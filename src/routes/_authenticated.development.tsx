@@ -154,9 +154,98 @@ function DevelopmentPage() {
       ],
     },
   ]);
+
   type DevelopmentTask = (typeof columns)[number]["tasks"][number];
+  type ColumnName = (typeof columns)[number]["name"];
+
+  const flow: ColumnName[] = [
+    "Ideia",
+    "Croqui",
+    "Modelagem",
+    "Piloto",
+    "Ajuste",
+    "Aprovação",
+    "Produção",
+    "Lançamento",
+  ];
+
+  const allowedTransition = (from: ColumnName, to: ColumnName) => {
+    const fromIdx = flow.indexOf(from);
+    const toIdx = flow.indexOf(to);
+    return fromIdx !== -1 && toIdx !== -1 && toIdx === fromIdx + 1;
+  };
+
+  const [draggedTask, setDraggedTask] = useState<{
+    task: DevelopmentTask;
+    fromColumn: ColumnName;
+  } | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<ColumnName | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const onDragStartTask = (
+    task: DevelopmentTask,
+    fromColumn: ColumnName,
+    e: React.DragEvent<HTMLDivElement>,
+  ) => {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("application/x-dev-task", JSON.stringify({ id: task.id, fromColumn }));
+    setDraggedTask({ task, fromColumn });
+    setIsDragging(true);
+  };
+
+  const onDragEndTask = () => {
+    setDraggedTask(null);
+    setDragOverColumn(null);
+    setIsDragging(false);
+  };
+
+  const onDragOverColumn = (toColumn: ColumnName, e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggedTask) return;
+    if (allowedTransition(draggedTask.fromColumn, toColumn)) {
+      setDragOverColumn(toColumn);
+    } else {
+      setDragOverColumn(null);
+    }
+  };
+
+  const onDropColumn = (toColumn: ColumnName, e: React.DragEvent) => {
+    e.preventDefault();
+    if (!draggedTask) return;
+
+    const fromColumn = draggedTask.fromColumn;
+    const task = draggedTask.task;
+
+    moveTask(task, fromColumn, toColumn);
+    setDragOverColumn(null);
+  };
+
+  const moveTask = (task: DevelopmentTask, fromColumn: ColumnName, toColumn: ColumnName) => {
+    if (fromColumn === toColumn) return;
+
+    if (!allowedTransition(fromColumn, toColumn)) {
+      toast.error(
+        `Fluxo inválido: mova apenas para a próxima etapa (${fromColumn} → ${flow[flow.indexOf(fromColumn) + 1]})`,
+      );
+      return;
+    }
+
+    setColumns((prev) => {
+      const next = prev.map((col) => {
+        if (col.name === fromColumn) {
+          return { ...col, tasks: col.tasks.filter((t) => t.id !== task.id) };
+        }
+        if (col.name === toColumn) {
+          return { ...col, tasks: [{ ...task }, ...col.tasks] };
+        }
+        return col;
+      });
+
+      return next;
+    });
+  };
   const [editingTask, setEditingTask] = useState<DevelopmentTask | null>(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -247,7 +336,15 @@ function DevelopmentPage() {
               </Button>
             </div>
 
-            <div className="flex-1 space-y-4">
+            <div
+              className={`flex-1 space-y-4 ${
+                dragOverColumn === col.name && draggedTask
+                  ? "ring-2 ring-primary/60 rounded-md"
+                  : ""
+              }`}
+              onDragOver={(e) => onDragOverColumn(col.name as ColumnName, e)}
+              onDrop={(e) => onDropColumn(col.name as ColumnName, e)}
+            >
               {col.tasks.map((task, ti) => (
                 <motion.div
                   key={task.id}
@@ -255,7 +352,14 @@ function DevelopmentPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: ti * 0.1 }}
                 >
-                  <Card className="glass-card rounded-lg border-white/5 hover:border-primary/30 transition-all cursor-grab active:cursor-grabbing group relative">
+                  <Card
+                    draggable
+                    onDragStart={(e) => onDragStartTask(task, col.name as ColumnName, e)}
+                    onDragEnd={onDragEndTask}
+                    className={`glass-card rounded-lg border-white/5 hover:border-primary/30 transition-all group relative ${
+                      isDragging ? "cursor-grabbing" : "cursor-grab"
+                    } ${draggedTask?.task.id === task.id ? "opacity-70" : "opacity-100"}`}
+                  >
                     <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                       <ModuleActionMenu
                         onEdit={() => handleOpenDialog(task)}
