@@ -322,9 +322,9 @@ function DevelopmentPage() {
         { label: "Prob. média", value: "87%", detail: "fit comercial IA" },
       ]}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4 flex-1 no-scrollbar min-h-[620px]">
+      <div className="flex gap-4 overflow-x-auto pb-4 flex-1 no-scrollbar min-h-155">
         {columns.map((col, i) => (
-          <div key={i} className="min-w-[292px] flex flex-col gap-4">
+          <div key={i} className="min-w-73 flex flex-col gap-4">
             <div className="flex items-center justify-between px-1 mb-1">
               <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-white flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -369,13 +369,13 @@ function DevelopmentPage() {
                     </div>
                     <CardContent className="p-0 overflow-hidden">
                       {task.image && (
-                        <div className="relative aspect-[4/3] overflow-hidden">
+                        <div className="relative aspect-4/3 overflow-hidden">
                           <img
                             src={task.image}
                             alt={task.title}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       )}
                       <div className="p-4 space-y-4">

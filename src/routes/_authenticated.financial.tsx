@@ -38,23 +38,36 @@ function FinancialPage() {
   ]);
 
   const [transactions, setTransactions] = useState([
-    { id: 1, label: "Contas a Receber (B2B)", val: "R$ 342k", due: "15 dias" },
-    { id: 2, label: "Contas a Pagar (Suppliers)", val: "R$ 124k", due: "08 dias" },
-    { id: 3, label: "Impostos/Fiscal", val: "R$ 42k", due: "02 dias" },
+    // Mock inicial com fonte (usado pelo BI de Marketing)
+    // Em produção, virá do ERP financeiro.
+
+    { id: 1, label: "Contas a Receber (B2B)", val: "R$ 342k", due: "15 dias", source: "vendas" },
+    { id: 2, label: "Contas a Pagar (Suppliers)", val: "R$ 124k", due: "08 dias", source: "producao" },
+    { id: 3, label: "Impostos/Fiscal", val: "R$ 42k", due: "02 dias", source: "outros" },
   ]);
-  type Transaction = (typeof transactions)[number];
+  type Transaction = (typeof transactions)[number] & { source?: string };
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [formData, setFormData] = useState({ label: "", val: "", due: "" });
+  const [formData, setFormData] = useState({
+    label: "",
+    val: "",
+    due: "",
+    source: "marketing" as "marketing" | "vendas" | "producao" | "estoque" | "outros",
+  });
 
   const handleOpenDialog = (transaction?: Transaction) => {
     if (transaction) {
       setEditingTransaction(transaction);
-      setFormData({ label: transaction.label, val: transaction.val, due: transaction.due });
+      setFormData({
+        label: transaction.label,
+        val: transaction.val,
+        due: transaction.due,
+        source: (transaction as any).source ?? "marketing",
+      });
     } else {
       setEditingTransaction(null);
-      setFormData({ label: "", val: "", due: "" });
+      setFormData({ label: "", val: "", due: "", source: "marketing" as any });
     }
     setIsDialogOpen(true);
   };
@@ -70,6 +83,9 @@ function FinancialPage() {
         id: Date.now(),
         ...formData,
       };
+
+      // Normaliza payload legado caso o usuário não preencha fonte
+      if (!newTrans.source) (newTrans as any).source = "marketing";
       setTransactions([newTrans, ...transactions]);
       toast.success("Nova transação registrada");
     }
@@ -166,8 +182,8 @@ function FinancialPage() {
               </span>
             </div>
           </div>
-          <div className="h-[300px] flex items-end gap-6 relative overflow-hidden pt-10">
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
+          <div className="h-75 flex items-end gap-6 relative overflow-hidden pt-10">
+            <div className="absolute inset-0 bg-linear-to-t from-primary/5 to-transparent pointer-events-none" />
             {[45, 65, 35, 85, 55, 75, 95].map((h, i) => (
               <div key={i} className="flex-1 space-y-2 group cursor-pointer">
                 <div className="relative w-full bg-white/5 rounded-t-xl overflow-hidden h-full flex flex-col justify-end">
@@ -221,7 +237,7 @@ function FinancialPage() {
             </div>
           </Card>
 
-          <Card className="glass-card rounded-[2.5rem] p-10 bg-gradient-to-br from-emerald-500/10 to-transparent border-emerald-500/20">
+          <Card className="glass-card rounded-[2.5rem] p-10 bg-linear-to-br from-emerald-500/10 to-transparent border-emerald-500/20">
             <div className="flex items-center gap-4 mb-4">
               <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400">
                 <Landmark className="w-6 h-6" />
@@ -263,6 +279,22 @@ function FinancialPage() {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                  Fonte
+                </Label>
+                <Input
+                  value={formData.source}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      source: e.target.value as any,
+                    })
+                  }
+                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  placeholder="marketing"
+                />
+              </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                   Valor
