@@ -234,7 +234,7 @@ function ProductionPage() {
 
       <ReferenciaDrawer
         loteNumero={selRefAtual?.loteNumero ?? ""}
-        ref={selRefAtual?.ref ?? null}
+        referencia={selRefAtual?.ref ?? null}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
