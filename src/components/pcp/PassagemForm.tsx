@@ -23,7 +23,7 @@ import {
 
 interface Props {
   loteNumero: string;
-  ref: ReferenciaLote;
+  referencia: ReferenciaLote;
   linha: LinhaPassagem;
 }
 

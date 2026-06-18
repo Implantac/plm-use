@@ -27,7 +27,7 @@ import {
 
 interface Props {
   loteNumero: string;
-  ref: ReferenciaLote | null;
+  referencia: ReferenciaLote | null;
   open: boolean;
   onClose(): void;
 }
@@ -148,15 +148,15 @@ export function ReferenciaDrawer({ loteNumero, ref, open, onClose }: Props) {
           </TabsContent>
 
           <TabsContent value="p1" className="mt-4">
-            <PassagemForm loteNumero={loteNumero} ref={ref} linha="1a" />
+            <PassagemForm loteNumero={loteNumero} referencia={referencia} linha="1a" />
           </TabsContent>
 
           <TabsContent value="p2" className="mt-4">
-            <PassagemForm loteNumero={loteNumero} ref={ref} linha="2a" />
+            <PassagemForm loteNumero={loteNumero} referencia={referencia} linha="2a" />
           </TabsContent>
 
           <TabsContent value="oco" className="mt-4">
-            <OcorrenciaForm loteNumero={loteNumero} ref={ref} />
+            <OcorrenciaForm loteNumero={loteNumero} referencia={referencia} />
             {ref.ocorrencias.length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
