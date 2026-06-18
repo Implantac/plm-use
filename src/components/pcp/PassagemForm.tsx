@@ -27,9 +27,9 @@ interface Props {
   linha: LinhaPassagem;
 }
 
-export function PassagemForm({ loteNumero, ref, linha }: Props) {
+export function PassagemForm({ loteNumero, referencia, linha }: Props) {
   const registrar = usePCPStore((s) => s.registrarPassagem);
-  const pendente = pendenteReferencia(ref);
+  const pendente = pendenteReferencia(referencia);
   const [tipo, setTipo] = useState<TipoPassagem>("integral");
   const [qtd, setQtd] = useState<number>(linha === "1a" ? pendente : 0);
   const [destino, setDestino] = useState<SetorPCP | "">("");
@@ -44,7 +44,7 @@ export function PassagemForm({ loteNumero, ref, linha }: Props) {
     }
     const res = registrar({
       lote: loteNumero,
-      ref: ref.ref,
+      ref: referencia.ref,
       tipo,
       linha,
       qtd: Number(qtd),
@@ -71,7 +71,7 @@ export function PassagemForm({ loteNumero, ref, linha }: Props) {
       <div className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]">
         <div className="flex justify-between text-muted-foreground">
           <span>Setor atual</span>
-          <span className="font-bold text-white">{ref.setor_atual}</span>
+          <span className="font-bold text-white">{referencia.setor_atual}</span>
         </div>
         <div className="mt-1 flex justify-between text-muted-foreground">
           <span>Saldo pendente</span>
@@ -114,7 +114,7 @@ export function PassagemForm({ loteNumero, ref, linha }: Props) {
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SETORES_PCP.filter((s) => s !== ref.setor_atual).map(
+                  {SETORES_PCP.filter((s) => s !== referencia.setor_atual).map(
                     (s) => (
                       <SelectItem key={s} value={s}>
                         {s}

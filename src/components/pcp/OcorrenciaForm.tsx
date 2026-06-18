@@ -23,7 +23,7 @@ interface Props {
   referencia: ReferenciaLote;
 }
 
-export function OcorrenciaForm({ loteNumero, ref }: Props) {
+export function OcorrenciaForm({ loteNumero, referencia }: Props) {
   const registrar = usePCPStore((s) => s.registrarOcorrencia);
   const [tipo, setTipo] = useState<TipoOcorrencia>("neutra");
   const [qtd, setQtd] = useState<number>(0);
@@ -42,7 +42,7 @@ export function OcorrenciaForm({ loteNumero, ref }: Props) {
     }
     const res = registrar({
       lote: loteNumero,
-      ref: ref.ref,
+      ref: referencia.ref,
       tipo,
       qtd: Number(qtd),
       motivo,
@@ -77,7 +77,7 @@ export function OcorrenciaForm({ loteNumero, ref }: Props) {
         </p>
         <p className="mt-2 text-muted-foreground">
           Saldo atual previsto:{" "}
-          <span className="font-bold text-white">{saldoReferencia(ref)} pç</span>
+          <span className="font-bold text-white">{saldoReferencia(referencia)} pç</span>
         </p>
       </div>
 

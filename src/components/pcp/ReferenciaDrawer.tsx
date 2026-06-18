@@ -32,8 +32,8 @@ interface Props {
   onClose(): void;
 }
 
-export function ReferenciaDrawer({ loteNumero, ref, open, onClose }: Props) {
-  if (!ref) return null;
+export function ReferenciaDrawer({ loteNumero, referencia, open, onClose }: Props) {
+  if (!referencia) return null;
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -45,48 +45,48 @@ export function ReferenciaDrawer({ loteNumero, ref, open, onClose }: Props) {
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                {loteNumero} • {ref.ref}
+                {loteNumero} • {referencia.ref}
               </p>
               <SheetTitle className="mt-1 text-white text-xl">
-                {ref.nome}
+                {referencia.nome}
               </SheetTitle>
               <div className="mt-2 flex items-center gap-2">
                 <Badge variant="outline" className="text-[10px] border-white/20">
-                  {ref.setor_atual}
+                  {referencia.setor_atual}
                 </Badge>
                 <Badge
                   variant="outline"
                   className={`text-[10px] ${
-                    ref.status === "Concluído"
+                    referencia.status === "Concluído"
                       ? "border-emerald-400/40 text-emerald-300"
-                      : ref.status === "Ocorrência"
+                      : referencia.status === "Ocorrência"
                         ? "border-rose-400/40 text-rose-300"
                         : "border-white/20"
                   }`}
                 >
-                  {ref.status}
+                  {referencia.status}
                 </Badge>
               </div>
             </div>
           </div>
 
           <div className="mt-4 grid grid-cols-4 gap-2 text-center">
-            <Metric label="Prog." value={ref.qtd_programada} />
-            <Metric label="Adic." value={ref.qtd_adicional} tone="pos" />
-            <Metric label="Perda" value={ref.qtd_perdida} tone="neg" />
+            <Metric label="Prog." value={referencia.qtd_programada} />
+            <Metric label="Adic." value={referencia.qtd_adicional} tone="pos" />
+            <Metric label="Perda" value={referencia.qtd_perdida} tone="neg" />
             <Metric
               label="Saldo"
-              value={saldoReferencia(ref)}
+              value={saldoReferencia(referencia)}
               tone="strong"
             />
           </div>
           <div>
             <div className="flex justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
-              <span>Produzido {ref.qtd_produzida}</span>
-              <span>Pendente {pendenteReferencia(ref)}</span>
+              <span>Produzido {referencia.qtd_produzida}</span>
+              <span>Pendente {pendenteReferencia(referencia)}</span>
             </div>
             <Progress
-              value={percentualReferencia(ref)}
+              value={percentualReferencia(referencia)}
               className="mt-1 h-1.5 bg-white/10"
             />
           </div>
@@ -122,8 +122,8 @@ export function ReferenciaDrawer({ loteNumero, ref, open, onClose }: Props) {
             <FichaRow
               label="Grade"
               value={
-                ref.grade
-                  ? Object.entries(ref.grade)
+                referencia.grade
+                  ? Object.entries(referencia.grade)
                       .map(([k, v]) => `${k}:${v}`)
                       .join(" • ")
                   : "—"
@@ -157,12 +157,12 @@ export function ReferenciaDrawer({ loteNumero, ref, open, onClose }: Props) {
 
           <TabsContent value="oco" className="mt-4">
             <OcorrenciaForm loteNumero={loteNumero} referencia={referencia} />
-            {ref.ocorrencias.length > 0 && (
+            {referencia.ocorrencias.length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
                   Ocorrências registradas
                 </p>
-                {ref.ocorrencias.map((o) => (
+                {referencia.ocorrencias.map((o) => (
                   <div
                     key={o.id}
                     className={`rounded-md border p-3 text-[11px] ${
@@ -190,12 +190,12 @@ export function ReferenciaDrawer({ loteNumero, ref, open, onClose }: Props) {
           </TabsContent>
 
           <TabsContent value="hist" className="mt-4 space-y-2">
-            {ref.passagens.length === 0 ? (
+            {referencia.passagens.length === 0 ? (
               <p className="text-[11px] text-muted-foreground">
                 Nenhuma passagem registrada ainda.
               </p>
             ) : (
-              ref.passagens.map((p) => (
+              referencia.passagens.map((p) => (
                 <div
                   key={p.id}
                   className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]"
