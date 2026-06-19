@@ -135,7 +135,7 @@ function ReferenciaTabs({
 
   return (
     <Tabs defaultValue="ficha" className="mt-4">
-      <TabsList className="grid w-full grid-cols-7 bg-white/5 h-auto">
+      <TabsList className="grid w-full grid-cols-8 bg-white/5 h-auto">
         <TabsTrigger value="ficha" className="text-[10px] gap-1">
           <ScrollText className="h-3 w-3" /> Ficha
         </TabsTrigger>
