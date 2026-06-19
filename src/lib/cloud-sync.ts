@@ -168,6 +168,26 @@ export function useModulesCloudSync(enabled: boolean) {
           debounce("ts", () => void pushTechSheetsAll(uid));
         }),
       );
+
+      // ---- Realtime: re-hidrata stores em qualquer mudança remota ----
+      const channel = supabase
+        .channel("modules-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: "influencers" }, () => {
+          hydrated.inf = false;
+          void hydrateInfluencers();
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "quality_capa" }, () => {
+          hydrated.capa = false;
+          void hydrateCapa();
+        })
+        .on("postgres_changes", { event: "*", schema: "public", table: "tech_sheets" }, () => {
+          hydrated.ts = false;
+          void hydrateTechSheets();
+        })
+        .subscribe();
+      unsubs.push(() => {
+        void supabase.removeChannel(channel);
+      });
     })();
     return () => {
       cancelled = true;
