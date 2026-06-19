@@ -1,5 +1,8 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { useAuth, signOut } from "@/hooks/use-auth";
+import { LogOut } from "lucide-react";
+import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { useEffect, useState } from "react";
 import {
@@ -41,6 +44,14 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const { isAuthenticated, loading, user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate({ to: "/login" });
+    }
+  }, [loading, isAuthenticated, navigate]);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("use-moda-theme");
@@ -49,6 +60,20 @@ function AuthenticatedLayout() {
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
   }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success("Sessão encerrada.");
+    navigate({ to: "/login" });
+  };
+
+  if (loading || !isAuthenticated) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.3em]">
+        Autenticando...
+      </div>
+    );
+  }
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
