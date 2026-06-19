@@ -47,6 +47,7 @@ function AuthenticatedLayout() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const { isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
+  usePCPCloudSync(isAuthenticated);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
