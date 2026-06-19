@@ -521,3 +521,146 @@ function DevelopmentPage() {
     </ModuleLayout>
   );
 }
+
+// ============================================================
+// CENTRO DE DESENVOLVIMENTO
+// Visão única da coleção: chips de filtro + grid de cards das
+// referências em desenvolvimento, baseadas no ciclo de vida (PLM-centric).
+// ============================================================
+
+const FILTERS: { id: DevFilter; label: string; icon: typeof Sparkles }[] = [
+  { id: "todos", label: "Todos", icon: LayoutDashboard },
+  { id: "pilotos_pendentes", label: "Pilotos pendentes", icon: Hourglass },
+  { id: "sem_ficha", label: "Sem ficha técnica", icon: FileWarning },
+  { id: "aguardando_aprovacao", label: "Aguardando aprovação", icon: Sparkles },
+  { id: "liberados_pcp", label: "Liberados PCP", icon: CheckCircle2 },
+  { id: "atrasados", label: "Atrasados", icon: AlertTriangle },
+];
+
+function CentroDeDesenvolvimento() {
+  const lifecycles = useReferenceStore((s) => s.lifecycles);
+  const [filter, setFilter] = useState<DevFilter>("todos");
+
+  const counts = useMemo(() => {
+    const out: Record<DevFilter, number> = {
+      todos: lifecycles.length,
+      pilotos_pendentes: 0,
+      sem_ficha: 0,
+      aguardando_aprovacao: 0,
+      liberados_pcp: 0,
+      atrasados: 0,
+    };
+    for (const f of FILTERS) {
+      if (f.id === "todos") continue;
+      out[f.id] = filtrarLifecycles(lifecycles, f.id).length;
+    }
+    return out;
+  }, [lifecycles]);
+
+  const filtered = useMemo(
+    () => filtrarLifecycles(lifecycles, filter),
+    [lifecycles, filter],
+  );
+
+  return (
+    <section className="mb-8 space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.25em] text-primary">
+            Centro de Desenvolvimento
+          </p>
+          <h2 className="text-lg font-bold text-white">
+            Visão única da coleção
+          </h2>
+        </div>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          {filtered.length} {filtered.length === 1 ? "referência" : "referências"}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {FILTERS.map((f) => {
+          const Icon = f.icon;
+          const active = filter === f.id;
+          const count = counts[f.id];
+          return (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] transition ${
+                active
+                  ? "border-primary/60 bg-primary/15 text-white"
+                  : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-white"
+              }`}
+            >
+              <Icon className="h-3 w-3" />
+              {f.label}
+              <span
+                className={`rounded-full px-1.5 text-[9px] ${
+                  active ? "bg-white/15 text-white" : "bg-white/10 text-muted-foreground"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {filter !== "todos" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {filtered.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground italic">
+              Nada neste filtro. ✨
+            </p>
+          ) : (
+            filtered.map((lc) => <LifecycleCard key={lc.ref} lc={lc} />)
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function LifecycleCard({ lc }: { lc: ReferenceLifecycle }) {
+  const pct = percentualLifecycle(lc);
+  const stage = stageAtual(lc);
+  const atrasada =
+    !!lc.prazo && pct < 100 && new Date(lc.prazo).getTime() < Date.now();
+
+  return (
+    <Link
+      to="/tech-sheet"
+      search={{ ref: lc.ref }}
+      className="block rounded-lg border border-white/10 bg-white/[0.03] p-4 hover:border-primary/40 transition"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[9px] uppercase tracking-[0.2em] text-primary">{lc.ref}</p>
+          <p className="text-sm font-bold text-white mt-0.5">{lc.nome}</p>
+          <p className="text-[10px] text-muted-foreground mt-1">
+            {lc.colecao ?? "—"} · {lc.designer ?? "—"}
+          </p>
+        </div>
+        {atrasada && (
+          <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-rose-400/40 bg-rose-400/10 text-rose-300">
+            Atrasada
+          </span>
+        )}
+      </div>
+
+      <div className="mt-3 space-y-1.5">
+        <div className="flex justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+          <span>{stage?.label ?? "—"}</span>
+          <span className="text-white">{pct}%</span>
+        </div>
+        <div className="h-1 w-full rounded-full bg-white/10 overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-primary/60 to-primary"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+    </Link>
+  );
+}
