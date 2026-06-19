@@ -27,6 +27,8 @@ import {
   LockKeyhole,
   Moon,
   Sun,
+  Heart,
+  Bot,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
