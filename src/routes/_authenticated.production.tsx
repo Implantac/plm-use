@@ -33,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/production")({
 function ProductionPage() {
   const lotes = usePCPStore((s) => s.lotes);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [view, setView] = useState<"kanban" | "torre">("kanban");
   const [selRef, setSelRef] = useState<{
     loteNumero: string;
     ref: ReferenciaLote;
