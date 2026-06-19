@@ -20,6 +20,7 @@ import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
 import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authenticated.prototypes'
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated.production'
+import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
 import { Route as AuthenticatedFinancialRouteImport } from './routes/_authenticated.financial'
@@ -86,6 +87,11 @@ const AuthenticatedPrototypesRoute = AuthenticatedPrototypesRouteImport.update({
 const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
   id: '/production',
   path: '/production',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
@@ -175,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/financial': typeof AuthenticatedFinancialRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/marketing': typeof AuthenticatedMarketingRoute
+  '/planner': typeof AuthenticatedPlannerRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
   '/research': typeof AuthenticatedResearchRoute
@@ -200,6 +207,7 @@ export interface FileRoutesByTo {
   '/financial': typeof AuthenticatedFinancialRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/marketing': typeof AuthenticatedMarketingRoute
+  '/planner': typeof AuthenticatedPlannerRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
   '/research': typeof AuthenticatedResearchRoute
@@ -227,6 +235,7 @@ export interface FileRoutesById {
   '/_authenticated/financial': typeof AuthenticatedFinancialRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
+  '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/production': typeof AuthenticatedProductionRouteWithChildren
   '/_authenticated/prototypes': typeof AuthenticatedPrototypesRoute
   '/_authenticated/research': typeof AuthenticatedResearchRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/financial'
     | '/inventory'
     | '/marketing'
+    | '/planner'
     | '/production'
     | '/prototypes'
     | '/research'
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/financial'
     | '/inventory'
     | '/marketing'
+    | '/planner'
     | '/production'
     | '/prototypes'
     | '/research'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/_authenticated/financial'
     | '/_authenticated/inventory'
     | '/_authenticated/marketing'
+    | '/_authenticated/planner'
     | '/_authenticated/production'
     | '/_authenticated/prototypes'
     | '/_authenticated/research'
@@ -399,6 +411,13 @@ declare module '@tanstack/react-router' {
       path: '/production'
       fullPath: '/production'
       preLoaderRoute: typeof AuthenticatedProductionRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/planner': {
+      id: '/_authenticated/planner'
+      path: '/planner'
+      fullPath: '/planner'
+      preLoaderRoute: typeof AuthenticatedPlannerRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/marketing': {
@@ -522,6 +541,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFinancialRoute: typeof AuthenticatedFinancialRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
+  AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRouteWithChildren
   AuthenticatedPrototypesRoute: typeof AuthenticatedPrototypesRoute
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRoute
@@ -543,6 +563,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFinancialRoute: AuthenticatedFinancialRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
+  AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRouteWithChildren,
   AuthenticatedPrototypesRoute: AuthenticatedPrototypesRoute,
   AuthenticatedResearchRoute: AuthenticatedResearchRoute,
@@ -565,13 +586,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
