@@ -116,7 +116,7 @@ function AIAgentsPage() {
       metrics={[
         { label: "Agente", value: A.label, detail: "ativo" },
         { label: "Mensagens", value: String(chat.length), detail: "na sessão" },
-        { label: "Contexto", value: agent === "pcp" ? `${lotes.length} lotes` : "Coleção", detail: "injetado" },
+        { label: "Contexto", value: agent === "pcp" ? `${lotes.length} lotes` : agent === "marketing" ? `${influencers.length} influencers` : "Coleção", detail: "injetado" },
         { label: "Modelo", value: "Gemini 3", detail: "Flash" },
       ]}
     >
