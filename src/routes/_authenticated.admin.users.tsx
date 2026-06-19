@@ -6,7 +6,7 @@ import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ShieldCheck, ShieldOff, Loader2 } from "lucide-react";
+import { ShieldOff, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
   component: AdminUsersPage,
