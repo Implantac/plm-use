@@ -106,6 +106,7 @@ function AuthenticatedLayout() {
     { icon: <Globe className="w-4 h-4" />, label: "Digital Twin", href: "/digital-twin" },
     { icon: <MessageSquare className="w-4 h-4" />, label: "Colaboração", href: "/feed" },
     { icon: <LockKeyhole className="w-4 h-4" />, label: "Segurança", href: "/security" },
+    { icon: <ShieldCheck className="w-4 h-4" />, label: "Admin · Usuários", href: "/admin/users" },
   ];
 
   return (
