@@ -173,6 +173,8 @@ function InventoryPage() {
           supplierColor: "A definir",
           image:
             "https://images.unsplash.com/photo-1584184854125-5162423799b5?auto=format&fit=crop&q=80&w=240",
+          consumoPrevisto: 0,
+          consumoReal: 0,
         },
         ...items,
       ]);
