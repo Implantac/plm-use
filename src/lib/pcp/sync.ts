@@ -40,8 +40,8 @@ function loteAggregate(l: Lote) {
   };
 }
 
-export async function hydratePCPFromCloud() {
-  if (hydrated) return;
+export async function hydratePCPFromCloud(force = false) {
+  if (hydrated && !force) return;
   hydrated = true;
   const { data, error } = await supabase
     .from("pcp_lots")
