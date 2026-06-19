@@ -330,6 +330,15 @@ function InventoryPage() {
         </Card>
 
         <div className="space-y-6">
+          <ConsumoPanel
+            items={items.map((i) => ({
+              ref: i.ref,
+              name: i.name,
+              unit: i.unit,
+              previsto: i.consumoPrevisto,
+              real: i.consumoReal,
+            }))}
+          />
           <Card className="glass-card rounded-lg border-rose-300/20 bg-rose-300/[0.035]">
             <CardHeader className="p-5 border-b border-white/5">
               <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
