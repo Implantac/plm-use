@@ -399,6 +399,17 @@ export const usePCPStore = create<PCPState>((set, get) => ({
       return { lotes };
     });
 
+    void import("@/lib/activity/log").then(({ logActivity }) =>
+      logActivity({
+        module: "PCP",
+        entity_type: "ocorrencia",
+        entity_id: `${lote}/${ref}`,
+        action: "occurrence",
+        message: `Ocorrência ${tipo} em ${ref} (${lote}): ${motivo} · qtd ${qtd}`,
+        metadata: { tipo, qtd, motivo, responsavel },
+      }),
+    );
+
     return { ok: true };
   },
 
