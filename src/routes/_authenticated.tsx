@@ -1,5 +1,8 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { useAuth, signOut } from "@/hooks/use-auth";
+import { LogOut } from "lucide-react";
+import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { useEffect, useState } from "react";
 import {
@@ -41,6 +44,14 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const { isAuthenticated, loading, user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate({ to: "/login" });
+    }
+  }, [loading, isAuthenticated, navigate]);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("use-moda-theme");
@@ -49,6 +60,20 @@ function AuthenticatedLayout() {
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
   }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success("Sessão encerrada.");
+    navigate({ to: "/login" });
+  };
+
+  if (loading || !isAuthenticated) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.3em]">
+        Autenticando...
+      </div>
+    );
+  }
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
@@ -116,23 +141,33 @@ function AuthenticatedLayout() {
         </ScrollArea>
 
         <div className="p-4 mt-auto border-t border-white/5">
-          <div className="flex items-center gap-3 p-3 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-pointer group shadow-sm">
+          <div className="flex items-center gap-3 p-3 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 transition-all group shadow-sm">
             <Avatar className="w-9 h-9 border-2 border-primary/20 transition-transform group-hover:scale-105">
-              <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100" />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold">UA</AvatarFallback>
+              <AvatarImage src={user?.user_metadata?.avatar_url} />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                {(user?.email?.[0] ?? "U").toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-white truncate">
-                Diretoria de Produto
+                {user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "Usuário"}
               </p>
               <p className="text-[9px] text-muted-foreground font-light italic truncate">
-                Admin Master
+                {user?.email}
               </p>
             </div>
-            <Settings className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors hover:rotate-45 duration-300" />
+            <button
+              onClick={handleLogout}
+              title="Sair"
+              className="p-1.5 rounded text-muted-foreground hover:text-primary hover:bg-white/5 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </aside>
+
+
 
       <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
         <div
