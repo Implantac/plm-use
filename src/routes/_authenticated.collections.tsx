@@ -27,6 +27,7 @@ import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { CollectionROI } from "@/components/collections/CollectionROI";
+import { CollectionPerformance } from "@/components/collections/CollectionPerformance";
 
 export const Route = createFileRoute("/_authenticated/collections")({
   component: CollectionsPage,
@@ -307,6 +308,7 @@ function CollectionsPage() {
         </div>
 
         <div className="space-y-6">
+          <CollectionPerformance collections={collections} />
           <Card className="glass-card rounded-lg">
             <CardHeader className="p-5 border-b border-white/5">
               <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
