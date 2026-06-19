@@ -23,6 +23,7 @@ import { Route as AuthenticatedProductionRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
+import { Route as AuthenticatedInfluencersRouteImport } from './routes/_authenticated.influencers'
 import { Route as AuthenticatedFinancialRouteImport } from './routes/_authenticated.financial'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
 import { Route as AuthenticatedDigitalTwinRouteImport } from './routes/_authenticated.digital-twin'
@@ -33,6 +34,7 @@ import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
+import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -104,6 +106,12 @@ const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedInfluencersRoute =
+  AuthenticatedInfluencersRouteImport.update({
+    id: '/influencers',
+    path: '/influencers',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedFinancialRoute = AuthenticatedFinancialRouteImport.update({
   id: '/financial',
   path: '/financial',
@@ -157,6 +165,11 @@ const AuthenticatedAiCenterRoute = AuthenticatedAiCenterRouteImport.update({
   path: '/ai-center',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAiAgentsRoute = AuthenticatedAiAgentsRouteImport.update({
+  id: '/ai-agents',
+  path: '/ai-agents',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedProductionTodayRoute =
   AuthenticatedProductionTodayRouteImport.update({
     id: '/today',
@@ -169,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/cad': typeof AuthenticatedCadRoute
@@ -179,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/digital-twin': typeof AuthenticatedDigitalTwinRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/financial': typeof AuthenticatedFinancialRoute
+  '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
@@ -195,6 +210,7 @@ export interface FileRoutesByTo {
   '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/cad': typeof AuthenticatedCadRoute
@@ -205,6 +221,7 @@ export interface FileRoutesByTo {
   '/digital-twin': typeof AuthenticatedDigitalTwinRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/financial': typeof AuthenticatedFinancialRoute
+  '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
@@ -223,6 +240,7 @@ export interface FileRoutesById {
   '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/_authenticated/ai-center': typeof AuthenticatedAiCenterRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/cad': typeof AuthenticatedCadRoute
@@ -233,6 +251,7 @@ export interface FileRoutesById {
   '/_authenticated/digital-twin': typeof AuthenticatedDigitalTwinRoute
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/financial': typeof AuthenticatedFinancialRoute
+  '/_authenticated/influencers': typeof AuthenticatedInfluencersRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
@@ -251,6 +270,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/login'
     | '/sitemap.xml'
+    | '/ai-agents'
     | '/ai-center'
     | '/analytics'
     | '/cad'
@@ -261,6 +281,7 @@ export interface FileRouteTypes {
     | '/digital-twin'
     | '/feed'
     | '/financial'
+    | '/influencers'
     | '/inventory'
     | '/marketing'
     | '/planner'
@@ -277,6 +298,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/login'
     | '/sitemap.xml'
+    | '/ai-agents'
     | '/ai-center'
     | '/analytics'
     | '/cad'
@@ -287,6 +309,7 @@ export interface FileRouteTypes {
     | '/digital-twin'
     | '/feed'
     | '/financial'
+    | '/influencers'
     | '/inventory'
     | '/marketing'
     | '/planner'
@@ -304,6 +327,7 @@ export interface FileRouteTypes {
     | '/audit'
     | '/login'
     | '/sitemap.xml'
+    | '/_authenticated/ai-agents'
     | '/_authenticated/ai-center'
     | '/_authenticated/analytics'
     | '/_authenticated/cad'
@@ -314,6 +338,7 @@ export interface FileRouteTypes {
     | '/_authenticated/digital-twin'
     | '/_authenticated/feed'
     | '/_authenticated/financial'
+    | '/_authenticated/influencers'
     | '/_authenticated/inventory'
     | '/_authenticated/marketing'
     | '/_authenticated/planner'
@@ -434,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInventoryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/influencers': {
+      id: '/_authenticated/influencers'
+      path: '/influencers'
+      fullPath: '/influencers'
+      preLoaderRoute: typeof AuthenticatedInfluencersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/financial': {
       id: '/_authenticated/financial'
       path: '/financial'
@@ -504,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiCenterRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/ai-agents': {
+      id: '/_authenticated/ai-agents'
+      path: '/ai-agents'
+      fullPath: '/ai-agents'
+      preLoaderRoute: typeof AuthenticatedAiAgentsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/production/today': {
       id: '/_authenticated/production/today'
       path: '/today'
@@ -529,6 +568,7 @@ const AuthenticatedProductionRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAiAgentsRoute: typeof AuthenticatedAiAgentsRoute
   AuthenticatedAiCenterRoute: typeof AuthenticatedAiCenterRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedCadRoute: typeof AuthenticatedCadRoute
@@ -539,6 +579,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDigitalTwinRoute: typeof AuthenticatedDigitalTwinRoute
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedFinancialRoute: typeof AuthenticatedFinancialRoute
+  AuthenticatedInfluencersRoute: typeof AuthenticatedInfluencersRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
@@ -551,6 +592,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAiAgentsRoute: AuthenticatedAiAgentsRoute,
   AuthenticatedAiCenterRoute: AuthenticatedAiCenterRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedCadRoute: AuthenticatedCadRoute,
@@ -561,6 +603,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDigitalTwinRoute: AuthenticatedDigitalTwinRoute,
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedFinancialRoute: AuthenticatedFinancialRoute,
+  AuthenticatedInfluencersRoute: AuthenticatedInfluencersRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
