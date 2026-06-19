@@ -9,16 +9,16 @@ import type { Lote } from "@/types/pcp";
 let hydrated = false;
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 
-function mapPriority(p: Lote["prioridade"]): "low" | "medium" | "high" | "urgent" {
+function mapPriority(p: Lote["prioridade"]): "baixa" | "media" | "alta" | "critica" {
   switch (p) {
     case "Urgente":
-      return "urgent";
+      return "critica";
     case "Alta":
-      return "high";
+      return "alta";
     case "Baixa":
-      return "low";
+      return "baixa";
     default:
-      return "medium";
+      return "media";
   }
 }
 
