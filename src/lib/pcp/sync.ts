@@ -33,7 +33,7 @@ function loteAggregate(l: Lote) {
     quantity: total,
     current_stage: ref?.setor_atual ?? "Compras",
     due_date: l.data_prevista || null,
-    status: "in_progress" as const,
+    status: "em_producao" as const,
     priority: mapPriority(l.prioridade),
     progress_percent: total > 0 ? Math.round((prod / total) * 100) : 0,
     metadata: { lote: l } as unknown as never,
