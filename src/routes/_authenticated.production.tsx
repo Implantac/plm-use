@@ -288,6 +288,7 @@ function ProductionPage() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
+      <CapacityPanel />
     </ModuleLayout>
   );
 }

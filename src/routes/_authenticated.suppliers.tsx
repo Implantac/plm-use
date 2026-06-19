@@ -332,6 +332,7 @@ function SuppliersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <SupplierScoreboard />
     </ModuleLayout>
   );
 }

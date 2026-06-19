@@ -409,6 +409,7 @@ function CollectionsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <CollectionROI />
     </ModuleLayout>
   );
 }

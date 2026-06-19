@@ -353,6 +353,7 @@ function ResearchHub() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <MoodBoard />
     </ModuleLayout>
   );
 }
