@@ -118,7 +118,40 @@ function Login() {
           </p>
         </div>
 
-        <form className="space-y-6" onSubmit={handleLogin}>
+        <div className="flex gap-1 p-1 rounded-md bg-white/5 border border-white/5">
+          {(["signin", "signup"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              className={`flex-1 py-2 rounded text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${
+                mode === m ? "bg-primary text-white" : "text-muted-foreground hover:text-white"
+              }`}
+            >
+              {m === "signin" ? "Entrar" : "Criar conta"}
+            </button>
+          ))}
+        </div>
+
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {mode === "signup" && (
+            <div className="space-y-3">
+              <Label
+                htmlFor="fullName"
+                className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-4"
+              >
+                Nome completo
+              </Label>
+              <Input
+                id="fullName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Seu nome"
+                className="rounded-md border-white/10 bg-white/5 h-12 px-4 text-sm focus-visible:ring-primary/30"
+                required
+              />
+            </div>
+          )}
           <div className="space-y-3">
             <Label
               htmlFor="email"
@@ -137,26 +170,18 @@ function Login() {
             />
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between px-4">
-              <Label
-                htmlFor="password"
-                title="Senha de Acesso"
-                className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
-              >
-                Senha
-              </Label>
-              <a
-                href="#"
-                className="text-[9px] text-primary hover:text-white transition-colors font-bold uppercase tracking-[0.1em]"
-              >
-                Redefinir Senha
-              </a>
-            </div>
+            <Label
+              htmlFor="password"
+              className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-4"
+            >
+              Senha
+            </Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
               className="rounded-md border-white/10 bg-white/5 h-12 px-4 focus-visible:ring-primary/30"
               required
             />
@@ -167,16 +192,22 @@ function Login() {
             disabled={loading}
             className="w-full rounded-md h-12 text-[10px] font-bold uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-white mt-4 border-none transition-all shadow-lg hover:shadow-primary/20"
           >
-            {loading ? "Autenticando..." : "Entrar no Sistema"}
+            {loading
+              ? "Processando..."
+              : mode === "signin"
+                ? "Entrar no Sistema"
+                : "Criar Conta"}
           </Button>
           <Button
             type="button"
             variant="outline"
+            onClick={handleGoogle}
             className="w-full rounded-md h-12 text-[10px] font-bold uppercase tracking-[0.16em] border-white/10 bg-white/5"
           >
-            Entrar com SSO
+            Continuar com Google
           </Button>
         </form>
+
 
         <div className="text-center pt-6 border-t border-white/5">
           <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em]">
