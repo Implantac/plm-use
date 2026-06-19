@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          message: string
+          metadata: Json
+          module: string
+          user_id: string | null
+          user_name: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          message: string
+          metadata?: Json
+          module: string
+          user_id?: string | null
+          user_name: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          message?: string
+          metadata?: Json
+          module?: string
+          user_id?: string | null
+          user_name?: string
+        }
+        Relationships: []
+      }
       influencers: {
         Row: {
           created_at: string
