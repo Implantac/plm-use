@@ -65,6 +65,7 @@ function AuthenticatedLayout() {
     { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
     { icon: <PenTool className="w-4 h-4" />, label: "CAD & Modelagem", href: "/cad" },
     { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
+    { icon: <Zap className="w-4 h-4" />, label: "Planner", href: "/planner" },
     { icon: <Box className="w-4 h-4" />, label: "Almoxarifado", href: "/inventory" },
     { icon: <Users className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
     { icon: <Megaphone className="w-4 h-4" />, label: "Marketing", href: "/marketing" },
