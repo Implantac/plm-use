@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { SupplierScoreboard } from "@/components/suppliers/SupplierScoreboard";
 
 export const Route = createFileRoute("/_authenticated/suppliers")({
   component: SuppliersPage,

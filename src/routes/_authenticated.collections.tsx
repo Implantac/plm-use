@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { CollectionROI } from "@/components/collections/CollectionROI";
 
 export const Route = createFileRoute("/_authenticated/collections")({
   component: CollectionsPage,

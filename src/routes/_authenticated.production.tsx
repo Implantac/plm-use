@@ -15,6 +15,7 @@ import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
 import { TorreDeControle } from "@/components/pcp/TorreDeControle";
+import { CapacityPanel } from "@/components/pcp/CapacityPanel";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
   SETORES_PCP,
