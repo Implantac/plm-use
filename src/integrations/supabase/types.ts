@@ -14,16 +14,185 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pcp_lots: {
+        Row: {
+          code: string
+          collection: string | null
+          created_at: string
+          created_by: string | null
+          current_stage: string | null
+          due_date: string | null
+          id: string
+          metadata: Json
+          model: string
+          priority: Database["public"]["Enums"]["lot_priority"]
+          progress_percent: number
+          quantity: number
+          responsible_id: string | null
+          status: Database["public"]["Enums"]["lot_status"]
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          collection?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_stage?: string | null
+          due_date?: string | null
+          id?: string
+          metadata?: Json
+          model: string
+          priority?: Database["public"]["Enums"]["lot_priority"]
+          progress_percent?: number
+          quantity?: number
+          responsible_id?: string | null
+          status?: Database["public"]["Enums"]["lot_status"]
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          collection?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_stage?: string | null
+          due_date?: string | null
+          id?: string
+          metadata?: Json
+          model?: string
+          priority?: Database["public"]["Enums"]["lot_priority"]
+          progress_percent?: number
+          quantity?: number
+          responsible_id?: string | null
+          status?: Database["public"]["Enums"]["lot_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pcp_occurrences: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          lot_id: string | null
+          reported_by: string | null
+          resolved_at: string | null
+          sector: string | null
+          severity: Database["public"]["Enums"]["occurrence_severity"]
+          status: Database["public"]["Enums"]["occurrence_status"]
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          lot_id?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          sector?: string | null
+          severity?: Database["public"]["Enums"]["occurrence_severity"]
+          status?: Database["public"]["Enums"]["occurrence_status"]
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          lot_id?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          sector?: string | null
+          severity?: Database["public"]["Enums"]["occurrence_severity"]
+          status?: Database["public"]["Enums"]["occurrence_status"]
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pcp_occurrences_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "pcp_lots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          job_title: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          job_title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          job_title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "manager" | "operator" | "viewer"
+      lot_priority: "baixa" | "media" | "alta" | "critica"
+      lot_status:
+        | "planejado"
+        | "em_producao"
+        | "pausado"
+        | "concluido"
+        | "cancelado"
+      occurrence_severity: "info" | "warning" | "critical"
+      occurrence_status: "aberta" | "em_tratativa" | "resolvida"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +319,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "manager", "operator", "viewer"],
+      lot_priority: ["baixa", "media", "alta", "critica"],
+      lot_status: [
+        "planejado",
+        "em_producao",
+        "pausado",
+        "concluido",
+        "cancelado",
+      ],
+      occurrence_severity: ["info", "warning", "critical"],
+      occurrence_status: ["aberta", "em_tratativa", "resolvida"],
+    },
   },
 } as const
