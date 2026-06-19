@@ -147,14 +147,7 @@ function AuthenticatedLayout() {
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-10 h-10 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 transition-all relative group"
-            >
-              <Bell className="w-4 h-4 text-muted-foreground group-hover:text-white transition-colors" />
-              <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-primary rounded-full ring-4 ring-background" />
-            </Button>
+            <AlertsBell />
             <Button
               variant="ghost"
               size="icon"
