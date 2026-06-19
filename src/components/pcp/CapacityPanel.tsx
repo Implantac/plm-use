@@ -6,8 +6,8 @@ import { SETORES_PCP, pendenteReferencia, type SetorPCP } from "@/types/pcp";
 
 // Capacidade diária mock (pç/dia) por setor.
 const CAPACIDADE: Record<SetorPCP, number> = {
-  Compras: 999_999, CAD: 400, Corte: 800, Silk: 350, Bordado: 200,
-  Costura: 600, Lavanderia: 500, Acabamento: 700, Expedição: 1200, Terceirizados: 250,
+  Compras: 999_999, CAD: 400, Corte: 800, Silk: 350,
+  Costura: 600, Acabamento: 700, Expedição: 1200, Terceirizados: 250,
 };
 
 export function CapacityPanel() {
