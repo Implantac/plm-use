@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      influencers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          custo_medio: number
+          envios: Json
+          handle: string
+          id: string
+          nome: string
+          perfil: string | null
+          regiao: string | null
+          segmento: string | null
+          seguidores: number
+          uf: string | null
+          updated_at: string
+          vendas_geradas: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          custo_medio?: number
+          envios?: Json
+          handle: string
+          id?: string
+          nome: string
+          perfil?: string | null
+          regiao?: string | null
+          segmento?: string | null
+          seguidores?: number
+          uf?: string | null
+          updated_at?: string
+          vendas_geradas?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          custo_medio?: number
+          envios?: Json
+          handle?: string
+          id?: string
+          nome?: string
+          perfil?: string | null
+          regiao?: string | null
+          segmento?: string | null
+          seguidores?: number
+          uf?: string | null
+          updated_at?: string
+          vendas_geradas?: number
+        }
+        Relationships: []
+      }
       pcp_lots: {
         Row: {
           code: string
@@ -145,6 +196,90 @@ export type Database = {
           id?: string
           job_title?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      quality_capa: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          criada: string
+          defeito: string
+          fornecedor: string | null
+          id: string
+          lote: string | null
+          prazo: string | null
+          ref: string | null
+          responsavel: string
+          setor: string
+          status: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          criada?: string
+          defeito: string
+          fornecedor?: string | null
+          id?: string
+          lote?: string | null
+          prazo?: string | null
+          ref?: string | null
+          responsavel: string
+          setor: string
+          status?: string
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          criada?: string
+          defeito?: string
+          fornecedor?: string | null
+          id?: string
+          lote?: string | null
+          prazo?: string | null
+          ref?: string | null
+          responsavel?: string
+          setor?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tech_sheets: {
+        Row: {
+          bom: Json
+          bop: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          ref: string
+          updated_at: string
+          versoes: Json
+        }
+        Insert: {
+          bom?: Json
+          bop?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          ref: string
+          updated_at?: string
+          versoes?: Json
+        }
+        Update: {
+          bom?: Json
+          bop?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          ref?: string
+          updated_at?: string
+          versoes?: Json
         }
         Relationships: []
       }
