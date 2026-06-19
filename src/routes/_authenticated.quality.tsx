@@ -8,6 +8,7 @@ import { ShieldAlert, AlertTriangle, CheckCircle2, ClipboardList, Plus, Trash2 }
 import { toast } from "sonner";
 import { usePCPStore } from "@/lib/pcp/store";
 import { useQualityStore, defeitosDosLotes, rankingPorChave, type CapaAction } from "@/lib/quality/store";
+import { DefectHeatmap } from "@/components/quality/DefectHeatmap";
 
 export const Route = createFileRoute("/_authenticated/quality")({
   component: QualityPage,
@@ -82,6 +83,10 @@ function QualityPage() {
             <BarList rows={rankMotivo} />
           </Card>
         </div>
+      </div>
+
+      <div className="mt-6">
+        <DefectHeatmap defeitos={defeitos} />
       </div>
 
       <Card className="glass-card rounded-lg p-6 mt-6 space-y-4">
