@@ -126,7 +126,7 @@ function InfluencersPage() {
                 Heat Map Brasil
               </h3>
               <div className="space-y-2">
-                {REGIOES.map((r) => {
+                {REGIOES_BR.map((r) => {
                   const v = heatmap.map[r];
                   const pct = Math.round((v / heatmap.max) * 100);
                   return (
