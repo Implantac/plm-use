@@ -228,6 +228,19 @@ interface PCPState {
     responsavel: string;
     observacao?: string;
   }): { ok: boolean; erro?: string };
+
+  criarLote(args: {
+    grupo: string;
+    colecao?: string;
+    prioridade?: Lote["prioridade"];
+    responsavel?: string;
+    referencia: {
+      ref: string;
+      nome: string;
+      qtd_programada: number;
+      grade?: Record<string, number>;
+    };
+  }): { ok: boolean; numero?: string; erro?: string };
 }
 
 // ---------- Helpers ----------
