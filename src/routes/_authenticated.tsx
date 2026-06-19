@@ -49,6 +49,7 @@ function AuthenticatedLayout() {
   const { isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
   usePCPCloudSync(isAuthenticated);
+  useModulesCloudSync(isAuthenticated);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
