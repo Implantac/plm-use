@@ -7,6 +7,7 @@ import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { PresenceBar } from "@/components/presence/PresenceBar";
+import { ActivityFeedButton } from "@/components/activity/ActivityFeedButton";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
