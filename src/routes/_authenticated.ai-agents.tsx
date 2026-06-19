@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { usePCPStore } from "@/lib/pcp/store";
+import { useInfluencersStore, resumoInfluencers } from "@/lib/influencers/store";
 import {
   ocorrenciasAbertasLote,
   pendenteReferencia,
