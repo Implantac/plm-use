@@ -53,6 +53,48 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          created_at: string
+          edited: boolean
+          entity_id: string
+          entity_type: string
+          id: string
+          mentions: string[]
+          message: string
+          updated_at: string
+          user_avatar: string | null
+          user_id: string | null
+          user_name: string
+        }
+        Insert: {
+          created_at?: string
+          edited?: boolean
+          entity_id: string
+          entity_type: string
+          id?: string
+          mentions?: string[]
+          message: string
+          updated_at?: string
+          user_avatar?: string | null
+          user_id?: string | null
+          user_name: string
+        }
+        Update: {
+          created_at?: string
+          edited?: boolean
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          mentions?: string[]
+          message?: string
+          updated_at?: string
+          user_avatar?: string | null
+          user_id?: string | null
+          user_name?: string
+        }
+        Relationships: []
+      }
       influencers: {
         Row: {
           created_at: string

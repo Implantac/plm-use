@@ -27,6 +27,8 @@ import {
   saldoReferencia,
   type ReferenciaLote,
 } from "@/types/pcp";
+import { CommentsPanel } from "@/components/comments/CommentsPanel";
+import { MessageSquare } from "lucide-react";
 
 interface Props {
   loteNumero: string;
@@ -133,7 +135,7 @@ function ReferenciaTabs({
 
   return (
     <Tabs defaultValue="ficha" className="mt-4">
-      <TabsList className="grid w-full grid-cols-7 bg-white/5 h-auto">
+      <TabsList className="grid w-full grid-cols-8 bg-white/5 h-auto">
         <TabsTrigger value="ficha" className="text-[10px] gap-1">
           <ScrollText className="h-3 w-3" /> Ficha
         </TabsTrigger>
@@ -155,7 +157,18 @@ function ReferenciaTabs({
         <TabsTrigger value="hist" className="text-[10px] gap-1">
           <History className="h-3 w-3" /> Hist.
         </TabsTrigger>
+        <TabsTrigger value="chat" className="text-[10px] gap-1">
+          <MessageSquare className="h-3 w-3" /> Chat
+        </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="chat" className="mt-4">
+        <CommentsPanel
+          entityType="pcp_ref"
+          entityId={`${loteNumero}/${referencia.ref}`}
+          title={`Conversa · ${referencia.ref}`}
+        />
+      </TabsContent>
 
       <TabsContent value="ficha" className="mt-4">
         <FichaTecnicaResumo referencia={referencia} grupo={grupo} colecao={colecao} />
