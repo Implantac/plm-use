@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Palette, Layers, Upload, Plus, Sparkles } from "lucide-react";
+import { Palette, Layers, Upload, Plus, Sparkles, Loader2 } from "lucide-react";
+import { uploadAsset, signedUrls } from "@/lib/storage/assets";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const REFS = [
   "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=600",
@@ -22,8 +25,44 @@ const TECIDOS = [
 ];
 
 export function MoodBoard() {
-  const [imgs, setImgs] = useState(REFS);
+  const [imgs, setImgs] = useState<string[]>(REFS);
   const [novo, setNovo] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  // hidrata: lista arquivos da pasta moodboard do bucket e gera signed URLs
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return;
+      const { data } = await supabase.storage
+        .from("use-moda-assets")
+        .list(`moodboard/${u.user.id}`, { sortBy: { column: "created_at", order: "desc" } });
+      if (!data || data.length === 0 || cancelled) return;
+      const paths = data
+        .filter((f) => f.name && !f.name.startsWith("."))
+        .map((f) => `moodboard/${u.user!.id}/${f.name}`);
+      const urls = await signedUrls(paths, 3600);
+      if (!cancelled && urls.length > 0) setImgs((prev) => [...urls, ...prev]);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleUpload = async (file: File) => {
+    setUploading(true);
+    const path = await uploadAsset(file, "moodboard");
+    setUploading(false);
+    if (!path) return toast.error("Falha no upload");
+    const { data } = await supabase.storage
+      .from("use-moda-assets")
+      .createSignedUrl(path, 3600);
+    if (data?.signedUrl) {
+      setImgs((arr) => [data.signedUrl, ...arr]);
+      toast.success("Imagem enviada ao Cloud");
+    }
+  };
 
   return (
     <Card className="glass-card rounded-lg p-6 space-y-6 mt-6">
@@ -43,11 +82,17 @@ export function MoodBoard() {
           </div>
         ))}
         <label className="aspect-[3/4] rounded-md border border-dashed border-white/15 bg-white/[0.02] flex flex-col items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 cursor-pointer transition">
-          <Upload className="w-5 h-5 mb-1" />
-          <span className="text-[9px] uppercase tracking-widest font-bold">Upload</span>
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+          {uploading ? (
+            <Loader2 className="w-5 h-5 mb-1 animate-spin" />
+          ) : (
+            <Upload className="w-5 h-5 mb-1" />
+          )}
+          <span className="text-[9px] uppercase tracking-widest font-bold">
+            {uploading ? "Enviando" : "Upload"}
+          </span>
+          <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={(e) => {
             const f = e.target.files?.[0]; if (!f) return;
-            setImgs((arr) => [URL.createObjectURL(f), ...arr]);
+            void handleUpload(f);
           }} />
         </label>
       </div>
