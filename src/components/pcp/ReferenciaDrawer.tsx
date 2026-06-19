@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   AlertOctagon,
+  GitBranch,
   History,
   ScrollText,
   Workflow,
@@ -17,6 +18,9 @@ import {
 import { PassagemForm } from "./PassagemForm";
 import { OcorrenciaForm } from "./OcorrenciaForm";
 import { FichaTecnicaResumo } from "./FichaTecnicaResumo";
+import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
+import { useReferenceStore } from "@/lib/reference/store";
+import { emptyLifecycle } from "@/types/reference";
 import {
   pendenteReferencia,
   percentualReferencia,
@@ -100,41 +104,72 @@ export function ReferenciaDrawer({
           </div>
         </SheetHeader>
 
-        <Tabs defaultValue="ficha" className="mt-4">
-          <TabsList className="grid w-full grid-cols-6 bg-white/5 h-auto">
-            <TabsTrigger value="ficha" className="text-[10px] gap-1">
-              <ScrollText className="h-3 w-3" /> Ficha
-            </TabsTrigger>
-            <TabsTrigger value="layout" className="text-[10px] gap-1">
-              <Layers className="h-3 w-3" /> Layout
-            </TabsTrigger>
-            <TabsTrigger value="p1" className="text-[10px] gap-1">
-              <Workflow className="h-3 w-3" /> 1ª Linha
-            </TabsTrigger>
-            <TabsTrigger value="p2" className="text-[10px] gap-1">
-              <Workflow className="h-3 w-3" /> 2ª Linha
-            </TabsTrigger>
-            <TabsTrigger value="oco" className="text-[10px] gap-1">
-              <AlertOctagon className="h-3 w-3" /> Ocorr.
-            </TabsTrigger>
-            <TabsTrigger value="hist" className="text-[10px] gap-1">
-              <History className="h-3 w-3" /> Hist.
-            </TabsTrigger>
-          </TabsList>
+        <ReferenciaTabs
+          loteNumero={loteNumero}
+          grupo={grupo}
+          colecao={colecao}
+          referencia={referencia}
+        />
+      </SheetContent>
+    </Sheet>
+  );
+}
 
-          <TabsContent value="ficha" className="mt-4">
-            <FichaTecnicaResumo
-              referencia={referencia}
-              grupo={grupo}
-              colecao={colecao}
-            />
-          </TabsContent>
+function ReferenciaTabs({
+  loteNumero,
+  grupo,
+  colecao,
+  referencia,
+}: {
+  loteNumero: string;
+  grupo?: string;
+  colecao?: string;
+  referencia: ReferenciaLote;
+}) {
+  const lifecycles = useReferenceStore((s) => s.lifecycles);
+  const lifecycle =
+    lifecycles.find((l) => l.ref === referencia.ref) ??
+    emptyLifecycle(referencia.ref, referencia.nome);
 
-          <TabsContent value="layout" className="mt-4">
-            <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground text-sm">
-              Layout de silk/bordado da referência
-            </div>
-          </TabsContent>
+  return (
+    <Tabs defaultValue="ficha" className="mt-4">
+      <TabsList className="grid w-full grid-cols-7 bg-white/5 h-auto">
+        <TabsTrigger value="ficha" className="text-[10px] gap-1">
+          <ScrollText className="h-3 w-3" /> Ficha
+        </TabsTrigger>
+        <TabsTrigger value="timeline" className="text-[10px] gap-1">
+          <GitBranch className="h-3 w-3" /> Timeline
+        </TabsTrigger>
+        <TabsTrigger value="layout" className="text-[10px] gap-1">
+          <Layers className="h-3 w-3" /> Layout
+        </TabsTrigger>
+        <TabsTrigger value="p1" className="text-[10px] gap-1">
+          <Workflow className="h-3 w-3" /> 1ª Linha
+        </TabsTrigger>
+        <TabsTrigger value="p2" className="text-[10px] gap-1">
+          <Workflow className="h-3 w-3" /> 2ª Linha
+        </TabsTrigger>
+        <TabsTrigger value="oco" className="text-[10px] gap-1">
+          <AlertOctagon className="h-3 w-3" /> Ocorr.
+        </TabsTrigger>
+        <TabsTrigger value="hist" className="text-[10px] gap-1">
+          <History className="h-3 w-3" /> Hist.
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="ficha" className="mt-4">
+        <FichaTecnicaResumo referencia={referencia} grupo={grupo} colecao={colecao} />
+      </TabsContent>
+
+      <TabsContent value="timeline" className="mt-4">
+        <ReferenceTimeline lifecycle={lifecycle} compact />
+      </TabsContent>
+
+      <TabsContent value="layout" className="mt-4">
+        <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground text-sm">
+          Layout de silk/bordado da referência
+        </div>
+      </TabsContent>
 
           <TabsContent value="p1" className="mt-4">
             <PassagemForm loteNumero={loteNumero} referencia={referencia} linha="1a" />
