@@ -1,8 +1,19 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Paperclip, MoreHorizontal, TrendingUp } from "lucide-react";
+import {
+  MessageSquare,
+  Paperclip,
+  MoreHorizontal,
+  TrendingUp,
+  AlertTriangle,
+  Sparkles,
+  CheckCircle2,
+  FileWarning,
+  Hourglass,
+  LayoutDashboard,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
 import {
@@ -16,6 +27,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import {
+  filtrarLifecycles,
+  useReferenceStore,
+  type DevFilter,
+} from "@/lib/reference/store";
+import {
+  percentualLifecycle,
+  stageAtual,
+  type ReferenceLifecycle,
+} from "@/types/reference";
 
 export const Route = createFileRoute("/_authenticated/development")({
   component: DevelopmentPage,
@@ -322,7 +343,10 @@ function DevelopmentPage() {
         { label: "Prob. média", value: "87%", detail: "fit comercial IA" },
       ]}
     >
+      <CentroDeDesenvolvimento />
+
       <div className="flex gap-4 overflow-x-auto pb-4 flex-1 no-scrollbar min-h-155">
+
         {columns.map((col, i) => (
           <div key={i} className="min-w-73 flex flex-col gap-4">
             <div className="flex items-center justify-between px-1 mb-1">
