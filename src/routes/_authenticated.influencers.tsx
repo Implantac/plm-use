@@ -43,7 +43,7 @@ function InfluencersPage() {
   }, [influencers]);
 
   const heatmap = useMemo(() => {
-    const map = Object.fromEntries(REGIOES.map((r) => [r, 0])) as Record<string, number>;
+    const map = Object.fromEntries(REGIOES_BR.map((r) => [r, 0])) as Record<string, number>;
     for (const i of influencers) map[i.regiao] += i.vendasGeradas;
     const max = Math.max(...Object.values(map), 1);
     return { map, max };
@@ -61,9 +61,7 @@ function InfluencersPage() {
       data: new Date().toISOString().slice(0, 10),
       status: "Enviado",
     };
-    setInfluencers((prev) =>
-      prev.map((i) => (i.id === sel.id ? { ...i, envios: [envio, ...i.envios] } : i)),
-    );
+    registrarEnvioStore(sel.id, envio);
     setSel((s) => (s ? { ...s, envios: [envio, ...s.envios] } : s));
     setNovoRef("");
     setNovoNome("");
