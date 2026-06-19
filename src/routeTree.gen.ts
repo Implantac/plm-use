@@ -32,6 +32,7 @@ import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
+import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -150,6 +151,12 @@ const AuthenticatedAiCenterRoute = AuthenticatedAiCenterRouteImport.update({
   path: '/ai-center',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProductionTodayRoute =
+  AuthenticatedProductionTodayRouteImport.update({
+    id: '/today',
+    path: '/today',
+    getParentRoute: () => AuthenticatedProductionRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -168,12 +175,13 @@ export interface FileRoutesByFullPath {
   '/financial': typeof AuthenticatedFinancialRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/marketing': typeof AuthenticatedMarketingRoute
-  '/production': typeof AuthenticatedProductionRoute
+  '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/production/today': typeof AuthenticatedProductionTodayRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -192,12 +200,13 @@ export interface FileRoutesByTo {
   '/financial': typeof AuthenticatedFinancialRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/marketing': typeof AuthenticatedMarketingRoute
-  '/production': typeof AuthenticatedProductionRoute
+  '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/production/today': typeof AuthenticatedProductionTodayRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -218,12 +227,13 @@ export interface FileRoutesById {
   '/_authenticated/financial': typeof AuthenticatedFinancialRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
-  '/_authenticated/production': typeof AuthenticatedProductionRoute
+  '/_authenticated/production': typeof AuthenticatedProductionRouteWithChildren
   '/_authenticated/prototypes': typeof AuthenticatedPrototypesRoute
   '/_authenticated/research': typeof AuthenticatedResearchRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/suppliers'
     | '/tech-sheet'
+    | '/production/today'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/suppliers'
     | '/tech-sheet'
+    | '/production/today'
   id:
     | '__root__'
     | '/'
@@ -299,6 +311,7 @@ export interface FileRouteTypes {
     | '/_authenticated/security'
     | '/_authenticated/suppliers'
     | '/_authenticated/tech-sheet'
+    | '/_authenticated/production/today'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -472,8 +485,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiCenterRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/production/today': {
+      id: '/_authenticated/production/today'
+      path: '/today'
+      fullPath: '/production/today'
+      preLoaderRoute: typeof AuthenticatedProductionTodayRouteImport
+      parentRoute: typeof AuthenticatedProductionRoute
+    }
   }
 }
+
+interface AuthenticatedProductionRouteChildren {
+  AuthenticatedProductionTodayRoute: typeof AuthenticatedProductionTodayRoute
+}
+
+const AuthenticatedProductionRouteChildren: AuthenticatedProductionRouteChildren =
+  {
+    AuthenticatedProductionTodayRoute: AuthenticatedProductionTodayRoute,
+  }
+
+const AuthenticatedProductionRouteWithChildren =
+  AuthenticatedProductionRoute._addFileChildren(
+    AuthenticatedProductionRouteChildren,
+  )
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAiCenterRoute: typeof AuthenticatedAiCenterRoute
@@ -488,7 +522,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFinancialRoute: typeof AuthenticatedFinancialRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
-  AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
+  AuthenticatedProductionRoute: typeof AuthenticatedProductionRouteWithChildren
   AuthenticatedPrototypesRoute: typeof AuthenticatedPrototypesRoute
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
@@ -509,7 +543,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFinancialRoute: AuthenticatedFinancialRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
-  AuthenticatedProductionRoute: AuthenticatedProductionRoute,
+  AuthenticatedProductionRoute: AuthenticatedProductionRouteWithChildren,
   AuthenticatedPrototypesRoute: AuthenticatedPrototypesRoute,
   AuthenticatedResearchRoute: AuthenticatedResearchRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
@@ -531,13 +565,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

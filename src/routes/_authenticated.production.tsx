@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
@@ -7,11 +7,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { LayoutGrid, Radar, Zap } from "lucide-react";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
+import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
   SETORES_PCP,
