@@ -189,6 +189,7 @@ function AuthenticatedLayout() {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <PresenceBar />
             <AlertsBell />
             <Button
               variant="ghost"
