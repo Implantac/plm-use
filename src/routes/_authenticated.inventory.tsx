@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ConsumoPanel } from "@/components/inventory/ConsumoPanel";
 
 export const Route = createFileRoute("/_authenticated/inventory")({
   component: InventoryPage,
@@ -35,6 +36,9 @@ type InventoryItem = {
   internalColor: string;
   supplierColor: string;
   image: string;
+  // Planejamento (BOM × Lotes em produção) — Onda 9.1
+  consumoPrevisto: number; // o que a BOM ativa demanda
+  consumoReal: number;     // o que de fato saiu para produção
 };
 
 const initialItems: InventoryItem[] = [
@@ -53,6 +57,8 @@ const initialItems: InventoryItem[] = [
     supplierColor: "Natural 110",
     image:
       "https://images.unsplash.com/photo-1584184854125-5162423799b5?auto=format&fit=crop&q=80&w=240",
+    consumoPrevisto: 180,
+    consumoReal: 195,
   },
   {
     id: 2,
@@ -69,6 +75,8 @@ const initialItems: InventoryItem[] = [
     supplierColor: "Shell White",
     image:
       "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&q=80&w=240",
+    consumoPrevisto: 1200,
+    consumoReal: 1380,
   },
   {
     id: 3,
@@ -85,6 +93,8 @@ const initialItems: InventoryItem[] = [
     supplierColor: "Blue 92",
     image:
       "https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&q=80&w=240",
+    consumoPrevisto: 60,
+    consumoReal: 58,
   },
   {
     id: 4,
@@ -101,6 +111,8 @@ const initialItems: InventoryItem[] = [
     supplierColor: "Preto 01",
     image:
       "https://images.unsplash.com/photo-1626497741445-562f904bb3a1?auto=format&fit=crop&q=80&w=240",
+    consumoPrevisto: 480,
+    consumoReal: 432,
   },
 ];
 
