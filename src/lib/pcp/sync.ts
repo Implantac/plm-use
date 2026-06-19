@@ -36,7 +36,7 @@ function loteAggregate(l: Lote) {
     status: "in_progress" as const,
     priority: mapPriority(l.prioridade),
     progress_percent: total > 0 ? Math.round((prod / total) * 100) : 0,
-    metadata: { lote: l } as Record<string, unknown>,
+    metadata: { lote: l } as unknown as never,
   };
 }
 
