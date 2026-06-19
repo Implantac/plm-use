@@ -16,6 +16,7 @@ import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
 import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { CapacityPanel } from "@/components/pcp/CapacityPanel";
+import { ExportMenu } from "@/components/export/ExportMenu";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
   SETORES_PCP,
@@ -111,12 +112,38 @@ function ProductionPage() {
               Torre de Controle
             </button>
           </div>
-          <Button asChild size="sm" variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
-            <Link to="/production/today">
-              <Zap className="h-3.5 w-3.5 mr-1" />
-              Produção do Dia
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportMenu
+              title="PCP — Lotes & Referências"
+              filename={`pcp-lotes-${new Date().toISOString().slice(0, 10)}`}
+              rows={lotes.flatMap((l) =>
+                l.referencias.map((r) => ({
+                  Lote: l.numero,
+                  Grupo: l.grupo,
+                  Colecao: l.colecao,
+                  Prioridade: l.prioridade,
+                  Responsavel: l.responsavel,
+                  Prazo: new Date(l.data_prevista).toLocaleDateString("pt-BR"),
+                  Ref: r.ref,
+                  Nome: r.nome,
+                  Setor: r.setor_atual,
+                  Status: r.status,
+                  Programada: r.qtd_programada,
+                  Produzida: r.qtd_produzida,
+                  Perdida: r.qtd_perdida,
+                  Saldo: saldoReferencia(r),
+                  "% concluído": Math.round((r.qtd_produzida / Math.max(r.qtd_programada, 1)) * 100),
+                })),
+              )}
+              columns={["Lote","Grupo","Colecao","Prioridade","Responsavel","Prazo","Ref","Nome","Setor","Status","Programada","Produzida","Perdida","Saldo","% concluído"]}
+            />
+            <Button asChild size="sm" variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
+              <Link to="/production/today">
+                <Zap className="h-3.5 w-3.5 mr-1" />
+                Produção do Dia
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {view === "kanban" ? (

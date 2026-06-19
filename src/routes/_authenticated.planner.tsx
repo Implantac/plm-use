@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Sparkles, TrendingUp, Package, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ExportMenu } from "@/components/export/ExportMenu";
 import { usePCPStore } from "@/lib/pcp/store";
 
 export const Route = createFileRoute("/_authenticated/planner")({
@@ -111,6 +112,27 @@ function PlannerPage() {
       ]}
     >
       <div className="space-y-3">
+        <div className="flex justify-end">
+          <ExportMenu
+            title="Smart Production Planner — Sugestões"
+            filename={`planner-${new Date().toISOString().slice(0, 10)}`}
+            rows={sugestoes.map((s) => ({
+              Ref: s.ref,
+              Nome: s.nome,
+              Grupo: s.grupo,
+              Colecao: s.colecao,
+              Estoque: s.estoque,
+              "Giro/sem": s.giroSemanal,
+              "Cobertura (sem)": s.coberturaSemanas,
+              "Peças sugeridas": Object.values(s.grade).reduce((a, b) => a + b, 0),
+              Grade: Object.entries(s.grade).map(([t, q]) => `${t}:${q}`).join(" · "),
+              Score: s.score,
+              Motivo: s.motivo,
+              "Em PCP": refsEmLote.has(s.ref) ? "Sim" : "Não",
+            }))}
+            columns={["Ref","Nome","Grupo","Colecao","Estoque","Giro/sem","Cobertura (sem)","Peças sugeridas","Grade","Score","Motivo","Em PCP"]}
+          />
+        </div>
         {sugestoes.map((s) => {
           const totalPecas = Object.values(s.grade).reduce((a, b) => a + b, 0);
           const jaCriado = criados.has(s.ref);
