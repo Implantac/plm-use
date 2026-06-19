@@ -1,6 +1,7 @@
 // Store de ciclo de vida das referências.
 // Mock realista; futuro alvo de migração para Supabase sem refactor de UI.
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import {
   emptyLifecycle,
   STAGE_ORDER,
@@ -166,7 +167,7 @@ interface ReferenceState {
   getOrCreate(ref: string, nome: string): ReferenceLifecycle;
 }
 
-export const useReferenceStore = create<ReferenceState>((set, get) => ({
+export const useReferenceStore = create<ReferenceState>()(persist((set, get) => ({
   lifecycles: seed,
 
   upsert(lc) {
@@ -209,7 +210,7 @@ export const useReferenceStore = create<ReferenceState>((set, get) => ({
     set((s) => ({ lifecycles: [...s.lifecycles, novo] }));
     return novo;
   },
-}));
+}), { name: "use-moda:reference" }));
 
 // Selectors / filtros do Centro de Desenvolvimento ------------------------
 export type DevFilter =

@@ -1,5 +1,6 @@
 // Store leve para Ficha Técnica: BOM, BOP e versionamento.
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type BomItem = {
   id: string;
@@ -78,7 +79,7 @@ const bumpVersion = (last: string) => {
   return `v${m[1]}.${Number(m[2]) + 1}`;
 };
 
-export const useTechSheetStore = create<State>((set, get) => ({
+export const useTechSheetStore = create<State>()(persist((set, get) => ({
   data: {},
   ensure(ref) {
     const cur = get().data[ref];
@@ -134,7 +135,7 @@ export const useTechSheetStore = create<State>((set, get) => ({
     }));
     return nova;
   },
-}));
+}), { name: "use-moda:techsheet" }));
 
 export function custoTotalBOM(items: BomItem[]) {
   return items.reduce((acc, i) => acc + i.custo, 0);
