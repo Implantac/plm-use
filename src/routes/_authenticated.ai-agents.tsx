@@ -68,14 +68,20 @@ function AIAgentsPage() {
   const [chat, setChat] = useState<{ role: "user" | "ai"; text: string }[]>([]);
   const ask = useServerFn(askAgent);
   const lotes = usePCPStore((s) => s.lotes);
+  const influencers = useInfluencersStore((s) => s.influencers);
 
   function buildContext(): string {
-    if (agent !== "pcp") return "";
-    const resumo = lotes.map((l) => {
-      const pend = l.referencias.reduce((a, r) => a + pendenteReferencia(r), 0);
-      return `${l.numero} (${l.grupo}, ${l.prioridade}): ${percentualLote(l)}% pronto, ${pend} pç pendentes, ${ocorrenciasAbertasLote(l)} ocorrências, prazo ${diasParaPrazo(l)}d`;
-    });
-    return `Lotes atuais:\n${resumo.join("\n")}`;
+    if (agent === "pcp") {
+      const resumo = lotes.map((l) => {
+        const pend = l.referencias.reduce((a, r) => a + pendenteReferencia(r), 0);
+        return `${l.numero} (${l.grupo}, ${l.prioridade}): ${percentualLote(l)}% pronto, ${pend} pç pendentes, ${ocorrenciasAbertasLote(l)} ocorrências, prazo ${diasParaPrazo(l)}d`;
+      });
+      return `Lotes atuais:\n${resumo.join("\n")}`;
+    }
+    if (agent === "marketing") {
+      return resumoInfluencers(influencers);
+    }
+    return "";
   }
 
   async function enviar(text?: string) {
