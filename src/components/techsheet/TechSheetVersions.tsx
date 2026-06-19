@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { GitBranch, CheckCircle2, Clock4, Archive, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useTechSheetStore, type TechSheetVersion } from "@/lib/techsheet/store";
+import { VersionDiff } from "@/components/techsheet/VersionDiff";
 
 const statusIcon = (s: TechSheetVersion["status"]) =>
   s === "Aprovada" ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> :
@@ -57,7 +58,8 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
         </div>
 
         <div className="space-y-3">
-          <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">Diff entre versões</p>
+          <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">Diff visual A → B</p>
+          <VersionDiff a={va} b={vb} />
           <div className="grid grid-cols-2 gap-3">
             <DiffSide v={va} side="A" />
             <DiffSide v={vb} side="B" />
