@@ -1,5 +1,6 @@
 // Quality / CAPA store. Deriva defeitos das ocorrências do PCP + CAPA própria.
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { Lote } from "@/types/pcp";
 
 export type CapaAction = {
@@ -31,7 +32,7 @@ interface State {
   remove(id: string): void;
 }
 
-export const useQualityStore = create<State>((set) => ({
+export const useQualityStore = create<State>()(persist((set) => ({
   capa: SEED,
   addCapa(c) {
     set((s) => ({ capa: [{ id: uid(), criada: today(), status: "Aberta", ...c }, ...s.capa] }));
@@ -42,7 +43,7 @@ export const useQualityStore = create<State>((set) => ({
   remove(id) {
     set((s) => ({ capa: s.capa.filter((x) => x.id !== id) }));
   },
-}));
+}), { name: "use-moda:quality" }));
 
 export type DefectRow = { motivo: string; qtd: number; setor: string; lote: string; ref: string; responsavel: string; timestamp: string };
 

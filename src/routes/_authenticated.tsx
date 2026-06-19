@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { useAuth, signOut } from "@/hooks/use-auth";
+import { usePCPCloudSync } from "@/lib/pcp/sync";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
@@ -46,6 +47,7 @@ function AuthenticatedLayout() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const { isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
+  usePCPCloudSync(isAuthenticated);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -106,6 +108,7 @@ function AuthenticatedLayout() {
     { icon: <Globe className="w-4 h-4" />, label: "Digital Twin", href: "/digital-twin" },
     { icon: <MessageSquare className="w-4 h-4" />, label: "Colaboração", href: "/feed" },
     { icon: <LockKeyhole className="w-4 h-4" />, label: "Segurança", href: "/security" },
+    { icon: <ShieldCheck className="w-4 h-4" />, label: "Admin · Usuários", href: "/admin/users" },
   ];
 
   return (

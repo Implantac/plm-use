@@ -1,5 +1,6 @@
 // Store compartilhado de influencers — usado pela página /influencers e pelo Marketing AI.
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type Envio = {
   id: string;
@@ -45,7 +46,7 @@ interface InfState {
   registrarEnvio(id: string, envio: Envio): void;
 }
 
-export const useInfluencersStore = create<InfState>((set) => ({
+export const useInfluencersStore = create<InfState>()(persist((set) => ({
   influencers: SEED,
   registrarEnvio(id, envio) {
     set((s) => ({
@@ -54,7 +55,7 @@ export const useInfluencersStore = create<InfState>((set) => ({
       ),
     }));
   },
-}));
+}), { name: "use-moda:influencers" }));
 
 export const REGIOES_BR = ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"] as const;
 
