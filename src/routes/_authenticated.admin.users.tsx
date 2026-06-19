@@ -74,7 +74,7 @@ function AdminUsersPage() {
 
   if (rolesLoading) {
     return (
-      <ModuleLayout title="Administração de Usuários" subtitle="Carregando permissões..." icon={<ShieldCheck className="w-5 h-5" />}>
+      <ModuleLayout title="Administração de Usuários" subtitle="Carregando permissões..." version="ADMIN">
         <div className="flex items-center justify-center py-20 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
         </div>
@@ -84,7 +84,7 @@ function AdminUsersPage() {
 
   if (!isAdmin) {
     return (
-      <ModuleLayout title="Administração de Usuários" subtitle="Acesso restrito" icon={<ShieldOff className="w-5 h-5" />}>
+      <ModuleLayout title="Administração de Usuários" subtitle="Acesso restrito" version="ADMIN">
         <div className="rounded-md border border-white/10 bg-white/5 p-10 text-center text-muted-foreground">
           <ShieldOff className="w-10 h-10 mx-auto mb-4 opacity-40" />
           <p className="text-xs uppercase tracking-[0.2em]">Sem permissão de administrador</p>
@@ -98,7 +98,7 @@ function AdminUsersPage() {
     <ModuleLayout
       title="Administração de Usuários"
       subtitle={`${rows.length} usuários · papéis e permissões`}
-      icon={<ShieldCheck className="w-5 h-5" />}
+      version="ADMIN"
     >
       {loading ? (
         <div className="flex items-center justify-center py-20 text-muted-foreground">
