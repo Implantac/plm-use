@@ -27,6 +27,8 @@ import {
   saldoReferencia,
   type ReferenciaLote,
 } from "@/types/pcp";
+import { CommentsPanel } from "@/components/comments/CommentsPanel";
+import { MessageSquare } from "lucide-react";
 
 interface Props {
   loteNumero: string;
