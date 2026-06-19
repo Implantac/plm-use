@@ -10,14 +10,13 @@ import { Progress } from "@/components/ui/progress";
 import {
   AlertOctagon,
   History,
-  ImageIcon,
-  Layers,
-  Package,
   ScrollText,
   Workflow,
+  Layers,
 } from "lucide-react";
 import { PassagemForm } from "./PassagemForm";
 import { OcorrenciaForm } from "./OcorrenciaForm";
+import { FichaTecnicaResumo } from "./FichaTecnicaResumo";
 import {
   pendenteReferencia,
   percentualReferencia,
@@ -27,12 +26,21 @@ import {
 
 interface Props {
   loteNumero: string;
+  grupo?: string;
+  colecao?: string;
   referencia: ReferenciaLote | null;
   open: boolean;
   onClose(): void;
 }
 
-export function ReferenciaDrawer({ loteNumero, referencia, open, onClose }: Props) {
+export function ReferenciaDrawer({
+  loteNumero,
+  grupo,
+  colecao,
+  referencia,
+  open,
+  onClose,
+}: Props) {
   if (!referencia) return null;
 
   return (
@@ -114,31 +122,12 @@ export function ReferenciaDrawer({ loteNumero, referencia, open, onClose }: Prop
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="ficha" className="mt-4 space-y-3">
-            <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground">
-              <ImageIcon className="h-12 w-12 opacity-40" />
-            </div>
-            <FichaRow label="Grupo / Coleção" value="ver lote" />
-            <FichaRow
-              label="Grade"
-              value={
-                referencia.grade
-                  ? Object.entries(referencia.grade)
-                      .map(([k, v]) => `${k}:${v}`)
-                      .join(" • ")
-                  : "—"
-              }
+          <TabsContent value="ficha" className="mt-4">
+            <FichaTecnicaResumo
+              referencia={referencia}
+              grupo={grupo}
+              colecao={colecao}
             />
-            <FichaRow label="Tecido principal" value="Linho 100%" />
-            <FichaRow label="Aviamentos" value="Botão madrepérola, linha 120" />
-            <FichaRow
-              label="Sequência operacional"
-              value="Corte → Silk → Costura → Acabamento → Expedição"
-            />
-            <p className="pt-3 text-[10px] text-muted-foreground italic flex items-center gap-2">
-              <Package className="h-3 w-3" />
-              Ficha técnica completa disponível no módulo de Ficha Técnica.
-            </p>
           </TabsContent>
 
           <TabsContent value="layout" className="mt-4">
@@ -257,11 +246,3 @@ function Metric({
   );
 }
 
-function FichaRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between border-b border-white/5 py-2 text-[11px]">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-bold text-white text-right">{value}</span>
-    </div>
-  );
-}

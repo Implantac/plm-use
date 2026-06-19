@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,6 +8,7 @@ import {
   GitCompare,
   History,
   Layers,
+  Link2,
   Scissors,
   Ruler,
   Paintbrush,
@@ -24,13 +26,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+const techSheetSearchSchema = z.object({
+  ref: z.string().optional(),
+});
+
 export const Route = createFileRoute("/_authenticated/tech-sheet")({
+  validateSearch: techSheetSearchSchema,
   component: TechSheetPage,
 });
 
 function TechSheetPage() {
-  const [productInfo, setProductInfo] = useState({
-    ref: "V24-001",
+  const { ref: refFromPcp } = Route.useSearch();
+  const [productInfo] = useState({
+    ref: refFromPcp ?? "V24-001",
     name: "Blusa Linho Amalfi",
     category: "Feminino / Top",
     status: "Protótipo Aprovado",
@@ -99,6 +107,15 @@ function TechSheetPage() {
         { label: "Fit comercial", value: "87%", detail: "previsão IA" },
       ]}
     >
+      {refFromPcp && (
+        <div className="mb-6 rounded-md border border-primary/30 bg-primary/10 px-4 py-3 flex items-center justify-between">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-primary flex items-center gap-2">
+            <Link2 className="h-3.5 w-3.5" /> Aberto a partir do PCP · referência{" "}
+            <span className="font-bold text-white">{refFromPcp}</span>
+          </p>
+        </div>
+      )}
+
       <div className="flex justify-end gap-4 mb-8">
         <Button
           variant="outline"
