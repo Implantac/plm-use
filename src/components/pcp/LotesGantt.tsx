@@ -78,7 +78,7 @@ export function LotesGantt({
         {months.map((m, i) => (
           <g key={i}>
             <line x1={m.x} x2={m.x} y1={20} y2={H} stroke="rgba(255,255,255,0.05)" />
-            <text x={m.x + 4} y={14} fill="rgba(255,255,255,0.4)" fontSize="9" textTransform="uppercase">
+            <text x={m.x + 4} y={14} fill="rgba(255,255,255,0.4)" fontSize="9" style={{ textTransform: "uppercase" }}>
               {m.label}
             </text>
           </g>
