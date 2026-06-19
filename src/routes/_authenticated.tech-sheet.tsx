@@ -25,6 +25,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
+import { useReferenceStore } from "@/lib/reference/store";
+import { emptyLifecycle } from "@/types/reference";
 
 const techSheetSearchSchema = z.object({
   ref: z.string().optional(),
@@ -410,4 +413,12 @@ function TechSheetPage() {
       </Dialog>
     </ModuleLayout>
   );
+}
+
+function TimelineDoProduto({ refAtual, nome }: { refAtual: string; nome: string }) {
+  const lifecycles = useReferenceStore((s) => s.lifecycles);
+  const lc =
+    lifecycles.find((l) => l.ref === refAtual) ??
+    emptyLifecycle(refAtual, nome);
+  return <ReferenceTimeline lifecycle={lc} compact />;
 }
