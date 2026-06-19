@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-rout
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { usePCPCloudSync } from "@/lib/pcp/sync";
+import { useModulesCloudSync } from "@/lib/cloud-sync";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
