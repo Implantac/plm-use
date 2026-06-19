@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Building2, Fingerprint, KeyRound, ShieldCheck } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -14,22 +15,47 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const navigate = useNavigate();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) navigate({ to: "/dashboard" });
+  }, [authLoading, isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      toast.error("Acesso negado. Verifique suas credenciais.");
-      return;
+    if (mode === "signin") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setLoading(false);
+      if (error) return toast.error(error.message || "Acesso negado.");
+      toast.success("Bem-vindo ao USE MODA PLM.");
+      navigate({ to: "/dashboard" });
+    } else {
+      const redirectUrl = `${window.location.origin}/dashboard`;
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirectUrl, data: { full_name: fullName } },
+      });
+      setLoading(false);
+      if (error) return toast.error(error.message || "Falha no cadastro.");
+      toast.success("Conta criada! Verifique seu e-mail se a confirmação estiver ativa.");
     }
-    toast.success("Bem-vindo ao USE MODA PLM.");
-    navigate({ to: "/dashboard" });
   };
+
+  const handleGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    });
+    if (error) toast.error(error.message);
+  };
+
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[1fr_480px] bg-[#020617] p-6 relative overflow-hidden">
