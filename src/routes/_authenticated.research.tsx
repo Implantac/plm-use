@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { MoodBoard } from "@/components/research/MoodBoard";
 
 export const Route = createFileRoute("/_authenticated/research")({
   component: ResearchHub,
@@ -353,6 +354,7 @@ function ResearchHub() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <MoodBoard />
     </ModuleLayout>
   );
 }

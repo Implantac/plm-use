@@ -28,6 +28,8 @@ import { toast } from "sonner";
 import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
 import { useReferenceStore } from "@/lib/reference/store";
 import { emptyLifecycle } from "@/types/reference";
+import { BomBopPanel } from "@/components/techsheet/BomBopPanel";
+import { TechSheetVersions } from "@/components/techsheet/TechSheetVersions";
 
 const techSheetSearchSchema = z.object({
   ref: z.string().optional(),
@@ -337,6 +339,11 @@ function TechSheetPage() {
             </div>
           </Card>
         </div>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-6">
+        <BomBopPanel refAtual={productInfo.ref} />
+        <TechSheetVersions refAtual={productInfo.ref} />
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

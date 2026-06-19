@@ -18,6 +18,7 @@ import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
 import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
+import { Route as AuthenticatedQualityRouteImport } from './routes/_authenticated.quality'
 import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authenticated.prototypes'
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated.production'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
@@ -79,6 +80,11 @@ const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
 const AuthenticatedResearchRoute = AuthenticatedResearchRouteImport.update({
   id: '/research',
   path: '/research',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedQualityRoute = AuthenticatedQualityRouteImport.update({
+  id: '/quality',
+  path: '/quality',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPrototypesRoute = AuthenticatedPrototypesRouteImport.update({
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/planner': typeof AuthenticatedPlannerRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
+  '/quality': typeof AuthenticatedQualityRoute
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
@@ -227,6 +234,7 @@ export interface FileRoutesByTo {
   '/planner': typeof AuthenticatedPlannerRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
+  '/quality': typeof AuthenticatedQualityRoute
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
@@ -257,6 +265,7 @@ export interface FileRoutesById {
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/production': typeof AuthenticatedProductionRouteWithChildren
   '/_authenticated/prototypes': typeof AuthenticatedPrototypesRoute
+  '/_authenticated/quality': typeof AuthenticatedQualityRoute
   '/_authenticated/research': typeof AuthenticatedResearchRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/production'
     | '/prototypes'
+    | '/quality'
     | '/research'
     | '/security'
     | '/suppliers'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/planner'
     | '/production'
     | '/prototypes'
+    | '/quality'
     | '/research'
     | '/security'
     | '/suppliers'
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/_authenticated/planner'
     | '/_authenticated/production'
     | '/_authenticated/prototypes'
+    | '/_authenticated/quality'
     | '/_authenticated/research'
     | '/_authenticated/security'
     | '/_authenticated/suppliers'
@@ -422,6 +434,13 @@ declare module '@tanstack/react-router' {
       path: '/research'
       fullPath: '/research'
       preLoaderRoute: typeof AuthenticatedResearchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quality': {
+      id: '/_authenticated/quality'
+      path: '/quality'
+      fullPath: '/quality'
+      preLoaderRoute: typeof AuthenticatedQualityRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/prototypes': {
@@ -585,6 +604,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRouteWithChildren
   AuthenticatedPrototypesRoute: typeof AuthenticatedPrototypesRoute
+  AuthenticatedQualityRoute: typeof AuthenticatedQualityRoute
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
@@ -609,6 +629,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRouteWithChildren,
   AuthenticatedPrototypesRoute: AuthenticatedPrototypesRoute,
+  AuthenticatedQualityRoute: AuthenticatedQualityRoute,
   AuthenticatedResearchRoute: AuthenticatedResearchRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
@@ -629,13 +650,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

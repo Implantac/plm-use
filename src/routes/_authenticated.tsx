@@ -1,10 +1,10 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Settings,
-  Bell,
   ChevronRight,
   Zap,
   BarChart3,
@@ -67,6 +67,7 @@ function AuthenticatedLayout() {
     { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
     { icon: <PenTool className="w-4 h-4" />, label: "CAD & Modelagem", href: "/cad" },
     { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
+    { icon: <ShieldCheck className="w-4 h-4" />, label: "Qualidade", href: "/quality" },
     { icon: <Zap className="w-4 h-4" />, label: "Planner", href: "/planner" },
     { icon: <Box className="w-4 h-4" />, label: "Almoxarifado", href: "/inventory" },
     { icon: <Users className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
@@ -147,14 +148,7 @@ function AuthenticatedLayout() {
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-10 h-10 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 transition-all relative group"
-            >
-              <Bell className="w-4 h-4 text-muted-foreground group-hover:text-white transition-colors" />
-              <div className="absolute top-3 right-3 w-1.5 h-1.5 bg-primary rounded-full ring-4 ring-background" />
-            </Button>
+            <AlertsBell />
             <Button
               variant="ghost"
               size="icon"
