@@ -37,6 +37,7 @@ import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
 import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -182,6 +183,11 @@ const AuthenticatedProductionTodayRoute =
     path: '/today',
     getParentRoute: () => AuthenticatedProductionRoute,
   } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/security': typeof AuthenticatedSecurityRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
 }
 export interface FileRoutesByTo {
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/security': typeof AuthenticatedSecurityRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
 }
 export interface FileRoutesById {
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
 }
 export interface FileRouteTypes {
@@ -301,6 +310,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/suppliers'
     | '/tech-sheet'
+    | '/admin/users'
     | '/production/today'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/security'
     | '/suppliers'
     | '/tech-sheet'
+    | '/admin/users'
     | '/production/today'
   id:
     | '__root__'
@@ -360,6 +371,7 @@ export interface FileRouteTypes {
     | '/_authenticated/security'
     | '/_authenticated/suppliers'
     | '/_authenticated/tech-sheet'
+    | '/_authenticated/admin/users'
     | '/_authenticated/production/today'
   fileRoutesById: FileRoutesById
 }
@@ -569,6 +581,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductionTodayRouteImport
       parentRoute: typeof AuthenticatedProductionRoute
     }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -609,6 +628,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
   AuthenticatedTechSheetRoute: typeof AuthenticatedTechSheetRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -634,6 +654,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
   AuthenticatedTechSheetRoute: AuthenticatedTechSheetRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -650,13 +671,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
