@@ -1,67 +1,86 @@
+# Plano de Evolução — USE MODA PLM Enterprise
 
-# Plano de Evolução — USE MODA PLM AI
+## Auditoria do que já existe (reaproveitar, não recriar)
 
-Escopo grande (20 focos). Para entregar com qualidade e sem quebrar o que já funciona, proponho dividir em **5 ondas incrementais**. Cada onda é independente, testável e termina com o sistema utilizável.
+**Módulos prontos** (19 rotas, ~7,5k linhas): `dashboard`, `research`, `development`, `prototypes`, `cad`, `tech-sheet`, `collections`, `production`, `suppliers`, `inventory`, `marketing`, `commercial`, `financial`, `analytics`, `ai-center`, `digital-twin`, `feed`, `security`.
 
-> ⚠️ Importante: este plano **não recria** módulos existentes. Cada onda revisa as telas atuais (`collections`, `development`, `tech-sheet`, `production`, `suppliers`, `marketing`, `analytics`, `ai-center`) e adiciona apenas o que falta.
+**Fundação PCP já entregue** (Ondas 1 e 2 anteriores):
+- Tipos `Lote / ReferenciaLote / Passagem / Ocorrencia` em `src/types/pcp.ts`
+- Store Zustand em `src/lib/pcp/store.ts` com `registrarPassagem` (integral/parcial, 1ª/2ª linha) e `registrarOcorrencia` (positiva/negativa/neutra) com regras de saldo
+- Kanban por setor em `production` (Compras → CAD → Corte → Silk → Costura → Acabamento → Expedição → Terceirizados)
+- `ReferenciaDrawer` com tabs Ficha · Layout · 1ª Linha · 2ª Linha · Ocorrências · Histórico
+- `FichaTecnicaResumo` reutilizando a Ficha Técnica; link `/tech-sheet?ref=...`
 
----
+**Não tocar (estável)**: `dashboard`, `cad`, `inventory`, `commercial`, `financial`, `digital-twin`, `feed`, `security`, `prototypes`, `research`.
 
-## Onda 1 — Fundação PCP (Lotes + Passagens + Ocorrências)
-**Foco 04, 05, 06, 07, 08, 11, 12**
+## O que falta para virar PLM Enterprise (do seu briefing)
 
-Refatora `_authenticated.production.tsx` para ter o **Lote como entidade central**:
-
-- Modelo de dados em memória (mock estruturado, pronto para futura conexão com backend):
-  - `Lote` { numero, grupo, prioridade, status, setor_atual, referencias[] }
-  - `ReferenciaLote` { ref, qtd_programada, qtd_produzida, qtd_perdida, qtd_adicional, saldo, status_por_setor }
-  - `Passagem` { tipo: integral|parcial, linha: 1ª|2ª, setor_origem, setor_destino, qtd, responsavel, timestamp }
-  - `Ocorrencia` { tipo: positiva|negativa|neutra, qtd, motivo, setor, responsavel, observacao }
-- Kanban por setor (Compras, CAD, Corte, Silk, Costura, Acabamento, Expedição, Terceirizados) com cards de **lote** mostrando qtd programada/produzida/saldo, prioridade, % concluído, ocorrências, atraso.
-- Cálculo de saldo segundo as regras (positiva soma, negativa reduz, neutra apenas registra; parcial mantém saldo, integral zera).
-- Mesma lote pode aparecer em **múltiplos setores** quando referências estão em fases diferentes.
-
-## Onda 2 — Drawer da Referência (Ficha Técnica + Passagens contextuais)
-**Foco 03, 10, 11, 12**
-
-- Ao clicar numa referência dentro do lote, abre **drawer lateral** com tabs:
-  Imagem | Ficha Técnica | Layout | Passagem 1ª linha | Passagem 2ª linha | Ocorrências | Histórico
-- Evolui `_authenticated.tech-sheet.tsx` — não duplica: o drawer **reutiliza** o componente de ficha técnica existente.
-- Formulários de passagem parcial/integral e registro de ocorrências (positiva/negativa/neutra) com validação de saldo.
-
-## Onda 3 — Terceirizados + Visão por Setor
-**Foco 09, 18**
-
-- Evolui `_authenticated.suppliers.tsx` para gerir lotes enviados a terceiros: envio, retorno integral/parcial, ocorrências, previsão.
-- Filtro de visão por setor (usuário do Corte vê só lotes do Corte etc.) — guard simples por role mockada.
-
-## Onda 4 — Coleções + Desenvolvimento + Marketing conectados
-**Foco 01, 02, 13**
-
-- `_authenticated.collections.tsx`: mix planejado x realizado, curva ABC, rentabilidade, campeões/baixo desempenho, metas (vendas, margem, rentabilidade, qtd).
-- `_authenticated.development.tsx`: fluxo Ideia→Croqui→Modelagem→Piloto→Ajuste→Aprovado→Produção→Lançado com status, responsável, datas e histórico (completar TODO de drag-and-drop).
-- `_authenticated.marketing.tsx`: custos (ensaio, conteúdo, influencer, tráfego) por produto/coleção + ROI/ROAS conectado a vendas.
-
-## Onda 5 — BI + IA Operacional + Limpeza técnica
-**Foco 14, 15, 16, 19**
-
-- `_authenticated.analytics.tsx`: indicadores reais de PCP (lotes atrasados, gargalos, ocorrências), desenvolvimento, coleções, marketing.
-- `_authenticated.ai-center.tsx`: perguntas operacionais com base em dados ("qual lote está parado?", "qual setor é gargalo?", "qual terceirizado atrasa?").
-- Revisão técnica: remoção de componentes/hooks duplicados, empty/loading/error states, responsividade tablet.
+1. Timeline da referência (Pesquisa → Sell Out) — fonte única
+2. Centro de Desenvolvimento (visão única da coleção)
+3. Produção do Dia por setor (operário abre e trabalha)
+4. Torre de Controle (lotes atrasados, gargalos, lead time)
+5. Smart Production Planner (evolução do relatório de necessidade; score de prioridade; grade real)
+6. Influencer Center + envio de peças + ROI + alertas
+7. 3 agentes IA operacionais (Fashion · PCP · Marketing) dentro do `ai-center` atual
 
 ---
 
-## Detalhes técnicos
+## Onda 3 — Reference Timeline + Centro de Desenvolvimento
+**Reaproveita**: `development.tsx`, `tech-sheet.tsx`, `collections.tsx`, `FichaTecnicaResumo`.
 
-- **Sem backend novo nesta fase**: os dados ficam num store (Zustand ou contexto) com mocks realistas, prontos para trocar por chamadas Supabase depois. Isso evita migrações destrutivas e respeita o foco 17 ("preservar dados existentes").
-- **Componentização**: criar `src/components/pcp/` com `LoteCard`, `KanbanColumn`, `ReferenciaDrawer`, `PassagemForm`, `OcorrenciaForm` — reutilizáveis entre Produção, Terceirizados e BI.
-- **Tipos**: `src/types/pcp.ts` centralizando Lote/Referência/Passagem/Ocorrência.
-- **Sem novos pacotes** salvo necessidade (drag-and-drop usa HTML5 nativo como já está no TODO).
+- Novo componente `ReferenceTimeline` (puro, isolado em `src/components/reference/`): 12 estágios Pesquisa → Croqui → Modelagem → Piloto → Prova → Ajustes → Engenharia → Liberação PCP → Produção → Marketing → Sell Out, com status, responsável, data, comentário.
+- Injetado em:
+  - `tech-sheet` (aba "Timeline")
+  - `ReferenciaDrawer` do PCP (nova tab "Timeline")
+- Tipo único `ReferenceLifecycle` em `src/types/reference.ts`; store leve em `src/lib/reference/store.ts` (mock).
+- `development.tsx` recebe **Centro de Desenvolvimento**: filtros rápidos "Pilotos pendentes", "Sem ficha técnica", "Aguardando aprovação", "Liberados PCP", "Atrasados". Sem nova tela — refatora a existente em modo cards/kanban com a mesma estética.
+
+## Onda 4 — Produção do Dia + Torre de Controle
+**Reaproveita**: `production.tsx`, store PCP existente.
+
+- Nova rota `/_authenticated/production/today` (sub-rota da Produção, **não duplica** o módulo): "O que produzir hoje" por setor selecionado — lista grande com Foto · Ref · Lote · Qtd · Prioridade · Prazo · Tempo previsto. Dois cliques no máximo (Passagem ou Ocorrência via drawer já existente).
+- Nova aba "Torre de Controle" dentro de `production.tsx` (toggle de visão Kanban ↔ Torre): lotes atrasados, gargalos (setor com maior fila), lead time médio, eficiência, capacidade vs demanda. Cards densos, sem novas tabelas.
+- Sem novo store: derivações puras sobre `usePCPStore`.
+
+## Onda 5 — Smart Production Planner + Score de Prioridade
+**Reaproveita**: `inventory.tsx` (dados de estoque mockados), `collections.tsx`, `analytics.tsx`.
+
+- Nova rota `/_authenticated/planner` integrada ao menu de PCP. Entrega:
+  - Tabela inteligente por referência: estoque, reservado, em produção, giro, sell out, lead time, cobertura, curva ABC, **necessidade por grade real** (PP/P/M/G/GG/XG/XXG calculada do giro por tamanho), score 0-100, recomendação ("Produzir 1.200 pç", "Risco de ruptura em 18 dias", "Excesso — não produzir").
+  - Filtros: Coleção, Grupo, ABC, Risco.
+  - Botão "Gerar Lote" que cria entrada no `usePCPStore` com a grade sugerida.
+- Tipos em `src/types/planner.ts`; lógica de score isolada em `src/lib/planner/score.ts` (testável).
+
+## Onda 6 — Influencer Center + 3 IAs operacionais
+**Reaproveita**: `marketing.tsx`, `ai-center.tsx`.
+
+- `marketing.tsx`: nova aba **Influencer Center**
+  - CRUD influenciador (nome, redes, cidade/UF/região, segmento, engajamento)
+  - Envio de peças (coleção, ref, cor, tamanho, data, campanha, valor estimado)
+  - Histórico por influenciador (peças, publicações, engajamento, ROI, vendas geradas — mock)
+  - Alertas inteligentes ao lançar coleção: "Ana Souza ainda não recebeu peças desta coleção"
+  - ROI por produto + Heat Map Brasil (SVG simples por região, sem libs novas)
+- `ai-center.tsx`: 3 cards de agente já consumindo dados reais dos stores existentes:
+  - **Fashion AI** — produtos atrasados, pilotos pendentes, coleções em risco
+  - **PCP AI** — o que produzir hoje, lote parado, gargalo, prioridade
+  - **Marketing AI** — produto a investir, influenciador top, coleção a repetir
+  - Respostas geradas via Lovable AI Gateway (`google/gemini-3-flash-preview`) através de `createServerFn` em `src/lib/ai/agents.functions.ts`, com o contexto dos stores enviado no prompt.
 
 ---
 
-## Pergunta antes de começar
+## Regras técnicas para todas as ondas
 
-Quer que eu execute **as 5 ondas em sequência nesta mesma resposta** (entrega grande, mais demorada) **ou começo pela Onda 1 (PCP/Lotes/Passagens/Ocorrências)** e seguimos onda a onda, validando a cada etapa?
+- **Sem backend novo** salvo o `createServerFn` da IA (Onda 6). Todo o resto vive em stores tipados, prontos para Supabase depois.
+- **Sem libs novas**: drag-and-drop nativo, charts/heatmap em SVG.
+- **Nada de novo módulo financeiro** — qualquer custo/ROI consome dados já existentes em `marketing.tsx` ou mock.
+- **Drawer-first**: nenhuma ação principal abre tela cheia; usa `Sheet` já em uso.
+- **Reaproveitar `ModuleLayout`, `ReferenciaDrawer`, `FichaTecnicaResumo`, store PCP, glass-card tokens** — proibido recriar variantes.
+- **Cada onda termina utilizável** — sem ondas dependentes "em construção".
 
-Recomendo **começar pela Onda 1**, porque ela é a base de tudo (lote é a entidade central) e permite validar o modelo antes de propagar para terceirizados, marketing e BI.
+## Ordem recomendada
+
+Onda 3 → 4 → 5 → 6, validando uma a uma. Onda 3 é base (timeline alimenta Desenvolvimento e PCP). Onda 5 (Planner) depende da Timeline para usar a fase real da referência.
+
+## Pergunta
+
+Confirma essa divisão e começo pela **Onda 3 (Reference Timeline + Centro de Desenvolvimento)**, ou prefere reordenar (ex.: Influencer/IA primeiro, Planner antes da Torre, etc.)?

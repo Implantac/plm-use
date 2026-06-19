@@ -25,6 +25,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
+import { useReferenceStore } from "@/lib/reference/store";
+import { emptyLifecycle } from "@/types/reference";
 
 const techSheetSearchSchema = z.object({
   ref: z.string().optional(),
@@ -255,25 +258,7 @@ function TechSheetPage() {
               </CardTitle>
             </CardHeader>
             <div className="space-y-4">
-              {[
-                { step: "Croqui", status: "Aprovado", date: "10 Mai" },
-                { step: "Modelagem", status: "Concluído", date: "12 Mai" },
-                { step: "Peça Piloto", status: "Ajustada", date: "15 Mai" },
-                { step: "Aprovação Final", status: "Aprovado", date: "20 Mai" },
-              ].map((step, i) => (
-                <div key={i} className="flex gap-4 relative group">
-                  <div className="flex flex-col items-center">
-                    <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
-                    {i < 3 && <div className="w-0.5 h-10 bg-white/5" />}
-                  </div>
-                  <div className="space-y-0.5">
-                    <p className="text-[10px] font-bold uppercase text-white">{step.step}</p>
-                    <p className="text-[8px] text-muted-foreground uppercase">
-                      {step.status} • {step.date}
-                    </p>
-                  </div>
-                </div>
-              ))}
+              <TimelineDoProduto refAtual={productInfo.ref} nome={productInfo.name} />
             </div>
           </Card>
 
@@ -428,4 +413,12 @@ function TechSheetPage() {
       </Dialog>
     </ModuleLayout>
   );
+}
+
+function TimelineDoProduto({ refAtual, nome }: { refAtual: string; nome: string }) {
+  const lifecycles = useReferenceStore((s) => s.lifecycles);
+  const lc =
+    lifecycles.find((l) => l.ref === refAtual) ??
+    emptyLifecycle(refAtual, nome);
+  return <ReferenceTimeline lifecycle={lc} compact />;
 }

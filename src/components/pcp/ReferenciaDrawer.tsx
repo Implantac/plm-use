@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   AlertOctagon,
+  GitBranch,
   History,
   ScrollText,
   Workflow,
@@ -17,6 +18,9 @@ import {
 import { PassagemForm } from "./PassagemForm";
 import { OcorrenciaForm } from "./OcorrenciaForm";
 import { FichaTecnicaResumo } from "./FichaTecnicaResumo";
+import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
+import { useReferenceStore } from "@/lib/reference/store";
+import { emptyLifecycle } from "@/types/reference";
 import {
   pendenteReferencia,
   percentualReferencia,
@@ -100,122 +104,149 @@ export function ReferenciaDrawer({
           </div>
         </SheetHeader>
 
-        <Tabs defaultValue="ficha" className="mt-4">
-          <TabsList className="grid w-full grid-cols-6 bg-white/5 h-auto">
-            <TabsTrigger value="ficha" className="text-[10px] gap-1">
-              <ScrollText className="h-3 w-3" /> Ficha
-            </TabsTrigger>
-            <TabsTrigger value="layout" className="text-[10px] gap-1">
-              <Layers className="h-3 w-3" /> Layout
-            </TabsTrigger>
-            <TabsTrigger value="p1" className="text-[10px] gap-1">
-              <Workflow className="h-3 w-3" /> 1ª Linha
-            </TabsTrigger>
-            <TabsTrigger value="p2" className="text-[10px] gap-1">
-              <Workflow className="h-3 w-3" /> 2ª Linha
-            </TabsTrigger>
-            <TabsTrigger value="oco" className="text-[10px] gap-1">
-              <AlertOctagon className="h-3 w-3" /> Ocorr.
-            </TabsTrigger>
-            <TabsTrigger value="hist" className="text-[10px] gap-1">
-              <History className="h-3 w-3" /> Hist.
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="ficha" className="mt-4">
-            <FichaTecnicaResumo
-              referencia={referencia}
-              grupo={grupo}
-              colecao={colecao}
-            />
-          </TabsContent>
-
-          <TabsContent value="layout" className="mt-4">
-            <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground text-sm">
-              Layout de silk/bordado da referência
-            </div>
-          </TabsContent>
-
-          <TabsContent value="p1" className="mt-4">
-            <PassagemForm loteNumero={loteNumero} referencia={referencia} linha="1a" />
-          </TabsContent>
-
-          <TabsContent value="p2" className="mt-4">
-            <PassagemForm loteNumero={loteNumero} referencia={referencia} linha="2a" />
-          </TabsContent>
-
-          <TabsContent value="oco" className="mt-4">
-            <OcorrenciaForm loteNumero={loteNumero} referencia={referencia} />
-            {referencia.ocorrencias.length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Ocorrências registradas
-                </p>
-                {referencia.ocorrencias.map((o) => (
-                  <div
-                    key={o.id}
-                    className={`rounded-md border p-3 text-[11px] ${
-                      o.tipo === "positiva"
-                        ? "border-emerald-400/30 bg-emerald-400/5"
-                        : o.tipo === "negativa"
-                          ? "border-rose-400/30 bg-rose-400/5"
-                          : "border-amber-300/30 bg-amber-300/5"
-                    }`}
-                  >
-                    <div className="flex justify-between">
-                      <span className="font-bold uppercase tracking-wider">
-                        {o.tipo} • {o.qtd} pç
-                      </span>
-                      <span className="text-muted-foreground">{o.setor}</span>
-                    </div>
-                    <p className="mt-1 text-white">{o.motivo}</p>
-                    <p className="mt-1 text-muted-foreground">
-                      {o.responsavel} • {new Date(o.timestamp).toLocaleString()}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="hist" className="mt-4 space-y-2">
-            {referencia.passagens.length === 0 ? (
-              <p className="text-[11px] text-muted-foreground">
-                Nenhuma passagem registrada ainda.
-              </p>
-            ) : (
-              referencia.passagens.map((p) => (
-                <div
-                  key={p.id}
-                  className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]"
-                >
-                  <div className="flex justify-between">
-                    <span className="font-bold uppercase tracking-wider text-primary">
-                      {p.linha === "1a" ? "Passagem" : "Retrabalho"} • {p.tipo}
-                    </span>
-                    <span className="text-white">{p.qtd} pç</span>
-                  </div>
-                  <p className="mt-1 text-muted-foreground">
-                    {p.setor_origem}
-                    {p.setor_destino ? ` → ${p.setor_destino}` : ""} •{" "}
-                    {p.responsavel}
-                  </p>
-                  {p.defeito && (
-                    <p className="mt-1 text-rose-300">Defeito: {p.defeito}</p>
-                  )}
-                  {p.observacao && (
-                    <p className="mt-1 text-white">{p.observacao}</p>
-                  )}
-                  <p className="mt-1 text-[10px] text-muted-foreground">
-                    {new Date(p.timestamp).toLocaleString()}
-                  </p>
-                </div>
-              ))
-            )}
-          </TabsContent>
-        </Tabs>
+        <ReferenciaTabs
+          loteNumero={loteNumero}
+          grupo={grupo}
+          colecao={colecao}
+          referencia={referencia}
+        />
       </SheetContent>
     </Sheet>
+  );
+}
+
+function ReferenciaTabs({
+  loteNumero,
+  grupo,
+  colecao,
+  referencia,
+}: {
+  loteNumero: string;
+  grupo?: string;
+  colecao?: string;
+  referencia: ReferenciaLote;
+}) {
+  const lifecycles = useReferenceStore((s) => s.lifecycles);
+  const lifecycle =
+    lifecycles.find((l) => l.ref === referencia.ref) ??
+    emptyLifecycle(referencia.ref, referencia.nome);
+
+  return (
+    <Tabs defaultValue="ficha" className="mt-4">
+      <TabsList className="grid w-full grid-cols-7 bg-white/5 h-auto">
+        <TabsTrigger value="ficha" className="text-[10px] gap-1">
+          <ScrollText className="h-3 w-3" /> Ficha
+        </TabsTrigger>
+        <TabsTrigger value="timeline" className="text-[10px] gap-1">
+          <GitBranch className="h-3 w-3" /> Timeline
+        </TabsTrigger>
+        <TabsTrigger value="layout" className="text-[10px] gap-1">
+          <Layers className="h-3 w-3" /> Layout
+        </TabsTrigger>
+        <TabsTrigger value="p1" className="text-[10px] gap-1">
+          <Workflow className="h-3 w-3" /> 1ª Linha
+        </TabsTrigger>
+        <TabsTrigger value="p2" className="text-[10px] gap-1">
+          <Workflow className="h-3 w-3" /> 2ª Linha
+        </TabsTrigger>
+        <TabsTrigger value="oco" className="text-[10px] gap-1">
+          <AlertOctagon className="h-3 w-3" /> Ocorr.
+        </TabsTrigger>
+        <TabsTrigger value="hist" className="text-[10px] gap-1">
+          <History className="h-3 w-3" /> Hist.
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="ficha" className="mt-4">
+        <FichaTecnicaResumo referencia={referencia} grupo={grupo} colecao={colecao} />
+      </TabsContent>
+
+      <TabsContent value="timeline" className="mt-4">
+        <ReferenceTimeline lifecycle={lifecycle} compact />
+      </TabsContent>
+
+      <TabsContent value="layout" className="mt-4">
+        <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground text-sm">
+          Layout de silk/bordado da referência
+        </div>
+      </TabsContent>
+
+      <TabsContent value="p1" className="mt-4">
+        <PassagemForm loteNumero={loteNumero} referencia={referencia} linha="1a" />
+      </TabsContent>
+
+      <TabsContent value="p2" className="mt-4">
+        <PassagemForm loteNumero={loteNumero} referencia={referencia} linha="2a" />
+      </TabsContent>
+
+      <TabsContent value="oco" className="mt-4">
+        <OcorrenciaForm loteNumero={loteNumero} referencia={referencia} />
+        {referencia.ocorrencias.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              Ocorrências registradas
+            </p>
+            {referencia.ocorrencias.map((o) => (
+              <div
+                key={o.id}
+                className={`rounded-md border p-3 text-[11px] ${
+                  o.tipo === "positiva"
+                    ? "border-emerald-400/30 bg-emerald-400/5"
+                    : o.tipo === "negativa"
+                      ? "border-rose-400/30 bg-rose-400/5"
+                      : "border-amber-300/30 bg-amber-300/5"
+                }`}
+              >
+                <div className="flex justify-between">
+                  <span className="font-bold uppercase tracking-wider">
+                    {o.tipo} • {o.qtd} pç
+                  </span>
+                  <span className="text-muted-foreground">{o.setor}</span>
+                </div>
+                <p className="mt-1 text-white">{o.motivo}</p>
+                <p className="mt-1 text-muted-foreground">
+                  {o.responsavel} • {new Date(o.timestamp).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </TabsContent>
+
+      <TabsContent value="hist" className="mt-4 space-y-2">
+        {referencia.passagens.length === 0 ? (
+          <p className="text-[11px] text-muted-foreground">
+            Nenhuma passagem registrada ainda.
+          </p>
+        ) : (
+          referencia.passagens.map((p) => (
+            <div
+              key={p.id}
+              className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]"
+            >
+              <div className="flex justify-between">
+                <span className="font-bold uppercase tracking-wider text-primary">
+                  {p.linha === "1a" ? "Passagem" : "Retrabalho"} • {p.tipo}
+                </span>
+                <span className="text-white">{p.qtd} pç</span>
+              </div>
+              <p className="mt-1 text-muted-foreground">
+                {p.setor_origem}
+                {p.setor_destino ? ` → ${p.setor_destino}` : ""} ·{" "}
+                {p.responsavel}
+              </p>
+              {p.defeito && (
+                <p className="mt-1 text-rose-300">Defeito: {p.defeito}</p>
+              )}
+              {p.observacao && <p className="mt-1 text-white">{p.observacao}</p>}
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                {new Date(p.timestamp).toLocaleString()}
+              </p>
+            </div>
+          ))
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }
 
