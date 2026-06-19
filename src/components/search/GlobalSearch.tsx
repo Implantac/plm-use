@@ -2,21 +2,28 @@ import * as React from "react";
 import {
   Search,
   Layers,
-  Users,
-  Box,
-  Megaphone,
   Package,
-  FileText,
-  BarChart3,
   Command as CommandIcon,
   ArrowRight,
-  PenTool,
-  LockKeyhole,
+  ShieldCheck,
+  Heart,
   Sparkles,
+  LayoutDashboard,
+  Palette,
+  Scissors,
+  Zap,
+  FileText,
+  PenTool,
+  Users,
+  Megaphone,
+  ShoppingBag,
+  DollarSign,
+  BarChart3,
   Globe,
   MessageSquare,
-  DollarSign,
-  ShoppingBag,
+  LockKeyhole,
+  Box,
+  Bot,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import {
@@ -28,19 +35,58 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { usePCPStore } from "@/lib/pcp/store";
+import { useQualityStore } from "@/lib/quality/store";
+import { useInfluencersStore } from "@/lib/influencers/store";
+
+type Entry = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  module: string;
+  icon: React.ReactNode;
+  path: string;
+};
+
+const MODULES: Entry[] = [
+  { id: "m-dash", title: "Dashboard", module: "Navegação", icon: <LayoutDashboard className="w-4 h-4" />, path: "/dashboard" },
+  { id: "m-research", title: "Pesquisa & Mood", module: "Navegação", icon: <Palette className="w-4 h-4" />, path: "/research" },
+  { id: "m-coll", title: "Coleções", module: "Navegação", icon: <Layers className="w-4 h-4" />, path: "/collections" },
+  { id: "m-dev", title: "Desenvolvimento", module: "Navegação", icon: <Scissors className="w-4 h-4" />, path: "/development" },
+  { id: "m-proto", title: "Protótipos", module: "Navegação", icon: <Zap className="w-4 h-4" />, path: "/prototypes" },
+  { id: "m-ft", title: "Ficha Técnica", module: "Navegação", icon: <FileText className="w-4 h-4" />, path: "/tech-sheet" },
+  { id: "m-cad", title: "CAD & Modelagem", module: "Navegação", icon: <PenTool className="w-4 h-4" />, path: "/cad" },
+  { id: "m-prod", title: "Produção / PCP", module: "Navegação", icon: <Package className="w-4 h-4" />, path: "/production" },
+  { id: "m-qa", title: "Qualidade & CAPA", module: "Navegação", icon: <ShieldCheck className="w-4 h-4" />, path: "/quality" },
+  { id: "m-plan", title: "Planner", module: "Navegação", icon: <Zap className="w-4 h-4" />, path: "/planner" },
+  { id: "m-inv", title: "Almoxarifado", module: "Navegação", icon: <Box className="w-4 h-4" />, path: "/inventory" },
+  { id: "m-sup", title: "Fornecedores", module: "Navegação", icon: <Users className="w-4 h-4" />, path: "/suppliers" },
+  { id: "m-mkt", title: "Marketing", module: "Navegação", icon: <Megaphone className="w-4 h-4" />, path: "/marketing" },
+  { id: "m-com", title: "Comercial", module: "Navegação", icon: <ShoppingBag className="w-4 h-4" />, path: "/commercial" },
+  { id: "m-fin", title: "Financeiro", module: "Navegação", icon: <DollarSign className="w-4 h-4" />, path: "/financial" },
+  { id: "m-bi", title: "BI Executivo", module: "Navegação", icon: <BarChart3 className="w-4 h-4" />, path: "/analytics" },
+  { id: "m-inf", title: "Influencers", module: "Navegação", icon: <Heart className="w-4 h-4" />, path: "/influencers" },
+  { id: "m-ai", title: "USE AI", module: "Navegação", icon: <Sparkles className="w-4 h-4" />, path: "/ai-center" },
+  { id: "m-agents", title: "AI Agents", module: "Navegação", icon: <Bot className="w-4 h-4" />, path: "/ai-agents" },
+  { id: "m-twin", title: "Digital Twin", module: "Navegação", icon: <Globe className="w-4 h-4" />, path: "/digital-twin" },
+  { id: "m-feed", title: "Colaboração", module: "Navegação", icon: <MessageSquare className="w-4 h-4" />, path: "/feed" },
+  { id: "m-sec", title: "Segurança", module: "Navegação", icon: <LockKeyhole className="w-4 h-4" />, path: "/security" },
+];
 
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+  const lotes = usePCPStore((s) => s.lotes);
+  const capas = useQualityStore((s) => s.capa);
+  const influencers = useInfluencersStore((s) => s.influencers);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setOpen((open) => !open);
+        setOpen((o) => !o);
       }
     };
-
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
@@ -50,127 +96,56 @@ export function GlobalSearch() {
     command();
   }, []);
 
-  const searchResults = [
-    {
-      id: "col-1",
-      title: "Verão 24 - Amalfi",
-      module: "Coleções",
-      icon: <Layers className="w-4 h-4" />,
-      path: "/collections",
-    },
-    {
-      id: "col-2",
-      title: "Outono 24 - Urban",
-      module: "Coleções",
-      icon: <Layers className="w-4 h-4" />,
-      path: "/collections",
-    },
-    {
-      id: "sup-1",
-      title: "Têxtil Amalfi Ltda",
-      module: "Fornecedores",
-      icon: <Users className="w-4 h-4" />,
-      path: "/suppliers",
-    },
-    {
-      id: "sup-2",
-      title: "Aviamentos Global",
-      module: "Fornecedores",
-      icon: <Users className="w-4 h-4" />,
-      path: "/suppliers",
-    },
-    {
-      id: "inv-1",
-      title: "Linho Puro Off-White",
-      module: "Inventário",
-      icon: <Box className="w-4 h-4" />,
-      path: "/inventory",
-    },
-    {
-      id: "inv-2",
-      title: "Botão Madre Pérola",
-      module: "Inventário",
-      icon: <Box className="w-4 h-4" />,
-      path: "/inventory",
-    },
-    {
-      id: "mkt-1",
-      title: "Campanha Verão 24",
-      module: "Marketing",
-      icon: <Megaphone className="w-4 h-4" />,
-      path: "/marketing",
-    },
-    {
-      id: "prod-1",
-      title: "OP-2024-101 Vestido Seda",
-      module: "Produção",
-      icon: <Package className="w-4 h-4" />,
-      path: "/production",
-    },
-    {
-      id: "tech-1",
-      title: "FT-V24-001 Blusa Linho",
-      module: "Ficha Técnica",
-      icon: <FileText className="w-4 h-4" />,
-      path: "/tech-sheet",
-    },
-    {
-      id: "cad-1",
-      title: "Molde Blusa Amalfi DXF",
-      module: "CAD & Modelagem",
-      icon: <PenTool className="w-4 h-4" />,
-      path: "/cad",
-    },
-    {
-      id: "com-1",
-      title: "Pedidos Marketplace",
-      module: "Comercial",
-      icon: <ShoppingBag className="w-4 h-4" />,
-      path: "/commercial",
-    },
-    {
-      id: "fin-1",
-      title: "Margem Coleção Verão 25",
-      module: "Financeiro",
-      icon: <DollarSign className="w-4 h-4" />,
-      path: "/financial",
-    },
-    {
-      id: "bi-1",
-      title: "ROI Coleção Verão",
-      module: "BI Executivo",
-      icon: <BarChart3 className="w-4 h-4" />,
-      path: "/analytics",
-    },
-    {
-      id: "ai-1",
-      title: "Gerador de Coleções",
-      module: "USE AI",
-      icon: <Sparkles className="w-4 h-4" />,
-      path: "/ai-center",
-    },
-    {
-      id: "twin-1",
-      title: "Digital Twin Verão 25",
-      module: "Digital Twin",
-      icon: <Globe className="w-4 h-4" />,
-      path: "/digital-twin",
-    },
-    {
-      id: "feed-1",
-      title: "Aprovação Blusa Amalfi",
-      module: "Colaboração",
-      icon: <MessageSquare className="w-4 h-4" />,
-      path: "/feed",
-    },
-    {
-      id: "sec-1",
-      title: "RBAC Admin Master",
-      module: "Segurança",
-      icon: <LockKeyhole className="w-4 h-4" />,
-      path: "/security",
-    },
-  ] as const;
+  const pcpEntries: Entry[] = React.useMemo(() => {
+    const out: Entry[] = [];
+    for (const l of lotes) {
+      out.push({
+        id: `lote-${l.numero}`,
+        title: `Lote ${l.numero}`,
+        subtitle: `${l.grupo} · ${l.referencias.length} ref.`,
+        module: "PCP · Lote",
+        icon: <Package className="w-4 h-4" />,
+        path: "/production",
+      });
+      for (const r of l.referencias) {
+        out.push({
+          id: `ref-${l.numero}-${r.ref}`,
+          title: `${r.ref} — ${r.nome}`,
+          subtitle: `Lote ${l.numero} · ${r.qtd_programada} un`,
+          module: "PCP · Referência",
+          icon: <Layers className="w-4 h-4" />,
+          path: "/production",
+        });
+      }
+    }
+    return out;
+  }, [lotes]);
+
+  const capaEntries: Entry[] = React.useMemo(
+    () =>
+      capas.map((c) => ({
+        id: `capa-${c.id}`,
+        title: c.defeito,
+        subtitle: `${c.setor} · ${c.tipo} · ${c.status}`,
+        module: "Qualidade · CAPA",
+        icon: <ShieldCheck className="w-4 h-4" />,
+        path: "/quality",
+      })),
+    [capas],
+  );
+
+  const infEntries: Entry[] = React.useMemo(
+    () =>
+      influencers.map((i) => ({
+        id: `inf-${i.id}`,
+        title: `${i.nome} ${i.handle}`,
+        subtitle: `${i.segmento} · ${i.regiao} · ${i.seguidores.toLocaleString("pt-BR")} seguidores`,
+        module: "Influencers",
+        icon: <Heart className="w-4 h-4" />,
+        path: "/influencers",
+      })),
+    [influencers],
+  );
 
   return (
     <>
@@ -188,7 +163,7 @@ export function GlobalSearch() {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <div className="glass-card border-none bg-black/95">
           <CommandInput
-            placeholder="Pesquisar em todo o ecossistema..."
+            placeholder="Buscar lotes, referências, CAPAs, influencers ou módulos…"
             className="h-16 text-white border-none focus:ring-0 placeholder:text-muted-foreground/50"
           />
           <CommandList className="max-h-[450px] overflow-y-auto no-scrollbar pb-4">
@@ -223,66 +198,99 @@ export function GlobalSearch() {
 
             <CommandSeparator className="bg-white/5 my-2" />
 
-            <CommandGroup heading="Registros Localizados">
-              {searchResults.map((item) => (
-                <CommandItem
-                  key={item.id}
-                  onSelect={() => runCommand(() => navigate({ to: item.path }))}
-                  className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/20 transition-all">
-                    {item.icon}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[11px] font-bold text-white group-hover:text-primary transition-colors">
-                      {item.title}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
-                        {item.module}
-                      </span>
-                      <span className="w-1 h-1 rounded-full bg-white/10" />
-                      <span className="text-[8px] font-medium text-muted-foreground/40 italic">
-                        Ref: {item.id.toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                  <ArrowRight className="w-3 h-3 text-white/5 group-hover:text-primary transition-all opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0" />
-                </CommandItem>
+            <CommandGroup heading="Módulos">
+              {MODULES.map((m) => (
+                <EntryRow key={m.id} entry={m} onSelect={() => runCommand(() => navigate({ to: m.path }))} />
               ))}
             </CommandGroup>
+
+            {pcpEntries.length > 0 && (
+              <>
+                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandGroup heading="PCP · Lotes & Referências">
+                  {pcpEntries.map((e) => (
+                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+
+            {capaEntries.length > 0 && (
+              <>
+                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandGroup heading="Qualidade · CAPAs">
+                  {capaEntries.map((e) => (
+                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+
+            {infEntries.length > 0 && (
+              <>
+                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandGroup heading="Influencers">
+                  {infEntries.map((e) => (
+                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                  ))}
+                </CommandGroup>
+              </>
+            )}
           </CommandList>
 
           <div className="p-4 border-t border-white/5 flex justify-between items-center bg-black/40">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
-                  Navegar
-                </span>
+                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Navegar</span>
                 <div className="flex gap-1">
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
-                    ↑
-                  </span>
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
-                    ↓
-                  </span>
+                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">↑</span>
+                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">↓</span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
-                  Abrir
-                </span>
-                <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
-                  ENTER
-                </span>
+                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Abrir</span>
+                <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">ENTER</span>
               </div>
             </div>
             <p className="text-[8px] font-bold text-primary/40 uppercase tracking-[0.3em]">
-              USE MODA Neural Search
+              USE MODA Neural Search · live
             </p>
           </div>
         </div>
       </CommandDialog>
     </>
+  );
+}
+
+function EntryRow({ entry, onSelect }: { entry: Entry; onSelect: () => void }) {
+  return (
+    <CommandItem
+      onSelect={onSelect}
+      value={`${entry.title} ${entry.subtitle ?? ""} ${entry.module}`}
+      className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+    >
+      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/20 transition-all">
+        {entry.icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] font-bold text-white group-hover:text-primary transition-colors truncate">
+          {entry.title}
+        </p>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+            {entry.module}
+          </span>
+          {entry.subtitle && (
+            <>
+              <span className="w-1 h-1 rounded-full bg-white/10" />
+              <span className="text-[8px] font-medium text-muted-foreground/50 italic truncate">
+                {entry.subtitle}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+      <ArrowRight className="w-3 h-3 text-white/5 group-hover:text-primary transition-all opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0" />
+    </CommandItem>
   );
 }
