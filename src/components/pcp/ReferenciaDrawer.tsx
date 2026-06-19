@@ -157,7 +157,18 @@ function ReferenciaTabs({
         <TabsTrigger value="hist" className="text-[10px] gap-1">
           <History className="h-3 w-3" /> Hist.
         </TabsTrigger>
+        <TabsTrigger value="chat" className="text-[10px] gap-1">
+          <MessageSquare className="h-3 w-3" /> Chat
+        </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="chat" className="mt-4">
+        <CommentsPanel
+          entityType="pcp_ref"
+          entityId={`${loteNumero}/${referencia.ref}`}
+          title={`Conversa · ${referencia.ref}`}
+        />
+      </TabsContent>
 
       <TabsContent value="ficha" className="mt-4">
         <FichaTecnicaResumo referencia={referencia} grupo={grupo} colecao={colecao} />
