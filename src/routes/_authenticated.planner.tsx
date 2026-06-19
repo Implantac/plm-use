@@ -75,11 +75,26 @@ function PlannerPage() {
   );
 
   function gerarLote(s: Sugestao) {
-    // Não mutamos store de PCP com criação real (Wave 5 apenas planejamento).
-    // Marcamos visualmente e damos feedback — abertura formal acontece no PCP.
+    const totalPecas = Object.values(s.grade).reduce((a, b) => a + b, 0);
+    const res = usePCPStore.getState().criarLote({
+      grupo: s.grupo,
+      colecao: s.colecao,
+      prioridade: s.score >= 75 ? "Urgente" : s.score >= 50 ? "Alta" : "Média",
+      responsavel: "Planner AI",
+      referencia: {
+        ref: s.ref,
+        nome: s.nome,
+        qtd_programada: totalPecas,
+        grade: s.grade,
+      },
+    });
+    if (!res.ok) {
+      toast.error(res.erro ?? "Falha ao gerar lote");
+      return;
+    }
     setCriados((prev) => new Set(prev).add(s.ref));
-    toast.success(`Lote sugerido para ${s.ref}`, {
-      description: `${Object.values(s.grade).reduce((a, b) => a + b, 0)} peças • envie ao PCP para abrir formalmente.`,
+    toast.success(`${res.numero} criado para ${s.ref}`, {
+      description: `${totalPecas} peças enviadas ao Kanban do PCP em Compras.`,
     });
   }
 
