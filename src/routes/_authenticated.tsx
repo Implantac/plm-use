@@ -1,10 +1,10 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Settings,
-  Bell,
   ChevronRight,
   Zap,
   BarChart3,
