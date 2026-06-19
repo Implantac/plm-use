@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { LivePCPWidget } from "@/components/dashboard/LivePCPWidget";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -301,6 +302,9 @@ function Dashboard() {
           </motion.div>
         ))}
       </section>
+
+      <LivePCPWidget />
+
 
       <section className="grid grid-cols-1 xl:grid-cols-[0.9fr_1.1fr_1fr] gap-6">
         <Card className="glass-card rounded-lg">
