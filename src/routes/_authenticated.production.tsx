@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
@@ -7,11 +7,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { LayoutGrid, Radar, Zap } from "lucide-react";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
+import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
   SETORES_PCP,
@@ -30,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/production")({
 function ProductionPage() {
   const lotes = usePCPStore((s) => s.lotes);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [view, setView] = useState<"kanban" | "torre">("kanban");
   const [selRef, setSelRef] = useState<{
     loteNumero: string;
     ref: ReferenciaLote;
@@ -80,23 +84,65 @@ function ProductionPage() {
         { label: "Atrasados", value: String(lotesAtrasados), detail: "fora do prazo" },
       ]}
     >
-      <div className="space-y-6">
-        <Card className="glass-card rounded-lg">
-          <CardContent className="p-4 overflow-x-auto">
-            <div className="flex gap-4 min-w-max pb-2">
-              {SETORES_PCP.map((s) => (
-                <KanbanColumn
-                  key={s}
-                  setor={s}
-                  lotes={colunas[s]}
-                  onSelectLote={(lote, setor) =>
-                    setLoteSelecionado({ lote, setor })
-                  }
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
+            <button
+              onClick={() => setView("kanban")}
+              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+                view === "kanban"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:text-white"
+              }`}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              Kanban
+            </button>
+            <button
+              onClick={() => setView("torre")}
+              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+                view === "torre"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:text-white"
+              }`}
+            >
+              <Radar className="h-3.5 w-3.5" />
+              Torre de Controle
+            </button>
+          </div>
+          <Button asChild size="sm" variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
+            <Link to="/production/today">
+              <Zap className="h-3.5 w-3.5 mr-1" />
+              Produção do Dia
+            </Link>
+          </Button>
+        </div>
+
+        {view === "kanban" ? (
+          <Card className="glass-card rounded-lg">
+            <CardContent className="p-4 overflow-x-auto">
+              <div className="flex gap-4 min-w-max pb-2">
+                {SETORES_PCP.map((s) => (
+                  <KanbanColumn
+                    key={s}
+                    setor={s}
+                    lotes={colunas[s]}
+                    onSelectLote={(lote, setor) =>
+                      setLoteSelecionado({ lote, setor })
+                    }
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <TorreDeControle
+            lotes={lotes}
+            onSelectLote={(l) =>
+              setLoteSelecionado({ lote: l, setor: l.referencias[0]?.setor_atual ?? "Costura" })
+            }
+          />
+        )}
       </div>
 
       {/* Dialog do lote: lista referências e abre o drawer */}
