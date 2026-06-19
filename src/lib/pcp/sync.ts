@@ -75,9 +75,16 @@ export function usePCPCloudSync(enabled: boolean) {
       pushTimer = setTimeout(() => void pushAllLotes(), 800);
     });
     subRef.current = unsub;
+    const channel = supabase
+      .channel("pcp-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "pcp_lots" }, () => {
+        void hydratePCPFromCloud(true);
+      })
+      .subscribe();
     return () => {
       unsub();
       if (pushTimer) clearTimeout(pushTimer);
+      void supabase.removeChannel(channel);
     };
   }, [enabled]);
 }
