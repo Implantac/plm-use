@@ -56,7 +56,9 @@ function ProductionPage() {
     if (!selRef) return null;
     const l = lotes.find((x) => x.numero === selRef.loteNumero);
     const r = l?.referencias.find((x) => x.ref === selRef.ref.ref);
-    return r ? { loteNumero: selRef.loteNumero, ref: r } : null;
+    return r && l
+      ? { loteNumero: selRef.loteNumero, ref: r, grupo: l.grupo, colecao: l.colecao }
+      : null;
   }, [selRef, lotes]);
 
   const loteSelecionadoAtual = useMemo(() => {
@@ -234,6 +236,8 @@ function ProductionPage() {
 
       <ReferenciaDrawer
         loteNumero={selRefAtual?.loteNumero ?? ""}
+        grupo={selRefAtual?.grupo}
+        colecao={selRefAtual?.colecao}
         referencia={selRefAtual?.ref ?? null}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}

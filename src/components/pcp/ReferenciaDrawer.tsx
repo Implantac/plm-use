@@ -10,11 +10,9 @@ import { Progress } from "@/components/ui/progress";
 import {
   AlertOctagon,
   History,
-  ImageIcon,
-  Layers,
-  Package,
   ScrollText,
   Workflow,
+  Layers,
 } from "lucide-react";
 import { PassagemForm } from "./PassagemForm";
 import { OcorrenciaForm } from "./OcorrenciaForm";
@@ -248,11 +246,3 @@ function Metric({
   );
 }
 
-function FichaRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between border-b border-white/5 py-2 text-[11px]">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-bold text-white text-right">{value}</span>
-    </div>
-  );
-}
