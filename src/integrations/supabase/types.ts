@@ -146,6 +146,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string
+          detail: string | null
+          external_id: string
+          href: string | null
+          id: string
+          read_at: string | null
+          severity: string
+          source: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          external_id: string
+          href?: string | null
+          id?: string
+          read_at?: string | null
+          severity: string
+          source?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          external_id?: string
+          href?: string | null
+          id?: string
+          read_at?: string | null
+          severity?: string
+          source?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pcp_lots: {
         Row: {
           code: string
