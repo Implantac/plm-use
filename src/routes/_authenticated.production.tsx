@@ -10,12 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { LayoutGrid, Radar, Zap } from "lucide-react";
+import { GanttChart, LayoutGrid, Radar, Zap } from "lucide-react";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
 import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { CapacityPanel } from "@/components/pcp/CapacityPanel";
+import { LotesGantt } from "@/components/pcp/LotesGantt";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
@@ -35,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/production")({
 function ProductionPage() {
   const lotes = usePCPStore((s) => s.lotes);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [view, setView] = useState<"kanban" | "torre">("kanban");
+  const [view, setView] = useState<"kanban" | "torre" | "gantt">("kanban");
   const [selRef, setSelRef] = useState<{
     loteNumero: string;
     ref: ReferenciaLote;
@@ -111,6 +112,17 @@ function ProductionPage() {
               <Radar className="h-3.5 w-3.5" />
               Torre de Controle
             </button>
+            <button
+              onClick={() => setView("gantt")}
+              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+                view === "gantt"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:text-white"
+              }`}
+            >
+              <GanttChart className="h-3.5 w-3.5" />
+              Gantt
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <ExportMenu
@@ -163,8 +175,15 @@ function ProductionPage() {
               </div>
             </CardContent>
           </Card>
-        ) : (
+        ) : view === "torre" ? (
           <TorreDeControle
+            lotes={lotes}
+            onSelectLote={(l) =>
+              setLoteSelecionado({ lote: l, setor: l.referencias[0]?.setor_atual ?? "Costura" })
+            }
+          />
+        ) : (
+          <LotesGantt
             lotes={lotes}
             onSelectLote={(l) =>
               setLoteSelecionado({ lote: l, setor: l.referencias[0]?.setor_atual ?? "Costura" })
