@@ -82,6 +82,8 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
     [local, eventsOf],
   );
 
+  const { openEntity } = useEntityDrawer();
+
   if (!local) return null;
   const overdue = isOverdue(local);
   const currentIdx = STEPS.indexOf(local.status);
