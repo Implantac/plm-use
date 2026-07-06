@@ -34,6 +34,8 @@ import {
   type CapaSeveridade,
   type CapaStatus,
 } from "@/hooks/use-capa";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
+import { Network } from "lucide-react";
 
 const STATUS_STYLES: Record<CapaStatus, string> = {
   Aberta: "bg-sky-500/15 text-sky-300 border-sky-400/30",
@@ -79,6 +81,8 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
     () => (local ? eventsOf(local.id) : []),
     [local, eventsOf],
   );
+
+  const { openEntity } = useEntityDrawer();
 
   if (!local) return null;
   const overdue = isOverdue(local);
@@ -166,14 +170,32 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 )}
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="text-muted-foreground"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Abrir na visão universal"
+                onClick={() =>
+                  openEntity({
+                    type: "capa",
+                    id: local.id,
+                    title: local.defeito,
+                    subtitle: `CAPA · ${local.setor}`,
+                  })
+                }
+                className="text-muted-foreground"
+              >
+                <Network className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="text-muted-foreground"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Workflow stepper */}
