@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import type { Database } from "@/integrations/supabase/types";
+
+type CapaUpdate = Database["public"]["Tables"]["quality_capa"]["Update"];
 
 export const CAPA_STATUSES = [
   "Aberta",
