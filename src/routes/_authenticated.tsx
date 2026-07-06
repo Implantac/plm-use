@@ -92,6 +92,7 @@ function AuthenticatedLayout() {
 
   const navItems = [
     { icon: <LayoutDashboard className="w-4 h-4" />, label: "Dashboard", href: "/dashboard" },
+    { icon: <Fingerprint className="w-4 h-4" />, label: "Núcleo · Referências", href: "/references" },
     { icon: <Palette className="w-4 h-4" />, label: "Pesquisa", href: "/research" },
     { icon: <Layers className="w-4 h-4" />, label: "Coleções", href: "/collections" },
     { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
