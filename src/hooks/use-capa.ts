@@ -215,15 +215,28 @@ export function useCapa() {
       note?: string | null,
     ) => {
       if (!user) return;
-      await supabase.from("capa_events").insert({
-        capa_id,
-        event,
-        from_status,
-        to_status,
-        note: note ?? null,
-        actor: user.id,
-        actor_name: actorName,
-      });
+      await Promise.all([
+        supabase.from("capa_events").insert({
+          capa_id,
+          event,
+          from_status,
+          to_status,
+          note: note ?? null,
+          actor: user.id,
+          actor_name: actorName,
+        }),
+        supabase.from("entity_events").insert({
+          entity_type: "capa",
+          entity_id: capa_id,
+          event_type: event,
+          from_status,
+          to_status,
+          note: note ?? null,
+          actor: user.id,
+          actor_name: actorName,
+          payload: {} as never,
+        }),
+      ]);
     },
     [user, actorName],
   );
