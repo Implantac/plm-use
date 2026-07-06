@@ -234,96 +234,116 @@ function ProductionPage() {
                 </span>
               </div>
 
-              <div className="mt-4 space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Referências neste setor
-                </p>
-                {loteSelecionadoAtual.lote.referencias
-                  .filter(
-                    (r) => r.setor_atual === loteSelecionadoAtual.setor,
-                  )
-                  .map((r) => (
-                    <button
-                      key={r.ref}
-                      onClick={() => {
-                        setSelRef({
-                          loteNumero: loteSelecionadoAtual.lote.numero,
-                          ref: r,
-                        });
-                        setDrawerOpen(true);
-                      }}
-                      className="w-full text-left rounded-md border border-white/10 bg-white/[0.04] p-3 hover:border-primary/40 hover:bg-white/[0.07] transition"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
-                            {r.ref}
-                          </p>
-                          <p className="text-sm font-bold text-white">
-                            {r.nome}
-                          </p>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className={`text-[9px] ${
-                            r.status === "Concluído"
-                              ? "border-emerald-400/40 text-emerald-300"
-                              : r.status === "Ocorrência"
-                                ? "border-rose-400/40 text-rose-300"
-                                : "border-white/20"
-                          }`}
-                        >
-                          {r.status}
-                        </Badge>
-                      </div>
-                      <div className="mt-2 grid grid-cols-4 gap-2 text-center text-[10px]">
-                        <Mini label="Prog" v={r.qtd_programada} />
-                        <Mini
-                          label="Saldo"
-                          v={saldoReferencia(r)}
-                          tone="primary"
-                        />
-                        <Mini label="Feito" v={r.qtd_produzida} tone="pos" />
-                        <Mini
-                          label="Perda"
-                          v={r.qtd_perdida}
-                          tone={r.qtd_perdida ? "neg" : undefined}
-                        />
-                      </div>
-                    </button>
-                  ))}
+              <Tabs defaultValue="refs" className="mt-4">
+                <TabsList className="bg-white/[0.04] border border-white/10">
+                  <TabsTrigger value="refs" className="text-[10px] gap-1">
+                    <LayoutGrid className="h-3 w-3" /> Referências
+                  </TabsTrigger>
+                  <TabsTrigger value="timeline" className="text-[10px] gap-1">
+                    <History className="h-3 w-3" /> Timeline
+                  </TabsTrigger>
+                </TabsList>
 
-                {loteSelecionadoAtual.lote.referencias.filter(
-                  (r) => r.setor_atual !== loteSelecionadoAtual.setor,
-                ).length > 0 && (
-                  <>
-                    <p className="pt-3 text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Outras referências do lote (em outros setores)
+                <TabsContent value="refs" className="mt-3">
+                  <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Referências neste setor
                     </p>
                     {loteSelecionadoAtual.lote.referencias
                       .filter(
-                        (r) =>
-                          r.setor_atual !== loteSelecionadoAtual.setor,
+                        (r) => r.setor_atual === loteSelecionadoAtual.setor,
                       )
                       .map((r) => (
-                        <div
+                        <button
                           key={r.ref}
-                          className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-[11px] flex justify-between"
+                          onClick={() => {
+                            setSelRef({
+                              loteNumero: loteSelecionadoAtual.lote.numero,
+                              ref: r,
+                            });
+                            setDrawerOpen(true);
+                          }}
+                          className="w-full text-left rounded-md border border-white/10 bg-white/[0.04] p-3 hover:border-primary/40 hover:bg-white/[0.07] transition"
                         >
-                          <span>
-                            <span className="text-primary font-bold">
-                              {r.ref}
-                            </span>{" "}
-                            — {r.nome}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {r.setor_atual}
-                          </span>
-                        </div>
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                                {r.ref}
+                              </p>
+                              <p className="text-sm font-bold text-white">
+                                {r.nome}
+                              </p>
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className={`text-[9px] ${
+                                r.status === "Concluído"
+                                  ? "border-emerald-400/40 text-emerald-300"
+                                  : r.status === "Ocorrência"
+                                    ? "border-rose-400/40 text-rose-300"
+                                    : "border-white/20"
+                              }`}
+                            >
+                              {r.status}
+                            </Badge>
+                          </div>
+                          <div className="mt-2 grid grid-cols-4 gap-2 text-center text-[10px]">
+                            <Mini label="Prog" v={r.qtd_programada} />
+                            <Mini
+                              label="Saldo"
+                              v={saldoReferencia(r)}
+                              tone="primary"
+                            />
+                            <Mini label="Feito" v={r.qtd_produzida} tone="pos" />
+                            <Mini
+                              label="Perda"
+                              v={r.qtd_perdida}
+                              tone={r.qtd_perdida ? "neg" : undefined}
+                            />
+                          </div>
+                        </button>
                       ))}
-                  </>
-                )}
-              </div>
+
+                    {loteSelecionadoAtual.lote.referencias.filter(
+                      (r) => r.setor_atual !== loteSelecionadoAtual.setor,
+                    ).length > 0 && (
+                      <>
+                        <p className="pt-3 text-[10px] uppercase tracking-wider text-muted-foreground">
+                          Outras referências do lote (em outros setores)
+                        </p>
+                        {loteSelecionadoAtual.lote.referencias
+                          .filter(
+                            (r) =>
+                              r.setor_atual !== loteSelecionadoAtual.setor,
+                          )
+                          .map((r) => (
+                            <div
+                              key={r.ref}
+                              className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-[11px] flex justify-between"
+                            >
+                              <span>
+                                <span className="text-primary font-bold">
+                                  {r.ref}
+                                </span>{" "}
+                                — {r.nome}
+                              </span>
+                              <span className="text-muted-foreground">
+                                {r.setor_atual}
+                              </span>
+                            </div>
+                          ))}
+                      </>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="timeline" className="mt-3">
+                  <div className="max-h-[460px] overflow-y-auto pr-1">
+                    <LoteTimeline lote={loteSelecionadoAtual.lote} />
+                  </div>
+                </TabsContent>
+              </Tabs>
+
             </>
           )}
         </DialogContent>
