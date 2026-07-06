@@ -145,11 +145,49 @@ export function useReferences() {
   );
 
   const transition = useCallback(
-    async (ref: ReferenceRow, to: ReferenceStatus) => {
+    async (ref: ReferenceRow, to: ReferenceStatus, note?: string) => {
       if (!canTransition(ref.status, to)) return false;
-      return update(ref.id, { status: to });
+      const ok = await update(ref.id, { status: to });
+      if (!ok) return false;
+
+      // Registra evento de negócio (adicional ao trigger de status_change)
+      if (user) {
+        await supabase.from("entity_events").insert({
+          entity_type: "reference",
+          entity_id: ref.id,
+          event_type: "workflow_transition",
+          from_status: ref.status,
+          to_status: to,
+          note: note ?? null,
+          actor: user.id,
+          actor_name:
+            (user.user_metadata?.full_name as string | undefined) ??
+            user.email ??
+            null,
+          payload: { code: ref.code } as never,
+        });
+      }
+
+      // Workflow automático: APROVACAO → ENGENHARIA (piloto aprovado abre engenharia)
+      if (to === "APROVACAO" && (transitionsMap.get("APROVACAO") ?? []).includes("ENGENHARIA")) {
+        await update(ref.id, { status: "ENGENHARIA" });
+        if (user) {
+          await supabase.from("entity_events").insert({
+            entity_type: "reference",
+            entity_id: ref.id,
+            event_type: "auto_workflow",
+            from_status: "APROVACAO",
+            to_status: "ENGENHARIA",
+            note: "Piloto aprovado — engenharia aberta automaticamente",
+            actor: user.id,
+            actor_name: null,
+            payload: { rule: "aprovacao_to_engenharia" } as never,
+          });
+        }
+      }
+      return true;
     },
-    [canTransition, update],
+    [canTransition, update, transitionsMap, user],
   );
 
   const upsertByCode = useCallback(
