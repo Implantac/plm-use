@@ -53,6 +53,50 @@ export type Database = {
         }
         Relationships: []
       }
+      capa_events: {
+        Row: {
+          actor: string | null
+          actor_name: string | null
+          capa_id: string
+          created_at: string
+          event: string
+          from_status: string | null
+          id: string
+          note: string | null
+          to_status: string | null
+        }
+        Insert: {
+          actor?: string | null
+          actor_name?: string | null
+          capa_id: string
+          created_at?: string
+          event: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status?: string | null
+        }
+        Update: {
+          actor?: string | null
+          actor_name?: string | null
+          capa_id?: string
+          created_at?: string
+          event?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capa_events_capa_id_fkey"
+            columns: ["capa_id"]
+            isOneToOne: false
+            referencedRelation: "quality_capa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           created_at: string
@@ -321,54 +365,95 @@ export type Database = {
       }
       quality_capa: {
         Row: {
+          acao_corretiva: string | null
+          acao_imediata: string | null
+          acao_preventiva: string | null
+          causa_raiz: string | null
+          cinco_porques: Json
           created_at: string
           created_by: string | null
           criada: string
           defeito: string
+          eficacia: string | null
+          evidencias: Json
           fornecedor: string | null
           id: string
           lote: string | null
           prazo: string | null
           ref: string | null
+          reincidencia_de: string | null
           responsavel: string
           setor: string
+          severidade: string
           status: string
           tipo: string
           updated_at: string
+          verificado_em: string | null
+          verificado_por: string | null
         }
         Insert: {
+          acao_corretiva?: string | null
+          acao_imediata?: string | null
+          acao_preventiva?: string | null
+          causa_raiz?: string | null
+          cinco_porques?: Json
           created_at?: string
           created_by?: string | null
           criada?: string
           defeito: string
+          eficacia?: string | null
+          evidencias?: Json
           fornecedor?: string | null
           id?: string
           lote?: string | null
           prazo?: string | null
           ref?: string | null
+          reincidencia_de?: string | null
           responsavel: string
           setor: string
+          severidade?: string
           status?: string
           tipo: string
           updated_at?: string
+          verificado_em?: string | null
+          verificado_por?: string | null
         }
         Update: {
+          acao_corretiva?: string | null
+          acao_imediata?: string | null
+          acao_preventiva?: string | null
+          causa_raiz?: string | null
+          cinco_porques?: Json
           created_at?: string
           created_by?: string | null
           criada?: string
           defeito?: string
+          eficacia?: string | null
+          evidencias?: Json
           fornecedor?: string | null
           id?: string
           lote?: string | null
           prazo?: string | null
           ref?: string | null
+          reincidencia_de?: string | null
           responsavel?: string
           setor?: string
+          severidade?: string
           status?: string
           tipo?: string
           updated_at?: string
+          verificado_em?: string | null
+          verificado_por?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "quality_capa_reincidencia_de_fkey"
+            columns: ["reincidencia_de"]
+            isOneToOne: false
+            referencedRelation: "quality_capa"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tech_sheets: {
         Row: {
