@@ -34,6 +34,8 @@ import {
   type CapaSeveridade,
   type CapaStatus,
 } from "@/hooks/use-capa";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
+import { Network } from "lucide-react";
 
 const STATUS_STYLES: Record<CapaStatus, string> = {
   Aberta: "bg-sky-500/15 text-sky-300 border-sky-400/30",
