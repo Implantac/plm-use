@@ -267,7 +267,7 @@ export function useCapa() {
   const transition = useCallback(
     async (capa: Capa, to: CapaStatus, note?: string) => {
       if (!canTransition(capa.status, to)) return false;
-      const patch: Record<string, unknown> = { status: to };
+      const patch: CapaUpdate = { status: to };
       if (to === "Concluída") {
         patch.verificado_em = new Date().toISOString();
         patch.verificado_por = user?.id ?? null;
@@ -286,7 +286,7 @@ export function useCapa() {
 
   const update = useCallback(
     async (id: string, patch: Partial<Capa>, note?: string) => {
-      const remap: Record<string, unknown> = {};
+      const remap: CapaUpdate = {};
       const keys = [
         "responsavel",
         "prazo",
