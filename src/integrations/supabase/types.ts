@@ -139,6 +139,87 @@ export type Database = {
         }
         Relationships: []
       }
+      entity_events: {
+        Row: {
+          actor: string | null
+          actor_name: string | null
+          created_at: string
+          entity_id: string
+          entity_type: Database["public"]["Enums"]["entity_type"]
+          event_type: string
+          from_status: string | null
+          id: string
+          note: string | null
+          payload: Json
+          to_status: string | null
+        }
+        Insert: {
+          actor?: string | null
+          actor_name?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: Database["public"]["Enums"]["entity_type"]
+          event_type: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          payload?: Json
+          to_status?: string | null
+        }
+        Update: {
+          actor?: string | null
+          actor_name?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: Database["public"]["Enums"]["entity_type"]
+          event_type?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          payload?: Json
+          to_status?: string | null
+        }
+        Relationships: []
+      }
+      entity_relations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          from_id: string
+          from_type: Database["public"]["Enums"]["entity_type"]
+          id: string
+          metadata: Json
+          relation: string
+          to_external_id: string | null
+          to_id: string | null
+          to_type: Database["public"]["Enums"]["entity_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          from_id: string
+          from_type: Database["public"]["Enums"]["entity_type"]
+          id?: string
+          metadata?: Json
+          relation: string
+          to_external_id?: string | null
+          to_id?: string | null
+          to_type: Database["public"]["Enums"]["entity_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          from_id?: string
+          from_type?: Database["public"]["Enums"]["entity_type"]
+          id?: string
+          metadata?: Json
+          relation?: string
+          to_external_id?: string | null
+          to_id?: string | null
+          to_type?: Database["public"]["Enums"]["entity_type"]
+        }
+        Relationships: []
+      }
       influencers: {
         Row: {
           created_at: string
@@ -455,6 +536,105 @@ export type Database = {
           },
         ]
       }
+      reference_transitions: {
+        Row: {
+          created_at: string
+          from_status: Database["public"]["Enums"]["reference_status"]
+          id: string
+          is_active: boolean
+          requires_checklist: Json
+          requires_role: string | null
+          to_status: Database["public"]["Enums"]["reference_status"]
+        }
+        Insert: {
+          created_at?: string
+          from_status: Database["public"]["Enums"]["reference_status"]
+          id?: string
+          is_active?: boolean
+          requires_checklist?: Json
+          requires_role?: string | null
+          to_status: Database["public"]["Enums"]["reference_status"]
+        }
+        Update: {
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["reference_status"]
+          id?: string
+          is_active?: boolean
+          requires_checklist?: Json
+          requires_role?: string | null
+          to_status?: Database["public"]["Enums"]["reference_status"]
+        }
+        Relationships: []
+      }
+      references: {
+        Row: {
+          code: string
+          collection_id: string | null
+          created_at: string
+          created_by: string | null
+          designer_id: string | null
+          erp_product_id: string | null
+          id: string
+          image_url: string | null
+          line: string | null
+          metadata: Json
+          modelista_id: string | null
+          name: string
+          priority: Database["public"]["Enums"]["reference_priority"]
+          season: string | null
+          status: Database["public"]["Enums"]["reference_status"]
+          target_cost: number | null
+          target_price: number | null
+          theme: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          collection_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          designer_id?: string | null
+          erp_product_id?: string | null
+          id?: string
+          image_url?: string | null
+          line?: string | null
+          metadata?: Json
+          modelista_id?: string | null
+          name: string
+          priority?: Database["public"]["Enums"]["reference_priority"]
+          season?: string | null
+          status?: Database["public"]["Enums"]["reference_status"]
+          target_cost?: number | null
+          target_price?: number | null
+          theme?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          collection_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          designer_id?: string | null
+          erp_product_id?: string | null
+          id?: string
+          image_url?: string | null
+          line?: string | null
+          metadata?: Json
+          modelista_id?: string | null
+          name?: string
+          priority?: Database["public"]["Enums"]["reference_priority"]
+          season?: string | null
+          status?: Database["public"]["Enums"]["reference_status"]
+          target_cost?: number | null
+          target_price?: number | null
+          theme?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       tech_sheets: {
         Row: {
           bom: Json
@@ -514,6 +694,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_transition_reference: {
+        Args: {
+          _from: Database["public"]["Enums"]["reference_status"]
+          _to: Database["public"]["Enums"]["reference_status"]
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -524,6 +711,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "manager" | "operator" | "viewer"
+      entity_type:
+        | "reference"
+        | "lote"
+        | "tech_sheet"
+        | "piloto"
+        | "capa"
+        | "engenharia"
+        | "facao_order"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -533,6 +728,18 @@ export type Database = {
         | "cancelado"
       occurrence_severity: "info" | "warning" | "critical"
       occurrence_status: "aberta" | "em_tratativa" | "resolvida"
+      reference_priority: "BAIXA" | "MEDIA" | "ALTA" | "URGENTE"
+      reference_status:
+        | "IDEIA"
+        | "CROQUI"
+        | "MODELAGEM"
+        | "PILOTO"
+        | "AJUSTE"
+        | "APROVACAO"
+        | "ENGENHARIA"
+        | "PRODUCAO"
+        | "FINALIZADA"
+        | "ARQUIVADA"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -661,6 +868,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "manager", "operator", "viewer"],
+      entity_type: [
+        "reference",
+        "lote",
+        "tech_sheet",
+        "piloto",
+        "capa",
+        "engenharia",
+        "facao_order",
+      ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [
         "planejado",
@@ -671,6 +887,19 @@ export const Constants = {
       ],
       occurrence_severity: ["info", "warning", "critical"],
       occurrence_status: ["aberta", "em_tratativa", "resolvida"],
+      reference_priority: ["BAIXA", "MEDIA", "ALTA", "URGENTE"],
+      reference_status: [
+        "IDEIA",
+        "CROQUI",
+        "MODELAGEM",
+        "PILOTO",
+        "AJUSTE",
+        "APROVACAO",
+        "ENGENHARIA",
+        "PRODUCAO",
+        "FINALIZADA",
+        "ARQUIVADA",
+      ],
     },
   },
 } as const
