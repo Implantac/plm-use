@@ -303,7 +303,9 @@ export function useCapa() {
         "setor",
         "defeito",
       ] as const;
-      for (const k of keys) if (k in patch) remap[k] = patch[k as keyof Capa];
+      for (const k of keys)
+        if (k in patch)
+          (remap as Record<string, unknown>)[k] = patch[k as keyof Capa];
       if (Object.keys(remap).length === 0) return true;
       const { error } = await supabase
         .from("quality_capa")
