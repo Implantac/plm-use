@@ -76,6 +76,21 @@ function renderMessage(msg: string) {
   );
 }
 
+function extOf(name: string) {
+  const i = name.lastIndexOf(".");
+  return i >= 0 ? name.slice(i + 1).toLowerCase() : "";
+}
+
+function isImageAttachment(a: { mime_type: string | null; file_name: string }) {
+  if (a.mime_type?.startsWith("image/")) return true;
+  return ["png", "jpg", "jpeg", "webp", "gif", "avif", "svg"].includes(extOf(a.file_name));
+}
+
+function isPdfAttachment(a: { mime_type: string | null; file_name: string }) {
+  if (a.mime_type === "application/pdf") return true;
+  return extOf(a.file_name) === "pdf";
+}
+
 async function downloadAttachment(storage_path: string, file_name: string) {
   const { data, error } = await supabase.storage
     .from(BUCKET)
