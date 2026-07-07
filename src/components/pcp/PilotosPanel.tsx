@@ -2,13 +2,12 @@
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
 import { useEffect, useState } from "react";
-import { Plus, Loader2, Camera } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2, Camera } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { usePilotos, useCreatePiloto } from "@/hooks/use-pilotos";
+import { usePilotos } from "@/hooks/use-pilotos";
 import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
-import { toast } from "sonner";
+import { NovoPilotoDialog } from "./NovoPilotoDialog";
 
 interface Props {
   referenciaRef: string;
@@ -18,7 +17,6 @@ interface Props {
 export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   const [referenceId, setReferenceId] = useState<string | null>(null);
   const [resolving, setResolving] = useState(true);
-  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,20 +37,6 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   }, [referenciaRef]);
 
   const { items, loading, refetch } = usePilotos(referenceId ?? undefined);
-  const { create } = useCreatePiloto();
-
-  const handleCreate = async () => {
-    if (!referenceId) return;
-    setCreating(true);
-    const p = await create({ reference_id: referenceId, tipo: "prova" });
-    setCreating(false);
-    if (p) {
-      toast.success(`Piloto rodada ${p.rodada} criado`);
-      await refetch();
-    } else {
-      toast.error("Falha ao criar piloto");
-    }
-  };
 
   if (resolving) {
     return (
@@ -83,21 +67,13 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             {items.length} rodada{items.length === 1 ? "" : "s"}
           </p>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleCreate}
-          disabled={creating}
-          className="gap-1 h-8"
-        >
-          {creating ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          ) : (
-            <Plus className="h-3 w-3" />
-          )}
-          Novo piloto
-        </Button>
+        <NovoPilotoDialog
+          referenceId={referenceId}
+          referenciaNome={referenciaNome}
+          onCreated={() => void refetch()}
+        />
       </div>
+
 
       {loading ? (
         <div className="flex items-center gap-2 text-[11px] text-muted-foreground">

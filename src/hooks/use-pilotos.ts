@@ -53,6 +53,7 @@ export function useCreatePiloto() {
       supplier_id?: string | null;
       tipo?: string;
       rodada?: number;
+      status?: string;
       observacoes?: string | null;
     }): Promise<Piloto | null> => {
       if (!user) return null;
@@ -78,7 +79,7 @@ export function useCreatePiloto() {
           supplier_id: input.supplier_id ?? null,
           tipo: input.tipo ?? "prova",
           rodada,
-          status: "RASCUNHO",
+          status: input.status ?? "RASCUNHO",
           observacoes: input.observacoes ?? null,
           created_by: user.id,
           updated_by: user.id,
@@ -90,6 +91,7 @@ export function useCreatePiloto() {
     },
     [user],
   );
+
 
   return { create };
 }
