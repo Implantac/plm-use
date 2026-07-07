@@ -79,7 +79,7 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     }
     for (const p of PATHS) {
       render(
-        <AttachmentItem attachment={img(p, p.split("/")[1])} canRemove={false} onRemove={() => {}} />,
+        <AttachmentItem attachment={img(p, p.replace("/", "-"))} canRemove={false} onRemove={() => {}} />,
       );
     }
     await flush();
@@ -142,7 +142,7 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     }
 
     // 4) Cada item exibe a URL do seu próprio path — todas distintas.
-    const imgs = PATHS.map((p) => screen.getByAltText(`${p.split("/")[1]}`));
+    const imgs = PATHS.map((p) => screen.getByAltText(`${p.replace("/", "-")}`));
     const srcs = imgs.map((el) => el.getAttribute("src"));
     for (let i = 0; i < PATHS.length; i++) {
       expect(srcs[i]).toMatch(new RegExp(`^https://signed\\.test/${PATHS[i]}\\?v=\\d+$`));
@@ -153,7 +153,7 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     const callsAfterRetry = createSignedUrl.mock.calls.length;
     for (const p of PATHS) {
       render(
-        <AttachmentItem attachment={img(p, `${p.split("/")[1]}-b`)} canRemove={false} onRemove={() => {}} />,
+        <AttachmentItem attachment={img(p, `${p.replace("/", "-")}-b`)} canRemove={false} onRemove={() => {}} />,
       );
     }
     await flush();
