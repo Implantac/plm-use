@@ -12,7 +12,7 @@
 4. **Toda ação gera evento.** Timeline, dashboard, BI e IA se alimentam de `entity_events` (V7).
 5. **Nenhuma tela é pronta** sem passar no Quality Gate (V12).
 
-## Os 13 Volumes
+## Os 14 Volumes
 
 | # | Volume | Estado | Arquivo |
 |---|--------|--------|---------|
@@ -29,8 +29,16 @@
 | 11 | IA Industrial | 🟠 3 agentes, sem contexto de eventos | [11-ai-industrial.md](./11-ai-industrial.md) |
 | 12 | Quality Assurance | 🔴 checklist não formalizado | [12-quality-assurance.md](./12-quality-assurance.md) |
 | 13 | Software House (Design Review) | 🟢 constituição escrita | [13-software-house.md](./13-software-house.md) |
+| 14 | Competitive Intelligence | 🟢 protocolo escrito | [14-competitive-intelligence.md](./14-competitive-intelligence.md) |
 
 Legenda: 🟢 pronto · 🟡 parcial · 🟠 gap significativo · 🔴 inexistente
+
+## Handbook (metodologia técnica)
+
+O FPEF é a **constituição** (o que é o produto). O
+[**Fashion PLM Enterprise Engineering Handbook**](../01-handbook/README.md)
+é o **método** (como se constrói cada pedaço) — ~100 documentos em 10 séries,
+independente de tecnologia.
 
 ## Como usar
 
