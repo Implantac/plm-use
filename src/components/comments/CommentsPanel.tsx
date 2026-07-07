@@ -374,32 +374,14 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                   </p>
                 )}
                 {atts.length > 0 && (
-                  <ul className="mt-1.5 space-y-1">
+                  <ul className="mt-1.5 space-y-1.5">
                     {atts.map((a) => (
-                      <li
+                      <AttachmentItem
                         key={a.id}
-                        className="flex items-center gap-2 rounded border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-white/80"
-                      >
-                        <FileText className="w-3 h-3 text-primary shrink-0" />
-                        <span className="truncate flex-1">{a.file_name}</span>
-                        <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(a.size_bytes)}</span>
-                        <button
-                          onClick={() => void downloadAttachment(a.storage_path, a.file_name)}
-                          className="text-muted-foreground hover:text-primary"
-                          aria-label="Baixar anexo"
-                        >
-                          <Download className="w-3 h-3" />
-                        </button>
-                        {a.uploaded_by === user?.id && (
-                          <button
-                            onClick={() => void removeAttachment(a)}
-                            className="text-muted-foreground hover:text-rose-400"
-                            aria-label="Remover anexo"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </li>
+                        attachment={a}
+                        canRemove={a.uploaded_by === user?.id}
+                        onRemove={() => void removeAttachment(a)}
+                      />
                     ))}
                   </ul>
                 )}
