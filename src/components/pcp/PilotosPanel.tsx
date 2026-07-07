@@ -2,13 +2,12 @@
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
 import { useEffect, useState } from "react";
-import { Plus, Loader2, Camera } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2, Camera } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { usePilotos, useCreatePiloto } from "@/hooks/use-pilotos";
+import { usePilotos } from "@/hooks/use-pilotos";
 import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
-import { toast } from "sonner";
+import { NovoPilotoDialog } from "./NovoPilotoDialog";
 
 interface Props {
   referenciaRef: string;
