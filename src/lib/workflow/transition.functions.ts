@@ -88,7 +88,7 @@ export const performTransition = createServerFn({ method: "POST" })
 
     // 3. Registrar evento status_changed (references já loga via trigger — evitar duplicar)
     let event_id: string | undefined;
-    if (data.entity_type !== "reference") {
+    if (data.entity_type !== "reference" && data.entity_type !== "piloto") {
       const actorName =
         (claims as { name?: string; email?: string } | null)?.name ??
         (claims as { email?: string } | null)?.email ??
