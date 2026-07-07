@@ -91,15 +91,17 @@ function isPdfAttachment(a: { mime_type: string | null; file_name: string }) {
   return extOf(a.file_name) === "pdf";
 }
 
-async function downloadAttachment(storage_path: string, file_name: string) {
+async function downloadAttachment(storage_path: string, file_name: string): Promise<string | null> {
   const { data, error } = await supabase.storage
     .from(BUCKET)
     .createSignedUrl(storage_path, 60, { download: file_name });
   if (error || !data?.signedUrl) {
-    toast.error(error?.message ?? "Falha ao gerar link de download");
-    return;
+    const msg = error?.message ?? "Falha ao gerar link de download";
+    toast.error(msg);
+    return msg;
   }
   window.open(data.signedUrl, "_blank");
+  return null;
 }
 
 interface Props {
