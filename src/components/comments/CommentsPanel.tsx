@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Send, Trash2, Loader2, MessageSquare, Pencil, History, X, Check,
-  Paperclip, Download, FileText,
+  Paperclip, Download, FileText, Image as ImageIcon, Maximize2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
