@@ -626,18 +626,20 @@ function AttachmentItem({
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
+  const isImage = isImageAttachment(attachment);
+  const isPdf = isPdfAttachment(attachment);
+  const previewable = isImage || isPdf;
+
   const loadPreview = () => {
     setError(null);
     setLoading(true);
-    void supabase.storage
-      .from(BUCKET)
-      .createSignedUrl(attachment.storage_path, 3600)
-      .then(({ data, error }) => {
-        if (error || !data?.signedUrl) {
-          setError(error?.message ?? "Falha ao carregar prévia");
-        } else {
-          setSignedUrl(data.signedUrl);
-        }
+    getPreviewUrl(attachment.storage_path)
+      .then((url) => {
+        setSignedUrl(url);
+        setLoading(false);
+      })
+      .catch((e: unknown) => {
+        setError(e instanceof Error ? e.message : "Falha ao carregar prévia");
         setLoading(false);
       });
   };
@@ -650,25 +652,20 @@ function AttachmentItem({
     if (err) setDownloadError(err);
   };
 
-  const isImage = isImageAttachment(attachment);
-  const isPdf = isPdfAttachment(attachment);
-  const previewable = isImage || isPdf;
-
   useEffect(() => {
     if (!previewable) return;
     let cancelled = false;
     setError(null);
     setLoading(true);
-    void supabase.storage
-      .from(BUCKET)
-      .createSignedUrl(attachment.storage_path, 3600)
-      .then(({ data, error }) => {
+    getPreviewUrl(attachment.storage_path)
+      .then((url) => {
         if (cancelled) return;
-        if (error || !data?.signedUrl) {
-          setError(error?.message ?? "Falha ao carregar prévia");
-        } else {
-          setSignedUrl(data.signedUrl);
-        }
+        setSignedUrl(url);
+        setLoading(false);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : "Falha ao carregar prévia");
         setLoading(false);
       });
     return () => {
