@@ -97,6 +97,41 @@ export type Database = {
           },
         ]
       }
+      comment_revisions: {
+        Row: {
+          comment_id: string
+          edited_at: string
+          edited_by: string | null
+          id: string
+          previous_mentions: string[]
+          previous_message: string
+        }
+        Insert: {
+          comment_id: string
+          edited_at?: string
+          edited_by?: string | null
+          id?: string
+          previous_mentions?: string[]
+          previous_message: string
+        }
+        Update: {
+          comment_id?: string
+          edited_at?: string
+          edited_by?: string | null
+          id?: string
+          previous_mentions?: string[]
+          previous_message?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_revisions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           created_at: string
