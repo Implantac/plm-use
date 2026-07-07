@@ -7,6 +7,11 @@
 
 ---
 
+> **Fronteira PLM × ERP** — este playbook herda o bloco canônico do
+> `H9-00-template.md` (§ Fronteira PLM × ERP). PLM modela/decide/rastreia;
+> ERP executa/contabiliza. Toda leitura/escrita de estoque, PO, NF, custo,
+> preço e financeiro passa por `ErpAdapter` (H6-02), nunca tabela local.
+
 ## 0. Identificação
 
 - **Elo da cadeia (V2):** Referência → **Modelagem (molde-mãe → graduação →
