@@ -70,6 +70,13 @@ async function advance(ms: number) {
   });
 }
 
+async function flush() {
+  await act(async () => {
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+  });
+}
+
+
 describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
   it("dentro do TTL reutiliza; após TTL - margem, o clique em prévia gera novo createSignedUrl", async () => {
     const onRemove = vi.fn();
