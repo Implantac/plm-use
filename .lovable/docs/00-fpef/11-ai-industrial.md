@@ -15,13 +15,14 @@ Não é chatbot. É **Diretor Industrial** — responde com dados reais do PLM +
 - Rota: `src/routes/_authenticated.ai-agents.tsx`, `_authenticated.ai-center.tsx`
 - Modelo padrão: `google/gemini-3-flash-preview` via Lovable AI Gateway
 - Chave: `LOVABLE_API_KEY` (server-only)
+- **Contexto ao vivo** de `entity_events` (últimas 72h, contadores + eventos recentes) via `src/lib/ai/live-context.functions.ts` — chamado automaticamente pela página antes de cada mensagem (V11 gap #1 parcialmente fechado)
 
 ## Gaps críticos
-- **Agente responde sem contexto real** — hoje só recebe `message` + `context` string manual.
-  Deveria automaticamente puxar: eventos recentes (`entity_events`), estado de lotes/refs, alertas ativos.
-- Sem tool calling — não consulta banco, não consulta ERP adapter
+- **Sem tool calling** — modelo não consulta banco por conta própria, só recebe snapshot pré-computado
+- Sem consulta a ERP adapter (V9) via ferramenta do modelo
 - Sem memória entre turnos
 - Sem "modo diretor" cross-agent (uma pergunta, três perspectivas)
+- Filtro de `entity_types` no live-context é fixo por perfil — poderia ser dinâmico
 
 ## Próxima onda proposta
 1. Adicionar `.middleware([requireSupabaseAuth])` nos agentes
