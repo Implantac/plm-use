@@ -16,12 +16,12 @@ implementa, testa, entrega e evolui cada pedaço do produto.
 
 | Série | Tema | Estado |
 |---|---|---|
-| **H0** | Fundamentos e princípios | 🟡 esqueleto |
-| **H1** | Discovery & Product Design | 🟡 esqueleto |
-| **H2** | Domain Modeling & Data | 🟡 esqueleto |
-| **H3** | Architecture & Backend | 🔴 planejado |
-| **H4** | Frontend & UX Engineering | 🔴 planejado |
-| **H5** | IA Industrial & Agentes | 🔴 planejado |
+| **H0** | Fundamentos e princípios | 🟢 pronto |
+| **H1** | Discovery & Product Design | 🟢 pronto |
+| **H2** | Domain Modeling & Data | 🟢 pronto |
+| **H3** | Architecture & Backend | 🟢 pronto |
+| **H4** | Frontend & UX Engineering | 🟢 pronto |
+| **H5** | IA Industrial & Agentes | 🟢 pronto |
 | **H6** | Integrações (ERP, CAD, e-commerce, terceiros) | 🔴 planejado |
 | **H7** | Qualidade, testes e observabilidade | 🔴 planejado |
 | **H8** | Operação, DevOps, segurança e compliance | 🔴 planejado |
