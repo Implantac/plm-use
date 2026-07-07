@@ -142,7 +142,7 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     }
 
     // 4) Cada item exibe a URL do seu próprio path — todas distintas.
-    const imgs = PATHS.map((p) => screen.getByAltText(`${p.replace("/", "-")}`));
+    const imgs = PATHS.map((p) => screen.getByAltText(`${p.replace("/", "-")}.png`));
     const srcs = imgs.map((el) => el.getAttribute("src"));
     for (let i = 0; i < PATHS.length; i++) {
       expect(srcs[i]).toMatch(new RegExp(`^https://signed\\.test/${PATHS[i]}\\?v=\\d+$`));
