@@ -493,6 +493,69 @@ export type Database = {
           },
         ]
       }
+      pilotos: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          foto_url: string | null
+          id: string
+          observacoes: string | null
+          reference_id: string
+          rodada: number
+          status: string
+          supplier_id: string | null
+          tech_sheet_id: string | null
+          tipo: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          foto_url?: string | null
+          id?: string
+          observacoes?: string | null
+          reference_id: string
+          rodada?: number
+          status?: string
+          supplier_id?: string | null
+          tech_sheet_id?: string | null
+          tipo?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          foto_url?: string | null
+          id?: string
+          observacoes?: string | null
+          reference_id?: string
+          rodada?: number
+          status?: string
+          supplier_id?: string | null
+          tech_sheet_id?: string | null
+          tipo?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilotos_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pilotos_tech_sheet_id_fkey"
+            columns: ["tech_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "tech_sheets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
