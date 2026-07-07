@@ -161,16 +161,15 @@ function isPdfAttachment(a: { mime_type: string | null; file_name: string }) {
 }
 
 async function downloadAttachment(storage_path: string, file_name: string): Promise<string | null> {
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(storage_path, 60, { download: file_name });
-  if (error || !data?.signedUrl) {
-    const msg = error?.message ?? "Falha ao gerar link de download";
+  try {
+    const url = await getDownloadUrl(storage_path, file_name);
+    window.open(url, "_blank");
+    return null;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Falha ao gerar link de download";
     toast.error(msg);
     return msg;
   }
-  window.open(data.signedUrl, "_blank");
-  return null;
 }
 
 interface Props {
