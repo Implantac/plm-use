@@ -18,17 +18,16 @@ usando o template canônico `H9-00-template.md`.
 | 02 | [Desenvolvimento](./H9-02-desenvolvimento.md) | Croqui → Referência → Piloto → Aprovação | 🟡 |
 | 03 | [Modelagem](./H9-03-modelagem.md) | Molde-mãe → Grade → Encaixe → Validação | 🟡 |
 | 04 | [Corte](./H9-04-corte.md) | Enfesto → Corte → Fardos etiquetados | 🟡 |
-| 05 | Engenharia de Produto | Engenharia (BOM/BOP/consumo) | 🔴 |
-| 06 | Compras & MRP | Compras | 🔴 |
-| 07 | Estoque & Recebimento | Estoque | 🔴 |
-| 08 | PCP & APS | Produção — planejamento | 🔴 |
-| 09 | Corte | Produção — corte | 🔴 |
-| 10 | Costura & Facções | Produção — costura | 🔴 |
-| 11 | Lavanderia & Acabamento | Produção — acabamento | 🔴 |
-| 12 | Qualidade & CAPA | Qualidade | 🔴 |
-| 13 | Mostruário & Comercial | Mostruário → Venda | 🔴 |
-| 14 | Expedição & Logística | Expedição | 🔴 |
-| 15 | Pós-venda & Aprendizado | Pós-venda + retro para V1 | 🔴 |
+| 05 | [Costura & Facções](./H9-05-costura-faccoes.md) | Distribuição → Passagens → Facção → Peças costuradas | 🟡 |
+| 06 | Lavanderia & Acabamento | Lavagem → Passadoria → Revisão → Embalagem | 🔴 |
+| 07 | Qualidade & CAPA | Inspeção final + ações corretivas | 🔴 |
+| 08 | PCP & APS | Planejamento / sequenciamento | 🔴 |
+| 09 | Engenharia de Produto | BOM / BOP / consumo | 🔴 |
+| 10 | Compras & MRP | Suprimentos | 🔴 |
+| 11 | Estoque & Recebimento | Almoxarifado | 🔴 |
+| 12 | Mostruário & Comercial | Mostruário → Venda | 🔴 |
+| 13 | Expedição & Logística | Expedição | 🔴 |
+| 14 | Pós-venda & Aprendizado | Pós-venda + retro para V1 | 🔴 |
 
 Legenda: 🔴 planejado · 🟡 parcial · 🟢 pronto
 
