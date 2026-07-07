@@ -20,7 +20,7 @@ usando o template canônico `H9-00-template.md`.
 | 04 | [Corte](./H9-04-corte.md) | Enfesto → Corte → Fardos etiquetados | 🟡 |
 | 05 | [Costura & Facções](./H9-05-costura-faccoes.md) | Distribuição → Passagens → Facção → Peças costuradas | 🟡 |
 | 06 | [Lavanderia & Acabamento](./H9-06-lavanderia-acabamento.md) | Lavagem → Passadoria → Revisão → Embalagem | 🟡 |
-| 07 | Qualidade & CAPA | Inspeção final + ações corretivas | 🔴 |
+| 07 | [Qualidade & CAPA](./H9-07-qualidade-capa.md) | Inspeção final + ações corretivas | 🟡 |
 | 08 | PCP & APS | Planejamento / sequenciamento | 🔴 |
 | 09 | Engenharia de Produto | BOM / BOP / consumo | 🔴 |
 | 10 | Compras & MRP | Suprimentos | 🔴 |
