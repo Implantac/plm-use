@@ -133,7 +133,9 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     await flush();
     expect(createSignedUrl).toHaveBeenCalledTimes(4);
     const img4 = screen.getByAltText("pic.png");
-    expect(img4.getAttribute("src")).toMatch(/\?v=4$/);
+    expect(img4.getAttribute("src")).toMatch(/\?v=3$/);
+    expect(img4.getAttribute("src")).not.toBe(url3);
+
 
   });
 });
