@@ -159,7 +159,7 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     await flush();
     expect(createSignedUrl.mock.calls.length).toBe(callsAfterRetry);
     for (let i = 0; i < PATHS.length; i++) {
-      const late = screen.getByAltText(`${PATHS[i].split("/")[1]}-b`);
+      const late = screen.getByAltText(`${PATHS[i].replace("/", "-")}-b.png`);
       expect(late.getAttribute("src")).toBe(srcs[i]);
     }
   });
