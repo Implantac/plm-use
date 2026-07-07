@@ -85,6 +85,29 @@ export function clearAttachmentUrlCache(storage_path?: string) {
   }
 }
 
+const CACHE_SWEEP_INTERVAL_MS = 60_000;
+
+function sweepExpiredCache() {
+  const now = Date.now();
+  for (const [k, v] of previewUrlCache) {
+    if (v.expiresAt - REFRESH_MARGIN_MS <= now) previewUrlCache.delete(k);
+  }
+  for (const [k, v] of downloadUrlCache) {
+    if (v.expiresAt - REFRESH_MARGIN_MS <= now) downloadUrlCache.delete(k);
+  }
+}
+
+if (typeof window !== "undefined") {
+  const w = window as Window & { __attachmentCacheSweeper?: number };
+  if (w.__attachmentCacheSweeper !== undefined) {
+    window.clearInterval(w.__attachmentCacheSweeper);
+  }
+  w.__attachmentCacheSweeper = window.setInterval(sweepExpiredCache, CACHE_SWEEP_INTERVAL_MS);
+  window.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") sweepExpiredCache();
+  });
+}
+
 export type CommentRow = {
   id: string;
   entity_type: string;
