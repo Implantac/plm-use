@@ -599,7 +599,7 @@ function HistoryButton({ commentId }: { commentId: string }) {
   );
 }
 
-function AttachmentItem({
+export function AttachmentItem({
   attachment,
   canRemove,
   onRemove,
