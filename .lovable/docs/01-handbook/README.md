@@ -25,7 +25,7 @@ implementa, testa, entrega e evolui cada pedaço do produto.
 | **H6** | Integrações (ERP, CAD, e-commerce, terceiros) | 🟢 pronto |
 | **H7** | Qualidade, testes e observabilidade | 🟢 pronto |
 | **H8** | Operação, DevOps, segurança e compliance | 🟢 pronto |
-| **H9** | Playbooks por processo de moda (cadeia produtiva) | 🔴 planejado |
+| **H9** | Playbooks por processo de moda (cadeia produtiva) | 🟡 template pronto |
 
 Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
 
