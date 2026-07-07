@@ -85,7 +85,8 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     const { unmount } = render(
       <AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />,
     );
-    const img1 = await screen.findByAltText("pic.png");
+    await flush();
+    const img1 = screen.getByAltText("pic.png");
     const url1 = img1.getAttribute("src");
     expect(url1).toMatch(/\?v=1$/);
     expect(createSignedUrl).toHaveBeenCalledTimes(1);
@@ -96,7 +97,8 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     // Reabre o anexo ("clicar em preview" novamente): cache HIT, mesma URL.
     unmount();
     render(<AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />);
-    const img2 = await screen.findByAltText("pic.png");
+    await flush();
+    const img2 = screen.getByAltText("pic.png");
     expect(img2.getAttribute("src")).toBe(url1);
     expect(createSignedUrl).toHaveBeenCalledTimes(1);
 
@@ -106,7 +108,8 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     // Novo "click em preview" (re-mount): cache MISS → novo createSignedUrl.
     cleanup();
     render(<AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />);
-    const img3 = await screen.findByAltText("pic.png");
+    await flush();
+    const img3 = screen.getByAltText("pic.png");
     const url3 = img3.getAttribute("src");
     expect(createSignedUrl).toHaveBeenCalledTimes(2);
     expect(url3).not.toBe(url1);
@@ -121,13 +124,16 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     await advance(PREVIEW_TTL_MS);
     cleanup();
     render(<AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />);
+    await flush();
 
-    const retry = await screen.findByRole("button", { name: /tentar novamente/i });
+    const retry = screen.getByRole("button", { name: /tentar novamente/i });
     expect(createSignedUrl).toHaveBeenCalledTimes(3);
 
     fireEvent.click(retry);
-    await waitFor(() => expect(createSignedUrl).toHaveBeenCalledTimes(4));
-    const img4 = await screen.findByAltText("pic.png");
+    await flush();
+    expect(createSignedUrl).toHaveBeenCalledTimes(4);
+    const img4 = screen.getByAltText("pic.png");
     expect(img4.getAttribute("src")).toMatch(/\?v=4$/);
+
   });
 });
