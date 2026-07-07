@@ -12,7 +12,7 @@
 4. **Toda ação gera evento.** Timeline, dashboard, BI e IA se alimentam de `entity_events` (V7).
 5. **Nenhuma tela é pronta** sem passar no Quality Gate (V12).
 
-## Os 12 Volumes
+## Os 13 Volumes
 
 | # | Volume | Estado | Arquivo |
 |---|--------|--------|---------|
@@ -28,6 +28,7 @@
 | 10 | BI | 🟡 telas soltas, sem catálogo de KPIs | [10-bi.md](./10-bi.md) |
 | 11 | IA Industrial | 🟠 3 agentes, sem contexto de eventos | [11-ai-industrial.md](./11-ai-industrial.md) |
 | 12 | Quality Assurance | 🔴 checklist não formalizado | [12-quality-assurance.md](./12-quality-assurance.md) |
+| 13 | Software House (Design Review) | 🟢 constituição escrita | [13-software-house.md](./13-software-house.md) |
 
 Legenda: 🟢 pronto · 🟡 parcial · 🟠 gap significativo · 🔴 inexistente
 
