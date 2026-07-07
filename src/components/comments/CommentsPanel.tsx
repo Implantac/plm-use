@@ -13,109 +13,47 @@ import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
 
+import { createSignedUrlCache } from "@/lib/attachments/signed-url-cache";
+
 const BUCKET = "use-moda-assets";
 const MAX_FILE_MB = 20;
 const PREVIEW_TTL = 3600;
 const DOWNLOAD_TTL = 60;
 const REFRESH_MARGIN_MS = 30_000;
-
-type CachedUrl = { url: string; expiresAt: number };
 const PREVIEW_CACHE_MAX = 200;
 const DOWNLOAD_CACHE_MAX = 100;
-const previewUrlCache = new Map<string, CachedUrl>();
-const downloadUrlCache = new Map<string, CachedUrl>();
-const inflightPreview = new Map<string, Promise<string>>();
-const inflightDownload = new Map<string, Promise<string>>();
+const CACHE_SWEEP_INTERVAL_MS = 60_000;
 
-function cacheHit(map: Map<string, CachedUrl>, key: string): string | null {
-  const hit = map.get(key);
-  if (hit && hit.expiresAt - REFRESH_MARGIN_MS > Date.now()) {
-    // Refresh LRU order: re-insert as most-recently used.
-    map.delete(key);
-    map.set(key, hit);
-    return hit.url;
-  }
-  if (hit) map.delete(key);
-  return null;
-}
-
-function cachePut(map: Map<string, CachedUrl>, key: string, value: CachedUrl, max: number) {
-  if (map.has(key)) map.delete(key);
-  map.set(key, value);
-  while (map.size > max) {
-    const oldest = map.keys().next().value;
-    if (oldest === undefined) break;
-    map.delete(oldest);
-  }
-}
-
-async function getPreviewUrl(storage_path: string): Promise<string> {
-  const cached = cacheHit(previewUrlCache, storage_path);
-  if (cached) return cached;
-  const existing = inflightPreview.get(storage_path);
-  if (existing) return existing;
-  const p = (async () => {
+const previewCache = createSignedUrlCache(
+  async (storage_path) => {
     const { data, error } = await supabase.storage
       .from(BUCKET)
       .createSignedUrl(storage_path, PREVIEW_TTL);
     if (error || !data?.signedUrl) throw new Error(error?.message ?? "Falha ao carregar prévia");
-    cachePut(
-      previewUrlCache,
-      storage_path,
-      { url: data.signedUrl, expiresAt: Date.now() + PREVIEW_TTL * 1000 },
-      PREVIEW_CACHE_MAX,
-    );
     return data.signedUrl;
-  })().finally(() => inflightPreview.delete(storage_path));
-  inflightPreview.set(storage_path, p);
-  return p;
-}
+  },
+  { ttlMs: PREVIEW_TTL * 1000, max: PREVIEW_CACHE_MAX, refreshMarginMs: REFRESH_MARGIN_MS },
+);
 
-async function getDownloadUrl(storage_path: string, file_name: string): Promise<string> {
-  const key = `${storage_path}::${file_name}`;
-  const cached = cacheHit(downloadUrlCache, key);
-  if (cached) return cached;
-  const existing = inflightDownload.get(key);
-  if (existing) return existing;
-  const p = (async () => {
+const downloadCache = createSignedUrlCache(
+  async (key) => {
+    const [storage_path, file_name] = key.split("::");
     const { data, error } = await supabase.storage
       .from(BUCKET)
       .createSignedUrl(storage_path, DOWNLOAD_TTL, { download: file_name });
     if (error || !data?.signedUrl) throw new Error(error?.message ?? "Falha ao gerar link de download");
-    cachePut(
-      downloadUrlCache,
-      key,
-      { url: data.signedUrl, expiresAt: Date.now() + DOWNLOAD_TTL * 1000 },
-      DOWNLOAD_CACHE_MAX,
-    );
     return data.signedUrl;
-  })().finally(() => inflightDownload.delete(key));
-  inflightDownload.set(key, p);
-  return p;
-}
+  },
+  { ttlMs: DOWNLOAD_TTL * 1000, max: DOWNLOAD_CACHE_MAX, refreshMarginMs: REFRESH_MARGIN_MS },
+);
+
+const getPreviewUrl = (storage_path: string) => previewCache.get(storage_path);
+const getDownloadUrl = (storage_path: string, file_name: string) =>
+  downloadCache.get(`${storage_path}::${file_name}`);
 
 export function clearAttachmentUrlCache(storage_path?: string) {
-  if (!storage_path) {
-    previewUrlCache.clear();
-    downloadUrlCache.clear();
-    return;
-  }
-  previewUrlCache.delete(storage_path);
-  for (const k of downloadUrlCache.keys()) {
-    if (k.startsWith(`${storage_path}::`)) downloadUrlCache.delete(k);
-  }
-}
-
-const CACHE_SWEEP_INTERVAL_MS = 60_000;
-
-function sweepExpiredCache() {
-  const now = Date.now();
-  for (const [k, v] of previewUrlCache) {
-    if (v.expiresAt - REFRESH_MARGIN_MS <= now) previewUrlCache.delete(k);
-  }
-  for (const [k, v] of downloadUrlCache) {
-    if (v.expiresAt - REFRESH_MARGIN_MS <= now) downloadUrlCache.delete(k);
-  }
+  previewCache.invalidate(storage_path);
+  downloadCache.invalidate(storage_path);
 }
 
 if (typeof window !== "undefined") {
@@ -123,9 +61,15 @@ if (typeof window !== "undefined") {
   if (w.__attachmentCacheSweeper !== undefined) {
     window.clearInterval(w.__attachmentCacheSweeper);
   }
-  w.__attachmentCacheSweeper = window.setInterval(sweepExpiredCache, CACHE_SWEEP_INTERVAL_MS);
+  w.__attachmentCacheSweeper = window.setInterval(() => {
+    previewCache.sweep();
+    downloadCache.sweep();
+  }, CACHE_SWEEP_INTERVAL_MS);
   window.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") sweepExpiredCache();
+    if (document.visibilityState === "visible") {
+      previewCache.sweep();
+      downloadCache.sweep();
+    }
   });
 }
 
