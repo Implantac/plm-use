@@ -20,6 +20,8 @@ const DOWNLOAD_TTL = 60;
 const REFRESH_MARGIN_MS = 30_000;
 
 type CachedUrl = { url: string; expiresAt: number };
+const PREVIEW_CACHE_MAX = 200;
+const DOWNLOAD_CACHE_MAX = 100;
 const previewUrlCache = new Map<string, CachedUrl>();
 const downloadUrlCache = new Map<string, CachedUrl>();
 const inflightPreview = new Map<string, Promise<string>>();
@@ -27,9 +29,24 @@ const inflightDownload = new Map<string, Promise<string>>();
 
 function cacheHit(map: Map<string, CachedUrl>, key: string): string | null {
   const hit = map.get(key);
-  if (hit && hit.expiresAt - REFRESH_MARGIN_MS > Date.now()) return hit.url;
+  if (hit && hit.expiresAt - REFRESH_MARGIN_MS > Date.now()) {
+    // Refresh LRU order: re-insert as most-recently used.
+    map.delete(key);
+    map.set(key, hit);
+    return hit.url;
+  }
   if (hit) map.delete(key);
   return null;
+}
+
+function cachePut(map: Map<string, CachedUrl>, key: string, value: CachedUrl, max: number) {
+  if (map.has(key)) map.delete(key);
+  map.set(key, value);
+  while (map.size > max) {
+    const oldest = map.keys().next().value;
+    if (oldest === undefined) break;
+    map.delete(oldest);
+  }
 }
 
 async function getPreviewUrl(storage_path: string): Promise<string> {
@@ -42,10 +59,12 @@ async function getPreviewUrl(storage_path: string): Promise<string> {
       .from(BUCKET)
       .createSignedUrl(storage_path, PREVIEW_TTL);
     if (error || !data?.signedUrl) throw new Error(error?.message ?? "Falha ao carregar prévia");
-    previewUrlCache.set(storage_path, {
-      url: data.signedUrl,
-      expiresAt: Date.now() + PREVIEW_TTL * 1000,
-    });
+    cachePut(
+      previewUrlCache,
+      storage_path,
+      { url: data.signedUrl, expiresAt: Date.now() + PREVIEW_TTL * 1000 },
+      PREVIEW_CACHE_MAX,
+    );
     return data.signedUrl;
   })().finally(() => inflightPreview.delete(storage_path));
   inflightPreview.set(storage_path, p);
@@ -63,10 +82,12 @@ async function getDownloadUrl(storage_path: string, file_name: string): Promise<
       .from(BUCKET)
       .createSignedUrl(storage_path, DOWNLOAD_TTL, { download: file_name });
     if (error || !data?.signedUrl) throw new Error(error?.message ?? "Falha ao gerar link de download");
-    downloadUrlCache.set(key, {
-      url: data.signedUrl,
-      expiresAt: Date.now() + DOWNLOAD_TTL * 1000,
-    });
+    cachePut(
+      downloadUrlCache,
+      key,
+      { url: data.signedUrl, expiresAt: Date.now() + DOWNLOAD_TTL * 1000 },
+      DOWNLOAD_CACHE_MAX,
+    );
     return data.signedUrl;
   })().finally(() => inflightDownload.delete(key));
   inflightDownload.set(key, p);
