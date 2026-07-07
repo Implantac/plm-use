@@ -97,12 +97,54 @@ export type Database = {
           },
         ]
       }
+      comment_attachments: {
+        Row: {
+          comment_id: string
+          created_at: string
+          file_name: string
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_attachments_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comment_revisions: {
         Row: {
           comment_id: string
           edited_at: string
           edited_by: string | null
           id: string
+          previous_attachments: Json
           previous_mentions: string[]
           previous_message: string
         }
@@ -111,6 +153,7 @@ export type Database = {
           edited_at?: string
           edited_by?: string | null
           id?: string
+          previous_attachments?: Json
           previous_mentions?: string[]
           previous_message: string
         }
@@ -119,6 +162,7 @@ export type Database = {
           edited_at?: string
           edited_by?: string | null
           id?: string
+          previous_attachments?: Json
           previous_mentions?: string[]
           previous_message?: string
         }
