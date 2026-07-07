@@ -589,6 +589,7 @@ function AttachmentItem({
   useEffect(() => {
     if (!previewable) return;
     let cancelled = false;
+    setError(null);
     setLoading(true);
     void supabase.storage
       .from(BUCKET)
@@ -612,13 +613,21 @@ function AttachmentItem({
       {previewable && (
         <div className="relative bg-black/40 border-b border-white/5">
           {loading && (
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center gap-1.5 h-32 text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-[9px] uppercase tracking-widest">Carregando prévia…</span>
             </div>
           )}
           {!loading && error && (
-            <div className="flex items-center justify-center h-20 text-[10px] text-rose-400 px-2 text-center">
-              {error}
+            <div className="flex flex-col items-center justify-center gap-1.5 h-24 px-3 text-center">
+              <span className="text-[10px] text-rose-400">{error}</span>
+              <button
+                type="button"
+                onClick={loadPreview}
+                className="text-[10px] uppercase tracking-widest text-primary hover:underline"
+              >
+                Tentar novamente
+              </button>
             </div>
           )}
           {!loading && !error && signedUrl && isImage && (
