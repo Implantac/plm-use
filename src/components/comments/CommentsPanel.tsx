@@ -364,6 +364,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
     await supabase.storage.from(BUCKET).remove([a.storage_path]);
     const { error } = await supabase.from("comment_attachments").delete().eq("id", a.id);
     if (error) toast.error(error.message);
+    clearAttachmentUrlCache(a.storage_path);
   };
 
   const startEdit = (c: CommentRow) => {
