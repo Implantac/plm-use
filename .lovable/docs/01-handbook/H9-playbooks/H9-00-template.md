@@ -7,6 +7,38 @@
 
 ---
 
+## Fronteira PLM × ERP (bloco fixo — não editar por playbook)
+
+O PLM **modela, decide e rastreia**. O ERP **executa e contabiliza**.
+Todo playbook H9 herda estas regras — quebrá-las é bug de escopo, não feature.
+
+- **Dentro do PLM:** referência, ficha técnica, coleção, workflow, evento,
+  CAPA, piloto, engenharia de produto, relações entre entidades, timeline,
+  comentários, decisão de qualidade, agentes IA.
+- **Fora do PLM (ERP, via `ErpAdapter` H6-02):** SKU mestre, saldo de
+  estoque, PO/pedido de compra, ordem de produção contábil, NF, cliente,
+  fornecedor cadastral, contas a pagar/receber, MRP, APS financeiro,
+  emissão fiscal, custo real, preço.
+- **Nunca duplicar tabela do ERP** em `public.*`. Guardamos apenas
+  `erp_id`, `erp_source`, `erp_synced_at` — cache ≤ 60s, sempre re-consulta.
+- **Escritas no ERP só via `ErpAdapter` e idempotentes** (`idempotency_key`
+  determinístico). PLM nunca é sistema de estoque, nunca soma saldo, nunca
+  emite documento fiscal.
+- **Campos proibidos** em qualquer `public.*` do PLM: `price`, `cost`,
+  `stock_qty`, `balance`, `ap_amount`, `ar_amount`, `nf_number`. Se
+  aparecerem, é bug de escopo — remover ou mover para leitura via adapter.
+- **Sem jobs de "sincronizar estoque a cada X min"** rodando em background
+  no PLM. Leitura sob demanda + cache curto; nunca espelhamento contínuo.
+- **Fonte da verdade:** desenvolvimento / qualidade / workflow / evento =
+  PLM. Quantidade / preço / estoque / fiscal / financeiro = ERP.
+- **Sinais de alerta** (revisar na hora): tabela nova espelhando entidade
+  ERP; cache de dado financeiro > 60s; tela do PLM editando saldo; server
+  fn que "recalcula custo"; cron de espelhamento.
+
+---
+
+
+
 ## 0. Identificação
 
 - **Elo da cadeia (V2):** <ex.: Pesquisa & Moodboard>
