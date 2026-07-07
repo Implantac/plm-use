@@ -1,12 +1,14 @@
 // Painel de comentários reutilizável, ancorado a qualquer (entity_type, entity_id).
 // Realtime via Supabase channel — mensagens novas aparecem ao vivo.
+// Suporta @mentions (dispara notificação via trigger) e histórico de edições.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Send, Trash2, Loader2, MessageSquare } from "lucide-react";
+import { Send, Trash2, Loader2, MessageSquare, Pencil, History, X, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
 
 export type CommentRow = {
@@ -19,6 +21,12 @@ export type CommentRow = {
   mentions: string[];
   edited: boolean;
   created_at: string;
+};
+
+type Revision = {
+  id: string;
+  previous_message: string;
+  edited_at: string;
 };
 
 function timeAgo(iso: string) {
@@ -60,6 +68,8 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -146,6 +156,32 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
     if (error) toast.error(error.message);
   };
 
+  const startEdit = (c: CommentRow) => {
+    setEditingId(c.id);
+    setEditDraft(c.message);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditDraft("");
+  };
+
+  const saveEdit = async (id: string) => {
+    if (!editDraft.trim()) return;
+    const { error } = await supabase
+      .from("comments")
+      .update({
+        message: editDraft.trim(),
+        mentions: extractMentions(editDraft),
+      })
+      .eq("id", id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    cancelEdit();
+  };
+
   return (
     <div
       className={`rounded-md border border-white/10 bg-white/[0.025] flex flex-col ${className ?? ""}`}
@@ -170,6 +206,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         )}
         {items.map((c) => {
           const mine = user?.id === c.user_id;
+          const isEditing = editingId === c.id;
           return (
             <div key={c.id} className="flex gap-3 group">
               <Avatar className="w-7 h-7 shrink-0">
@@ -181,20 +218,48 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                 <div className="flex items-baseline gap-2">
                   <span className="text-[11px] font-bold text-white">{c.user_name}</span>
                   <span className="text-[9px] text-muted-foreground">{timeAgo(c.created_at)}</span>
-                  {c.edited && <span className="text-[9px] text-muted-foreground italic">(editado)</span>}
+                  {c.edited && <HistoryButton commentId={c.id} />}
                 </div>
-                <p className="text-[12px] text-white/90 leading-snug mt-0.5 whitespace-pre-wrap break-words">
-                  {renderMessage(c.message)}
-                </p>
+                {isEditing ? (
+                  <div className="mt-1 space-y-1.5">
+                    <Textarea
+                      value={editDraft}
+                      onChange={(e) => setEditDraft(e.target.value)}
+                      rows={2}
+                      className="resize-none bg-white/5 border-white/10 text-[12px]"
+                    />
+                    <div className="flex gap-1.5">
+                      <Button size="sm" className="h-6 px-2 text-[10px]" onClick={() => void saveEdit(c.id)}>
+                        <Check className="w-3 h-3 mr-1" /> Salvar
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-6 px-2 text-[10px]" onClick={cancelEdit}>
+                        <X className="w-3 h-3 mr-1" /> Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-white/90 leading-snug mt-0.5 whitespace-pre-wrap break-words">
+                    {renderMessage(c.message)}
+                  </p>
+                )}
               </div>
-              {mine && (
-                <button
-                  onClick={() => void remove(c.id)}
-                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-rose-400 transition"
-                  aria-label="Apagar comentário"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+              {mine && !isEditing && (
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+                  <button
+                    onClick={() => startEdit(c)}
+                    className="text-muted-foreground hover:text-primary"
+                    aria-label="Editar comentário"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => void remove(c.id)}
+                    className="text-muted-foreground hover:text-rose-400"
+                    aria-label="Apagar comentário"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               )}
             </div>
           );
@@ -232,5 +297,59 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         </div>
       </div>
     </div>
+  );
+}
+
+function HistoryButton({ commentId }: { commentId: string }) {
+  const [revisions, setRevisions] = useState<Revision[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const load = async () => {
+    if (revisions !== null) return;
+    setLoading(true);
+    const { data } = await supabase
+      .from("comment_revisions")
+      .select("id, previous_message, edited_at")
+      .eq("comment_id", commentId)
+      .order("edited_at", { ascending: false });
+    setRevisions((data ?? []) as Revision[]);
+    setLoading(false);
+  };
+
+  return (
+    <Popover onOpenChange={(open) => open && void load()}>
+      <PopoverTrigger asChild>
+        <button
+          className="text-[9px] text-muted-foreground italic hover:text-primary inline-flex items-center gap-0.5"
+          aria-label="Ver histórico de edições"
+        >
+          <History className="w-2.5 h-2.5" />
+          (editado)
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-3 bg-background/95 border-white/10">
+        <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-white mb-2">
+          Histórico
+        </div>
+        {loading && (
+          <div className="flex justify-center py-4 text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+          </div>
+        )}
+        {!loading && revisions && revisions.length === 0 && (
+          <div className="text-[11px] text-muted-foreground">Sem revisões anteriores.</div>
+        )}
+        {!loading && revisions && revisions.length > 0 && (
+          <ul className="space-y-2 max-h-64 overflow-y-auto">
+            {revisions.map((r) => (
+              <li key={r.id} className="border-l-2 border-white/10 pl-2">
+                <div className="text-[9px] text-muted-foreground">{timeAgo(r.edited_at)}</div>
+                <div className="text-[11px] text-white/80 whitespace-pre-wrap">{r.previous_message}</div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }
