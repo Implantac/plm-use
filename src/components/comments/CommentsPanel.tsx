@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Send, Trash2, Loader2, MessageSquare, Pencil, History, X, Check,
-  Paperclip, Download, FileText,
+  Paperclip, Download, FileText, Image as ImageIcon, Maximize2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -74,6 +74,21 @@ function renderMessage(msg: string) {
       <span key={i}>{p}</span>
     ),
   );
+}
+
+function extOf(name: string) {
+  const i = name.lastIndexOf(".");
+  return i >= 0 ? name.slice(i + 1).toLowerCase() : "";
+}
+
+function isImageAttachment(a: { mime_type: string | null; file_name: string }) {
+  if (a.mime_type?.startsWith("image/")) return true;
+  return ["png", "jpg", "jpeg", "webp", "gif", "avif", "svg"].includes(extOf(a.file_name));
+}
+
+function isPdfAttachment(a: { mime_type: string | null; file_name: string }) {
+  if (a.mime_type === "application/pdf") return true;
+  return extOf(a.file_name) === "pdf";
 }
 
 async function downloadAttachment(storage_path: string, file_name: string) {
@@ -359,32 +374,14 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                   </p>
                 )}
                 {atts.length > 0 && (
-                  <ul className="mt-1.5 space-y-1">
+                  <ul className="mt-1.5 space-y-1.5">
                     {atts.map((a) => (
-                      <li
+                      <AttachmentItem
                         key={a.id}
-                        className="flex items-center gap-2 rounded border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-white/80"
-                      >
-                        <FileText className="w-3 h-3 text-primary shrink-0" />
-                        <span className="truncate flex-1">{a.file_name}</span>
-                        <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(a.size_bytes)}</span>
-                        <button
-                          onClick={() => void downloadAttachment(a.storage_path, a.file_name)}
-                          className="text-muted-foreground hover:text-primary"
-                          aria-label="Baixar anexo"
-                        >
-                          <Download className="w-3 h-3" />
-                        </button>
-                        {a.uploaded_by === user?.id && (
-                          <button
-                            onClick={() => void removeAttachment(a)}
-                            className="text-muted-foreground hover:text-rose-400"
-                            aria-label="Remover anexo"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        )}
-                      </li>
+                        attachment={a}
+                        canRemove={a.uploaded_by === user?.id}
+                        onRemove={() => void removeAttachment(a)}
+                      />
                     ))}
                   </ul>
                 )}
@@ -540,5 +537,126 @@ function HistoryButton({ commentId }: { commentId: string }) {
         )}
       </PopoverContent>
     </Popover>
+  );
+}
+
+function AttachmentItem({
+  attachment,
+  canRemove,
+  onRemove,
+}: {
+  attachment: Attachment;
+  canRemove: boolean;
+  onRemove: () => void;
+}) {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+
+  const isImage = isImageAttachment(attachment);
+  const isPdf = isPdfAttachment(attachment);
+  const previewable = isImage || isPdf;
+
+  useEffect(() => {
+    if (!previewable) return;
+    let cancelled = false;
+    setLoading(true);
+    void supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(attachment.storage_path, 3600)
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data?.signedUrl) {
+          setError(error?.message ?? "Falha ao carregar prévia");
+        } else {
+          setSignedUrl(data.signedUrl);
+        }
+        setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [attachment.storage_path, previewable]);
+
+  return (
+    <li className="rounded border border-white/10 bg-white/[0.03] overflow-hidden">
+      {previewable && (
+        <div className="relative bg-black/40 border-b border-white/5">
+          {loading && (
+            <div className="flex items-center justify-center h-32 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+            </div>
+          )}
+          {!loading && error && (
+            <div className="flex items-center justify-center h-20 text-[10px] text-rose-400 px-2 text-center">
+              {error}
+            </div>
+          )}
+          {!loading && !error && signedUrl && isImage && (
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="block w-full group/preview"
+              aria-label={expanded ? "Reduzir imagem" : "Expandir imagem"}
+            >
+              <img
+                src={signedUrl}
+                alt={attachment.file_name}
+                className={`w-full object-contain bg-black/60 transition-all ${
+                  expanded ? "max-h-[520px]" : "max-h-48"
+                }`}
+                loading="lazy"
+              />
+              <span className="absolute top-1.5 right-1.5 rounded bg-black/60 p-1 opacity-0 group-hover/preview:opacity-100 transition">
+                <Maximize2 className="w-3 h-3 text-white" />
+              </span>
+            </button>
+          )}
+          {!loading && !error && signedUrl && isPdf && (
+            <iframe
+              src={`${signedUrl}#toolbar=0&navpanes=0`}
+              title={attachment.file_name}
+              className={`w-full bg-white transition-all ${expanded ? "h-[560px]" : "h-64"}`}
+            />
+          )}
+          {!loading && !error && signedUrl && isPdf && (
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              className="absolute top-1.5 right-1.5 rounded bg-black/60 p-1 hover:bg-black/80"
+              aria-label={expanded ? "Reduzir PDF" : "Expandir PDF"}
+            >
+              <Maximize2 className="w-3 h-3 text-white" />
+            </button>
+          )}
+        </div>
+      )}
+      <div className="flex items-center gap-2 px-2 py-1 text-[11px] text-white/80">
+        {isImage ? (
+          <ImageIcon className="w-3 h-3 text-primary shrink-0" />
+        ) : (
+          <FileText className="w-3 h-3 text-primary shrink-0" />
+        )}
+        <span className="truncate flex-1">{attachment.file_name}</span>
+        <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(attachment.size_bytes)}</span>
+        <button
+          onClick={() => void downloadAttachment(attachment.storage_path, attachment.file_name)}
+          className="text-muted-foreground hover:text-primary"
+          aria-label="Baixar anexo"
+        >
+          <Download className="w-3 h-3" />
+        </button>
+        {canRemove && (
+          <button
+            onClick={onRemove}
+            className="text-muted-foreground hover:text-rose-400"
+            aria-label="Remover anexo"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        )}
+      </div>
+    </li>
   );
 }
