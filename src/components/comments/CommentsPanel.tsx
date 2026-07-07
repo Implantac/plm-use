@@ -1,8 +1,10 @@
-// Painel de comentários reutilizável, ancorado a qualquer (entity_type, entity_id).
+// Painel de comentários com @mentions, edição, histórico de revisões e anexos.
 // Realtime via Supabase channel — mensagens novas aparecem ao vivo.
-// Suporta @mentions (dispara notificação via trigger) e histórico de edições.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Send, Trash2, Loader2, MessageSquare, Pencil, History, X, Check } from "lucide-react";
+import {
+  Send, Trash2, Loader2, MessageSquare, Pencil, History, X, Check,
+  Paperclip, Download, FileText,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -10,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
+
+const BUCKET = "use-moda-assets";
+const MAX_FILE_MB = 20;
 
 export type CommentRow = {
   id: string;
@@ -23,9 +28,20 @@ export type CommentRow = {
   created_at: string;
 };
 
+type Attachment = {
+  id: string;
+  comment_id: string;
+  storage_path: string;
+  file_name: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  uploaded_by: string | null;
+};
+
 type Revision = {
   id: string;
   previous_message: string;
+  previous_attachments: Array<{ file_name: string; storage_path: string }>;
   edited_at: string;
 };
 
@@ -37,6 +53,13 @@ function timeAgo(iso: string) {
   return `${Math.floor(s / 86400)}d atrás`;
 }
 
+function fmtSize(n: number | null) {
+  if (!n) return "";
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
 function extractMentions(msg: string): string[] {
   const m = msg.match(/@[\w.-]+/g);
   return m ? Array.from(new Set(m.map((x) => x.slice(1).toLowerCase()))) : [];
@@ -46,13 +69,22 @@ function renderMessage(msg: string) {
   const parts = msg.split(/(@[\w.-]+)/g);
   return parts.map((p, i) =>
     p.startsWith("@") ? (
-      <span key={i} className="text-primary font-semibold">
-        {p}
-      </span>
+      <span key={i} className="text-primary font-semibold">{p}</span>
     ) : (
       <span key={i}>{p}</span>
     ),
   );
+}
+
+async function downloadAttachment(storage_path: string, file_name: string) {
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl(storage_path, 60, { download: file_name });
+  if (error || !data?.signedUrl) {
+    toast.error(error?.message ?? "Falha ao gerar link de download");
+    return;
+  }
+  window.open(data.signedUrl, "_blank");
 }
 
 interface Props {
@@ -65,25 +97,40 @@ interface Props {
 export function CommentsPanel({ entityType, entityId, title = "Comentários", className }: Props) {
   const { user } = useAuth();
   const [items, setItems] = useState<CommentRow[]>([]);
+  const [attachments, setAttachments] = useState<Record<string, Attachment[]>>({});
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     void (async () => {
-      const { data } = await supabase
+      const { data: rows } = await supabase
         .from("comments")
         .select("*")
         .eq("entity_type", entityType)
         .eq("entity_id", entityId)
         .order("created_at", { ascending: true });
       if (cancelled) return;
-      setItems((data ?? []) as CommentRow[]);
+      const list = (rows ?? []) as CommentRow[];
+      setItems(list);
+      if (list.length > 0) {
+        const { data: atts } = await supabase
+          .from("comment_attachments")
+          .select("*")
+          .in("comment_id", list.map((c) => c.id));
+        const grouped: Record<string, Attachment[]> = {};
+        for (const a of (atts ?? []) as Attachment[]) {
+          (grouped[a.comment_id] ??= []).push(a);
+        }
+        if (!cancelled) setAttachments(grouped);
+      }
       setLoading(false);
     })();
 
@@ -91,12 +138,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
       .channel(`comments:${entityType}:${entityId}`)
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "comments",
-          filter: `entity_id=eq.${entityId}`,
-        },
+        { event: "*", schema: "public", table: "comments", filter: `entity_id=eq.${entityId}` },
         (payload) => {
           if (payload.eventType === "INSERT") {
             const row = payload.new as CommentRow;
@@ -105,9 +147,35 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
           } else if (payload.eventType === "DELETE") {
             const id = (payload.old as { id: string }).id;
             setItems((prev) => prev.filter((p) => p.id !== id));
+            setAttachments((prev) => {
+              const next = { ...prev };
+              delete next[id];
+              return next;
+            });
           } else if (payload.eventType === "UPDATE") {
             const row = payload.new as CommentRow;
             setItems((prev) => prev.map((p) => (p.id === row.id ? row : p)));
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "comment_attachments" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const a = payload.new as Attachment;
+            setAttachments((prev) => {
+              const list = prev[a.comment_id] ?? [];
+              if (list.some((x) => x.id === a.id)) return prev;
+              return { ...prev, [a.comment_id]: [...list, a] };
+            });
+          } else if (payload.eventType === "DELETE") {
+            const a = payload.old as Attachment;
+            setAttachments((prev) => {
+              const list = prev[a.comment_id];
+              if (!list) return prev;
+              return { ...prev, [a.comment_id]: list.filter((x) => x.id !== a.id) };
+            });
           }
         },
       )
@@ -131,28 +199,85 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
     [user],
   );
 
-  const send = async () => {
-    if (!user || !draft.trim()) return;
-    setSending(true);
-    const { error } = await supabase.from("comments").insert({
-      entity_type: entityType,
-      entity_id: entityId,
-      user_id: user.id,
-      user_name: userName,
-      user_avatar: (user.user_metadata?.avatar_url as string | undefined) ?? null,
-      message: draft.trim(),
-      mentions: extractMentions(draft),
-    });
-    setSending(false);
-    if (error) {
-      toast.error(error.message);
+  const addFiles = (fl: FileList | null) => {
+    if (!fl) return;
+    const arr = Array.from(fl);
+    const over = arr.find((f) => f.size > MAX_FILE_MB * 1024 * 1024);
+    if (over) {
+      toast.error(`Arquivo "${over.name}" excede ${MAX_FILE_MB}MB`);
       return;
     }
+    setPendingFiles((prev) => [...prev, ...arr]);
+  };
+
+  const uploadAttachments = async (commentId: string, files: File[]) => {
+    if (!user || files.length === 0) return;
+    for (const file of files) {
+      const safe = file.name.replace(/[^\w.\-]+/g, "_");
+      const path = `${user.id}/comments/${commentId}/${crypto.randomUUID()}_${safe}`;
+      const { error: upErr } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (upErr) {
+        toast.error(`Falha ao enviar ${file.name}: ${upErr.message}`);
+        continue;
+      }
+      const { error: insErr } = await supabase.from("comment_attachments").insert({
+        comment_id: commentId,
+        storage_path: path,
+        file_name: file.name,
+        mime_type: file.type || null,
+        size_bytes: file.size,
+        uploaded_by: user.id,
+      });
+      if (insErr) {
+        toast.error(insErr.message);
+        void supabase.storage.from(BUCKET).remove([path]);
+      }
+    }
+  };
+
+  const send = async () => {
+    if (!user || (!draft.trim() && pendingFiles.length === 0)) return;
+    setSending(true);
+    const { data, error } = await supabase
+      .from("comments")
+      .insert({
+        entity_type: entityType,
+        entity_id: entityId,
+        user_id: user.id,
+        user_name: userName,
+        user_avatar: (user.user_metadata?.avatar_url as string | undefined) ?? null,
+        message: draft.trim() || "(anexo)",
+        mentions: extractMentions(draft),
+      })
+      .select("id")
+      .single();
+    if (error || !data) {
+      setSending(false);
+      toast.error(error?.message ?? "Erro ao enviar");
+      return;
+    }
+    if (pendingFiles.length > 0) {
+      await uploadAttachments(data.id, pendingFiles);
+    }
+    setSending(false);
     setDraft("");
+    setPendingFiles([]);
   };
 
   const remove = async (id: string) => {
+    const list = attachments[id] ?? [];
+    if (list.length > 0) {
+      await supabase.storage.from(BUCKET).remove(list.map((a) => a.storage_path));
+    }
     const { error } = await supabase.from("comments").delete().eq("id", id);
+    if (error) toast.error(error.message);
+  };
+
+  const removeAttachment = async (a: Attachment) => {
+    await supabase.storage.from(BUCKET).remove([a.storage_path]);
+    const { error } = await supabase.from("comment_attachments").delete().eq("id", a.id);
     if (error) toast.error(error.message);
   };
 
@@ -160,32 +285,22 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
     setEditingId(c.id);
     setEditDraft(c.message);
   };
-
   const cancelEdit = () => {
     setEditingId(null);
     setEditDraft("");
   };
-
   const saveEdit = async (id: string) => {
     if (!editDraft.trim()) return;
     const { error } = await supabase
       .from("comments")
-      .update({
-        message: editDraft.trim(),
-        mentions: extractMentions(editDraft),
-      })
+      .update({ message: editDraft.trim(), mentions: extractMentions(editDraft) })
       .eq("id", id);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
+    if (error) return toast.error(error.message);
     cancelEdit();
   };
 
   return (
-    <div
-      className={`rounded-md border border-white/10 bg-white/[0.025] flex flex-col ${className ?? ""}`}
-    >
+    <div className={`rounded-md border border-white/10 bg-white/[0.025] flex flex-col ${className ?? ""}`}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white font-bold">
           <MessageSquare className="w-3.5 h-3.5 text-primary" /> {title}
@@ -193,7 +308,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         <span className="text-[10px] text-muted-foreground">{items.length}</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto max-h-[360px] px-4 py-3 space-y-3">
+      <div className="flex-1 overflow-y-auto max-h-[420px] px-4 py-3 space-y-3">
         {loading && (
           <div className="flex items-center justify-center py-8 text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -207,6 +322,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         {items.map((c) => {
           const mine = user?.id === c.user_id;
           const isEditing = editingId === c.id;
+          const atts = attachments[c.id] ?? [];
           return (
             <div key={c.id} className="flex gap-3 group">
               <Avatar className="w-7 h-7 shrink-0">
@@ -242,21 +358,43 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                     {renderMessage(c.message)}
                   </p>
                 )}
+                {atts.length > 0 && (
+                  <ul className="mt-1.5 space-y-1">
+                    {atts.map((a) => (
+                      <li
+                        key={a.id}
+                        className="flex items-center gap-2 rounded border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-white/80"
+                      >
+                        <FileText className="w-3 h-3 text-primary shrink-0" />
+                        <span className="truncate flex-1">{a.file_name}</span>
+                        <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(a.size_bytes)}</span>
+                        <button
+                          onClick={() => void downloadAttachment(a.storage_path, a.file_name)}
+                          className="text-muted-foreground hover:text-primary"
+                          aria-label="Baixar anexo"
+                        >
+                          <Download className="w-3 h-3" />
+                        </button>
+                        {a.uploaded_by === user?.id && (
+                          <button
+                            onClick={() => void removeAttachment(a)}
+                            className="text-muted-foreground hover:text-rose-400"
+                            aria-label="Remover anexo"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               {mine && !isEditing && (
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                  <button
-                    onClick={() => startEdit(c)}
-                    className="text-muted-foreground hover:text-primary"
-                    aria-label="Editar comentário"
-                  >
+                  <button onClick={() => startEdit(c)} className="text-muted-foreground hover:text-primary" aria-label="Editar comentário">
                     <Pencil className="w-3.5 h-3.5" />
                   </button>
-                  <button
-                    onClick={() => void remove(c.id)}
-                    className="text-muted-foreground hover:text-rose-400"
-                    aria-label="Apagar comentário"
-                  >
+                  <button onClick={() => void remove(c.id)} className="text-muted-foreground hover:text-rose-400" aria-label="Apagar comentário">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -281,13 +419,51 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
             }
           }}
         />
+        {pendingFiles.length > 0 && (
+          <ul className="flex flex-wrap gap-1.5">
+            {pendingFiles.map((f, i) => (
+              <li key={i} className="flex items-center gap-1.5 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] text-white/80">
+                <FileText className="w-3 h-3 text-primary" />
+                <span className="truncate max-w-[160px]">{f.name}</span>
+                <span className="text-muted-foreground">{fmtSize(f.size)}</span>
+                <button
+                  onClick={() => setPendingFiles((prev) => prev.filter((_, j) => j !== i))}
+                  className="text-muted-foreground hover:text-rose-400"
+                  aria-label="Remover"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
-            Ctrl/Cmd + Enter para enviar
-          </span>
+          <div className="flex items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                addFiles(e.target.files);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }}
+            />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 px-2 text-[10px] gap-1"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Paperclip className="w-3.5 h-3.5" /> Anexar
+            </Button>
+            <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
+              Ctrl/Cmd + Enter para enviar
+            </span>
+          </div>
           <Button
             size="sm"
-            disabled={sending || !draft.trim() || !user}
+            disabled={sending || (!draft.trim() && pendingFiles.length === 0) || !user}
             onClick={() => void send()}
             className="h-8 gap-1.5 btn-primary-premium"
           >
@@ -309,10 +485,10 @@ function HistoryButton({ commentId }: { commentId: string }) {
     setLoading(true);
     const { data } = await supabase
       .from("comment_revisions")
-      .select("id, previous_message, edited_at")
+      .select("id, previous_message, previous_attachments, edited_at")
       .eq("comment_id", commentId)
       .order("edited_at", { ascending: false });
-    setRevisions((data ?? []) as Revision[]);
+    setRevisions((data ?? []) as unknown as Revision[]);
     setLoading(false);
   };
 
@@ -327,10 +503,8 @@ function HistoryButton({ commentId }: { commentId: string }) {
           (editado)
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-3 bg-background/95 border-white/10">
-        <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-white mb-2">
-          Histórico
-        </div>
+      <PopoverContent className="w-96 p-3 bg-background/95 border-white/10">
+        <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-white mb-2">Histórico</div>
         {loading && (
           <div className="flex justify-center py-4 text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -340,11 +514,26 @@ function HistoryButton({ commentId }: { commentId: string }) {
           <div className="text-[11px] text-muted-foreground">Sem revisões anteriores.</div>
         )}
         {!loading && revisions && revisions.length > 0 && (
-          <ul className="space-y-2 max-h-64 overflow-y-auto">
+          <ul className="space-y-2 max-h-72 overflow-y-auto">
             {revisions.map((r) => (
               <li key={r.id} className="border-l-2 border-white/10 pl-2">
                 <div className="text-[9px] text-muted-foreground">{timeAgo(r.edited_at)}</div>
                 <div className="text-[11px] text-white/80 whitespace-pre-wrap">{r.previous_message}</div>
+                {Array.isArray(r.previous_attachments) && r.previous_attachments.length > 0 && (
+                  <ul className="mt-1 space-y-0.5">
+                    {r.previous_attachments.map((a, i) => (
+                      <li key={i} className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <FileText className="w-2.5 h-2.5" />
+                        <button
+                          onClick={() => void downloadAttachment(a.storage_path, a.file_name)}
+                          className="hover:text-primary underline-offset-2 hover:underline truncate"
+                        >
+                          {a.file_name}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
