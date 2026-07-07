@@ -47,8 +47,8 @@ const downloadCache = createSignedUrlCache(
   { ttlMs: DOWNLOAD_TTL * 1000, max: DOWNLOAD_CACHE_MAX, refreshMarginMs: REFRESH_MARGIN_MS },
 );
 
-const getPreviewUrl = (storage_path: string) => previewCache.get(storage_path);
-const getDownloadUrl = (storage_path: string, file_name: string) =>
+export const getPreviewUrl = (storage_path: string) => previewCache.get(storage_path);
+export const getDownloadUrl = (storage_path: string, file_name: string) =>
   downloadCache.get(`${storage_path}::${file_name}`);
 
 export function clearAttachmentUrlCache(storage_path?: string) {
