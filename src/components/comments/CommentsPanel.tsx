@@ -91,15 +91,17 @@ function isPdfAttachment(a: { mime_type: string | null; file_name: string }) {
   return extOf(a.file_name) === "pdf";
 }
 
-async function downloadAttachment(storage_path: string, file_name: string) {
+async function downloadAttachment(storage_path: string, file_name: string): Promise<string | null> {
   const { data, error } = await supabase.storage
     .from(BUCKET)
     .createSignedUrl(storage_path, 60, { download: file_name });
   if (error || !data?.signedUrl) {
-    toast.error(error?.message ?? "Falha ao gerar link de download");
-    return;
+    const msg = error?.message ?? "Falha ao gerar link de download";
+    toast.error(msg);
+    return msg;
   }
   window.open(data.signedUrl, "_blank");
+  return null;
 }
 
 interface Props {
@@ -553,6 +555,32 @@ function AttachmentItem({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  const loadPreview = () => {
+    setError(null);
+    setLoading(true);
+    void supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(attachment.storage_path, 3600)
+      .then(({ data, error }) => {
+        if (error || !data?.signedUrl) {
+          setError(error?.message ?? "Falha ao carregar prévia");
+        } else {
+          setSignedUrl(data.signedUrl);
+        }
+        setLoading(false);
+      });
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    setDownloadError(null);
+    const err = await downloadAttachment(attachment.storage_path, attachment.file_name);
+    setDownloading(false);
+    if (err) setDownloadError(err);
+  };
 
   const isImage = isImageAttachment(attachment);
   const isPdf = isPdfAttachment(attachment);
@@ -561,6 +589,7 @@ function AttachmentItem({
   useEffect(() => {
     if (!previewable) return;
     let cancelled = false;
+    setError(null);
     setLoading(true);
     void supabase.storage
       .from(BUCKET)
@@ -584,13 +613,21 @@ function AttachmentItem({
       {previewable && (
         <div className="relative bg-black/40 border-b border-white/5">
           {loading && (
-            <div className="flex items-center justify-center h-32 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center gap-1.5 h-32 text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-[9px] uppercase tracking-widest">Carregando prévia…</span>
             </div>
           )}
           {!loading && error && (
-            <div className="flex items-center justify-center h-20 text-[10px] text-rose-400 px-2 text-center">
-              {error}
+            <div className="flex flex-col items-center justify-center gap-1.5 h-24 px-3 text-center">
+              <span className="text-[10px] text-rose-400">{error}</span>
+              <button
+                type="button"
+                onClick={loadPreview}
+                className="text-[10px] uppercase tracking-widest text-primary hover:underline"
+              >
+                Tentar novamente
+              </button>
             </div>
           )}
           {!loading && !error && signedUrl && isImage && (
@@ -632,29 +669,39 @@ function AttachmentItem({
           )}
         </div>
       )}
-      <div className="flex items-center gap-2 px-2 py-1 text-[11px] text-white/80">
-        {isImage ? (
-          <ImageIcon className="w-3 h-3 text-primary shrink-0" />
-        ) : (
-          <FileText className="w-3 h-3 text-primary shrink-0" />
-        )}
-        <span className="truncate flex-1">{attachment.file_name}</span>
-        <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(attachment.size_bytes)}</span>
-        <button
-          onClick={() => void downloadAttachment(attachment.storage_path, attachment.file_name)}
-          className="text-muted-foreground hover:text-primary"
-          aria-label="Baixar anexo"
-        >
-          <Download className="w-3 h-3" />
-        </button>
-        {canRemove && (
+      <div className="px-2 py-1 space-y-0.5">
+        <div className="flex items-center gap-2 text-[11px] text-white/80">
+          {isImage ? (
+            <ImageIcon className="w-3 h-3 text-primary shrink-0" />
+          ) : (
+            <FileText className="w-3 h-3 text-primary shrink-0" />
+          )}
+          <span className="truncate flex-1">{attachment.file_name}</span>
+          <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(attachment.size_bytes)}</span>
           <button
-            onClick={onRemove}
-            className="text-muted-foreground hover:text-rose-400"
-            aria-label="Remover anexo"
+            onClick={() => void handleDownload()}
+            disabled={downloading}
+            className="text-muted-foreground hover:text-primary disabled:opacity-50"
+            aria-label="Baixar anexo"
           >
-            <X className="w-3 h-3" />
+            {downloading ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <Download className="w-3 h-3" />
+            )}
           </button>
+          {canRemove && (
+            <button
+              onClick={onRemove}
+              className="text-muted-foreground hover:text-rose-400"
+              aria-label="Remover anexo"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+        {downloadError && (
+          <div className="text-[9px] text-rose-400 pl-5">{downloadError}</div>
         )}
       </div>
     </li>
