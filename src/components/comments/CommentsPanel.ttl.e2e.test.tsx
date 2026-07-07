@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 //
-// E2E de expiração: com fake timers, garante que o signed-url-cache reutiliza
-// a URL enquanto está fresca e dispara um novo createSignedUrl assim que o
-// TTL (menos a margem de refresh) é ultrapassado.
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+// E2E de expiração: com fake timers instalados ANTES do import (o cache
+// captura Date.now no momento da criação), garante que o signed-url-cache
+// reutiliza a URL enquanto está fresca e dispara um novo createSignedUrl
+// assim que o TTL (menos a margem de refresh) é ultrapassado.
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach, afterAll } from "vitest";
 import { render, screen, cleanup, fireEvent, waitFor, act } from "@testing-library/react";
 
 const createSignedUrl = vi.fn();
@@ -14,10 +15,23 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+// Instala fake timers ANTES de importar o CommentsPanel — o cache captura
+// Date.now na construção; se instalarmos depois, seguirá com o Date real.
+vi.useFakeTimers();
+
+type CP = typeof import("@/components/comments/CommentsPanel");
+let AttachmentItem: CP["AttachmentItem"];
+let clearAttachmentUrlCache: CP["clearAttachmentUrlCache"];
+
+beforeAll(async () => {
+  const mod = await import("@/components/comments/CommentsPanel");
+  AttachmentItem = mod.AttachmentItem;
+  clearAttachmentUrlCache = mod.clearAttachmentUrlCache;
+});
+
+afterAll(() => {
+  vi.useRealTimers();
+});
 
 const IMG = {
   id: "att-img-ttl",
@@ -44,13 +58,10 @@ beforeEach(() => {
   }));
   clearAttachmentUrlCache();
   (window.open as unknown) = vi.fn();
-  vi.useFakeTimers({ shouldAdvanceTime: true });
 });
 
 afterEach(() => {
   cleanup();
-  vi.useRealTimers();
-  vi.restoreAllMocks();
 });
 
 async function advance(ms: number) {
@@ -72,18 +83,17 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     expect(url1).toMatch(/\?v=1$/);
     expect(createSignedUrl).toHaveBeenCalledTimes(1);
 
-    // Avança um tempo bem menor que o TTL — cache continua fresco.
+    // Avança bem menos que o TTL — cache continua fresco.
     await advance(PREVIEW_TTL_MS / 2);
 
-    // Reabre o anexo (equivalente a "clicar em preview" novamente):
-    // useEffect chama getPreviewUrl → cache HIT, mesma URL, sem novo fetch.
+    // Reabre o anexo ("clicar em preview" novamente): cache HIT, mesma URL.
     unmount();
     render(<AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />);
     const img2 = await screen.findByAltText("pic.png");
     expect(img2.getAttribute("src")).toBe(url1);
     expect(createSignedUrl).toHaveBeenCalledTimes(1);
 
-    // Avança para além do (TTL - margem de refresh) → entrada considerada stale.
+    // Avança para além de (TTL - margem) → entrada considerada stale.
     await advance(PREVIEW_TTL_MS - REFRESH_MARGIN_MS + 1_000);
 
     // Novo "click em preview" (re-mount): cache MISS → novo createSignedUrl.
@@ -95,15 +105,12 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     expect(url3).not.toBe(url1);
     expect(url3).toMatch(/\?v=2$/);
 
-    // A URL renovada é reutilizada imediatamente em novos acessos (ex.: download
-    // via retry de prévia). Aqui exercitamos o botão "Tentar novamente" após
-    // forçar um erro para provar que o clique em preview passa pelo cache.
+    // Após novo TTL, força um erro no próximo fetch e valida que o clique
+    // explícito em "Tentar novamente" (preview) chama createSignedUrl.
     createSignedUrl.mockImplementationOnce(async () => ({
       data: null,
       error: { message: "boom" },
     }));
-
-    // Avança novamente para invalidar → force nova busca que agora falha.
     await advance(PREVIEW_TTL_MS);
     cleanup();
     render(<AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />);
@@ -111,7 +118,6 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     const retry = await screen.findByRole("button", { name: /tentar novamente/i });
     expect(createSignedUrl).toHaveBeenCalledTimes(3);
 
-    // Clique em "Tentar novamente" = clique explícito em preview → novo fetch bem-sucedido.
     fireEvent.click(retry);
     await waitFor(() => expect(createSignedUrl).toHaveBeenCalledTimes(4));
     const img4 = await screen.findByAltText("pic.png");
