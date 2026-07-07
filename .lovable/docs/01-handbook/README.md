@@ -22,9 +22,9 @@ implementa, testa, entrega e evolui cada pedaço do produto.
 | **H3** | Architecture & Backend | 🟢 pronto |
 | **H4** | Frontend & UX Engineering | 🟢 pronto |
 | **H5** | IA Industrial & Agentes | 🟢 pronto |
-| **H6** | Integrações (ERP, CAD, e-commerce, terceiros) | 🔴 planejado |
-| **H7** | Qualidade, testes e observabilidade | 🔴 planejado |
-| **H8** | Operação, DevOps, segurança e compliance | 🔴 planejado |
+| **H6** | Integrações (ERP, CAD, e-commerce, terceiros) | 🟢 pronto |
+| **H7** | Qualidade, testes e observabilidade | 🟢 pronto |
+| **H8** | Operação, DevOps, segurança e compliance | 🟢 pronto |
 | **H9** | Playbooks por processo de moda (cadeia produtiva) | 🔴 planejado |
 
 Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
