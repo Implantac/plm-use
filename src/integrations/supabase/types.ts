@@ -768,11 +768,54 @@ export type Database = {
         }
         Relationships: []
       }
+      workflow_definitions: {
+        Row: {
+          created_at: string
+          entity_type: string
+          from_status: string
+          id: string
+          is_active: boolean
+          requires_checklist: Json
+          requires_role: string | null
+          sla_hours: number | null
+          to_status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entity_type: string
+          from_status: string
+          id?: string
+          is_active?: boolean
+          requires_checklist?: Json
+          requires_role?: string | null
+          sla_hours?: number | null
+          to_status: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entity_type?: string
+          from_status?: string
+          id?: string
+          is_active?: boolean
+          requires_checklist?: Json
+          requires_role?: string | null
+          sla_hours?: number | null
+          to_status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      can_transition: {
+        Args: { _entity_type: string; _from: string; _to: string }
+        Returns: boolean
+      }
       can_transition_reference: {
         Args: {
           _from: Database["public"]["Enums"]["reference_status"]
