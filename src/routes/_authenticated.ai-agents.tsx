@@ -10,6 +10,7 @@ import { Loader2, Send, Sparkles, Factory, Megaphone, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { askAgent } from "@/lib/ai/agents.functions";
+import { fetchLiveContext } from "@/lib/ai/live-context.functions";
 import { usePCPStore } from "@/lib/pcp/store";
 import { useInfluencersStore, resumoInfluencers } from "@/lib/influencers/store";
 import {
@@ -67,6 +68,7 @@ function AIAgentsPage() {
   const [loading, setLoading] = useState(false);
   const [chat, setChat] = useState<{ role: "user" | "ai"; text: string }[]>([]);
   const ask = useServerFn(askAgent);
+  const fetchLive = useServerFn(fetchLiveContext);
   const lotes = usePCPStore((s) => s.lotes);
   const influencers = useInfluencersStore((s) => s.influencers);
 
@@ -91,7 +93,29 @@ function AIAgentsPage() {
     setInput("");
     setLoading(true);
     try {
-      const res = await ask({ data: { agent, message: msg, context: buildContext() } });
+      // V11 · Contexto ao vivo do banco (entity_events) — best-effort, não bloqueia se falhar.
+      const entityTypes =
+        agent === "pcp"
+          ? (["lote", "reference"] as const)
+          : agent === "fashion"
+            ? (["reference", "tech_sheet"] as const)
+            : undefined;
+      let liveText = "";
+      try {
+        const live = await fetchLive({
+          data: {
+            since_hours: 72,
+            limit_events: 40,
+            ...(entityTypes ? { entity_types: [...entityTypes] } : {}),
+          },
+        });
+        liveText = live.as_prompt;
+      } catch {
+        // Sem sessão ou sem eventos: seguimos apenas com contexto local.
+      }
+      const localCtx = buildContext();
+      const context = [liveText, localCtx].filter(Boolean).join("\n\n");
+      const res = await ask({ data: { agent, message: msg, context } });
       if (res.ok) {
         setChat((c) => [...c, { role: "ai", text: res.reply }]);
       } else {
