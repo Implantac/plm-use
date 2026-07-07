@@ -21,12 +21,12 @@ usando o template canônico `H9-00-template.md`.
 | 05 | [Costura & Facções](./H9-05-costura-faccoes.md) | Distribuição → Passagens → Facção → Peças costuradas | 🟡 |
 | 06 | [Lavanderia & Acabamento](./H9-06-lavanderia-acabamento.md) | Lavagem → Passadoria → Revisão → Embalagem | 🟡 |
 | 07 | [Qualidade & CAPA](./H9-07-qualidade-capa.md) | Inspeção final + ações corretivas | 🟡 |
-| 08 | PCP & APS | Planejamento / sequenciamento | 🔴 |
-| 09 | Engenharia de Produto | BOM / BOP / consumo | 🔴 |
-| 10 | Compras & MRP | Suprimentos | 🔴 |
-| 11 | Estoque & Recebimento | Almoxarifado | 🔴 |
-| 12 | Mostruário & Comercial | Mostruário → Venda | 🔴 |
-| 13 | Expedição & Logística | Expedição | 🔴 |
+| 08 | [Expedição & Estoque PA](./H9-08-expedicao-estoque.md) | Entrada PA → Alocação → Picking → Conferência → Despacho | 🟡 |
+| 09 | PCP & APS | Planejamento / sequenciamento | 🔴 |
+| 10 | Engenharia de Produto | BOM / BOP / consumo | 🔴 |
+| 11 | Compras & MRP | Suprimentos | 🔴 |
+| 12 | Estoque & Recebimento (MP) | Almoxarifado matéria-prima | 🔴 |
+| 13 | Mostruário & Comercial | Mostruário → Venda | 🔴 |
 | 14 | Pós-venda & Aprendizado | Pós-venda + retro para V1 | 🔴 |
 
 Legenda: 🔴 planejado · 🟡 parcial · 🟢 pronto
