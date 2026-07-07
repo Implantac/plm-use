@@ -10,10 +10,11 @@ const ENTITY_TABLE: Record<string, string> = {
   lote: "pcp_lots",
   tech_sheet: "tech_sheets",
   capa: "quality_capa",
+  piloto: "pilotos",
 };
 
 const Input = z.object({
-  entity_type: z.enum(["reference", "lote", "tech_sheet", "capa"]),
+  entity_type: z.enum(["reference", "lote", "tech_sheet", "capa", "piloto"]),
   entity_id: z.string().uuid(),
   from_status: z.string().min(1),
   to_status: z.string().min(1),
@@ -87,7 +88,7 @@ export const performTransition = createServerFn({ method: "POST" })
 
     // 3. Registrar evento status_changed (references já loga via trigger — evitar duplicar)
     let event_id: string | undefined;
-    if (data.entity_type !== "reference") {
+    if (data.entity_type !== "reference" && data.entity_type !== "piloto") {
       const actorName =
         (claims as { name?: string; email?: string } | null)?.name ??
         (claims as { email?: string } | null)?.email ??
