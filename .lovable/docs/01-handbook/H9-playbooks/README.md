@@ -16,7 +16,7 @@ usando o template canônico `H9-00-template.md`.
 |---|----------|----------|--------|
 | 01 | [Coleção](./H9-01-colecao.md) | Briefing → Coleção aprovada | 🟡 |
 | 02 | [Desenvolvimento](./H9-02-desenvolvimento.md) | Croqui → Referência → Piloto → Aprovação | 🟡 |
-| 03 | Briefing & Croquis | Briefing → Croquis → Referência | 🔴 |
+| 03 | [Modelagem](./H9-03-modelagem.md) | Molde-mãe → Grade → Encaixe → Validação | 🟡 |
 | 04 | Modelagem & Piloto | Modelagem → Piloto → Correções → Aprovação | 🔴 |
 | 05 | Engenharia de Produto | Engenharia (BOM/BOP/consumo) | 🔴 |
 | 06 | Compras & MRP | Compras | 🔴 |
