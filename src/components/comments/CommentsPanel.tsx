@@ -555,6 +555,32 @@ function AttachmentItem({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  const loadPreview = () => {
+    setError(null);
+    setLoading(true);
+    void supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(attachment.storage_path, 3600)
+      .then(({ data, error }) => {
+        if (error || !data?.signedUrl) {
+          setError(error?.message ?? "Falha ao carregar prévia");
+        } else {
+          setSignedUrl(data.signedUrl);
+        }
+        setLoading(false);
+      });
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    setDownloadError(null);
+    const err = await downloadAttachment(attachment.storage_path, attachment.file_name);
+    setDownloading(false);
+    if (err) setDownloadError(err);
+  };
 
   const isImage = isImageAttachment(attachment);
   const isPdf = isPdfAttachment(attachment);
