@@ -137,9 +137,12 @@ function ReferenciaTabs({
 
   return (
     <Tabs defaultValue="ficha" className="mt-4">
-      <TabsList className="grid w-full grid-cols-8 bg-white/5 h-auto">
+      <TabsList className="grid w-full grid-cols-9 bg-white/5 h-auto">
         <TabsTrigger value="ficha" className="text-[10px] gap-1">
           <ScrollText className="h-3 w-3" /> Ficha
+        </TabsTrigger>
+        <TabsTrigger value="pilotos" className="text-[10px] gap-1">
+          <Shirt className="h-3 w-3" /> Pilotos
         </TabsTrigger>
         <TabsTrigger value="timeline" className="text-[10px] gap-1">
           <GitBranch className="h-3 w-3" /> Timeline
@@ -163,6 +166,14 @@ function ReferenciaTabs({
           <MessageSquare className="h-3 w-3" /> Chat
         </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="pilotos" className="mt-4">
+        <PilotosPanel
+          referenciaRef={referencia.ref}
+          referenciaNome={referencia.nome}
+        />
+      </TabsContent>
+
 
       <TabsContent value="chat" className="mt-4">
         <CommentsPanel
