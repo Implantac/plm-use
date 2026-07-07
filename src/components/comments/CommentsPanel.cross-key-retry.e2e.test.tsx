@@ -120,5 +120,23 @@ describe("CommentsPanel E2E — retries concorrentes em paths distintos", () => 
     expect(imgA.getAttribute("src")).toMatch(new RegExp(`^https://signed\\.test/${PATH_A}\\?v=1$`));
     expect(imgB.getAttribute("src")).toMatch(new RegExp(`^https://signed\\.test/${PATH_B}\\?v=2$`));
     expect(imgA.getAttribute("src")).not.toBe(imgB.getAttribute("src"));
+
+    const urlA = imgA.getAttribute("src");
+    const urlB = imgB.getAttribute("src");
+    const callsAfterSuccess = createSignedUrl.mock.calls.length;
+
+    // 5) Novo mount para cada path DEVE ser cache HIT — nenhum createSignedUrl
+    //    adicional é chamado e a URL reutilizada é EXATAMENTE a mesma.
+    render(<AttachmentItem attachment={img(PATH_A, "a2")} canRemove={false} onRemove={() => {}} />);
+    render(<AttachmentItem attachment={img(PATH_B, "b2")} canRemove={false} onRemove={() => {}} />);
+    await flush();
+
+    expect(createSignedUrl.mock.calls.length).toBe(callsAfterSuccess);
+    expect(queue.get(PATH_A)?.length ?? 0).toBe(0);
+    expect(queue.get(PATH_B)?.length ?? 0).toBe(0);
+
+    expect(screen.getByAltText("a2.png").getAttribute("src")).toBe(urlA);
+    expect(screen.getByAltText("b2.png").getAttribute("src")).toBe(urlB);
   });
 });
+
