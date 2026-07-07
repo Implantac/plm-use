@@ -669,29 +669,39 @@ function AttachmentItem({
           )}
         </div>
       )}
-      <div className="flex items-center gap-2 px-2 py-1 text-[11px] text-white/80">
-        {isImage ? (
-          <ImageIcon className="w-3 h-3 text-primary shrink-0" />
-        ) : (
-          <FileText className="w-3 h-3 text-primary shrink-0" />
-        )}
-        <span className="truncate flex-1">{attachment.file_name}</span>
-        <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(attachment.size_bytes)}</span>
-        <button
-          onClick={() => void downloadAttachment(attachment.storage_path, attachment.file_name)}
-          className="text-muted-foreground hover:text-primary"
-          aria-label="Baixar anexo"
-        >
-          <Download className="w-3 h-3" />
-        </button>
-        {canRemove && (
+      <div className="px-2 py-1 space-y-0.5">
+        <div className="flex items-center gap-2 text-[11px] text-white/80">
+          {isImage ? (
+            <ImageIcon className="w-3 h-3 text-primary shrink-0" />
+          ) : (
+            <FileText className="w-3 h-3 text-primary shrink-0" />
+          )}
+          <span className="truncate flex-1">{attachment.file_name}</span>
+          <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(attachment.size_bytes)}</span>
           <button
-            onClick={onRemove}
-            className="text-muted-foreground hover:text-rose-400"
-            aria-label="Remover anexo"
+            onClick={() => void handleDownload()}
+            disabled={downloading}
+            className="text-muted-foreground hover:text-primary disabled:opacity-50"
+            aria-label="Baixar anexo"
           >
-            <X className="w-3 h-3" />
+            {downloading ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <Download className="w-3 h-3" />
+            )}
           </button>
+          {canRemove && (
+            <button
+              onClick={onRemove}
+              className="text-muted-foreground hover:text-rose-400"
+              aria-label="Remover anexo"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+        {downloadError && (
+          <div className="text-[9px] text-rose-400 pl-5">{downloadError}</div>
         )}
       </div>
     </li>
