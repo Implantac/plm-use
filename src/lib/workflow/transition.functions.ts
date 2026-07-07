@@ -10,10 +10,11 @@ const ENTITY_TABLE: Record<string, string> = {
   lote: "pcp_lots",
   tech_sheet: "tech_sheets",
   capa: "quality_capa",
+  piloto: "pilotos",
 };
 
 const Input = z.object({
-  entity_type: z.enum(["reference", "lote", "tech_sheet", "capa"]),
+  entity_type: z.enum(["reference", "lote", "tech_sheet", "capa", "piloto"]),
   entity_id: z.string().uuid(),
   from_status: z.string().min(1),
   to_status: z.string().min(1),
