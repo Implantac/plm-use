@@ -15,6 +15,75 @@ import { toast } from "sonner";
 
 const BUCKET = "use-moda-assets";
 const MAX_FILE_MB = 20;
+const PREVIEW_TTL = 3600;
+const DOWNLOAD_TTL = 60;
+const REFRESH_MARGIN_MS = 30_000;
+
+type CachedUrl = { url: string; expiresAt: number };
+const previewUrlCache = new Map<string, CachedUrl>();
+const downloadUrlCache = new Map<string, CachedUrl>();
+const inflightPreview = new Map<string, Promise<string>>();
+const inflightDownload = new Map<string, Promise<string>>();
+
+function cacheHit(map: Map<string, CachedUrl>, key: string): string | null {
+  const hit = map.get(key);
+  if (hit && hit.expiresAt - REFRESH_MARGIN_MS > Date.now()) return hit.url;
+  if (hit) map.delete(key);
+  return null;
+}
+
+async function getPreviewUrl(storage_path: string): Promise<string> {
+  const cached = cacheHit(previewUrlCache, storage_path);
+  if (cached) return cached;
+  const existing = inflightPreview.get(storage_path);
+  if (existing) return existing;
+  const p = (async () => {
+    const { data, error } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(storage_path, PREVIEW_TTL);
+    if (error || !data?.signedUrl) throw new Error(error?.message ?? "Falha ao carregar prévia");
+    previewUrlCache.set(storage_path, {
+      url: data.signedUrl,
+      expiresAt: Date.now() + PREVIEW_TTL * 1000,
+    });
+    return data.signedUrl;
+  })().finally(() => inflightPreview.delete(storage_path));
+  inflightPreview.set(storage_path, p);
+  return p;
+}
+
+async function getDownloadUrl(storage_path: string, file_name: string): Promise<string> {
+  const key = `${storage_path}::${file_name}`;
+  const cached = cacheHit(downloadUrlCache, key);
+  if (cached) return cached;
+  const existing = inflightDownload.get(key);
+  if (existing) return existing;
+  const p = (async () => {
+    const { data, error } = await supabase.storage
+      .from(BUCKET)
+      .createSignedUrl(storage_path, DOWNLOAD_TTL, { download: file_name });
+    if (error || !data?.signedUrl) throw new Error(error?.message ?? "Falha ao gerar link de download");
+    downloadUrlCache.set(key, {
+      url: data.signedUrl,
+      expiresAt: Date.now() + DOWNLOAD_TTL * 1000,
+    });
+    return data.signedUrl;
+  })().finally(() => inflightDownload.delete(key));
+  inflightDownload.set(key, p);
+  return p;
+}
+
+export function clearAttachmentUrlCache(storage_path?: string) {
+  if (!storage_path) {
+    previewUrlCache.clear();
+    downloadUrlCache.clear();
+    return;
+  }
+  previewUrlCache.delete(storage_path);
+  for (const k of downloadUrlCache.keys()) {
+    if (k.startsWith(`${storage_path}::`)) downloadUrlCache.delete(k);
+  }
+}
 
 export type CommentRow = {
   id: string;
