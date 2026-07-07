@@ -14,7 +14,9 @@ import {
   ScrollText,
   Workflow,
   Layers,
+  Shirt,
 } from "lucide-react";
+import { PilotosPanel } from "./PilotosPanel";
 import { PassagemForm } from "./PassagemForm";
 import { OcorrenciaForm } from "./OcorrenciaForm";
 import { FichaTecnicaResumo } from "./FichaTecnicaResumo";
