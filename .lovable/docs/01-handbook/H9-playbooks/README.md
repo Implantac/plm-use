@@ -15,7 +15,7 @@ usando o template canônico `H9-00-template.md`.
 | # | Playbook | Elo (V2) | Estado |
 |---|----------|----------|--------|
 | 01 | [Coleção](./H9-01-colecao.md) | Briefing → Coleção aprovada | 🟡 |
-| 02 | Cartela & Tendências | Cartela → Tendências | 🔴 |
+| 02 | [Desenvolvimento](./H9-02-desenvolvimento.md) | Croqui → Referência → Piloto → Aprovação | 🟡 |
 | 03 | Briefing & Croquis | Briefing → Croquis → Referência | 🔴 |
 | 04 | Modelagem & Piloto | Modelagem → Piloto → Correções → Aprovação | 🔴 |
 | 05 | Engenharia de Produto | Engenharia (BOM/BOP/consumo) | 🔴 |
