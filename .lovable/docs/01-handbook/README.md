@@ -17,8 +17,8 @@ implementa, testa, entrega e evolui cada pedaço do produto.
 | Série | Tema | Estado |
 |---|---|---|
 | **H0** | Fundamentos e princípios | 🟡 esqueleto |
-| **H1** | Discovery & Product Design | 🔴 planejado |
-| **H2** | Domain Modeling & Data | 🔴 planejado |
+| **H1** | Discovery & Product Design | 🟡 esqueleto |
+| **H2** | Domain Modeling & Data | 🟡 esqueleto |
 | **H3** | Architecture & Backend | 🔴 planejado |
 | **H4** | Frontend & UX Engineering | 🔴 planejado |
 | **H5** | IA Industrial & Agentes | 🔴 planejado |
@@ -26,6 +26,21 @@ implementa, testa, entrega e evolui cada pedaço do produto.
 | **H7** | Qualidade, testes e observabilidade | 🔴 planejado |
 | **H8** | Operação, DevOps, segurança e compliance | 🔴 planejado |
 | **H9** | Playbooks por processo de moda (cadeia produtiva) | 🔴 planejado |
+
+Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
+
+## Índices das séries
+
+- [H0 — Fundamentos](./H0-fundamentals/README.md)
+- [H1 — Discovery & Product Design](./H1-discovery/README.md)
+- [H2 — Domain Modeling & Data](./H2-domain/README.md)
+- H3 — Architecture & Backend *(a criar)*
+- H4 — Frontend & UX Engineering *(a criar)*
+- H5 — IA Industrial & Agentes *(a criar)*
+- H6 — Integrações *(a criar)*
+- H7 — Qualidade e observabilidade *(a criar)*
+- H8 — Operação, segurança e compliance *(a criar)*
+- H9 — Playbooks por processo de moda *(a criar)*
 
 Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
 
