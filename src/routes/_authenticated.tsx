@@ -120,9 +120,9 @@ function AuthenticatedLayout() {
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
       <aside className="w-[276px] glass-sidebar flex flex-col z-30">
-        <div className="px-6 py-5 border-b border-white/5">
+        <div className="px-6 py-5 border-b border-sidebar-border">
           <img src="/assets/logo.png" alt="USE MODA" className="h-9 w-auto" />
-          <div className="mt-4 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+          <div className="mt-4 flex items-center gap-2 uppercase-label text-status-approved">
             <ShieldCheck className="h-3.5 w-3.5" />
             Multiempresa ativo
           </div>
@@ -133,42 +133,41 @@ function AuthenticatedLayout() {
         </div>
 
         <ScrollArea className="flex-1 px-4">
-          <nav className="space-y-1">
+          <nav className="space-y-0.5">
             {navItems.map((item) => (
               <Link
                 key={item.label}
                 to={item.href}
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-[10px] font-bold uppercase tracking-[0.16em] transition-all duration-300 group text-muted-foreground hover:text-white hover:bg-white/5 [&.active]:bg-primary/10 [&.active]:text-primary [&.active]:border [&.active]:border-primary/20"
+                className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
               >
-                <span className="transition-transform group-hover:scale-110 duration-300">
-                  {item.icon}
-                </span>
+                <span>{item.icon}</span>
                 <span>{item.label}</span>
               </Link>
             ))}
           </nav>
         </ScrollArea>
 
-        <div className="p-4 mt-auto border-t border-white/5">
-          <div className="flex items-center gap-3 p-3 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 transition-all group shadow-sm">
-            <Avatar className="w-9 h-9 border-2 border-primary/20 transition-transform group-hover:scale-105">
+        <div className="p-4 mt-auto border-t border-sidebar-border">
+          <div className="flex items-center gap-3 p-3 rounded-md bg-accent border border-border hover:bg-muted transition-colors group">
+            <Avatar className="w-9 h-9 border border-border">
               <AvatarImage src={user?.user_metadata?.avatar_url} />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold">
+              <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                 {(user?.email?.[0] ?? "U").toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-white truncate">
+              <p className="text-xs font-semibold text-foreground truncate">
                 {user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "Usuário"}
               </p>
-              <p className="text-[9px] text-muted-foreground font-light italic truncate">
+              <p className="text-2xs text-muted-foreground truncate">
                 {user?.email}
               </p>
             </div>
             <button
               onClick={handleLogout}
               title="Sair"
-              className="p-1.5 rounded text-muted-foreground hover:text-primary hover:bg-white/5 transition-colors"
+              aria-label="Sair"
+              className="p-1.5 rounded text-muted-foreground hover:text-primary hover:bg-background/60 transition-colors"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -176,22 +175,14 @@ function AuthenticatedLayout() {
         </div>
       </aside>
 
-
-
       <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.02]"
-          style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }}
-        />
-        <header className="h-[72px] border-b border-white/5 flex items-center justify-between px-8 bg-background/35 backdrop-blur-xl z-20">
-          <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="hover:text-white transition-colors cursor-pointer">USE MODA AI</span>
-            <ChevronRight className="w-3.5 h-3.5 opacity-30" />
-            <span className="text-white border-b border-primary/50 pb-0.5 uppercase">
-              PLM Cockpit
-            </span>
+        <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-background/80 backdrop-blur-xl z-20">
+          <div className="flex items-center gap-3 uppercase-label text-muted-foreground">
+            <span className="hover:text-foreground transition-colors cursor-pointer">USE MODA AI</span>
+            <ChevronRight className="w-3.5 h-3.5 opacity-40" />
+            <span className="text-foreground">PLM Cockpit</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <PresenceBar />
             <ActivityFeedButton />
             <AlertsBell />
@@ -200,26 +191,23 @@ function AuthenticatedLayout() {
               size="icon"
               onClick={toggleTheme}
               aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
-              className="w-10 h-10 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 transition-all group"
+              className="w-9 h-9"
             >
               {theme === "dark" ? (
-                <Sun className="w-4 h-4 text-muted-foreground group-hover:text-white transition-colors" />
+                <Sun className="w-4 h-4" />
               ) : (
-                <Moon className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Moon className="w-4 h-4" />
               )}
             </Button>
-            <Button
-              size="sm"
-              className="rounded-md gap-3 px-5 h-10 text-[10px] font-bold uppercase tracking-[0.16em] btn-primary-premium"
-            >
-              <Sparkles className="w-4 h-4 fill-current" />
+            <Button size="sm" className="gap-2 h-9 uppercase-label">
+              <Sparkles className="w-4 h-4" />
               USE AI Copilot
             </Button>
           </div>
         </header>
 
         <ScrollArea className="flex-1">
-          <div className="p-8 max-w-[1680px] mx-auto">
+          <div className="p-6">
             <Outlet />
           </div>
         </ScrollArea>
@@ -227,3 +215,4 @@ function AuthenticatedLayout() {
     </div>
   );
 }
+
