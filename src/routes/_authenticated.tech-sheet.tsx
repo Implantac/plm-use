@@ -30,6 +30,8 @@ import { useReferenceStore } from "@/lib/reference/store";
 import { emptyLifecycle } from "@/types/reference";
 import { BomBopPanel } from "@/components/techsheet/BomBopPanel";
 import { TechSheetVersions } from "@/components/techsheet/TechSheetVersions";
+import { PreCostPanel } from "@/components/techsheet/PreCostPanel";
+
 
 const techSheetSearchSchema = z.object({
   ref: z.string().optional(),
