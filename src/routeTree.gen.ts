@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authenticated.tech-sheet'
 import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
+import { Route as AuthenticatedShowroomRouteImport } from './routes/_authenticated.showroom'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
 import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
 import { Route as AuthenticatedReferencesRouteImport } from './routes/_authenticated.references'
@@ -72,6 +73,11 @@ const AuthenticatedTechSheetRoute = AuthenticatedTechSheetRouteImport.update({
 const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedShowroomRoute = AuthenticatedShowroomRouteImport.update({
+  id: '/showroom',
+  path: '/showroom',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
@@ -221,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/references': typeof AuthenticatedReferencesRoute
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
+  '/showroom': typeof AuthenticatedShowroomRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -252,6 +259,7 @@ export interface FileRoutesByTo {
   '/references': typeof AuthenticatedReferencesRoute
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
+  '/showroom': typeof AuthenticatedShowroomRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/references': typeof AuthenticatedReferencesRoute
   '/_authenticated/research': typeof AuthenticatedResearchRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
+  '/_authenticated/showroom': typeof AuthenticatedShowroomRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -318,6 +327,7 @@ export interface FileRouteTypes {
     | '/references'
     | '/research'
     | '/security'
+    | '/showroom'
     | '/suppliers'
     | '/tech-sheet'
     | '/admin/users'
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/references'
     | '/research'
     | '/security'
+    | '/showroom'
     | '/suppliers'
     | '/tech-sheet'
     | '/admin/users'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/_authenticated/references'
     | '/_authenticated/research'
     | '/_authenticated/security'
+    | '/_authenticated/showroom'
     | '/_authenticated/suppliers'
     | '/_authenticated/tech-sheet'
     | '/_authenticated/admin/users'
@@ -444,6 +456,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/showroom': {
+      id: '/_authenticated/showroom'
+      path: '/showroom'
+      fullPath: '/showroom'
+      preLoaderRoute: typeof AuthenticatedShowroomRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/security': {
@@ -646,6 +665,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedReferencesRoute: typeof AuthenticatedReferencesRoute
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
+  AuthenticatedShowroomRoute: typeof AuthenticatedShowroomRoute
   AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
   AuthenticatedTechSheetRoute: typeof AuthenticatedTechSheetRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -673,6 +693,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedReferencesRoute: AuthenticatedReferencesRoute,
   AuthenticatedResearchRoute: AuthenticatedResearchRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
+  AuthenticatedShowroomRoute: AuthenticatedShowroomRoute,
   AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
   AuthenticatedTechSheetRoute: AuthenticatedTechSheetRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
