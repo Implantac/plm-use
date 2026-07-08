@@ -181,6 +181,45 @@ function InventoryPage() {
         </Button>
       </div>
 
+      {criticalItems.length > 0 && (
+        <Card className="glass-card rounded-lg border border-rose-400/30 bg-rose-500/[0.06] mb-6">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-rose-200">
+              <AlertTriangle className="h-4 w-4" />
+              {criticalItems.length} insumo{criticalItems.length > 1 ? "s" : ""} abaixo do ponto do pedido
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {criticalItems.slice(0, 6).map((it) => {
+                const onHand = Number(balances[it.id]?.qty_on_hand ?? 0);
+                const belowSafety = onHand <= it.safety_stock && it.safety_stock > 0;
+                return (
+                  <button
+                    key={it.id}
+                    onClick={() => handleOpenDialog(it)}
+                    className={`text-left rounded-md border p-3 transition-colors ${belowSafety ? "border-rose-400/50 bg-rose-500/10 hover:bg-rose-500/15" : "border-amber-300/30 bg-amber-300/[0.05] hover:bg-amber-300/[0.09]"}`}
+                  >
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      {it.code} · {belowSafety ? "Crítico" : "Repor"}
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-white truncate">{it.name}</p>
+                    <p className="mt-1 text-[11px] text-white/80">
+                      Saldo {onHand.toFixed(0)}{it.unit} · PP {Number(it.reorder_point).toFixed(0)}{it.unit}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+            {criticalItems.length > 6 && (
+              <p className="mt-3 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                +{criticalItems.length - 6} outros itens abaixo do PP na tabela
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
         <Card className="glass-card rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
