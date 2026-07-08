@@ -135,12 +135,9 @@ function InventoryPage() {
 
   const handleClassifyAbc = async () => {
     setBusy(true);
-    const { error } = await supabase.rpc("classify_abc" as never, {
-      _a_threshold: 0.8,
-      _b_threshold: 0.95,
-    } as never);
+    const result = await runAbcClassification();
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (!result.ok) return toast.error(result.reason);
     toast.success("Curva ABC recalculada");
     void refetch();
   };
