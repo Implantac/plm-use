@@ -174,11 +174,21 @@ export const updateReservationStatus = createServerFn({ method: "POST" })
 
 // ---------- runAbcClassification --------------------------------------------
 // Reordena todos os itens ativos por annual_revenue e atribui A/B/C.
+// classify_abc é SECURITY DEFINER e só é executável por service_role — usamos
+// o admin client após validar o papel do chamador via requireSupabaseAuth +
+// has_role check ('admin' | 'manager' | 'almoxarifado').
 export const runAbcClassification = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase } = context;
-    const { data, error } = await supabase.rpc("classify_abc", {
+    const { supabase, userId } = context;
+    const { data: allowed, error: roleError } = await supabase.rpc("has_stock_write_role", {
+      _uid: userId,
+    } as never);
+    if (roleError) return { ok: false as const, reason: roleError.message, changes: [] };
+    if (!allowed) return { ok: false as const, reason: "forbidden", changes: [] };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("classify_abc", {
       _a_threshold: 0.8,
       _b_threshold: 0.95,
     });
