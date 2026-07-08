@@ -57,10 +57,20 @@ export const ITEM_NEXT: Record<LaunchItemStatus, LaunchItemStatus[]> = {
   descontinuado: [],
 };
 
+export type LaunchPerformance = {
+  wave_id: string;
+  codigo?: string | null;
+  janela_dias?: number | null;
+  sell_through_pct?: number | null;
+  fonte?: string | null;
+  calculado_em: string;
+};
+
 export function useLaunch() {
   const [waves, setWaves] = useState<LaunchWaveRow[]>([]);
   const [items, setItems] = useState<LaunchItemRow[]>([]);
   const [handoffs, setHandoffs] = useState<LaunchHandoffRow[]>([]);
+  const [performance, setPerformance] = useState<Record<string, LaunchPerformance>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,11 +80,26 @@ export function useLaunch() {
       supabase.from("launch_wave").select("*").order("created_at", { ascending: false }),
       supabase.from("launch_item").select("*").order("created_at", { ascending: false }),
       supabase.from("launch_handoff").select("*").order("created_at", { ascending: false }),
-    ]).then(([w, i, h]) => {
+      supabase
+        .from("entity_events")
+        .select("entity_id, entity_type, event_type, payload, created_at")
+        .eq("entity_type", "launch_wave")
+        .eq("event_type", "launch.performance.updated")
+        .order("created_at", { ascending: false })
+        .limit(500),
+    ]).then(([w, i, h, ev]) => {
       if (cancelled) return;
       if (w.data) setWaves(w.data as LaunchWaveRow[]);
       if (i.data) setItems(i.data as LaunchItemRow[]);
       if (h.data) setHandoffs(h.data as LaunchHandoffRow[]);
+      if (ev.data) {
+        const map: Record<string, LaunchPerformance> = {};
+        for (const row of ev.data) {
+          if (map[row.entity_id]) continue; // ordenado desc → mantém o mais recente
+          map[row.entity_id] = toPerformance(row.entity_id, row.payload, row.created_at);
+        }
+        setPerformance(map);
+      }
       setLoading(false);
     });
 
@@ -88,6 +113,28 @@ export function useLaunch() {
       )
       .on("postgres_changes", { event: "*", schema: "public", table: "launch_handoff" }, (p) =>
         setHandoffs((prev) => mergeRow(prev, p)),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "entity_events",
+          filter: "event_type=eq.launch.performance.updated",
+        },
+        (p) => {
+          const row = p.new as {
+            entity_id: string;
+            entity_type: string;
+            payload: unknown;
+            created_at: string;
+          };
+          if (row.entity_type !== "launch_wave") return;
+          setPerformance((prev) => ({
+            ...prev,
+            [row.entity_id]: toPerformance(row.entity_id, row.payload, row.created_at),
+          }));
+        },
       )
       .subscribe();
 
@@ -117,7 +164,19 @@ export function useLaunch() {
     return m;
   }, [handoffs]);
 
-  return { waves, items, handoffs, itemsByWave, handoffsByWave, loading };
+  return { waves, items, handoffs, itemsByWave, handoffsByWave, performance, loading };
+}
+
+function toPerformance(waveId: string, payload: unknown, createdAt: string): LaunchPerformance {
+  const p = (payload ?? {}) as Record<string, unknown>;
+  return {
+    wave_id: waveId,
+    codigo: (p.codigo as string | null) ?? null,
+    janela_dias: (p.janela_dias as number | null) ?? null,
+    sell_through_pct: (p.sell_through_pct as number | null) ?? null,
+    fonte: (p.fonte as string | null) ?? null,
+    calculado_em: (p.calculado_em as string) ?? createdAt,
+  };
 }
 
 function mergeRow<T extends { id: string }>(
