@@ -370,6 +370,9 @@ function InventoryPage() {
 
         <div className="space-y-6">
           <AbcCoveragePanel items={items} balances={balances} />
+          <ReservationsPanel items={items} />
+
+
 
           <Card className="glass-card rounded-lg">
             <CardContent className="p-5 space-y-4">
