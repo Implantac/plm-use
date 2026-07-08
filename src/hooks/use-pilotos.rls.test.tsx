@@ -41,7 +41,10 @@ function makeInsertBuilder(payload: unknown) {
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     from: (_table: string) => ({
-      select: (...args: unknown[]) => makeSelectBuilder().select?.(...args),
+      select: (...args: unknown[]) => {
+        const b = makeSelectBuilder() as { select: (...a: unknown[]) => unknown };
+        return b.select(...args);
+      },
       insert: (payload: unknown) => makeInsertBuilder(payload),
     }),
   },
