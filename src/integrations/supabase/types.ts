@@ -1215,6 +1215,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_entity_topic: {
+        Args: { _entity_id: string }
+        Returns: boolean
+      }
+      can_access_module_topic: { Args: { _topic: string }; Returns: boolean }
       can_transition: {
         Args: { _entity_type: string; _from: string; _to: string }
         Returns: boolean
