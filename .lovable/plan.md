@@ -1,167 +1,157 @@
-# Onda Fundação — Espinha Dorsal do PLM
+# H9-10 · Lançamento — Plano de Implementação
 
-Objetivo: transformar o produto de "coleção de telas" em "PLM com núcleo".
-Três entregas encadeadas, sem quebrar nada existente, sem virar ERP.
+Elo seguinte ao Mostruário (H9-09). Consolida a **decisão comercial** em um **plano de lançamento** rastreável: quais referências entram na coleção comercial, em qual janela, com qual grade, preço-alvo (referência via ERP) e meta de produção. Fecha o ciclo `Qualidade → Mostruário → Lançamento → Produção/Comercial`.
 
-**Princípio inegociável:** o PLM **não é fonte da verdade** para Produto,
-Estoque, Fornecedor, Pedido, NF, Financeiro, OP fabril, Cliente. Essas
-entidades pertencem ao ERP. O PLM apenas **referencia** (por chave externa
-`erp_id` + snapshot leve) e **consome via adapter read-only**.
+## 1. Escopo do playbook
 
----
+**Faz parte (PLM):**
+- Consolidar `showroom_decision = aprovada` em uma **Launch Wave** (janela comercial: coleção, mês, canal).
+- Definir grade final, cor final, meta de venda esperada, prioridade de produção, canal (varejo/atacado/e-com).
+- Gerar handoff idempotente para PCP (produção) e Comercial (catálogo/pedido), sem duplicar entidades do ERP.
+- Timeline unificada, workflow versionado, feedback pós-lançamento (sell-through vindo do ERP via adapter).
 
-## Entrega 1 — Núcleo `references` + eventos polimórficos
+**Fora (ERP, via `ErpAdapter`):**
+- Criação real de SKU comercial, preço final, ordem de produção contábil, pedido de venda, NF, saldo.
+- Cálculo de custo, margem, MRP.
 
-### O que faz
-Cria a entidade unificada de Referência (a peça em desenvolvimento) com
-workflow real de estados, e um motor de eventos reutilizável para qualquer
-entidade do sistema (referência, lote, ficha, piloto, CAPA, etc).
+## 2. Modelo de dados (novo)
 
-### Migrations (schema)
+```text
+launch_wave (janela comercial)
+  ├── launch_item (uma linha por referência lançada nessa wave)
+  │      ├── launch_item_grade (tamanhos/cores previstos)
+  │      └── launch_channel_target (varejo | atacado | ecom + meta)
+  └── launch_handoff (registro idempotente de envio ao ERP: pcp / comercial)
+```
 
-**`references`** — entidade central do PLM (peça sendo desenvolvida)
-- `code` (código de negócio, único), `name`, `collection_id` (soft ref),
-  `theme`, `line`, `season`, `designer_id`, `modelista_id`,
-  `status` (enum: `IDEIA | CROQUI | MODELAGEM | PILOTO | AJUSTE | APROVACAO | ENGENHARIA | PRODUCAO | FINALIZADA | ARQUIVADA`),
-  `priority`, `target_cost`, `target_price`, `image_url`,
-  `erp_product_id` (nullable — preenchido quando industrializa), `metadata` jsonb,
-  auditoria completa (created_by/at, updated_by/at).
-- Índices em `status`, `collection_id`, `code`.
+Campos-chave (sem preço/custo/estoque — proibidos por H9-00):
+- `launch_wave`: `codigo`, `colecao`, `janela_inicio`, `janela_fim`, `status`, `responsavel_id`.
+- `launch_item`: `wave_id`, `reference_id`, `showroom_decision_id` (origem), `prioridade`, `meta_unidades`, `status`, `erp_sku_ref` (só id externo).
+- `launch_handoff`: `wave_id`, `destino` (`pcp` | `comercial`), `idempotency_key`, `erp_source`, `erp_id`, `synced_at`, `payload_hash`.
 
-**`reference_transitions`** — máquina de estados versionada em tabela
-(from_status, to_status, requires_role, requires_checklist jsonb). Permite
-customizar workflow sem redeploy.
+## 3. Workflow (registrado em `workflow_definitions`)
 
-**`entity_events`** — motor polimórfico único
-- `entity_type` (enum: `reference | lote | tech_sheet | piloto | capa | engenharia | facao_order`)
-- `entity_id` uuid, `event_type` (`created | status_changed | commented | approved | rejected | assigned | attached | linked | erp_synced | ...`)
-- `from_status`, `to_status`, `payload` jsonb, `actor_id`, `actor_name`, `created_at`.
-- Índice composto `(entity_type, entity_id, created_at desc)` para timeline.
+- `launch_wave`: `rascunho → em_revisao → aprovada → publicada → em_producao → lancada → encerrada` (+ `cancelada` como saída controlada).
+- `launch_item`: `proposto → validado → aprovado → em_producao → disponivel → esgotado | descontinuado`.
+- Toda transição sensível exige `requires_role` (`coordenador_produto`, `diretor_produto`, `comercial`, `pcp`).
 
-**`entity_relations`** — grafo de relacionamentos entre entidades
-- `(from_type, from_id) → (to_type, to_id)` com `relation`
-  (`derives_from | has_tech_sheet | has_piloto | produced_in_lote | capa_for | uses_material_erp | supplied_by_erp`).
-- Permite "abrir uma referência e ver tudo conectado a ela" sem joins hard-coded.
+## 4. Eventos (`entity_events`)
 
-**Grants + RLS** em todas: leitura por `authenticated`, escrita por autor/manager,
-`service_role` full. Realtime habilitado em `references` e `entity_events`.
+`launch.wave.created` · `launch.wave.status_changed` · `launch.item.added` · `launch.item.status_changed` · `launch.handoff.sent` · `launch.handoff.confirmed` · `launch.performance.updated` (sell-through do ERP).
 
-### Funções SQL
-- `public.log_event(...)` security definer — grava em `entity_events`.
-- `public.can_transition_reference(from, to)` — consulta `reference_transitions`.
-- Trigger `references_status_change` → grava evento automático ao mudar status.
+Triggers automatizam `status_changed` e `handoff.*`. Cliente **nunca** insere em `entity_events`.
 
-### Client
-- `src/hooks/use-references.ts` — CRUD, transições validadas, realtime.
-- `src/hooks/use-entity-events.ts` — `useTimeline(entityType, entityId)` genérico.
-- `src/hooks/use-entity-relations.ts` — `useRelated(entityType, entityId)`.
+## 5. UX
 
-### Migração de dados existentes
-- Nenhuma destruição. Zustand `useReferenceStore` continua funcionando.
-- Adicionado botão "Publicar no núcleo" nas telas de Development/Reference
-  que faz upsert em `references` (opt-in, incremental).
+- Rota `/launch` (autenticada) com abas: **Waves**, **Itens**, **Handoffs**, **Performance**.
+- `EntityDrawer` reaproveitado para `launch_wave` e `launch_item` (timeline + relations + comentários).
+- Ação principal: "Promover decisões de mostruário → nova wave" (bulk, filtrado por período).
+- Estados vazio/carregando/erro cobertos; realtime via tópico escopado `launch-live`.
 
----
+## 6. IA (V11)
 
-## Entrega 2 — Drawer Universal de Entidade
+- Agente **Merchandiser**: sugere composição da wave a partir de feedback do mostruário (dimensão × nota), sinaliza sobreposição de mix e gaps de grade.
+- Agente **PCP-planner**: propõe prioridade de produção a partir de meta_unidades × lead time histórico (eventos).
+- Guardrail: agentes **sugerem**, humano decide; toda sugestão gravada como evento `ai_suggested` com hash do contexto.
 
-### O que faz
-Um único componente `<EntityDrawer type="reference" id="..." />` invocável
-de qualquer módulo, mostrando o painel completo padronizado do manifesto:
-Resumo, Indicadores, Timeline, Comentários, Documentos, Relacionamentos,
-Histórico, Responsáveis, Checklist, Workflow, Auditoria.
+## 7. Integração ERP (H6-02)
 
-### Componentes
-- `src/components/entity/EntityDrawer.tsx` — shell com tabs padronizadas.
-- `src/components/entity/EntitySummary.tsx` — cabeçalho + KPIs + ações rápidas.
-- `src/components/entity/EntityTimeline.tsx` — consome `entity_events` (unifica
-  o que hoje é `LoteTimeline` + `capa_events` + activity_log).
-- `src/components/entity/EntityRelations.tsx` — grafo enxuto: "Ficha técnica v3",
-  "Piloto aprovado", "Lote 2601 em Costura", "CAPA #12 aberta", "Material ERP-XYZ".
-- `src/components/entity/EntityWorkflow.tsx` — stepper com próximas transições
-  válidas + gates de checklist.
-- `src/components/entity/EntityContext.tsx` — provider global; `useOpenEntity()`
-  em qualquer lugar abre o drawer.
+- Leitura sob demanda: `erpAdapter.getSku(erp_sku_ref)` para exibir preço/EAN (cache ≤ 60s).
+- Escrita: `erpAdapter.writeErp('launch_handoff', payload, idempotency_key)` — chave determinística `wave:{id}:destino:{pcp|comercial}:v{n}`.
+- Performance: `erpAdapter.getSellThrough({ref_ids, from, to})` alimenta `launch.performance.updated` via cron `/api/public/cron/launch-performance` (assinado).
 
-### Integrações (sem reescrever telas)
-- Development, Tech-Sheet, Production (dialog do lote), Quality (CAPA),
-  Suppliers passam a chamar `openEntity({type,id})` em vez de drawers próprios,
-  **mantendo os drawers atuais como fallback** enquanto a migração ocorre.
-- Cmd+K (GlobalSearch) ganha "abrir no drawer" além de "navegar".
+## 8. Checklist técnico pré-produção
 
----
+### 8.1 Migrações (ordem)
+- [ ] `launch_wave`, `launch_item`, `launch_item_grade`, `launch_channel_target`, `launch_handoff` — cada `CREATE TABLE` seguido de `GRANT` (`authenticated` + `service_role`, **sem `anon`**), `ENABLE RLS`, policies por ação, trigger `updated_at`, índices em FKs e (`wave_id`, `reference_id`, `status`).
+- [ ] Inserts em `workflow_definitions` para `launch_wave` e `launch_item` com `requires_role`.
+- [ ] Triggers `log_launch_*_status_change` gravando `entity_events`.
+- [ ] Trigger de validação: `launch_item` só aceita `reference_id` com `showroom_decision.decision = 'aprovada'`.
+- [ ] `COMMENT ON TABLE/COLUMN` para contexto de IA.
+- [ ] Rollback documentado (drop na ordem inversa).
 
-## Entrega 3 — Camada ERP (adapter read-only)
+### 8.2 RLS (H2-03 / H3-03)
+- [ ] SELECT: `is_member(auth.uid())` **+** papel específico (`coordenador_produto`, `comercial`, `diretor_produto`, `pcp`, `admin`) via nova função `has_any_launch_role(uid)`.
+- [ ] INSERT: `WITH CHECK (auth.uid() = created_by AND has_any_launch_role(auth.uid()))`.
+- [ ] UPDATE: owner OR (`coordenador_produto` | `diretor_produto` | `admin`); `WITH CHECK` em `updated_by`.
+- [ ] DELETE: apenas `admin` — demais estados via transição `cancelada`.
+- [ ] Nenhuma policy `FOR ALL USING (true)`; nenhuma `TO anon`.
+- [ ] `handoff` protegido contra UPDATE de `idempotency_key`, `erp_id`, `synced_at` (trigger `BEFORE UPDATE` rejeita).
 
-### O que faz
-Define o **contrato** de consumo do ERP e uma implementação **mock trocável**,
-sem incluir escrita e sem duplicar entidades do ERP no PLM.
+### 8.3 Realtime (tópico `launch-live`)
+- [ ] Policy em `realtime.messages` para `launch-live` exige `can_access_module_topic('launch-live')` estendida com papéis do lançamento — **sem `is_member` sozinho**.
+- [ ] Tópicos por entidade (`launch:{wave_id}`) validam via `can_access_entity_topic(wave_id)`.
+- [ ] Payload de broadcast **não** carrega meta_unidades/valores sensíveis — apenas ids e status.
+- [ ] Cleanup: teardown do channel em `useEffect` (evitar loop de reconexão).
 
-### Arquitetura
-- `src/lib/erp/contract.ts` — interfaces TypeScript puras:
-  `ErpProduct`, `ErpSupplier`, `ErpStockLevel`, `ErpPurchaseOrder`,
-  `ErpProductionOrder`. Só campos que o PLM realmente lê.
-- `src/lib/erp/adapter.ts` — interface `ErpAdapter` com métodos
-  `getProduct(id)`, `searchProducts(q)`, `getSupplier(id)`, `getStock(sku)`,
-  `listPurchaseOrders({filter})`, `listProductionOrders({filter})`.
-  **Nenhum método `create/update/delete`.**
-- `src/lib/erp/mock-adapter.ts` — implementação que devolve dados dos seeds
-  atuais, com latência simulada e taxa de erro configurável.
-- `src/lib/erp/http-adapter.ts` (stub) — placeholder para adapter HTTP real
-  (documenta variáveis de ambiente esperadas; **não** implementado agora).
-- `src/lib/erp/index.ts` — factory que escolhe adapter por `VITE_ERP_MODE`.
-- `src/hooks/use-erp.ts` — hooks React Query com cache, retry, fallback UI
-  de indisponibilidade.
+### 8.4 Server functions (H3-02)
+- [ ] `createLaunchWave`, `addLaunchItem`, `promoteShowroomDecisions`, `transitionLaunch*` com `requireSupabaseAuth` + `has_role`.
+- [ ] `sendLaunchHandoff` (POST) — idempotente, valida wave `aprovada`, chama `erpAdapter.writeErp`, grava `launch.handoff.sent`.
+- [ ] Zod em toda entrada; nenhum `any`.
+- [ ] Nenhum helper de topo referenciado dentro de `.handler()` (evitar split transform).
 
-### Uso
-- Componente `<ErpBadge productId="..." />` mostra dados vindos do ERP com
-  ícone "external", tooltip "Fonte: ERP · sincronizado há Xmin", e estado
-  de erro tratado.
-- `entity_relations` guarda apenas `erp_id` (string opaca) — nunca copia
-  produto/estoque/fornecedor para tabelas do PLM.
+### 8.5 Permissões / papéis
+- [ ] Novos papéis já existem no enum `app_role` (`comercial`, `diretor_produto`, `coordenador_produto`, `pcp`); caso falte algum, migration adiciona.
+- [ ] `has_any_launch_role()` `SECURITY DEFINER`, `search_path = public`, `REVOKE EXECUTE FROM PUBLIC, anon, authenticated` (só o motor SQL invoca).
+- [ ] Auditoria: toda ação sensível gera `entity_events` com `actor = auth.uid()`.
 
-### O que NÃO fazemos (e por quê)
-- Não criar tabelas `products`, `suppliers`, `stock`, `purchase_orders`,
-  `financial_*` no PLM. Isso seria ERP.
-- Não escrever no ERP nesta onda. Escrita virá em onda posterior via
-  outbox pattern, se e quando necessário.
-- Não sincronizar em background agora. Consultas são pull sob demanda com
-  cache curto. Sync incremental é onda futura.
+### 8.6 Cron / webhook público
+- [ ] `/api/public/cron/launch-performance` verifica HMAC via `LAUNCH_CRON_SECRET` antes de qualquer escrita.
+- [ ] Idempotência: `payload_hash` bloqueia reprocesso.
+- [ ] Timeouts e retries documentados.
 
----
+### 8.7 UX / A11y (H4-05)
+- [ ] Estados vazio/carregando/erro em todas as abas.
+- [ ] Contraste AA; navegação por teclado; foco visível.
+- [ ] Textos em pt-BR consistentes.
+- [ ] `EntityDrawer` mostra timeline + relations + comments.
 
-## Fora de escopo desta onda
+### 8.8 Testes (H7)
+- [ ] RLS: matriz 8 cenários por tabela (anon, member sem papel, papel correto, owner, não-owner, admin, insert força `created_by`, delete só admin).
+- [ ] Workflow: toda transição válida passa; toda inválida falha; role errado falha.
+- [ ] Idempotência do handoff (mesmo `idempotency_key` → 1 registro).
+- [ ] E2E Playwright: promover 3 decisões → wave → aprovar → handoff → ver evento na timeline.
 
-- Reagrupamento das 25 rotas em 6 áreas → onda seguinte de UX.
-- Copiloto Industrial (IA) → onda seguinte, consome `entity_events` e adapter ERP.
-- Workflows automáticos (piloto aprovado → cria engenharia) → viáveis
-  após Entrega 1, mas serão outra onda para não inflar esta.
-- BI consolidado (views materializadas) → depende de volume de eventos reais.
+### 8.9 Segurança (H8-04) — findings abertos hoje
+- [ ] Corrigir `REALTIME_BROADCAST_MISSING_SCOPE` residual: garantir que o novo `launch-live` já nasça com escopo por papel.
+- [ ] Corrigir `REALTIME_BROADCAST_WILDCARD_TOPIC` para os wildcards que este elo introduz (`launch:%`).
+- [ ] Revisar `SUPA_authenticated_security_definer_function_executable`: revogar `EXECUTE` de `has_any_launch_role` e triggers novas.
+- [ ] `security--run_security_scan` sem novo `error` após deploy.
+- [ ] Atualizar `security-memory` com decisões deste elo.
 
----
+### 8.10 Observabilidade & BI (H3-05 / V10)
+- [ ] KPIs derivados de `entity_events`: `time_to_launch`, `handoff_success_rate`, `sell_through_D30`, `waves_publicadas_mes`.
+- [ ] Dashboard consome view materializada refreshada por cron.
+- [ ] Logs de server fns com `request_id` propagado.
 
-## Definition of Done desta onda
+### 8.11 Release (H7-05)
+- [ ] Build + tsgo + lint verdes.
+- [ ] Migração revisada (GRANT/RLS/policies por ação).
+- [ ] `supabase--linter` sem novo warning não justificado.
+- [ ] Design Review (V13) aprovado.
+- [ ] Rollback plan escrito.
 
-- [ ] Migrations aplicadas com GRANT + RLS + realtime.
-- [ ] Referência criável, transições validadas, timeline visível no drawer universal.
-- [ ] Drawer universal invocável de Development, Production e Quality sem regressão.
-- [ ] `LoteTimeline` e `capa_events` migrados para leitura via `useTimeline` genérico
-      (mantendo compatibilidade).
-- [ ] `ErpAdapter` mock em uso em pelo menos um ponto (ex.: exibição de fornecedor
-      na CAPA e material na ficha técnica) via `<ErpBadge/>`.
-- [ ] Nenhuma tabela nova do PLM duplicando escopo do ERP.
-- [ ] Nenhum store existente removido; migração é opt-in.
+## 9. Ordem de execução sugerida
 
----
+```text
+1. Playbook H9-10 .md + README H9 atualizado
+2. Migration 1 — tabelas + GRANT + RLS + índices
+3. Migration 2 — workflow_definitions + triggers de eventos + validação showroom_decision
+4. Migration 3 — realtime policies escopadas + revoke EXECUTE
+5. server fns (createServerFn) + hooks + rota /launch
+6. Cron público de performance + integração ErpAdapter
+7. Testes (RLS + workflow + E2E) + security scan
+8. Release checklist (H7-05)
+```
 
-## Ordem de execução proposta
+## 10. Riscos
 
-1. Migration do núcleo (`references`, `entity_events`, `entity_relations`,
-   `reference_transitions`, funções e triggers, grants, realtime).
-2. Hooks `use-references`, `use-entity-events`, `use-entity-relations`.
-3. Contrato + mock adapter ERP + `use-erp`.
-4. `EntityDrawer` + subcomponentes + provider global.
-5. Integração incremental: Development → Production → Quality.
-6. Refactor de `LoteTimeline` para consumir `useTimeline` (sem quebrar UI).
+| Risco | Mitigação |
+|---|---|
+| Duplicar SKU/preço no PLM | Adapter obrigatório; campos proibidos bloqueados em code review |
+| Handoff duplicado ao ERP | `idempotency_key` determinístico + `payload_hash` |
+| Vazamento de meta comercial via realtime | Tópicos escopados por papel; payload mínimo |
+| Wave publicada com item sem decisão aprovada | Trigger de validação no `launch_item` |
+| Cron sem autenticação | HMAC obrigatório antes de qualquer escrita |
 
-Confirma este escopo para eu começar pela migration do núcleo?
+Aprovando este plano, sigo com o `.md` do playbook + primeira migração (tabelas + RLS + GRANT).

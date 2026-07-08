@@ -350,6 +350,268 @@ export type Database = {
         }
         Relationships: []
       }
+      launch_channel_target: {
+        Row: {
+          canal: string
+          created_at: string
+          created_by: string | null
+          id: string
+          item_id: string
+          meta_unidades: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          canal: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id: string
+          meta_unidades?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          canal?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id?: string
+          meta_unidades?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "launch_channel_target_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "launch_item"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      launch_handoff: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          destino: string
+          erp_id: string | null
+          erp_source: string | null
+          error: string | null
+          id: string
+          idempotency_key: string
+          payload_hash: string
+          synced_at: string | null
+          updated_at: string
+          updated_by: string | null
+          wave_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          destino: string
+          erp_id?: string | null
+          erp_source?: string | null
+          error?: string | null
+          id?: string
+          idempotency_key: string
+          payload_hash: string
+          synced_at?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          wave_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          destino?: string
+          erp_id?: string | null
+          erp_source?: string | null
+          error?: string | null
+          id?: string
+          idempotency_key?: string
+          payload_hash?: string
+          synced_at?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          wave_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "launch_handoff_wave_id_fkey"
+            columns: ["wave_id"]
+            isOneToOne: false
+            referencedRelation: "launch_wave"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      launch_item: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          erp_sku_ref: string | null
+          erp_source: string | null
+          erp_synced_at: string | null
+          id: string
+          meta_unidades: number
+          notas: string | null
+          prioridade: number
+          reference_id: string
+          showroom_decision_id: string | null
+          status: string
+          updated_at: string
+          updated_by: string | null
+          wave_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          erp_sku_ref?: string | null
+          erp_source?: string | null
+          erp_synced_at?: string | null
+          id?: string
+          meta_unidades?: number
+          notas?: string | null
+          prioridade?: number
+          reference_id: string
+          showroom_decision_id?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+          wave_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          erp_sku_ref?: string | null
+          erp_source?: string | null
+          erp_synced_at?: string | null
+          id?: string
+          meta_unidades?: number
+          notas?: string | null
+          prioridade?: number
+          reference_id?: string
+          showroom_decision_id?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+          wave_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "launch_item_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "launch_item_showroom_decision_id_fkey"
+            columns: ["showroom_decision_id"]
+            isOneToOne: false
+            referencedRelation: "showroom_decision"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "launch_item_wave_id_fkey"
+            columns: ["wave_id"]
+            isOneToOne: false
+            referencedRelation: "launch_wave"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      launch_item_grade: {
+        Row: {
+          cor: string
+          created_at: string
+          created_by: string | null
+          id: string
+          item_id: string
+          quantidade: number
+          tamanho: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cor: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id: string
+          quantidade?: number
+          tamanho: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cor?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id?: string
+          quantidade?: number
+          tamanho?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "launch_item_grade_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "launch_item"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      launch_wave: {
+        Row: {
+          codigo: string
+          colecao: string
+          created_at: string
+          created_by: string | null
+          id: string
+          janela_fim: string
+          janela_inicio: string
+          notas: string | null
+          responsavel_id: string | null
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          codigo: string
+          colecao: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          janela_fim: string
+          janela_inicio: string
+          notas?: string | null
+          responsavel_id?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          codigo?: string
+          colecao?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          janela_fim?: string
+          janela_inicio?: string
+          notas?: string | null
+          responsavel_id?: string | null
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -1231,6 +1493,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_any_launch_role: { Args: { _uid: string }; Returns: boolean }
       has_any_showroom_role: { Args: { _uid: string }; Returns: boolean }
       has_role: {
         Args: {

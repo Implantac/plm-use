@@ -23,11 +23,12 @@ usando o template canônico `H9-00-template.md`.
 | 07 | [Qualidade & CAPA](./H9-07-qualidade-capa.md) | Inspeção final + ações corretivas | 🟡 |
 | 08 | [Expedição & Estoque PA](./H9-08-expedicao-estoque.md) | Entrada PA → Alocação → Picking → Conferência → Despacho | 🟡 |
 | 09 | [Mostruário](./H9-09-mostruario.md) | Peça-mãe → Kits → Ficha digital → Feedback → Go/No-Go | 🟡 |
-| 10 | Engenharia de Produto | BOM / BOP / consumo | 🔴 |
-| 11 | Compras & MRP | Suprimentos | 🔴 |
-| 12 | Estoque & Recebimento (MP) | Almoxarifado matéria-prima | 🔴 |
-| 13 | Mostruário & Comercial | Mostruário → Venda | 🔴 |
-| 14 | Pós-venda & Aprendizado | Pós-venda + retro para V1 | 🔴 |
+| 10 | [Lançamento](./H9-10-lancamento.md) | Wave comercial → Handoff ERP → Sell-through | 🟡 |
+| 11 | Engenharia de Produto | BOM / BOP / consumo | 🔴 |
+| 12 | Compras & MRP | Suprimentos | 🔴 |
+| 13 | Estoque & Recebimento (MP) | Almoxarifado matéria-prima | 🔴 |
+| 14 | Comercial pós-lançamento | Pedido → Faturamento (via ERP) | 🔴 |
+| 15 | Pós-venda & Aprendizado | Pós-venda + retro para V1 | 🔴 |
 
 Legenda: 🔴 planejado · 🟡 parcial · 🟢 pronto
 
