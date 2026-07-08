@@ -25,6 +25,7 @@ import { Route as AuthenticatedReferencesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedQualityRouteImport } from './routes/_authenticated.quality'
 import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authenticated.prototypes'
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated.production'
+import { Route as AuthenticatedPrintsRouteImport } from './routes/_authenticated.prints'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
 import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
@@ -126,6 +127,11 @@ const AuthenticatedPrototypesRoute = AuthenticatedPrototypesRouteImport.update({
 const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
   id: '/production',
   path: '/production',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPrintsRoute = AuthenticatedPrintsRouteImport.update({
+  id: '/prints',
+  path: '/prints',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/launch': typeof AuthenticatedLaunchRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
+  '/prints': typeof AuthenticatedPrintsRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
   '/quality': typeof AuthenticatedQualityRoute
@@ -308,6 +315,7 @@ export interface FileRoutesByTo {
   '/launch': typeof AuthenticatedLaunchRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
+  '/prints': typeof AuthenticatedPrintsRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
   '/prototypes': typeof AuthenticatedPrototypesRoute
   '/quality': typeof AuthenticatedQualityRoute
@@ -349,6 +357,7 @@ export interface FileRoutesById {
   '/_authenticated/launch': typeof AuthenticatedLaunchRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
+  '/_authenticated/prints': typeof AuthenticatedPrintsRoute
   '/_authenticated/production': typeof AuthenticatedProductionRouteWithChildren
   '/_authenticated/prototypes': typeof AuthenticatedPrototypesRoute
   '/_authenticated/quality': typeof AuthenticatedQualityRoute
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/launch'
     | '/marketing'
     | '/planner'
+    | '/prints'
     | '/production'
     | '/prototypes'
     | '/quality'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/launch'
     | '/marketing'
     | '/planner'
+    | '/prints'
     | '/production'
     | '/prototypes'
     | '/quality'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/_authenticated/launch'
     | '/_authenticated/marketing'
     | '/_authenticated/planner'
+    | '/_authenticated/prints'
     | '/_authenticated/production'
     | '/_authenticated/prototypes'
     | '/_authenticated/quality'
@@ -610,6 +622,13 @@ declare module '@tanstack/react-router' {
       path: '/production'
       fullPath: '/production'
       preLoaderRoute: typeof AuthenticatedProductionRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/prints': {
+      id: '/_authenticated/prints'
+      path: '/prints'
+      fullPath: '/prints'
+      preLoaderRoute: typeof AuthenticatedPrintsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/planner': {
@@ -815,6 +834,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedLaunchRoute: typeof AuthenticatedLaunchRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
+  AuthenticatedPrintsRoute: typeof AuthenticatedPrintsRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRouteWithChildren
   AuthenticatedPrototypesRoute: typeof AuthenticatedPrototypesRoute
   AuthenticatedQualityRoute: typeof AuthenticatedQualityRoute
@@ -846,6 +866,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedLaunchRoute: AuthenticatedLaunchRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
+  AuthenticatedPrintsRoute: AuthenticatedPrintsRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRouteWithChildren,
   AuthenticatedPrototypesRoute: AuthenticatedPrototypesRoute,
   AuthenticatedQualityRoute: AuthenticatedQualityRoute,
