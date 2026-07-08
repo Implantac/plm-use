@@ -40,6 +40,7 @@ import {
   FileImage,
   LayoutTemplate,
   Grid3x3,
+  Shirt,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -96,6 +97,7 @@ function AuthenticatedLayout() {
           { icon: <Palette className="w-4 h-4" />, label: "Cartela de Cores", href: "/colors" },
           { icon: <FileImage className="w-4 h-4" />, label: "Cartela de Estampas", href: "/prints" },
           { icon: <LayoutTemplate className="w-4 h-4" />, label: "Painel de Displayagem", href: "/display" },
+          { icon: <Shirt className="w-4 h-4" />, label: "Coordenados · Looks", href: "/looks" },
           { icon: <Layers className="w-4 h-4" />, label: "Coleções", href: "/collections" },
           { icon: <Grid3x3 className="w-4 h-4" />, label: "Mapa de Coleção", href: "/collection-map" },
           { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
