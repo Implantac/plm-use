@@ -40,6 +40,7 @@ import {
   FileImage,
   LayoutTemplate,
   Grid3x3,
+  Shirt,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
