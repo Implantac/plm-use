@@ -470,6 +470,15 @@ function InventoryPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <MovementDialog
+        open={isMoveOpen}
+        onOpenChange={setIsMoveOpen}
+        items={items}
+        preselectItemId={moveItemId}
+        onDone={() => void refetch()}
+      />
     </ModuleLayout>
   );
 }
+
