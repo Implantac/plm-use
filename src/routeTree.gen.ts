@@ -28,6 +28,7 @@ import { Route as AuthenticatedProductionRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPrintsRouteImport } from './routes/_authenticated.prints'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
+import { Route as AuthenticatedLooksRouteImport } from './routes/_authenticated.looks'
 import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
 import { Route as AuthenticatedInfluencersRouteImport } from './routes/_authenticated.influencers'
@@ -144,6 +145,11 @@ const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
 const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
   id: '/marketing',
   path: '/marketing',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedLooksRoute = AuthenticatedLooksRouteImport.update({
+  id: '/looks',
+  path: '/looks',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedLaunchRoute = AuthenticatedLaunchRouteImport.update({
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/launch': typeof AuthenticatedLaunchRoute
+  '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/launch': typeof AuthenticatedLaunchRoute
+  '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
@@ -374,6 +382,7 @@ export interface FileRoutesById {
   '/_authenticated/influencers': typeof AuthenticatedInfluencersRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/launch': typeof AuthenticatedLaunchRoute
+  '/_authenticated/looks': typeof AuthenticatedLooksRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/prints': typeof AuthenticatedPrintsRoute
@@ -418,6 +427,7 @@ export interface FileRouteTypes {
     | '/influencers'
     | '/inventory'
     | '/launch'
+    | '/looks'
     | '/marketing'
     | '/planner'
     | '/prints'
@@ -460,6 +470,7 @@ export interface FileRouteTypes {
     | '/influencers'
     | '/inventory'
     | '/launch'
+    | '/looks'
     | '/marketing'
     | '/planner'
     | '/prints'
@@ -503,6 +514,7 @@ export interface FileRouteTypes {
     | '/_authenticated/influencers'
     | '/_authenticated/inventory'
     | '/_authenticated/launch'
+    | '/_authenticated/looks'
     | '/_authenticated/marketing'
     | '/_authenticated/planner'
     | '/_authenticated/prints'
@@ -668,6 +680,13 @@ declare module '@tanstack/react-router' {
       path: '/marketing'
       fullPath: '/marketing'
       preLoaderRoute: typeof AuthenticatedMarketingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/looks': {
+      id: '/_authenticated/looks'
+      path: '/looks'
+      fullPath: '/looks'
+      preLoaderRoute: typeof AuthenticatedLooksRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/launch': {
@@ -873,6 +892,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedInfluencersRoute: typeof AuthenticatedInfluencersRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedLaunchRoute: typeof AuthenticatedLaunchRoute
+  AuthenticatedLooksRoute: typeof AuthenticatedLooksRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedPrintsRoute: typeof AuthenticatedPrintsRoute
@@ -907,6 +927,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedInfluencersRoute: AuthenticatedInfluencersRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedLaunchRoute: AuthenticatedLaunchRoute,
+  AuthenticatedLooksRoute: AuthenticatedLooksRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedPrintsRoute: AuthenticatedPrintsRoute,
