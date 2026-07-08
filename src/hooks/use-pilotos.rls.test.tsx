@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 // Testes de RLS do client para a entidade Piloto.
 // Cobre: usuário sem papel recebe lista vazia (RLS filtra); INSERT sem papel
 // falha silenciosamente (create → null); usuário com papel autorizado enxerga
