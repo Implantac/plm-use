@@ -40,6 +40,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCommercialRouteImport } from './routes/_authenticated.commercial'
 import { Route as AuthenticatedColorsRouteImport } from './routes/_authenticated.colors'
 import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenticated.collections'
+import { Route as AuthenticatedCollectionMapRouteImport } from './routes/_authenticated.collection-map'
 import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
@@ -209,6 +210,12 @@ const AuthenticatedCollectionsRoute =
     path: '/collections',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCollectionMapRoute =
+  AuthenticatedCollectionMapRouteImport.update({
+    id: '/collection-map',
+    path: '/collection-map',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedCadRoute = AuthenticatedCadRouteImport.update({
   id: '/cad',
   path: '/cad',
@@ -268,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/cad': typeof AuthenticatedCadRoute
+  '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/colors': typeof AuthenticatedColorsRoute
   '/commercial': typeof AuthenticatedCommercialRoute
@@ -309,6 +317,7 @@ export interface FileRoutesByTo {
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/cad': typeof AuthenticatedCadRoute
+  '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/colors': typeof AuthenticatedColorsRoute
   '/commercial': typeof AuthenticatedCommercialRoute
@@ -352,6 +361,7 @@ export interface FileRoutesById {
   '/_authenticated/ai-center': typeof AuthenticatedAiCenterRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/cad': typeof AuthenticatedCadRoute
+  '/_authenticated/collection-map': typeof AuthenticatedCollectionMapRoute
   '/_authenticated/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/_authenticated/colors': typeof AuthenticatedColorsRoute
   '/_authenticated/commercial': typeof AuthenticatedCommercialRoute
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/ai-center'
     | '/analytics'
     | '/cad'
+    | '/collection-map'
     | '/collections'
     | '/colors'
     | '/commercial'
@@ -436,6 +447,7 @@ export interface FileRouteTypes {
     | '/ai-center'
     | '/analytics'
     | '/cad'
+    | '/collection-map'
     | '/collections'
     | '/colors'
     | '/commercial'
@@ -478,6 +490,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ai-center'
     | '/_authenticated/analytics'
     | '/_authenticated/cad'
+    | '/_authenticated/collection-map'
     | '/_authenticated/collections'
     | '/_authenticated/colors'
     | '/_authenticated/commercial'
@@ -741,6 +754,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCollectionsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/collection-map': {
+      id: '/_authenticated/collection-map'
+      path: '/collection-map'
+      fullPath: '/collection-map'
+      preLoaderRoute: typeof AuthenticatedCollectionMapRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/cad': {
       id: '/_authenticated/cad'
       path: '/cad'
@@ -840,6 +860,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAiCenterRoute: typeof AuthenticatedAiCenterRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedCadRoute: typeof AuthenticatedCadRoute
+  AuthenticatedCollectionMapRoute: typeof AuthenticatedCollectionMapRoute
   AuthenticatedCollectionsRoute: typeof AuthenticatedCollectionsRouteWithChildren
   AuthenticatedColorsRoute: typeof AuthenticatedColorsRoute
   AuthenticatedCommercialRoute: typeof AuthenticatedCommercialRoute
@@ -873,6 +894,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAiCenterRoute: AuthenticatedAiCenterRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedCadRoute: AuthenticatedCadRoute,
+  AuthenticatedCollectionMapRoute: AuthenticatedCollectionMapRoute,
   AuthenticatedCollectionsRoute: AuthenticatedCollectionsRouteWithChildren,
   AuthenticatedColorsRoute: AuthenticatedColorsRoute,
   AuthenticatedCommercialRoute: AuthenticatedCommercialRoute,
