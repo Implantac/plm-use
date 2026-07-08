@@ -130,6 +130,13 @@ export const useTechSheetStore = create<State>()(persist((set, get) => ({
       return { data: { ...s.data, [ref]: { ...cur, bop: cur.bop.filter((b) => b.id !== id) } } };
     });
   },
+  updatePreCost(ref, patch) {
+    set((s) => {
+      const cur = s.data[ref] ?? seedFor(ref);
+      return { data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } } };
+    });
+  },
+
   createVersion(ref, autor, resumo, alteracoes) {
     const cur = get().data[ref] ?? seedFor(ref);
     const last = cur.versoes[0]?.versao ?? "v1.0";
