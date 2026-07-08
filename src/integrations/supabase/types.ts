@@ -1379,6 +1379,250 @@ export type Database = {
           },
         ]
       }
+      stock_item: {
+        Row: {
+          abc_class: Database["public"]["Enums"]["abc_class"] | null
+          annual_qty: number
+          annual_revenue: number
+          category: Database["public"]["Enums"]["stock_item_category"]
+          code: string
+          coverage_days_min: number
+          created_at: string
+          created_by: string
+          demand_avg_daily: number
+          demand_stddev: number
+          eoq: number
+          holding_cost_unit: number
+          id: string
+          is_active: boolean
+          lead_time_days: number
+          max_qty: number
+          min_qty: number
+          name: string
+          notes: string | null
+          order_cost: number
+          reorder_point: number
+          safety_stock: number
+          service_factor: number
+          supplier_default: string | null
+          unit: string
+          unit_price: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          abc_class?: Database["public"]["Enums"]["abc_class"] | null
+          annual_qty?: number
+          annual_revenue?: number
+          category?: Database["public"]["Enums"]["stock_item_category"]
+          code: string
+          coverage_days_min?: number
+          created_at?: string
+          created_by?: string
+          demand_avg_daily?: number
+          demand_stddev?: number
+          eoq?: number
+          holding_cost_unit?: number
+          id?: string
+          is_active?: boolean
+          lead_time_days?: number
+          max_qty?: number
+          min_qty?: number
+          name: string
+          notes?: string | null
+          order_cost?: number
+          reorder_point?: number
+          safety_stock?: number
+          service_factor?: number
+          supplier_default?: string | null
+          unit?: string
+          unit_price?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          abc_class?: Database["public"]["Enums"]["abc_class"] | null
+          annual_qty?: number
+          annual_revenue?: number
+          category?: Database["public"]["Enums"]["stock_item_category"]
+          code?: string
+          coverage_days_min?: number
+          created_at?: string
+          created_by?: string
+          demand_avg_daily?: number
+          demand_stddev?: number
+          eoq?: number
+          holding_cost_unit?: number
+          id?: string
+          is_active?: boolean
+          lead_time_days?: number
+          max_qty?: number
+          min_qty?: number
+          name?: string
+          notes?: string | null
+          order_cost?: number
+          reorder_point?: number
+          safety_stock?: number
+          service_factor?: number
+          supplier_default?: string | null
+          unit?: string
+          unit_price?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      stock_movement: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          item_id: string
+          justification: string | null
+          kind: Database["public"]["Enums"]["stock_movement_kind"]
+          lot_code: string | null
+          qty: number
+          ref_id: string | null
+          ref_type: string | null
+          transfer_pair_id: string | null
+          warehouse_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          item_id: string
+          justification?: string | null
+          kind: Database["public"]["Enums"]["stock_movement_kind"]
+          lot_code?: string | null
+          qty: number
+          ref_id?: string | null
+          ref_type?: string | null
+          transfer_pair_id?: string | null
+          warehouse_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          item_id?: string
+          justification?: string | null
+          kind?: Database["public"]["Enums"]["stock_movement_kind"]
+          lot_code?: string | null
+          qty?: number
+          ref_id?: string | null
+          ref_type?: string | null
+          transfer_pair_id?: string | null
+          warehouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movement_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_balance"
+            referencedColumns: ["item_id"]
+          },
+          {
+            foreignKeyName: "stock_movement_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_item"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movement_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "stock_balance"
+            referencedColumns: ["warehouse_id"]
+          },
+          {
+            foreignKeyName: "stock_movement_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouse"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_reservation: {
+        Row: {
+          cancelled_at: string | null
+          consumed_at: string | null
+          created_at: string
+          created_by: string
+          id: string
+          item_id: string
+          notes: string | null
+          qty: number
+          ref_id: string
+          ref_type: string
+          status: Database["public"]["Enums"]["stock_reservation_status"]
+          updated_at: string
+          warehouse_id: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          consumed_at?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          item_id: string
+          notes?: string | null
+          qty: number
+          ref_id: string
+          ref_type: string
+          status?: Database["public"]["Enums"]["stock_reservation_status"]
+          updated_at?: string
+          warehouse_id: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          consumed_at?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          item_id?: string
+          notes?: string | null
+          qty?: number
+          ref_id?: string
+          ref_type?: string
+          status?: Database["public"]["Enums"]["stock_reservation_status"]
+          updated_at?: string
+          warehouse_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_reservation_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_balance"
+            referencedColumns: ["item_id"]
+          },
+          {
+            foreignKeyName: "stock_reservation_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_item"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_reservation_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "stock_balance"
+            referencedColumns: ["warehouse_id"]
+          },
+          {
+            foreignKeyName: "stock_reservation_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouse"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tech_sheets: {
         Row: {
           bom: Json
@@ -1433,6 +1677,42 @@ export type Database = {
         }
         Relationships: []
       }
+      warehouse: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean
+          location: string | null
+          name: string
+          type: Database["public"]["Enums"]["warehouse_type"]
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          name: string
+          type?: Database["public"]["Enums"]["warehouse_type"]
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          name?: string
+          type?: Database["public"]["Enums"]["warehouse_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       workflow_definitions: {
         Row: {
           created_at: string
@@ -1474,9 +1754,59 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      stock_balance: {
+        Row: {
+          item_code: string | null
+          item_id: string | null
+          item_name: string | null
+          qty_on_hand: number | null
+          qty_reserved: number | null
+          warehouse_code: string | null
+          warehouse_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      calc_stock_params_row: {
+        Args: { _row: Database["public"]["Tables"]["stock_item"]["Row"] }
+        Returns: {
+          abc_class: Database["public"]["Enums"]["abc_class"] | null
+          annual_qty: number
+          annual_revenue: number
+          category: Database["public"]["Enums"]["stock_item_category"]
+          code: string
+          coverage_days_min: number
+          created_at: string
+          created_by: string
+          demand_avg_daily: number
+          demand_stddev: number
+          eoq: number
+          holding_cost_unit: number
+          id: string
+          is_active: boolean
+          lead_time_days: number
+          max_qty: number
+          min_qty: number
+          name: string
+          notes: string | null
+          order_cost: number
+          reorder_point: number
+          safety_stock: number
+          service_factor: number
+          supplier_default: string | null
+          unit: string
+          unit_price: number
+          updated_at: string
+          updated_by: string | null
+        }
+        SetofOptions: {
+          from: "stock_item"
+          to: "stock_item"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       can_access_entity_topic: {
         Args: { _entity_id: string }
         Returns: boolean
@@ -1493,8 +1823,18 @@ export type Database = {
         }
         Returns: boolean
       }
+      classify_abc: {
+        Args: { _a_threshold?: number; _b_threshold?: number }
+        Returns: {
+          cumulative_pct: number
+          item_id: string
+          new_class: Database["public"]["Enums"]["abc_class"]
+          old_class: Database["public"]["Enums"]["abc_class"]
+        }[]
+      }
       has_any_launch_role: { Args: { _uid: string }; Returns: boolean }
       has_any_showroom_role: { Args: { _uid: string }; Returns: boolean }
+      has_any_stock_role: { Args: { _uid: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1502,6 +1842,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_stock_write_role: { Args: { _uid: string }; Returns: boolean }
       is_member: { Args: { _uid: string }; Returns: boolean }
       user_has_role_name: {
         Args: { _name: string; _uid: string }
@@ -1509,6 +1850,7 @@ export type Database = {
       }
     }
     Enums: {
+      abc_class: "A" | "B" | "C"
       app_role:
         | "admin"
         | "manager"
@@ -1534,6 +1876,9 @@ export type Database = {
         | "launch_wave"
         | "launch_item"
         | "launch_handoff"
+        | "stock_item"
+        | "stock_movement"
+        | "stock_reservation"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -1555,6 +1900,22 @@ export type Database = {
         | "PRODUCAO"
         | "FINALIZADA"
         | "ARQUIVADA"
+      stock_item_category:
+        | "tecido"
+        | "aviamento"
+        | "embalagem"
+        | "acabado"
+        | "insumo"
+        | "etiqueta"
+      stock_movement_kind:
+        | "in"
+        | "out"
+        | "transfer_in"
+        | "transfer_out"
+        | "adjust"
+        | "count"
+      stock_reservation_status: "ativa" | "consumida" | "cancelada"
+      warehouse_type: "central" | "celula" | "expedicao" | "quarentena"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1682,6 +2043,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      abc_class: ["A", "B", "C"],
       app_role: [
         "admin",
         "manager",
@@ -1708,6 +2070,9 @@ export const Constants = {
         "launch_wave",
         "launch_item",
         "launch_handoff",
+        "stock_item",
+        "stock_movement",
+        "stock_reservation",
       ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [
@@ -1732,6 +2097,24 @@ export const Constants = {
         "FINALIZADA",
         "ARQUIVADA",
       ],
+      stock_item_category: [
+        "tecido",
+        "aviamento",
+        "embalagem",
+        "acabado",
+        "insumo",
+        "etiqueta",
+      ],
+      stock_movement_kind: [
+        "in",
+        "out",
+        "transfer_in",
+        "transfer_out",
+        "adjust",
+        "count",
+      ],
+      stock_reservation_status: ["ativa", "consumida", "cancelada"],
+      warehouse_type: ["central", "celula", "expedicao", "quarentena"],
     },
   },
 } as const
