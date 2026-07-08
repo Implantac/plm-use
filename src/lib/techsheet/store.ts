@@ -72,10 +72,7 @@ const seedFor = (ref: string): TechSheetData => ({
   preCost: { targetCusto: 80, overheadPct: 12, markupPct: 220, targetPreco: 349 },
 });
 
-export function setPreCost(state: State, ref: string, patch: Partial<PreCost>) {
-  const cur = state.data[ref] ?? seedFor(ref);
-  return { ...cur, preCost: { ...cur.preCost, ...patch } };
-}
+
 
 
 interface State {
