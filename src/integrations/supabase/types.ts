@@ -1623,6 +1623,230 @@ export type Database = {
           },
         ]
       }
+      supplier_orders: {
+        Row: {
+          codigo: string
+          created_at: string
+          created_by: string | null
+          descricao: string | null
+          id: string
+          observacoes: string | null
+          prazo: string | null
+          quantidade: number
+          reference_id: string | null
+          status: string
+          supplier_id: string
+          supplier_responded_at: string | null
+          supplier_response: string | null
+          unidade: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          codigo: string
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          observacoes?: string | null
+          prazo?: string | null
+          quantidade?: number
+          reference_id?: string | null
+          status?: string
+          supplier_id: string
+          supplier_responded_at?: string | null
+          supplier_response?: string | null
+          unidade?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          codigo?: string
+          created_at?: string
+          created_by?: string | null
+          descricao?: string | null
+          id?: string
+          observacoes?: string | null
+          prazo?: string | null
+          quantidade?: number
+          reference_id?: string | null
+          status?: string
+          supplier_id?: string
+          supplier_responded_at?: string | null
+          supplier_response?: string | null
+          unidade?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_orders_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "references"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supplier_sample_submissions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          decided_at: string | null
+          decided_by: string | null
+          decision: string
+          decision_note: string | null
+          fotos: Json
+          id: string
+          observacoes: string | null
+          supplier_id: string
+          supplier_order_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision?: string
+          decision_note?: string | null
+          fotos?: Json
+          id?: string
+          observacoes?: string | null
+          supplier_id: string
+          supplier_order_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          decision?: string
+          decision_note?: string | null
+          fotos?: Json
+          id?: string
+          observacoes?: string | null
+          supplier_id?: string
+          supplier_order_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_sample_submissions_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_sample_submissions_supplier_order_id_fkey"
+            columns: ["supplier_order_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supplier_users: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          supplier_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          supplier_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          supplier_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_users_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          cidade: string | null
+          cnpj: string | null
+          code: string
+          contato_email: string | null
+          contato_nome: string | null
+          contato_telefone: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          notes: string | null
+          status: string
+          tipo: string
+          uf: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          cnpj?: string | null
+          code: string
+          contato_email?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          status?: string
+          tipo?: string
+          uf?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          cnpj?: string | null
+          code?: string
+          contato_email?: string | null
+          contato_nome?: string | null
+          contato_telefone?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          status?: string
+          tipo?: string
+          uf?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       tech_sheets: {
         Row: {
           bom: Json
@@ -1843,9 +2067,14 @@ export type Database = {
         Returns: boolean
       }
       has_stock_write_role: { Args: { _uid: string }; Returns: boolean }
+      has_supplier_mgmt_role: { Args: { _uid: string }; Returns: boolean }
       is_member: { Args: { _uid: string }; Returns: boolean }
       is_user_mentioned: {
         Args: { _mentions: string[]; _uid: string }
+        Returns: boolean
+      }
+      user_belongs_to_supplier: {
+        Args: { _supplier_id: string; _uid: string }
         Returns: boolean
       }
       user_has_role_name: {
