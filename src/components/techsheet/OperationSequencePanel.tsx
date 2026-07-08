@@ -10,8 +10,8 @@ const EFICIENCIA = 0.75;    // 75% de eficiência real de fábrica
 const COSTUREIRAS_DEFAULT = 8;
 
 export function OperationSequencePanel({ refAtual }: { refAtual: string }) {
-  const { getSheet } = useTechSheetStore();
-  const sheet = getSheet(refAtual);
+  const ensure = useTechSheetStore((s) => s.ensure);
+  const sheet = ensure(refAtual);
 
   const stats = useMemo(() => {
     const sam = sheet.bop.reduce((sum, s) => sum + (s.tempoMin || 0), 0);
