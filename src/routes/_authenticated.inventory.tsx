@@ -174,9 +174,10 @@ function InventoryPage() {
         </Button>
         <Button
           variant="outline"
+          onClick={() => handleOpenMove()}
           className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
         >
-          <ScanLine className="w-4 h-4" /> Escanear QR
+          <ArrowRightLeft className="w-4 h-4" /> Movimentação
         </Button>
         <Button
           variant="outline"
