@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { MoodBoard } from "@/components/research/MoodBoard";
+import { AiCroquiPanel } from "@/components/research/AiCroquiPanel";
 
 export const Route = createFileRoute("/_authenticated/research")({
   component: ResearchHub,
@@ -355,6 +356,7 @@ function ResearchHub() {
         </DialogContent>
       </Dialog>
       <MoodBoard />
+      <AiCroquiPanel />
     </ModuleLayout>
   );
 }

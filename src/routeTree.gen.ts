@@ -14,8 +14,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
 import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authenticated.tech-sheet'
 import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
+import { Route as AuthenticatedSupplierPortalRouteImport } from './routes/_authenticated.supplier-portal'
 import { Route as AuthenticatedShowroomRouteImport } from './routes/_authenticated.showroom'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
 import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
@@ -68,6 +70,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
+  id: '/api/generate-image',
+  path: '/api/generate-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedTechSheetRoute = AuthenticatedTechSheetRouteImport.update({
   id: '/tech-sheet',
   path: '/tech-sheet',
@@ -78,6 +85,12 @@ const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
   path: '/suppliers',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSupplierPortalRoute =
+  AuthenticatedSupplierPortalRouteImport.update({
+    id: '/supplier-portal',
+    path: '/supplier-portal',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedShowroomRoute = AuthenticatedShowroomRouteImport.update({
   id: '/showroom',
   path: '/showroom',
@@ -249,8 +262,10 @@ export interface FileRoutesByFullPath {
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/showroom': typeof AuthenticatedShowroomRoute
+  '/supplier-portal': typeof AuthenticatedSupplierPortalRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
@@ -284,8 +299,10 @@ export interface FileRoutesByTo {
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/showroom': typeof AuthenticatedShowroomRoute
+  '/supplier-portal': typeof AuthenticatedSupplierPortalRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
@@ -321,8 +338,10 @@ export interface FileRoutesById {
   '/_authenticated/research': typeof AuthenticatedResearchRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/showroom': typeof AuthenticatedShowroomRoute
+  '/_authenticated/supplier-portal': typeof AuthenticatedSupplierPortalRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
@@ -358,8 +377,10 @@ export interface FileRouteTypes {
     | '/research'
     | '/security'
     | '/showroom'
+    | '/supplier-portal'
     | '/suppliers'
     | '/tech-sheet'
+    | '/api/generate-image'
     | '/admin/users'
     | '/production/today'
     | '/api/public/cron/abc-classify'
@@ -393,8 +414,10 @@ export interface FileRouteTypes {
     | '/research'
     | '/security'
     | '/showroom'
+    | '/supplier-portal'
     | '/suppliers'
     | '/tech-sheet'
+    | '/api/generate-image'
     | '/admin/users'
     | '/production/today'
     | '/api/public/cron/abc-classify'
@@ -429,8 +452,10 @@ export interface FileRouteTypes {
     | '/_authenticated/research'
     | '/_authenticated/security'
     | '/_authenticated/showroom'
+    | '/_authenticated/supplier-portal'
     | '/_authenticated/suppliers'
     | '/_authenticated/tech-sheet'
+    | '/api/generate-image'
     | '/_authenticated/admin/users'
     | '/_authenticated/production/today'
     | '/api/public/cron/abc-classify'
@@ -443,6 +468,7 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiGenerateImageRoute: typeof ApiGenerateImageRoute
   ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
 }
@@ -484,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/generate-image': {
+      id: '/api/generate-image'
+      path: '/api/generate-image'
+      fullPath: '/api/generate-image'
+      preLoaderRoute: typeof ApiGenerateImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tech-sheet': {
       id: '/_authenticated/tech-sheet'
       path: '/tech-sheet'
@@ -496,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/supplier-portal': {
+      id: '/_authenticated/supplier-portal'
+      path: '/supplier-portal'
+      fullPath: '/supplier-portal'
+      preLoaderRoute: typeof AuthenticatedSupplierPortalRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/showroom': {
@@ -728,6 +768,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedShowroomRoute: typeof AuthenticatedShowroomRoute
+  AuthenticatedSupplierPortalRoute: typeof AuthenticatedSupplierPortalRoute
   AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
   AuthenticatedTechSheetRoute: typeof AuthenticatedTechSheetRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -757,6 +798,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedResearchRoute: AuthenticatedResearchRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedShowroomRoute: AuthenticatedShowroomRoute,
+  AuthenticatedSupplierPortalRoute: AuthenticatedSupplierPortalRoute,
   AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
   AuthenticatedTechSheetRoute: AuthenticatedTechSheetRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
@@ -772,6 +814,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiGenerateImageRoute: ApiGenerateImageRoute,
   ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
 }
