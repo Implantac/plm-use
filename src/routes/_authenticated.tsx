@@ -8,11 +8,11 @@ import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { PresenceBar } from "@/components/presence/PresenceBar";
 import { ActivityFeedButton } from "@/components/activity/ActivityFeedButton";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
-  Settings,
   ChevronRight,
+  ChevronDown,
   Zap,
   BarChart3,
   Layers,
@@ -90,32 +90,92 @@ function AuthenticatedLayout() {
     document.documentElement.classList.toggle("dark", nextTheme === "dark");
   };
 
-  const navItems = [
-    { icon: <LayoutDashboard className="w-4 h-4" />, label: "Dashboard", href: "/dashboard" },
-    { icon: <Fingerprint className="w-4 h-4" />, label: "Núcleo · Referências", href: "/references" },
-    { icon: <Palette className="w-4 h-4" />, label: "Pesquisa", href: "/research" },
-    { icon: <Layers className="w-4 h-4" />, label: "Coleções", href: "/collections" },
-    { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
-    { icon: <Zap className="w-4 h-4" />, label: "Protótipos", href: "/prototypes" },
-    { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
-    { icon: <PenTool className="w-4 h-4" />, label: "CAD & Modelagem", href: "/cad" },
-    { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
-    { icon: <ShieldCheck className="w-4 h-4" />, label: "Qualidade", href: "/quality" },
-    { icon: <Zap className="w-4 h-4" />, label: "Planner", href: "/planner" },
-    { icon: <Box className="w-4 h-4" />, label: "Almoxarifado", href: "/inventory" },
-    { icon: <Users className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
-    { icon: <Megaphone className="w-4 h-4" />, label: "Marketing", href: "/marketing" },
-    { icon: <ShoppingBag className="w-4 h-4" />, label: "Comercial", href: "/commercial" },
-    { icon: <DollarSign className="w-4 h-4" />, label: "Financeiro", href: "/financial" },
-    { icon: <BarChart3 className="w-4 h-4" />, label: "BI Executivo", href: "/analytics" },
-    { icon: <Heart className="w-4 h-4" />, label: "Influencers", href: "/influencers" },
-    { icon: <Sparkles className="w-4 h-4" />, label: "USE AI", href: "/ai-center" },
-    { icon: <Bot className="w-4 h-4" />, label: "AI Agents", href: "/ai-agents" },
-    { icon: <Globe className="w-4 h-4" />, label: "Digital Twin", href: "/digital-twin" },
-    { icon: <MessageSquare className="w-4 h-4" />, label: "Colaboração", href: "/feed" },
-    { icon: <LockKeyhole className="w-4 h-4" />, label: "Segurança", href: "/security" },
-    { icon: <ShieldCheck className="w-4 h-4" />, label: "Admin · Usuários", href: "/admin/users" },
-  ];
+  const navSections = useMemo(
+    () => [
+      {
+        id: "geral",
+        label: "Geral",
+        items: [
+          { icon: <LayoutDashboard className="w-4 h-4" />, label: "Dashboard", href: "/dashboard" },
+          { icon: <MessageSquare className="w-4 h-4" />, label: "Colaboração", href: "/feed" },
+        ],
+      },
+      {
+        id: "plm",
+        label: "PLM · Produto",
+        items: [
+          { icon: <Fingerprint className="w-4 h-4" />, label: "Núcleo · Referências", href: "/references" },
+          { icon: <Palette className="w-4 h-4" />, label: "Pesquisa", href: "/research" },
+          { icon: <Layers className="w-4 h-4" />, label: "Coleções", href: "/collections" },
+          { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
+          { icon: <Zap className="w-4 h-4" />, label: "Protótipos", href: "/prototypes" },
+          { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
+          { icon: <PenTool className="w-4 h-4" />, label: "CAD & Modelagem", href: "/cad" },
+        ],
+      },
+      {
+        id: "pcp",
+        label: "PCP · Produção",
+        items: [
+          { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
+          { icon: <Zap className="w-4 h-4" />, label: "Planner", href: "/planner" },
+          { icon: <ShieldCheck className="w-4 h-4" />, label: "Qualidade", href: "/quality" },
+        ],
+      },
+      {
+        id: "supply",
+        label: "Supply Chain",
+        items: [
+          { icon: <Box className="w-4 h-4" />, label: "Almoxarifado", href: "/inventory" },
+          { icon: <Truck className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
+        ],
+      },
+      {
+        id: "gtm",
+        label: "Go-to-Market",
+        items: [
+          { icon: <Megaphone className="w-4 h-4" />, label: "Marketing", href: "/marketing" },
+          { icon: <ShoppingBag className="w-4 h-4" />, label: "Comercial", href: "/commercial" },
+          { icon: <Heart className="w-4 h-4" />, label: "Influencers", href: "/influencers" },
+        ],
+      },
+      {
+        id: "insights",
+        label: "Insights & IA",
+        items: [
+          { icon: <BarChart3 className="w-4 h-4" />, label: "BI Executivo", href: "/analytics" },
+          { icon: <DollarSign className="w-4 h-4" />, label: "Financeiro", href: "/financial" },
+          { icon: <Sparkles className="w-4 h-4" />, label: "USE AI", href: "/ai-center" },
+          { icon: <Bot className="w-4 h-4" />, label: "AI Agents", href: "/ai-agents" },
+          { icon: <Globe className="w-4 h-4" />, label: "Digital Twin", href: "/digital-twin" },
+        ],
+      },
+      {
+        id: "admin",
+        label: "Administração",
+        items: [
+          { icon: <LockKeyhole className="w-4 h-4" />, label: "Segurança", href: "/security" },
+          { icon: <ShieldCheck className="w-4 h-4" />, label: "Admin · Usuários", href: "/admin/users" },
+        ],
+      },
+    ],
+    [],
+  );
+
+  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    navSections.forEach((s) => {
+      initial[s.id] = s.items.some((it) => currentPath.startsWith(it.href));
+    });
+    // ensure at least Geral + PLM open by default
+    initial.geral = true;
+    if (!Object.values(initial).some(Boolean)) initial.plm = true;
+    return initial;
+  });
+
+  const toggleSection = (id: string) =>
+    setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
@@ -132,18 +192,39 @@ function AuthenticatedLayout() {
           <GlobalSearch />
         </div>
 
-        <ScrollArea className="flex-1 px-4">
-          <nav className="space-y-0.5">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.href}
-                className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
-              >
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            ))}
+        <ScrollArea className="flex-1 px-3">
+          <nav className="space-y-4 py-1">
+            {navSections.map((section) => {
+              const open = openSections[section.id] ?? false;
+              return (
+                <div key={section.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.id)}
+                    className="w-full flex items-center justify-between px-2 py-1.5 text-2xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70 hover:text-foreground transition-colors"
+                  >
+                    <span>{section.label}</span>
+                    <ChevronDown
+                      className={`w-3 h-3 transition-transform ${open ? "" : "-rotate-90"}`}
+                    />
+                  </button>
+                  {open && (
+                    <div className="mt-1 space-y-0.5">
+                      {section.items.map((item) => (
+                        <Link
+                          key={item.label}
+                          to={item.href}
+                          className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
+                        >
+                          <span>{item.icon}</span>
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
         </ScrollArea>
 
