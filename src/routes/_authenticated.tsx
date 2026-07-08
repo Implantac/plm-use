@@ -74,22 +74,6 @@ function AuthenticatedLayout() {
     navigate({ to: "/login" });
   };
 
-  if (loading || !isAuthenticated) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.3em]">
-        Autenticando...
-      </div>
-    );
-  }
-
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-
-    setTheme(nextTheme);
-    window.localStorage.setItem("use-moda-theme", nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-  };
-
   const navSections = useMemo(
     () => [
       {
@@ -162,20 +146,42 @@ function AuthenticatedLayout() {
     [],
   );
 
-  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
+    const path = typeof window !== "undefined" ? window.location.pathname : "";
+    const initial: Record<string, boolean> = {
+      geral: true,
+      plm: false,
+      pcp: false,
+      supply: false,
+      gtm: false,
+      insights: false,
+      admin: false,
+    };
     navSections.forEach((s) => {
-      initial[s.id] = s.items.some((it) => currentPath.startsWith(it.href));
+      if (s.items.some((it) => path.startsWith(it.href))) initial[s.id] = true;
     });
-    // ensure at least Geral + PLM open by default
-    initial.geral = true;
-    if (!Object.values(initial).some(Boolean)) initial.plm = true;
     return initial;
   });
 
   const toggleSection = (id: string) =>
     setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  if (loading || !isAuthenticated) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.3em]">
+        Autenticando...
+      </div>
+    );
+  }
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+
+    setTheme(nextTheme);
+    window.localStorage.setItem("use-moda-theme", nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+  };
+
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
