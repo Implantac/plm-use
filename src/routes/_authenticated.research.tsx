@@ -356,6 +356,7 @@ function ResearchHub() {
         </DialogContent>
       </Dialog>
       <MoodBoard />
+      <AiCroquiPanel />
     </ModuleLayout>
   );
 }
