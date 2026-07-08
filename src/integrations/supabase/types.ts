@@ -1865,6 +1865,12 @@ export type Database = {
         | "comercial"
         | "showroom"
         | "diretor_produto"
+        | "fornecedor_externo"
+        | "pcp"
+        | "qualidade"
+        | "estilista"
+        | "modelagem"
+        | "almoxarifado"
       entity_type:
         | "reference"
         | "lote"
@@ -2058,6 +2064,12 @@ export const Constants = {
         "comercial",
         "showroom",
         "diretor_produto",
+        "fornecedor_externo",
+        "pcp",
+        "qualidade",
+        "estilista",
+        "modelagem",
+        "almoxarifado",
       ],
       entity_type: [
         "reference",
