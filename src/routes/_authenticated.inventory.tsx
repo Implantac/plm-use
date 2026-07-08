@@ -19,6 +19,7 @@ import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayou
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
 import { useStockItems, type StockItem } from "@/hooks/use-stock";
 import { supabase } from "@/integrations/supabase/client";
+import { runAbcClassification } from "@/lib/inventory/inventory.functions";
 
 export const Route = createFileRoute("/_authenticated/inventory")({
   component: InventoryPage,
@@ -134,12 +135,9 @@ function InventoryPage() {
 
   const handleClassifyAbc = async () => {
     setBusy(true);
-    const { error } = await supabase.rpc("classify_abc" as never, {
-      _a_threshold: 0.8,
-      _b_threshold: 0.95,
-    } as never);
+    const result = await runAbcClassification();
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (!result.ok) return toast.error(result.reason);
     toast.success("Curva ABC recalculada");
     void refetch();
   };
