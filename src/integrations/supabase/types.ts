@@ -1844,6 +1844,10 @@ export type Database = {
       }
       has_stock_write_role: { Args: { _uid: string }; Returns: boolean }
       is_member: { Args: { _uid: string }; Returns: boolean }
+      is_user_mentioned: {
+        Args: { _mentions: string[]; _uid: string }
+        Returns: boolean
+      }
       user_has_role_name: {
         Args: { _name: string; _uid: string }
         Returns: boolean
