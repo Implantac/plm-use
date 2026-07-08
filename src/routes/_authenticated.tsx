@@ -112,6 +112,7 @@ function AuthenticatedLayout() {
         items: [
           { icon: <Box className="w-4 h-4" />, label: "Almoxarifado", href: "/inventory" },
           { icon: <Truck className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
+          { icon: <Truck className="w-4 h-4" />, label: "Portal do Fornecedor", href: "/supplier-portal" },
         ],
       },
       {
