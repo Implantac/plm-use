@@ -431,6 +431,8 @@ function InventoryPage() {
               ["annual_qty", "Qtd. anual", "525315"],
               ["annual_revenue", "Faturamento anual R$", "28839793.50"],
               ["unit_price", "Preço unitário R$", "54.90"],
+              ["order_cost", "Custo do pedido R$ (S)", "12.88"],
+              ["holding_cost_unit", "Custo manutenção un/ano R$ (H)", "8.52"],
             ].map(([key, label, placeholder]) => (
               <div key={key} className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
