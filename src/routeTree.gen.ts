@@ -33,6 +33,7 @@ import { Route as AuthenticatedInventoryRouteImport } from './routes/_authentica
 import { Route as AuthenticatedInfluencersRouteImport } from './routes/_authenticated.influencers'
 import { Route as AuthenticatedFinancialRouteImport } from './routes/_authenticated.financial'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
+import { Route as AuthenticatedDisplayRouteImport } from './routes/_authenticated.display'
 import { Route as AuthenticatedDigitalTwinRouteImport } from './routes/_authenticated.digital-twin'
 import { Route as AuthenticatedDevelopmentRouteImport } from './routes/_authenticated.development'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
@@ -170,6 +171,11 @@ const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDisplayRoute = AuthenticatedDisplayRouteImport.update({
+  id: '/display',
+  path: '/display',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedDigitalTwinRoute =
   AuthenticatedDigitalTwinRouteImport.update({
     id: '/digital-twin',
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/development': typeof AuthenticatedDevelopmentRoute
   '/digital-twin': typeof AuthenticatedDigitalTwinRoute
+  '/display': typeof AuthenticatedDisplayRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/financial': typeof AuthenticatedFinancialRoute
   '/influencers': typeof AuthenticatedInfluencersRoute
@@ -308,6 +315,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/development': typeof AuthenticatedDevelopmentRoute
   '/digital-twin': typeof AuthenticatedDigitalTwinRoute
+  '/display': typeof AuthenticatedDisplayRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/financial': typeof AuthenticatedFinancialRoute
   '/influencers': typeof AuthenticatedInfluencersRoute
@@ -350,6 +358,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/development': typeof AuthenticatedDevelopmentRoute
   '/_authenticated/digital-twin': typeof AuthenticatedDigitalTwinRoute
+  '/_authenticated/display': typeof AuthenticatedDisplayRoute
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/financial': typeof AuthenticatedFinancialRoute
   '/_authenticated/influencers': typeof AuthenticatedInfluencersRoute
@@ -392,6 +401,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/development'
     | '/digital-twin'
+    | '/display'
     | '/feed'
     | '/financial'
     | '/influencers'
@@ -432,6 +442,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/development'
     | '/digital-twin'
+    | '/display'
     | '/feed'
     | '/financial'
     | '/influencers'
@@ -473,6 +484,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/development'
     | '/_authenticated/digital-twin'
+    | '/_authenticated/display'
     | '/_authenticated/feed'
     | '/_authenticated/financial'
     | '/_authenticated/influencers'
@@ -680,6 +692,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFeedRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/display': {
+      id: '/_authenticated/display'
+      path: '/display'
+      fullPath: '/display'
+      preLoaderRoute: typeof AuthenticatedDisplayRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/digital-twin': {
       id: '/_authenticated/digital-twin'
       path: '/digital-twin'
@@ -827,6 +846,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDevelopmentRoute: typeof AuthenticatedDevelopmentRoute
   AuthenticatedDigitalTwinRoute: typeof AuthenticatedDigitalTwinRoute
+  AuthenticatedDisplayRoute: typeof AuthenticatedDisplayRoute
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedFinancialRoute: typeof AuthenticatedFinancialRoute
   AuthenticatedInfluencersRoute: typeof AuthenticatedInfluencersRoute
@@ -859,6 +879,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDevelopmentRoute: AuthenticatedDevelopmentRoute,
   AuthenticatedDigitalTwinRoute: AuthenticatedDigitalTwinRoute,
+  AuthenticatedDisplayRoute: AuthenticatedDisplayRoute,
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedFinancialRoute: AuthenticatedFinancialRoute,
   AuthenticatedInfluencersRoute: AuthenticatedInfluencersRoute,
