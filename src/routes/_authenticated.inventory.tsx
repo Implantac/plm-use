@@ -485,6 +485,12 @@ function InventoryPage() {
         preselectItemId={moveItemId}
         onDone={() => void refetch()}
       />
+      <ReservationDialog
+        open={isResOpen}
+        onOpenChange={setIsResOpen}
+        items={items}
+        onDone={() => void refetch()}
+      />
     </ModuleLayout>
   );
 }
