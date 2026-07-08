@@ -41,6 +41,7 @@ import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
+import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -206,6 +207,12 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiPublicCronLaunchPerformanceRoute =
+  ApiPublicCronLaunchPerformanceRouteImport.update({
+    id: '/api/public/cron/launch-performance',
+    path: '/api/public/cron/launch-performance',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -272,6 +280,7 @@ export interface FileRoutesByTo {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -307,6 +316,7 @@ export interface FileRoutesById {
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/admin/users'
     | '/production/today'
+    | '/api/public/cron/launch-performance'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -375,6 +386,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/admin/users'
     | '/production/today'
+    | '/api/public/cron/launch-performance'
   id:
     | '__root__'
     | '/'
@@ -409,6 +421,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tech-sheet'
     | '/_authenticated/admin/users'
     | '/_authenticated/production/today'
+    | '/api/public/cron/launch-performance'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -417,6 +430,7 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -645,6 +659,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/cron/launch-performance': {
+      id: '/api/public/cron/launch-performance'
+      path: '/api/public/cron/launch-performance'
+      fullPath: '/api/public/cron/launch-performance'
+      preLoaderRoute: typeof ApiPublicCronLaunchPerformanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -730,6 +751,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
