@@ -39,6 +39,7 @@ import {
   Fingerprint,
   FileImage,
   LayoutTemplate,
+  Grid3x3,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
