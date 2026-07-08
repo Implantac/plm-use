@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  ArrowLeftRight,
   ArrowUpRight,
   CalendarClock,
   CircleDollarSign,
@@ -211,6 +212,17 @@ function CollectionsPage() {
         { label: "Meta combinada", value: "R$ 3,36 mi", detail: "receita alvo" },
       ]}
     >
+      <div className="mb-4 flex justify-end">
+        <Button
+          asChild
+          variant="ghost"
+          className="h-9 rounded-md border border-white/10 px-4 text-[10px] font-bold uppercase tracking-[0.14em]"
+        >
+          <Link to="/collections/compare">
+            <ArrowLeftRight className="mr-2 h-3.5 w-3.5" /> Comparar coleções
+          </Link>
+        </Button>
+      </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
         <div className="space-y-4">
           {collections.map((collection) => (
