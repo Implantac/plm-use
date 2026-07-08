@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
 import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authenticated.tech-sheet'
 import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
 import { Route as AuthenticatedShowroomRouteImport } from './routes/_authenticated.showroom'
@@ -66,6 +67,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
+  id: '/api/generate-image',
+  path: '/api/generate-image',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTechSheetRoute = AuthenticatedTechSheetRouteImport.update({
@@ -251,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/showroom': typeof AuthenticatedShowroomRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/showroom': typeof AuthenticatedShowroomRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
@@ -323,6 +331,7 @@ export interface FileRoutesById {
   '/_authenticated/showroom': typeof AuthenticatedShowroomRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
+  '/api/generate-image': typeof ApiGenerateImageRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/showroom'
     | '/suppliers'
     | '/tech-sheet'
+    | '/api/generate-image'
     | '/admin/users'
     | '/production/today'
     | '/api/public/cron/abc-classify'
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/showroom'
     | '/suppliers'
     | '/tech-sheet'
+    | '/api/generate-image'
     | '/admin/users'
     | '/production/today'
     | '/api/public/cron/abc-classify'
@@ -431,6 +442,7 @@ export interface FileRouteTypes {
     | '/_authenticated/showroom'
     | '/_authenticated/suppliers'
     | '/_authenticated/tech-sheet'
+    | '/api/generate-image'
     | '/_authenticated/admin/users'
     | '/_authenticated/production/today'
     | '/api/public/cron/abc-classify'
@@ -443,6 +455,7 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiGenerateImageRoute: typeof ApiGenerateImageRoute
   ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
 }
@@ -482,6 +495,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/generate-image': {
+      id: '/api/generate-image'
+      path: '/api/generate-image'
+      fullPath: '/api/generate-image'
+      preLoaderRoute: typeof ApiGenerateImageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/tech-sheet': {
@@ -772,6 +792,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiGenerateImageRoute: ApiGenerateImageRoute,
   ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
 }
