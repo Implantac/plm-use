@@ -86,7 +86,7 @@ function SupplierPortalPage() {
     <ModuleLayout
       title="Portal do Fornecedor"
       subtitle="Cadastro, ordens de produção e amostras — visão interna + espaço do fornecedor externo"
-      icon={<Factory className="w-5 h-5 text-primary" />}
+      version="v1.0"
     >
       <Tabs defaultValue="suppliers" className="w-full">
         <TabsList className="bg-white/5 border border-white/10">
