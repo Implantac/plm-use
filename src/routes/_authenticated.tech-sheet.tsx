@@ -347,6 +347,7 @@ function TechSheetPage() {
       <div className="mt-6 grid grid-cols-1 gap-6">
         <BomBopPanel refAtual={productInfo.ref} />
         <PreCostPanel refAtual={productInfo.ref} />
+        <OperationSequencePanel refAtual={productInfo.ref} />
         <TechSheetVersions refAtual={productInfo.ref} />
 
       </div>
