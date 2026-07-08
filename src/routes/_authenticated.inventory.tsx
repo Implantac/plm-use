@@ -19,6 +19,7 @@ import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayou
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
 import { useStockItems, type StockItem } from "@/hooks/use-stock";
 import { supabase } from "@/integrations/supabase/client";
+import { runAbcClassification } from "@/lib/inventory/inventory.functions";
 
 export const Route = createFileRoute("/_authenticated/inventory")({
   component: InventoryPage,
