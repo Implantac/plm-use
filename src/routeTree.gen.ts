@@ -42,6 +42,7 @@ import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
 import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
+import { Route as AuthenticatedCollectionsCompareRouteImport } from './routes/_authenticated.collections.compare'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
 import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
 import { Route as ApiPublicCronAbcClassifyRouteImport } from './routes/api/public/cron/abc-classify'
@@ -216,6 +217,12 @@ const AuthenticatedProductionTodayRoute =
     path: '/today',
     getParentRoute: () => AuthenticatedProductionRoute,
   } as any)
+const AuthenticatedCollectionsCompareRoute =
+  AuthenticatedCollectionsCompareRouteImport.update({
+    id: '/compare',
+    path: '/compare',
+    getParentRoute: () => AuthenticatedCollectionsRoute,
+  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -243,7 +250,7 @@ export interface FileRoutesByFullPath {
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/cad': typeof AuthenticatedCadRoute
-  '/collections': typeof AuthenticatedCollectionsRoute
+  '/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/commercial': typeof AuthenticatedCommercialRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/development': typeof AuthenticatedDevelopmentRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
@@ -280,7 +288,7 @@ export interface FileRoutesByTo {
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/cad': typeof AuthenticatedCadRoute
-  '/collections': typeof AuthenticatedCollectionsRoute
+  '/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/commercial': typeof AuthenticatedCommercialRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/development': typeof AuthenticatedDevelopmentRoute
@@ -304,6 +312,7 @@ export interface FileRoutesByTo {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
@@ -319,7 +328,7 @@ export interface FileRoutesById {
   '/_authenticated/ai-center': typeof AuthenticatedAiCenterRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/cad': typeof AuthenticatedCadRoute
-  '/_authenticated/collections': typeof AuthenticatedCollectionsRoute
+  '/_authenticated/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/_authenticated/commercial': typeof AuthenticatedCommercialRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/development': typeof AuthenticatedDevelopmentRoute
@@ -343,6 +352,7 @@ export interface FileRoutesById {
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/api/generate-image'
     | '/admin/users'
+    | '/collections/compare'
     | '/production/today'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
@@ -419,6 +430,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/api/generate-image'
     | '/admin/users'
+    | '/collections/compare'
     | '/production/today'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
@@ -457,6 +469,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tech-sheet'
     | '/api/generate-image'
     | '/_authenticated/admin/users'
+    | '/_authenticated/collections/compare'
     | '/_authenticated/production/today'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
@@ -706,6 +719,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductionTodayRouteImport
       parentRoute: typeof AuthenticatedProductionRoute
     }
+    '/_authenticated/collections/compare': {
+      id: '/_authenticated/collections/compare'
+      path: '/compare'
+      fullPath: '/collections/compare'
+      preLoaderRoute: typeof AuthenticatedCollectionsCompareRouteImport
+      parentRoute: typeof AuthenticatedCollectionsRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -730,6 +750,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedCollectionsRouteChildren {
+  AuthenticatedCollectionsCompareRoute: typeof AuthenticatedCollectionsCompareRoute
+}
+
+const AuthenticatedCollectionsRouteChildren: AuthenticatedCollectionsRouteChildren =
+  {
+    AuthenticatedCollectionsCompareRoute: AuthenticatedCollectionsCompareRoute,
+  }
+
+const AuthenticatedCollectionsRouteWithChildren =
+  AuthenticatedCollectionsRoute._addFileChildren(
+    AuthenticatedCollectionsRouteChildren,
+  )
+
 interface AuthenticatedProductionRouteChildren {
   AuthenticatedProductionTodayRoute: typeof AuthenticatedProductionTodayRoute
 }
@@ -749,7 +783,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAiCenterRoute: typeof AuthenticatedAiCenterRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedCadRoute: typeof AuthenticatedCadRoute
-  AuthenticatedCollectionsRoute: typeof AuthenticatedCollectionsRoute
+  AuthenticatedCollectionsRoute: typeof AuthenticatedCollectionsRouteWithChildren
   AuthenticatedCommercialRoute: typeof AuthenticatedCommercialRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDevelopmentRoute: typeof AuthenticatedDevelopmentRoute
@@ -779,7 +813,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAiCenterRoute: AuthenticatedAiCenterRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedCadRoute: AuthenticatedCadRoute,
-  AuthenticatedCollectionsRoute: AuthenticatedCollectionsRoute,
+  AuthenticatedCollectionsRoute: AuthenticatedCollectionsRouteWithChildren,
   AuthenticatedCommercialRoute: AuthenticatedCommercialRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDevelopmentRoute: AuthenticatedDevelopmentRoute,
