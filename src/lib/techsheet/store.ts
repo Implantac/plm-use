@@ -33,12 +33,21 @@ export type TechSheetVersion = {
   alteracoes: string[];
 };
 
+export type PreCost = {
+  targetCusto: number;      // meta de custo industrial
+  overheadPct: number;      // % de rateio (energia, adm, indireto)
+  markupPct: number;        // % de markup sobre custo final para preço sugerido
+  targetPreco?: number;     // preço-alvo de venda (opcional, alerta se sugerido > alvo)
+};
+
 export type TechSheetData = {
   ref: string;
   bom: BomItem[];
   bop: BopStep[];
   versoes: TechSheetVersion[];
+  preCost: PreCost;
 };
+
 
 const seedFor = (ref: string): TechSheetData => ({
   ref,
