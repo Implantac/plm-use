@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { AlertTriangle, Boxes, History, PackageSearch, ScanLine, ShieldCheck, RefreshCw } from "lucide-react";
+import { AlertTriangle, Boxes, History, PackageSearch, ArrowRightLeft, ShieldCheck, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,9 +17,10 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
+import { MovementDialog } from "@/components/inventory/MovementDialog";
 import { useStockItems, type StockItem } from "@/hooks/use-stock";
 import { supabase } from "@/integrations/supabase/client";
-import { runAbcClassification } from "@/lib/inventory/inventory.functions";
+import { runAbcClassification, upsertStockItem } from "@/lib/inventory/inventory.functions";
 
 export const Route = createFileRoute("/_authenticated/inventory")({
   component: InventoryPage,
@@ -43,11 +44,15 @@ const emptyForm = {
   annual_qty: "0",
   annual_revenue: "0",
   unit_price: "0",
+  order_cost: "0",
+  holding_cost_unit: "0",
 };
 
 function InventoryPage() {
   const { items, balances, loading, refetch } = useStockItems();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isMoveOpen, setIsMoveOpen] = useState(false);
+  const [moveItemId, setMoveItemId] = useState<string | undefined>();
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
   const [formData, setFormData] = useState(emptyForm);
   const [busy, setBusy] = useState(false);
@@ -81,6 +86,8 @@ function InventoryPage() {
         annual_qty: String(item.annual_qty),
         annual_revenue: String(item.annual_revenue),
         unit_price: String(item.unit_price),
+        order_cost: String((item as unknown as { order_cost?: number }).order_cost ?? 0),
+        holding_cost_unit: String((item as unknown as { holding_cost_unit?: number }).holding_cost_unit ?? 0),
       });
     } else {
       setEditingItem(null);
@@ -89,39 +96,39 @@ function InventoryPage() {
     setIsDialogOpen(true);
   };
 
+  const handleOpenMove = (item?: StockItem) => {
+    setMoveItemId(item?.id);
+    setIsMoveOpen(true);
+  };
+
   const handleSave = async () => {
     setBusy(true);
-    const payload = {
-      code: formData.code.trim(),
-      name: formData.name.trim(),
-      category: formData.category,
-      unit: formData.unit,
-      lead_time_days: Number(formData.lead_time_days) || 0,
-      demand_avg_daily: Number(formData.demand_avg_daily) || 0,
-      demand_stddev: Number(formData.demand_stddev) || 0,
-      service_factor: Number(formData.service_factor) || 1.65,
-      annual_qty: Number(formData.annual_qty) || 0,
-      annual_revenue: Number(formData.annual_revenue) || 0,
-      unit_price: Number(formData.unit_price) || 0,
-    };
-
-    const table = supabase.from("stock_item" as never);
-    const query = editingItem
-      ? (table as unknown as { update: (v: unknown) => { eq: (c: string, v: string) => Promise<{ error: { message: string } | null }> } })
-          .update(payload)
-          .eq("id", editingItem.id)
-      : (table as unknown as { insert: (v: unknown) => Promise<{ error: { message: string } | null }> }).insert(payload);
-
-    const { error } = await query;
+    const res = await upsertStockItem({
+      data: {
+        ...(editingItem ? { id: editingItem.id } : {}),
+        code: formData.code.trim(),
+        name: formData.name.trim(),
+        category: formData.category as "tecido" | "aviamento" | "embalagem" | "acabado" | "insumo" | "etiqueta",
+        unit: formData.unit || "un",
+        lead_time_days: Math.max(0, Math.round(Number(formData.lead_time_days) || 0)),
+        demand_avg_daily: Number(formData.demand_avg_daily) || 0,
+        demand_stddev: Number(formData.demand_stddev) || 0,
+        service_factor: Number(formData.service_factor) || 1.65,
+        annual_qty: Number(formData.annual_qty) || 0,
+        annual_revenue: Number(formData.annual_revenue) || 0,
+        unit_price: Number(formData.unit_price) || 0,
+        order_cost: Number(formData.order_cost) || 0,
+        holding_cost_unit: Number(formData.holding_cost_unit) || 0,
+        is_active: true,
+      },
+    });
     setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
+    if (!res.ok) return toast.error(res.reason);
     toast.success(editingItem ? "Insumo atualizado" : "Insumo cadastrado");
     setIsDialogOpen(false);
     void refetch();
   };
+
 
   const handleToggleActive = async (item: StockItem) => {
     const { error } = await supabase
@@ -167,9 +174,10 @@ function InventoryPage() {
         </Button>
         <Button
           variant="outline"
+          onClick={() => handleOpenMove()}
           className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
         >
-          <ScanLine className="w-4 h-4" /> Escanear QR
+          <ArrowRightLeft className="w-4 h-4" /> Movimentação
         </Button>
         <Button
           variant="outline"
@@ -348,7 +356,7 @@ function InventoryPage() {
                         <ModuleActionMenu
                           onEdit={() => handleOpenDialog(item)}
                           onDelete={() => handleToggleActive(item)}
-                          onView={() => toast.info(`Código: ${item.code}`)}
+                          onView={() => handleOpenMove(item)}
                         />
                       </td>
                     </tr>
@@ -423,6 +431,8 @@ function InventoryPage() {
               ["annual_qty", "Qtd. anual", "525315"],
               ["annual_revenue", "Faturamento anual R$", "28839793.50"],
               ["unit_price", "Preço unitário R$", "54.90"],
+              ["order_cost", "Custo do pedido R$ (S)", "12.88"],
+              ["holding_cost_unit", "Custo manutenção un/ano R$ (H)", "8.52"],
             ].map(([key, label, placeholder]) => (
               <div key={key} className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
@@ -460,6 +470,15 @@ function InventoryPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <MovementDialog
+        open={isMoveOpen}
+        onOpenChange={setIsMoveOpen}
+        items={items}
+        preselectItemId={moveItemId}
+        onDone={() => void refetch()}
+      />
     </ModuleLayout>
   );
 }
+

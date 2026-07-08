@@ -42,6 +42,7 @@ import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
 import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
+import { Route as ApiPublicCronAbcClassifyRouteImport } from './routes/api/public/cron/abc-classify'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -213,6 +214,12 @@ const ApiPublicCronLaunchPerformanceRoute =
     path: '/api/public/cron/launch-performance',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCronAbcClassifyRoute =
+  ApiPublicCronAbcClassifyRouteImport.update({
+    id: '/api/public/cron/abc-classify',
+    path: '/api/public/cron/abc-classify',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -246,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRoutesByTo {
@@ -280,6 +288,7 @@ export interface FileRoutesByTo {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRoutesById {
@@ -316,6 +325,7 @@ export interface FileRoutesById {
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRouteTypes {
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/admin/users'
     | '/production/today'
+    | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/admin/users'
     | '/production/today'
+    | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
   id:
     | '__root__'
@@ -421,6 +433,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tech-sheet'
     | '/_authenticated/admin/users'
     | '/_authenticated/production/today'
+    | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
   fileRoutesById: FileRoutesById
 }
@@ -430,6 +443,7 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
 }
 
@@ -666,6 +680,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronLaunchPerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/abc-classify': {
+      id: '/api/public/cron/abc-classify'
+      path: '/api/public/cron/abc-classify'
+      fullPath: '/api/public/cron/abc-classify'
+      preLoaderRoute: typeof ApiPublicCronAbcClassifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -751,6 +772,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
 }
 export const routeTree = rootRouteImport

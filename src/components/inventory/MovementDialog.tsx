@@ -1,0 +1,220 @@
+// Doc 06.2 · Almoxarifado — dialog de movimentação (entrada/saída/ajuste/transferência).
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { registerMovement } from "@/lib/inventory/inventory.functions";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { StockItem } from "@/hooks/use-stock";
+
+interface Warehouse {
+  id: string;
+  code: string;
+  name: string;
+}
+
+type Kind = "in" | "out" | "adjust" | "transfer_in" | "transfer_out" | "count";
+
+interface Props {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  items: StockItem[];
+  preselectItemId?: string;
+  onDone?: () => void;
+}
+
+export function MovementDialog({ open, onOpenChange, items, preselectItemId, onDone }: Props) {
+  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [itemId, setItemId] = useState(preselectItemId ?? "");
+  const [warehouseId, setWarehouseId] = useState("");
+  const [kind, setKind] = useState<Kind>("in");
+  const [qty, setQty] = useState("0");
+  const [lotCode, setLotCode] = useState("");
+  const [justification, setJustification] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setItemId(preselectItemId ?? "");
+    supabase
+      .from("warehouse" as never)
+      .select("id, code, name")
+      .eq("is_active", true)
+      .order("code")
+      .then(({ data }) => {
+        const list = (data ?? []) as unknown as Warehouse[];
+        setWarehouses(list);
+        if (list.length > 0) setWarehouseId((prev) => prev || list[0].id);
+      });
+  }, [open, preselectItemId]);
+
+  const handleSubmit = async () => {
+    if (!itemId || !warehouseId) return toast.error("Selecione insumo e armazém.");
+    const q = Number(qty);
+    if (!(q > 0)) return toast.error("Quantidade deve ser > 0.");
+    if (kind === "adjust" && justification.trim().length < 3)
+      return toast.error("Ajuste requer justificativa (mín. 3 caracteres).");
+
+    setBusy(true);
+    const res = await registerMovement({
+      data: {
+        item_id: itemId,
+        warehouse_id: warehouseId,
+        kind,
+        qty: q,
+        lot_code: lotCode.trim() || undefined,
+        justification: justification.trim() || undefined,
+      },
+    });
+    setBusy(false);
+    if (!res.ok) return toast.error(res.reason);
+    toast.success("Movimentação registrada.");
+    setQty("0");
+    setLotCode("");
+    setJustification("");
+    onOpenChange(false);
+    onDone?.();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="glass-card border-white/10 bg-black/95 text-white rounded-lg p-6 max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold uppercase tracking-tight">
+            Nova movimentação
+          </DialogTitle>
+        </DialogHeader>
+        <div className="grid grid-cols-1 gap-4 py-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              Insumo
+            </Label>
+            <Select value={itemId} onValueChange={setItemId}>
+              <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                <SelectValue placeholder="Selecione o insumo" />
+              </SelectTrigger>
+              <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
+                {items.map((it) => (
+                  <SelectItem key={it.id} value={it.id}>
+                    {it.code} — {it.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Armazém
+              </Label>
+              <Select value={warehouseId} onValueChange={setWarehouseId}>
+                <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent className="bg-black/95 border-white/10 text-white">
+                  {warehouses.map((w) => (
+                    <SelectItem key={w.id} value={w.id}>
+                      {w.code} — {w.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Tipo
+              </Label>
+              <Select value={kind} onValueChange={(v) => setKind(v as Kind)}>
+                <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-black/95 border-white/10 text-white">
+                  <SelectItem value="in">Entrada</SelectItem>
+                  <SelectItem value="out">Saída</SelectItem>
+                  <SelectItem value="transfer_in">Transf. entrada</SelectItem>
+                  <SelectItem value="transfer_out">Transf. saída</SelectItem>
+                  <SelectItem value="adjust">Ajuste</SelectItem>
+                  <SelectItem value="count">Contagem</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Quantidade
+              </Label>
+              <Input
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+                type="number"
+                min="0"
+                step="0.01"
+                className="bg-white/5 border-white/10 h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Lote (opcional)
+              </Label>
+              <Input
+                value={lotCode}
+                onChange={(e) => setLotCode(e.target.value)}
+                className="bg-white/5 border-white/10 h-11"
+                placeholder="LOTE-2601"
+              />
+            </div>
+          </div>
+
+          {kind === "adjust" && (
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Justificativa (obrigatória para ajuste)
+              </Label>
+              <Textarea
+                value={justification}
+                onChange={(e) => setJustification(e.target.value)}
+                rows={3}
+                className="bg-white/5 border-white/10"
+              />
+            </div>
+          )}
+        </div>
+        <DialogFooter className="gap-3">
+          <Button
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            className="rounded-md h-10 text-[10px] font-bold uppercase tracking-widest"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={busy}
+            className="rounded-md h-10 px-6 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
+          >
+            Registrar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
