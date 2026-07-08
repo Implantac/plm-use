@@ -18,6 +18,7 @@ import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
 import { MovementDialog } from "@/components/inventory/MovementDialog";
+import { ReservationDialog } from "@/components/inventory/ReservationDialog";
 import { ReservationsPanel } from "@/components/inventory/ReservationsPanel";
 import { useStockItems, type StockItem } from "@/hooks/use-stock";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,6 +54,7 @@ function InventoryPage() {
   const { items, balances, loading, refetch } = useStockItems();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMoveOpen, setIsMoveOpen] = useState(false);
+  const [isResOpen, setIsResOpen] = useState(false);
   const [moveItemId, setMoveItemId] = useState<string | undefined>();
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
   const [formData, setFormData] = useState(emptyForm);
@@ -182,9 +184,10 @@ function InventoryPage() {
         </Button>
         <Button
           variant="outline"
+          onClick={() => setIsResOpen(true)}
           className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
         >
-          <History className="w-4 h-4" /> Histórico
+          <History className="w-4 h-4" /> Reservar
         </Button>
       </div>
 
@@ -480,6 +483,12 @@ function InventoryPage() {
         onOpenChange={setIsMoveOpen}
         items={items}
         preselectItemId={moveItemId}
+        onDone={() => void refetch()}
+      />
+      <ReservationDialog
+        open={isResOpen}
+        onOpenChange={setIsResOpen}
+        items={items}
         onDone={() => void refetch()}
       />
     </ModuleLayout>
