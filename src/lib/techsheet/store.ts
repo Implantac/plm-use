@@ -69,7 +69,14 @@ const seedFor = (ref: string): TechSheetData => ({
     { id: "v2", versao: "v4.1", data: "2026-05-28", autor: "Sandra Lima", status: "Obsoleta", resumo: "Revisão de botão e fornecedor.", alteracoes: ["Botão plástico → Madre Pérola", "Fornecedor: Plastic Co → Aviamentos Real"] },
     { id: "v3", versao: "v4.0", data: "2026-05-10", autor: "Carla Mendes", status: "Obsoleta", resumo: "Versão inicial após aprovação do piloto.", alteracoes: ["Liberada para produção"] },
   ],
+  preCost: { targetCusto: 80, overheadPct: 12, markupPct: 220, targetPreco: 349 },
 });
+
+export function setPreCost(state: State, ref: string, patch: Partial<PreCost>) {
+  const cur = state.data[ref] ?? seedFor(ref);
+  return { ...cur, preCost: { ...cur.preCost, ...patch } };
+}
+
 
 interface State {
   data: Record<string, TechSheetData>;
