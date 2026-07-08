@@ -187,7 +187,7 @@ function LaunchPage() {
                           <ArrowRight className="h-3 w-3 mr-1" /> {WAVE_STATUS_LABEL[to]}
                         </Button>
                       ))}
-                      <Button size="sm" variant="ghost" onClick={() => openEntity({ type: "launch_wave", id: w.id, label: w.codigo })}>
+                      <Button size="sm" variant="ghost" onClick={() => openEntity({ type: "launch_wave", id: w.id, title: w.codigo })}>
                         Timeline
                       </Button>
                     </div>
