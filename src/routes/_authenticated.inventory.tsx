@@ -104,9 +104,12 @@ function InventoryPage() {
       unit_price: Number(formData.unit_price) || 0,
     };
 
+    const table = supabase.from("stock_item" as never);
     const query = editingItem
-      ? supabase.from("stock_item" as never).update(payload).eq("id", editingItem.id)
-      : supabase.from("stock_item" as never).insert(payload as never);
+      ? (table as unknown as { update: (v: unknown) => { eq: (c: string, v: string) => Promise<{ error: { message: string } | null }> } })
+          .update(payload)
+          .eq("id", editingItem.id)
+      : (table as unknown as { insert: (v: unknown) => Promise<{ error: { message: string } | null }> }).insert(payload);
 
     const { error } = await query;
     setBusy(false);
