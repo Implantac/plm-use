@@ -97,6 +97,7 @@ function AuthenticatedLayout() {
           { icon: <FileImage className="w-4 h-4" />, label: "Cartela de Estampas", href: "/prints" },
           { icon: <LayoutTemplate className="w-4 h-4" />, label: "Painel de Displayagem", href: "/display" },
           { icon: <Layers className="w-4 h-4" />, label: "Coleções", href: "/collections" },
+          { icon: <Grid3x3 className="w-4 h-4" />, label: "Mapa de Coleção", href: "/collection-map" },
           { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
           { icon: <Zap className="w-4 h-4" />, label: "Protótipos", href: "/prototypes" },
           { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
