@@ -896,7 +896,16 @@ export type Database = {
       is_member: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "manager" | "operator" | "viewer"
+      app_role:
+        | "admin"
+        | "manager"
+        | "operator"
+        | "viewer"
+        | "coordenador_produto"
+        | "merchandising"
+        | "comercial"
+        | "showroom"
+        | "diretor_produto"
       entity_type:
         | "reference"
         | "lote"
@@ -1053,7 +1062,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "manager", "operator", "viewer"],
+      app_role: [
+        "admin",
+        "manager",
+        "operator",
+        "viewer",
+        "coordenador_produto",
+        "merchandising",
+        "comercial",
+        "showroom",
+        "diretor_produto",
+      ],
       entity_type: [
         "reference",
         "lote",
