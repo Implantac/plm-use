@@ -192,18 +192,39 @@ function AuthenticatedLayout() {
           <GlobalSearch />
         </div>
 
-        <ScrollArea className="flex-1 px-4">
-          <nav className="space-y-0.5">
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.href}
-                className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
-              >
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            ))}
+        <ScrollArea className="flex-1 px-3">
+          <nav className="space-y-4 py-1">
+            {navSections.map((section) => {
+              const open = openSections[section.id] ?? false;
+              return (
+                <div key={section.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.id)}
+                    className="w-full flex items-center justify-between px-2 py-1.5 text-2xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70 hover:text-foreground transition-colors"
+                  >
+                    <span>{section.label}</span>
+                    <ChevronDown
+                      className={`w-3 h-3 transition-transform ${open ? "" : "-rotate-90"}`}
+                    />
+                  </button>
+                  {open && (
+                    <div className="mt-1 space-y-0.5">
+                      {section.items.map((item) => (
+                        <Link
+                          key={item.label}
+                          to={item.href}
+                          className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
+                        >
+                          <span>{item.icon}</span>
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
         </ScrollArea>
 
