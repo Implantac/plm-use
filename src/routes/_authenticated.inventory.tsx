@@ -184,9 +184,10 @@ function InventoryPage() {
         </Button>
         <Button
           variant="outline"
+          onClick={() => setIsResOpen(true)}
           className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
         >
-          <History className="w-4 h-4" /> Histórico
+          <History className="w-4 h-4" /> Reservar
         </Button>
       </div>
 
