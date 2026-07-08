@@ -777,6 +777,346 @@ export type Database = {
         }
         Relationships: []
       }
+      showroom_decision: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          decidido_em: string | null
+          decidido_por: string | null
+          decision: string
+          id: string
+          justificativa: string | null
+          publication_id: string | null
+          reference_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          decidido_em?: string | null
+          decidido_por?: string | null
+          decision?: string
+          id?: string
+          justificativa?: string | null
+          publication_id?: string | null
+          reference_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          decidido_em?: string | null
+          decidido_por?: string | null
+          decision?: string
+          id?: string
+          justificativa?: string | null
+          publication_id?: string | null
+          reference_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "showroom_decision_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "showroom_publication"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "showroom_decision_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "references"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      showroom_feedback: {
+        Row: {
+          autor_id: string | null
+          autor_nome: string | null
+          autor_tipo: string
+          comentario: string | null
+          created_at: string
+          dimensao: string
+          id: string
+          kit_id: string | null
+          metadata: Json
+          nota: number
+          publication_id: string | null
+          reference_id: string
+          rota: string | null
+        }
+        Insert: {
+          autor_id?: string | null
+          autor_nome?: string | null
+          autor_tipo?: string
+          comentario?: string | null
+          created_at?: string
+          dimensao: string
+          id?: string
+          kit_id?: string | null
+          metadata?: Json
+          nota: number
+          publication_id?: string | null
+          reference_id: string
+          rota?: string | null
+        }
+        Update: {
+          autor_id?: string | null
+          autor_nome?: string | null
+          autor_tipo?: string
+          comentario?: string | null
+          created_at?: string
+          dimensao?: string
+          id?: string
+          kit_id?: string | null
+          metadata?: Json
+          nota?: number
+          publication_id?: string | null
+          reference_id?: string
+          rota?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "showroom_feedback_kit_id_fkey"
+            columns: ["kit_id"]
+            isOneToOne: false
+            referencedRelation: "showroom_kit"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "showroom_feedback_publication_id_fkey"
+            columns: ["publication_id"]
+            isOneToOne: false
+            referencedRelation: "showroom_publication"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "showroom_feedback_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "references"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      showroom_kit: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          metadata: Json
+          nome: string
+          periodo_fim: string | null
+          periodo_inicio: string | null
+          responsavel_id: string | null
+          rota: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json
+          nome: string
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
+          responsavel_id?: string | null
+          rota: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json
+          nome?: string
+          periodo_fim?: string | null
+          periodo_inicio?: string | null
+          responsavel_id?: string | null
+          rota?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      showroom_kit_item: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          kit_id: string
+          observacao: string | null
+          posicao: number | null
+          sample_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kit_id: string
+          observacao?: string | null
+          posicao?: number | null
+          sample_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kit_id?: string
+          observacao?: string | null
+          posicao?: number | null
+          sample_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "showroom_kit_item_kit_id_fkey"
+            columns: ["kit_id"]
+            isOneToOne: false
+            referencedRelation: "showroom_kit"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "showroom_kit_item_sample_id_fkey"
+            columns: ["sample_id"]
+            isOneToOne: false
+            referencedRelation: "showroom_sample"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      showroom_publication: {
+        Row: {
+          colecao: string | null
+          created_at: string
+          created_by: string | null
+          frozen_at: string | null
+          id: string
+          metadata: Json
+          published_at: string | null
+          published_by: string | null
+          reference_ids: string[]
+          status: string
+          storytelling: string | null
+          titulo: string
+          updated_at: string
+          updated_by: string | null
+          versao: number
+        }
+        Insert: {
+          colecao?: string | null
+          created_at?: string
+          created_by?: string | null
+          frozen_at?: string | null
+          id?: string
+          metadata?: Json
+          published_at?: string | null
+          published_by?: string | null
+          reference_ids?: string[]
+          status?: string
+          storytelling?: string | null
+          titulo: string
+          updated_at?: string
+          updated_by?: string | null
+          versao?: number
+        }
+        Update: {
+          colecao?: string | null
+          created_at?: string
+          created_by?: string | null
+          frozen_at?: string | null
+          id?: string
+          metadata?: Json
+          published_at?: string | null
+          published_by?: string | null
+          reference_ids?: string[]
+          status?: string
+          storytelling?: string | null
+          titulo?: string
+          updated_at?: string
+          updated_by?: string | null
+          versao?: number
+        }
+        Relationships: []
+      }
+      showroom_sample: {
+        Row: {
+          cor: string | null
+          created_at: string
+          created_by: string | null
+          evidencias: Json
+          grade: string | null
+          id: string
+          metadata: Json
+          motivo: string | null
+          piloto_id: string | null
+          posse_logica: string | null
+          quantidade: number
+          reference_id: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cor?: string | null
+          created_at?: string
+          created_by?: string | null
+          evidencias?: Json
+          grade?: string | null
+          id?: string
+          metadata?: Json
+          motivo?: string | null
+          piloto_id?: string | null
+          posse_logica?: string | null
+          quantidade?: number
+          reference_id: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cor?: string | null
+          created_at?: string
+          created_by?: string | null
+          evidencias?: Json
+          grade?: string | null
+          id?: string
+          metadata?: Json
+          motivo?: string | null
+          piloto_id?: string | null
+          posse_logica?: string | null
+          quantidade?: number
+          reference_id?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "showroom_sample_piloto_id_fkey"
+            columns: ["piloto_id"]
+            isOneToOne: false
+            referencedRelation: "pilotos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "showroom_sample_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "references"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tech_sheets: {
         Row: {
           bom: Json
@@ -886,6 +1226,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_any_showroom_role: { Args: { _uid: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -894,6 +1235,10 @@ export type Database = {
         Returns: boolean
       }
       is_member: { Args: { _uid: string }; Returns: boolean }
+      user_has_role_name: {
+        Args: { _name: string; _uid: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:
