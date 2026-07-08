@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
 import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authenticated.tech-sheet'
 import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
+import { Route as AuthenticatedSupplierPortalRouteImport } from './routes/_authenticated.supplier-portal'
 import { Route as AuthenticatedShowroomRouteImport } from './routes/_authenticated.showroom'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
 import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
@@ -84,6 +85,12 @@ const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
   path: '/suppliers',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSupplierPortalRoute =
+  AuthenticatedSupplierPortalRouteImport.update({
+    id: '/supplier-portal',
+    path: '/supplier-portal',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedShowroomRoute = AuthenticatedShowroomRouteImport.update({
   id: '/showroom',
   path: '/showroom',
@@ -255,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/showroom': typeof AuthenticatedShowroomRoute
+  '/supplier-portal': typeof AuthenticatedSupplierPortalRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
@@ -291,6 +299,7 @@ export interface FileRoutesByTo {
   '/research': typeof AuthenticatedResearchRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/showroom': typeof AuthenticatedShowroomRoute
+  '/supplier-portal': typeof AuthenticatedSupplierPortalRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
@@ -329,6 +338,7 @@ export interface FileRoutesById {
   '/_authenticated/research': typeof AuthenticatedResearchRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/showroom': typeof AuthenticatedShowroomRoute
+  '/_authenticated/supplier-portal': typeof AuthenticatedSupplierPortalRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
@@ -367,6 +377,7 @@ export interface FileRouteTypes {
     | '/research'
     | '/security'
     | '/showroom'
+    | '/supplier-portal'
     | '/suppliers'
     | '/tech-sheet'
     | '/api/generate-image'
@@ -403,6 +414,7 @@ export interface FileRouteTypes {
     | '/research'
     | '/security'
     | '/showroom'
+    | '/supplier-portal'
     | '/suppliers'
     | '/tech-sheet'
     | '/api/generate-image'
@@ -440,6 +452,7 @@ export interface FileRouteTypes {
     | '/_authenticated/research'
     | '/_authenticated/security'
     | '/_authenticated/showroom'
+    | '/_authenticated/supplier-portal'
     | '/_authenticated/suppliers'
     | '/_authenticated/tech-sheet'
     | '/api/generate-image'
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/supplier-portal': {
+      id: '/_authenticated/supplier-portal'
+      path: '/supplier-portal'
+      fullPath: '/supplier-portal'
+      preLoaderRoute: typeof AuthenticatedSupplierPortalRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/showroom': {
@@ -748,6 +768,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedShowroomRoute: typeof AuthenticatedShowroomRoute
+  AuthenticatedSupplierPortalRoute: typeof AuthenticatedSupplierPortalRoute
   AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
   AuthenticatedTechSheetRoute: typeof AuthenticatedTechSheetRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -777,6 +798,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedResearchRoute: AuthenticatedResearchRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedShowroomRoute: AuthenticatedShowroomRoute,
+  AuthenticatedSupplierPortalRoute: AuthenticatedSupplierPortalRoute,
   AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
   AuthenticatedTechSheetRoute: AuthenticatedTechSheetRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
