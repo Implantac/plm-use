@@ -1527,6 +1527,13 @@ export type Database = {
         | "capa"
         | "engenharia"
         | "facao_order"
+        | "showroom_sample"
+        | "showroom_publication"
+        | "showroom_feedback"
+        | "showroom_decision"
+        | "launch_wave"
+        | "launch_item"
+        | "launch_handoff"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -1694,6 +1701,13 @@ export const Constants = {
         "capa",
         "engenharia",
         "facao_order",
+        "showroom_sample",
+        "showroom_publication",
+        "showroom_feedback",
+        "showroom_decision",
+        "launch_wave",
+        "launch_item",
+        "launch_handoff",
       ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [

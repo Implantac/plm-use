@@ -25,6 +25,7 @@ import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated.production'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
+import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
 import { Route as AuthenticatedInfluencersRouteImport } from './routes/_authenticated.influencers'
 import { Route as AuthenticatedFinancialRouteImport } from './routes/_authenticated.financial'
@@ -40,6 +41,7 @@ import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
+import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -118,6 +120,11 @@ const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
 const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
   id: '/marketing',
   path: '/marketing',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedLaunchRoute = AuthenticatedLaunchRouteImport.update({
+  id: '/launch',
+  path: '/launch',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
@@ -200,6 +207,12 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiPublicCronLaunchPerformanceRoute =
+  ApiPublicCronLaunchPerformanceRouteImport.update({
+    id: '/api/public/cron/launch-performance',
+    path: '/api/public/cron/launch-performance',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -219,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/financial': typeof AuthenticatedFinancialRoute
   '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
+  '/launch': typeof AuthenticatedLaunchRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
@@ -232,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -251,6 +266,7 @@ export interface FileRoutesByTo {
   '/financial': typeof AuthenticatedFinancialRoute
   '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
+  '/launch': typeof AuthenticatedLaunchRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
@@ -264,6 +280,7 @@ export interface FileRoutesByTo {
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -285,6 +302,7 @@ export interface FileRoutesById {
   '/_authenticated/financial': typeof AuthenticatedFinancialRoute
   '/_authenticated/influencers': typeof AuthenticatedInfluencersRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
+  '/_authenticated/launch': typeof AuthenticatedLaunchRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/production': typeof AuthenticatedProductionRouteWithChildren
@@ -298,6 +316,7 @@ export interface FileRoutesById {
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -319,6 +338,7 @@ export interface FileRouteTypes {
     | '/financial'
     | '/influencers'
     | '/inventory'
+    | '/launch'
     | '/marketing'
     | '/planner'
     | '/production'
@@ -332,6 +352,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/admin/users'
     | '/production/today'
+    | '/api/public/cron/launch-performance'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -351,6 +372,7 @@ export interface FileRouteTypes {
     | '/financial'
     | '/influencers'
     | '/inventory'
+    | '/launch'
     | '/marketing'
     | '/planner'
     | '/production'
@@ -364,6 +386,7 @@ export interface FileRouteTypes {
     | '/tech-sheet'
     | '/admin/users'
     | '/production/today'
+    | '/api/public/cron/launch-performance'
   id:
     | '__root__'
     | '/'
@@ -384,6 +407,7 @@ export interface FileRouteTypes {
     | '/_authenticated/financial'
     | '/_authenticated/influencers'
     | '/_authenticated/inventory'
+    | '/_authenticated/launch'
     | '/_authenticated/marketing'
     | '/_authenticated/planner'
     | '/_authenticated/production'
@@ -397,6 +421,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tech-sheet'
     | '/_authenticated/admin/users'
     | '/_authenticated/production/today'
+    | '/api/public/cron/launch-performance'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -405,6 +430,7 @@ export interface RootRouteChildren {
   AuditRoute: typeof AuditRoute
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -521,6 +547,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMarketingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/launch': {
+      id: '/_authenticated/launch'
+      path: '/launch'
+      fullPath: '/launch'
+      preLoaderRoute: typeof AuthenticatedLaunchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/inventory': {
       id: '/_authenticated/inventory'
       path: '/inventory'
@@ -626,6 +659,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/cron/launch-performance': {
+      id: '/api/public/cron/launch-performance'
+      path: '/api/public/cron/launch-performance'
+      fullPath: '/api/public/cron/launch-performance'
+      preLoaderRoute: typeof ApiPublicCronLaunchPerformanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -657,6 +697,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFinancialRoute: typeof AuthenticatedFinancialRoute
   AuthenticatedInfluencersRoute: typeof AuthenticatedInfluencersRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
+  AuthenticatedLaunchRoute: typeof AuthenticatedLaunchRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRouteWithChildren
@@ -685,6 +726,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFinancialRoute: AuthenticatedFinancialRoute,
   AuthenticatedInfluencersRoute: AuthenticatedInfluencersRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
+  AuthenticatedLaunchRoute: AuthenticatedLaunchRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRouteWithChildren,
@@ -709,6 +751,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuditRoute: AuditRoute,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
