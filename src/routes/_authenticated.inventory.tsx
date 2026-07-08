@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { AlertTriangle, Boxes, History, PackageSearch, ScanLine, ShieldCheck, RefreshCw } from "lucide-react";
+import { AlertTriangle, Boxes, History, PackageSearch, ArrowRightLeft, ShieldCheck, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,9 +17,10 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
+import { MovementDialog } from "@/components/inventory/MovementDialog";
 import { useStockItems, type StockItem } from "@/hooks/use-stock";
 import { supabase } from "@/integrations/supabase/client";
-import { runAbcClassification } from "@/lib/inventory/inventory.functions";
+import { runAbcClassification, upsertStockItem } from "@/lib/inventory/inventory.functions";
 
 export const Route = createFileRoute("/_authenticated/inventory")({
   component: InventoryPage,
@@ -43,6 +44,8 @@ const emptyForm = {
   annual_qty: "0",
   annual_revenue: "0",
   unit_price: "0",
+  order_cost: "0",
+  holding_cost_unit: "0",
 };
 
 function InventoryPage() {
