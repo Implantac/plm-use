@@ -162,7 +162,7 @@ function CompareCollectionsPage() {
       title="Comparar coleções"
       subtitle="Escolha duas coleções e compare mix, financeiro, showroom, custo e sell-through lado a lado."
       version="Strategy v2.0"
-      hideSearch
+      searchPlaceholder="Buscar coleção"
       metrics={[
         { label: "Coleções disponíveis", value: String(collections.length), detail: "no catálogo" },
         {
