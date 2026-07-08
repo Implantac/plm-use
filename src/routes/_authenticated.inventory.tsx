@@ -54,6 +54,7 @@ function InventoryPage() {
   const { items, balances, loading, refetch } = useStockItems();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMoveOpen, setIsMoveOpen] = useState(false);
+  const [isResOpen, setIsResOpen] = useState(false);
   const [moveItemId, setMoveItemId] = useState<string | undefined>();
   const [editingItem, setEditingItem] = useState<StockItem | null>(null);
   const [formData, setFormData] = useState(emptyForm);
