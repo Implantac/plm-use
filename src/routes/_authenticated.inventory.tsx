@@ -356,7 +356,7 @@ function InventoryPage() {
                         <ModuleActionMenu
                           onEdit={() => handleOpenDialog(item)}
                           onDelete={() => handleToggleActive(item)}
-                          onView={() => toast.info(`Código: ${item.code}`)}
+                          onView={() => handleOpenMove(item)}
                         />
                       </td>
                     </tr>
