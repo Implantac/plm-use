@@ -18,6 +18,7 @@ import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
 import { MovementDialog } from "@/components/inventory/MovementDialog";
+import { ReservationsPanel } from "@/components/inventory/ReservationsPanel";
 import { useStockItems, type StockItem } from "@/hooks/use-stock";
 import { supabase } from "@/integrations/supabase/client";
 import { runAbcClassification, upsertStockItem } from "@/lib/inventory/inventory.functions";
