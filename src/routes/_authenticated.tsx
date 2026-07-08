@@ -199,7 +199,7 @@ function AuthenticatedLayout() {
         </div>
 
         <ScrollArea className="flex-1 px-3">
-          <nav className="space-y-4 py-1">
+          <nav className="space-y-1 py-1">
             {navSections.map((section) => {
               const open = openSections[section.id] ?? false;
               return (
@@ -207,7 +207,7 @@ function AuthenticatedLayout() {
                   <button
                     type="button"
                     onClick={() => toggleSection(section.id)}
-                    className="w-full flex items-center justify-between px-2 py-1.5 text-2xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70 hover:text-foreground transition-colors"
+                    className="w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70 hover:text-foreground transition-colors"
                   >
                     <span>{section.label}</span>
                     <ChevronDown
@@ -215,7 +215,8 @@ function AuthenticatedLayout() {
                     />
                   </button>
                   {open && (
-                    <div className="mt-1 space-y-0.5">
+                    <div className="mt-0.5 mb-1 space-y-0.5">
+
                       {section.items.map((item) => (
                         <Link
                           key={item.label}
