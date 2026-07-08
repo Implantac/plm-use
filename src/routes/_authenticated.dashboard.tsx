@@ -176,76 +176,47 @@ function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         className="grid grid-cols-1 xl:grid-cols-[1.35fr_0.65fr] gap-6"
       >
-        <div className="min-h-[360px] rounded-lg border border-white/10 bg-white/[0.035] overflow-hidden relative">
-          <OptimizedImage
-            src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&q=80&w=1600"
-            alt="Equipe de moda analisando colecao"
-            className="absolute inset-0 h-full w-full object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/25" />
-          <div className="relative z-10 h-full p-6 md:p-8 flex flex-col justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                SaaS multiempresa
-              </span>
-              <span className="rounded-md border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-300">
-                LGPD, SSO, MFA, auditoria
-              </span>
-            </div>
+        <div className="rounded-lg border border-white/10 bg-white/[0.035] p-6 md:p-7 flex flex-col justify-between gap-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-2 rounded-md border border-primary/25 bg-primary/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              SaaS multiempresa
+            </span>
+            <span className="rounded-md border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+              LGPD, SSO, MFA, auditoria
+            </span>
+          </div>
 
-            <div className="max-w-3xl space-y-5">
-              <div>
-                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
-                  USE MODA PLM AI
-                </h1>
-                <p className="mt-3 max-w-2xl text-sm md:text-base leading-relaxed text-muted-foreground">
-                  Cockpit unico para pesquisa, desenvolvimento, engenharia, producao, marketing,
-                  comercial, financeiro e rentabilidade da colecao.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  asChild
-                  className="rounded-md h-11 px-5 text-[10px] font-bold uppercase tracking-[0.16em] btn-primary-premium"
-                >
-                  <Link to="/ai-center">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Abrir USE AI
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-md h-11 px-5 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/10"
-                >
-                  <Link to="/digital-twin">
-                    <RouteIcon className="mr-2 h-4 w-4" />
-                    Digital Twin
-                  </Link>
-                </Button>
-              </div>
+          <div className="space-y-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
+                USE MODA PLM AI
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Cockpit unico para pesquisa, desenvolvimento, engenharia, producao, marketing,
+                comercial, financeiro e rentabilidade da colecao.
+              </p>
             </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {executiveStats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-lg border border-white/10 bg-black/35 p-4 backdrop-blur"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                      {stat.label}
-                    </p>
-                    <stat.icon className={`h-4 w-4 ${stat.tone}`} />
-                  </div>
-                  <div className="mt-4 flex items-end justify-between gap-2">
-                    <p className="text-2xl font-bold tracking-tight text-white">{stat.value}</p>
-                    <p className={`text-[10px] font-bold uppercase ${stat.tone}`}>{stat.change}</p>
-                  </div>
-                  <p className="mt-1 text-[10px] text-muted-foreground">{stat.detail}</p>
-                </div>
-              ))}
+            <div className="flex flex-wrap gap-3">
+              <Button
+                asChild
+                className="rounded-md h-11 px-5 text-[10px] font-bold uppercase tracking-[0.16em] btn-primary-premium"
+              >
+                <Link to="/ai-center">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Abrir USE AI
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-md h-11 px-5 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/10"
+              >
+                <Link to="/digital-twin">
+                  <RouteIcon className="mr-2 h-4 w-4" />
+                  Digital Twin
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -276,6 +247,7 @@ function Dashboard() {
           </CardContent>
         </Card>
       </motion.section>
+
 
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {executiveStats.map((stat, index) => (
