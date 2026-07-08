@@ -1,23 +1,15 @@
 // Doc 06.2 · Almoxarifado — cron público de reclassificação ABC (mensal).
-// Chamado por pg_cron via net.http_post. Autenticação via HMAC-SHA256 no header
-// x-abc-signature, secret LAUNCH_CRON_SECRET. Sem verificação, nada roda.
+// Autenticação: apikey header contendo o Supabase publishable key (padrão Lovable /api/public/*).
 import { createFileRoute } from "@tanstack/react-router";
-import { createHmac, timingSafeEqual } from "crypto";
 
 export const Route = createFileRoute("/api/public/cron/abc-classify")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = process.env.LAUNCH_CRON_SECRET;
-        if (!secret) return new Response("Cron secret not configured", { status: 503 });
-
-        const signature = request.headers.get("x-abc-signature") ?? "";
-        const body = await request.text();
-        const expected = createHmac("sha256", secret).update(body).digest("hex");
-        const sig = Buffer.from(signature);
-        const exp = Buffer.from(expected);
-        if (sig.length !== exp.length || !timingSafeEqual(sig, exp)) {
-          return new Response("Invalid signature", { status: 401 });
+        const expected = process.env.SUPABASE_PUBLISHABLE_KEY;
+        const provided = request.headers.get("apikey") ?? "";
+        if (!expected || provided !== expected) {
+          return new Response("Unauthorized", { status: 401 });
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -32,7 +24,12 @@ export const Route = createFileRoute("/api/public/cron/abc-classify")({
           });
         }
 
-        const changes = (data ?? []) as Array<{ item_id: string; old_class: string | null; new_class: string; cumulative_pct: number }>;
+        const changes = (data ?? []) as Array<{
+          item_id: string;
+          old_class: string | null;
+          new_class: string;
+          cumulative_pct: number;
+        }>;
         if (changes.length > 0) {
           await supabaseAdmin.from("entity_events").insert(
             changes.map((c) => ({
