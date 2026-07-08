@@ -31,6 +31,7 @@ import { emptyLifecycle } from "@/types/reference";
 import { BomBopPanel } from "@/components/techsheet/BomBopPanel";
 import { TechSheetVersions } from "@/components/techsheet/TechSheetVersions";
 import { PreCostPanel } from "@/components/techsheet/PreCostPanel";
+import { OperationSequencePanel } from "@/components/techsheet/OperationSequencePanel";
 
 
 const techSheetSearchSchema = z.object({
