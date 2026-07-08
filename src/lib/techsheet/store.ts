@@ -85,7 +85,9 @@ interface State {
   removeBomItem(ref: string, id: string): void;
   addBopStep(ref: string, step: Omit<BopStep, "id">): void;
   removeBopStep(ref: string, id: string): void;
+  updatePreCost(ref: string, patch: Partial<PreCost>): void;
   createVersion(ref: string, autor: string, resumo: string, alteracoes: string[]): TechSheetVersion;
+
 }
 
 const uid = () => Math.random().toString(36).slice(2, 9);
