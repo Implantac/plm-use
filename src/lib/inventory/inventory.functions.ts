@@ -181,10 +181,14 @@ export const runAbcClassification = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const { data: allowed, error: roleError } = await supabase.rpc("has_stock_write_role", {
-      _uid: userId,
-    } as never);
+    const { data: roles, error: roleError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
     if (roleError) return { ok: false as const, reason: roleError.message, changes: [] };
+    const allowed = (roles ?? []).some((r: { role: string }) =>
+      ["admin", "manager", "almoxarifado"].includes(r.role),
+    );
     if (!allowed) return { ok: false as const, reason: "forbidden", changes: [] };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
