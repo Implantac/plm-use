@@ -33,12 +33,21 @@ export type TechSheetVersion = {
   alteracoes: string[];
 };
 
+export type PreCost = {
+  targetCusto: number;      // meta de custo industrial
+  overheadPct: number;      // % de rateio (energia, adm, indireto)
+  markupPct: number;        // % de markup sobre custo final para preço sugerido
+  targetPreco?: number;     // preço-alvo de venda (opcional, alerta se sugerido > alvo)
+};
+
 export type TechSheetData = {
   ref: string;
   bom: BomItem[];
   bop: BopStep[];
   versoes: TechSheetVersion[];
+  preCost: PreCost;
 };
+
 
 const seedFor = (ref: string): TechSheetData => ({
   ref,
@@ -60,7 +69,11 @@ const seedFor = (ref: string): TechSheetData => ({
     { id: "v2", versao: "v4.1", data: "2026-05-28", autor: "Sandra Lima", status: "Obsoleta", resumo: "Revisão de botão e fornecedor.", alteracoes: ["Botão plástico → Madre Pérola", "Fornecedor: Plastic Co → Aviamentos Real"] },
     { id: "v3", versao: "v4.0", data: "2026-05-10", autor: "Carla Mendes", status: "Obsoleta", resumo: "Versão inicial após aprovação do piloto.", alteracoes: ["Liberada para produção"] },
   ],
+  preCost: { targetCusto: 80, overheadPct: 12, markupPct: 220, targetPreco: 349 },
 });
+
+
+
 
 interface State {
   data: Record<string, TechSheetData>;
@@ -69,7 +82,9 @@ interface State {
   removeBomItem(ref: string, id: string): void;
   addBopStep(ref: string, step: Omit<BopStep, "id">): void;
   removeBopStep(ref: string, id: string): void;
+  updatePreCost(ref: string, patch: Partial<PreCost>): void;
   createVersion(ref: string, autor: string, resumo: string, alteracoes: string[]): TechSheetVersion;
+
 }
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -112,6 +127,13 @@ export const useTechSheetStore = create<State>()(persist((set, get) => ({
       return { data: { ...s.data, [ref]: { ...cur, bop: cur.bop.filter((b) => b.id !== id) } } };
     });
   },
+  updatePreCost(ref, patch) {
+    set((s) => {
+      const cur = s.data[ref] ?? seedFor(ref);
+      return { data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } } };
+    });
+  },
+
   createVersion(ref, autor, resumo, alteracoes) {
     const cur = get().data[ref] ?? seedFor(ref);
     const last = cur.versoes[0]?.versao ?? "v1.0";
