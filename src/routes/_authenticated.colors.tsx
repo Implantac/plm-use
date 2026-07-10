@@ -28,6 +28,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import { toast } from "sonner";
 import {
   listPalettes,
