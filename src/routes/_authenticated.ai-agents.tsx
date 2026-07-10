@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Send, Sparkles, Factory, Megaphone, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { fetchLiveContext } from "@/lib/ai/live-context.functions";
 import { usePCPStore } from "@/lib/pcp/store";
