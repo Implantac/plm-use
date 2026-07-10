@@ -176,15 +176,21 @@ function AuthenticatedLayout() {
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const path = typeof window !== "undefined" ? window.location.pathname : "";
-    const initial: Record<string, boolean> = {
-      geral: true,
-      plm: false,
-      pcp: false,
-      supply: false,
-      gtm: false,
-      insights: false,
-      admin: false,
-    };
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem("use-moda-sidebar-sections") : null;
+    const initial: Record<string, boolean> = stored
+      ? (JSON.parse(stored) as Record<string, boolean>)
+      : {
+          geral: true,
+          "plm-criacao": false,
+          "plm-colecao": false,
+          "plm-engenharia": false,
+          pcp: false,
+          supply: false,
+          gtm: false,
+          insights: false,
+          admin: false,
+        };
+    // Sempre expandir o grupo do path atual
     navSections.forEach((s) => {
       if (s.items.some((it) => path.startsWith(it.href))) initial[s.id] = true;
     });
@@ -192,7 +198,24 @@ function AuthenticatedLayout() {
   });
 
   const toggleSection = (id: string) =>
-    setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
+    setOpenSections((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("use-moda-sidebar-sections", JSON.stringify(next));
+      }
+      return next;
+    });
+
+  const { favorites, isFavorite, toggleFavorite } = useRecentRoutes();
+  const favoriteItems = favorites
+    .map((path) => {
+      for (const s of navSections) {
+        const item = s.items.find((it) => it.href === path);
+        if (item) return item;
+      }
+      return null;
+    })
+    .filter((v): v is NonNullable<typeof v> => Boolean(v));
 
   if (loading || !isAuthenticated) {
     return (
