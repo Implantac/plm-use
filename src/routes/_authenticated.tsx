@@ -93,17 +93,29 @@ function AuthenticatedLayout() {
         ],
       },
       {
-        id: "plm",
-        label: "PLM · Produto",
+        id: "plm-criacao",
+        label: "PLM · Criação",
         items: [
-          { icon: <Fingerprint className="w-4 h-4" />, label: "Núcleo · Referências", href: "/references" },
-          { icon: <Palette className="w-4 h-4" />, label: "Pesquisa", href: "/research" },
+          { icon: <Palette className="w-4 h-4" />, label: "Pesquisa & Moodboard", href: "/research" },
           { icon: <Palette className="w-4 h-4" />, label: "Cartela de Cores", href: "/colors" },
           { icon: <FileImage className="w-4 h-4" />, label: "Cartela de Estampas", href: "/prints" },
           { icon: <LayoutTemplate className="w-4 h-4" />, label: "Painel de Displayagem", href: "/display" },
           { icon: <Shirt className="w-4 h-4" />, label: "Coordenados · Looks", href: "/looks" },
+        ],
+      },
+      {
+        id: "plm-colecao",
+        label: "PLM · Coleção",
+        items: [
           { icon: <Layers className="w-4 h-4" />, label: "Coleções", href: "/collections" },
           { icon: <Grid3x3 className="w-4 h-4" />, label: "Mapa de Coleção", href: "/collection-map" },
+          { icon: <Fingerprint className="w-4 h-4" />, label: "Núcleo · Referências", href: "/references" },
+        ],
+      },
+      {
+        id: "plm-engenharia",
+        label: "PLM · Engenharia",
+        items: [
           { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
           { icon: <Zap className="w-4 h-4" />, label: "Protótipos", href: "/prototypes" },
           { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
