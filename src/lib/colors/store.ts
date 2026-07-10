@@ -96,30 +96,70 @@ export function getPalette(id: string): ColorPalette | undefined {
   return palettes.find((p) => p.id === id);
 }
 
+import { emitLocalEvent } from "@/lib/local-events/store";
+
 export function upsertPalette(next: ColorPalette) {
   const idx = palettes.findIndex((p) => p.id === next.id);
+  const prev = idx === -1 ? null : palettes[idx];
   if (idx === -1) palettes = [next, ...palettes];
   else palettes = palettes.map((p, i) => (i === idx ? next : p));
   listeners.forEach((l) => l());
+  if (!prev) {
+    emitLocalEvent({
+      entity_type: "color_palette",
+      entity_id: next.id,
+      event_type: "created",
+      to_status: next.status,
+      note: `Cartela "${next.name}" criada`,
+    });
+  } else if (prev.status !== next.status) {
+    emitLocalEvent({
+      entity_type: "color_palette",
+      entity_id: next.id,
+      event_type: "status_changed",
+      from_status: prev.status,
+      to_status: next.status,
+    });
+  } else {
+    emitLocalEvent({
+      entity_type: "color_palette",
+      entity_id: next.id,
+      event_type: "updated",
+      note: `Cartela atualizada · ${next.colors.length} cores`,
+    });
+  }
 }
 
 export function addColorToPalette(paletteId: string, color: ColorRef) {
   const p = getPalette(paletteId);
   if (!p) return;
-  upsertPalette({
-    ...p,
-    colors: [...p.colors, color],
-    updatedAt: new Date().toISOString().slice(0, 10),
+  palettes = palettes.map((x) =>
+    x.id === paletteId ? { ...x, colors: [...x.colors, color], updatedAt: new Date().toISOString().slice(0, 10) } : x,
+  );
+  listeners.forEach((l) => l());
+  emitLocalEvent({
+    entity_type: "color_palette",
+    entity_id: paletteId,
+    event_type: "color_added",
+    note: `Cor "${color.name}" (${color.hex})`,
   });
 }
 
 export function removeColor(paletteId: string, colorId: string) {
   const p = getPalette(paletteId);
   if (!p) return;
-  upsertPalette({
-    ...p,
-    colors: p.colors.filter((c) => c.id !== colorId),
-    updatedAt: new Date().toISOString().slice(0, 10),
+  const removed = p.colors.find((c) => c.id === colorId);
+  palettes = palettes.map((x) =>
+    x.id === paletteId
+      ? { ...x, colors: x.colors.filter((c) => c.id !== colorId), updatedAt: new Date().toISOString().slice(0, 10) }
+      : x,
+  );
+  listeners.forEach((l) => l());
+  emitLocalEvent({
+    entity_type: "color_palette",
+    entity_id: paletteId,
+    event_type: "color_removed",
+    note: removed ? `Cor "${removed.name}" removida` : "Cor removida",
   });
 }
 
