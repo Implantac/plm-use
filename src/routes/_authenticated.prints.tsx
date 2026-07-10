@@ -278,12 +278,22 @@ function PrintDetail({ print }: { print: PrintAsset }) {
                 {TECNICA_LABEL[print.tecnica]} · {print.season ?? "—"} · {print.brand ?? "—"}
               </p>
             </div>
-            <Badge
-              variant="outline"
-              className={`${STATUS_CLASS[print.status]} text-[10px] uppercase tracking-widest`}
-            >
-              {STATUS_LABEL[print.status]}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <LocalHistoryButton
+                entityType="print_design"
+                entityId={print.id}
+                entityLabel={`${print.code} · ${print.name}`}
+                variant="outline"
+                size="sm"
+                className="gap-1.5 border-white/20 bg-black/40 text-white hover:bg-black/60"
+              />
+              <Badge
+                variant="outline"
+                className={`${STATUS_CLASS[print.status]} text-[10px] uppercase tracking-widest`}
+              >
+                {STATUS_LABEL[print.status]}
+              </Badge>
+            </div>
           </div>
         </div>
         <CardContent className="p-5 space-y-4">
