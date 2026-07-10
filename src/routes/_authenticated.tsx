@@ -13,7 +13,7 @@ import { ActivityFeedButton } from "@/components/activity/ActivityFeedButton";
 import { useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
-  ChevronRight,
+  
   ChevronDown,
   Zap,
   BarChart3,
