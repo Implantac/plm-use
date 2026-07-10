@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useUserRoles, type AppRole } from "@/hooks/use-auth";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
