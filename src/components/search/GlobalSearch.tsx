@@ -224,7 +224,33 @@ export function GlobalSearch() {
               </div>
             </CommandEmpty>
 
-            <CommandGroup heading="Ações Rápidas">
+            {currentMeta?.quickActions && currentMeta.quickActions.length > 0 && (
+              <>
+                <CommandGroup heading={`Ações rápidas · ${currentMeta.label}`}>
+                  {currentMeta.quickActions.map((qa) => (
+                    <CommandItem
+                      key={qa.id}
+                      onSelect={() => runCommand(() => dispatchQuickAction(qa.event))}
+                      className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <ZapAction className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-white">{qa.label}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
+                          Aqui no {currentMeta.label}
+                        </p>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                <CommandSeparator className="bg-white/5 my-2" />
+              </>
+            )}
+
+            <CommandGroup heading="Ações globais">
               <CommandItem
                 onSelect={() => runCommand(() => navigate({ to: "/ai-center" }))}
                 className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
@@ -233,16 +259,54 @@ export function GlobalSearch() {
                   <CommandIcon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">
-                    USE AI Copilot
-                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">USE AI Copilot</p>
                   <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
                     Consultar inteligência aplicada
                   </p>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
               </CommandItem>
+              {currentMeta && (
+                <CommandItem
+                  onSelect={() => runCommand(() => toggleFavorite(currentMeta.path))}
+                  className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <Star className={`w-4 h-4 ${isFavorite(currentMeta.path) ? "fill-primary" : ""}`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                      {isFavorite(currentMeta.path) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                    </p>
+                    <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
+                      {currentMeta.label}
+                    </p>
+                  </div>
+                </CommandItem>
+              )}
             </CommandGroup>
+
+            {favoriteEntries.length > 0 && (
+              <>
+                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandGroup heading="Favoritos">
+                  {favoriteEntries.map((e) => (
+                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+
+            {recentEntries.length > 0 && (
+              <>
+                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandGroup heading="Recentes">
+                  {recentEntries.map((e) => (
+                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                  ))}
+                </CommandGroup>
+              </>
+            )}
 
             <CommandSeparator className="bg-white/5 my-2" />
 
@@ -251,6 +315,7 @@ export function GlobalSearch() {
                 <EntryRow key={m.id} entry={m} onSelect={() => runCommand(() => navigate({ to: m.path }))} />
               ))}
             </CommandGroup>
+
 
             {pcpEntries.length > 0 && (
               <>
