@@ -153,50 +153,86 @@ export function getBoard(id: string): DisplayBoard | undefined {
   return boards.find((b) => b.id === id);
 }
 
+import { emitLocalEvent } from "@/lib/local-events/store";
+
 export function upsertBoard(next: DisplayBoard) {
   const idx = boards.findIndex((b) => b.id === next.id);
+  const prev = idx === -1 ? null : boards[idx];
   if (idx === -1) boards = [next, ...boards];
   else boards = boards.map((b, i) => (i === idx ? next : b));
   listeners.forEach((l) => l());
+  if (!prev) {
+    emitLocalEvent({
+      entity_type: "display_board",
+      entity_id: next.id,
+      event_type: "created",
+      to_status: next.status,
+      note: `Painel "${next.name}" criado`,
+    });
+  } else if (prev.status !== next.status) {
+    emitLocalEvent({
+      entity_type: "display_board",
+      entity_id: next.id,
+      event_type: "status_changed",
+      from_status: prev.status,
+      to_status: next.status,
+    });
+  }
 }
 
 export function addItem(boardId: string, item: BoardItem) {
   const b = getBoard(boardId);
   if (!b) return;
-  upsertBoard({
-    ...b,
-    items: [...b.items, item],
-    updatedAt: new Date().toISOString().slice(0, 10),
+  boards = boards.map((x) =>
+    x.id === boardId ? { ...x, items: [...x.items, item], updatedAt: new Date().toISOString().slice(0, 10) } : x,
+  );
+  listeners.forEach((l) => l());
+  emitLocalEvent({
+    entity_type: "display_board",
+    entity_id: boardId,
+    event_type: "item_added",
+    note: `${item.refCode} — ${item.refName}`,
   });
 }
 
 export function moveItem(boardId: string, itemId: string, x: number, y: number) {
   const b = getBoard(boardId);
   if (!b) return;
-  upsertBoard({
-    ...b,
-    items: b.items.map((i) => (i.id === itemId ? { ...i, x, y } : i)),
-    updatedAt: new Date().toISOString().slice(0, 10),
-  });
+  boards = boards.map((br) =>
+    br.id === boardId
+      ? { ...br, items: br.items.map((i) => (i.id === itemId ? { ...i, x, y } : i)), updatedAt: new Date().toISOString().slice(0, 10) }
+      : br,
+  );
+  listeners.forEach((l) => l());
+  // move é ruidoso — não emite evento por peça movida (só via addItem/removeItem/status)
 }
 
 export function resizeItem(boardId: string, itemId: string, w: number) {
   const b = getBoard(boardId);
   if (!b) return;
-  upsertBoard({
-    ...b,
-    items: b.items.map((i) => (i.id === itemId ? { ...i, w } : i)),
-    updatedAt: new Date().toISOString().slice(0, 10),
-  });
+  boards = boards.map((br) =>
+    br.id === boardId
+      ? { ...br, items: br.items.map((i) => (i.id === itemId ? { ...i, w } : i)), updatedAt: new Date().toISOString().slice(0, 10) }
+      : br,
+  );
+  listeners.forEach((l) => l());
 }
 
 export function removeItem(boardId: string, itemId: string) {
   const b = getBoard(boardId);
   if (!b) return;
-  upsertBoard({
-    ...b,
-    items: b.items.filter((i) => i.id !== itemId),
-    updatedAt: new Date().toISOString().slice(0, 10),
+  const removed = b.items.find((i) => i.id === itemId);
+  boards = boards.map((br) =>
+    br.id === boardId
+      ? { ...br, items: br.items.filter((i) => i.id !== itemId), updatedAt: new Date().toISOString().slice(0, 10) }
+      : br,
+  );
+  listeners.forEach((l) => l());
+  emitLocalEvent({
+    entity_type: "display_board",
+    entity_id: boardId,
+    event_type: "item_removed",
+    note: removed ? `${removed.refCode} — ${removed.refName}` : itemId,
   });
 }
 
