@@ -24,8 +24,11 @@ import {
   LockKeyhole,
   Box,
   Bot,
+  Star,
+  Clock,
+  Zap as ZapAction,
 } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   CommandDialog,
   CommandEmpty,
@@ -35,6 +38,8 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { useRecentRoutes } from "@/hooks/use-recent-routes";
+import { ROUTE_REGISTRY, findRouteMeta, dispatchQuickAction } from "@/lib/nav/routes";
 import { usePCPStore } from "@/lib/pcp/store";
 import { useQualityStore } from "@/lib/quality/store";
 import { useInfluencersStore } from "@/lib/influencers/store";
