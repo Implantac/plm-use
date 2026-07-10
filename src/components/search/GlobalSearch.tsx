@@ -84,6 +84,9 @@ export function GlobalSearch() {
   const lotes = usePCPStore((s) => s.lotes);
   const capas = useQualityStore((s) => s.capa);
   const influencers = useInfluencersStore((s) => s.influencers);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { recents, favorites, toggleFavorite, isFavorite } = useRecentRoutes();
+  const currentMeta = React.useMemo(() => findRouteMeta(pathname), [pathname]);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -100,6 +103,46 @@ export function GlobalSearch() {
     setOpen(false);
     command();
   }, []);
+
+  const metaByPath = React.useMemo(() => {
+    const map = new Map<string, (typeof ROUTE_REGISTRY)[number]>();
+    for (const r of ROUTE_REGISTRY) map.set(r.path, r);
+    return map;
+  }, []);
+
+  const recentEntries: Entry[] = React.useMemo(
+    () =>
+      recents
+        .map((p) => metaByPath.get(p))
+        .filter((m): m is NonNullable<typeof m> => Boolean(m) && m!.path !== pathname)
+        .slice(0, 6)
+        .map((m) => ({
+          id: `recent-${m.path}`,
+          title: m.label,
+          subtitle: m.crumbs?.join(" · "),
+          module: "Recentes",
+          icon: <Clock className="w-4 h-4" />,
+          path: m.path,
+        })),
+    [recents, metaByPath, pathname],
+  );
+
+  const favoriteEntries: Entry[] = React.useMemo(
+    () =>
+      favorites
+        .map((p) => metaByPath.get(p))
+        .filter((m): m is NonNullable<typeof m> => Boolean(m))
+        .map((m) => ({
+          id: `fav-${m.path}`,
+          title: m.label,
+          subtitle: m.crumbs?.join(" · "),
+          module: "Favoritos",
+          icon: <Star className="w-4 h-4" />,
+          path: m.path,
+        })),
+    [favorites, metaByPath],
+  );
+
 
   const pcpEntries: Entry[] = React.useMemo(() => {
     const out: Entry[] = [];
