@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Copy, Trash2, Sparkles, Shirt, X } from "lucide-react";
 import { toast } from "sonner";
+import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 
 export const Route = createFileRoute("/_authenticated/looks")({
   component: LooksPage,

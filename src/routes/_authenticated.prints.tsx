@@ -40,6 +40,7 @@ import {
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { toast } from "sonner";
+import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import {
   listPrints,
   subscribe,
