@@ -62,7 +62,9 @@ function AICenterPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-160px)] flex gap-8">
+    <div className="flex flex-col gap-4">
+      <ModuleTabs group="ai" />
+      <div className="h-[calc(100vh-220px)] flex gap-8">
       <div className="flex-1 flex flex-col bg-white/[0.02] border border-white/5 rounded-[3rem] overflow-hidden relative">
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.03]"
