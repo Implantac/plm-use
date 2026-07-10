@@ -251,6 +251,26 @@ function AuthenticatedLayout() {
 
         <ScrollArea className="flex-1 px-3">
           <nav className="space-y-1 py-1">
+            {favoriteItems.length > 0 && (
+              <div>
+                <div className="px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] text-primary/70 flex items-center gap-1.5">
+                  <Star className="w-3 h-3 fill-primary/40" />
+                  Favoritos
+                </div>
+                <div className="mt-0.5 mb-2 space-y-0.5">
+                  {favoriteItems.map((item) => (
+                    <Link
+                      key={`fav-${item.href}`}
+                      to={item.href}
+                      className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
+                    >
+                      <span>{item.icon}</span>
+                      <span className="flex-1 truncate">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
             {navSections.map((section) => {
               const open = openSections[section.id] ?? false;
               return (
@@ -267,17 +287,32 @@ function AuthenticatedLayout() {
                   </button>
                   {open && (
                     <div className="mt-0.5 mb-1 space-y-0.5">
-
-                      {section.items.map((item) => (
-                        <Link
-                          key={item.label}
-                          to={item.href}
-                          className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
-                        >
-                          <span>{item.icon}</span>
-                          <span>{item.label}</span>
-                        </Link>
-                      ))}
+                      {section.items.map((item) => {
+                        const fav = isFavorite(item.href);
+                        return (
+                          <div key={item.label} className="group/nav flex items-center">
+                            <Link
+                              to={item.href}
+                              className="flex-1 flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
+                            >
+                              <span>{item.icon}</span>
+                              <span className="flex-1 truncate">{item.label}</span>
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(item.href);
+                              }}
+                              aria-label={fav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                              className={`ml-1 p-1 rounded transition-opacity ${fav ? "opacity-100 text-primary" : "opacity-0 group-hover/nav:opacity-60 hover:opacity-100 text-muted-foreground"}`}
+                            >
+                              <Star className={`w-3 h-3 ${fav ? "fill-primary" : ""}`} />
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -285,6 +320,7 @@ function AuthenticatedLayout() {
             })}
           </nav>
         </ScrollArea>
+
 
         <div className="p-4 mt-auto border-t border-sidebar-border">
           <div className="flex items-center gap-3 p-3 rounded-md bg-accent border border-border hover:bg-muted transition-colors group">
