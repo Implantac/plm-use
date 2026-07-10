@@ -24,8 +24,11 @@ import {
   LockKeyhole,
   Box,
   Bot,
+  Star,
+  Clock,
+  Zap as ZapAction,
 } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   CommandDialog,
   CommandEmpty,
@@ -35,6 +38,8 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { useRecentRoutes } from "@/hooks/use-recent-routes";
+import { ROUTE_REGISTRY, findRouteMeta, dispatchQuickAction } from "@/lib/nav/routes";
 import { usePCPStore } from "@/lib/pcp/store";
 import { useQualityStore } from "@/lib/quality/store";
 import { useInfluencersStore } from "@/lib/influencers/store";
@@ -79,6 +84,9 @@ export function GlobalSearch() {
   const lotes = usePCPStore((s) => s.lotes);
   const capas = useQualityStore((s) => s.capa);
   const influencers = useInfluencersStore((s) => s.influencers);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { recents, favorites, toggleFavorite, isFavorite } = useRecentRoutes();
+  const currentMeta = React.useMemo(() => findRouteMeta(pathname), [pathname]);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -95,6 +103,46 @@ export function GlobalSearch() {
     setOpen(false);
     command();
   }, []);
+
+  const metaByPath = React.useMemo(() => {
+    const map = new Map<string, (typeof ROUTE_REGISTRY)[number]>();
+    for (const r of ROUTE_REGISTRY) map.set(r.path, r);
+    return map;
+  }, []);
+
+  const recentEntries: Entry[] = React.useMemo(
+    () =>
+      recents
+        .map((p) => metaByPath.get(p))
+        .filter((m): m is NonNullable<typeof m> => Boolean(m) && m!.path !== pathname)
+        .slice(0, 6)
+        .map((m) => ({
+          id: `recent-${m.path}`,
+          title: m.label,
+          subtitle: m.crumbs?.join(" · "),
+          module: "Recentes",
+          icon: <Clock className="w-4 h-4" />,
+          path: m.path,
+        })),
+    [recents, metaByPath, pathname],
+  );
+
+  const favoriteEntries: Entry[] = React.useMemo(
+    () =>
+      favorites
+        .map((p) => metaByPath.get(p))
+        .filter((m): m is NonNullable<typeof m> => Boolean(m))
+        .map((m) => ({
+          id: `fav-${m.path}`,
+          title: m.label,
+          subtitle: m.crumbs?.join(" · "),
+          module: "Favoritos",
+          icon: <Star className="w-4 h-4" />,
+          path: m.path,
+        })),
+    [favorites, metaByPath],
+  );
+
 
   const pcpEntries: Entry[] = React.useMemo(() => {
     const out: Entry[] = [];
@@ -176,7 +224,33 @@ export function GlobalSearch() {
               </div>
             </CommandEmpty>
 
-            <CommandGroup heading="Ações Rápidas">
+            {currentMeta?.quickActions && currentMeta.quickActions.length > 0 && (
+              <>
+                <CommandGroup heading={`Ações rápidas · ${currentMeta.label}`}>
+                  {currentMeta.quickActions.map((qa) => (
+                    <CommandItem
+                      key={qa.id}
+                      onSelect={() => runCommand(() => dispatchQuickAction(qa.event))}
+                      className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <ZapAction className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-white">{qa.label}</p>
+                        <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
+                          Aqui no {currentMeta.label}
+                        </p>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+                <CommandSeparator className="bg-white/5 my-2" />
+              </>
+            )}
+
+            <CommandGroup heading="Ações globais">
               <CommandItem
                 onSelect={() => runCommand(() => navigate({ to: "/ai-center" }))}
                 className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
@@ -185,16 +259,54 @@ export function GlobalSearch() {
                   <CommandIcon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">
-                    USE AI Copilot
-                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">USE AI Copilot</p>
                   <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
                     Consultar inteligência aplicada
                   </p>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
               </CommandItem>
+              {currentMeta && (
+                <CommandItem
+                  onSelect={() => runCommand(() => toggleFavorite(currentMeta.path))}
+                  className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    <Star className={`w-4 h-4 ${isFavorite(currentMeta.path) ? "fill-primary" : ""}`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                      {isFavorite(currentMeta.path) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                    </p>
+                    <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
+                      {currentMeta.label}
+                    </p>
+                  </div>
+                </CommandItem>
+              )}
             </CommandGroup>
+
+            {favoriteEntries.length > 0 && (
+              <>
+                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandGroup heading="Favoritos">
+                  {favoriteEntries.map((e) => (
+                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+
+            {recentEntries.length > 0 && (
+              <>
+                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandGroup heading="Recentes">
+                  {recentEntries.map((e) => (
+                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                  ))}
+                </CommandGroup>
+              </>
+            )}
 
             <CommandSeparator className="bg-white/5 my-2" />
 
@@ -203,6 +315,7 @@ export function GlobalSearch() {
                 <EntryRow key={m.id} entry={m} onSelect={() => runCommand(() => navigate({ to: m.path }))} />
               ))}
             </CommandGroup>
+
 
             {pcpEntries.length > 0 && (
               <>
