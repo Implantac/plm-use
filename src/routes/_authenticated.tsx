@@ -45,6 +45,7 @@ import {
   Shirt,
   Ruler,
   ClipboardList,
+  Star,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
