@@ -213,6 +213,7 @@ function CollectionsPage() {
         { label: "Meta combinada", value: "R$ 3,36 mi", detail: "receita alvo" },
       ]}
     >
+      <div className="mb-4"><ModuleTabs group="collections" /></div>
       <div className="mb-4 flex justify-end">
         <Button
           asChild
