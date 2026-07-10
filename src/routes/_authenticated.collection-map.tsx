@@ -185,6 +185,7 @@ function CollectionMapRoute() {
       searchPlaceholder="Buscar referência"
       metrics={metrics}
     >
+      <div className="mb-4"><ModuleTabs group="collections" /></div>
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         {/* Barra de filtros */}
         <div className="space-y-4">
