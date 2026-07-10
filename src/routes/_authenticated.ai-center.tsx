@@ -459,6 +459,7 @@ function AICenterPage() {
           ))}
         </Card>
       </div>
+      </div>
     </div>
   );
 }
