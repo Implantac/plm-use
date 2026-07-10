@@ -196,21 +196,54 @@ export function getPrint(id: string): PrintAsset | undefined {
   return prints.find((p) => p.id === id);
 }
 
+import { emitLocalEvent } from "@/lib/local-events/store";
+
 export function upsertPrint(next: PrintAsset) {
   const idx = prints.findIndex((p) => p.id === next.id);
+  const prev = idx === -1 ? null : prints[idx];
   if (idx === -1) prints = [next, ...prints];
   else prints = prints.map((p, i) => (i === idx ? next : p));
   listeners.forEach((l) => l());
+  if (!prev) {
+    emitLocalEvent({
+      entity_type: "print_design",
+      entity_id: next.id,
+      event_type: "created",
+      to_status: next.status,
+      note: `Estampa ${next.code} "${next.name}"`,
+    });
+  } else if (prev.status !== next.status) {
+    emitLocalEvent({
+      entity_type: "print_design",
+      entity_id: next.id,
+      event_type: "status_changed",
+      from_status: prev.status,
+      to_status: next.status,
+    });
+  } else {
+    emitLocalEvent({
+      entity_type: "print_design",
+      entity_id: next.id,
+      event_type: "updated",
+    });
+  }
 }
 
 export function addVersion(printId: string, v: PrintVersion) {
   const p = getPrint(printId);
   if (!p) return;
-  upsertPrint({
-    ...p,
-    versions: [v, ...p.versions],
-    cover: v.image,
-    updatedAt: new Date().toISOString().slice(0, 10),
+  prints = prints.map((x) =>
+    x.id === printId
+      ? { ...x, versions: [v, ...x.versions], cover: v.image, updatedAt: new Date().toISOString().slice(0, 10) }
+      : x,
+  );
+  listeners.forEach((l) => l());
+  emitLocalEvent({
+    entity_type: "print_design",
+    entity_id: printId,
+    event_type: "updated",
+    note: `Nova versão ${v.label}${v.note ? ` — ${v.note}` : ""}`,
+    actor_name: v.createdBy,
   });
 }
 

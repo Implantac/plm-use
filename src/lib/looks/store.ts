@@ -108,8 +108,11 @@ export function useLooks(): Look[] {
   );
 }
 
+import { emitLocalEvent } from "@/lib/local-events/store";
+
 export function upsertLook(look: Look) {
   const idx = looks.findIndex((l) => l.id === look.id);
+  const prev = idx >= 0 ? looks[idx] : null;
   const now = new Date().toISOString();
   const next = { ...look, updatedAt: now };
   if (idx >= 0) {
@@ -118,11 +121,43 @@ export function upsertLook(look: Look) {
     looks = [{ ...next, createdAt: now }, ...looks];
   }
   emit();
+  if (!prev) {
+    emitLocalEvent({
+      entity_type: "look",
+      entity_id: next.id,
+      event_type: "created",
+      to_status: next.status,
+      note: `Look "${next.name}" criado`,
+    });
+  } else if (prev.status !== next.status) {
+    emitLocalEvent({
+      entity_type: "look",
+      entity_id: next.id,
+      event_type: "status_changed",
+      from_status: prev.status,
+      to_status: next.status,
+    });
+  } else {
+    emitLocalEvent({
+      entity_type: "look",
+      entity_id: next.id,
+      event_type: "updated",
+    });
+  }
 }
 
 export function removeLook(id: string) {
-  looks = looks.filter((l) => l.id !== id);
+  const l = looks.find((x) => x.id === id);
+  looks = looks.filter((x) => x.id !== id);
   emit();
+  if (l) {
+    emitLocalEvent({
+      entity_type: "look",
+      entity_id: id,
+      event_type: "archived",
+      note: `Look "${l.name}" removido`,
+    });
+  }
 }
 
 export function duplicateLook(id: string) {
@@ -139,6 +174,12 @@ export function duplicateLook(id: string) {
   };
   looks = [copy, ...looks];
   emit();
+  emitLocalEvent({
+    entity_type: "look",
+    entity_id: copy.id,
+    event_type: "cloned",
+    note: `Duplicado a partir de "${src.name}"`,
+  });
 }
 
 export function setLookStatus(id: string, status: LookStatus) {
@@ -151,13 +192,30 @@ export function addItemToLook(lookId: string, item: LookItem) {
   const l = looks.find((x) => x.id === lookId);
   if (!l) return;
   if (l.items.some((i) => i.refCode === item.refCode)) return;
-  upsertLook({ ...l, items: [...l.items, item] });
+  looks = looks.map((x) => (x.id === lookId ? { ...x, items: [...x.items, item], updatedAt: new Date().toISOString() } : x));
+  emit();
+  emitLocalEvent({
+    entity_type: "look",
+    entity_id: lookId,
+    event_type: "item_added",
+    note: `${item.refCode} — ${item.refName}`,
+  });
 }
 
 export function removeItemFromLook(lookId: string, refCode: string) {
   const l = looks.find((x) => x.id === lookId);
   if (!l) return;
-  upsertLook({ ...l, items: l.items.filter((i) => i.refCode !== refCode) });
+  const removed = l.items.find((i) => i.refCode === refCode);
+  looks = looks.map((x) =>
+    x.id === lookId ? { ...x, items: x.items.filter((i) => i.refCode !== refCode), updatedAt: new Date().toISOString() } : x,
+  );
+  emit();
+  emitLocalEvent({
+    entity_type: "look",
+    entity_id: lookId,
+    event_type: "item_removed",
+    note: removed ? `${removed.refCode} — ${removed.refName}` : refCode,
+  });
 }
 
 export const OCCASION_LABEL: Record<LookOccasion, string> = {

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Ruler, Layers, CheckCircle2, Archive, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import {
   listCharts,
   subscribe,
@@ -219,18 +220,28 @@ function MeasurementsPage() {
                     {selected.updatedBy}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-rose-300 hover:text-rose-200"
-                  onClick={() => {
-                    deleteChart(selected.id);
-                    toast.error("Tabela removida");
-                    setSelectedId(null);
-                  }}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <LocalHistoryButton
+                    entityType="measurement_chart"
+                    entityId={selected.id}
+                    entityLabel={`${selected.code} · ${selected.name}`}
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-rose-300 hover:text-rose-200"
+                    onClick={() => {
+                      deleteChart(selected.id);
+                      toast.error("Tabela removida");
+                      setSelectedId(null);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
 
               {selected.notes && (

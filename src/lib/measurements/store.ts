@@ -131,16 +131,52 @@ export function getChart(id: string): MeasurementChart | undefined {
   return charts.find((c) => c.id === id);
 }
 
+import { emitLocalEvent } from "@/lib/local-events/store";
+
 export function upsertChart(next: MeasurementChart) {
   const idx = charts.findIndex((c) => c.id === next.id);
+  const prev = idx === -1 ? null : charts[idx];
   if (idx === -1) charts = [next, ...charts];
   else charts = charts.map((c, i) => (i === idx ? next : c));
   listeners.forEach((l) => l());
+  if (!prev) {
+    emitLocalEvent({
+      entity_type: "measurement_chart",
+      entity_id: next.id,
+      event_type: "created",
+      to_status: next.status,
+      note: `Tabela ${next.code} "${next.name}"`,
+    });
+  } else if (prev.status !== next.status) {
+    emitLocalEvent({
+      entity_type: "measurement_chart",
+      entity_id: next.id,
+      event_type: "status_changed",
+      from_status: prev.status,
+      to_status: next.status,
+    });
+  } else {
+    emitLocalEvent({
+      entity_type: "measurement_chart",
+      entity_id: next.id,
+      event_type: "updated",
+      note: `${next.points.length} pontos · ${next.grade.length} tamanhos`,
+    });
+  }
 }
 
 export function deleteChart(id: string) {
-  charts = charts.filter((c) => c.id !== id);
+  const c = charts.find((x) => x.id === id);
+  charts = charts.filter((x) => x.id !== id);
   listeners.forEach((l) => l());
+  if (c) {
+    emitLocalEvent({
+      entity_type: "measurement_chart",
+      entity_id: id,
+      event_type: "archived",
+      note: `Tabela ${c.code} arquivada`,
+    });
+  }
 }
 
 export function subscribe(l: Listener) {

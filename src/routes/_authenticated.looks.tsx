@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Copy, Trash2, Sparkles, Shirt, X } from "lucide-react";
 import { toast } from "sonner";
+import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 
 export const Route = createFileRoute("/_authenticated/looks")({
   component: LooksPage,
@@ -229,9 +230,19 @@ function LookDetail({ look }: { look: Look }) {
               {look.season} · {OCCASION_LABEL[look.occasion]}
             </CardDescription>
           </div>
-          <Badge className={`text-2xs ${STATUS_TONE[look.status]}`}>
-            {STATUS_LABEL[look.status]}
-          </Badge>
+          <div className="flex items-center gap-2 shrink-0">
+            <LocalHistoryButton
+              entityType="look"
+              entityId={look.id}
+              entityLabel={look.name}
+              variant="outline"
+              size="sm"
+              className="gap-1.5 h-7"
+            />
+            <Badge className={`text-2xs ${STATUS_TONE[look.status]}`}>
+              {STATUS_LABEL[look.status]}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

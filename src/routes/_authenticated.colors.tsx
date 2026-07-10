@@ -28,6 +28,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import { toast } from "sonner";
 import {
   listPalettes,
@@ -228,6 +229,15 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
               <p className="text-sm text-muted-foreground mt-1">{palette.mood}</p>
             </div>
             <div className="flex gap-2">
+              <LocalHistoryButton
+                entityType="color_palette"
+                entityId={palette.id}
+                entityLabel={palette.name}
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+              />
+
               <Button
                 variant="outline"
                 size="sm"
