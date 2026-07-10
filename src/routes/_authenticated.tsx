@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
-import { useAuth, signOut } from "@/hooks/use-auth";
+import { AppBreadcrumb } from "@/components/nav/AppBreadcrumb";
+import { useRecentRoutes } from "@/hooks/use-recent-routes";
 import { usePCPCloudSync } from "@/lib/pcp/sync";
 import { useModulesCloudSync } from "@/lib/cloud-sync";
 import { LogOut } from "lucide-react";
