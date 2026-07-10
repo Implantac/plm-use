@@ -316,11 +316,8 @@ function AuthenticatedLayout() {
 
       <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
         <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-background/80 backdrop-blur-xl z-20">
-          <div className="flex items-center gap-3 uppercase-label text-muted-foreground">
-            <span className="hover:text-foreground transition-colors cursor-pointer">USE MODA AI</span>
-            <ChevronRight className="w-3.5 h-3.5 opacity-40" />
-            <span className="text-foreground">PLM Cockpit</span>
-          </div>
+          <AppBreadcrumb />
+
           <div className="flex items-center gap-2">
             <PresenceBar />
             <ActivityFeedButton />
