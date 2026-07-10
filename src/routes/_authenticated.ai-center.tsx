@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 
 export const Route = createFileRoute("/_authenticated/ai-center")({
   component: AICenterPage,
