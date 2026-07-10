@@ -41,6 +41,8 @@ import {
   LayoutTemplate,
   Grid3x3,
   Shirt,
+  Ruler,
+  ClipboardList,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -103,6 +105,8 @@ function AuthenticatedLayout() {
           { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
           { icon: <Zap className="w-4 h-4" />, label: "Protótipos", href: "/prototypes" },
           { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
+          { icon: <Ruler className="w-4 h-4" />, label: "Tabela de Medidas", href: "/measurements" },
+          { icon: <ClipboardList className="w-4 h-4" />, label: "Relatório de Peças", href: "/pieces-report" },
           { icon: <PenTool className="w-4 h-4" />, label: "CAD & Modelagem", href: "/cad" },
         ],
       },
