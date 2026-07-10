@@ -26,44 +26,43 @@ type SortMode = "atrasadas" | "lentas" | "repilotadas" | "recentes";
 
 function diasEmEtapa(lc: ReferenceLifecycle): number {
   const stage = stageAtual(lc);
-  if (!stage?.startedAt) return 0;
-  const ms = Date.now() - new Date(stage.startedAt).getTime();
+  if (!stage?.data) return 0;
+  const ms = Date.now() - new Date(stage.data).getTime();
   return Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)));
 }
 
 function repilotagens(lc: ReferenceLifecycle): number {
-  // Reconta pilotos pela fase "Piloto" — se houver mais de 1 execução, é repiloto.
-  const piloto = lc.stages?.find((s) => /piloto/i.test(s.label));
-  return Math.max(0, (piloto?.iterations ?? 1) - 1);
+  // Conta quantos estágios de piloto/prova foram reprovados no histórico.
+  return lc.stages.filter(
+    (s) =>
+      (s.id === "piloto" || s.id === "prova" || s.id === "ajustes") &&
+      s.status === "reprovado",
+  ).length;
+}
+
+function ultimaAtualizacao(lc: ReferenceLifecycle): number {
+  const dates = lc.stages
+    .map((s) => (s.data ? new Date(s.data).getTime() : 0))
+    .filter((n) => n > 0);
+  return dates.length ? Math.max(...dates) : 0;
 }
 
 function PiecesReportPage() {
   const lifecycles = useReferenceStore((s) => s.lifecycles);
   const [sort, setSort] = useState<SortMode>("atrasadas");
-  const [query, setQuery] = useState("");
 
   const enriched = useMemo(() => {
-    const q = query.toLowerCase();
-    return lifecycles
-      .filter((lc) => {
-        if (!q) return true;
-        return (
-          lc.ref.toLowerCase().includes(q) ||
-          lc.nome.toLowerCase().includes(q) ||
-          (lc.colecao ?? "").toLowerCase().includes(q) ||
-          (lc.designer ?? "").toLowerCase().includes(q)
-        );
-      })
-      .map((lc) => {
-        const pct = percentualLifecycle(lc);
-        const stage = stageAtual(lc);
-        const dias = diasEmEtapa(lc);
-        const rep = repilotagens(lc);
-        const atrasada =
-          !!lc.prazo && pct < 100 && new Date(lc.prazo).getTime() < Date.now();
-        return { lc, pct, stage, dias, rep, atrasada };
-      });
-  }, [lifecycles, query]);
+    return lifecycles.map((lc) => {
+      const pct = percentualLifecycle(lc);
+      const stage = stageAtual(lc);
+      const dias = diasEmEtapa(lc);
+      const rep = repilotagens(lc);
+      const atrasada =
+        !!lc.prazo && pct < 100 && new Date(lc.prazo).getTime() < Date.now();
+      const updated = ultimaAtualizacao(lc);
+      return { lc, pct, stage, dias, rep, atrasada, updated };
+    });
+  }, [lifecycles]);
 
   const sorted = useMemo(() => {
     const arr = [...enriched];
@@ -77,11 +76,7 @@ function PiecesReportPage() {
       case "repilotadas":
         return arr.sort((a, b) => b.rep - a.rep);
       case "recentes":
-        return arr.sort(
-          (a, b) =>
-            new Date(b.lc.atualizadoEm ?? 0).getTime() -
-            new Date(a.lc.atualizadoEm ?? 0).getTime(),
-        );
+        return arr.sort((a, b) => b.updated - a.updated);
     }
   }, [enriched, sort]);
 
@@ -89,8 +84,7 @@ function PiecesReportPage() {
     const atrasadas = enriched.filter((e) => e.atrasada).length;
     const emPiloto = filtrarLifecycles(lifecycles, "pilotos_pendentes").length;
     const totalRep = enriched.reduce((s, e) => s + e.rep, 0);
-    const concluidas = enriched.filter((e) => e.pct >= 100).length;
-    return { atrasadas, emPiloto, totalRep, concluidas };
+    return { atrasadas, emPiloto, totalRep };
   }, [enriched, lifecycles]);
 
   const SORT_OPTIONS: { id: SortMode; label: string; icon: typeof Clock }[] = [
@@ -106,7 +100,6 @@ function PiecesReportPage() {
       subtitle="Progresso peça-a-peça da coleção: tempo em cada etapa, atrasos, repilotagens e conclusão do desenvolvimento."
       version="Engineering v3.0"
       searchPlaceholder="Buscar referência, coleção ou designer"
-      onSearch={setQuery}
       metrics={[
         {
           label: "Peças em desenvolvimento",
