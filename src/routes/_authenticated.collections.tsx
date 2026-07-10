@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { CollectionROI } from "@/components/collections/CollectionROI";
 import { CollectionPerformance } from "@/components/collections/CollectionPerformance";
