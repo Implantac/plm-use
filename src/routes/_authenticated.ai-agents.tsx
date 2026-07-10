@@ -145,6 +145,7 @@ function AIAgentsPage() {
         { label: "Modelo", value: "Gemini 3", detail: "Flash" },
       ]}
     >
+      <div className="mb-4"><ModuleTabs group="ai" /></div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Sidebar de agentes */}
         <div className="space-y-2">
