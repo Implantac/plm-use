@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { toast } from "sonner";
 import {
@@ -184,6 +185,7 @@ function CollectionMapRoute() {
       searchPlaceholder="Buscar referência"
       metrics={metrics}
     >
+      <div className="mb-4"><ModuleTabs group="collections" /></div>
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         {/* Barra de filtros */}
         <div className="space-y-4">

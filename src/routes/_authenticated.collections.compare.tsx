@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { collectionsSeed, type Collection } from "@/lib/collections/store";
 
@@ -178,6 +179,7 @@ function CompareCollectionsPage() {
         { label: "Fonte", value: "PLM · Showroom · ERP", detail: "agregado" },
       ]}
     >
+      <div className="mb-4"><ModuleTabs group="collections" /></div>
       <div className="mb-6 flex items-end gap-4 flex-wrap">
         <div className="min-w-[240px] flex-1 space-y-2">
           <label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">

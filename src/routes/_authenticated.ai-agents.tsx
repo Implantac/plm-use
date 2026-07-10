@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Send, Sparkles, Factory, Megaphone, Bot } from "lucide-react";
 import { toast } from "sonner";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { fetchLiveContext } from "@/lib/ai/live-context.functions";
 import { usePCPStore } from "@/lib/pcp/store";
@@ -144,6 +145,7 @@ function AIAgentsPage() {
         { label: "Modelo", value: "Gemini 3", detail: "Flash" },
       ]}
     >
+      <div className="mb-4"><ModuleTabs group="ai" /></div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Sidebar de agentes */}
         <div className="space-y-2">

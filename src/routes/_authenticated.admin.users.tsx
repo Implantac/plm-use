@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useUserRoles, type AppRole } from "@/hooks/use-auth";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -100,6 +101,7 @@ function AdminUsersPage() {
       subtitle={`${rows.length} usuários · papéis e permissões`}
       version="ADMIN"
     >
+      <div className="mb-4"><ModuleTabs group="admin" /></div>
       {loading ? (
         <div className="flex items-center justify-center py-20 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
