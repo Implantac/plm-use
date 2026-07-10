@@ -27,6 +27,8 @@ import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated.production'
 import { Route as AuthenticatedPrintsRouteImport } from './routes/_authenticated.prints'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
+import { Route as AuthenticatedPiecesReportRouteImport } from './routes/_authenticated.pieces-report'
+import { Route as AuthenticatedMeasurementsRouteImport } from './routes/_authenticated.measurements'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
 import { Route as AuthenticatedLooksRouteImport } from './routes/_authenticated.looks'
 import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
@@ -142,6 +144,18 @@ const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
   path: '/planner',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPiecesReportRoute =
+  AuthenticatedPiecesReportRouteImport.update({
+    id: '/pieces-report',
+    path: '/pieces-report',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedMeasurementsRoute =
+  AuthenticatedMeasurementsRouteImport.update({
+    id: '/measurements',
+    path: '/measurements',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
   id: '/marketing',
   path: '/marketing',
@@ -296,6 +310,8 @@ export interface FileRoutesByFullPath {
   '/launch': typeof AuthenticatedLaunchRoute
   '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
+  '/measurements': typeof AuthenticatedMeasurementsRoute
+  '/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
@@ -339,6 +355,8 @@ export interface FileRoutesByTo {
   '/launch': typeof AuthenticatedLaunchRoute
   '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
+  '/measurements': typeof AuthenticatedMeasurementsRoute
+  '/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
   '/production': typeof AuthenticatedProductionRouteWithChildren
@@ -384,6 +402,8 @@ export interface FileRoutesById {
   '/_authenticated/launch': typeof AuthenticatedLaunchRoute
   '/_authenticated/looks': typeof AuthenticatedLooksRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
+  '/_authenticated/measurements': typeof AuthenticatedMeasurementsRoute
+  '/_authenticated/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/prints': typeof AuthenticatedPrintsRoute
   '/_authenticated/production': typeof AuthenticatedProductionRouteWithChildren
@@ -429,6 +449,8 @@ export interface FileRouteTypes {
     | '/launch'
     | '/looks'
     | '/marketing'
+    | '/measurements'
+    | '/pieces-report'
     | '/planner'
     | '/prints'
     | '/production'
@@ -472,6 +494,8 @@ export interface FileRouteTypes {
     | '/launch'
     | '/looks'
     | '/marketing'
+    | '/measurements'
+    | '/pieces-report'
     | '/planner'
     | '/prints'
     | '/production'
@@ -516,6 +540,8 @@ export interface FileRouteTypes {
     | '/_authenticated/launch'
     | '/_authenticated/looks'
     | '/_authenticated/marketing'
+    | '/_authenticated/measurements'
+    | '/_authenticated/pieces-report'
     | '/_authenticated/planner'
     | '/_authenticated/prints'
     | '/_authenticated/production'
@@ -673,6 +699,20 @@ declare module '@tanstack/react-router' {
       path: '/planner'
       fullPath: '/planner'
       preLoaderRoute: typeof AuthenticatedPlannerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pieces-report': {
+      id: '/_authenticated/pieces-report'
+      path: '/pieces-report'
+      fullPath: '/pieces-report'
+      preLoaderRoute: typeof AuthenticatedPiecesReportRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/measurements': {
+      id: '/_authenticated/measurements'
+      path: '/measurements'
+      fullPath: '/measurements'
+      preLoaderRoute: typeof AuthenticatedMeasurementsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/marketing': {
@@ -894,6 +934,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedLaunchRoute: typeof AuthenticatedLaunchRoute
   AuthenticatedLooksRoute: typeof AuthenticatedLooksRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
+  AuthenticatedMeasurementsRoute: typeof AuthenticatedMeasurementsRoute
+  AuthenticatedPiecesReportRoute: typeof AuthenticatedPiecesReportRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedPrintsRoute: typeof AuthenticatedPrintsRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRouteWithChildren
@@ -929,6 +971,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedLaunchRoute: AuthenticatedLaunchRoute,
   AuthenticatedLooksRoute: AuthenticatedLooksRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
+  AuthenticatedMeasurementsRoute: AuthenticatedMeasurementsRoute,
+  AuthenticatedPiecesReportRoute: AuthenticatedPiecesReportRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedPrintsRoute: AuthenticatedPrintsRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRouteWithChildren,
