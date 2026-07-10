@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { ModuleTabs } from "@/components/nav/ModuleTabs";
 
 export const Route = createFileRoute("/_authenticated/security")({
   component: SecurityPage,
