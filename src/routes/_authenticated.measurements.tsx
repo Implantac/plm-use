@@ -113,7 +113,6 @@ function MeasurementsPage() {
       version="Engineering v3.0"
       onAdd={() => setCreating(true)}
       searchPlaceholder="Buscar tabela, código ou categoria"
-      onSearch={setQuery}
       metrics={[
         { label: "Grades", value: String(totals.total), detail: "cadastradas" },
         { label: "Aprovadas", value: String(totals.aprovadas), detail: "prontas para uso" },
