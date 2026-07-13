@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { usePilotos } from "@/hooks/use-pilotos";
 import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
 import { NovoPilotoDialog } from "./NovoPilotoDialog";
+import { toast } from "sonner";
 
 interface Props {
   referenciaRef: string;
