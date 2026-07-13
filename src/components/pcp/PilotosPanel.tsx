@@ -11,11 +11,19 @@ import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
 import { NovoPilotoDialog } from "./NovoPilotoDialog";
 import { toast } from "sonner";
 
-// Estilo idêntico ao badge do banner (emerald para sucesso, rose para erro).
+// Tokens semânticos (status-approved / status-rejected) — idênticos claro/escuro.
 const REPILOT_TOAST_SUCCESS_CLASS =
-  "!border !border-emerald-400/50 !bg-emerald-500/[0.08] !text-emerald-200 [&_[data-icon]]:!text-emerald-300 [&_[data-description]]:!text-emerald-300/80";
+  "!border !border-status-approved/50 !bg-status-approved/10 !text-status-approved [&_[data-icon]]:!text-status-approved [&_[data-description]]:!text-status-approved/80";
 const REPILOT_TOAST_ERROR_CLASS =
-  "!border !border-rose-400/50 !bg-rose-500/[0.08] !text-rose-200 [&_[data-icon]]:!text-rose-300 [&_[data-description]]:!text-rose-300/80";
+  "!border !border-status-rejected/50 !bg-status-rejected/10 !text-status-rejected [&_[data-icon]]:!text-status-rejected [&_[data-description]]:!text-status-rejected/80";
+const REPILOT_BADGE_SUCCESS_CLASS =
+  "text-[9px] gap-1 border-status-approved/50 bg-status-approved/10 text-status-approved";
+const REPILOT_BADGE_ERROR_CLASS =
+  "text-[9px] gap-1 border-status-rejected/50 bg-status-rejected/10 text-status-rejected";
+const REPILOT_BANNER_ERROR_CLASS =
+  "border-status-rejected/40 bg-status-rejected/[0.08]";
+const REPILOT_BANNER_TEXT_ERROR = "text-status-rejected";
+const REPILOT_BANNER_TEXT_SUCCESS = "text-status-approved";
 
 interface Props {
   referenciaRef: string;
