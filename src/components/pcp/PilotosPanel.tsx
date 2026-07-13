@@ -10,16 +10,13 @@ import { usePilotos } from "@/hooks/use-pilotos";
 import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
 import { NovoPilotoDialog } from "./NovoPilotoDialog";
 import { toast } from "sonner";
+import { STATUS_BADGE_CLASS, STATUS_TOAST_CLASS } from "@/components/ui/status-presets";
 
-// Tokens semânticos (status-approved / status-rejected) — idênticos claro/escuro.
-const REPILOT_TOAST_SUCCESS_CLASS =
-  "!border !border-status-approved/50 !bg-status-approved/10 !text-status-approved [&_[data-icon]]:!text-status-approved [&_[data-description]]:!text-status-approved/80";
-const REPILOT_TOAST_ERROR_CLASS =
-  "!border !border-status-rejected/50 !bg-status-rejected/10 !text-status-rejected [&_[data-icon]]:!text-status-rejected [&_[data-description]]:!text-status-rejected/80";
-const REPILOT_BADGE_SUCCESS_CLASS =
-  "text-[9px] gap-1 border-status-approved/50 bg-status-approved/10 text-status-approved";
-const REPILOT_BADGE_ERROR_CLASS =
-  "text-[9px] gap-1 border-status-rejected/50 bg-status-rejected/10 text-status-rejected";
+// Compat: mesmos nomes/valores, agora derivados dos presets compartilhados.
+const REPILOT_TOAST_SUCCESS_CLASS = STATUS_TOAST_CLASS.success;
+const REPILOT_TOAST_ERROR_CLASS = STATUS_TOAST_CLASS.error;
+const REPILOT_BADGE_SUCCESS_CLASS = `text-[9px] gap-1 ${STATUS_BADGE_CLASS.success}`;
+const REPILOT_BADGE_ERROR_CLASS = `text-[9px] gap-1 ${STATUS_BADGE_CLASS.error}`;
 const REPILOT_BANNER_ERROR_CLASS =
   "border-status-rejected/40 bg-status-rejected/[0.08]";
 const REPILOT_BANNER_TEXT_ERROR = "text-status-rejected";

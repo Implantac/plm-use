@@ -3,7 +3,7 @@
 // Todas as escritas passam pela RLS: só membros com papel de mostruário editam.
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
+import { statusToast } from "@/components/ui/status-presets";
 import { CheckCircle2, MessageSquarePlus, PackageOpen, Sparkles, ThumbsDown, ThumbsUp, Undo2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,8 +107,8 @@ function ShowroomPage() {
             references={references}
             onSubmit={async (payload) => {
               const created = await requestSample(payload);
-              if (created) toast.success("Peça-mãe solicitada");
-              else toast.error("Falha ao solicitar peça-mãe");
+              if (created) statusToast.success("Peça-mãe solicitada");
+              else statusToast.error("Falha ao solicitar peça-mãe");
             }}
           />
 
@@ -150,8 +150,8 @@ function ShowroomPage() {
                             variant="secondary"
                             onClick={async () => {
                               const ok = await transitionSample(s.id, to);
-                              if (ok) toast.success(`→ ${SAMPLE_STATUS_LABEL[to]}`);
-                              else toast.error("Transição bloqueada");
+                              if (ok) statusToast.success(`→ ${SAMPLE_STATUS_LABEL[to]}`);
+                              else statusToast.error("Transição bloqueada");
                             }}
                           >
                             {to === "aprovada" && <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
@@ -183,8 +183,8 @@ function ShowroomPage() {
             references={references}
             onSubmit={async (payload) => {
               const created = await captureFeedback(payload);
-              if (created) toast.success("Feedback registrado");
-              else toast.error("Falha ao registrar feedback");
+              if (created) statusToast.success("Feedback registrado");
+              else statusToast.error("Falha ao registrar feedback");
             }}
           />
           <FeedbackList feedbackByRef={feedbackByReference} referenceById={referenceById} />
@@ -196,8 +196,8 @@ function ShowroomPage() {
             decisionByRef={decisionByRef}
             onDecide={async (reference_id, decision, justificativa) => {
               const ok = await recordDecision(reference_id, decision, justificativa);
-              if (ok) toast.success(`Decisão registrada: ${DECISION_LABEL[decision]}`);
-              else toast.error("Falha ao registrar decisão (justificativa obrigatória)");
+              if (ok) statusToast.success(`Decisão registrada: ${DECISION_LABEL[decision]}`);
+              else statusToast.error("Falha ao registrar decisão (justificativa obrigatória)");
             }}
           />
         </TabsContent>

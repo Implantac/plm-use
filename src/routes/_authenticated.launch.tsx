@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { statusToast } from "@/components/ui/status-presets";
 import { Rocket, Send, CheckCircle2, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,23 +65,23 @@ function LaunchPage() {
 
   async function handleCreateWave() {
     if (!form.codigo || !form.colecao || !form.janela_inicio || !form.janela_fim) {
-      toast.error("Preencha código, coleção e janela");
+      statusToast.error("Preencha código, coleção e janela");
       return;
     }
     const res = await create({ data: form });
-    if (!res.ok) return toast.error(res.reason ?? "Falha ao criar wave");
-    toast.success(`Wave ${form.codigo} criada`);
+    if (!res.ok) return statusToast.error(res.reason ?? "Falha ao criar wave");
+    statusToast.success(`Wave ${form.codigo} criada`);
     setForm({ codigo: "", colecao: "", janela_inicio: "", janela_fim: "", notas: "" });
   }
 
   async function handlePromote() {
     if (!selectedWave || pickedDecisions.length === 0) {
-      toast.error("Escolha uma wave e ao menos 1 decisão");
+      statusToast.error("Escolha uma wave e ao menos 1 decisão");
       return;
     }
     const res = await promote({ data: { wave_id: selectedWave, decision_ids: pickedDecisions } });
-    if (!res.ok) return toast.error(res.reason ?? "Falha ao promover");
-    toast.success(`${res.created} item(ns) adicionado(s)`);
+    if (!res.ok) return statusToast.error(res.reason ?? "Falha ao promover");
+    statusToast.success(`${res.created} item(ns) adicionado(s)`);
     setPickedDecisions([]);
   }
 
@@ -88,23 +89,23 @@ function LaunchPage() {
     const res = await transition({
       data: { entity_type: "launch_wave", entity_id: id, from_status: from, to_status: to },
     });
-    if (!res.ok) return toast.error(res.reason ?? "Transição negada");
-    toast.success(`Wave → ${WAVE_STATUS_LABEL[to]}`);
+    if (!res.ok) return statusToast.error(res.reason ?? "Transição negada");
+    statusToast.success(`Wave → ${WAVE_STATUS_LABEL[to]}`);
   }
 
   async function handleTransitionItem(id: string, from: LaunchItemStatus, to: LaunchItemStatus) {
     const res = await transition({
       data: { entity_type: "launch_item", entity_id: id, from_status: from, to_status: to },
     });
-    if (!res.ok) return toast.error(res.reason ?? "Transição negada");
-    toast.success(`Item → ${ITEM_STATUS_LABEL[to]}`);
+    if (!res.ok) return statusToast.error(res.reason ?? "Transição negada");
+    statusToast.success(`Item → ${ITEM_STATUS_LABEL[to]}`);
   }
 
   async function handleHandoff(wave_id: string, destino: "pcp" | "comercial") {
     const res = await handoff({ data: { wave_id, destino } });
-    if (!res.ok) return toast.error(res.reason ?? "Handoff falhou");
+    if (!res.ok) return statusToast.error(res.reason ?? "Handoff falhou");
     if ("deduped" in res && res.deduped) toast.info("Handoff já enviado (idempotente)");
-    else toast.success(`Handoff ${destino} enviado`);
+    else statusToast.success(`Handoff ${destino} enviado`);
   }
 
   return (
