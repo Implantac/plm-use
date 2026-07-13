@@ -274,6 +274,22 @@ function SuppliersPage() {
                 variant="ghost"
                 size="icon"
                 className="h-11 w-11 rounded-md border border-white/5 bg-white/5 hover:bg-primary/10 hover:text-primary transition-all"
+                onClick={() =>
+                  openEntity({
+                    type: "supplier",
+                    id: String(sup.id),
+                    title: sup.name,
+                    subtitle: `${sup.type} · ${sup.location}`,
+                  })
+                }
+                title="Abrir na trilha"
+              >
+                <GitBranch className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-11 w-11 rounded-md border border-white/5 bg-white/5 hover:bg-primary/10 hover:text-primary transition-all"
               >
                 <ChevronRight className="w-5 h-5" />
               </Button>
