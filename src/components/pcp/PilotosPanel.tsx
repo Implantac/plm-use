@@ -37,7 +37,13 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     };
   }, [referenciaRef]);
 
-  const { items, loading, refetch } = usePilotos(referenceId ?? undefined);
+  const { items, loading, refetch, upsertLocal } = usePilotos(
+    referenceId ?? undefined,
+  );
+  const handleCreated = (p: import("@/hooks/use-pilotos").Piloto) => {
+    upsertLocal(p); // Atualização otimista imediata do banner + lista.
+    void refetch(); // Reconciliação em segundo plano.
+  };
 
   if (resolving) {
     return (
