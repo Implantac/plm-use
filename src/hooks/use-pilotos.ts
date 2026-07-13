@@ -32,15 +32,19 @@ export function usePilotos(referenceId?: string) {
 
   const fetch = useCallback(async () => {
     setLoading(true);
-    let q = supabase
-      .from("pilotos" as never)
-      .select("*")
-      .order("rodada", { ascending: false })
-      .order("created_at", { ascending: false });
-    if (referenceId) q = q.eq("reference_id", referenceId);
-    const { data } = await q;
-    setItems((data as Piloto[] | null) ?? []);
-    setLoading(false);
+    try {
+      let q = supabase
+        .from("pilotos" as never)
+        .select("*")
+        .order("rodada", { ascending: false })
+        .order("created_at", { ascending: false });
+      if (referenceId) q = q.eq("reference_id", referenceId);
+      const { data, error } = await q;
+      if (error) throw new Error(error.message);
+      setItems((data as Piloto[] | null) ?? []);
+    } finally {
+      setLoading(false);
+    }
   }, [referenceId]);
 
   useEffect(() => {
@@ -56,7 +60,12 @@ export function usePilotos(referenceId?: string) {
     });
   }, []);
 
-  return { items, loading, refetch: fetch, upsertLocal };
+  /** Remove um piloto do estado local (rollback otimista). */
+  const removeLocal = useCallback((id: string) => {
+    setItems((prev) => prev.filter((x) => x.id !== id));
+  }, []);
+
+  return { items, loading, refetch: fetch, upsertLocal, removeLocal };
 }
 
 export function useCreatePiloto() {

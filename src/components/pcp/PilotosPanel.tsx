@@ -2,7 +2,7 @@
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Camera, RotateCcw } from "lucide-react";
+import { Loader2, Camera, RotateCcw, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,22 +37,52 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     };
   }, [referenciaRef]);
 
-  const { items, loading, refetch, upsertLocal } = usePilotos(
+  const { items, loading, refetch, upsertLocal, removeLocal } = usePilotos(
     referenceId ?? undefined,
   );
   const [repiloting, setRepiloting] = useState<{
     active: boolean;
     rodada: number | null;
   }>({ active: false, rodada: null });
+  const [repilotError, setRepilotError] = useState<{
+    message: string;
+    optimisticId: string;
+    piloto: import("@/hooks/use-pilotos").Piloto;
+  } | null>(null);
 
-  const handleCreated = async (p: import("@/hooks/use-pilotos").Piloto) => {
-    upsertLocal(p); // Atualização otimista imediata.
+  const confirmRepilot = async (
+    p: import("@/hooks/use-pilotos").Piloto,
+  ): Promise<void> => {
     setRepiloting({ active: true, rodada: p.rodada });
     try {
-      await refetch(); // Aguarda confirmação do servidor.
+      await refetch();
+      setRepilotError(null);
+    } catch (e) {
+      // Rollback: remove a rodada otimista e expõe o erro no banner.
+      removeLocal(p.id);
+      setRepilotError({
+        message: e instanceof Error ? e.message : "Falha ao confirmar rodada",
+        optimisticId: p.id,
+        piloto: p,
+      });
     } finally {
       setRepiloting({ active: false, rodada: null });
     }
+  };
+
+  const handleCreated = async (p: import("@/hooks/use-pilotos").Piloto) => {
+    setRepilotError(null);
+    upsertLocal(p); // Atualização otimista imediata.
+    await confirmRepilot(p);
+  };
+
+  const retryConfirmation = async () => {
+    if (!repilotError) return;
+    // Reinsere otimista e tenta reconfirmar.
+    const p = repilotError.piloto;
+    setRepilotError(null);
+    upsertLocal(p);
+    await confirmRepilot(p);
   };
 
   if (resolving) {
@@ -105,9 +135,15 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         />
       </div>
 
-      {/* H · Banner de estado + repilotagem visível */}
+      {/* H · Banner de estado + repilotagem visível (com estado de erro) */}
       {current && (
-        <div className="rounded-md border border-primary/25 bg-primary/[0.06] p-3 flex items-center justify-between gap-3">
+        <div
+          className={`rounded-md border p-3 flex items-center justify-between gap-3 ${
+            repilotError
+              ? "border-rose-400/40 bg-rose-500/[0.08]"
+              : "border-primary/25 bg-primary/[0.06]"
+          }`}
+        >
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-wider text-primary/80">
               Estado atual
@@ -129,11 +165,25 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   Reexecutando…
                 </Badge>
               )}
+              {repilotError && !repiloting.active && (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] gap-1 border-rose-400/50 text-rose-300"
+                >
+                  <AlertTriangle className="h-2.5 w-2.5" />
+                  Falha ao reexecutar
+                </Badge>
+              )}
             </div>
             {repiloting.active ? (
               <p className="mt-1 text-[10px] text-primary/80">
                 Aguardando confirmação do servidor para a Rodada{" "}
                 {repiloting.rodada}…
+              </p>
+            ) : repilotError ? (
+              <p className="mt-1 text-[10px] text-rose-300">
+                Rodada {repilotError.piloto.rodada} foi revertida.{" "}
+                {repilotError.message}
               </p>
             ) : (
               !canRepilot && (
@@ -143,6 +193,17 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               )
             )}
           </div>
+          {repilotError ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1 h-8 shrink-0 border-rose-400/40 text-rose-200 hover:bg-rose-500/10"
+              onClick={() => void retryConfirmation()}
+            >
+              <RotateCcw className="h-3 w-3" />
+              Tentar novamente
+            </Button>
+          ) : (
           <NovoPilotoDialog
             referenceId={referenceId}
             referenciaNome={referenciaNome}
@@ -182,6 +243,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               </Button>
             }
           />
+          )}
         </div>
       )}
 
