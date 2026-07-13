@@ -1,9 +1,10 @@
 // V5 · Painel de Pilotos dentro do ReferenciaDrawer.
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
-import { useEffect, useState } from "react";
-import { Loader2, Camera } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, Camera, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { usePilotos } from "@/hooks/use-pilotos";
 import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
