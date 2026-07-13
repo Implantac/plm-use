@@ -120,11 +120,27 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 {current.tipo}
               </Badge>
               <StatusBadge status={current.status} />
+              {repiloting.active && (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] gap-1 border-primary/50 text-primary animate-pulse"
+                >
+                  <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                  Reexecutando…
+                </Badge>
+              )}
             </div>
-            {!canRepilot && (
-              <p className="mt-1 text-[10px] text-muted-foreground">
-                Aguardando avaliação para liberar reexecução.
+            {repiloting.active ? (
+              <p className="mt-1 text-[10px] text-primary/80">
+                Aguardando confirmação do servidor para a Rodada{" "}
+                {repiloting.rodada}…
               </p>
+            ) : (
+              !canRepilot && (
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Aguardando avaliação para liberar reexecução.
+                </p>
+              )
             )}
           </div>
           <NovoPilotoDialog
