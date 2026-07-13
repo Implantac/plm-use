@@ -135,9 +135,15 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         />
       </div>
 
-      {/* H · Banner de estado + repilotagem visível */}
+      {/* H · Banner de estado + repilotagem visível (com estado de erro) */}
       {current && (
-        <div className="rounded-md border border-primary/25 bg-primary/[0.06] p-3 flex items-center justify-between gap-3">
+        <div
+          className={`rounded-md border p-3 flex items-center justify-between gap-3 ${
+            repilotError
+              ? "border-rose-400/40 bg-rose-500/[0.08]"
+              : "border-primary/25 bg-primary/[0.06]"
+          }`}
+        >
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-wider text-primary/80">
               Estado atual
