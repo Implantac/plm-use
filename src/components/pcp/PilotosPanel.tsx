@@ -200,7 +200,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                     className="text-[9px] gap-1 border-emerald-400/50 text-emerald-300"
                   >
                     <CheckCircle2 className="h-2.5 w-2.5" />
-                    R{confirmedRodada} confirmada
+                    Reexecução R{confirmedRodada} confirmada
                   </Badge>
                 )}
             </div>
