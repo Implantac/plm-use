@@ -174,7 +174,14 @@ function SuppliersPage() {
               <ModuleActionMenu
                 onEdit={() => handleOpenDialog(sup)}
                 onDelete={() => handleDelete(sup.id)}
-                onView={() => toast.info(`Visualizando ${sup.name}`)}
+                onView={() =>
+                  openEntity({
+                    type: "supplier",
+                    id: String(sup.id),
+                    title: sup.name,
+                    subtitle: `${sup.type} · ${sup.location}`,
+                  })
+                }
               />
             </div>
 
