@@ -58,13 +58,21 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     try {
       await refetch();
       setRepilotError(null);
+      toast.success(`Rodada ${p.rodada} confirmada`, {
+        description: `${referenciaNome} · reexecução sincronizada com o servidor.`,
+      });
     } catch (e) {
       // Rollback: remove a rodada otimista e expõe o erro no banner.
       removeLocal(p.id);
+      const message =
+        e instanceof Error ? e.message : "Falha ao confirmar rodada";
       setRepilotError({
-        message: e instanceof Error ? e.message : "Falha ao confirmar rodada",
+        message,
         optimisticId: p.id,
         piloto: p,
+      });
+      toast.error(`Falha ao confirmar rodada ${p.rodada}`, {
+        description: message,
       });
     } finally {
       setRepiloting({ active: false, rodada: null });
