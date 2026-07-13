@@ -176,7 +176,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         <div
           className={`rounded-md border p-3 flex items-center justify-between gap-3 ${
             repilotError
-              ? "border-rose-400/40 bg-rose-500/[0.08]"
+              ? REPILOT_BANNER_ERROR_CLASS
               : "border-primary/25 bg-primary/[0.06]"
           }`}
         >
