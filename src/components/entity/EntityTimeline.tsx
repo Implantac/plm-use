@@ -43,11 +43,32 @@ const EVENT_LABEL: Record<string, string> = {
 export function EntityTimeline({
   entityType,
   entityId,
+  active = true,
+  onNewCountChange,
 }: {
   entityType: EntityType;
   entityId: string;
+  active?: boolean;
+  onNewCountChange?: (count: number) => void;
 }) {
   const { items, loading } = useEntityTimeline(entityType, entityId);
+  const baselineRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (loading) return;
+    if (baselineRef.current === null) {
+      baselineRef.current = items.length;
+      onNewCountChange?.(0);
+      return;
+    }
+    if (active) {
+      baselineRef.current = items.length;
+      onNewCountChange?.(0);
+    } else {
+      const diff = Math.max(0, items.length - baselineRef.current);
+      onNewCountChange?.(diff);
+    }
+  }, [items.length, active, loading, onNewCountChange]);
 
   if (loading) {
     return (
