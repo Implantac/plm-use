@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
+import { useEventEmitter } from "@/hooks/use-entity-events";
 import {
   Dialog,
   DialogContent,
@@ -35,9 +36,10 @@ export const Route = createFileRoute("/_authenticated/suppliers")({
 
 function SuppliersPage() {
   const { openEntity } = useEntityDrawer();
+  const { emit } = useEventEmitter();
   const [suppliers, setSuppliers] = useState([
     {
-      id: 1,
+      id: "11111111-1111-4111-8111-111111111111",
       name: "Têxtil Amalfi Ltda",
       type: "Tecidos",
       rating: 4.8,
@@ -50,7 +52,7 @@ function SuppliersPage() {
       eta: "2 dias",
     },
     {
-      id: 2,
+      id: "22222222-2222-4222-8222-222222222222",
       name: "Aviamentos Global",
       type: "Insumos",
       rating: 4.5,
@@ -63,7 +65,7 @@ function SuppliersPage() {
       eta: "5 dias",
     },
     {
-      id: 3,
+      id: "33333333-3333-4333-8333-333333333333",
       name: "Seda & Cia",
       type: "Tecidos Finos",
       rating: 4.9,
@@ -76,7 +78,7 @@ function SuppliersPage() {
       eta: "1 dia",
     },
     {
-      id: 4,
+      id: "44444444-4444-4444-8444-444444444444",
       name: "Botões do Sul",
       type: "Insumos",
       rating: 4.2,
@@ -116,13 +118,23 @@ function SuppliersPage() {
     setIsDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editingSupplier) {
-      setSuppliers(suppliers.map((s) => (s.id === editingSupplier.id ? { ...s, ...formData } : s)));
+      const prev = editingSupplier;
+      setSuppliers(suppliers.map((s) => (s.id === prev.id ? { ...s, ...formData } : s)));
       toast.success("Fornecedor atualizado");
+      await emit({
+        entity_type: "supplier",
+        entity_id: prev.id,
+        event_type: "updated",
+        from_status: prev.status,
+        to_status: formData.status,
+        note: `Atualizado: ${formData.name}`,
+        payload: { before: prev, after: formData },
+      });
     } else {
       const newSup = {
-        id: Date.now(),
+        id: crypto.randomUUID(),
         ...formData,
         rating: 5.0,
         compliance: "100%",
@@ -133,13 +145,31 @@ function SuppliersPage() {
       };
       setSuppliers([newSup, ...suppliers]);
       toast.success("Novo fornecedor cadastrado");
+      await emit({
+        entity_type: "supplier",
+        entity_id: newSup.id,
+        event_type: "created",
+        to_status: newSup.status,
+        note: `Fornecedor cadastrado: ${newSup.name}`,
+        payload: { name: newSup.name, type: newSup.type, location: newSup.location },
+      });
     }
     setIsDialogOpen(false);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string) => {
+    const target = suppliers.find((s) => s.id === id);
     setSuppliers(suppliers.filter((s) => s.id !== id));
     toast.error("Fornecedor removido");
+    if (target) {
+      await emit({
+        entity_type: "supplier",
+        entity_id: id,
+        event_type: "deleted",
+        from_status: target.status,
+        note: `Removido: ${target.name}`,
+      });
+    }
   };
 
   return (

@@ -33,6 +33,7 @@ const ENTITY_LABEL: Record<string, string> = {
   capa: "CAPA",
   engenharia: "Engenharia",
   facao_order: "Ordem de Facção",
+  supplier: "Fornecedor",
 };
 
 export function EntityDrawer({
