@@ -67,8 +67,8 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       await refetch();
       setRepilotError(null);
       setConfirmedRodada(p.rodada);
-      toast.success(`Reexecução confirmada · R${p.rodada}`, {
-        description: `${referenciaNome} · Rodada ${p.rodada} sincronizada com o servidor.`,
+      toast.success(`Reexecução R${p.rodada} confirmada`, {
+        description: `${referenciaNome} · Reexecução R${p.rodada} sincronizada com o servidor.`,
       });
     } catch (e) {
       // Rollback: remove a rodada otimista e expõe o erro no banner.
@@ -80,7 +80,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         optimisticId: p.id,
         piloto: p,
       });
-      toast.error(`Falha ao reexecutar · R${p.rodada}`, {
+      toast.error(`Reexecução R${p.rodada} falhou`, {
         description: `${referenciaNome} · ${message}`,
       });
     } finally {
