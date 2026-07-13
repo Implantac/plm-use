@@ -2,7 +2,7 @@
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Camera, RotateCcw, AlertTriangle } from "lucide-react";
+import { Loader2, Camera, RotateCcw, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,6 +50,14 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     optimisticId: string;
     piloto: import("@/hooks/use-pilotos").Piloto;
   } | null>(null);
+  const [confirmedRodada, setConfirmedRodada] = useState<number | null>(null);
+
+  // Limpa o estado "confirmada" após 6s para não poluir o banner.
+  useEffect(() => {
+    if (confirmedRodada == null) return;
+    const t = setTimeout(() => setConfirmedRodada(null), 6000);
+    return () => clearTimeout(t);
+  }, [confirmedRodada]);
 
   const confirmRepilot = async (
     p: import("@/hooks/use-pilotos").Piloto,
@@ -58,6 +66,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     try {
       await refetch();
       setRepilotError(null);
+      setConfirmedRodada(p.rodada);
       toast.success(`Reexecução confirmada · R${p.rodada}`, {
         description: `${referenciaNome} · Rodada ${p.rodada} sincronizada com o servidor.`,
       });
@@ -183,6 +192,17 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   Falha ao reexecutar
                 </Badge>
               )}
+              {confirmedRodada != null &&
+                !repiloting.active &&
+                !repilotError && (
+                  <Badge
+                    variant="outline"
+                    className="text-[9px] gap-1 border-emerald-400/50 text-emerald-300"
+                  >
+                    <CheckCircle2 className="h-2.5 w-2.5" />
+                    R{confirmedRodada} confirmada
+                  </Badge>
+                )}
             </div>
             {repiloting.active ? (
               <p className="mt-1 text-[10px] text-primary/80">
@@ -193,6 +213,10 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               <p className="mt-1 text-[10px] text-rose-300">
                 Rodada {repilotError.piloto.rodada} foi revertida.{" "}
                 {repilotError.message}
+              </p>
+            ) : confirmedRodada != null ? (
+              <p className="mt-1 text-[10px] text-emerald-300">
+                Reexecução R{confirmedRodada} confirmada pelo servidor.
               </p>
             ) : (
               !canRepilot && (
