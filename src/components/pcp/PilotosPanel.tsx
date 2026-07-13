@@ -1,9 +1,10 @@
 // V5 · Painel de Pilotos dentro do ReferenciaDrawer.
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
-import { useEffect, useState } from "react";
-import { Loader2, Camera } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, Camera, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { usePilotos } from "@/hooks/use-pilotos";
 import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
@@ -56,6 +57,20 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     );
   }
 
+  // H · Estado atual da repilotagem: rodada mais alta + seu status.
+  const current = useMemo(() => {
+    if (!items.length) return null;
+    // items já vem ordenado por rodada desc
+    return items[0];
+  }, [items]);
+  const canRepilot =
+    !!current &&
+    (current.status === "APROVADO" ||
+      current.status === "REPROVADO" ||
+      current.status === "AJUSTE_SOLICITADO");
+  const nextTipo: "prova" | "ajuste" | "final" =
+    current?.status === "APROVADO" ? "final" : "ajuste";
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -73,6 +88,64 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
           onCreated={() => void refetch()}
         />
       </div>
+
+      {/* H · Banner de estado + repilotagem visível */}
+      {current && (
+        <div className="rounded-md border border-primary/25 bg-primary/[0.06] p-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-wider text-primary/80">
+              Estado atual
+            </p>
+            <div className="mt-1 flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-bold text-white">
+                Rodada {current.rodada}
+              </span>
+              <Badge variant="outline" className="text-[9px] border-white/20">
+                {current.tipo}
+              </Badge>
+              <StatusBadge status={current.status} />
+            </div>
+            {!canRepilot && (
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                Aguardando avaliação para liberar reexecução.
+              </p>
+            )}
+          </div>
+          <NovoPilotoDialog
+            referenceId={referenceId}
+            referenciaNome={referenciaNome}
+            currentRodada={current.rodada}
+            defaultTipo={nextTipo}
+            defaultStatus="EM_DESENVOLVIMENTO"
+            defaultObservacoes={
+              current.status === "AJUSTE_SOLICITADO"
+                ? `Repilotagem após ajuste solicitado na rodada ${current.rodada}.`
+                : current.status === "REPROVADO"
+                  ? `Repilotagem após reprovação da rodada ${current.rodada}.`
+                  : `Nova rodada a partir da rodada ${current.rodada}.`
+            }
+            onCreated={() => void refetch()}
+            trigger={
+              <Button
+                size="sm"
+                variant="default"
+                className="gap-1 h-8 shrink-0"
+                disabled={!canRepilot}
+                title={
+                  canRepilot
+                    ? `Reexecutar como rodada ${current.rodada + 1}`
+                    : "Avalie a rodada atual para reexecutar"
+                }
+              >
+                <RotateCcw className="h-3 w-3" />
+                Reexecutar (R{current.rodada + 1})
+              </Button>
+            }
+          />
+        </div>
+      )}
+
+
 
 
       {loading ? (

@@ -1,5 +1,6 @@
 // V5 · Modal para criar novo piloto com tipo, fornecedor e status inicial.
-import { useState } from "react";
+// H · Suporta trigger customizado para fluxo de repilotagem (reexecutar).
+import { useState, useEffect, type ReactNode } from "react";
 import { Loader2, Plus } from "lucide-react";
 import {
   Dialog,
@@ -46,28 +47,48 @@ interface Props {
   referenceId: string;
   referenciaNome: string;
   onCreated?: () => void;
+  /** Rodada corrente (usada para exibir "Rodada N+1" no trigger). */
+  currentRodada?: number;
+  defaultTipo?: "prova" | "ajuste" | "final";
+  defaultStatus?: "RASCUNHO" | "EM_DESENVOLVIMENTO";
+  defaultObservacoes?: string;
+  trigger?: ReactNode;
 }
 
 export function NovoPilotoDialog({
   referenceId,
   referenciaNome,
   onCreated,
+  currentRodada,
+  defaultTipo = "prova",
+  defaultStatus = "RASCUNHO",
+  defaultObservacoes = "",
+  trigger,
 }: Props) {
   const { create } = useCreatePiloto();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
-  const [tipo, setTipo] = useState<"prova" | "ajuste" | "final">("prova");
+  const [tipo, setTipo] = useState<"prova" | "ajuste" | "final">(defaultTipo);
   const [status, setStatus] = useState<"RASCUNHO" | "EM_DESENVOLVIMENTO">(
-    "RASCUNHO",
+    defaultStatus,
   );
   const [supplierId, setSupplierId] = useState("");
-  const [observacoes, setObservacoes] = useState("");
+  const [observacoes, setObservacoes] = useState(defaultObservacoes);
+
+  // Ao reabrir, respeita novos defaults (ex.: trigger de repilotagem).
+  useEffect(() => {
+    if (open) {
+      setTipo(defaultTipo);
+      setStatus(defaultStatus);
+      setObservacoes(defaultObservacoes);
+    }
+  }, [open, defaultTipo, defaultStatus, defaultObservacoes]);
 
   const reset = () => {
-    setTipo("prova");
-    setStatus("RASCUNHO");
+    setTipo(defaultTipo);
+    setStatus(defaultStatus);
     setSupplierId("");
-    setObservacoes("");
+    setObservacoes(defaultObservacoes);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,14 +131,20 @@ export function NovoPilotoDialog({
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-1 h-8">
-          <Plus className="h-3 w-3" />
-          Novo piloto
-        </Button>
+        {trigger ?? (
+          <Button size="sm" variant="outline" className="gap-1 h-8">
+            <Plus className="h-3 w-3" />
+            Novo piloto
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Novo piloto</DialogTitle>
+          <DialogTitle>
+            {currentRodada && currentRodada > 0
+              ? `Reexecutar piloto · Rodada ${currentRodada + 1}`
+              : "Novo piloto"}
+          </DialogTitle>
           <DialogDescription>
             {referenciaNome} · a rodada é calculada automaticamente.
           </DialogDescription>
