@@ -1,6 +1,7 @@
 // Núcleo do PLM — gestão da entidade unificada "Referência".
 // Ponto central para criar, filtrar e abrir referências no drawer universal.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Search, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -45,6 +46,8 @@ function ReferencesPage() {
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReferenceStatus | "TODOS">("TODOS");
   const [openNew, setOpenNew] = useState(false);
+
+  useEffect(() => onQuickAction("quick:new-reference", () => setOpenNew(true)), []);
 
   const filtered = useMemo(() => {
     return items.filter((r) => {

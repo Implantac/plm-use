@@ -1,6 +1,7 @@
 // H1-03 · Cartela de Estampas (inspirado em Coleção.Moda / Kubix Link / NedGraphics).
 // Biblioteca versionada de estampas com metadados (repeat, cores, técnica, fornecedor).
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Sparkles,
@@ -133,6 +134,40 @@ function PrintsRoute() {
     ];
   }, [prints]);
 
+  const handleAddPrint = useCallback(() => {
+    const id = `est-${Date.now()}`;
+    upsertPrint({
+      id,
+      code: `EST-${Math.floor(1000 + Math.random() * 9000)}`,
+      name: "Nova estampa",
+      tecnica: "digital",
+      repeat: { widthCm: 40, heightCm: 50 },
+      colorCount: 1,
+      colors: ["#888888"],
+      status: "rascunho",
+      cover:
+        "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=900",
+      fileFormat: "AI",
+      linkedRefs: 0,
+      updatedAt: new Date().toISOString().slice(0, 10),
+      tags: [],
+      versions: [
+        {
+          id: `v-${Date.now()}`,
+          label: "v1",
+          createdAt: new Date().toISOString().slice(0, 10),
+          createdBy: "Você",
+          image:
+            "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=600",
+        },
+      ],
+    });
+    setSelectedId(id);
+    toast.success("Estampa criada");
+  }, []);
+
+  useEffect(() => onQuickAction("quick:new-print", handleAddPrint), [handleAddPrint]);
+
   return (
     <ModuleLayout
       title="Cartela de Estampas"
@@ -140,37 +175,7 @@ function PrintsRoute() {
       version="H1-03 · V4"
       searchPlaceholder="Buscar estampa, código ou tag"
       metrics={metrics}
-      onAdd={() => {
-        const id = `est-${Date.now()}`;
-        upsertPrint({
-          id,
-          code: `EST-${Math.floor(1000 + Math.random() * 9000)}`,
-          name: "Nova estampa",
-          tecnica: "digital",
-          repeat: { widthCm: 40, heightCm: 50 },
-          colorCount: 1,
-          colors: ["#888888"],
-          status: "rascunho",
-          cover:
-            "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=900",
-          fileFormat: "AI",
-          linkedRefs: 0,
-          updatedAt: new Date().toISOString().slice(0, 10),
-          tags: [],
-          versions: [
-            {
-              id: `v-${Date.now()}`,
-              label: "v1",
-              createdAt: new Date().toISOString().slice(0, 10),
-              createdBy: "Você",
-              image:
-                "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=600",
-            },
-          ],
-        });
-        setSelectedId(id);
-        toast.success("Estampa criada");
-      }}
+      onAdd={handleAddPrint}
     >
       {/* Filtros de status */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">

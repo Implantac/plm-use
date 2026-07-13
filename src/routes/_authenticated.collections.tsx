@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
@@ -163,6 +164,9 @@ function CollectionsPage() {
     }
     setIsDialogOpen(true);
   };
+
+  useEffect(() => onQuickAction("quick:new-collection", () => handleOpenDialog()), []);
+
 
   const handleSave = () => {
     if (editingCollection) {
