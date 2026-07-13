@@ -118,13 +118,23 @@ function SuppliersPage() {
     setIsDialogOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editingSupplier) {
-      setSuppliers(suppliers.map((s) => (s.id === editingSupplier.id ? { ...s, ...formData } : s)));
+      const prev = editingSupplier;
+      setSuppliers(suppliers.map((s) => (s.id === prev.id ? { ...s, ...formData } : s)));
       toast.success("Fornecedor atualizado");
+      await emit({
+        entity_type: "supplier",
+        entity_id: prev.id,
+        event_type: "updated",
+        from_status: prev.status,
+        to_status: formData.status,
+        note: `Atualizado: ${formData.name}`,
+        payload: { before: prev, after: formData },
+      });
     } else {
       const newSup = {
-        id: Date.now(),
+        id: crypto.randomUUID(),
         ...formData,
         rating: 5.0,
         compliance: "100%",
@@ -135,13 +145,31 @@ function SuppliersPage() {
       };
       setSuppliers([newSup, ...suppliers]);
       toast.success("Novo fornecedor cadastrado");
+      await emit({
+        entity_type: "supplier",
+        entity_id: newSup.id,
+        event_type: "created",
+        to_status: newSup.status,
+        note: `Fornecedor cadastrado: ${newSup.name}`,
+        payload: { name: newSup.name, type: newSup.type, location: newSup.location },
+      });
     }
     setIsDialogOpen(false);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: string) => {
+    const target = suppliers.find((s) => s.id === id);
     setSuppliers(suppliers.filter((s) => s.id !== id));
     toast.error("Fornecedor removido");
+    if (target) {
+      await emit({
+        entity_type: "supplier",
+        entity_id: id,
+        event_type: "deleted",
+        from_status: target.status,
+        note: `Removido: ${target.name}`,
+      });
+    }
   };
 
   return (
