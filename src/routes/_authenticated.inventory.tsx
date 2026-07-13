@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { AlertTriangle, Boxes, History, PackageSearch, ArrowRightLeft, ShieldCheck, RefreshCw } from "lucide-react";
+import { AlertTriangle, Boxes, GitBranch, History, PackageSearch, ArrowRightLeft, ShieldCheck, RefreshCw } from "lucide-react";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +53,7 @@ const emptyForm = {
 
 function InventoryPage() {
   const { items, balances, loading, refetch } = useStockItems();
+  const { openEntity } = useEntityDrawer();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isMoveOpen, setIsMoveOpen] = useState(false);
   const [isResOpen, setIsResOpen] = useState(false);
@@ -357,12 +359,31 @@ function InventoryPage() {
                         </span>
                       </td>
                       <td className="px-4 py-4">
-                        <ModuleActionMenu
-                          onEdit={() => handleOpenDialog(item)}
-                          onDelete={() => handleToggleActive(item)}
-                          onView={() => handleOpenMove(item)}
-                        />
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                            title="Abrir na trilha"
+                            onClick={() =>
+                              openEntity({
+                                type: "stock_item",
+                                id: item.id,
+                                title: item.name,
+                                subtitle: `${item.code} · ${item.category}`,
+                              })
+                            }
+                          >
+                            <GitBranch className="h-3.5 w-3.5" />
+                          </Button>
+                          <ModuleActionMenu
+                            onEdit={() => handleOpenDialog(item)}
+                            onDelete={() => handleToggleActive(item)}
+                            onView={() => handleOpenMove(item)}
+                          />
+                        </div>
                       </td>
+
                     </tr>
                   );
                 })}

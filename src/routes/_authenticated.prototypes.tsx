@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   CheckCircle2,
   Clock,
+  GitBranch,
   Image,
   MessageSquare,
   Play,
@@ -14,6 +15,7 @@ import {
   UserCheck,
   Video,
 } from "lucide-react";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,6 +112,7 @@ const prototypeStages = [
 
 function PrototypesPage() {
   const [prototypes, setPrototypes] = useState(initialPrototypes);
+  const { openEntity } = useEntityDrawer();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPrototype, setEditingPrototype] = useState<Prototype | null>(null);
   const [formData, setFormData] = useState({ name: "", version: "", requester: "", owner: "" });
@@ -266,10 +269,19 @@ function PrototypesPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="rounded-md text-[10px] font-bold uppercase tracking-[0.14em] text-primary"
+                    className="rounded-md gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-primary hover:bg-primary/10"
+                    onClick={() =>
+                      openEntity({
+                        type: "piloto",
+                        id: prototype.id,
+                        title: `${prototype.id} · ${prototype.name}`,
+                        subtitle: `${prototype.version} · ${prototype.stage}`,
+                      })
+                    }
                   >
-                    Timeline
+                    <GitBranch className="h-3.5 w-3.5" /> Trilha
                   </Button>
+
                 </div>
               </CardContent>
             </Card>
