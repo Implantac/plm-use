@@ -211,8 +211,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               </p>
             ) : repilotError ? (
               <p className="mt-1 text-[10px] text-rose-300">
-                Rodada {repilotError.piloto.rodada} foi revertida.{" "}
-                {repilotError.message}
+                R{repilotError.piloto.rodada} revertida — {repilotError.message}
               </p>
             ) : confirmedRodada != null ? (
               <p className="mt-1 text-[10px] text-emerald-300">
