@@ -247,8 +247,14 @@ function ReferenceBody({ id }: { id: string }) {
       </TabsContent>
 
       <TabsContent value="timeline" className="mt-4">
-        <EntityTimeline entityType="reference" entityId={row.id} />
+        <EntityTimeline
+          entityType="reference"
+          entityId={row.id}
+          active={tab === "timeline"}
+          onNewCountChange={setNewTimelineCount}
+        />
       </TabsContent>
+
 
       <TabsContent value="relations" className="mt-4">
         <EntityRelations entityType="reference" entityId={row.id} />
