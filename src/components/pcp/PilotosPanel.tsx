@@ -189,7 +189,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   className="text-[9px] gap-1 border-rose-400/50 text-rose-300"
                 >
                   <AlertTriangle className="h-2.5 w-2.5" />
-                  Falha ao reexecutar R{repilotError.piloto.rodada}
+                  Reexecução R{repilotError.piloto.rodada} falhou
                 </Badge>
               )}
               {confirmedRodada != null &&
