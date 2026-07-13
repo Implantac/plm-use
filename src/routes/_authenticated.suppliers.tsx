@@ -34,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/suppliers")({
 });
 
 function SuppliersPage() {
+  const { openEntity } = useEntityDrawer();
   const [suppliers, setSuppliers] = useState([
     {
       id: 1,
