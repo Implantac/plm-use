@@ -189,7 +189,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   className="text-[9px] gap-1 border-rose-400/50 text-rose-300"
                 >
                   <AlertTriangle className="h-2.5 w-2.5" />
-                  Falha ao reexecutar
+                  Falha ao reexecutar R{repilotError.piloto.rodada}
                 </Badge>
               )}
               {confirmedRodada != null &&
@@ -211,8 +211,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               </p>
             ) : repilotError ? (
               <p className="mt-1 text-[10px] text-rose-300">
-                Rodada {repilotError.piloto.rodada} foi revertida.{" "}
-                {repilotError.message}
+                R{repilotError.piloto.rodada} revertida — {repilotError.message}
               </p>
             ) : confirmedRodada != null ? (
               <p className="mt-1 text-[10px] text-emerald-300">
