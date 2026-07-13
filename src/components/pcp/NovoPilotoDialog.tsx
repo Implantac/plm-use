@@ -1,5 +1,6 @@
 // V5 · Modal para criar novo piloto com tipo, fornecedor e status inicial.
-import { useState } from "react";
+// H · Suporta trigger customizado para fluxo de repilotagem (reexecutar).
+import { useState, useEffect, type ReactNode } from "react";
 import { Loader2, Plus } from "lucide-react";
 import {
   Dialog,
