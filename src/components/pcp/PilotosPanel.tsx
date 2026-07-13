@@ -37,7 +37,13 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     };
   }, [referenciaRef]);
 
-  const { items, loading, refetch } = usePilotos(referenceId ?? undefined);
+  const { items, loading, refetch, upsertLocal } = usePilotos(
+    referenceId ?? undefined,
+  );
+  const handleCreated = (p: import("@/hooks/use-pilotos").Piloto) => {
+    upsertLocal(p); // Atualização otimista imediata do banner + lista.
+    void refetch(); // Reconciliação em segundo plano.
+  };
 
   if (resolving) {
     return (
@@ -85,7 +91,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         <NovoPilotoDialog
           referenceId={referenceId}
           referenciaNome={referenciaNome}
-          onCreated={() => void refetch()}
+          onCreated={handleCreated}
         />
       </div>
 
@@ -124,7 +130,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   ? `Repilotagem após reprovação da rodada ${current.rodada}.`
                   : `Nova rodada a partir da rodada ${current.rodada}.`
             }
-            onCreated={() => void refetch()}
+            onCreated={handleCreated}
             trigger={
               <Button
                 size="sm"
