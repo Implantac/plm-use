@@ -244,7 +244,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             <Button
               size="sm"
               variant="outline"
-              className="gap-1 h-8 shrink-0 border-rose-400/40 text-rose-200 hover:bg-rose-500/10"
+              className="gap-1 h-8 shrink-0 border-status-rejected/50 text-status-rejected hover:bg-status-rejected/10"
               onClick={() => void retryConfirmation()}
             >
               <RotateCcw className="h-3 w-3" />
