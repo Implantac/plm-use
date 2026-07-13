@@ -40,9 +40,19 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   const { items, loading, refetch, upsertLocal } = usePilotos(
     referenceId ?? undefined,
   );
-  const handleCreated = (p: import("@/hooks/use-pilotos").Piloto) => {
-    upsertLocal(p); // Atualização otimista imediata do banner + lista.
-    void refetch(); // Reconciliação em segundo plano.
+  const [repiloting, setRepiloting] = useState<{
+    active: boolean;
+    rodada: number | null;
+  }>({ active: false, rodada: null });
+
+  const handleCreated = async (p: import("@/hooks/use-pilotos").Piloto) => {
+    upsertLocal(p); // Atualização otimista imediata.
+    setRepiloting({ active: true, rodada: p.rodada });
+    try {
+      await refetch(); // Aguarda confirmação do servidor.
+    } finally {
+      setRepiloting({ active: false, rodada: null });
+    }
   };
 
   if (resolving) {
@@ -110,11 +120,27 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 {current.tipo}
               </Badge>
               <StatusBadge status={current.status} />
+              {repiloting.active && (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] gap-1 border-primary/50 text-primary animate-pulse"
+                >
+                  <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                  Reexecutando…
+                </Badge>
+              )}
             </div>
-            {!canRepilot && (
-              <p className="mt-1 text-[10px] text-muted-foreground">
-                Aguardando avaliação para liberar reexecução.
+            {repiloting.active ? (
+              <p className="mt-1 text-[10px] text-primary/80">
+                Aguardando confirmação do servidor para a Rodada{" "}
+                {repiloting.rodada}…
               </p>
+            ) : (
+              !canRepilot && (
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Aguardando avaliação para liberar reexecução.
+                </p>
+              )
             )}
           </div>
           <NovoPilotoDialog
@@ -136,15 +162,23 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 size="sm"
                 variant="default"
                 className="gap-1 h-8 shrink-0"
-                disabled={!canRepilot}
+                disabled={!canRepilot || repiloting.active}
                 title={
-                  canRepilot
-                    ? `Reexecutar como rodada ${current.rodada + 1}`
-                    : "Avalie a rodada atual para reexecutar"
+                  repiloting.active
+                    ? "Aguardando confirmação do servidor…"
+                    : canRepilot
+                      ? `Reexecutar como rodada ${current.rodada + 1}`
+                      : "Avalie a rodada atual para reexecutar"
                 }
               >
-                <RotateCcw className="h-3 w-3" />
-                Reexecutar (R{current.rodada + 1})
+                {repiloting.active ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <RotateCcw className="h-3 w-3" />
+                )}
+                {repiloting.active
+                  ? "Reexecutando…"
+                  : `Reexecutar (R${current.rodada + 1})`}
               </Button>
             }
           />
