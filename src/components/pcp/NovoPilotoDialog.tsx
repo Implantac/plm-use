@@ -46,7 +46,7 @@ const schema = z.object({
 interface Props {
   referenceId: string;
   referenciaNome: string;
-  onCreated?: () => void;
+  onCreated?: (piloto: import("@/hooks/use-pilotos").Piloto) => void;
   /** Rodada corrente (usada para exibir "Rodada N+1" no trigger). */
   currentRodada?: number;
   defaultTipo?: "prova" | "ajuste" | "final";
