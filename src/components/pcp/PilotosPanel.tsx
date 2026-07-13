@@ -162,15 +162,23 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 size="sm"
                 variant="default"
                 className="gap-1 h-8 shrink-0"
-                disabled={!canRepilot}
+                disabled={!canRepilot || repiloting.active}
                 title={
-                  canRepilot
-                    ? `Reexecutar como rodada ${current.rodada + 1}`
-                    : "Avalie a rodada atual para reexecutar"
+                  repiloting.active
+                    ? "Aguardando confirmação do servidor…"
+                    : canRepilot
+                      ? `Reexecutar como rodada ${current.rodada + 1}`
+                      : "Avalie a rodada atual para reexecutar"
                 }
               >
-                <RotateCcw className="h-3 w-3" />
-                Reexecutar (R{current.rodada + 1})
+                {repiloting.active ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <RotateCcw className="h-3 w-3" />
+                )}
+                {repiloting.active
+                  ? "Reexecutando…"
+                  : `Reexecutar (R${current.rodada + 1})`}
               </Button>
             }
           />
