@@ -202,10 +202,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 </Badge>
               )}
               {repilotError && !repiloting.active && (
-                <Badge
-                  variant="outline"
-                  className="text-[9px] gap-1 border-rose-400/50 text-rose-300"
-                >
+                <Badge variant="outline" className={REPILOT_BADGE_ERROR_CLASS}>
                   <AlertTriangle className="h-2.5 w-2.5" />
                   Reexecução R{repilotError.piloto.rodada} falhou
                 </Badge>
@@ -215,7 +212,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 !repilotError && (
                   <Badge
                     variant="outline"
-                    className="text-[9px] gap-1 border-emerald-400/50 text-emerald-300"
+                    className={REPILOT_BADGE_SUCCESS_CLASS}
                   >
                     <CheckCircle2 className="h-2.5 w-2.5" />
                     Reexecução R{confirmedRodada} confirmada
