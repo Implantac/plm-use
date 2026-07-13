@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
@@ -128,6 +129,9 @@ function PrototypesPage() {
     }
     setIsDialogOpen(true);
   };
+
+  useEffect(() => onQuickAction("quick:new-piloto", () => handleOpenDialog()), []);
+
 
   const handleSave = () => {
     if (editingPrototype) {

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { onQuickAction } from "@/lib/nav/routes";
 import {
   useLooks,
   upsertLook,
@@ -72,6 +73,8 @@ function LooksPage() {
   const [occasionFilter, setOccasionFilter] = useState<LookOccasion | "all">("all");
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => onQuickAction("quick:new-look", () => setDialogOpen(true)), []);
 
   const filtered = useMemo(() => {
     return looks.filter((l) => {
