@@ -56,7 +56,12 @@ export function usePilotos(referenceId?: string) {
     });
   }, []);
 
-  return { items, loading, refetch: fetch, upsertLocal };
+  /** Remove um piloto do estado local (rollback otimista). */
+  const removeLocal = useCallback((id: string) => {
+    setItems((prev) => prev.filter((x) => x.id !== id));
+  }, []);
+
+  return { items, loading, refetch: fetch, upsertLocal, removeLocal };
 }
 
 export function useCreatePiloto() {
