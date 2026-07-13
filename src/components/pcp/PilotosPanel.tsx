@@ -67,8 +67,8 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       await refetch();
       setRepilotError(null);
       setConfirmedRodada(p.rodada);
-      toast.success(`Reexecução confirmada · R${p.rodada}`, {
-        description: `${referenciaNome} · Rodada ${p.rodada} sincronizada com o servidor.`,
+      toast.success(`Reexecução R${p.rodada} confirmada`, {
+        description: `${referenciaNome} · Reexecução R${p.rodada} sincronizada com o servidor.`,
       });
     } catch (e) {
       // Rollback: remove a rodada otimista e expõe o erro no banner.
@@ -80,7 +80,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         optimisticId: p.id,
         piloto: p,
       });
-      toast.error(`Falha ao reexecutar · R${p.rodada}`, {
+      toast.error(`Reexecução R${p.rodada} falhou`, {
         description: `${referenciaNome} · ${message}`,
       });
     } finally {
@@ -189,7 +189,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   className="text-[9px] gap-1 border-rose-400/50 text-rose-300"
                 >
                   <AlertTriangle className="h-2.5 w-2.5" />
-                  Falha ao reexecutar R{repilotError.piloto.rodada}
+                  Reexecução R{repilotError.piloto.rodada} falhou
                 </Badge>
               )}
               {confirmedRodada != null &&
@@ -200,7 +200,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                     className="text-[9px] gap-1 border-emerald-400/50 text-emerald-300"
                   >
                     <CheckCircle2 className="h-2.5 w-2.5" />
-                    R{confirmedRodada} confirmada
+                    Reexecução R{confirmedRodada} confirmada
                   </Badge>
                 )}
             </div>
@@ -211,7 +211,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               </p>
             ) : repilotError ? (
               <p className="mt-1 text-[10px] text-rose-300">
-                R{repilotError.piloto.rodada} revertida — {repilotError.message}
+                Reexecução R{repilotError.piloto.rodada} revertida — {repilotError.message}
               </p>
             ) : confirmedRodada != null ? (
               <p className="mt-1 text-[10px] text-emerald-300">
