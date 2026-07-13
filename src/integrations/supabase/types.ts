@@ -2118,6 +2118,7 @@ export type Database = {
         | "stock_item"
         | "stock_movement"
         | "stock_reservation"
+        | "supplier"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -2318,6 +2319,7 @@ export const Constants = {
         "stock_item",
         "stock_movement",
         "stock_reservation",
+        "supplier",
       ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [

@@ -13,8 +13,10 @@ import {
   PackageCheck,
   Clock,
   FileCheck2,
+  GitBranch,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/suppliers")({
 });
 
 function SuppliersPage() {
+  const { openEntity } = useEntityDrawer();
   const [suppliers, setSuppliers] = useState([
     {
       id: 1,
@@ -171,7 +174,14 @@ function SuppliersPage() {
               <ModuleActionMenu
                 onEdit={() => handleOpenDialog(sup)}
                 onDelete={() => handleDelete(sup.id)}
-                onView={() => toast.info(`Visualizando ${sup.name}`)}
+                onView={() =>
+                  openEntity({
+                    type: "supplier",
+                    id: String(sup.id),
+                    title: sup.name,
+                    subtitle: `${sup.type} · ${sup.location}`,
+                  })
+                }
               />
             </div>
 
@@ -259,6 +269,22 @@ function SuppliersPage() {
                 className="flex-1 h-11 rounded-md border border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
               >
                 Portal do fornecedor
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-11 w-11 rounded-md border border-white/5 bg-white/5 hover:bg-primary/10 hover:text-primary transition-all"
+                onClick={() =>
+                  openEntity({
+                    type: "supplier",
+                    id: String(sup.id),
+                    title: sup.name,
+                    subtitle: `${sup.type} · ${sup.location}`,
+                  })
+                }
+                title="Abrir na trilha"
+              >
+                <GitBranch className="w-5 h-5" />
               </Button>
               <Button
                 variant="ghost"
