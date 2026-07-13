@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
+import { useEventEmitter } from "@/hooks/use-entity-events";
 import {
   Dialog,
   DialogContent,
