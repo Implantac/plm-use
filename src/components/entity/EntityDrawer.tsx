@@ -266,11 +266,19 @@ function ReferenceBody({ id }: { id: string }) {
 // ---------- Genérico ----------
 
 function GenericBody({ entity }: { entity: EntityRef }) {
+  const [tab, setTab] = useState("timeline");
+  const [newTimelineCount, setNewTimelineCount] = useState(0);
+
   return (
-    <Tabs defaultValue="timeline">
+    <Tabs value={tab} onValueChange={setTab}>
       <TabsList className="bg-white/[0.04] border border-white/10">
-        <TabsTrigger value="timeline" className="text-[10px] gap-1">
+        <TabsTrigger value="timeline" className="text-[10px] gap-1 relative">
           <History className="h-3 w-3" /> Timeline
+          {newTimelineCount > 0 && (
+            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] leading-none flex items-center justify-center animate-pulse">
+              {newTimelineCount}
+            </Badge>
+          )}
         </TabsTrigger>
         <TabsTrigger value="relations" className="text-[10px] gap-1">
           <Link2 className="h-3 w-3" /> Relações
@@ -280,7 +288,12 @@ function GenericBody({ entity }: { entity: EntityRef }) {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="timeline" className="mt-4">
-        <EntityTimeline entityType={entity.type} entityId={entity.id} />
+        <EntityTimeline
+          entityType={entity.type}
+          entityId={entity.id}
+          active={tab === "timeline"}
+          onNewCountChange={setNewTimelineCount}
+        />
       </TabsContent>
       <TabsContent value="relations" className="mt-4">
         <EntityRelations entityType={entity.type} entityId={entity.id} />
