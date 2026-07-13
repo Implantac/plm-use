@@ -243,6 +243,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               </Button>
             }
           />
+          )}
         </div>
       )}
 
