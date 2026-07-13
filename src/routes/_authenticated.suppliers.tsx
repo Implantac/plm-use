@@ -36,9 +36,10 @@ export const Route = createFileRoute("/_authenticated/suppliers")({
 
 function SuppliersPage() {
   const { openEntity } = useEntityDrawer();
+  const { emit } = useEventEmitter();
   const [suppliers, setSuppliers] = useState([
     {
-      id: 1,
+      id: "11111111-1111-4111-8111-111111111111",
       name: "Têxtil Amalfi Ltda",
       type: "Tecidos",
       rating: 4.8,
@@ -51,7 +52,7 @@ function SuppliersPage() {
       eta: "2 dias",
     },
     {
-      id: 2,
+      id: "22222222-2222-4222-8222-222222222222",
       name: "Aviamentos Global",
       type: "Insumos",
       rating: 4.5,
@@ -64,7 +65,7 @@ function SuppliersPage() {
       eta: "5 dias",
     },
     {
-      id: 3,
+      id: "33333333-3333-4333-8333-333333333333",
       name: "Seda & Cia",
       type: "Tecidos Finos",
       rating: 4.9,
@@ -77,7 +78,7 @@ function SuppliersPage() {
       eta: "1 dia",
     },
     {
-      id: 4,
+      id: "44444444-4444-4444-8444-444444444444",
       name: "Botões do Sul",
       type: "Insumos",
       rating: 4.2,
