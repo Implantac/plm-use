@@ -13,6 +13,7 @@ import {
   XCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { useEntityTimeline, type EntityType } from "@/hooks/use-entity-events";
 
 const EVENT_ICON: Record<string, LucideIcon> = {
