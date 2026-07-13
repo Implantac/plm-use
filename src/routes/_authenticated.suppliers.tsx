@@ -13,8 +13,10 @@ import {
   PackageCheck,
   Clock,
   FileCheck2,
+  GitBranch,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
 import {
   Dialog,
   DialogContent,
