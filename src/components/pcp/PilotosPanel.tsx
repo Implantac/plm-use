@@ -192,6 +192,17 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   Falha ao reexecutar
                 </Badge>
               )}
+              {confirmedRodada != null &&
+                !repiloting.active &&
+                !repilotError && (
+                  <Badge
+                    variant="outline"
+                    className="text-[9px] gap-1 border-emerald-400/50 text-emerald-300"
+                  >
+                    <CheckCircle2 className="h-2.5 w-2.5" />
+                    R{confirmedRodada} confirmada
+                  </Badge>
+                )}
             </div>
             {repiloting.active ? (
               <p className="mt-1 text-[10px] text-primary/80">
@@ -202,6 +213,10 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               <p className="mt-1 text-[10px] text-rose-300">
                 Rodada {repilotError.piloto.rodada} foi revertida.{" "}
                 {repilotError.message}
+              </p>
+            ) : confirmedRodada != null ? (
+              <p className="mt-1 text-[10px] text-emerald-300">
+                Reexecução R{confirmedRodada} confirmada pelo servidor.
               </p>
             ) : (
               !canRepilot && (
