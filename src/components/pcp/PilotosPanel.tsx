@@ -40,9 +40,19 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   const { items, loading, refetch, upsertLocal } = usePilotos(
     referenceId ?? undefined,
   );
-  const handleCreated = (p: import("@/hooks/use-pilotos").Piloto) => {
-    upsertLocal(p); // Atualização otimista imediata do banner + lista.
-    void refetch(); // Reconciliação em segundo plano.
+  const [repiloting, setRepiloting] = useState<{
+    active: boolean;
+    rodada: number | null;
+  }>({ active: false, rodada: null });
+
+  const handleCreated = async (p: import("@/hooks/use-pilotos").Piloto) => {
+    upsertLocal(p); // Atualização otimista imediata.
+    setRepiloting({ active: true, rodada: p.rodada });
+    try {
+      await refetch(); // Aguarda confirmação do servidor.
+    } finally {
+      setRepiloting({ active: false, rodada: null });
+    }
   };
 
   if (resolving) {
