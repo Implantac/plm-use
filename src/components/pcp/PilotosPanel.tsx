@@ -50,6 +50,14 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     optimisticId: string;
     piloto: import("@/hooks/use-pilotos").Piloto;
   } | null>(null);
+  const [confirmedRodada, setConfirmedRodada] = useState<number | null>(null);
+
+  // Limpa o estado "confirmada" após 6s para não poluir o banner.
+  useEffect(() => {
+    if (confirmedRodada == null) return;
+    const t = setTimeout(() => setConfirmedRodada(null), 6000);
+    return () => clearTimeout(t);
+  }, [confirmedRodada]);
 
   const confirmRepilot = async (
     p: import("@/hooks/use-pilotos").Piloto,
@@ -58,6 +66,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     try {
       await refetch();
       setRepilotError(null);
+      setConfirmedRodada(p.rodada);
       toast.success(`Reexecução confirmada · R${p.rodada}`, {
         description: `${referenciaNome} · Rodada ${p.rodada} sincronizada com o servidor.`,
       });
