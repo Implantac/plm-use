@@ -24,7 +24,6 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { toast } from "sonner";
 import { statusToast } from "@/components/ui/status-presets";
 import {
   CAPA_SEVERIDADES,

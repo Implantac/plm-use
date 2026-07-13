@@ -3,7 +3,6 @@
 // Todas as escritas passam pela RLS: só membros com papel de mostruário editam.
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { toast } from "sonner";
 import { statusToast } from "@/components/ui/status-presets";
 import { CheckCircle2, MessageSquarePlus, PackageOpen, Sparkles, ThumbsDown, ThumbsUp, Undo2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
