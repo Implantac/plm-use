@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { GanttChart, History, LayoutGrid, Radar, Zap } from "lucide-react";
+import { GanttChart, GitBranch, History, LayoutGrid, Radar, Zap } from "lucide-react";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/_authenticated/production")({
 
 function ProductionPage() {
   const lotes = usePCPStore((s) => s.lotes);
+  const { openEntity } = useEntityDrawer();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [view, setView] = useState<"kanban" | "torre" | "gantt">("kanban");
   const [selRef, setSelRef] = useState<{
@@ -218,6 +220,25 @@ function ProductionPage() {
                   ).toLocaleDateString()}
                 </p>
               </DialogHeader>
+
+              <div className="mt-2 flex justify-end">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 gap-1.5 border-primary/30 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-[0.14em]"
+                  onClick={() =>
+                    openEntity({
+                      type: "lote",
+                      id: loteSelecionadoAtual.lote.numero,
+                      title: `Lote ${loteSelecionadoAtual.lote.numero}`,
+                      subtitle: `${loteSelecionadoAtual.lote.grupo} · ${loteSelecionadoAtual.setor}`,
+                    })
+                  }
+                >
+                  <GitBranch className="h-3.5 w-3.5" /> Abrir na trilha
+                </Button>
+              </div>
+
 
               <div className="mt-2 flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]">
                 <span className="text-muted-foreground">
