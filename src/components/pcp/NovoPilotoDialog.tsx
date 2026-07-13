@@ -119,7 +119,7 @@ export function NovoPilotoDialog({
     toast.success(`Piloto rodada ${p.rodada} criado (${p.status})`);
     setOpen(false);
     reset();
-    onCreated?.();
+    onCreated?.(p);
   };
 
   return (
