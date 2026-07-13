@@ -32,15 +32,19 @@ export function usePilotos(referenceId?: string) {
 
   const fetch = useCallback(async () => {
     setLoading(true);
-    let q = supabase
-      .from("pilotos" as never)
-      .select("*")
-      .order("rodada", { ascending: false })
-      .order("created_at", { ascending: false });
-    if (referenceId) q = q.eq("reference_id", referenceId);
-    const { data } = await q;
-    setItems((data as Piloto[] | null) ?? []);
-    setLoading(false);
+    try {
+      let q = supabase
+        .from("pilotos" as never)
+        .select("*")
+        .order("rodada", { ascending: false })
+        .order("created_at", { ascending: false });
+      if (referenceId) q = q.eq("reference_id", referenceId);
+      const { data, error } = await q;
+      if (error) throw new Error(error.message);
+      setItems((data as Piloto[] | null) ?? []);
+    } finally {
+      setLoading(false);
+    }
   }, [referenceId]);
 
   useEffect(() => {
