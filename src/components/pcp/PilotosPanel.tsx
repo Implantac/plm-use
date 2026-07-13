@@ -165,11 +165,25 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   Reexecutando…
                 </Badge>
               )}
+              {repilotError && !repiloting.active && (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] gap-1 border-rose-400/50 text-rose-300"
+                >
+                  <AlertTriangle className="h-2.5 w-2.5" />
+                  Falha ao reexecutar
+                </Badge>
+              )}
             </div>
             {repiloting.active ? (
               <p className="mt-1 text-[10px] text-primary/80">
                 Aguardando confirmação do servidor para a Rodada{" "}
                 {repiloting.rodada}…
+              </p>
+            ) : repilotError ? (
+              <p className="mt-1 text-[10px] text-rose-300">
+                Rodada {repilotError.piloto.rodada} foi revertida.{" "}
+                {repilotError.message}
               </p>
             ) : (
               !canRepilot && (
@@ -179,6 +193,17 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               )
             )}
           </div>
+          {repilotError ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1 h-8 shrink-0 border-rose-400/40 text-rose-200 hover:bg-rose-500/10"
+              onClick={() => void retryConfirmation()}
+            >
+              <RotateCcw className="h-3 w-3" />
+              Tentar novamente
+            </Button>
+          ) : (
           <NovoPilotoDialog
             referenceId={referenceId}
             referenciaNome={referenciaNome}
