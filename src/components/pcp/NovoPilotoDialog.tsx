@@ -131,14 +131,20 @@ export function NovoPilotoDialog({
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-1 h-8">
-          <Plus className="h-3 w-3" />
-          Novo piloto
-        </Button>
+        {trigger ?? (
+          <Button size="sm" variant="outline" className="gap-1 h-8">
+            <Plus className="h-3 w-3" />
+            Novo piloto
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Novo piloto</DialogTitle>
+          <DialogTitle>
+            {currentRodada && currentRodada > 0
+              ? `Reexecutar piloto · Rodada ${currentRodada + 1}`
+              : "Novo piloto"}
+          </DialogTitle>
           <DialogDescription>
             {referenciaNome} · a rodada é calculada automaticamente.
           </DialogDescription>
