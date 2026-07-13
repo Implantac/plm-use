@@ -225,11 +225,11 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 {repiloting.rodada}…
               </p>
             ) : repilotError ? (
-              <p className="mt-1 text-[10px] text-rose-300">
+              <p className={`mt-1 text-[10px] ${REPILOT_BANNER_TEXT_ERROR}`}>
                 Reexecução R{repilotError.piloto.rodada} revertida — {repilotError.message}
               </p>
             ) : confirmedRodada != null ? (
-              <p className="mt-1 text-[10px] text-emerald-300">
+              <p className={`mt-1 text-[10px] ${REPILOT_BANNER_TEXT_SUCCESS}`}>
                 Reexecução R{confirmedRodada} confirmada pelo servidor.
               </p>
             ) : (
