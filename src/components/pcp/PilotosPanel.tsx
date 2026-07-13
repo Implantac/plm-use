@@ -11,11 +11,19 @@ import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
 import { NovoPilotoDialog } from "./NovoPilotoDialog";
 import { toast } from "sonner";
 
-// Estilo idêntico ao badge do banner (emerald para sucesso, rose para erro).
+// Tokens semânticos (status-approved / status-rejected) — idênticos claro/escuro.
 const REPILOT_TOAST_SUCCESS_CLASS =
-  "!border !border-emerald-400/50 !bg-emerald-500/[0.08] !text-emerald-200 [&_[data-icon]]:!text-emerald-300 [&_[data-description]]:!text-emerald-300/80";
+  "!border !border-status-approved/50 !bg-status-approved/10 !text-status-approved [&_[data-icon]]:!text-status-approved [&_[data-description]]:!text-status-approved/80";
 const REPILOT_TOAST_ERROR_CLASS =
-  "!border !border-rose-400/50 !bg-rose-500/[0.08] !text-rose-200 [&_[data-icon]]:!text-rose-300 [&_[data-description]]:!text-rose-300/80";
+  "!border !border-status-rejected/50 !bg-status-rejected/10 !text-status-rejected [&_[data-icon]]:!text-status-rejected [&_[data-description]]:!text-status-rejected/80";
+const REPILOT_BADGE_SUCCESS_CLASS =
+  "text-[9px] gap-1 border-status-approved/50 bg-status-approved/10 text-status-approved";
+const REPILOT_BADGE_ERROR_CLASS =
+  "text-[9px] gap-1 border-status-rejected/50 bg-status-rejected/10 text-status-rejected";
+const REPILOT_BANNER_ERROR_CLASS =
+  "border-status-rejected/40 bg-status-rejected/[0.08]";
+const REPILOT_BANNER_TEXT_ERROR = "text-status-rejected";
+const REPILOT_BANNER_TEXT_SUCCESS = "text-status-approved";
 
 interface Props {
   referenciaRef: string;
@@ -168,7 +176,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         <div
           className={`rounded-md border p-3 flex items-center justify-between gap-3 ${
             repilotError
-              ? "border-rose-400/40 bg-rose-500/[0.08]"
+              ? REPILOT_BANNER_ERROR_CLASS
               : "border-primary/25 bg-primary/[0.06]"
           }`}
         >
@@ -194,10 +202,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 </Badge>
               )}
               {repilotError && !repiloting.active && (
-                <Badge
-                  variant="outline"
-                  className="text-[9px] gap-1 border-rose-400/50 text-rose-300"
-                >
+                <Badge variant="outline" className={REPILOT_BADGE_ERROR_CLASS}>
                   <AlertTriangle className="h-2.5 w-2.5" />
                   Reexecução R{repilotError.piloto.rodada} falhou
                 </Badge>
@@ -207,7 +212,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 !repilotError && (
                   <Badge
                     variant="outline"
-                    className="text-[9px] gap-1 border-emerald-400/50 text-emerald-300"
+                    className={REPILOT_BADGE_SUCCESS_CLASS}
                   >
                     <CheckCircle2 className="h-2.5 w-2.5" />
                     Reexecução R{confirmedRodada} confirmada
@@ -220,11 +225,11 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                 {repiloting.rodada}…
               </p>
             ) : repilotError ? (
-              <p className="mt-1 text-[10px] text-rose-300">
+              <p className={`mt-1 text-[10px] ${REPILOT_BANNER_TEXT_ERROR}`}>
                 Reexecução R{repilotError.piloto.rodada} revertida — {repilotError.message}
               </p>
             ) : confirmedRodada != null ? (
-              <p className="mt-1 text-[10px] text-emerald-300">
+              <p className={`mt-1 text-[10px] ${REPILOT_BANNER_TEXT_SUCCESS}`}>
                 Reexecução R{confirmedRodada} confirmada pelo servidor.
               </p>
             ) : (
@@ -239,7 +244,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             <Button
               size="sm"
               variant="outline"
-              className="gap-1 h-8 shrink-0 border-rose-400/40 text-rose-200 hover:bg-rose-500/10"
+              className="gap-1 h-8 shrink-0 border-status-rejected/50 text-status-rejected hover:bg-status-rejected/10"
               onClick={() => void retryConfirmation()}
             >
               <RotateCcw className="h-3 w-3" />
