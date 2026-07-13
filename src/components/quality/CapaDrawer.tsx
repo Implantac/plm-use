@@ -25,6 +25,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { statusToast } from "@/components/ui/status-presets";
 import {
   CAPA_SEVERIDADES,
   isOverdue,
@@ -90,16 +91,16 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
 
   async function doTransition(to: CapaStatus) {
     const ok = await transition(local!, to, note || undefined);
-    if (!ok) return toast.error("Transição não permitida");
-    toast.success(`Movido para ${to}`);
+    if (!ok) return statusToast.error("Transição não permitida");
+    statusToast.success(`Movido para ${to}`);
     setNote("");
   }
 
   async function persistPatch(patch: Partial<Capa>, msg?: string) {
     const ok = await update(local!.id, patch, msg);
-    if (!ok) return toast.error("Falha ao salvar");
+    if (!ok) return statusToast.error("Falha ao salvar");
     setLocal({ ...local!, ...patch });
-    toast.success("Salvo");
+    statusToast.success("Salvo");
   }
 
   function addPorque() {
@@ -517,7 +518,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
               className="h-8 text-rose-400 hover:bg-rose-500/10"
               onClick={async () => {
                 await remove(local.id);
-                toast.success("CAPA removida");
+                statusToast.success("CAPA removida");
                 onClose();
               }}
             >

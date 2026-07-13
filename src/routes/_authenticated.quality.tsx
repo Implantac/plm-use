@@ -13,6 +13,7 @@ import {
   Search,
 } from "lucide-react";
 import { toast } from "sonner";
+import { statusToast } from "@/components/ui/status-presets";
 import { usePCPStore } from "@/lib/pcp/store";
 import {
   defeitosDosLotes,
@@ -113,7 +114,7 @@ function QualityPage() {
 
   async function submit() {
     if (!form.defeito || !form.responsavel)
-      return toast.error("Preencha defeito e responsável");
+      return statusToast.error("Preencha defeito e responsável");
     const c = await create({
       defeito: form.defeito,
       setor: form.setor,
@@ -123,11 +124,11 @@ function QualityPage() {
       prazo: form.prazo || null,
     });
     if (c) {
-      toast.success("CAPA aberta");
+      statusToast.success("CAPA aberta");
       setForm({ ...form, defeito: "", responsavel: "", prazo: "" });
       setSelected(c);
     } else {
-      toast.error("Falha ao criar CAPA");
+      statusToast.error("Falha ao criar CAPA");
     }
   }
 
