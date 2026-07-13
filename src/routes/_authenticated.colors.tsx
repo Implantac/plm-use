@@ -110,6 +110,27 @@ function ColorPaletteRoute() {
     ];
   }, [palettes]);
 
+  const handleAddPalette = useCallback(() => {
+    const id = `pal-${Date.now()}`;
+    upsertPalette({
+      id,
+      name: "Nova paleta",
+      season: "Verão 26",
+      brand: "—",
+      mood: "",
+      cover:
+        "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=900",
+      status: "rascunho",
+      colors: [],
+      updatedAt: new Date().toISOString().slice(0, 10),
+      linkedRefs: 0,
+    });
+    setSelectedId(id);
+    toast.success("Paleta criada");
+  }, []);
+
+  useEffect(() => onQuickAction("quick:new-color", handleAddPalette), [handleAddPalette]);
+
   return (
     <ModuleLayout
       title="Cartela de Cores"
