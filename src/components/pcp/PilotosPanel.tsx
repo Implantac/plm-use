@@ -69,6 +69,8 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       setConfirmedRodada(p.rodada);
       toast.success(`Reexecução R${p.rodada} confirmada`, {
         description: `${referenciaNome} · Reexecução R${p.rodada} sincronizada com o servidor.`,
+        icon: <CheckCircle2 className="h-3.5 w-3.5" />,
+        className: REPILOT_TOAST_SUCCESS_CLASS,
       });
     } catch (e) {
       // Rollback: remove a rodada otimista e expõe o erro no banner.
@@ -82,6 +84,8 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       });
       toast.error(`Reexecução R${p.rodada} falhou`, {
         description: `${referenciaNome} · ${message}`,
+        icon: <AlertTriangle className="h-3.5 w-3.5" />,
+        className: REPILOT_TOAST_ERROR_CLASS,
       });
     } finally {
       setRepiloting({ active: false, rodada: null });
