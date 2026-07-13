@@ -80,8 +80,8 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         optimisticId: p.id,
         piloto: p,
       });
-      toast.error(`Falha ao confirmar rodada ${p.rodada}`, {
-        description: message,
+      toast.error(`Falha ao reexecutar · R${p.rodada}`, {
+        description: `${referenciaNome} · ${message}`,
       });
     } finally {
       setRepiloting({ active: false, rodada: null });
