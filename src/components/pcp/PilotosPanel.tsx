@@ -11,6 +11,12 @@ import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
 import { NovoPilotoDialog } from "./NovoPilotoDialog";
 import { toast } from "sonner";
 
+// Estilo idêntico ao badge do banner (emerald para sucesso, rose para erro).
+const REPILOT_TOAST_SUCCESS_CLASS =
+  "!border !border-emerald-400/50 !bg-emerald-500/[0.08] !text-emerald-200 [&_[data-icon]]:!text-emerald-300 [&_[data-description]]:!text-emerald-300/80";
+const REPILOT_TOAST_ERROR_CLASS =
+  "!border !border-rose-400/50 !bg-rose-500/[0.08] !text-rose-200 [&_[data-icon]]:!text-rose-300 [&_[data-description]]:!text-rose-300/80";
+
 interface Props {
   referenciaRef: string;
   referenciaNome: string;
@@ -69,6 +75,8 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       setConfirmedRodada(p.rodada);
       toast.success(`Reexecução R${p.rodada} confirmada`, {
         description: `${referenciaNome} · Reexecução R${p.rodada} sincronizada com o servidor.`,
+        icon: <CheckCircle2 className="h-3.5 w-3.5" />,
+        className: REPILOT_TOAST_SUCCESS_CLASS,
       });
     } catch (e) {
       // Rollback: remove a rodada otimista e expõe o erro no banner.
@@ -82,6 +90,8 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       });
       toast.error(`Reexecução R${p.rodada} falhou`, {
         description: `${referenciaNome} · ${message}`,
+        icon: <AlertTriangle className="h-3.5 w-3.5" />,
+        className: REPILOT_TOAST_ERROR_CLASS,
       });
     } finally {
       setRepiloting({ active: false, rodada: null });
