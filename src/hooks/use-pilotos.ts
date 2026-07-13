@@ -23,6 +23,13 @@ export function usePilotos(referenceId?: string) {
   const [items, setItems] = useState<Piloto[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const sortItems = (arr: Piloto[]) =>
+    [...arr].sort(
+      (a, b) =>
+        b.rodada - a.rodada ||
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+
   const fetch = useCallback(async () => {
     setLoading(true);
     let q = supabase
@@ -40,7 +47,16 @@ export function usePilotos(referenceId?: string) {
     void fetch();
   }, [fetch]);
 
-  return { items, loading, refetch: fetch };
+  /** Insere/atualiza um piloto localmente (otimista) sem esperar o refetch. */
+  const upsertLocal = useCallback((p: Piloto) => {
+    setItems((prev) => {
+      const next = prev.filter((x) => x.id !== p.id);
+      next.push(p);
+      return sortItems(next);
+    });
+  }, []);
+
+  return { items, loading, refetch: fetch, upsertLocal };
 }
 
 export function useCreatePiloto() {
