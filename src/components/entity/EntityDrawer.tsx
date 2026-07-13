@@ -157,8 +157,11 @@ function ReferenceBody({ id }: { id: string }) {
     }
   };
 
+  const [tab, setTab] = useState("summary");
+  const [newTimelineCount, setNewTimelineCount] = useState(0);
+
   return (
-    <Tabs defaultValue="summary">
+    <Tabs value={tab} onValueChange={setTab}>
       <TabsList className="bg-white/[0.04] border border-white/10">
         <TabsTrigger value="summary" className="text-[10px] gap-1">
           <Package className="h-3 w-3" /> Resumo
@@ -166,13 +169,19 @@ function ReferenceBody({ id }: { id: string }) {
         <TabsTrigger value="workflow" className="text-[10px] gap-1">
           <GitBranch className="h-3 w-3" /> Workflow
         </TabsTrigger>
-        <TabsTrigger value="timeline" className="text-[10px] gap-1">
+        <TabsTrigger value="timeline" className="text-[10px] gap-1 relative">
           <History className="h-3 w-3" /> Timeline
+          {newTimelineCount > 0 && (
+            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] leading-none flex items-center justify-center animate-pulse">
+              {newTimelineCount}
+            </Badge>
+          )}
         </TabsTrigger>
         <TabsTrigger value="relations" className="text-[10px] gap-1">
           <Link2 className="h-3 w-3" /> Relações
         </TabsTrigger>
       </TabsList>
+
 
       <TabsContent value="summary" className="mt-4 space-y-3">
         <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] p-3">
