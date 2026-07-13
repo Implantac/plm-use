@@ -2,7 +2,7 @@
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, Camera, RotateCcw, AlertTriangle } from "lucide-react";
+import { Loader2, Camera, RotateCcw, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
