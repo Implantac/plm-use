@@ -37,22 +37,52 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     };
   }, [referenciaRef]);
 
-  const { items, loading, refetch, upsertLocal } = usePilotos(
+  const { items, loading, refetch, upsertLocal, removeLocal } = usePilotos(
     referenceId ?? undefined,
   );
   const [repiloting, setRepiloting] = useState<{
     active: boolean;
     rodada: number | null;
   }>({ active: false, rodada: null });
+  const [repilotError, setRepilotError] = useState<{
+    message: string;
+    optimisticId: string;
+    piloto: import("@/hooks/use-pilotos").Piloto;
+  } | null>(null);
 
-  const handleCreated = async (p: import("@/hooks/use-pilotos").Piloto) => {
-    upsertLocal(p); // Atualização otimista imediata.
+  const confirmRepilot = async (
+    p: import("@/hooks/use-pilotos").Piloto,
+  ): Promise<void> => {
     setRepiloting({ active: true, rodada: p.rodada });
     try {
-      await refetch(); // Aguarda confirmação do servidor.
+      await refetch();
+      setRepilotError(null);
+    } catch (e) {
+      // Rollback: remove a rodada otimista e expõe o erro no banner.
+      removeLocal(p.id);
+      setRepilotError({
+        message: e instanceof Error ? e.message : "Falha ao confirmar rodada",
+        optimisticId: p.id,
+        piloto: p,
+      });
     } finally {
       setRepiloting({ active: false, rodada: null });
     }
+  };
+
+  const handleCreated = async (p: import("@/hooks/use-pilotos").Piloto) => {
+    setRepilotError(null);
+    upsertLocal(p); // Atualização otimista imediata.
+    await confirmRepilot(p);
+  };
+
+  const retryConfirmation = async () => {
+    if (!repilotError) return;
+    // Reinsere otimista e tenta reconfirmar.
+    const p = repilotError.piloto;
+    setRepilotError(null);
+    upsertLocal(p);
+    await confirmRepilot(p);
   };
 
   if (resolving) {
