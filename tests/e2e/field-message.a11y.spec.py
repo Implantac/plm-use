@@ -182,6 +182,7 @@ async def main() -> int:
             "email sem aria-invalid após corrigir",
         )
         await page.screenshot(path=str(SHOTS / "3_short_password.png"))
+        diff(await run_axe(page, "short_password"), "short_password")
 
         # ---------------------------------------------------------------
         # 4. Correção limpa alerts e aria-invalid
