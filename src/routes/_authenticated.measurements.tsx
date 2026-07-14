@@ -364,7 +364,7 @@ function MeasurementsPage() {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground" required>
                   Código
                 </Label>
                 <Input
@@ -372,10 +372,14 @@ function MeasurementsPage() {
                   onChange={(e) => setNewChart({ ...newChart, code: e.target.value })}
                   placeholder="TM-BLU-03"
                   className="rounded-lg"
+                  aria-invalid={!!chartErrors.code}
                 />
+                {chartErrors.code && (
+                  <FieldMessage variant="error">{chartErrors.code}</FieldMessage>
+                )}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground" required>
                   Nome
                 </Label>
                 <Input
@@ -383,7 +387,11 @@ function MeasurementsPage() {
                   onChange={(e) => setNewChart({ ...newChart, name: e.target.value })}
                   placeholder="Camisas Oversized"
                   className="rounded-lg"
+                  aria-invalid={!!chartErrors.name}
                 />
+                {chartErrors.name && (
+                  <FieldMessage variant="error">{chartErrors.name}</FieldMessage>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
