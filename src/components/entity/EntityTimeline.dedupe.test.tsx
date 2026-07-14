@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 // Valida que o contador do badge da Timeline não infla com replays/reconexões.
 // O componente dedupa por id em duas camadas: useMemo(uniqueItems) e diff
 // contra baselineIdsRef (Set de ids), ambos idempotentes.
