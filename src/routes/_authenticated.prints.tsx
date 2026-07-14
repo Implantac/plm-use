@@ -465,12 +465,17 @@ function NewVersionDialog({ printId }: { printId: string }) {
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[10px] uppercase tracking-widest">Rótulo</Label>
+              <Label className="text-[10px] uppercase tracking-widest" required>Rótulo</Label>
               <Input
                 value={label}
-                onChange={(e) => setLabel(e.target.value)}
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                  if (e.target.value.trim()) setLabelError(null);
+                }}
                 placeholder="v2 · ajuste rapport"
+                aria-invalid={!!labelError}
               />
+              {labelError && <FieldMessage variant="error">{labelError}</FieldMessage>}
             </div>
             <div>
               <Label className="text-[10px] uppercase tracking-widest">Formato</Label>
