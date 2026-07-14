@@ -46,6 +46,12 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
   const [qty, setQty] = useState("0");
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<{
+    itemId?: string;
+    warehouseId?: string;
+    refId?: string;
+    qty?: string;
+  }>({});
 
   useEffect(() => {
     if (!open) return;
