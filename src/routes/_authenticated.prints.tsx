@@ -444,6 +444,7 @@ function MetaCell({
 function NewVersionDialog({ printId }: { printId: string }) {
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState("");
+  const [labelError, setLabelError] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [image, setImage] = useState(
     "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80&w=600",
