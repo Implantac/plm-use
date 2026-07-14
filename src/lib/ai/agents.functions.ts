@@ -21,8 +21,20 @@ const SYSTEM_PROMPTS: Record<string, string> = {
 };
 
 export const askAgent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => AgentInput.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    // Só membros da confecção (algum papel em user_roles) podem gastar créditos.
+    const { supabase, userId } = context;
+    const { data: memberFlag, error: memberErr } = await supabase.rpc("is_member", {
+      _uid: userId,
+    } as never);
+    if (memberErr) {
+      return { ok: false as const, error: "Falha ao validar acesso." };
+    }
+    if (!memberFlag) {
+      return { ok: false as const, error: "Sem permissão para consultar o agente." };
+    }
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) {
       return { ok: false as const, error: "AI Gateway não configurado." };
