@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,11 @@ import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { CapacityPanel } from "@/components/pcp/CapacityPanel";
 import { LotesGantt } from "@/components/pcp/LotesGantt";
 import { LoteTimeline } from "@/components/pcp/LoteTimeline";
-import { PCPFlowDiagram } from "@/components/pcp/PCPFlowDiagram";
+import {
+  PCPFlowDiagram,
+  PCP_STEP_IDS,
+  type PCPStepId,
+} from "@/components/pcp/PCPFlowDiagram";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
@@ -33,8 +37,24 @@ import {
   type SetorPCP,
 } from "@/types/pcp";
 
+interface PCPSearch {
+  pcpStep?: PCPStepId;
+  pcpRef?: string;
+}
+
 export const Route = createFileRoute("/_authenticated/production")({
   component: ProductionPage,
+  validateSearch: (search: Record<string, unknown>): PCPSearch => {
+    const step = search.pcpStep;
+    const ref = search.pcpRef;
+    return {
+      pcpStep:
+        typeof step === "string" && (PCP_STEP_IDS as string[]).includes(step)
+          ? (step as PCPStepId)
+          : undefined,
+      pcpRef: typeof ref === "string" ? ref : undefined,
+    };
+  },
 });
 
 function ProductionPage() {
