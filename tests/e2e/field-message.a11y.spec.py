@@ -55,8 +55,10 @@ async def main() -> int:
 
         # Contorna a validação nativa do browser para chegar no validate()
         # do formulário — que é onde FieldMessage é acionado.
+        # Desativa validação HTML nativa para exercitar o validate() do form.
         await page.evaluate(
-            "document.querySelectorAll('input').forEach(i => i.removeAttribute('required'))"
+            "document.querySelectorAll('form').forEach(f => f.noValidate = true);"
+            "document.querySelectorAll('input').forEach(i => i.removeAttribute('required'));"
         )
 
         import re as _re
