@@ -31,6 +31,7 @@ interface Props {
 export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   const [referenceId, setReferenceId] = useState<string | null>(null);
   const [resolving, setResolving] = useState(true);
+  const [pcpDialogOpen, setPcpDialogOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
