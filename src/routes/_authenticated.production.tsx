@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,11 @@ import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { CapacityPanel } from "@/components/pcp/CapacityPanel";
 import { LotesGantt } from "@/components/pcp/LotesGantt";
 import { LoteTimeline } from "@/components/pcp/LoteTimeline";
-import { PCPFlowDiagram } from "@/components/pcp/PCPFlowDiagram";
+import {
+  PCPFlowDiagram,
+  PCP_STEP_IDS,
+  type PCPStepId,
+} from "@/components/pcp/PCPFlowDiagram";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
@@ -33,13 +37,32 @@ import {
   type SetorPCP,
 } from "@/types/pcp";
 
+interface PCPSearch {
+  pcpStep?: PCPStepId;
+  pcpRef?: string;
+}
+
 export const Route = createFileRoute("/_authenticated/production")({
   component: ProductionPage,
+  validateSearch: (search: Record<string, unknown>): PCPSearch => {
+    const step = search.pcpStep;
+    const ref = search.pcpRef;
+    return {
+      pcpStep:
+        typeof step === "string" && (PCP_STEP_IDS as string[]).includes(step)
+          ? (step as PCPStepId)
+          : undefined,
+      pcpRef: typeof ref === "string" ? ref : undefined,
+    };
+  },
 });
 
 function ProductionPage() {
   const lotes = usePCPStore((s) => s.lotes);
   const { openEntity } = useEntityDrawer();
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const flowRef = useRef<HTMLDivElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [view, setView] = useState<"kanban" | "torre" | "gantt">("kanban");
   const [selRef, setSelRef] = useState<{
@@ -50,6 +73,19 @@ function ProductionPage() {
     lote: Lote;
     setor: SetorPCP;
   } | null>(null);
+
+  const setStep = (step: PCPStepId | null) => {
+    void navigate({
+      search: (prev: PCPSearch) => ({ ...prev, pcpStep: step ?? undefined }),
+      replace: true,
+    });
+  };
+
+  useEffect(() => {
+    if (search.pcpStep && flowRef.current) {
+      flowRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [search.pcpStep]);
 
   const colunas = useMemo(() => lotesPorSetor(lotes), [lotes]);
 
@@ -93,7 +129,13 @@ function ProductionPage() {
       ]}
     >
       <div className="space-y-4">
-        <PCPFlowDiagram />
+        <div ref={flowRef}>
+          <PCPFlowDiagram
+            activeId={search.pcpStep ?? null}
+            refCode={search.pcpRef}
+            onSelect={setStep}
+          />
+        </div>
 
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
