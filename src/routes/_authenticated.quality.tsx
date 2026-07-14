@@ -199,70 +199,85 @@ function QualityPage() {
         </div>
 
         {/* Quick add */}
-        <div className="flex flex-wrap gap-2 items-center p-3 rounded-md bg-white/[0.02] border border-white/5">
-          <Input
-            value={form.defeito}
-            onChange={(e) => setForm({ ...form, defeito: e.target.value })}
-            placeholder="Defeito / problema"
-            className="flex-1 min-w-[220px] text-[11px]"
-          />
-          <select
-            value={form.setor}
-            onChange={(e) => setForm({ ...form, setor: e.target.value })}
-            className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
-          >
-            {[
-              "Corte",
-              "Silk",
-              "Bordado",
-              "Costura",
-              "Lavanderia",
-              "Acabamento",
-              "Expedição",
-              "Fornecedor",
-            ].map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-          <select
-            value={form.tipo}
-            onChange={(e) =>
-              setForm({ ...form, tipo: e.target.value as CapaTipo })
-            }
-            className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
-          >
-            <option>Corretiva</option>
-            <option>Preventiva</option>
-          </select>
-          <select
-            value={form.severidade}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                severidade: e.target.value as CapaSeveridade,
-              })
-            }
-            className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
-          >
-            {CAPA_SEVERIDADES.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-          <Input
-            value={form.responsavel}
-            onChange={(e) => setForm({ ...form, responsavel: e.target.value })}
-            placeholder="Responsável"
-            className="w-36 text-[11px]"
-          />
-          <Input
-            type="date"
-            value={form.prazo}
-            onChange={(e) => setForm({ ...form, prazo: e.target.value })}
-            className="w-36 text-[11px]"
-          />
-          <Button size="sm" className="gap-1" onClick={submit}>
-            <Plus className="w-3.5 h-3.5" /> Abrir CAPA
-          </Button>
+        <div className="p-3 rounded-md bg-white/[0.02] border border-white/5 space-y-2">
+          <div className="flex flex-wrap gap-2 items-center">
+            <Input
+              value={form.defeito}
+              onChange={(e) => {
+                setForm({ ...form, defeito: e.target.value });
+                if (e.target.value) setCapaErrors((p) => ({ ...p, defeito: undefined }));
+              }}
+              placeholder="Defeito / problema"
+              className="flex-1 min-w-[220px] text-[11px]"
+              aria-invalid={!!capaErrors.defeito}
+            />
+            <select
+              value={form.setor}
+              onChange={(e) => setForm({ ...form, setor: e.target.value })}
+              className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+            >
+              {[
+                "Corte",
+                "Silk",
+                "Bordado",
+                "Costura",
+                "Lavanderia",
+                "Acabamento",
+                "Expedição",
+                "Fornecedor",
+              ].map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+            <select
+              value={form.tipo}
+              onChange={(e) =>
+                setForm({ ...form, tipo: e.target.value as CapaTipo })
+              }
+              className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+            >
+              <option>Corretiva</option>
+              <option>Preventiva</option>
+            </select>
+            <select
+              value={form.severidade}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  severidade: e.target.value as CapaSeveridade,
+                })
+              }
+              className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+            >
+              {CAPA_SEVERIDADES.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+            <Input
+              value={form.responsavel}
+              onChange={(e) => {
+                setForm({ ...form, responsavel: e.target.value });
+                if (e.target.value) setCapaErrors((p) => ({ ...p, responsavel: undefined }));
+              }}
+              placeholder="Responsável"
+              className="w-36 text-[11px]"
+              aria-invalid={!!capaErrors.responsavel}
+            />
+            <Input
+              type="date"
+              value={form.prazo}
+              onChange={(e) => setForm({ ...form, prazo: e.target.value })}
+              className="w-36 text-[11px]"
+            />
+            <Button size="sm" className="gap-1" onClick={submit}>
+              <Plus className="w-3.5 h-3.5" /> Abrir CAPA
+            </Button>
+          </div>
+          {(capaErrors.defeito || capaErrors.responsavel || capaErrors.form) && (
+            <FieldMessage variant="error">
+              {capaErrors.form ?? capaErrors.defeito ?? capaErrors.responsavel}
+            </FieldMessage>
+          )}
         </div>
 
         <div className="rounded-lg border border-white/5 overflow-hidden">
