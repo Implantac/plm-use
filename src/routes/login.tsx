@@ -41,12 +41,22 @@ function Login() {
     if (!password) next.password = "Informe a senha.";
     else if (password.length < 6) next.password = "A senha precisa ter ao menos 6 caracteres.";
     setErrors(next);
+    const firstInvalid = ["fullName", "email", "password"].find(
+      (k) => (next as Record<string, string | undefined>)[k],
+    );
+    if (firstInvalid) {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(firstInvalid) as HTMLElement | null;
+        el?.focus();
+      });
+    }
     return Object.keys(next).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+
     setLoading(true);
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
