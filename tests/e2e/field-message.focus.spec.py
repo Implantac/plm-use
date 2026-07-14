@@ -78,7 +78,7 @@ async def main() -> int:
         page = await context.new_page()
         page.on("pageerror", lambda e: print(f"[pageerror] {e}"))
 
-        submit_re = re.compile("Entrar no Sistema|Criar Conta", re.I)
+        submit_re = re.compile(r"^(Entrar no Sistema|Criar Conta)$")
 
         # -----------------------------------------------------------
         # 1. Signin vazio → foco em #email
@@ -125,7 +125,7 @@ async def main() -> int:
         await page.locator("#email").fill("")
         await page.locator("#password").fill("")
 
-        submit_signup = page.get_by_role("button", name=re.compile("Criar Conta", re.I))
+        submit_signup = page.get_by_role("button", name=re.compile(r"^Criar Conta$"))
         await submit_signup.click()
         await page.wait_for_timeout(150)
 
