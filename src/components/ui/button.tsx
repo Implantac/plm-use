@@ -5,23 +5,56 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  [
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium cursor-pointer select-none",
+    "transition-[background,color,box-shadow,filter,transform] duration-150 ease-out",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:filter-none",
+    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+    "active:translate-y-px",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        // Primary — ember/copper gradient signature CTA
+        default: [
+          "text-primary-foreground border border-transparent",
+          "bg-[linear-gradient(135deg,hsl(var(--brand-500))_0%,hsl(var(--glow-500))_100%)]",
+          "shadow-[0_8px_24px_-8px_hsl(var(--brand-500)/0.55)]",
+          "hover:brightness-110 hover:shadow-[0_10px_28px_-8px_hsl(var(--brand-500)/0.7)]",
+          "active:brightness-95",
+        ].join(" "),
+        // Secondary — quiet surface, ember hover ring
+        secondary: [
+          "bg-secondary text-secondary-foreground border border-border",
+          "hover:bg-accent hover:border-border-strong hover:text-foreground",
+          "active:bg-muted",
+        ].join(" "),
+        // Destructive
+        destructive: [
+          "bg-destructive text-destructive-foreground border border-transparent",
+          "shadow-[0_6px_20px_-8px_hsl(var(--destructive)/0.6)]",
+          "hover:brightness-110 hover:shadow-[0_8px_22px_-8px_hsl(var(--destructive)/0.75)]",
+          "active:brightness-95",
+        ].join(" "),
+        // Outline — ember focus tint on hover
+        outline: [
+          "border border-border-strong bg-transparent text-foreground",
+          "hover:bg-primary/10 hover:border-primary/50 hover:text-foreground",
+          "active:bg-primary/15",
+        ].join(" "),
+        // Ghost — minimal, subtle ember tint on hover
+        ghost: "text-foreground hover:bg-primary/10 hover:text-foreground active:bg-primary/15",
+        // Link — ember underline
+        link: "text-primary underline-offset-4 hover:underline hover:text-[hsl(var(--glow-500))]",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        xs: "h-7 px-2.5 text-[11px] rounded-md [&_svg]:size-3.5",
+        sm: "h-8 px-3 text-xs rounded-md",
+        default: "h-9 px-4 text-sm rounded-md",
+        lg: "h-11 px-6 text-sm rounded-md tracking-wide",
+        icon: "h-9 w-9 rounded-md",
+        "icon-sm": "h-8 w-8 rounded-md [&_svg]:size-3.5",
       },
     },
     defaultVariants: {
