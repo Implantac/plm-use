@@ -13,6 +13,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
   const [src, setSrc] = useState<string | null>(null);
   const [isFinal, setIsFinal] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [promptError, setPromptError] = useState<string | null>(null);
 
   const templates: Record<typeof preset, string> = {
     croqui:
