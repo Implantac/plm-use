@@ -301,27 +301,32 @@ function AuthenticatedLayout() {
                   Favoritos
                 </div>
                 <div className="mt-0.5 mb-2 space-y-0.5">
-                  {favoriteItems.map((item) => (
-                    <Link
-                      key={`fav-${item.href}`}
-                      to={item.href}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
-                    >
-                      <span>{item.icon}</span>
-                      <span className="flex-1 truncate">{item.label}</span>
-                    </Link>
-                  ))}
+                  {favoriteItems.map((item) => {
+                    const active = isActiveItem(item.href);
+                    return (
+                      <Link
+                        key={`fav-${item.href}`}
+                        to={item.href}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
+                      >
+                        <span>{item.icon}</span>
+                        <span className="flex-1 truncate">{item.label}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
             {navSections.map((section) => {
               const open = openSections[section.id] ?? false;
+              const sectionActive = section.id === activeSectionId;
               return (
                 <div key={section.id}>
                   <button
                     type="button"
                     onClick={() => toggleSection(section.id)}
-                    className="w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70 hover:text-foreground transition-colors"
+                    aria-expanded={open}
+                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] transition-colors ${sectionActive ? "text-primary" : "text-muted-foreground/70 hover:text-foreground"}`}
                   >
                     <span>{section.label}</span>
                     <ChevronDown
@@ -332,11 +337,13 @@ function AuthenticatedLayout() {
                     <div className="mt-0.5 mb-1 space-y-0.5">
                       {section.items.map((item) => {
                         const fav = isFavorite(item.href);
+                        const active = isActiveItem(item.href);
                         return (
                           <div key={item.label} className="group/nav flex items-center">
                             <Link
                               to={item.href}
-                              className="flex-1 flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
+                              aria-current={active ? "page" : undefined}
+                              className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
                             >
                               <span>{item.icon}</span>
                               <span className="flex-1 truncate">{item.label}</span>
