@@ -67,11 +67,19 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
   }, [open, preselectItemId]);
 
   const handleSubmit = async () => {
-    if (!itemId || !warehouseId) return toast.error("Selecione insumo e armazém.");
+    const next: typeof errors = {};
+    if (!itemId) next.itemId = "Selecione o insumo.";
+    if (!warehouseId) next.warehouseId = "Selecione o armazém.";
     const q = Number(qty);
-    if (!(q > 0)) return toast.error("Quantidade deve ser > 0.");
+    if (!(q > 0)) next.qty = "Quantidade deve ser maior que 0.";
     if (kind === "adjust" && justification.trim().length < 3)
-      return toast.error("Ajuste requer justificativa (mín. 3 caracteres).");
+      next.justification = "Ajuste requer justificativa com no mínimo 3 caracteres.";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      return;
+    }
+    setErrors({});
+
 
     setBusy(true);
     const res = await registerMovement({
