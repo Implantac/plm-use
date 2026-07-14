@@ -514,11 +514,12 @@ function NewVersionDialog({ printId }: { printId: string }) {
             Cancelar
           </Button>
           <Button
- onClick={() => {
+  onClick={() => {
               if (!label.trim()) {
-                toast.error("Dê um rótulo à versão (ex.: v2)");
+                setLabelError("Dê um rótulo à versão (ex.: v2).");
                 return;
               }
+              setLabelError(null);
               addVersion(printId, {
                 id: `v-${Date.now()}`,
                 label: label.trim(),
