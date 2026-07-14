@@ -21,6 +21,36 @@ from playwright.async_api import async_playwright, expect
 BASE = "http://localhost:8080"
 SHOTS = Path(__file__).parent / "screenshots" / "field-message"
 SHOTS.mkdir(parents=True, exist_ok=True)
+AXE_SRC = (Path(__file__).parent / "vendor" / "axe.min.js").read_text()
+
+
+async def run_axe(page, label: str) -> set[tuple[str, str]]:
+    """Roda axe-core no <form> e devolve fingerprint (rule, target) das
+    violações. Restringe às regras WCAG 2.0/2.1 A e AA."""
+    await page.evaluate(AXE_SRC)
+    result = await page.evaluate(
+        """async () => {
+          const form = document.querySelector('form');
+          const res = await window.axe.run(form, {
+            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+          });
+          return res.violations.map(v => ({
+            id: v.id,
+            impact: v.impact,
+            nodes: v.nodes.map(n => ({ target: n.target.join(' '), failureSummary: n.failureSummary })),
+          }));
+        }"""
+    )
+    fp: set[tuple[str, str]] = set()
+    for v in result:
+        for n in v["nodes"]:
+            fp.add((v["id"], n["target"]))
+    print(f"  · axe [{label}]: {len(fp)} nó(s) com violação")
+    for v in result:
+        print(f"     - {v['id']} ({v['impact']}) x{len(v['nodes'])}")
+        for n in v["nodes"]:
+            print(f"        · {n['target']}")
+    return fp
 
 
 async def get_attr(locator, name: str) -> str | None:
@@ -61,6 +91,21 @@ async def main() -> int:
             "document.querySelectorAll('input').forEach(i => i.removeAttribute('required'));"
         )
 
+        # ---------------------------------------------------------------
+        # Baseline axe · form pristino, sem nenhum erro exibido.
+        # Todos os fluxos abaixo devem se manter ⊆ deste baseline
+        # (ou seja, FieldMessage não pode introduzir novas violações).
+        # ---------------------------------------------------------------
+        baseline_axe = await run_axe(page, "baseline")
+
+        def diff(new: set, label: str) -> None:
+            added = new - baseline_axe
+            if not added:
+                check(True, f"axe [{label}]: nenhuma violação nova vs baseline")
+                return
+            for rule, target in sorted(added):
+                check(False, f"axe [{label}]: nova violação {rule} em {target}")
+
         import re as _re
         submit = page.get_by_role(
             "button", name=_re.compile("Entrar no Sistema", _re.I)
@@ -91,6 +136,7 @@ async def main() -> int:
             "password aria-invalid=true após submit vazio",
         )
         await page.screenshot(path=str(SHOTS / "1_empty_submit.png"))
+        diff(await run_axe(page, "empty_submit"), "empty_submit")
 
         # ---------------------------------------------------------------
         # 2. E-mail inválido
@@ -112,6 +158,7 @@ async def main() -> int:
             "password perde aria-invalid após preencher com valor válido",
         )
         await page.screenshot(path=str(SHOTS / "2_invalid_email.png"))
+        diff(await run_axe(page, "invalid_email"), "invalid_email")
 
         # ---------------------------------------------------------------
         # 3. Senha curta
@@ -135,6 +182,7 @@ async def main() -> int:
             "email sem aria-invalid após corrigir",
         )
         await page.screenshot(path=str(SHOTS / "3_short_password.png"))
+        diff(await run_axe(page, "short_password"), "short_password")
 
         # ---------------------------------------------------------------
         # 4. Correção limpa alerts e aria-invalid
@@ -179,6 +227,7 @@ async def main() -> int:
             "password aria-invalid limpo",
         )
         await page.screenshot(path=str(SHOTS / "4_after_fix.png"))
+        diff(await run_axe(page, "after_fix"), "after_fix")
 
         await browser.close()
 
