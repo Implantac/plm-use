@@ -257,7 +257,7 @@ function Login() {
 
           <Button
  type="submit"
- disabled={loading}
+ aria-busy={loading}
  className="w-full text-[10px] tracking-[0.2em] bg-primary hover:bg-primary/90 text-white mt-4 border-none shadow-lg hover:shadow-primary/20"
  >
             {loading
