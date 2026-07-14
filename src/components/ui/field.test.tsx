@@ -103,7 +103,7 @@ describe("Field a11y auto-wiring", () => {
     );
     const trigger = screen.getByLabelText("tipo-trigger");
     const label = screen.getByText("Tipo");
-    const msg = screen.getByRole("alert");
+    const msg = messageEl("Escolha um tipo");
     expectWired(trigger, label, msg);
     expect(trigger.getAttribute("aria-invalid")).toBe("true");
   });
