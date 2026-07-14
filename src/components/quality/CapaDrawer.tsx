@@ -493,11 +493,12 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
  key={to}
  size="sm"
  variant={to === "Reprovada" ? "outline" : "default"}
- className={
- to === "Reprovada"
- ? "h-8 border-rose-400/40 text-rose-300 hover:bg-rose-500/10"
- : "h-8 btn-primary-premium"
- }
+  className={
+  to === "Reprovada"
+  ? "border-rose-400/40 text-rose-300 hover:bg-rose-500/10"
+  : ""
+  }
+
  onClick={() => doTransition(to)}
               >
                 <ArrowRight className="h-3 w-3 mr-1" /> {to}
