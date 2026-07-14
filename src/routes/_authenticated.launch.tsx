@@ -49,6 +49,10 @@ function LaunchPage() {
   const [form, setForm] = useState({
     codigo: "", colecao: "", janela_inicio: "", janela_fim: "", notas: "",
   });
+  const [waveErrors, setWaveErrors] = useState<{
+    codigo?: string; colecao?: string; janela_inicio?: string; janela_fim?: string;
+  }>({});
+  const [promoteError, setPromoteError] = useState<string | null>(null);
   const [selectedWave, setSelectedWave] = useState<string | null>(null);
   const [pickedDecisions, setPickedDecisions] = useState<string[]>([]);
 
