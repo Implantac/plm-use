@@ -69,10 +69,16 @@ function LaunchPage() {
   ], [waves, items, handoffs]);
 
   async function handleCreateWave() {
-    if (!form.codigo || !form.colecao || !form.janela_inicio || !form.janela_fim) {
-      statusToast.error("Preencha código, coleção e janela");
+    const errs: typeof waveErrors = {};
+    if (!form.codigo) errs.codigo = "Informe o código da wave.";
+    if (!form.colecao) errs.colecao = "Informe a coleção.";
+    if (!form.janela_inicio) errs.janela_inicio = "Defina o início da janela.";
+    if (!form.janela_fim) errs.janela_fim = "Defina o fim da janela.";
+    if (Object.keys(errs).length > 0) {
+      setWaveErrors(errs);
       return;
     }
+    setWaveErrors({});
     const res = await create({ data: form });
     if (!res.ok) return statusToast.error(res.reason ?? "Falha ao criar wave");
     statusToast.success(`Wave ${form.codigo} criada`);
@@ -81,9 +87,10 @@ function LaunchPage() {
 
   async function handlePromote() {
     if (!selectedWave || pickedDecisions.length === 0) {
-      statusToast.error("Escolha uma wave e ao menos 1 decisão");
+      setPromoteError("Selecione uma wave destino e ao menos uma decisão aprovada.");
       return;
     }
+    setPromoteError(null);
     const res = await promote({ data: { wave_id: selectedWave, decision_ids: pickedDecisions } });
     if (!res.ok) return statusToast.error(res.reason ?? "Falha ao promover");
     statusToast.success(`${res.created} item(ns) adicionado(s)`);
