@@ -48,8 +48,10 @@ async def main() -> int:
         # 1. Submit vazio
         # ---------------------------------------------------------------
         print("\n▶ 1. Submit vazio anuncia erros via role=alert")
-        await page.goto(f"{BASE}/login", wait_until="domcontentloaded")
-        await page.wait_for_selector('input#email')
+        await page.goto(f"{BASE}/login", wait_until="networkidle")
+        await page.wait_for_selector("input#email")
+        # dá tempo para o React hidratar os handlers de onSubmit
+        await page.wait_for_timeout(800)
 
         # Contorna a validação nativa do browser para chegar no validate()
         # do formulário — que é onde FieldMessage é acionado.
@@ -58,17 +60,10 @@ async def main() -> int:
         )
 
         import re as _re
-        submit = page.get_by_role("button", name=_re.compile("Entrar no Sistema", _re.I))
+        submit = page.get_by_role(
+            "button", name=_re.compile("Entrar no Sistema", _re.I)
+        )
         await submit.click()
-        await page.wait_for_timeout(500)
-        cnt = await page.locator('[role="alert"]').count()
-        print(f"  debug: role=alert count after click = {cnt}, disabled={await submit.get_attribute('disabled')}")
-        if cnt == 0:
-            # fallback: dispatch requestSubmit directly
-            await page.evaluate("document.querySelector('form').requestSubmit()")
-            await page.wait_for_timeout(400)
-            cnt = await page.locator('[role="alert"]').count()
-            print(f"  debug: after requestSubmit count = {cnt}")
 
         email = page.locator("input#email")
         password = page.locator("input#password")
