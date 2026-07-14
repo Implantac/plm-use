@@ -176,8 +176,12 @@ function Login() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Seu nome"
                 className="h-12 px-4 text-sm"
+                aria-invalid={!!errors.fullName}
                 required
               />
+              {errors.fullName && (
+                <FieldMessage variant="error" className="ml-4">{errors.fullName}</FieldMessage>
+              )}
             </div>
           )}
           <div className="space-y-3">
@@ -194,8 +198,12 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               className="h-12 px-4 text-sm"
+              aria-invalid={!!errors.email}
               required
             />
+            {errors.email && (
+              <FieldMessage variant="error" className="ml-4">{errors.email}</FieldMessage>
+            )}
           </div>
           <div className="space-y-3">
             <Label
@@ -211,9 +219,17 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               minLength={6}
               className="h-12 px-4"
+              aria-invalid={!!errors.password}
               required
             />
+            {errors.password && (
+              <FieldMessage variant="error" className="ml-4">{errors.password}</FieldMessage>
+            )}
           </div>
+
+          {errors.form && (
+            <FieldMessage variant="error" className="ml-4">{errors.form}</FieldMessage>
+          )}
 
           <Button
  type="submit"
