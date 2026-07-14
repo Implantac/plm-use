@@ -324,12 +324,21 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    font-feature-settings: "cv02", "ss01", "ss02", "kern";
+    font-optical-sizing: auto;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  /* Display serif dramático nos títulos heróicos, sans nos operacionais */
+  h1, h2 {
     font-family: var(--font-heading);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
+    font-weight: 400;   /* DM Serif Display já é bold por design */
+    line-height: 1.05;
+  }
+
+  h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -337,6 +346,7 @@
     font-family: var(--font-mono);
     font-variant-ligatures: none;
   }
+
 
   /* Tabular numerals in obvious numeric contexts */
   td.num, th.num, .tabular, [data-tabular] {
