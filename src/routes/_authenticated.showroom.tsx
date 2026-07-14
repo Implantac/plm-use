@@ -346,10 +346,10 @@ function FeedbackCard({
       </CardHeader>
       <CardContent>
         <div className="grid gap-3 md:grid-cols-6">
-          <div className="md:col-span-2">
-            <Label>Referência</Label>
+          <div className="md:col-span-2 space-y-1.5">
+            <Label required>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger><SelectValue placeholder="Escolha…" /></SelectTrigger>
+              <SelectTrigger aria-invalid={!refId}><SelectValue placeholder="Escolha…" /></SelectTrigger>
               <SelectContent>
                 {references.map((r) => (
                   <SelectItem key={r.id} value={r.id}>
@@ -358,8 +358,10 @@ function FeedbackCard({
                 ))}
               </SelectContent>
             </Select>
+            {!refId && (
+              <FieldMessage variant="helper">Selecione a referência avaliada.</FieldMessage>
+            )}
           </div>
-          <div>
             <Label>Dimensão</Label>
             <Select value={dim} onValueChange={(v) => setDim(v as ShowroomFeedbackDimension)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
