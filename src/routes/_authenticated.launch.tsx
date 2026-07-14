@@ -141,20 +141,24 @@ function LaunchPage() {
             <CardHeader><CardTitle className="text-sm">Nova wave</CardTitle></CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-5">
               <div>
-                <Label>Código</Label>
-                <Input value={form.codigo} onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))} placeholder="W-2026-01" />
+                <Label required>Código</Label>
+                <Input value={form.codigo} onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))} placeholder="W-2026-01" aria-invalid={!!waveErrors.codigo} />
+                {waveErrors.codigo && <FieldMessage variant="error">{waveErrors.codigo}</FieldMessage>}
               </div>
               <div>
-                <Label>Coleção</Label>
-                <Input value={form.colecao} onChange={(e) => setForm((f) => ({ ...f, colecao: e.target.value }))} placeholder="Verão 26" />
+                <Label required>Coleção</Label>
+                <Input value={form.colecao} onChange={(e) => setForm((f) => ({ ...f, colecao: e.target.value }))} placeholder="Verão 26" aria-invalid={!!waveErrors.colecao} />
+                {waveErrors.colecao && <FieldMessage variant="error">{waveErrors.colecao}</FieldMessage>}
               </div>
               <div>
-                <Label>Início janela</Label>
-                <Input type="date" value={form.janela_inicio} onChange={(e) => setForm((f) => ({ ...f, janela_inicio: e.target.value }))} />
+                <Label required>Início janela</Label>
+                <Input type="date" value={form.janela_inicio} onChange={(e) => setForm((f) => ({ ...f, janela_inicio: e.target.value }))} aria-invalid={!!waveErrors.janela_inicio} />
+                {waveErrors.janela_inicio && <FieldMessage variant="error">{waveErrors.janela_inicio}</FieldMessage>}
               </div>
               <div>
-                <Label>Fim janela</Label>
-                <Input type="date" value={form.janela_fim} onChange={(e) => setForm((f) => ({ ...f, janela_fim: e.target.value }))} />
+                <Label required>Fim janela</Label>
+                <Input type="date" value={form.janela_fim} onChange={(e) => setForm((f) => ({ ...f, janela_fim: e.target.value }))} aria-invalid={!!waveErrors.janela_fim} />
+                {waveErrors.janela_fim && <FieldMessage variant="error">{waveErrors.janela_fim}</FieldMessage>}
               </div>
               <div className="flex items-end">
                 <Button onClick={handleCreateWave} className="w-full">
