@@ -231,8 +231,8 @@ function PlannerPage() {
                       </Badge>
                     )}
                     <Button
-                      size="sm"
-                      onClick={() => gerarLote(s)}
+ size="sm"
+ onClick={() => gerarLote(s)}
                       disabled={jaCriado}
                       className={
                         jaCriado

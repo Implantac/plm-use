@@ -360,9 +360,9 @@ function PrintDetail({ print }: { print: PrintAsset }) {
             <NewVersionDialog printId={print.id} />
             {print.status !== "aprovada" && (
               <Button
-                size="sm"
-                className="gap-2"
-                onClick={() => {
+ size="sm"
+ className="gap-2"
+ onClick={() => {
                   upsertPrint({ ...print, status: "aprovada" });
                   toast.success(`${print.code} aprovada`);
                 }}
@@ -371,10 +371,10 @@ function PrintDetail({ print }: { print: PrintAsset }) {
               </Button>
             )}
             <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => toast.info("Análise IA em breve")}
+ variant="outline"
+ size="sm"
+ className="gap-2"
+ onClick={() => toast.info("Análise IA em breve")}
             >
               <Sparkles className="h-3.5 w-3.5" /> Análise IA
             </Button>
@@ -507,7 +507,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
             Cancelar
           </Button>
           <Button
-            onClick={() => {
+ onClick={() => {
               if (!label.trim()) {
                 toast.error("Dê um rótulo à versão (ex.: v2)");
                 return;

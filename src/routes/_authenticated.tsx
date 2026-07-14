@@ -386,12 +386,12 @@ function AuthenticatedLayout() {
             <ActivityFeedButton />
             <AlertsBell />
             <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
-              className="w-9 h-9"
-            >
+ variant="ghost"
+ size="icon"
+ onClick={toggleTheme}
+ aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
+ className="w-9"
+ >
               {theme === "dark" ? (
                 <Sun className="w-4 h-4" />
               ) : (
@@ -399,9 +399,9 @@ function AuthenticatedLayout() {
               )}
             </Button>
             <Button
-              size="sm"
-              className="gap-2 h-9 uppercase-label btn-primary-premium border-0 text-primary-foreground hover:brightness-110 active:scale-[0.98] transition-all"
-            >
+ size="sm"
+ className="gap-2-label text-primary-foreground active:scale-[0.98]"
+ >
               <Sparkles className="w-4 h-4" />
               USE AI Copilot
             </Button>

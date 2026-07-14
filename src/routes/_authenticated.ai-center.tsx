@@ -190,9 +190,9 @@ function AICenterPage() {
                   </div>
 
                   <Button
-                    onClick={handleGenerateCollection}
-                    className="w-full rounded-none h-14 text-[10px] font-bold uppercase tracking-[0.3em] btn-primary-premium group gap-3 shadow-[0_0_30px_rgba(var(--primary),0.2)]"
-                  >
+ onClick={handleGenerateCollection}
+ className="w-full text-[10px] tracking-[0.3em] group gap-3 shadow-[0_0_30px_rgba(var(--primary),0.2)]"
+ >
                     <Wand2 className="w-4 h-4 animate-sparkle" />
                     Gerar Coleção e SKUs
                   </Button>
@@ -232,7 +232,7 @@ function AICenterPage() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full rounded-md h-12 text-[10px] font-bold uppercase tracking-[0.2em] btn-primary-premium gap-3">
+                  <Button className="w-full text-[10px] tracking-[0.2em] gap-3">
                     <FileText className="w-4 h-4" />
                     Gerar ficha técnica v1
                   </Button>
@@ -279,7 +279,7 @@ function AICenterPage() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full rounded-md h-12 text-[10px] font-bold uppercase tracking-[0.2em] btn-primary-premium gap-3">
+                  <Button className="w-full text-[10px] tracking-[0.2em] gap-3">
                     <TrendingUp className="w-4 h-4" />
                     Recalcular demanda
                   </Button>
@@ -355,8 +355,8 @@ function AICenterPage() {
                       className="pt-8"
                     >
                       <Button
-                        onClick={() => setIsDialogOpen(false)}
-                        className="w-full h-14 rounded-none text-[10px] font-bold uppercase tracking-[0.3em] btn-primary-premium"
+ onClick={() => setIsDialogOpen(false)}
+                        className="w-full text-[10px] tracking-[0.3em]"
                       >
                         Explorar Coleção Gerada
                       </Button>
@@ -373,10 +373,10 @@ function AICenterPage() {
             <div className="flex flex-wrap gap-3">
               {suggestedPrompts.map((p, i) => (
                 <Button
-                  key={i}
-                  variant="ghost"
-                  className="h-10 px-6 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-white hover:border-primary/40 transition-all"
-                >
+ key={i}
+ variant="ghost"
+ className="bg-white/5 border text-[9px] tracking-[0.2em] text-muted-foreground hover:text-white hover:border-primary/40"
+ >
                   {p}
                 </Button>
               ))}
@@ -386,7 +386,7 @@ function AICenterPage() {
                 className="h-16 pl-8 pr-16 rounded-3xl bg-white/10 border-white/5 focus:border-primary/40 focus:ring-0 text-white placeholder:text-muted-foreground/50"
                 placeholder="Pergunte qualquer coisa sobre sua operação..."
               />
-              <Button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-2xl bg-primary text-white p-0 hover:scale-105 active:scale-95 transition-all">
+              <Button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 bg-primary text-white p-0 hover:scale-105 active:scale-95">
                 <Send className="w-4 h-4" />
               </Button>
             </div>

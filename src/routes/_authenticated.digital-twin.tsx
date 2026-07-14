@@ -36,7 +36,7 @@ function DigitalTwinPage() {
           </p>
         </motion.div>
         <div className="flex gap-4">
-          <Button className="rounded-none px-8 h-12 text-[10px] font-bold uppercase tracking-[0.2em] btn-primary-premium gap-2">
+          <Button className="text-[10px] tracking-[0.2em] gap-2">
             <Globe className="w-4 h-4" /> Live Sync
           </Button>
         </div>
@@ -118,10 +118,10 @@ function DigitalTwinPage() {
               { label: "Cost", active: false },
             ].map((btn, i) => (
               <Button
-                key={i}
-                variant="ghost"
-                className={`h-10 w-28 rounded-md text-[9px] font-bold uppercase tracking-widest border border-white/5 ${btn.active ? "bg-primary text-white" : "bg-white/5 text-muted-foreground"}`}
-              >
+ key={i}
+ variant="ghost"
+ className={`w-28 text-[9px] border ${btn.active ? "bg-primary text-white" : "bg-white/5 text-muted-foreground"}`}
+ >
                 {btn.label}
               </Button>
             ))}
@@ -162,7 +162,7 @@ function DigitalTwinPage() {
               se aumentarmos a produção da blusa amalfi em 20%, o tempo de entrega das calças urban
               será impactado em +5 dias úteis.
             </p>
-            <Button className="w-full h-11 rounded-md text-[9px] font-bold uppercase tracking-[0.16em] btn-primary-premium">
+            <Button className="w-full text-[9px] tracking-[0.16em]">
               Testar Cenário
             </Button>
           </Card>

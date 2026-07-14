@@ -230,10 +230,10 @@ function MeasurementsPage() {
                     className="gap-1.5"
                   />
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-rose-300 hover:text-rose-200"
-                    onClick={() => {
+ variant="ghost"
+ size="sm"
+ className="text-rose-300 hover:text-rose-200"
+ onClick={() => {
                       deleteChart(selected.id);
                       toast.error("Tabela removida");
                       setSelectedId(null);
@@ -286,10 +286,10 @@ function MeasurementsPage() {
 
               <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
                 <Button
-                  size="sm"
-                  variant="outline"
-                  className="rounded-full border-white/10 text-[10px] uppercase tracking-widest"
-                  onClick={() => {
+ size="sm"
+ variant="outline"
+ className="text-[10px]"
+ onClick={() => {
                     upsertChart({
                       ...selected,
                       status: "aprovada",
@@ -301,10 +301,10 @@ function MeasurementsPage() {
                   <CheckCircle2 className="w-3 h-3 mr-1" /> Aprovar
                 </Button>
                 <Button
-                  size="sm"
-                  variant="outline"
-                  className="rounded-full border-white/10 text-[10px] uppercase tracking-widest"
-                  onClick={() => {
+ size="sm"
+ variant="outline"
+ className="text-[10px]"
+ onClick={() => {
                     upsertChart({
                       ...selected,
                       status: "arquivada",
@@ -316,10 +316,10 @@ function MeasurementsPage() {
                   <Archive className="w-3 h-3 mr-1" /> Arquivar
                 </Button>
                 <Button
-                  size="sm"
-                  variant="outline"
-                  className="rounded-full border-white/10 text-[10px] uppercase tracking-widest"
-                  onClick={() => {
+ size="sm"
+ variant="outline"
+ className="text-[10px]"
+ onClick={() => {
                     const dup: MeasurementChart = {
                       ...selected,
                       id: `tm-${Date.now()}`,
@@ -429,7 +429,7 @@ function MeasurementsPage() {
             <Button variant="ghost" onClick={() => setCreating(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleCreate} className="btn-primary-premium">
+            <Button onClick={handleCreate} >
               Criar rascunho
             </Button>
           </DialogFooter>

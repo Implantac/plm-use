@@ -113,10 +113,10 @@ export function AlertsBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          className="w-10 h-10 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 relative group"
-        >
+ variant="ghost"
+ size="icon"
+ className="w-10 bg-white/5 border hover:bg-white/10 relative group"
+ >
           <Bell className="w-4 h-4 text-muted-foreground group-hover:text-white" />
           {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-bold flex items-center justify-center bg-rose-500 text-white ring-2 ring-background">

@@ -138,11 +138,11 @@ function AdminUsersPage() {
                         const has = r.roles.includes(role);
                         return (
                           <Button
-                            key={role}
-                            size="sm"
-                            variant={has ? "default" : "outline"}
-                            className="h-7 text-[9px] uppercase tracking-wider"
-                            onClick={() => toggleRole(r.id, role, has)}
+ key={role}
+ size="sm"
+ variant={has ? "default" : "outline"}
+ className="h-7 text-[9px] tracking-wider"
+ onClick={() => toggleRole(r.id, role, has)}
                           >
                             {has ? "−" : "+"} {role}
                           </Button>

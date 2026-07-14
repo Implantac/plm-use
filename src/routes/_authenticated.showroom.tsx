@@ -145,10 +145,10 @@ function ShowroomPage() {
                       <div className="flex flex-wrap gap-2">
                         {next.map((to) => (
                           <Button
-                            key={to}
-                            size="sm"
-                            variant="secondary"
-                            onClick={async () => {
+ key={to}
+ size="sm"
+ variant="secondary"
+ onClick={async () => {
                               const ok = await transitionSample(s.id, to);
                               if (ok) statusToast.success(`→ ${SAMPLE_STATUS_LABEL[to]}`);
                               else statusToast.error("Transição bloqueada");
@@ -162,9 +162,9 @@ function ShowroomPage() {
                         ))}
                         {ref ? (
                           <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => openEntity({ type: "reference", id: ref.id })}
+ size="sm"
+ variant="ghost"
+ onClick={() => openEntity({ type: "reference", id: ref.id })}
                           >
                             Abrir referência
                           </Button>
@@ -295,9 +295,9 @@ function RequestSampleCard({
         </div>
         <div className="mt-3 flex justify-end">
           <Button
-            size="sm"
-            disabled={!refId}
-            onClick={async () => {
+ size="sm"
+ disabled={!refId}
+ onClick={async () => {
               await onSubmit({
                 reference_id: refId,
                 grade: grade || undefined,
@@ -407,9 +407,9 @@ function FeedbackCard({
         </div>
         <div className="mt-3 flex justify-end">
           <Button
-            size="sm"
-            disabled={!refId}
-            onClick={async () => {
+ size="sm"
+ disabled={!refId}
+ onClick={async () => {
               await onSubmit({
                 reference_id: refId,
                 dimensao: dim,
@@ -524,25 +524,25 @@ function DecisionCard({
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
-            size="sm"
-            disabled={!refId || justificativa.trim().length < 3}
-            onClick={async () => { await onDecide(refId, "go", justificativa); setJustificativa(""); }}
+ size="sm"
+ disabled={!refId || justificativa.trim().length < 3}
+ onClick={async () => { await onDecide(refId, "go", justificativa); setJustificativa(""); }}
           >
             <ThumbsUp className="h-3.5 w-3.5 mr-1" /> Go
           </Button>
           <Button
-            size="sm"
-            variant="secondary"
-            disabled={!refId || justificativa.trim().length < 3}
-            onClick={async () => { await onDecide(refId, "revisar", justificativa); setJustificativa(""); }}
+ size="sm"
+ variant="secondary"
+ disabled={!refId || justificativa.trim().length < 3}
+ onClick={async () => { await onDecide(refId, "revisar", justificativa); setJustificativa(""); }}
           >
             Revisar
           </Button>
           <Button
-            size="sm"
-            variant="destructive"
-            disabled={!refId || justificativa.trim().length < 3}
-            onClick={async () => { await onDecide(refId, "no_go", justificativa); setJustificativa(""); }}
+ size="sm"
+ variant="destructive"
+ disabled={!refId || justificativa.trim().length < 3}
+ onClick={async () => { await onDecide(refId, "no_go", justificativa); setJustificativa(""); }}
           >
             <ThumbsDown className="h-3.5 w-3.5 mr-1" /> No-Go
           </Button>

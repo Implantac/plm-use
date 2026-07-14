@@ -191,8 +191,8 @@ function InfluencersPage() {
                   Histórico de envios ({sel.envios.length})
                 </p>
                 <Button
-                  size="sm"
-                  onClick={() => setEnvioOpen(true)}
+ size="sm"
+ onClick={() => setEnvioOpen(true)}
                   className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />

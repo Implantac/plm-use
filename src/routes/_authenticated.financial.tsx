@@ -113,15 +113,15 @@ function FinancialPage() {
     >
       <div className="flex justify-end gap-4 mb-8">
         <Button
-          variant="outline"
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
-        >
+ variant="outline"
+ className="text-[10px] tracking-[0.16em] gap-2"
+ >
           <FileText className="w-4 h-4" /> DRE Gerencial
         </Button>
         <Button
-          variant="outline"
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
-        >
+ variant="outline"
+ className="text-[10px] tracking-[0.16em] gap-2"
+ >
           <Wallet className="w-4 h-4" /> Conciliação
         </Button>
       </div>
@@ -321,16 +321,16 @@ function FinancialPage() {
           </div>
           <DialogFooter className="gap-4">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
-              className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
+              className="text-[10px]"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-xl h-12 px-8 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Efetivar Lançamento
             </Button>
           </DialogFooter>

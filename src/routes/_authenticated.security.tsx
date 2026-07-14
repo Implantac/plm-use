@@ -83,7 +83,7 @@ function SecurityPage() {
               <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
                 RBAC avançado
               </CardTitle>
-              <Button className="rounded-md h-9 text-[10px] font-bold uppercase tracking-[0.14em] btn-primary-premium">
+              <Button className="text-[10px] tracking-[0.14em]">
                 Novo perfil
               </Button>
             </CardHeader>
@@ -184,7 +184,7 @@ function SecurityPage() {
                 Snapshots incrementais a cada 15 minutos, retenção de 90 dias e restauração por
                 tenant.
               </p>
-              <Button className="mt-5 w-full rounded-md h-10 text-[10px] font-bold uppercase tracking-[0.14em] btn-primary-premium">
+              <Button className="mt-5 w-full text-[10px] tracking-[0.14em]">
                 Testar restauração
               </Button>
             </CardContent>

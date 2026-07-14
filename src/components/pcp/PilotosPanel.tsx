@@ -239,10 +239,10 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
           </div>
           {repilotError ? (
             <Button
-              size="sm"
-              variant="outline"
-              className="gap-1 h-8 shrink-0 border-status-rejected/50 text-status-rejected hover:bg-status-rejected/10"
-              onClick={() => void retryConfirmation()}
+ size="sm"
+ variant="outline"
+ className="gap-1 shrink-0 border-status-rejected/50 text-status-rejected hover:bg-status-rejected/10"
+ onClick={() => void retryConfirmation()}
             >
               <RotateCcw className="h-3 w-3" />
               Tentar novamente
@@ -264,18 +264,18 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             onCreated={handleCreated}
             trigger={
               <Button
-                size="sm"
-                variant="default"
-                className="gap-1 h-8 shrink-0"
-                disabled={!canRepilot || repiloting.active}
-                title={
-                  repiloting.active
-                    ? "Aguardando confirmação do servidor…"
-                    : canRepilot
-                      ? `Reexecutar como rodada ${current.rodada + 1}`
-                      : "Avalie a rodada atual para reexecutar"
-                }
-              >
+ size="sm"
+ variant="default"
+ className="gap-1 shrink-0"
+ disabled={!canRepilot || repiloting.active}
+ title={
+ repiloting.active
+ ? "Aguardando confirmação do servidor…"
+ : canRepilot
+ ? `Reexecutar como rodada ${current.rodada + 1}`
+ : "Avalie a rodada atual para reexecutar"
+ }
+ >
                 {repiloting.active ? (
                   <Loader2 className="h-3 w-3 animate-spin" />
                 ) : (

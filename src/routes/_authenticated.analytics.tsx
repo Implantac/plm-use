@@ -201,9 +201,9 @@ function AnalyticsPage() {
     >
       <div className="flex justify-end gap-4 mb-8">
         <Button
-          variant="outline"
-          className="rounded-none px-8 h-12 text-[10px] font-bold uppercase tracking-[0.2em] btn-outline-premium border-white/5 gap-2"
-        >
+ variant="outline"
+ className="text-[10px] tracking-[0.2em] gap-2"
+ >
           <Download className="w-4 h-4" /> Exportar Relatórios
         </Button>
       </div>
@@ -559,16 +559,16 @@ function AnalyticsPage() {
           </div>
           <DialogFooter className="gap-4">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
-              className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
+              className="text-[10px]"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-xl h-12 px-8 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar Indicador
             </Button>
           </DialogFooter>

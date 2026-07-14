@@ -172,9 +172,9 @@ function CommercialPage() {
               <Users className="w-5 h-5 text-primary" /> Principais Clientes B2B
             </h3>
             <Button
-              variant="ghost"
-              className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary"
-            >
+ variant="ghost"
+ className="text-[9px] tracking-[0.2em] text-primary"
+ >
               Ver Todos
             </Button>
           </div>
@@ -274,7 +274,7 @@ function CommercialPage() {
             A maior devolução vem de modelagem em pantalonas tamanho M. Recomendação: revisar tabela
             de medidas e pausar reposição em 2 marketplaces.
           </p>
-          <Button className="mt-5 w-full rounded-md h-10 text-[10px] font-bold uppercase tracking-[0.14em] btn-primary-premium">
+          <Button className="mt-5 w-full text-[10px] tracking-[0.14em]">
             Gerar plano de ação
           </Button>
         </Card>
@@ -327,16 +327,16 @@ function CommercialPage() {
           </div>
           <DialogFooter className="gap-4">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
-              className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
+              className="text-[10px]"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-xl h-12 px-8 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar na Carteira
             </Button>
           </DialogFooter>

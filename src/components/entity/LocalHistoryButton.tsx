@@ -30,11 +30,11 @@ export function LocalHistoryButton({
   return (
     <>
       <Button
-        type="button"
-        variant={variant}
-        size={size}
-        className={className}
-        onClick={(e) => {
+ type="button"
+ variant={variant}
+ size={size}
+ className={className}
+ onClick={(e) => {
           e.stopPropagation();
           setOpen(true);
         }}

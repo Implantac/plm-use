@@ -189,10 +189,10 @@ function Login() {
           </div>
 
           <Button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-md h-12 text-[10px] font-bold uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-white mt-4 border-none transition-all shadow-lg hover:shadow-primary/20"
-          >
+ type="submit"
+ disabled={loading}
+ className="w-full text-[10px] tracking-[0.2em] bg-primary hover:bg-primary/90 text-white mt-4 border-none shadow-lg hover:shadow-primary/20"
+ >
             {loading
               ? "Processando..."
               : mode === "signin"
@@ -200,11 +200,11 @@ function Login() {
                 : "Criar Conta"}
           </Button>
           <Button
-            type="button"
-            variant="outline"
-            onClick={handleGoogle}
-            className="w-full rounded-md h-12 text-[10px] font-bold uppercase tracking-[0.16em] border-white/10 bg-white/5"
-          >
+ type="button"
+ variant="outline"
+ onClick={handleGoogle}
+ className="w-full text-[10px] tracking-[0.16em] bg-white/5"
+ >
             Continuar com Google
           </Button>
         </form>

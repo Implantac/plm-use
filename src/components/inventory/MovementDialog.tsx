@@ -200,17 +200,17 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
         </div>
         <DialogFooter className="gap-3">
           <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-            className="rounded-md h-10 text-[10px] font-bold uppercase tracking-widest"
+ variant="ghost"
+ onClick={() => onOpenChange(false)}
+            className="text-[10px]"
           >
             Cancelar
           </Button>
           <Button
-            onClick={handleSubmit}
-            disabled={busy}
-            className="rounded-md h-10 px-6 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-          >
+ onClick={handleSubmit}
+ disabled={busy}
+ className="text-[10px]"
+ >
             Registrar
           </Button>
         </DialogFooter>

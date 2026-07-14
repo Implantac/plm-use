@@ -132,7 +132,7 @@ export function NovoPilotoDialog({
     >
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm" variant="outline" className="gap-1 h-8">
+          <Button size="sm" variant="outline" className="gap-1">
             <Plus className="h-3 w-3" />
             Novo piloto
           </Button>
@@ -217,9 +217,9 @@ export function NovoPilotoDialog({
 
           <DialogFooter>
             <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setOpen(false)}
+ type="button"
+ variant="ghost"
+ onClick={() => setOpen(false)}
               disabled={pending}
             >
               Cancelar

@@ -144,9 +144,9 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       </div>
 
       <Button
-        onClick={handleSubmit}
-        className="w-full h-10 btn-primary-premium rounded-md text-[10px] font-bold uppercase tracking-widest"
-      >
+ onClick={handleSubmit}
+ className="w-full text-[10px]"
+ >
         Registrar Ocorrência
       </Button>
     </div>

@@ -134,7 +134,7 @@ function SuppliersTab() {
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" className="btn-primary-premium gap-1">
+            <Button size="sm" className="gap-1">
               <PackagePlus className="w-3.5 h-3.5" /> Novo fornecedor
             </Button>
           </DialogTrigger>
@@ -253,7 +253,7 @@ function OrdersTab() {
       <div className="flex justify-end">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" className="btn-primary-premium gap-1" disabled={!suppliers?.length}>
+            <Button size="sm" className="gap-1" disabled={!suppliers?.length}>
               <Send className="w-3.5 h-3.5" /> Nova OP
             </Button>
           </DialogTrigger>
@@ -332,24 +332,24 @@ function OrdersTab() {
                     {o.status === "enviada" && (
                       <>
                         <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
-                          onClick={() => transition.mutate({ id: o.id, status: "aceita" })}>
+ onClick={() => transition.mutate({ id: o.id, status: "aceita" })}>
                           <CheckCircle2 className="w-3 h-3" /> Aceitar
                         </Button>
                         <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
-                          onClick={() => transition.mutate({ id: o.id, status: "cancelada" })}>
+ onClick={() => transition.mutate({ id: o.id, status: "cancelada" })}>
                           <XCircle className="w-3 h-3" /> Cancelar
                         </Button>
                       </>
                     )}
                     {o.status === "aceita" && (
                       <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
-                        onClick={() => transition.mutate({ id: o.id, status: "em_producao" })}>
+ onClick={() => transition.mutate({ id: o.id, status: "em_producao" })}>
                         <Clock className="w-3 h-3" /> Iniciar produção
                       </Button>
                     )}
                     {o.status === "em_producao" && (
                       <Button size="sm" variant="outline" className="h-7 text-[10px]"
-                        onClick={() => transition.mutate({ id: o.id, status: "concluida" })}>
+ onClick={() => transition.mutate({ id: o.id, status: "concluida" })}>
                         Concluir
                       </Button>
                     )}
@@ -414,11 +414,11 @@ function SamplesTab() {
             {s.decision === "pendente" && (
               <div className="flex gap-1 mt-1">
                 <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
-                  onClick={() => decide.mutate({ id: s.id, decision: "aprovada" })}>
+ onClick={() => decide.mutate({ id: s.id, decision: "aprovada" })}>
                   <CheckCircle2 className="w-3 h-3" /> Aprovar
                 </Button>
                 <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
-                  onClick={() => decide.mutate({ id: s.id, decision: "reprovada" })}>
+ onClick={() => decide.mutate({ id: s.id, decision: "reprovada" })}>
                   <XCircle className="w-3 h-3" /> Reprovar
                 </Button>
               </div>

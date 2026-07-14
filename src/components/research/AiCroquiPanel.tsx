@@ -77,7 +77,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
           className="h-9 bg-white/5 border-white/10 text-[11px]"
           disabled={busy}
         />
-        <Button size="sm" className="h-9 btn-primary-premium gap-1" onClick={generate} disabled={busy}>
+        <Button size="sm" className="gap-1" onClick={generate} disabled={busy}>
           {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
           Gerar
         </Button>
@@ -96,13 +96,13 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
           </div>
           {isFinal && (
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="h-8 text-[10px] gap-1" asChild>
+              <Button size="sm" variant="outline" className="text-[10px] gap-1" asChild>
                 <a href={src} download={`ai-${preset}-${Date.now()}.png`}>
                   <Download className="w-3 h-3" /> Baixar
                 </a>
               </Button>
               {onSave && (
-                <Button size="sm" className="h-8 text-[10px]" onClick={() => onSave(src)}>
+                <Button size="sm" className="text-[10px]" onClick={() => onSave(src)}>
                   Salvar no moodboard
                 </Button>
               )}

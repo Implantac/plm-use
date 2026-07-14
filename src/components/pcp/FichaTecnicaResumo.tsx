@@ -48,11 +48,11 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
           </p>
         </div>
         <Button
-          asChild
-          size="sm"
-          variant="outline"
-          className="border-white/15 text-[10px] uppercase tracking-[0.15em] gap-1"
-        >
+ asChild
+ size="sm"
+ variant="outline"
+ className="text-[10px] tracking-[0.15em] gap-1"
+ >
           <Link to="/tech-sheet" search={{ ref: referencia.ref }}>
             Abrir ficha completa <ExternalLink className="h-3 w-3" />
           </Link>

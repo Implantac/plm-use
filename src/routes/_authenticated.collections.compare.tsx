@@ -200,12 +200,12 @@ function CompareCollectionsPage() {
         </div>
 
         <Button
-          type="button"
-          onClick={swap}
-          variant="ghost"
-          className="h-11 rounded-md border border-white/10 px-4"
-          aria-label="Inverter coleções"
-        >
+ type="button"
+ onClick={swap}
+ variant="ghost"
+ className="border"
+ aria-label="Inverter coleções"
+ >
           <ArrowLeftRight className="h-4 w-4" />
         </Button>
 
@@ -228,10 +228,10 @@ function CompareCollectionsPage() {
         </div>
 
         <Button
-          asChild
-          variant="ghost"
-          className="h-11 rounded-md border border-white/10 px-4 text-[10px] font-bold uppercase tracking-[0.14em]"
-        >
+ asChild
+ variant="ghost"
+ className="border text-[10px] tracking-[0.14em]"
+ >
           <Link to="/collections">Voltar</Link>
         </Button>
       </div>

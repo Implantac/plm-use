@@ -112,9 +112,9 @@ function Section({
               </div>
               {!incoming && (
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onUnlink(r.id)}
+ variant="ghost"
+ size="sm"
+ onClick={() => onUnlink(r.id)}
                   className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-300"
                   title="Desvincular"
                 >

@@ -118,9 +118,9 @@ function BomTable({
               <td className="px-4 py-2"><Input value={form.custo} onChange={(e) => setForm({ ...form, custo: e.target.value })} placeholder="0,00" className="h-9 bg-white/5 border-white/10 text-[11px]" /></td>
               <td className="px-4 py-2 text-right">
                 <Button
-                  size="sm"
-                  className="h-9 btn-primary-premium gap-1"
-                  onClick={() => {
+ size="sm"
+ className="gap-1"
+ onClick={() => {
                     if (!form.material) return;
                     onAdd({ tipo: form.tipo as BomItem["tipo"], material: form.material, fornecedor: form.fornecedor || "—", consumo: form.consumo || "0", unidade: form.unidade || "un", custo: Number(form.custo.replace(",", ".")) || 0 });
                     setForm({ ...form, material: "", fornecedor: "", consumo: "", custo: "" });
@@ -179,8 +179,8 @@ function BopTable({
         <Input value={form.tempo} onChange={(e) => setForm({ ...form, tempo: e.target.value })} placeholder="Min" className="h-9 w-20 bg-white/5 border-white/10 text-[11px]" />
         <Input value={form.custo} onChange={(e) => setForm({ ...form, custo: e.target.value })} placeholder="Custo R$" className="h-9 w-24 bg-white/5 border-white/10 text-[11px]" />
         <Button
-          size="sm" className="h-9 btn-primary-premium gap-1"
-          onClick={() => {
+ size="sm" className="gap-1"
+ onClick={() => {
             if (!form.etapa) return;
             onAdd({ seq: sorted.length + 1, etapa: form.etapa, setor: form.setor, tempoMin: Number(form.tempo) || 0, custo: Number(form.custo.replace(",", ".")) || 0 });
             setForm({ etapa: "", setor: form.setor, tempo: "", custo: "" });

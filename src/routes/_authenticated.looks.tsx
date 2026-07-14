@@ -317,10 +317,10 @@ function LookDetail({ look }: { look: Look }) {
           </div>
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 gap-1"
-              onClick={() => {
+ variant="outline"
+ size="sm"
+ className="flex-1 gap-1"
+ onClick={() => {
                 duplicateLook(look.id);
                 toast.success("Look duplicado como rascunho.");
               }}
@@ -328,10 +328,10 @@ function LookDetail({ look }: { look: Look }) {
               <Copy className="w-3.5 h-3.5" /> Duplicar
             </Button>
             <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 gap-1 text-status-blocked hover:text-status-blocked"
-              onClick={() => {
+ variant="outline"
+ size="sm"
+ className="flex-1 gap-1 text-status-blocked hover:text-status-blocked"
+ onClick={() => {
                 if (confirm(`Excluir "${look.name}"?`)) {
                   removeLook(look.id);
                   toast.success("Look excluído.");
@@ -397,7 +397,7 @@ function AddItemForm({ lookId }: { lookId: string }) {
           onChange={(e) => setColor(e.target.value)}
           className="h-8 w-10 p-0.5 shrink-0"
         />
-        <Button type="submit" size="sm" className="h-8 flex-1 text-xs">Adicionar</Button>
+        <Button type="submit" size="sm" className="flex-1 text-xs">Adicionar</Button>
       </div>
     </form>
   );
