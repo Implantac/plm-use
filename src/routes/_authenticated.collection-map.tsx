@@ -537,16 +537,20 @@ function SaveFilterDialog({
           <DialogTitle>Salvar filtro atual</DialogTitle>
         </DialogHeader>
         <div className="space-y-2">
-          <Label className="text-[10px] uppercase tracking-widest">Nome</Label>
+          <Label className="text-[10px] uppercase tracking-widest" required>Nome</Label>
           <Input
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (e.target.value.trim()) setNameError(null);
+            }}
             placeholder="Ex.: Tops terrosos em produção"
+            aria-invalid={!!nameError}
           />
-          <p className="text-[10px] text-muted-foreground">
-            {current.categories.length} categorias · {current.colors.length} cores ·{" "}
-            {current.statuses.length} status
-          </p>
+          <FieldMessage variant={nameError ? "error" : "helper"}>
+            {nameError ??
+              `${current.categories.length} categorias · ${current.colors.length} cores · ${current.statuses.length} status`}
+          </FieldMessage>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
