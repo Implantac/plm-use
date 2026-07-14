@@ -52,23 +52,39 @@ export function EntityTimeline({
   onNewCountChange?: (count: number) => void;
 }) {
   const { items, loading } = useEntityTimeline(entityType, entityId);
-  const baselineRef = useRef<number | null>(null);
+  const baselineIdsRef = useRef<Set<string> | null>(null);
+
+  // Dedupe by id defensively — subscription reconnects/replays could deliver
+  // the same event multiple times before the hook's own de-dup catches up.
+  const uniqueItems = useMemo(() => {
+    const seen = new Set<string>();
+    const out: typeof items = [];
+    for (const it of items) {
+      if (seen.has(it.id)) continue;
+      seen.add(it.id);
+      out.push(it);
+    }
+    return out;
+  }, [items]);
 
   useEffect(() => {
     if (loading) return;
-    if (baselineRef.current === null) {
-      baselineRef.current = items.length;
+    const ids = new Set(uniqueItems.map((i) => i.id));
+    if (baselineIdsRef.current === null) {
+      baselineIdsRef.current = ids;
       onNewCountChange?.(0);
       return;
     }
     if (active) {
-      baselineRef.current = items.length;
+      baselineIdsRef.current = ids;
       onNewCountChange?.(0);
     } else {
-      const diff = Math.max(0, items.length - baselineRef.current);
+      const baseline = baselineIdsRef.current;
+      let diff = 0;
+      for (const id of ids) if (!baseline.has(id)) diff++;
       onNewCountChange?.(diff);
     }
-  }, [items.length, active, loading, onNewCountChange]);
+  }, [uniqueItems, active, loading, onNewCountChange]);
 
   if (loading) {
     return (
