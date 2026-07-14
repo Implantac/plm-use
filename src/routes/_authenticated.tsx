@@ -373,7 +373,12 @@ function AuthenticatedLayout() {
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
-        <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-background/80 backdrop-blur-xl z-20">
+        {/* Ambient forge glow — halo ember discreto que amarra o tema */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-90 bg-forge"
+        />
+        <header className="relative h-14 border-b border-border flex items-center justify-between px-6 bg-background/70 backdrop-blur-xl z-20">
           <AppBreadcrumb />
 
           <div className="flex items-center gap-2">
@@ -393,19 +398,23 @@ function AuthenticatedLayout() {
                 <Moon className="w-4 h-4" />
               )}
             </Button>
-            <Button size="sm" className="gap-2 h-9 uppercase-label">
+            <Button
+              size="sm"
+              className="gap-2 h-9 uppercase-label btn-primary-premium border-0 text-primary-foreground hover:brightness-110 active:scale-[0.98] transition-all"
+            >
               <Sparkles className="w-4 h-4" />
               USE AI Copilot
             </Button>
           </div>
         </header>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="relative flex-1">
           <div className="p-6">
             <Outlet />
           </div>
         </ScrollArea>
       </main>
+
     </div>
   );
 }
