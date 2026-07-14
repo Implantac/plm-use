@@ -22,6 +22,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
   const [compareB, setCompareB] = useState<string | null>(data.versoes[1]?.id ?? null);
   const [resumo, setResumo] = useState("");
   const [alteracoes, setAlteracoes] = useState("");
+  const [resumoError, setResumoError] = useState<string | null>(null);
 
   const va = data.versoes.find((v) => v.id === compareA);
   const vb = data.versoes.find((v) => v.id === compareB);
