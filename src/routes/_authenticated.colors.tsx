@@ -31,6 +31,7 @@ import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import { toast } from "sonner";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   listPalettes,
   subscribe,
