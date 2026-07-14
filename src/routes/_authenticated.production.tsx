@@ -129,7 +129,13 @@ function ProductionPage() {
       ]}
     >
       <div className="space-y-4">
-        <PCPFlowDiagram />
+        <div ref={flowRef}>
+          <PCPFlowDiagram
+            activeId={search.pcpStep ?? null}
+            refCode={search.pcpRef}
+            onSelect={setStep}
+          />
+        </div>
 
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
