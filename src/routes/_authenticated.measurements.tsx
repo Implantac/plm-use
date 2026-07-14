@@ -47,6 +47,7 @@ function MeasurementsPage() {
     category: "Top" as MeasurementChart["category"],
     segment: "Feminino" as MeasurementChart["segment"],
   });
+  const [chartErrors, setChartErrors] = useState<{ code?: string; name?: string }>({});
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
