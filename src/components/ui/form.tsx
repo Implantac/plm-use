@@ -12,6 +12,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { FieldMessage } from "@/components/ui/field-message";
 
 const Form = FormProvider;
 
