@@ -20,6 +20,7 @@ import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { CapacityPanel } from "@/components/pcp/CapacityPanel";
 import { LotesGantt } from "@/components/pcp/LotesGantt";
 import { LoteTimeline } from "@/components/pcp/LoteTimeline";
+import { PCPFlowDiagram } from "@/components/pcp/PCPFlowDiagram";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
