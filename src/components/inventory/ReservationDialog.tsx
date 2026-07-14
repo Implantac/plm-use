@@ -135,40 +135,43 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 py-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Insumo</Label>
+            <Label required>Insumo</Label>
             <Select value={itemId} onValueChange={setItemId}>
-              <SelectTrigger className=""><SelectValue placeholder="Selecione o insumo" /></SelectTrigger>
+              <SelectTrigger aria-invalid={!!errors.itemId}><SelectValue placeholder="Selecione o insumo" /></SelectTrigger>
               <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
                 {items.map((it) => (
                   <SelectItem key={it.id} value={it.id}>{it.code} — {it.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {errors.itemId && <FieldMessage variant="error">{errors.itemId}</FieldMessage>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Armazém</Label>
+              <Label required>Armazém</Label>
               <Select value={warehouseId} onValueChange={setWarehouseId}>
-                <SelectTrigger className=""><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectTrigger aria-invalid={!!errors.warehouseId}><SelectValue placeholder="Selecione" /></SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
                   {warehouses.map((w) => (
                     <SelectItem key={w.id} value={w.id}>{w.code}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {errors.warehouseId && <FieldMessage variant="error">{errors.warehouseId}</FieldMessage>}
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Quantidade</Label>
-              <Input value={qty} onChange={(e) => setQty(e.target.value)} type="number" min="0" step="0.01" className="" />
+              <Label required>Quantidade</Label>
+              <Input value={qty} onChange={(e) => setQty(e.target.value)} type="number" min="0" step="0.01" aria-invalid={!!errors.qty} />
+              {errors.qty && <FieldMessage variant="error">{errors.qty}</FieldMessage>}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Tipo</Label>
+              <Label>Tipo</Label>
               <Select value={refType} onValueChange={(v) => setRefType(v as RefType)}>
-                <SelectTrigger className=""><SelectValue /></SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
                   <SelectItem value="pcp_lot">Lote PCP</SelectItem>
                   <SelectItem value="piloto">Piloto</SelectItem>
@@ -177,12 +180,12 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Referência</Label>
+              <Label required>Referência</Label>
               {refType === "op" ? (
-                <Input value={refId} onChange={(e) => setRefId(e.target.value)} placeholder="UUID da OP" className="" />
+                <Input value={refId} onChange={(e) => setRefId(e.target.value)} placeholder="UUID da OP" aria-invalid={!!errors.refId} />
               ) : (
                 <Select value={refId} onValueChange={setRefId}>
-                  <SelectTrigger className=""><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectTrigger aria-invalid={!!errors.refId}><SelectValue placeholder="Selecione" /></SelectTrigger>
                   <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
                     {refs.map((r) => (
                       <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
@@ -193,6 +196,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
                   </SelectContent>
                 </Select>
               )}
+              {errors.refId && <FieldMessage variant="error">{errors.refId}</FieldMessage>}
             </div>
           </div>
 
