@@ -75,6 +75,7 @@ export function NovoPilotoDialog({
   );
   const [supplierId, setSupplierId] = useState("");
   const [observacoes, setObservacoes] = useState(defaultObservacoes);
+  const [errors, setErrors] = useState<{ supplier_id?: string; observacoes?: string }>({});
 
   // Ao reabrir, respeita novos defaults (ex.: trigger de repilotagem).
   useEffect(() => {
@@ -82,6 +83,7 @@ export function NovoPilotoDialog({
       setTipo(defaultTipo);
       setStatus(defaultStatus);
       setObservacoes(defaultObservacoes);
+      setErrors({});
     }
   }, [open, defaultTipo, defaultStatus, defaultObservacoes]);
 
@@ -90,6 +92,7 @@ export function NovoPilotoDialog({
     setStatus(defaultStatus);
     setSupplierId("");
     setObservacoes(defaultObservacoes);
+    setErrors({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,9 +104,15 @@ export function NovoPilotoDialog({
       observacoes: observacoes || undefined,
     });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      const next: typeof errors = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0] as keyof typeof errors;
+        if (key && !next[key]) next[key] = issue.message;
+      }
+      setErrors(next);
       return;
     }
+    setErrors({});
     setPending(true);
     const p = await create({
       reference_id: referenceId,
