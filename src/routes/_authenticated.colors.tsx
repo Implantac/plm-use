@@ -439,11 +439,12 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             Cancelar
           </Button>
           <Button
- onClick={() => {
+  onClick={() => {
               if (!name.trim()) {
-                toast.error("Dê um nome à cor");
+                setNameError("Dê um nome à cor.");
                 return;
               }
+              setNameError(null);
               addColorToPalette(paletteId, {
                 id: `c-${Date.now()}`,
                 name: name.trim(),
