@@ -76,7 +76,7 @@ function ProductionPage() {
 
   const setStep = (step: PCPStepId | null) => {
     void navigate({
-      search: (prev) => ({ ...prev, pcpStep: step ?? undefined }),
+      search: (prev: PCPSearch) => ({ ...prev, pcpStep: step ?? undefined }),
       replace: true,
     });
   };
