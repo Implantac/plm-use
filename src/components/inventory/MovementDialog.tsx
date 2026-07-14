@@ -49,6 +49,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
   const [lotCode, setLotCode] = useState("");
   const [justification, setJustification] = useState("");
   const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<{ itemId?: string; warehouseId?: string; qty?: string; justification?: string }>({});
 
   useEffect(() => {
     if (!open) return;
