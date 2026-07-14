@@ -310,21 +310,24 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             </p>
           </div>
           <Button
-            asChild
             size="sm"
             variant="outline"
+            onClick={() => setPcpDialogOpen(true)}
             className="gap-1.5 shrink-0 border-emerald-400/50 text-emerald-200 hover:bg-emerald-400/10"
           >
-            <Link
-              to="/production"
-              search={{ pcpStep: "handoff", pcpRef: referenciaRef }}
-            >
-              <Workflow className="h-3 w-3" />
-              Iniciar fluxo PCP
-            </Link>
+            <Workflow className="h-3 w-3" />
+            Iniciar fluxo PCP
           </Button>
         </div>
       )}
+
+      <IniciarPCPDialog
+        open={pcpDialogOpen}
+        onOpenChange={setPcpDialogOpen}
+        referenciaRef={referenciaRef}
+        referenciaNome={referenciaNome}
+      />
+
 
 
 
