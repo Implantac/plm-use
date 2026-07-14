@@ -141,55 +141,51 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
 
       {linha === "2a" && (
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Tipo de defeito
-          </Label>
+          <Label required>Tipo de defeito</Label>
           <Input
             value={defeito}
             onChange={(e) => setDefeito(e.target.value)}
             placeholder="Ex: silk torto, peça manchada, costura aberta"
-            className=""
+            aria-invalid={!!errors.defeito}
           />
+          {errors.defeito && <FieldMessage variant="error">{errors.defeito}</FieldMessage>}
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Quantidade
-          </Label>
+          <Label>Quantidade</Label>
           <Input
             type="number"
             value={qtd}
             onChange={(e) => setQtd(Number(e.target.value))}
             disabled={linha === "1a" && tipo === "integral"}
-            className=""
           />
         </div>
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Responsável
-          </Label>
+          <Label required>Responsável</Label>
           <Input
             value={resp}
             onChange={(e) => setResp(e.target.value)}
             placeholder="Nome do operador"
-            className=""
+            aria-invalid={!!errors.responsavel}
           />
+          {errors.responsavel && (
+            <FieldMessage variant="error">{errors.responsavel}</FieldMessage>
+          )}
         </div>
       </div>
 
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Observação
-        </Label>
+        <Label>Observação</Label>
         <Textarea
           value={obs}
           onChange={(e) => setObs(e.target.value)}
           rows={2}
-          className=""
         />
       </div>
+
+      {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
       <Button
  onClick={handleSubmit}
