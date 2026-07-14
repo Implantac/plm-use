@@ -57,7 +57,8 @@ async def main() -> int:
             "document.querySelectorAll('input').forEach(i => i.removeAttribute('required'))"
         )
 
-        submit = page.get_by_role("button", name=/Entrar no Sistema/i)
+        import re as _re
+        submit = page.get_by_role("button", name=_re.compile("Entrar no Sistema", _re.I))
         await submit.click()
 
         email = page.locator("input#email")
