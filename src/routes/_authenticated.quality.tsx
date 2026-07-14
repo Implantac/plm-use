@@ -114,8 +114,14 @@ function QualityPage() {
     : null;
 
   async function submit() {
-    if (!form.defeito || !form.responsavel)
-      return statusToast.error("Preencha defeito e responsável");
+    const errs: typeof capaErrors = {};
+    if (!form.defeito) errs.defeito = "Descreva o defeito.";
+    if (!form.responsavel) errs.responsavel = "Informe o responsável.";
+    if (Object.keys(errs).length > 0) {
+      setCapaErrors(errs);
+      return;
+    }
+    setCapaErrors({});
     const c = await create({
       defeito: form.defeito,
       setor: form.setor,
@@ -129,7 +135,7 @@ function QualityPage() {
       setForm({ ...form, defeito: "", responsavel: "", prazo: "" });
       setSelected(c);
     } else {
-      statusToast.error("Falha ao criar CAPA");
+      setCapaErrors({ form: "Falha ao criar CAPA. Tente novamente." });
     }
   }
 
