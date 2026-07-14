@@ -87,7 +87,7 @@ async def main() -> int:
         print("\n▶ 1. Abrir /login em modo 'Entrar'")
         await page.goto(f"{BASE}/login", wait_until="domcontentloaded")
         await expect(page.locator("#email")).to_be_visible(timeout=8000)
-        await page.wait_for_timeout(600)
+        await page.wait_for_timeout(1500)
         await page.evaluate(
             "() => { const f = document.querySelector('form'); if (f) f.noValidate = true; }"
         )
