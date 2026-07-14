@@ -227,6 +227,7 @@ async def main() -> int:
             "password aria-invalid limpo",
         )
         await page.screenshot(path=str(SHOTS / "4_after_fix.png"))
+        diff(await run_axe(page, "after_fix"), "after_fix")
 
         await browser.close()
 
