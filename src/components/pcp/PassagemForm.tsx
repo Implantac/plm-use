@@ -93,7 +93,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
                   if (v === "integral") setQtd(pendente);
                 }}
               >
-                <SelectTrigger className="mt-1 h-10 bg-white/5 border-white/10">
+                <SelectTrigger className="">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -110,7 +110,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
                 value={destino}
                 onValueChange={(v) => setDestino(v as SetorPCP)}
               >
-                <SelectTrigger className="mt-1 h-10 bg-white/5 border-white/10">
+                <SelectTrigger className="">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
@@ -137,7 +137,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
             value={defeito}
             onChange={(e) => setDefeito(e.target.value)}
             placeholder="Ex: silk torto, peça manchada, costura aberta"
-            className="mt-1 h-10 bg-white/5 border-white/10"
+            className=""
           />
         </div>
       )}
@@ -152,7 +152,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
             value={qtd}
             onChange={(e) => setQtd(Number(e.target.value))}
             disabled={linha === "1a" && tipo === "integral"}
-            className="mt-1 h-10 bg-white/5 border-white/10"
+            className=""
           />
         </div>
         <div>
@@ -163,7 +163,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
             value={resp}
             onChange={(e) => setResp(e.target.value)}
             placeholder="Nome do operador"
-            className="mt-1 h-10 bg-white/5 border-white/10"
+            className=""
           />
         </div>
       </div>
@@ -176,7 +176,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
           value={obs}
           onChange={(e) => setObs(e.target.value)}
           rows={2}
-          className="mt-1 bg-white/5 border-white/10"
+          className=""
         />
       </div>
 

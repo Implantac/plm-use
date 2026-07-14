@@ -186,7 +186,7 @@ function CompareCollectionsPage() {
             Coleção A
           </label>
           <Select value={String(leftId)} onValueChange={(v) => setLeftId(Number(v))}>
-            <SelectTrigger className="bg-white/5 border-white/10 rounded-md h-11">
+            <SelectTrigger className="">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -214,7 +214,7 @@ function CompareCollectionsPage() {
             Coleção B
           </label>
           <Select value={String(rightId)} onValueChange={(v) => setRightId(Number(v))}>
-            <SelectTrigger className="bg-white/5 border-white/10 rounded-md h-11">
+            <SelectTrigger className="">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

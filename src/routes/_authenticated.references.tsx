@@ -90,11 +90,11 @@ function ReferencesPage() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Buscar…"
-                className="pl-9 bg-white/[0.03] border-white/10 text-[12px] h-9"
+                className="pl-9 bg-white/[0.03] text-[12px]"
               />
             </div>
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ReferenceStatus | "TODOS")}>
-              <SelectTrigger className="w-[180px] bg-white/[0.03] border-white/10 text-[12px] h-9">
+              <SelectTrigger className="w-[180px] bg-white/[0.03] text-[12px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

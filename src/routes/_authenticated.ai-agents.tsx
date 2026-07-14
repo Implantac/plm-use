@@ -262,7 +262,7 @@ function AIAgentsPage() {
                 }}
                 placeholder={`Pergunte para ${A.label}...`}
                 rows={2}
-                className="resize-none bg-white/[0.04] border-white/10 text-white"
+                className="resize-none bg-white/[0.04] text-white"
                 disabled={loading}
               />
               <Button

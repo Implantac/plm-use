@@ -307,7 +307,7 @@ function LookDetail({ look }: { look: Look }) {
                 toast.success(`Look marcado como ${STATUS_LABEL[v as LookStatus]}`);
               }}
             >
-              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {STATUSES.map((s) => (
                   <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
@@ -373,16 +373,16 @@ function AddItemForm({ lookId }: { lookId: string }) {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="REF-…"
-        className="h-8 text-xs col-span-1"
+        className="text-xs col-span-1"
       />
       <Input
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Nome da peça"
-        className="h-8 text-xs col-span-1"
+        className="text-xs col-span-1"
       />
       <Select value={role} onValueChange={(v) => setRole(v as LookItem["role"])}>
-        <SelectTrigger className="h-8 text-xs col-span-1"><SelectValue /></SelectTrigger>
+        <SelectTrigger className="text-xs col-span-1"><SelectValue /></SelectTrigger>
         <SelectContent>
           <SelectItem value="peça-chave">Peça-chave</SelectItem>
           <SelectItem value="complemento">Complemento</SelectItem>
@@ -395,7 +395,7 @@ function AddItemForm({ lookId }: { lookId: string }) {
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          className="h-8 w-10 p-0.5 shrink-0"
+          className="w-10 p-0.5 shrink-0"
         />
         <Button type="submit" size="sm" className="flex-1 text-xs">Adicionar</Button>
       </div>
@@ -467,7 +467,7 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
               type="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              className="h-9 p-1"
+              className="p-1"
             />
           </div>
           <div>

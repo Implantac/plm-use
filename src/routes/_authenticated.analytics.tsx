@@ -528,7 +528,7 @@ function AnalyticsPage() {
               <Input
                 value={formData.label}
                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: ROI Campanha Digital"
               />
             </div>
@@ -540,7 +540,7 @@ function AnalyticsPage() {
                 <Input
                   value={formData.value}
                   onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 5.2x"
                 />
               </div>
@@ -551,7 +551,7 @@ function AnalyticsPage() {
                 <Input
                   value={formData.sub}
                   onChange={(e) => setFormData({ ...formData, sub: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: target 6.0x"
                 />
               </div>

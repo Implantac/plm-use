@@ -51,7 +51,7 @@ export function ModuleLayout({
             <div className="relative group w-full sm:w-72">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
               <Input
-                className="h-11 pl-10 rounded-md bg-white/5 border-white/10 focus:border-primary/40 focus:ring-0 text-[10px] font-bold uppercase tracking-widest placeholder:text-muted-foreground/40"
+                className="pl-10 focus:border-primary/40 focus:ring-0 text-[10px] font-bold uppercase tracking-widest/40"
                 placeholder={searchPlaceholder}
               />
             </div>

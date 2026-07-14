@@ -172,7 +172,7 @@ function QualityPage() {
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder="Buscar defeito, ref, lote..."
-                className="h-8 pl-7 w-64 bg-white/5 border-white/10 text-[11px]"
+                className="pl-7 w-64 text-[11px]"
               />
             </div>
             <select
@@ -196,7 +196,7 @@ function QualityPage() {
             value={form.defeito}
             onChange={(e) => setForm({ ...form, defeito: e.target.value })}
             placeholder="Defeito / problema"
-            className="h-9 flex-1 min-w-[220px] bg-white/5 border-white/10 text-[11px]"
+            className="flex-1 min-w-[220px] text-[11px]"
           />
           <select
             value={form.setor}
@@ -244,13 +244,13 @@ function QualityPage() {
             value={form.responsavel}
             onChange={(e) => setForm({ ...form, responsavel: e.target.value })}
             placeholder="Responsável"
-            className="h-9 w-36 bg-white/5 border-white/10 text-[11px]"
+            className="w-36 text-[11px]"
           />
           <Input
             type="date"
             value={form.prazo}
             onChange={(e) => setForm({ ...form, prazo: e.target.value })}
-            className="h-9 w-36 bg-white/5 border-white/10 text-[11px]"
+            className="w-36 text-[11px]"
           />
           <Button size="sm" className="gap-1" onClick={submit}>
             <Plus className="w-3.5 h-3.5" /> Abrir CAPA

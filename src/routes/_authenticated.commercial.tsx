@@ -295,7 +295,7 @@ function CommercialPage() {
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Luxury Boutique LTDA"
               />
             </div>
@@ -308,7 +308,7 @@ function CommercialPage() {
                   type="number"
                   value={formData.orders}
                   onChange={(e) => setFormData({ ...formData, orders: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 10"
                 />
               </div>
@@ -319,7 +319,7 @@ function CommercialPage() {
                 <Input
                   value={formData.total}
                   onChange={(e) => setFormData({ ...formData, total: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: R$ 50k"
                 />
               </div>

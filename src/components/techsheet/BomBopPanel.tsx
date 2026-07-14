@@ -109,13 +109,13 @@ function BomTable({
                   ))}
                 </select>
               </td>
-              <td className="px-4 py-2"><Input value={form.material} onChange={(e) => setForm({ ...form, material: e.target.value })} placeholder="Material" className="h-9 bg-white/5 border-white/10 text-[11px]" /></td>
-              <td className="px-4 py-2"><Input value={form.fornecedor} onChange={(e) => setForm({ ...form, fornecedor: e.target.value })} placeholder="Fornecedor" className="h-9 bg-white/5 border-white/10 text-[11px]" /></td>
+              <td className="px-4 py-2"><Input value={form.material} onChange={(e) => setForm({ ...form, material: e.target.value })} placeholder="Material" className="text-[11px]" /></td>
+              <td className="px-4 py-2"><Input value={form.fornecedor} onChange={(e) => setForm({ ...form, fornecedor: e.target.value })} placeholder="Fornecedor" className="text-[11px]" /></td>
               <td className="px-4 py-2 flex gap-1">
-                <Input value={form.consumo} onChange={(e) => setForm({ ...form, consumo: e.target.value })} placeholder="0" className="h-9 w-16 bg-white/5 border-white/10 text-[11px]" />
-                <Input value={form.unidade} onChange={(e) => setForm({ ...form, unidade: e.target.value })} placeholder="m" className="h-9 w-12 bg-white/5 border-white/10 text-[11px]" />
+                <Input value={form.consumo} onChange={(e) => setForm({ ...form, consumo: e.target.value })} placeholder="0" className="w-16 text-[11px]" />
+                <Input value={form.unidade} onChange={(e) => setForm({ ...form, unidade: e.target.value })} placeholder="m" className="w-12 text-[11px]" />
               </td>
-              <td className="px-4 py-2"><Input value={form.custo} onChange={(e) => setForm({ ...form, custo: e.target.value })} placeholder="0,00" className="h-9 bg-white/5 border-white/10 text-[11px]" /></td>
+              <td className="px-4 py-2"><Input value={form.custo} onChange={(e) => setForm({ ...form, custo: e.target.value })} placeholder="0,00" className="text-[11px]" /></td>
               <td className="px-4 py-2 text-right">
                 <Button
  size="sm"
@@ -172,12 +172,12 @@ function BopTable({
         ))}
       </div>
       <div className="flex flex-wrap gap-2 items-center p-3 rounded-md bg-white/[0.02] border border-white/5">
-        <Input value={form.etapa} onChange={(e) => setForm({ ...form, etapa: e.target.value })} placeholder="Etapa" className="h-9 flex-1 min-w-[160px] bg-white/5 border-white/10 text-[11px]" />
+        <Input value={form.etapa} onChange={(e) => setForm({ ...form, etapa: e.target.value })} placeholder="Etapa" className="flex-1 min-w-[160px] text-[11px]" />
         <select value={form.setor} onChange={(e) => setForm({ ...form, setor: e.target.value })} className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2">
           {["Compras", "CAD", "Corte", "Silk", "Bordado", "Costura", "Lavanderia", "Acabamento", "Expedição"].map((s) => <option key={s}>{s}</option>)}
         </select>
-        <Input value={form.tempo} onChange={(e) => setForm({ ...form, tempo: e.target.value })} placeholder="Min" className="h-9 w-20 bg-white/5 border-white/10 text-[11px]" />
-        <Input value={form.custo} onChange={(e) => setForm({ ...form, custo: e.target.value })} placeholder="Custo R$" className="h-9 w-24 bg-white/5 border-white/10 text-[11px]" />
+        <Input value={form.tempo} onChange={(e) => setForm({ ...form, tempo: e.target.value })} placeholder="Min" className="w-20 text-[11px]" />
+        <Input value={form.custo} onChange={(e) => setForm({ ...form, custo: e.target.value })} placeholder="Custo R$" className="w-24 text-[11px]" />
         <Button
  size="sm" className="gap-1"
  onClick={() => {

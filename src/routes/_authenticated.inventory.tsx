@@ -471,7 +471,7 @@ function InventoryPage() {
                   onChange={(event) =>
                     setFormData({ ...formData, [key]: event.target.value })
                   }
-                  className="bg-white/5 border-white/10 rounded-md h-11 focus:border-primary/40 focus:ring-0"
+                  className="focus:border-primary/40 focus:ring-0"
                   placeholder={placeholder}
                 />
               </div>

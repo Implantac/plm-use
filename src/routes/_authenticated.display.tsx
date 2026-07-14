@@ -388,7 +388,7 @@ function RefPalette({ boardId }: { boardId: string }) {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar código ou nome"
-            className="h-8 text-xs"
+            className="text-xs"
           />
         </div>
         <div className="grid grid-cols-2 gap-2 max-h-[520px] overflow-y-auto pr-1">

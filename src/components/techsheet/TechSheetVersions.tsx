@@ -69,8 +69,8 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
 
       <div className="border-t border-white/5 pt-5 space-y-3">
         <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">Criar nova versão</p>
-        <Input value={resumo} onChange={(e) => setResumo(e.target.value)} placeholder="Resumo da alteração" className="bg-white/5 border-white/10 text-[11px]" />
-        <Input value={alteracoes} onChange={(e) => setAlteracoes(e.target.value)} placeholder="Alterações (separe por ; )" className="bg-white/5 border-white/10 text-[11px]" />
+        <Input value={resumo} onChange={(e) => setResumo(e.target.value)} placeholder="Resumo da alteração" className="text-[11px]" />
+        <Input value={alteracoes} onChange={(e) => setAlteracoes(e.target.value)} placeholder="Alterações (separe por ; )" className="text-[11px]" />
         <Button
  size="sm" className="gap-2"
  onClick={() => {

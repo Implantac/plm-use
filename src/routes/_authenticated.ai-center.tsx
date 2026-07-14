@@ -383,7 +383,7 @@ function AICenterPage() {
             </div>
             <div className="relative group">
               <Input
-                className="h-16 pl-8 pr-16 rounded-3xl bg-white/10 border-white/5 focus:border-primary/40 focus:ring-0 text-white placeholder:text-muted-foreground/50"
+                className="h-16 pl-8 pr-16 rounded-3xl bg-white/10 focus:border-primary/40 focus:ring-0 text-white/50"
                 placeholder="Pergunte qualquer coisa sobre sua operação..."
               />
               <Button className="absolute right-3 top-1/2 -translate-y-1/2 w-10 bg-primary text-white p-0 hover:scale-105 active:scale-95">

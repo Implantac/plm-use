@@ -416,7 +416,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                       value={editDraft}
                       onChange={(e) => setEditDraft(e.target.value)}
                       rows={2}
-                      className="resize-none bg-white/5 border-white/10 text-[12px]"
+                      className="resize-none text-[12px]"
                     />
                     <div className="flex gap-1.5">
                       <Button size="sm" className="h-6 text-[10px]" onClick={() => void saveEdit(c.id)}>
@@ -468,7 +468,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Escreva um comentário · use @nome para mencionar"
           rows={2}
-          className="resize-none bg-white/5 border-white/10 text-[12px]"
+          className="resize-none text-[12px]"
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
               e.preventDefault();

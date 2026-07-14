@@ -322,7 +322,7 @@ function ResearchHub() {
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Texturas Urbanas"
               />
             </div>
@@ -333,7 +333,7 @@ function ResearchHub() {
               <Input
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: linho, verão, chic"
               />
             </div>

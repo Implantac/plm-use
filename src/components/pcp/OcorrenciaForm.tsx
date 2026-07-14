@@ -87,7 +87,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
             Tipo
           </Label>
           <Select value={tipo} onValueChange={(v) => setTipo(v as TipoOcorrencia)}>
-            <SelectTrigger className="mt-1 h-10 bg-white/5 border-white/10">
+            <SelectTrigger className="">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -105,7 +105,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
             type="number"
             value={qtd}
             onChange={(e) => setQtd(Number(e.target.value))}
-            className="mt-1 h-10 bg-white/5 border-white/10"
+            className=""
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
           value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
           placeholder="Ex: Aproveitamento de retalho, defeito de malha..."
-          className="mt-1 h-10 bg-white/5 border-white/10"
+          className=""
         />
       </div>
       <div>
@@ -128,7 +128,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
         <Input
           value={resp}
           onChange={(e) => setResp(e.target.value)}
-          className="mt-1 h-10 bg-white/5 border-white/10"
+          className=""
         />
       </div>
       <div>
@@ -139,7 +139,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
           value={obs}
           onChange={(e) => setObs(e.target.value)}
           rows={2}
-          className="mt-1 bg-white/5 border-white/10"
+          className=""
         />
       </div>
 

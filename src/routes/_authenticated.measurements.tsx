@@ -365,7 +365,7 @@ function MeasurementsPage() {
                   value={newChart.code}
                   onChange={(e) => setNewChart({ ...newChart, code: e.target.value })}
                   placeholder="TM-BLU-03"
-                  className="bg-white/5 border-white/10 rounded-lg h-10"
+                  className="rounded-lg"
                 />
               </div>
               <div className="space-y-1.5">
@@ -376,7 +376,7 @@ function MeasurementsPage() {
                   value={newChart.name}
                   onChange={(e) => setNewChart({ ...newChart, name: e.target.value })}
                   placeholder="Camisas Oversized"
-                  className="bg-white/5 border-white/10 rounded-lg h-10"
+                  className="rounded-lg"
                 />
               </div>
             </div>

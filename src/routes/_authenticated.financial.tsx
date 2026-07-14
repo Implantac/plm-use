@@ -274,7 +274,7 @@ function FinancialPage() {
               <Input
                 value={formData.label}
                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Contas a Pagar Fornecedor"
               />
             </div>
@@ -291,7 +291,7 @@ function FinancialPage() {
                       source: e.target.value as any,
                     })
                   }
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="marketing"
                 />
               </div>
@@ -302,7 +302,7 @@ function FinancialPage() {
                 <Input
                   value={formData.val}
                   onChange={(e) => setFormData({ ...formData, val: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: R$ 15.000"
                 />
               </div>
@@ -313,7 +313,7 @@ function FinancialPage() {
                 <Input
                   value={formData.due}
                   onChange={(e) => setFormData({ ...formData, due: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 10 dias"
                 />
               </div>

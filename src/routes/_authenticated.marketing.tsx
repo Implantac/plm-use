@@ -339,7 +339,7 @@ function MarketingPage() {
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Lançamento Outono Chic"
               />
             </div>
@@ -350,7 +350,7 @@ function MarketingPage() {
               <Input
                 value={formData.channel}
                 onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Meta Ads, Influencers..."
               />
             </div>
