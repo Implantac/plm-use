@@ -557,11 +557,12 @@ function SaveFilterDialog({
             Cancelar
           </Button>
           <Button
- onClick={() => {
+  onClick={() => {
               if (!name.trim()) {
-                toast.error("Dê um nome ao filtro");
+                setNameError("Dê um nome ao filtro para salvá-lo.");
                 return;
               }
+              setNameError(null);
               saveFilter({
                 id: `f-${Date.now()}`,
                 name: name.trim(),
