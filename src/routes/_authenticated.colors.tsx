@@ -357,12 +357,14 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
   const [hex, setHex] = useState("#7FA88B");
   const [pantone, setPantone] = useState("");
   const [supplier, setSupplier] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
 
   const reset = () => {
     setName("");
     setHex("#7FA88B");
     setPantone("");
     setSupplier("");
+    setNameError(null);
   };
 
   return (
