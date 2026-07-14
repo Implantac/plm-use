@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FieldMessage } from "@/components/ui/field-message";
 import { Sparkles, Loader2, Wand2, Download } from "lucide-react";
 import { streamImage } from "@/lib/streamImage";
 import { toast } from "sonner";
