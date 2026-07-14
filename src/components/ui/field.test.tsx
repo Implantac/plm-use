@@ -73,7 +73,7 @@ describe("Field a11y auto-wiring", () => {
     expectWired(
       screen.getByPlaceholderText("Obs"),
       screen.getByText("Observações"),
-      screen.getByText("Opcional"),
+      messageEl("Opcional"),
     );
   });
 
