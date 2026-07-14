@@ -198,7 +198,7 @@ function ShowroomPage() {
             onDecide={async (reference_id, decision, justificativa) => {
               const ok = await recordDecision(reference_id, decision, justificativa);
               if (ok) statusToast.success(`Decisão registrada: ${DECISION_LABEL[decision]}`);
-              else statusToast.error("Falha ao registrar decisão (justificativa obrigatória)");
+              else throw new Error("Falha ao registrar decisão (justificativa obrigatória).");
             }}
           />
         </TabsContent>
