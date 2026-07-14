@@ -198,7 +198,7 @@ function AuthenticatedLayout() {
     setOpenSections((prev) => {
       const next = { ...prev, [id]: !prev[id] };
       if (typeof window !== "undefined") {
-        window.localStorage.setItem("use-moda-sidebar-sections", JSON.stringify(next));
+        window.localStorage.setItem("use-moda-sidebar-sections-v2", JSON.stringify(next));
       }
       return next;
     });
