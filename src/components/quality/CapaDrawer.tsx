@@ -172,10 +172,10 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             </div>
             <div className="flex items-center gap-1">
               <Button
-                variant="ghost"
-                size="icon"
-                title="Abrir na visão universal"
-                onClick={() =>
+ variant="ghost"
+ size="icon"
+ title="Abrir na visão universal"
+ onClick={() =>
                   openEntity({
                     type: "capa",
                     id: local.id,
@@ -188,11 +188,11 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 <Network className="h-4 w-4" />
               </Button>
               <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="text-muted-foreground"
-              >
+ variant="ghost"
+ size="icon"
+ onClick={onClose}
+ className="text-muted-foreground"
+ >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -271,10 +271,10 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                     </span>
                     <span className="flex-1">{p}</span>
                     <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => {
+ variant="ghost"
+ size="icon"
+ className="h-6 w-6"
+ onClick={() => {
                         removePorque(i);
                         persistPatch(
                           {
@@ -313,9 +313,9 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                       }}
                     />
                     <Button
-                      size="sm"
-                      className="h-8 btn-primary-premium"
-                      onClick={() => {
+ size="sm"
+ 
+ onClick={() => {
                         if (!porqueDraft.trim()) return;
                         const arr = [
                           ...local.cinco_porques,
@@ -395,10 +395,10 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   {e.label}
                 </a>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  onClick={() => {
+ variant="ghost"
+ size="icon"
+ className="h-6 w-6"
+ onClick={() => {
                     const arr = local.evidencias.filter((_, x) => x !== i);
                     removeEvidencia(i);
                     persistPatch({ evidencias: arr }, "Evidência removida");
@@ -423,9 +423,9 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   className="h-8 bg-white/5 border-white/10 text-[11px] flex-1"
                 />
                 <Button
-                  size="sm"
-                  className="h-8 btn-primary-premium"
-                  onClick={() => {
+ size="sm"
+ 
+ onClick={() => {
                     if (!evUrl.trim()) return;
                     const arr = [
                       ...local.evidencias,
@@ -492,15 +492,15 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
           <div className="flex flex-wrap gap-2">
             {nextStatuses(local.status).map((to) => (
               <Button
-                key={to}
-                size="sm"
-                variant={to === "Reprovada" ? "outline" : "default"}
-                className={
-                  to === "Reprovada"
-                    ? "h-8 border-rose-400/40 text-rose-300 hover:bg-rose-500/10"
-                    : "h-8 btn-primary-premium"
-                }
-                onClick={() => doTransition(to)}
+ key={to}
+ size="sm"
+ variant={to === "Reprovada" ? "outline" : "default"}
+ className={
+ to === "Reprovada"
+ ? "h-8 border-rose-400/40 text-rose-300 hover:bg-rose-500/10"
+ : "h-8 btn-primary-premium"
+ }
+ onClick={() => doTransition(to)}
               >
                 <ArrowRight className="h-3 w-3 mr-1" /> {to}
               </Button>
@@ -512,10 +512,10 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             )}
             <div className="flex-1" />
             <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 text-rose-400 hover:bg-rose-500/10"
-              onClick={async () => {
+ size="sm"
+ variant="ghost"
+ className="text-rose-400 hover:bg-rose-500/10"
+ onClick={async () => {
                 await remove(local.id);
                 statusToast.success("CAPA removida");
                 onClose();

@@ -295,16 +295,16 @@ function SuppliersPage() {
 
             <div className="flex gap-4">
               <Button
-                variant="ghost"
-                className="flex-1 h-11 rounded-md border border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
-              >
+ variant="ghost"
+ className="flex-1 border bg-white/5 hover:bg-white/10 text-[10px] tracking-[0.14em] text-white"
+ >
                 Portal do fornecedor
               </Button>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-11 w-11 rounded-md border border-white/5 bg-white/5 hover:bg-primary/10 hover:text-primary transition-all"
-                onClick={() =>
+ variant="ghost"
+ size="icon"
+ className="w-11 border bg-white/5 hover:bg-primary/10 hover:text-primary"
+ onClick={() =>
                   openEntity({
                     type: "supplier",
                     id: String(sup.id),
@@ -317,10 +317,10 @@ function SuppliersPage() {
                 <GitBranch className="w-5 h-5" />
               </Button>
               <Button
-                variant="ghost"
-                size="icon"
-                className="h-11 w-11 rounded-md border border-white/5 bg-white/5 hover:bg-primary/10 hover:text-primary transition-all"
-              >
+ variant="ghost"
+ size="icon"
+ className="w-11 border bg-white/5 hover:bg-primary/10 hover:text-primary"
+ >
                 <ChevronRight className="w-5 h-5" />
               </Button>
             </div>
@@ -374,16 +374,16 @@ function SuppliersPage() {
           </div>
           <DialogFooter className="gap-4">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
               className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-xl h-12 px-8 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar Fornecedor
             </Button>
           </DialogFooter>

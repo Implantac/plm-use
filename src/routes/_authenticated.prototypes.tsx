@@ -267,10 +267,10 @@ function PrototypesPage() {
                     </span>
                   </div>
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-md gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-primary hover:bg-primary/10"
-                    onClick={() =>
+ variant="ghost"
+ size="sm"
+ className="gap-1.5 text-[10px] tracking-[0.14em] text-primary hover:bg-primary/10"
+ onClick={() =>
                       openEntity({
                         type: "piloto",
                         id: prototype.id,
@@ -325,7 +325,7 @@ function PrototypesPage() {
                 Blusa Linho Amalfi precisa de validação de gola e vídeo de caimento antes de liberar
                 OP piloto.
               </p>
-              <Button className="mt-5 w-full rounded-md h-10 text-[10px] font-bold uppercase tracking-[0.14em] btn-primary-premium">
+              <Button className="mt-5 w-full text-[10px] tracking-[0.14em]">
                 Solicitar aprovação
               </Button>
             </CardContent>
@@ -362,16 +362,16 @@ function PrototypesPage() {
           </div>
           <DialogFooter className="gap-3">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
               className="rounded-md h-10 text-[10px] font-bold uppercase tracking-widest"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-md h-10 px-6 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar protótipo
             </Button>
           </DialogFooter>

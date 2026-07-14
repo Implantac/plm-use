@@ -203,8 +203,8 @@ function LaunchPage() {
                               <div className="flex items-center gap-1">
                                 <Badge variant="outline" className="text-[10px]">{ITEM_STATUS_LABEL[is]}</Badge>
                                 {ITEM_NEXT[is].slice(0, 1).map((to) => (
-                                  <Button key={to} size="sm" variant="ghost" className="h-6 px-2 text-[11px]"
-                                    onClick={() => handleTransitionItem(it.id, is, to)}>
+                                  <Button key={to} size="sm" variant="ghost" className="h-6 text-[11px]"
+ onClick={() => handleTransitionItem(it.id, is, to)}>
                                     → {ITEM_STATUS_LABEL[to]}
                                   </Button>
                                 ))}

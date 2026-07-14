@@ -126,21 +126,21 @@ function TechSheetPage() {
 
       <div className="flex justify-end gap-4 mb-8">
         <Button
-          variant="outline"
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
-        >
+ variant="outline"
+ className="text-[10px] tracking-[0.16em] gap-2"
+ >
           <History className="w-4 h-4" /> Histórico
         </Button>
         <Button
-          variant="outline"
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
-        >
+ variant="outline"
+ className="text-[10px] tracking-[0.16em] gap-2"
+ >
           <GitCompare className="w-4 h-4" /> Comparar Versões
         </Button>
         <Button
-          variant="outline"
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
-        >
+ variant="outline"
+ className="text-[10px] tracking-[0.16em] gap-2"
+ >
           <FileDown className="w-4 h-4" /> Exportar PDF
         </Button>
       </div>
@@ -304,15 +304,15 @@ function TechSheetPage() {
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <Button
-                variant="ghost"
-                className="h-20 rounded-md flex flex-col gap-2 border border-white/5 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase tracking-[0.16em] text-white"
-              >
+ variant="ghost"
+ className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[9px] tracking-[0.16em] text-white"
+ >
                 <Ruler className="w-5 h-5" /> Tabela Medidas
               </Button>
               <Button
-                variant="ghost"
-                className="h-20 rounded-md flex flex-col gap-2 border border-white/5 bg-white/5 hover:bg-white/10 text-[9px] font-bold uppercase tracking-[0.16em] text-white"
-              >
+ variant="ghost"
+ className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[9px] tracking-[0.16em] text-white"
+ >
                 <Paintbrush className="w-5 h-5" /> Variantes
               </Button>
             </div>
@@ -409,16 +409,16 @@ function TechSheetPage() {
           </div>
           <DialogFooter className="gap-4">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
               className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-xl h-12 px-8 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar na Ficha
             </Button>
           </DialogFooter>

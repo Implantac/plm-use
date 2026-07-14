@@ -419,10 +419,10 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                       className="resize-none bg-white/5 border-white/10 text-[12px]"
                     />
                     <div className="flex gap-1.5">
-                      <Button size="sm" className="h-6 px-2 text-[10px]" onClick={() => void saveEdit(c.id)}>
+                      <Button size="sm" className="h-6 text-[10px]" onClick={() => void saveEdit(c.id)}>
                         <Check className="w-3 h-3 mr-1" /> Salvar
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-6 px-2 text-[10px]" onClick={cancelEdit}>
+                      <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={cancelEdit}>
                         <X className="w-3 h-3 mr-1" /> Cancelar
                       </Button>
                     </div>
@@ -506,10 +506,10 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
               }}
             />
             <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 px-2 text-[10px] gap-1"
-              onClick={() => fileInputRef.current?.click()}
+ size="sm"
+ variant="ghost"
+ className="text-[10px] gap-1"
+ onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip className="w-3.5 h-3.5" /> Anexar
             </Button>
@@ -518,9 +518,9 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
             </span>
           </div>
           <Button
-            size="sm"
-            disabled={sending || (!draft.trim() && pendingFiles.length === 0) || !user}
-            onClick={() => void send()}
+ size="sm"
+ disabled={sending || (!draft.trim() && pendingFiles.length === 0) || !user}
+ onClick={() => void send()}
             className="h-8 gap-1.5 btn-primary-premium"
           >
             {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}

@@ -72,7 +72,7 @@ function DrawerBody({ entity, onClose }: { entity: EntityRef; onClose: () => voi
               <p className="text-[11px] text-muted-foreground mt-0.5">{entity.subtitle}</p>
             )}
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
+          <Button variant="ghost" size="sm" onClick={onClose} className="w-8 p-0">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -231,11 +231,11 @@ function ReferenceBody({ id }: { id: string }) {
             <div className="flex flex-wrap gap-2">
               {next.map((s) => (
                 <Button
-                  key={s}
-                  size="sm"
-                  variant="outline"
-                  className="border-primary/30 text-primary hover:bg-primary/10 h-8"
-                  onClick={() => doTransition(s)}
+ key={s}
+ size="sm"
+ variant="outline"
+ className="border-primary/30 text-primary hover:bg-primary/10"
+ onClick={() => doTransition(s)}
                 >
                   <ArrowRight className="h-3 w-3 mr-1" />
                   {REFERENCE_STATUS_LABEL[s]}

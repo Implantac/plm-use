@@ -170,23 +170,23 @@ function InventoryPage() {
     >
       <div className="flex flex-wrap justify-end gap-3 mb-5">
         <Button
-          variant="outline"
-          onClick={handleClassifyAbc}
-          disabled={busy}
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
-        >
+ variant="outline"
+ onClick={handleClassifyAbc}
+ disabled={busy}
+ className="text-[10px] tracking-[0.16em] gap-2"
+ >
           <RefreshCw className="w-4 h-4" /> Classificar ABC
         </Button>
         <Button
-          variant="outline"
-          onClick={() => handleOpenMove()}
+ variant="outline"
+ onClick={() => handleOpenMove()}
           className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
         >
           <ArrowRightLeft className="w-4 h-4" /> Movimentação
         </Button>
         <Button
-          variant="outline"
-          onClick={() => setIsResOpen(true)}
+ variant="outline"
+ onClick={() => setIsResOpen(true)}
           className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
         >
           <History className="w-4 h-4" /> Reservar
@@ -361,11 +361,11 @@ function InventoryPage() {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-1">
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-primary"
-                            title="Abrir na trilha"
-                            onClick={() =>
+ variant="ghost"
+ size="icon"
+ className="w-8 text-muted-foreground hover:text-primary"
+ title="Abrir na trilha"
+ onClick={() =>
                               openEntity({
                                 type: "stock_item",
                                 id: item.id,
@@ -482,17 +482,17 @@ function InventoryPage() {
           </p>
           <DialogFooter className="gap-3">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
               className="rounded-md h-10 text-[10px] font-bold uppercase tracking-widest"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              disabled={busy}
-              className="rounded-md h-10 px-6 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ disabled={busy}
+ className="text-[10px]"
+ >
               {editingItem ? "Salvar" : "Cadastrar"}
             </Button>
           </DialogFooter>

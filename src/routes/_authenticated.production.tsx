@@ -223,10 +223,10 @@ function ProductionPage() {
 
               <div className="mt-2 flex justify-end">
                 <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-8 gap-1.5 border-primary/30 text-primary hover:bg-primary/10 text-[10px] font-bold uppercase tracking-[0.14em]"
-                  onClick={() =>
+ size="sm"
+ variant="outline"
+ className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10 text-[10px] tracking-[0.14em]"
+ onClick={() =>
                     openEntity({
                       type: "lote",
                       id: loteSelecionadoAtual.lote.numero,

@@ -522,11 +522,11 @@ function SaveFilterDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-2"
-          disabled={!hasAny}
-        >
+ variant="outline"
+ size="sm"
+ className="w-full gap-2"
+ disabled={!hasAny}
+ >
           <Save className="h-3.5 w-3.5" /> Salvar filtro
         </Button>
       </DialogTrigger>
@@ -551,7 +551,7 @@ function SaveFilterDialog({
             Cancelar
           </Button>
           <Button
-            onClick={() => {
+ onClick={() => {
               if (!name.trim()) {
                 toast.error("Dê um nome ao filtro");
                 return;

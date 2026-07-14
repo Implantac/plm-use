@@ -244,10 +244,10 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
               />
 
               <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => {
+ variant="outline"
+ size="sm"
+ className="gap-2"
+ onClick={() => {
                   const clone: ColorPalette = {
                     ...palette,
                     id: `pal-${Date.now()}`,
@@ -264,9 +264,9 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
               </Button>
               {palette.status !== "aprovada" && (
                 <Button
-                  size="sm"
-                  className="gap-2"
-                  onClick={() => {
+ size="sm"
+ className="gap-2"
+ onClick={() => {
                     upsertPalette({ ...palette, status: "aprovada" });
                     toast.success("Paleta aprovada");
                   }}
@@ -431,7 +431,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             Cancelar
           </Button>
           <Button
-            onClick={() => {
+ onClick={() => {
               if (!name.trim()) {
                 toast.error("Dê um nome à cor");
                 return;

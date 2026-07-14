@@ -199,19 +199,19 @@ function Dashboard() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Button
-                asChild
-                className="rounded-md h-11 px-5 text-[10px] font-bold uppercase tracking-[0.16em] btn-primary-premium"
-              >
+ asChild
+ className="text-[10px] tracking-[0.16em]"
+ >
                 <Link to="/ai-center">
                   <Sparkles className="mr-2 h-4 w-4" />
                   Abrir USE AI
                 </Link>
               </Button>
               <Button
-                asChild
-                variant="outline"
-                className="rounded-md h-11 px-5 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/10"
-              >
+ asChild
+ variant="outline"
+ className="text-[10px] tracking-[0.16em]"
+ >
                 <Link to="/digital-twin">
                   <RouteIcon className="mr-2 h-4 w-4" />
                   Digital Twin
@@ -241,7 +241,7 @@ function Dashboard() {
                 </div>
               </div>
             ))}
-            <Button className="w-full rounded-md h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-primary-premium">
+            <Button className="w-full text-[10px] tracking-[0.16em]">
               Gerar plano inteligente
             </Button>
           </CardContent>
@@ -345,10 +345,10 @@ function Dashboard() {
                   </p>
                 </div>
                 <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-md border-white/10 text-[10px] font-bold uppercase tracking-[0.14em]"
-                >
+ asChild
+ variant="outline"
+ className="text-[10px] tracking-[0.14em]"
+ >
                   <Link to="/prototypes">Resolver fila</Link>
                 </Button>
               </div>
@@ -444,10 +444,10 @@ function Dashboard() {
               Ranking de rentabilidade PLM + ERP
             </CardTitle>
             <Button
-              asChild
-              variant="ghost"
-              className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary"
-            >
+ asChild
+ variant="ghost"
+ className="text-[10px] tracking-[0.16em] text-primary"
+ >
               <Link to="/financial">
                 Ver financeiro
                 <ArrowUpRight className="ml-2 h-3.5 w-3.5" />

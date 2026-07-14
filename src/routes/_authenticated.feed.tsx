@@ -84,21 +84,21 @@ function FeedPage() {
               <div className="flex justify-between items-center pt-4 border-t border-white/5">
                 <div className="flex gap-2">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-white"
-                  >
+ variant="ghost"
+ size="icon"
+ className="text-muted-foreground hover:text-white"
+ >
                     <Paperclip className="w-4 h-4" />
                   </Button>
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-white"
-                  >
+ variant="ghost"
+ size="icon"
+ className="text-muted-foreground hover:text-white"
+ >
                     <AlertCircle className="w-4 h-4" />
                   </Button>
                 </div>
-                <Button className="rounded-full px-8 h-10 text-[9px] font-bold uppercase tracking-[0.2em] btn-primary-premium">
+                <Button className="text-[9px] tracking-[0.2em]">
                   Publicar
                 </Button>
               </div>

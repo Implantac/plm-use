@@ -252,7 +252,7 @@ function QualityPage() {
             onChange={(e) => setForm({ ...form, prazo: e.target.value })}
             className="h-9 w-36 bg-white/5 border-white/10 text-[11px]"
           />
-          <Button size="sm" className="h-9 btn-primary-premium gap-1" onClick={submit}>
+          <Button size="sm" className="gap-1" onClick={submit}>
             <Plus className="w-3.5 h-3.5" /> Abrir CAPA
           </Button>
         </div>

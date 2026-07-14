@@ -262,8 +262,8 @@ function NewReferenceDialog({
       </div>
       <DialogFooter>
         <Button
-          disabled={busy || !code || !name}
-          onClick={async () => {
+ disabled={busy || !code || !name}
+ onClick={async () => {
             setBusy(true);
             const r = await onCreate({
               code: code.trim(),

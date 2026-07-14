@@ -92,7 +92,7 @@ function ProductionTodayPage() {
     >
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Button asChild variant="outline" size="sm" className="border-white/15">
+          <Button asChild variant="outline" size="sm" >
             <Link to="/production">
               <ArrowLeft className="h-3.5 w-3.5 mr-1" />
               Voltar ao Kanban

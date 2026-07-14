@@ -72,19 +72,19 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
             </div>
             <div className="flex gap-2">
               <Button
-                size="sm"
-                variant="ghost"
-                disabled={busyId === r.id}
-                onClick={() => act(r.id, "consumida")}
+ size="sm"
+ variant="ghost"
+ disabled={busyId === r.id}
+ onClick={() => act(r.id, "consumida")}
                 className="h-8 px-2 text-emerald-300 hover:text-emerald-200"
               >
                 <CheckCircle2 className="h-4 w-4" />
               </Button>
               <Button
-                size="sm"
-                variant="ghost"
-                disabled={busyId === r.id}
-                onClick={() => act(r.id, "cancelada")}
+ size="sm"
+ variant="ghost"
+ disabled={busyId === r.id}
+ onClick={() => act(r.id, "cancelada")}
                 className="h-8 px-2 text-rose-300 hover:text-rose-200"
               >
                 <XCircle className="h-4 w-4" />

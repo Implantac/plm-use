@@ -503,16 +503,16 @@ function DevelopmentPage() {
           </div>
           <DialogFooter className="gap-4">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
               className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-xl h-12 px-8 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar no Kanban
             </Button>
           </DialogFooter>

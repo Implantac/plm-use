@@ -72,8 +72,8 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
         <Input value={resumo} onChange={(e) => setResumo(e.target.value)} placeholder="Resumo da alteração" className="bg-white/5 border-white/10 text-[11px]" />
         <Input value={alteracoes} onChange={(e) => setAlteracoes(e.target.value)} placeholder="Alterações (separe por ; )" className="bg-white/5 border-white/10 text-[11px]" />
         <Button
-          size="sm" className="btn-primary-premium gap-2"
-          onClick={() => {
+ size="sm" className="gap-2"
+ onClick={() => {
             if (!resumo.trim()) return toast.error("Informe o resumo");
             const v = create(refAtual, "Você", resumo.trim(), alteracoes.split(";").map((x) => x.trim()).filter(Boolean));
             toast.success(`Versão ${v.versao} criada · em revisão`);

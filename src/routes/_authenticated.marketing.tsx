@@ -137,9 +137,9 @@ function MarketingPage() {
               <TrendingUp className="w-5 h-5 text-primary" /> Performance por Produto e Coleção
             </h3>
             <Button
-              variant="ghost"
-              className="text-[10px] font-bold uppercase tracking-widest text-primary hover:bg-primary/10"
-            >
+ variant="ghost"
+ className="text-[10px] text-primary hover:bg-primary/10"
+ >
               Ver Relatório Completo
             </Button>
           </div>
@@ -266,7 +266,7 @@ function MarketingPage() {
                 </div>
               ))}
             </div>
-            <Button className="w-full mt-8 h-11 rounded-md text-[10px] font-bold uppercase tracking-[0.16em] btn-primary-premium">
+            <Button className="w-full mt-8 text-[10px] tracking-[0.16em]">
               Gerenciar Conexões
             </Button>
           </Card>
@@ -357,16 +357,16 @@ function MarketingPage() {
           </div>
           <DialogFooter className="gap-4">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
               className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-xl h-12 px-8 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar Campanha
             </Button>
           </DialogFooter>

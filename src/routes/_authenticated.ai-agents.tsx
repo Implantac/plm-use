@@ -266,7 +266,7 @@ function AIAgentsPage() {
                 disabled={loading}
               />
               <Button
-                onClick={() => enviar()}
+ onClick={() => enviar()}
                 disabled={loading || !input.trim()}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 self-end"
               >

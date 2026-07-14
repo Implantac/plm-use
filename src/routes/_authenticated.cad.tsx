@@ -51,12 +51,12 @@ function CadPage() {
               </CardTitle>
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
-                  className="rounded-md h-9 text-[10px] font-bold uppercase tracking-[0.14em] border-white/10"
-                >
+ variant="outline"
+ className="text-[10px] tracking-[0.14em]"
+ >
                   <Upload className="mr-2 h-4 w-4" /> Importar
                 </Button>
-                <Button className="rounded-md h-9 text-[10px] font-bold uppercase tracking-[0.14em] btn-primary-premium">
+                <Button className="text-[10px] tracking-[0.14em]">
                   <Download className="mr-2 h-4 w-4" /> Exportar
                 </Button>
               </div>
@@ -123,17 +123,17 @@ function CadPage() {
                       <td className="px-5 py-4">
                         <div className="flex gap-2">
                           <Button
-                            size="icon"
-                            variant="ghost"
-                            className="rounded-md h-8 w-8 text-muted-foreground hover:text-primary"
-                          >
+ size="icon"
+ variant="ghost"
+ className="w-8 text-muted-foreground hover:text-primary"
+ >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
-                            size="icon"
-                            variant="ghost"
-                            className="rounded-md h-8 w-8 text-muted-foreground hover:text-primary"
-                          >
+ size="icon"
+ variant="ghost"
+ className="w-8 text-muted-foreground hover:text-primary"
+ >
                             <Download className="h-4 w-4" />
                           </Button>
                         </div>

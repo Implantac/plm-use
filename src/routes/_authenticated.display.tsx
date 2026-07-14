@@ -253,10 +253,10 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
             />
           </label>
           <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => {
+ variant="outline"
+ size="sm"
+ className="gap-2"
+ onClick={() => {
               upsertBoard({
                 ...board,
                 id: `board-${Date.now()}`,
@@ -271,9 +271,9 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
           </Button>
           {board.status !== "aprovada" && (
             <Button
-              size="sm"
-              className="gap-2"
-              onClick={() => {
+ size="sm"
+ className="gap-2"
+ onClick={() => {
                 upsertBoard({ ...board, status: "aprovada" });
                 toast.success("Painel aprovado — pronto para showroom");
               }}

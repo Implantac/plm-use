@@ -220,10 +220,10 @@ function CollectionsPage() {
       <div className="mb-4"><ModuleTabs group="collections" /></div>
       <div className="mb-4 flex justify-end">
         <Button
-          asChild
-          variant="ghost"
-          className="h-9 rounded-md border border-white/10 px-4 text-[10px] font-bold uppercase tracking-[0.14em]"
-        >
+ asChild
+ variant="ghost"
+ className="border text-[10px] tracking-[0.14em]"
+ >
           <Link to="/collections/compare">
             <ArrowLeftRight className="mr-2 h-3.5 w-3.5" /> Comparar coleções
           </Link>
@@ -373,9 +373,9 @@ function CollectionsPage() {
                 realocar 12 refs da curva C para tops de linho.
               </p>
               <Button
-                asChild
-                className="w-full rounded-md h-10 text-[10px] font-bold uppercase tracking-[0.14em] btn-primary-premium"
-              >
+ asChild
+ className="w-full text-[10px] tracking-[0.14em]"
+ >
                 <Link to="/ai-center">Simular novo mix</Link>
               </Button>
             </CardContent>
@@ -415,16 +415,16 @@ function CollectionsPage() {
           </div>
           <DialogFooter className="gap-3">
             <Button
-              variant="ghost"
-              onClick={() => setIsDialogOpen(false)}
+ variant="ghost"
+ onClick={() => setIsDialogOpen(false)}
               className="rounded-md h-10 text-[10px] font-bold uppercase tracking-widest"
             >
               Cancelar
             </Button>
             <Button
-              onClick={handleSave}
-              className="rounded-md h-10 px-6 text-[10px] font-bold uppercase tracking-widest btn-primary-premium"
-            >
+ onClick={handleSave}
+ className="text-[10px]"
+ >
               Salvar coleção
             </Button>
           </DialogFooter>

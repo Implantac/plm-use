@@ -99,7 +99,7 @@ export function MoodBoard() {
 
       <div className="flex gap-2">
         <Input value={novo} onChange={(e) => setNovo(e.target.value)} placeholder="Cole URL de referência" className="h-9 bg-white/5 border-white/10 text-[11px]" />
-        <Button size="sm" className="h-9 btn-primary-premium gap-1" onClick={() => { if (novo) { setImgs([novo, ...imgs]); setNovo(""); } }}><Plus className="w-3.5 h-3.5" /> Adicionar</Button>
+        <Button size="sm" className="gap-1" onClick={() => { if (novo) { setImgs([novo, ...imgs]); setNovo(""); } }}><Plus className="w-3.5 h-3.5" /> Adicionar</Button>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6 border-t border-white/5 pt-6">

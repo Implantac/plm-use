@@ -26,11 +26,11 @@ export function ExportMenu({ title, filename, rows, columns, label = "Exportar" 
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
-          size="sm"
-          disabled={disabled}
-          className="h-8 bg-white/5 border-white/10 hover:bg-white/10 text-[10px] uppercase tracking-[0.18em]"
-        >
+ variant="outline"
+ size="sm"
+ disabled={disabled}
+ className="bg-white/5 hover:bg-white/10 text-[10px] tracking-[0.18em]"
+ >
           <Download className="w-3.5 h-3.5 mr-2" />
           {label}
         </Button>
