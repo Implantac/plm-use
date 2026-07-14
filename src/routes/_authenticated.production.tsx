@@ -60,6 +60,9 @@ export const Route = createFileRoute("/_authenticated/production")({
 function ProductionPage() {
   const lotes = usePCPStore((s) => s.lotes);
   const { openEntity } = useEntityDrawer();
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const flowRef = useRef<HTMLDivElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [view, setView] = useState<"kanban" | "torre" | "gantt">("kanban");
   const [selRef, setSelRef] = useState<{
@@ -70,6 +73,19 @@ function ProductionPage() {
     lote: Lote;
     setor: SetorPCP;
   } | null>(null);
+
+  const setStep = (step: PCPStepId | null) => {
+    void navigate({
+      search: (prev) => ({ ...prev, pcpStep: step ?? undefined }),
+      replace: true,
+    });
+  };
+
+  useEffect(() => {
+    if (search.pcpStep && flowRef.current) {
+      flowRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [search.pcpStep]);
 
   const colunas = useMemo(() => lotesPorSetor(lotes), [lotes]);
 
