@@ -3,7 +3,7 @@
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Camera, RotateCcw, AlertTriangle, CheckCircle2, Workflow } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { IniciarPCPDialog } from "./IniciarPCPDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +31,7 @@ interface Props {
 export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   const [referenceId, setReferenceId] = useState<string | null>(null);
   const [resolving, setResolving] = useState(true);
+  const [pcpDialogOpen, setPcpDialogOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -309,21 +310,24 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             </p>
           </div>
           <Button
-            asChild
             size="sm"
             variant="outline"
+            onClick={() => setPcpDialogOpen(true)}
             className="gap-1.5 shrink-0 border-emerald-400/50 text-emerald-200 hover:bg-emerald-400/10"
           >
-            <Link
-              to="/production"
-              search={{ pcpStep: "handoff", pcpRef: referenciaRef }}
-            >
-              <Workflow className="h-3 w-3" />
-              Iniciar fluxo PCP
-            </Link>
+            <Workflow className="h-3 w-3" />
+            Iniciar fluxo PCP
           </Button>
         </div>
       )}
+
+      <IniciarPCPDialog
+        open={pcpDialogOpen}
+        onOpenChange={setPcpDialogOpen}
+        referenciaRef={referenciaRef}
+        referenciaNome={referenciaNome}
+      />
+
 
 
 
