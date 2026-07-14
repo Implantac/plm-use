@@ -292,6 +292,38 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         </div>
       )}
 
+      {current?.status === "APROVADO" && (
+        <div className="rounded-md border border-emerald-400/30 bg-emerald-400/[0.06] p-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+              <Workflow className="h-3 w-3" /> Handoff PLM → PCP
+            </p>
+            <p className="mt-1 text-[11px] text-white/90">
+              Piloto R{current.rodada} aprovado. Inicie o fluxo do PCP para
+              abrir a Ordem de Produção de{" "}
+              <span className="font-bold">{referenciaNome}</span>.
+            </p>
+            <p className="mt-0.5 text-[10px] text-white/60">
+              Analisar produção → almoxarifado → organizar → finalizar OP →
+              rota → lançar no Kanban.
+            </p>
+          </div>
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="gap-1.5 shrink-0 border-emerald-400/50 text-emerald-200 hover:bg-emerald-400/10"
+          >
+            <Link to="/production">
+              <Workflow className="h-3 w-3" />
+              Iniciar fluxo PCP
+            </Link>
+          </Button>
+        </div>
+      )}
+
+
+
 
 
 
