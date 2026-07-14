@@ -187,10 +187,11 @@ function Login() {
                 placeholder="Seu nome"
                 className="h-12 px-4 text-sm"
                 aria-invalid={!!errors.fullName}
+                aria-describedby={errors.fullName ? "fullName-error" : undefined}
                 required
               />
               {errors.fullName && (
-                <FieldMessage variant="error" className="ml-4">{errors.fullName}</FieldMessage>
+                <FieldMessage id="fullName-error" variant="error" className="ml-4">{errors.fullName}</FieldMessage>
               )}
             </div>
           )}
@@ -209,10 +210,11 @@ function Login() {
               placeholder="seu@email.com"
               className="h-12 px-4 text-sm"
               aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
               required
             />
             {errors.email && (
-              <FieldMessage variant="error" className="ml-4">{errors.email}</FieldMessage>
+              <FieldMessage id="email-error" variant="error" className="ml-4">{errors.email}</FieldMessage>
             )}
           </div>
           <div className="space-y-3">
@@ -230,12 +232,14 @@ function Login() {
               minLength={6}
               className="h-12 px-4"
               aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "password-error" : undefined}
               required
             />
             {errors.password && (
-              <FieldMessage variant="error" className="ml-4">{errors.password}</FieldMessage>
+              <FieldMessage id="password-error" variant="error" className="ml-4">{errors.password}</FieldMessage>
             )}
           </div>
+
 
           {errors.form && (
             <FieldMessage variant="error" className="ml-4">{errors.form}</FieldMessage>
