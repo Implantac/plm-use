@@ -94,7 +94,7 @@ export function EntityTimeline({
     );
   }
 
-  if (items.length === 0) {
+  if (uniqueItems.length === 0) {
     return (
       <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
         Sem eventos registrados ainda.
@@ -105,7 +105,7 @@ export function EntityTimeline({
   return (
     <ol className="relative space-y-3">
       <div className="absolute left-[11px] top-1 bottom-1 w-px bg-white/10" />
-      {items.map((it) => {
+      {uniqueItems.map((it) => {
         const Icon = EVENT_ICON[it.event_type] ?? AlertTriangle;
         const label = EVENT_LABEL[it.event_type] ?? it.event_type;
         const ts = new Date(it.created_at);
