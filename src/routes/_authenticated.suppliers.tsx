@@ -376,7 +376,7 @@ function SuppliersPage() {
             <Button
  variant="ghost"
  onClick={() => setIsDialogOpen(false)}
-              className="rounded-xl h-12 text-[10px] font-bold uppercase tracking-widest"
+              className="text-[10px]"
             >
               Cancelar
             </Button>

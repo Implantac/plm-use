@@ -356,7 +356,7 @@ function AICenterPage() {
                     >
                       <Button
  onClick={() => setIsDialogOpen(false)}
-                        className="w-full h-14 rounded-none text-[10px] font-bold uppercase tracking-[0.3em] btn-primary-premium"
+                        className="w-full text-[10px] tracking-[0.3em]"
                       >
                         Explorar Coleção Gerada
                       </Button>

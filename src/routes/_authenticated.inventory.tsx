@@ -180,14 +180,14 @@ function InventoryPage() {
         <Button
  variant="outline"
  onClick={() => handleOpenMove()}
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
+          className="text-[10px] tracking-[0.16em] gap-2"
         >
           <ArrowRightLeft className="w-4 h-4" /> Movimentação
         </Button>
         <Button
  variant="outline"
  onClick={() => setIsResOpen(true)}
-          className="rounded-md px-5 h-11 text-[10px] font-bold uppercase tracking-[0.16em] btn-outline-premium border-white/5 gap-2"
+          className="text-[10px] tracking-[0.16em] gap-2"
         >
           <History className="w-4 h-4" /> Reservar
         </Button>
@@ -484,7 +484,7 @@ function InventoryPage() {
             <Button
  variant="ghost"
  onClick={() => setIsDialogOpen(false)}
-              className="rounded-md h-10 text-[10px] font-bold uppercase tracking-widest"
+              className="text-[10px]"
             >
               Cancelar
             </Button>

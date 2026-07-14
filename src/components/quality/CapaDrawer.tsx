@@ -314,7 +314,6 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                     />
                     <Button
  size="sm"
- 
  onClick={() => {
                         if (!porqueDraft.trim()) return;
                         const arr = [
@@ -424,7 +423,6 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 />
                 <Button
  size="sm"
- 
  onClick={() => {
                     if (!evUrl.trim()) return;
                     const arr = [

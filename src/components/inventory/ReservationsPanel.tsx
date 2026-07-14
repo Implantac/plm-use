@@ -76,7 +76,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
  variant="ghost"
  disabled={busyId === r.id}
  onClick={() => act(r.id, "consumida")}
-                className="h-8 px-2 text-emerald-300 hover:text-emerald-200"
+                className="text-emerald-300 hover:text-emerald-200"
               >
                 <CheckCircle2 className="h-4 w-4" />
               </Button>
@@ -85,7 +85,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
  variant="ghost"
  disabled={busyId === r.id}
  onClick={() => act(r.id, "cancelada")}
-                className="h-8 px-2 text-rose-300 hover:text-rose-200"
+                className="text-rose-300 hover:text-rose-200"
               >
                 <XCircle className="h-4 w-4" />
               </Button>

@@ -521,7 +521,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
  size="sm"
  disabled={sending || (!draft.trim() && pendingFiles.length === 0) || !user}
  onClick={() => void send()}
-            className="h-8 gap-1.5 btn-primary-premium"
+            className="gap-1.5"
           >
             {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
             Enviar
