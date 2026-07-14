@@ -5,6 +5,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useFieldContext } from "@/components/ui/field";
 
 const Select = SelectPrimitive.Root;
 
@@ -15,28 +16,37 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-background/40 px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer",
-      "data-[placeholder]:text-muted-foreground/70",
-      "transition-[color,background-color,border-color,box-shadow] duration-150",
-      "hover:border-primary/40",
-      "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 focus:bg-background/60",
-      "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-input",
-      "aria-[invalid=true]:border-destructive aria-[invalid=true]:focus:ring-destructive/30",
-      "[&>span]:line-clamp-1",
-      className,
-    )}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 opacity-60" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-));
+>(({ className, children, id, "aria-describedby": describedBy, "aria-invalid": ariaInvalid, ...props }, ref) => {
+  const field = useFieldContext();
+  const resolvedId = id ?? field?.controlId;
+  const resolvedDescribedBy = describedBy ?? field?.messageId;
+  const resolvedInvalid = ariaInvalid ?? (field?.invalid ? true : undefined);
+  return (
+    <SelectPrimitive.Trigger
+      ref={ref}
+      id={resolvedId}
+      aria-describedby={resolvedDescribedBy}
+      aria-invalid={resolvedInvalid}
+      className={cn(
+        "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-background/40 px-3 py-2 text-sm shadow-sm ring-offset-background cursor-pointer",
+        "data-[placeholder]:text-muted-foreground/70",
+        "transition-[color,background-color,border-color,box-shadow] duration-150",
+        "hover:border-primary/40",
+        "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 focus:bg-background/60",
+        "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-input",
+        "aria-[invalid=true]:border-destructive aria-[invalid=true]:focus:ring-destructive/30",
+        "[&>span]:line-clamp-1",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDown className="h-4 w-4 opacity-60" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  );
+});
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 const SelectScrollUpButton = React.forwardRef<
