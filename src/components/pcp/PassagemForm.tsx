@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   Select,
   SelectContent,
@@ -36,10 +37,19 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
   const [resp, setResp] = useState("");
   const [obs, setObs] = useState("");
   const [defeito, setDefeito] = useState("");
+  const [errors, setErrors] = useState<{
+    responsavel?: string;
+    defeito?: string;
+    form?: string;
+  }>({});
 
   const handleSubmit = () => {
-    if (!resp) {
-      toast.error("Informe o responsável");
+    const next: typeof errors = {};
+    if (!resp.trim()) next.responsavel = "Informe o responsável.";
+    if (linha === "2a" && !defeito.trim())
+      next.defeito = "Descreva o tipo de defeito para o retrabalho.";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
       return;
     }
     const res = registrar({
@@ -54,9 +64,10 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
       defeito: linha === "2a" ? defeito || undefined : undefined,
     });
     if (!res.ok) {
-      toast.error(res.erro ?? "Erro ao registrar passagem");
+      setErrors({ form: res.erro ?? "Erro ao registrar passagem." });
       return;
     }
+    setErrors({});
     toast.success(
       linha === "1a"
         ? `Passagem ${tipo} registrada (${qtd} pç)`
@@ -130,55 +141,51 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
 
       {linha === "2a" && (
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Tipo de defeito
-          </Label>
+          <Label required>Tipo de defeito</Label>
           <Input
             value={defeito}
             onChange={(e) => setDefeito(e.target.value)}
             placeholder="Ex: silk torto, peça manchada, costura aberta"
-            className=""
+            aria-invalid={!!errors.defeito}
           />
+          {errors.defeito && <FieldMessage variant="error">{errors.defeito}</FieldMessage>}
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Quantidade
-          </Label>
+          <Label>Quantidade</Label>
           <Input
             type="number"
             value={qtd}
             onChange={(e) => setQtd(Number(e.target.value))}
             disabled={linha === "1a" && tipo === "integral"}
-            className=""
           />
         </div>
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Responsável
-          </Label>
+          <Label required>Responsável</Label>
           <Input
             value={resp}
             onChange={(e) => setResp(e.target.value)}
             placeholder="Nome do operador"
-            className=""
+            aria-invalid={!!errors.responsavel}
           />
+          {errors.responsavel && (
+            <FieldMessage variant="error">{errors.responsavel}</FieldMessage>
+          )}
         </div>
       </div>
 
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Observação
-        </Label>
+        <Label>Observação</Label>
         <Textarea
           value={obs}
           onChange={(e) => setObs(e.target.value)}
           rows={2}
-          className=""
         />
       </div>
+
+      {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
       <Button
  onClick={handleSubmit}

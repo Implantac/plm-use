@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldMessage } from "@/components/ui/field-message";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,18 +22,40 @@ function Login() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{
+    fullName?: string;
+    email?: string;
+    password?: string;
+    form?: string;
+  }>({});
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) navigate({ to: "/dashboard" });
   }, [authLoading, isAuthenticated, navigate]);
 
+  const validate = () => {
+    const next: typeof errors = {};
+    if (mode === "signup" && !fullName.trim()) next.fullName = "Informe seu nome completo.";
+    if (!email.trim()) next.email = "Informe o e-mail corporativo.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = "E-mail inválido.";
+    if (!password) next.password = "Informe a senha.";
+    else if (password.length < 6) next.password = "A senha precisa ter ao menos 6 caracteres.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     if (mode === "signin") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
-      if (error) return toast.error(error.message || "Acesso negado.");
+      if (error) {
+        setErrors({ form: error.message || "Acesso negado." });
+        return;
+      }
+      setErrors({});
       toast.success("Bem-vindo ao USE MODA PLM.");
       navigate({ to: "/dashboard" });
     } else {
@@ -43,7 +66,11 @@ function Login() {
         options: { emailRedirectTo: redirectUrl, data: { full_name: fullName } },
       });
       setLoading(false);
-      if (error) return toast.error(error.message || "Falha no cadastro.");
+      if (error) {
+        setErrors({ form: error.message || "Falha no cadastro." });
+        return;
+      }
+      setErrors({});
       toast.success("Conta criada! Verifique seu e-mail se a confirmação estiver ativa.");
     }
   };
@@ -149,8 +176,12 @@ function Login() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Seu nome"
                 className="h-12 px-4 text-sm"
+                aria-invalid={!!errors.fullName}
                 required
               />
+              {errors.fullName && (
+                <FieldMessage variant="error" className="ml-4">{errors.fullName}</FieldMessage>
+              )}
             </div>
           )}
           <div className="space-y-3">
@@ -167,8 +198,12 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               className="h-12 px-4 text-sm"
+              aria-invalid={!!errors.email}
               required
             />
+            {errors.email && (
+              <FieldMessage variant="error" className="ml-4">{errors.email}</FieldMessage>
+            )}
           </div>
           <div className="space-y-3">
             <Label
@@ -184,9 +219,17 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               minLength={6}
               className="h-12 px-4"
+              aria-invalid={!!errors.password}
               required
             />
+            {errors.password && (
+              <FieldMessage variant="error" className="ml-4">{errors.password}</FieldMessage>
+            )}
           </div>
+
+          {errors.form && (
+            <FieldMessage variant="error" className="ml-4">{errors.form}</FieldMessage>
+          )}
 
           <Button
  type="submit"

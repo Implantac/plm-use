@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   Select,
   SelectContent,
@@ -30,14 +31,19 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
   const [motivo, setMotivo] = useState("");
   const [resp, setResp] = useState("");
   const [obs, setObs] = useState("");
+  const [errors, setErrors] = useState<{
+    motivo?: string;
+    responsavel?: string;
+    qtd?: string;
+    form?: string;
+  }>({});
 
   const handleSubmit = () => {
-    if (!motivo) {
-      toast.error("Informe o motivo");
-      return;
-    }
-    if (!resp) {
-      toast.error("Informe o responsável");
+    const next: typeof errors = {};
+    if (!motivo.trim()) next.motivo = "Informe o motivo da ocorrência.";
+    if (!resp.trim()) next.responsavel = "Informe o responsável pelo registro.";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
       return;
     }
     const res = registrar({
@@ -50,9 +56,10 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       observacao: obs || undefined,
     });
     if (!res.ok) {
-      toast.error(res.erro ?? "Erro ao registrar ocorrência");
+      setErrors({ form: res.erro ?? "Erro ao registrar ocorrência." });
       return;
     }
+    setErrors({});
     toast.success(`Ocorrência ${tipo} registrada (${qtd} pç)`);
     setMotivo("");
     setObs("");
@@ -111,37 +118,36 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       </div>
 
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Motivo
-        </Label>
+        <Label required>Motivo</Label>
         <Input
           value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
           placeholder="Ex: Aproveitamento de retalho, defeito de malha..."
-          className=""
+          aria-invalid={!!errors.motivo}
         />
+        {errors.motivo && <FieldMessage variant="error">{errors.motivo}</FieldMessage>}
       </div>
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Responsável
-        </Label>
+        <Label required>Responsável</Label>
         <Input
           value={resp}
           onChange={(e) => setResp(e.target.value)}
-          className=""
+          aria-invalid={!!errors.responsavel}
         />
+        {errors.responsavel && (
+          <FieldMessage variant="error">{errors.responsavel}</FieldMessage>
+        )}
       </div>
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Observação
-        </Label>
+        <Label>Observação</Label>
         <Textarea
           value={obs}
           onChange={(e) => setObs(e.target.value)}
           rows={2}
-          className=""
         />
       </div>
+
+      {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
       <Button
  onClick={handleSubmit}

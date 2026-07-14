@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -197,7 +198,7 @@ function ShowroomPage() {
             onDecide={async (reference_id, decision, justificativa) => {
               const ok = await recordDecision(reference_id, decision, justificativa);
               if (ok) statusToast.success(`Decisão registrada: ${DECISION_LABEL[decision]}`);
-              else statusToast.error("Falha ao registrar decisão (justificativa obrigatória)");
+              else throw new Error("Falha ao registrar decisão (justificativa obrigatória).");
             }}
           />
         </TabsContent>
@@ -345,10 +346,10 @@ function FeedbackCard({
       </CardHeader>
       <CardContent>
         <div className="grid gap-3 md:grid-cols-6">
-          <div className="md:col-span-2">
-            <Label>Referência</Label>
+          <div className="md:col-span-2 space-y-1.5">
+            <Label required>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger><SelectValue placeholder="Escolha…" /></SelectTrigger>
+              <SelectTrigger aria-invalid={!refId}><SelectValue placeholder="Escolha…" /></SelectTrigger>
               <SelectContent>
                 {references.map((r) => (
                   <SelectItem key={r.id} value={r.id}>
@@ -357,6 +358,9 @@ function FeedbackCard({
                 ))}
               </SelectContent>
             </Select>
+            {!refId && (
+              <FieldMessage variant="helper">Selecione a referência avaliada.</FieldMessage>
+            )}
           </div>
           <div>
             <Label>Dimensão</Label>
@@ -489,6 +493,22 @@ function DecisionCard({
   );
   const [refId, setRefId] = useState("");
   const [justificativa, setJustificativa] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const missingRef = !refId;
+  const missingJust = justificativa.trim().length < 3;
+  const canSubmit = !missingRef && !missingJust;
+
+  const submit = async (decision: Exclude<ShowroomDecision, "pendente">) => {
+    if (!canSubmit) return;
+    setSubmitError(null);
+    try {
+      await onDecide(refId, decision, justificativa);
+      setJustificativa("");
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Falha ao registrar decisão.");
+    }
+  };
 
   return (
     <Card className="border-white/10 bg-white/[0.02]">
@@ -497,10 +517,10 @@ function DecisionCard({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="grid gap-3 md:grid-cols-2">
-          <div>
-            <Label>Referência</Label>
+          <div className="space-y-1.5">
+            <Label required>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger><SelectValue placeholder="Escolha…" /></SelectTrigger>
+              <SelectTrigger aria-invalid={missingRef}><SelectValue placeholder="Escolha…" /></SelectTrigger>
               <SelectContent>
                 {eligible.map((r) => {
                   const d = decisionByRef.get(r.id);
@@ -512,41 +532,51 @@ function DecisionCard({
                 })}
               </SelectContent>
             </Select>
+            {missingRef && (
+              <FieldMessage variant="helper">Selecione a referência antes de decidir.</FieldMessage>
+            )}
           </div>
-          <div>
-            <Label>Justificativa (obrigatória)</Label>
+          <div className="space-y-1.5">
+            <Label required>Justificativa</Label>
             <Input
               value={justificativa}
               onChange={(e) => setJustificativa(e.target.value)}
               placeholder="Ex.: feedback ≥ 4, cobertura de grade ok, sem CAPA aberta."
+              aria-invalid={missingJust && justificativa.length > 0}
             />
+            <FieldMessage variant={missingJust && justificativa.length > 0 ? "error" : "helper"}>
+              {missingJust && justificativa.length > 0
+                ? "A justificativa precisa ter ao menos 3 caracteres."
+                : "Obrigatória — registrada na trilha de auditoria."}
+            </FieldMessage>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
  size="sm"
- disabled={!refId || justificativa.trim().length < 3}
- onClick={async () => { await onDecide(refId, "go", justificativa); setJustificativa(""); }}
+ disabled={!canSubmit}
+ onClick={() => submit("go")}
           >
             <ThumbsUp className="h-3.5 w-3.5 mr-1" /> Go
           </Button>
           <Button
  size="sm"
  variant="secondary"
- disabled={!refId || justificativa.trim().length < 3}
- onClick={async () => { await onDecide(refId, "revisar", justificativa); setJustificativa(""); }}
+ disabled={!canSubmit}
+ onClick={() => submit("revisar")}
           >
             Revisar
           </Button>
           <Button
  size="sm"
  variant="destructive"
- disabled={!refId || justificativa.trim().length < 3}
- onClick={async () => { await onDecide(refId, "no_go", justificativa); setJustificativa(""); }}
+ disabled={!canSubmit}
+ onClick={() => submit("no_go")}
           >
             <ThumbsDown className="h-3.5 w-3.5 mr-1" /> No-Go
           </Button>
         </div>
+        {submitError && <FieldMessage variant="error">{submitError}</FieldMessage>}
       </CardContent>
     </Card>
   );
