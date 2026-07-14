@@ -11,6 +11,7 @@ import { Building2, Fingerprint, KeyRound, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
+  ssr: false, // tela client-only (framer-motion + supabase.auth), evita hydration mismatch
   component: Login,
 });
 
