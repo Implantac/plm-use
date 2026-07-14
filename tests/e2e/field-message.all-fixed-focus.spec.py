@@ -82,9 +82,10 @@ async def main() -> int:
 
         print("\n▶ 1. Abrir /login em modo 'Criar conta'")
         await page.goto(f"{BASE}/login", wait_until="domcontentloaded")
-        await expect(page.get_by_role("button", name=re.compile(r"Criar conta", re.I))).to_be_visible(timeout=8000)
-        await page.get_by_role("button", name=re.compile(r"^Criar conta$", re.I)).first.click()
-        await expect(page.locator("#fullName")).to_be_visible(timeout=3000)
+        tab = page.get_by_role("button", name=re.compile(r"^Criar conta$", re.I)).first
+        await expect(tab).to_be_visible(timeout=8000)
+        await tab.click()
+        await page.wait_for_selector("#fullName", timeout=5000)
         await page.screenshot(path=str(SHOTS / "1_signup_open.png"))
 
         print("\n▶ 2. Submeter vazio → alerts presentes, foco no primeiro inválido")
