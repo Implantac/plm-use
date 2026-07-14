@@ -20,6 +20,7 @@ import { TorreDeControle } from "@/components/pcp/TorreDeControle";
 import { CapacityPanel } from "@/components/pcp/CapacityPanel";
 import { LotesGantt } from "@/components/pcp/LotesGantt";
 import { LoteTimeline } from "@/components/pcp/LoteTimeline";
+import { PCPFlowDiagram } from "@/components/pcp/PCPFlowDiagram";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
@@ -92,6 +93,8 @@ function ProductionPage() {
       ]}
     >
       <div className="space-y-4">
+        <PCPFlowDiagram />
+
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
             <button
