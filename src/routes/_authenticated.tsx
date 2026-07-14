@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { AppBreadcrumb } from "@/components/nav/AppBreadcrumb";
 import { useRecentRoutes } from "@/hooks/use-recent-routes";
