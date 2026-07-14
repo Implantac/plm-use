@@ -84,6 +84,7 @@ async def main() -> int:
         await page.goto(f"{BASE}/login", wait_until="domcontentloaded")
         tab = page.get_by_role("button", name=re.compile(r"^Criar conta$", re.I)).first
         await expect(tab).to_be_visible(timeout=8000)
+        await page.wait_for_timeout(800)
         await tab.click()
         await page.wait_for_selector("#fullName", timeout=5000)
         await page.screenshot(path=str(SHOTS / "1_signup_open.png"))
