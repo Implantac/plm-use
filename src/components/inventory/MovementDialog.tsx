@@ -76,9 +76,23 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
       next.justification = "Ajuste requer justificativa com no mínimo 3 caracteres.";
     if (Object.keys(next).length > 0) {
       setErrors(next);
+      const order: Array<[keyof typeof next, string]> = [
+        ["itemId", "movement-item"],
+        ["warehouseId", "movement-warehouse"],
+        ["qty", "movement-qty"],
+        ["justification", "movement-justification"],
+      ];
+      const firstInvalid = order.find(([k]) => next[k])?.[1];
+      if (firstInvalid) {
+        requestAnimationFrame(() => {
+          (document.getElementById(firstInvalid) as HTMLElement | null)?.focus();
+        });
+      }
       return;
     }
+
     setErrors({});
+
 
 
     setBusy(true);
@@ -112,9 +126,13 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 py-4">
           <div className="space-y-2">
-            <Label required>Insumo</Label>
+            <Label required htmlFor="movement-item">Insumo</Label>
             <Select value={itemId} onValueChange={setItemId}>
-              <SelectTrigger aria-invalid={!!errors.itemId}>
+              <SelectTrigger
+                id="movement-item"
+                aria-invalid={!!errors.itemId}
+                aria-describedby={errors.itemId ? "movement-item-error" : undefined}
+              >
                 <SelectValue placeholder="Selecione o insumo" />
               </SelectTrigger>
               <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
@@ -125,14 +143,20 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 ))}
               </SelectContent>
             </Select>
-            {errors.itemId && <FieldMessage variant="error">{errors.itemId}</FieldMessage>}
+            {errors.itemId && (
+              <FieldMessage id="movement-item-error" variant="error">{errors.itemId}</FieldMessage>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label required>Armazém</Label>
+              <Label required htmlFor="movement-warehouse">Armazém</Label>
               <Select value={warehouseId} onValueChange={setWarehouseId}>
-                <SelectTrigger aria-invalid={!!errors.warehouseId}>
+                <SelectTrigger
+                  id="movement-warehouse"
+                  aria-invalid={!!errors.warehouseId}
+                  aria-describedby={errors.warehouseId ? "movement-warehouse-error" : undefined}
+                >
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
@@ -143,7 +167,9 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                   ))}
                 </SelectContent>
               </Select>
-              {errors.warehouseId && <FieldMessage variant="error">{errors.warehouseId}</FieldMessage>}
+              {errors.warehouseId && (
+                <FieldMessage id="movement-warehouse-error" variant="error">{errors.warehouseId}</FieldMessage>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Tipo</Label>
@@ -165,17 +191,22 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label required>Quantidade</Label>
+              <Label required htmlFor="movement-qty">Quantidade</Label>
               <Input
+                id="movement-qty"
                 value={qty}
                 onChange={(e) => setQty(e.target.value)}
                 type="number"
                 min="0"
                 step="0.01"
                 aria-invalid={!!errors.qty}
+                aria-describedby={errors.qty ? "movement-qty-error" : undefined}
               />
-              {errors.qty && <FieldMessage variant="error">{errors.qty}</FieldMessage>}
+              {errors.qty && (
+                <FieldMessage id="movement-qty-error" variant="error">{errors.qty}</FieldMessage>
+              )}
             </div>
+
             <div className="space-y-2">
               <Label>Lote (opcional)</Label>
               <Input
