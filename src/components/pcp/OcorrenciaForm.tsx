@@ -31,14 +31,19 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
   const [motivo, setMotivo] = useState("");
   const [resp, setResp] = useState("");
   const [obs, setObs] = useState("");
+  const [errors, setErrors] = useState<{
+    motivo?: string;
+    responsavel?: string;
+    qtd?: string;
+    form?: string;
+  }>({});
 
   const handleSubmit = () => {
-    if (!motivo) {
-      toast.error("Informe o motivo");
-      return;
-    }
-    if (!resp) {
-      toast.error("Informe o responsável");
+    const next: typeof errors = {};
+    if (!motivo.trim()) next.motivo = "Informe o motivo da ocorrência.";
+    if (!resp.trim()) next.responsavel = "Informe o responsável pelo registro.";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
       return;
     }
     const res = registrar({
@@ -51,9 +56,10 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       observacao: obs || undefined,
     });
     if (!res.ok) {
-      toast.error(res.erro ?? "Erro ao registrar ocorrência");
+      setErrors({ form: res.erro ?? "Erro ao registrar ocorrência." });
       return;
     }
+    setErrors({});
     toast.success(`Ocorrência ${tipo} registrada (${qtd} pç)`);
     setMotivo("");
     setObs("");
