@@ -17,6 +17,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+function messageEl(text: string): HTMLElement {
+  const node = screen.getByText(text).closest("p");
+  if (!node) throw new Error(`no <p> ancestor for "${text}"`);
+  return node as HTMLElement;
+}
+
 function expectWired(control: HTMLElement, label: HTMLElement, message: HTMLElement) {
   const id = control.getAttribute("id");
   const msgId = message.getAttribute("id");
