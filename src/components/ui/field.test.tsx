@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 // Tests for automatic a11y wiring between Field, Label, FieldMessage,
 // and the form controls (Input, Textarea, SelectTrigger).
 import { describe, it, expect } from "vitest";
