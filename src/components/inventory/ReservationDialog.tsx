@@ -94,10 +94,17 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
   }, [open, refType]);
 
   const handleSubmit = async () => {
-    if (!itemId || !warehouseId || !refId)
-      return toast.error("Selecione insumo, armazém e referência.");
+    const next: typeof errors = {};
+    if (!itemId) next.itemId = "Selecione um insumo.";
+    if (!warehouseId) next.warehouseId = "Selecione o armazém.";
+    if (!refId) next.refId = "Selecione uma referência.";
     const q = Number(qty);
-    if (!(q > 0)) return toast.error("Quantidade deve ser > 0.");
+    if (!(q > 0)) next.qty = "Quantidade deve ser maior que 0.";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      return;
+    }
+    setErrors({});
 
     setBusy(true);
     const res = await createReservation({
