@@ -49,12 +49,22 @@ function Login() {
         const el = document.getElementById(firstInvalid) as HTMLElement | null;
         el?.focus();
       });
+    } else {
+      // Todos os campos válidos: mover o foco para o primeiro elemento
+      // acionável seguinte (submit) antes que o handler troque o
+      // estado para "loading" e desabilite o botão. Foco síncrono
+      // garante que o leitor de tela anuncie o próximo passo.
+      const el = document.querySelector<HTMLElement>(
+        'form button[type="submit"]',
+      );
+      el?.focus();
     }
     return Object.keys(next).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!validate()) return;
 
     setLoading(true);
@@ -247,7 +257,7 @@ function Login() {
 
           <Button
  type="submit"
- disabled={loading}
+ aria-busy={loading}
  className="w-full text-[10px] tracking-[0.2em] bg-primary hover:bg-primary/90 text-white mt-4 border-none shadow-lg hover:shadow-primary/20"
  >
             {loading
