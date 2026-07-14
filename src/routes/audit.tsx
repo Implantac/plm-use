@@ -134,7 +134,7 @@ const architecture = [
 
 function AuditScreen() {
   return (
-    <div className="min-h-screen bg-background text-white p-6 md:p-10">
+    <div className="min-h-dvh bg-background text-white p-6 md:p-10">
       <div className="mx-auto max-w-7xl space-y-8">
         <header className="rounded-lg border border-white/10 bg-white/[0.035] p-6 md:p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">

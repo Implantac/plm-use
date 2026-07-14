@@ -241,7 +241,7 @@ function AuthenticatedLayout() {
 
   if (loading || !isAuthenticated) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.3em]">
+      <div className="flex h-dvh items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.3em]">
         Autenticando...
       </div>
     );
@@ -257,7 +257,7 @@ function AuthenticatedLayout() {
 
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
+    <div className="flex h-dvh bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
       <aside className="w-[276px] glass-sidebar flex flex-col z-30 relative">
         {/* Ambient ember glow no topo da sidebar */}
         <div
