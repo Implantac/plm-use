@@ -314,7 +314,10 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             variant="outline"
             className="gap-1.5 shrink-0 border-emerald-400/50 text-emerald-200 hover:bg-emerald-400/10"
           >
-            <Link to="/production">
+            <Link
+              to="/production"
+              search={{ pcpStep: "handoff", pcpRef: referenciaRef }}
+            >
               <Workflow className="h-3 w-3" />
               Iniciar fluxo PCP
             </Link>
