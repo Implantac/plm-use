@@ -120,7 +120,7 @@ describe("Field a11y auto-wiring", () => {
     expect(input.id).toBe("custom-id");
     expect(input.getAttribute("aria-describedby")).toBe("custom-msg");
     expect(screen.getByText("Custom").getAttribute("for")).toBe("custom-id");
-    expect(screen.getByText("Custom helper").id).toBe("custom-msg");
+    expect(messageEl("Custom helper").id).toBe("custom-msg");
   });
 
   it("without Field, no auto ids are injected (backwards compatible)", () => {
