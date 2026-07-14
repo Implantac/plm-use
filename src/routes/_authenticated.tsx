@@ -237,18 +237,39 @@ function AuthenticatedLayout() {
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
-      <aside className="w-[276px] glass-sidebar flex flex-col z-30">
-        <div className="px-6 py-5 border-b border-sidebar-border">
-          <img src="/assets/logo.png" alt="USE MODA" className="h-9 w-auto" />
+      <aside className="w-[276px] glass-sidebar flex flex-col z-30 relative">
+        {/* Ambient ember glow no topo da sidebar */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-48 opacity-70"
+          style={{
+            background:
+              "radial-gradient(80% 100% at 30% 0%, hsl(var(--brand-500) / 0.14) 0%, transparent 65%)",
+          }}
+        />
+        <div className="relative px-6 py-5 border-b border-sidebar-border">
+          <div className="flex items-center gap-3">
+            <div className="relative shrink-0">
+              <div className="absolute -inset-1.5 rounded-full bg-ember opacity-30 blur-md" aria-hidden />
+              <img src="/assets/logo.png" alt="USE MODA" className="relative h-10 w-10 object-contain" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-heading text-lg leading-none text-foreground truncate">USE MODA</p>
+              <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.28em] text-glow">
+                PLM · AI
+              </p>
+            </div>
+          </div>
           <div className="mt-4 flex items-center gap-2 uppercase-label text-status-approved">
             <ShieldCheck className="h-3.5 w-3.5" />
             Multiempresa ativo
           </div>
         </div>
 
-        <div className="px-4 py-4">
+        <div className="relative px-4 py-4">
           <GlobalSearch />
         </div>
+
 
         <ScrollArea className="flex-1 px-3">
           <nav className="space-y-1 py-1">
