@@ -72,18 +72,25 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
         ))}
       </div>
 
-      <div className="flex gap-2">
-        <Input
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Ex.: vestido linho off-white, gola v, mangas curtas, comprimento midi"
-          className="text-[11px]"
-          disabled={busy}
-        />
-        <Button size="sm" className="gap-1" onClick={generate} disabled={busy}>
-          {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
-          Gerar
-        </Button>
+      <div className="space-y-1.5">
+        <div className="flex gap-2">
+          <Input
+            value={prompt}
+            onChange={(e) => {
+              setPrompt(e.target.value);
+              if (e.target.value.trim()) setPromptError(null);
+            }}
+            placeholder="Ex.: vestido linho off-white, gola v, mangas curtas, comprimento midi"
+            className="text-[11px]"
+            disabled={busy}
+            aria-invalid={!!promptError}
+          />
+          <Button size="sm" className="gap-1" onClick={generate} disabled={busy}>
+            {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
+            Gerar
+          </Button>
+        </div>
+        {promptError && <FieldMessage variant="error">{promptError}</FieldMessage>}
       </div>
 
       {src && (
