@@ -76,9 +76,20 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
       next.justification = "Ajuste requer justificativa com no mínimo 3 caracteres.";
     if (Object.keys(next).length > 0) {
       setErrors(next);
+      const firstInvalid = ["movement-item", "movement-warehouse", "movement-qty", "movement-justification"]
+        .find((id) => {
+          const key = id.replace("movement-", "") as keyof typeof next;
+          return next[key === "item" ? "itemId" : key === "warehouse" ? "warehouseId" : key];
+        });
+      if (firstInvalid) {
+        requestAnimationFrame(() => {
+          (document.getElementById(firstInvalid) as HTMLElement | null)?.focus();
+        });
+      }
       return;
     }
     setErrors({});
+
 
 
     setBusy(true);
