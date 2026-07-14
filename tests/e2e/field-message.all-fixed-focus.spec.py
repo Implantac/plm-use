@@ -90,9 +90,14 @@ async def main() -> int:
         await page.screenshot(path=str(SHOTS / "1_signup_open.png"))
 
         print("\n▶ 2. Submeter vazio → alerts presentes, foco no primeiro inválido")
+        # Desativa validação HTML5 para acionar somente a lógica custom
+        # (senão o browser bloqueia o submit dos campos required).
+        await page.evaluate(
+            "() => { const f = document.querySelector('form'); if (f) f.noValidate = true; }"
+        )
         submit = page.locator('form button[type="submit"]')
         await submit.click()
-        await page.wait_for_timeout(200)
+        await page.wait_for_timeout(250)
 
         alerts_empty = await form_alerts(page)
         check(len(alerts_empty) >= 2, f"há múltiplos role='alert' após submit vazio (achado: {alerts_empty})")
