@@ -74,7 +74,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Ex.: vestido linho off-white, gola v, mangas curtas, comprimento midi"
-          className="h-9 bg-white/5 border-white/10 text-[11px]"
+          className="text-[11px]"
           disabled={busy}
         />
         <Button size="sm" className="gap-1" onClick={generate} disabled={busy}>

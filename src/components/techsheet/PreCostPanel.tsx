@@ -173,7 +173,7 @@ function FieldNumber({
         step={0.1}
         value={Number.isFinite(value) ? value : 0}
         onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-        className="h-8 text-sm"
+        className="text-sm"
       />
     </div>
   );

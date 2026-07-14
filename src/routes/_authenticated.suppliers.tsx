@@ -343,7 +343,7 @@ function SuppliersPage() {
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Têxtil Brasil S.A."
               />
             </div>
@@ -355,7 +355,7 @@ function SuppliersPage() {
                 <Input
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Tecidos"
                 />
               </div>
@@ -366,7 +366,7 @@ function SuppliersPage() {
                 <Input
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: SP, Brasil"
                 />
               </div>

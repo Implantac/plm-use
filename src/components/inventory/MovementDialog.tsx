@@ -106,7 +106,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
               Insumo
             </Label>
             <Select value={itemId} onValueChange={setItemId}>
-              <SelectTrigger className="bg-white/5 border-white/10 h-11">
+              <SelectTrigger className="">
                 <SelectValue placeholder="Selecione o insumo" />
               </SelectTrigger>
               <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
@@ -125,7 +125,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 Armazém
               </Label>
               <Select value={warehouseId} onValueChange={setWarehouseId}>
-                <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                <SelectTrigger className="">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
@@ -142,7 +142,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 Tipo
               </Label>
               <Select value={kind} onValueChange={(v) => setKind(v as Kind)}>
-                <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                <SelectTrigger className="">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
@@ -168,7 +168,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 type="number"
                 min="0"
                 step="0.01"
-                className="bg-white/5 border-white/10 h-11"
+                className=""
               />
             </div>
             <div className="space-y-2">
@@ -178,7 +178,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
               <Input
                 value={lotCode}
                 onChange={(e) => setLotCode(e.target.value)}
-                className="bg-white/5 border-white/10 h-11"
+                className=""
                 placeholder="LOTE-2601"
               />
             </div>
@@ -193,7 +193,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 value={justification}
                 onChange={(e) => setJustification(e.target.value)}
                 rows={3}
-                className="bg-white/5 border-white/10"
+                className=""
               />
             </div>
           )}

@@ -368,7 +368,7 @@ function TechSheetPage() {
                 <Input
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Tecido"
                 />
               </div>
@@ -379,7 +379,7 @@ function TechSheetPage() {
                 <Input
                   value={formData.qty}
                   onChange={(e) => setFormData({ ...formData, qty: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 1.5m"
                 />
               </div>
@@ -391,7 +391,7 @@ function TechSheetPage() {
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Algodão Pima"
               />
             </div>
@@ -402,7 +402,7 @@ function TechSheetPage() {
               <Input
                 value={formData.cost}
                 onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: R$ 35,00"
               />
             </div>

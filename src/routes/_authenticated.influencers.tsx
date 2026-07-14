@@ -277,7 +277,7 @@ function InfluencersPage() {
                 value={novoRef}
                 onChange={(e) => setNovoRef(e.target.value)}
                 placeholder="ex: VT302"
-                className="bg-white/[0.04] border-white/10 text-white"
+                className="bg-white/[0.04] text-white"
               />
             </div>
             <div>
@@ -286,7 +286,7 @@ function InfluencersPage() {
                 value={novoNome}
                 onChange={(e) => setNovoNome(e.target.value)}
                 placeholder="ex: Vestido Midi Toscana"
-                className="bg-white/[0.04] border-white/10 text-white"
+                className="bg-white/[0.04] text-white"
               />
             </div>
             <Button onClick={registrarEnvio} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">

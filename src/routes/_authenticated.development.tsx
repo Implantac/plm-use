@@ -472,7 +472,7 @@ function DevelopmentPage() {
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Blusa Verão Amalfi"
               />
             </div>
@@ -484,7 +484,7 @@ function DevelopmentPage() {
                 <Input
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Top"
                 />
               </div>
@@ -495,7 +495,7 @@ function DevelopmentPage() {
                 <Input
                   value={formData.designer}
                   onChange={(e) => setFormData({ ...formData, designer: e.target.value })}
-                  className="bg-white/5 border-white/10 rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Julia"
                 />
               </div>

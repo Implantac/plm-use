@@ -256,7 +256,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   persistPatch({ causa_raiz: local.causa_raiz }, "Causa-raiz atualizada")
                 }
                 placeholder="Descreva a causa-raiz identificada"
-                className="min-h-[80px] bg-white/5 border-white/10 text-[12px]"
+                className="min-h-[80px] text-[12px]"
               />
             </Field>
             <Field label={`5 Porquês (${local.cinco_porques.length}/5)`}>
@@ -296,7 +296,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                       value={porqueDraft}
                       onChange={(e) => setPorqueDraft(e.target.value)}
                       placeholder={`Porquê #${local.cinco_porques.length + 1}`}
-                      className="h-8 bg-white/5 border-white/10 text-[11px]"
+                      className="text-[11px]"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -412,14 +412,14 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 value={evUrl}
                 onChange={(e) => setEvUrl(e.target.value)}
                 placeholder="URL da evidência (foto, laudo, doc)"
-                className="h-8 bg-white/5 border-white/10 text-[11px]"
+                className="text-[11px]"
               />
               <div className="flex gap-2">
                 <Input
                   value={evLabel}
                   onChange={(e) => setEvLabel(e.target.value)}
                   placeholder="Descrição (opcional)"
-                  className="h-8 bg-white/5 border-white/10 text-[11px] flex-1"
+                  className="text-[11px] flex-1"
                 />
                 <Button
  size="sm"
@@ -485,7 +485,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Nota da transição (opcional)"
-            className="min-h-[52px] bg-white/5 border-white/10 text-[11px]"
+            className="min-h-[52px] text-[11px]"
           />
           <div className="flex flex-wrap gap-2">
             {nextStatuses(local.status).map((to) => (
@@ -566,7 +566,7 @@ function ActionField({
           if (v !== (value ?? "")) onSave(v);
         }}
         placeholder="Descreva a ação, responsável e prazo"
-        className="min-h-[64px] bg-white/5 border-white/10 text-[11px]"
+        className="min-h-[64px] text-[11px]"
       />
     </Field>
   );
@@ -588,7 +588,7 @@ function MetaRow({
             e.target.value !== local.responsavel &&
             onSave({ responsavel: e.target.value }, "Responsável atualizado")
           }
-          className="h-8 bg-white/5 border-white/10 text-[11px]"
+          className="text-[11px]"
         />
       </Field>
       <Field label="Prazo">
@@ -599,7 +599,7 @@ function MetaRow({
             e.target.value !== (local.prazo ?? "") &&
             onSave({ prazo: e.target.value || null }, "Prazo atualizado")
           }
-          className="h-8 bg-white/5 border-white/10 text-[11px]"
+          className="text-[11px]"
         />
       </Field>
       <Field label="Severidade">
@@ -626,7 +626,7 @@ function MetaRow({
             onSave({ fornecedor: e.target.value || null }, "Fornecedor")
           }
           placeholder="—"
-          className="h-8 bg-white/5 border-white/10 text-[11px]"
+          className="text-[11px]"
         />
       </Field>
     </div>

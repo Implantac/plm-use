@@ -211,7 +211,7 @@ function CollectionMapRoute() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Ref ou nome"
-                className="h-8 text-xs"
+                className="text-xs"
               />
 
               <FilterGroup label="Categoria">

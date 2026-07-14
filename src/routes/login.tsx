@@ -148,7 +148,7 @@ function Login() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Seu nome"
-                className="rounded-md border-white/10 bg-white/5 h-12 px-4 text-sm focus-visible:ring-primary/30"
+                className="h-12 px-4 text-sm"
                 required
               />
             </div>
@@ -166,7 +166,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className="rounded-md border-white/10 bg-white/5 h-12 px-4 text-sm focus-visible:ring-primary/30"
+              className="h-12 px-4 text-sm"
               required
             />
           </div>
@@ -183,7 +183,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               minLength={6}
-              className="rounded-md border-white/10 bg-white/5 h-12 px-4 focus-visible:ring-primary/30"
+              className="h-12 px-4"
               required
             />
           </div>
