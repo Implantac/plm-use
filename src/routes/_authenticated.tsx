@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { AppBreadcrumb } from "@/components/nav/AppBreadcrumb";
 import { useRecentRoutes } from "@/hooks/use-recent-routes";
@@ -173,10 +173,26 @@ function AuthenticatedLayout() {
     [],
   );
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const bestMatchHref = useMemo(() => {
+    const allHrefs = navSections.flatMap((s) => s.items.map((it) => it.href));
+    const matches = allHrefs.filter(
+      (href) => pathname === href || pathname.startsWith(href + "/"),
+    );
+    return matches.sort((a, b) => b.length - a.length)[0];
+  }, [pathname, navSections]);
+
+  const activeSectionId = useMemo(() => {
+    if (!bestMatchHref) return undefined;
+    return navSections.find((s) => s.items.some((it) => it.href === bestMatchHref))?.id;
+  }, [bestMatchHref, navSections]);
+
+  const isActiveItem = (href: string) => href === bestMatchHref;
+
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
-    const path = typeof window !== "undefined" ? window.location.pathname : "";
     const stored = typeof window !== "undefined" ? window.localStorage.getItem("use-moda-sidebar-sections-v2") : null;
-    const initial: Record<string, boolean> = stored
+    return stored
       ? (JSON.parse(stored) as Record<string, boolean>)
       : {
           geral: true,
@@ -188,11 +204,20 @@ function AuthenticatedLayout() {
           insights: false,
           admin: false,
         };
-    navSections.forEach((s) => {
-      if (s.items.some((it) => path.startsWith(it.href))) initial[s.id] = true;
-    });
-    return initial;
   });
+
+  // Sincroniza o grupo ativo com a rota atual — abre automaticamente a seção do processo em uso.
+  useEffect(() => {
+    if (!activeSectionId) return;
+    setOpenSections((prev) => {
+      if (prev[activeSectionId]) return prev;
+      const next = { ...prev, [activeSectionId]: true };
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("use-moda-sidebar-sections-v2", JSON.stringify(next));
+      }
+      return next;
+    });
+  }, [activeSectionId]);
 
   const toggleSection = (id: string) =>
     setOpenSections((prev) => {
@@ -276,27 +301,32 @@ function AuthenticatedLayout() {
                   Favoritos
                 </div>
                 <div className="mt-0.5 mb-2 space-y-0.5">
-                  {favoriteItems.map((item) => (
-                    <Link
-                      key={`fav-${item.href}`}
-                      to={item.href}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
-                    >
-                      <span>{item.icon}</span>
-                      <span className="flex-1 truncate">{item.label}</span>
-                    </Link>
-                  ))}
+                  {favoriteItems.map((item) => {
+                    const active = isActiveItem(item.href);
+                    return (
+                      <Link
+                        key={`fav-${item.href}`}
+                        to={item.href}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
+                      >
+                        <span>{item.icon}</span>
+                        <span className="flex-1 truncate">{item.label}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
             {navSections.map((section) => {
               const open = openSections[section.id] ?? false;
+              const sectionActive = section.id === activeSectionId;
               return (
                 <div key={section.id}>
                   <button
                     type="button"
                     onClick={() => toggleSection(section.id)}
-                    className="w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70 hover:text-foreground transition-colors"
+                    aria-expanded={open}
+                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] transition-colors ${sectionActive ? "text-primary" : "text-muted-foreground/70 hover:text-foreground"}`}
                   >
                     <span>{section.label}</span>
                     <ChevronDown
@@ -307,11 +337,13 @@ function AuthenticatedLayout() {
                     <div className="mt-0.5 mb-1 space-y-0.5">
                       {section.items.map((item) => {
                         const fav = isFavorite(item.href);
+                        const active = isActiveItem(item.href);
                         return (
                           <div key={item.label} className="group/nav flex items-center">
                             <Link
                               to={item.href}
-                              className="flex-1 flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors text-muted-foreground hover:text-foreground hover:bg-accent [&.active]:bg-primary/10 [&.active]:text-primary"
+                              aria-current={active ? "page" : undefined}
+                              className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
                             >
                               <span>{item.icon}</span>
                               <span className="flex-1 truncate">{item.label}</span>
