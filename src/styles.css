@@ -140,10 +140,11 @@
   --motion-slow:  320ms cubic-bezier(0.16, 1, 0.3, 1);
   --motion-pulse: 1600ms ease-in-out infinite;
 
-  /* Fonts */
-  --font-sans:    "Inter Variable", "Inter", system-ui, sans-serif;
-  --font-heading: "Inter Tight", "Inter Variable", "Inter", system-ui, sans-serif;
+  /* Fonts — DM Serif Display (heróico/editorial) + Fira Sans (industrial legível) */
+  --font-sans:    "Fira Sans", system-ui, sans-serif;
+  --font-heading: "DM Serif Display", "DM Serif Text", "Cormorant Garamond", Georgia, serif;
   --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
 
   /* Density defaults */
   --row-h:  36px;
