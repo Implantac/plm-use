@@ -10,40 +10,52 @@
  * All colors HSL. No component may hardcode colors.
  * ========================================================================= */
 
-/* ---------- Primitives (HSL triplets — never referenced by components) --- */
+/* ---------- Primitives (HSL triplets — never referenced by components) ---
+ * Paleta extraída da logo USE MODA:
+ *   preto quente → borgonha profundo → ember/copper → highlight dourado
+ * ------------------------------------------------------------------------ */
 :root {
-  /* Neutros (ink) */
-  --ink-0:    0 0% 100%;
-  --ink-50:   220 15% 96%;
-  --ink-200:  220 12% 82%;
-  --ink-400:  220 10% 62%;
-  --ink-600:  220 12% 40%;
-  --ink-800:  222 18% 16%;
-  --ink-900:  222 22% 10%;
-  --ink-950:  222 30% 6%;
-  --ink-1000: 222 40% 3%;
+  /* Neutros (ink) — família preto quente com undertone burgundy */
+  --ink-0:    30 33% 98%;   /* off-white quente */
+  --ink-50:   30 24% 94%;   /* paper */
+  --ink-200:  28 14% 78%;   /* soft */
+  --ink-400:  26 10% 58%;   /* muted body */
+  --ink-600:  22 12% 38%;   /* deep muted */
+  --ink-800:  18 22% 12%;   /* surface elevated */
+  --ink-900:  18 30% 8%;    /* surface */
+  --ink-950:  16 40% 5%;    /* background */
+  --ink-1000: 14 50% 3%;    /* deep sunken */
 
-  /* Brand — azul-elétrico industrial (único) */
-  --brand-50:  210 100% 96%;
-  --brand-200: 210 100% 84%;
-  --brand-500: 210 100% 56%;
-  --brand-700: 210 100% 42%;
-  --brand-900: 210 100% 22%;
+  /* Brand — ember/copper industrial (extraído da logo) */
+  --brand-50:  30 90% 94%;
+  --brand-200: 26 88% 78%;
+  --brand-500: 19 83% 44%;  /* #c04a12 — ember signature */
+  --brand-700: 18 88% 34%;
+  --brand-900: 16 90% 20%;
 
-  /* Status primitives */
-  --info-500:    195 90% 50%;
-  --info-700:    195 90% 36%;
-  --success-500: 152 68% 44%;
-  --success-700: 152 68% 30%;
-  --warning-500: 38 92% 52%;
+  /* Highlight dourado/copper glow (halo, focus, primary-glow) */
+  --glow-500: 27 82% 55%;   /* #e8801f — copper radiante */
+  --glow-700: 24 78% 42%;
+
+  /* Borgonha profundo (accent secundário, entidades premium) */
+  --wine-500: 8 65% 24%;    /* #6b1a12 — deep sienna wine */
+  --wine-700: 6 72% 16%;
+
+  /* Status primitives — recalibrados para paleta quente */
+  --info-500:    195 78% 48%;   /* teal-blue, contraste com ember */
+  --info-700:    195 82% 34%;
+  --success-500: 145 55% 42%;   /* verde oliva-esmeralda, terroso */
+  --success-700: 145 60% 28%;
+  --warning-500: 38 92% 52%;    /* amber puro */
   --warning-700: 38 92% 40%;
-  --danger-500:  358 78% 56%;
-  --danger-700:  358 78% 42%;
-  --neutral-500: 220 12% 50%;
-  --neutral-700: 220 12% 36%;
-  --purple-500:  268 76% 62%;
-  --purple-700:  268 76% 48%;
+  --danger-500:  358 78% 54%;
+  --danger-700:  358 82% 40%;
+  --neutral-500: 22 12% 48%;
+  --neutral-700: 22 12% 34%;
+  --purple-500:  282 58% 58%;   /* orquídea, equilibra o warm */
+  --purple-700:  282 60% 44%;
 }
+
 
 /* ---------- Semantics — LIGHT (default when no .dark) ------------------- */
 :root {
