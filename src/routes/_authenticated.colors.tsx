@@ -31,6 +31,7 @@ import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import { toast } from "sonner";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   listPalettes,
   subscribe,
@@ -356,12 +357,14 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
   const [hex, setHex] = useState("#7FA88B");
   const [pantone, setPantone] = useState("");
   const [supplier, setSupplier] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
 
   const reset = () => {
     setName("");
     setHex("#7FA88B");
     setPantone("");
     setSupplier("");
+    setNameError(null);
   };
 
   return (
@@ -390,12 +393,17 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             />
             <div className="flex-1 space-y-2">
               <div>
-                <Label className="text-[10px] uppercase tracking-widest">Nome</Label>
+                <Label className="text-[10px] uppercase tracking-widest" required>Nome</Label>
                 <Input
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (e.target.value.trim()) setNameError(null);
+                  }}
                   placeholder="Ex.: Verde Amêndoa"
+                  aria-invalid={!!nameError}
                 />
+                {nameError && <FieldMessage variant="error">{nameError}</FieldMessage>}
               </div>
               <div>
                 <Label className="text-[10px] uppercase tracking-widest">HEX</Label>
@@ -431,11 +439,12 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             Cancelar
           </Button>
           <Button
- onClick={() => {
+  onClick={() => {
               if (!name.trim()) {
-                toast.error("Dê um nome à cor");
+                setNameError("Dê um nome à cor.");
                 return;
               }
+              setNameError(null);
               addColorToPalette(paletteId, {
                 id: `c-${Date.now()}`,
                 name: name.trim(),

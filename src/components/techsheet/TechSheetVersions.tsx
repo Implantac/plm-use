@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FieldMessage } from "@/components/ui/field-message";
 import { GitBranch, CheckCircle2, Clock4, Archive, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useTechSheetStore, type TechSheetVersion } from "@/lib/techsheet/store";
@@ -21,6 +22,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
   const [compareB, setCompareB] = useState<string | null>(data.versoes[1]?.id ?? null);
   const [resumo, setResumo] = useState("");
   const [alteracoes, setAlteracoes] = useState("");
+  const [resumoError, setResumoError] = useState<string | null>(null);
 
   const va = data.versoes.find((v) => v.id === compareA);
   const vb = data.versoes.find((v) => v.id === compareB);
@@ -69,12 +71,26 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
 
       <div className="border-t border-white/5 pt-5 space-y-3">
         <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">Criar nova versão</p>
-        <Input value={resumo} onChange={(e) => setResumo(e.target.value)} placeholder="Resumo da alteração" className="text-[11px]" />
+        <Input
+          value={resumo}
+          onChange={(e) => {
+            setResumo(e.target.value);
+            if (e.target.value.trim()) setResumoError(null);
+          }}
+          placeholder="Resumo da alteração"
+          className="text-[11px]"
+          aria-invalid={!!resumoError}
+        />
+        {resumoError && <FieldMessage variant="error">{resumoError}</FieldMessage>}
         <Input value={alteracoes} onChange={(e) => setAlteracoes(e.target.value)} placeholder="Alterações (separe por ; )" className="text-[11px]" />
         <Button
  size="sm" className="gap-2"
  onClick={() => {
-            if (!resumo.trim()) return toast.error("Informe o resumo");
+            if (!resumo.trim()) {
+              setResumoError("Informe o resumo da alteração.");
+              return;
+            }
+            setResumoError(null);
             const v = create(refAtual, "Você", resumo.trim(), alteracoes.split(";").map((x) => x.trim()).filter(Boolean));
             toast.success(`Versão ${v.versao} criada · em revisão`);
             setResumo(""); setAlteracoes("");

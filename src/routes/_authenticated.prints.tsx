@@ -41,6 +41,7 @@ import {
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { toast } from "sonner";
+import { FieldMessage } from "@/components/ui/field-message";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import {
   listPrints,
@@ -443,6 +444,7 @@ function MetaCell({
 function NewVersionDialog({ printId }: { printId: string }) {
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState("");
+  const [labelError, setLabelError] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [image, setImage] = useState(
     "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80&w=600",
@@ -463,12 +465,17 @@ function NewVersionDialog({ printId }: { printId: string }) {
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[10px] uppercase tracking-widest">Rótulo</Label>
+              <Label className="text-[10px] uppercase tracking-widest" required>Rótulo</Label>
               <Input
                 value={label}
-                onChange={(e) => setLabel(e.target.value)}
+                onChange={(e) => {
+                  setLabel(e.target.value);
+                  if (e.target.value.trim()) setLabelError(null);
+                }}
                 placeholder="v2 · ajuste rapport"
+                aria-invalid={!!labelError}
               />
+              {labelError && <FieldMessage variant="error">{labelError}</FieldMessage>}
             </div>
             <div>
               <Label className="text-[10px] uppercase tracking-widest">Formato</Label>
@@ -507,11 +514,12 @@ function NewVersionDialog({ printId }: { printId: string }) {
             Cancelar
           </Button>
           <Button
- onClick={() => {
+  onClick={() => {
               if (!label.trim()) {
-                toast.error("Dê um rótulo à versão (ex.: v2)");
+                setLabelError("Dê um rótulo à versão (ex.: v2).");
                 return;
               }
+              setLabelError(null);
               addVersion(printId, {
                 id: `v-${Date.now()}`,
                 label: label.trim(),

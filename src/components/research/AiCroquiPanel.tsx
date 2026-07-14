@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FieldMessage } from "@/components/ui/field-message";
 import { Sparkles, Loader2, Wand2, Download } from "lucide-react";
 import { streamImage } from "@/lib/streamImage";
 import { toast } from "sonner";
@@ -12,6 +13,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
   const [src, setSrc] = useState<string | null>(null);
   const [isFinal, setIsFinal] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [promptError, setPromptError] = useState<string | null>(null);
 
   const templates: Record<typeof preset, string> = {
     croqui:
@@ -24,9 +26,10 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
 
   async function generate() {
     if (!prompt.trim()) {
-      toast.error("Descreva a peça");
+      setPromptError("Descreva a peça antes de gerar.");
       return;
     }
+    setPromptError(null);
     setBusy(true);
     setSrc(null);
     setIsFinal(false);
@@ -69,18 +72,25 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
         ))}
       </div>
 
-      <div className="flex gap-2">
-        <Input
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Ex.: vestido linho off-white, gola v, mangas curtas, comprimento midi"
-          className="text-[11px]"
-          disabled={busy}
-        />
-        <Button size="sm" className="gap-1" onClick={generate} disabled={busy}>
-          {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
-          Gerar
-        </Button>
+      <div className="space-y-1.5">
+        <div className="flex gap-2">
+          <Input
+            value={prompt}
+            onChange={(e) => {
+              setPrompt(e.target.value);
+              if (e.target.value.trim()) setPromptError(null);
+            }}
+            placeholder="Ex.: vestido linho off-white, gola v, mangas curtas, comprimento midi"
+            className="text-[11px]"
+            disabled={busy}
+            aria-invalid={!!promptError}
+          />
+          <Button size="sm" className="gap-1" onClick={generate} disabled={busy}>
+            {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
+            Gerar
+          </Button>
+        </div>
+        {promptError && <FieldMessage variant="error">{promptError}</FieldMessage>}
       </div>
 
       {src && (

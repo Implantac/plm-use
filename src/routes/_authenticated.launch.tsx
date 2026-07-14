@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -48,6 +49,10 @@ function LaunchPage() {
   const [form, setForm] = useState({
     codigo: "", colecao: "", janela_inicio: "", janela_fim: "", notas: "",
   });
+  const [waveErrors, setWaveErrors] = useState<{
+    codigo?: string; colecao?: string; janela_inicio?: string; janela_fim?: string;
+  }>({});
+  const [promoteError, setPromoteError] = useState<string | null>(null);
   const [selectedWave, setSelectedWave] = useState<string | null>(null);
   const [pickedDecisions, setPickedDecisions] = useState<string[]>([]);
 
@@ -64,10 +69,16 @@ function LaunchPage() {
   ], [waves, items, handoffs]);
 
   async function handleCreateWave() {
-    if (!form.codigo || !form.colecao || !form.janela_inicio || !form.janela_fim) {
-      statusToast.error("Preencha código, coleção e janela");
+    const errs: typeof waveErrors = {};
+    if (!form.codigo) errs.codigo = "Informe o código da wave.";
+    if (!form.colecao) errs.colecao = "Informe a coleção.";
+    if (!form.janela_inicio) errs.janela_inicio = "Defina o início da janela.";
+    if (!form.janela_fim) errs.janela_fim = "Defina o fim da janela.";
+    if (Object.keys(errs).length > 0) {
+      setWaveErrors(errs);
       return;
     }
+    setWaveErrors({});
     const res = await create({ data: form });
     if (!res.ok) return statusToast.error(res.reason ?? "Falha ao criar wave");
     statusToast.success(`Wave ${form.codigo} criada`);
@@ -76,9 +87,10 @@ function LaunchPage() {
 
   async function handlePromote() {
     if (!selectedWave || pickedDecisions.length === 0) {
-      statusToast.error("Escolha uma wave e ao menos 1 decisão");
+      setPromoteError("Selecione uma wave destino e ao menos uma decisão aprovada.");
       return;
     }
+    setPromoteError(null);
     const res = await promote({ data: { wave_id: selectedWave, decision_ids: pickedDecisions } });
     if (!res.ok) return statusToast.error(res.reason ?? "Falha ao promover");
     statusToast.success(`${res.created} item(ns) adicionado(s)`);
@@ -129,20 +141,24 @@ function LaunchPage() {
             <CardHeader><CardTitle className="text-sm">Nova wave</CardTitle></CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-5">
               <div>
-                <Label>Código</Label>
-                <Input value={form.codigo} onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))} placeholder="W-2026-01" />
+                <Label required>Código</Label>
+                <Input value={form.codigo} onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))} placeholder="W-2026-01" aria-invalid={!!waveErrors.codigo} />
+                {waveErrors.codigo && <FieldMessage variant="error">{waveErrors.codigo}</FieldMessage>}
               </div>
               <div>
-                <Label>Coleção</Label>
-                <Input value={form.colecao} onChange={(e) => setForm((f) => ({ ...f, colecao: e.target.value }))} placeholder="Verão 26" />
+                <Label required>Coleção</Label>
+                <Input value={form.colecao} onChange={(e) => setForm((f) => ({ ...f, colecao: e.target.value }))} placeholder="Verão 26" aria-invalid={!!waveErrors.colecao} />
+                {waveErrors.colecao && <FieldMessage variant="error">{waveErrors.colecao}</FieldMessage>}
               </div>
               <div>
-                <Label>Início janela</Label>
-                <Input type="date" value={form.janela_inicio} onChange={(e) => setForm((f) => ({ ...f, janela_inicio: e.target.value }))} />
+                <Label required>Início janela</Label>
+                <Input type="date" value={form.janela_inicio} onChange={(e) => setForm((f) => ({ ...f, janela_inicio: e.target.value }))} aria-invalid={!!waveErrors.janela_inicio} />
+                {waveErrors.janela_inicio && <FieldMessage variant="error">{waveErrors.janela_inicio}</FieldMessage>}
               </div>
               <div>
-                <Label>Fim janela</Label>
-                <Input type="date" value={form.janela_fim} onChange={(e) => setForm((f) => ({ ...f, janela_fim: e.target.value }))} />
+                <Label required>Fim janela</Label>
+                <Input type="date" value={form.janela_fim} onChange={(e) => setForm((f) => ({ ...f, janela_fim: e.target.value }))} aria-invalid={!!waveErrors.janela_fim} />
+                {waveErrors.janela_fim && <FieldMessage variant="error">{waveErrors.janela_fim}</FieldMessage>}
               </div>
               <div className="flex items-end">
                 <Button onClick={handleCreateWave} className="w-full">
@@ -269,6 +285,7 @@ function LaunchPage() {
                 <CheckCircle2 className="h-4 w-4 mr-1" />
                 Promover {pickedDecisions.length} item(ns)
               </Button>
+              {promoteError && <FieldMessage variant="error">{promoteError}</FieldMessage>}
             </CardContent>
           </Card>
         </TabsContent>

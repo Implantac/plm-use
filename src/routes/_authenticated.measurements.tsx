@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Ruler, Layers, CheckCircle2, Archive, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { FieldMessage } from "@/components/ui/field-message";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import {
   listCharts,
@@ -46,6 +47,7 @@ function MeasurementsPage() {
     category: "Top" as MeasurementChart["category"],
     segment: "Feminino" as MeasurementChart["segment"],
   });
+  const [chartErrors, setChartErrors] = useState<{ code?: string; name?: string }>({});
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
@@ -63,10 +65,14 @@ function MeasurementsPage() {
   const selected = charts.find((c) => c.id === selectedId) ?? filtered[0];
 
   const handleCreate = () => {
-    if (!newChart.code.trim() || !newChart.name.trim()) {
-      toast.error("Informe código e nome");
+    const errs: typeof chartErrors = {};
+    if (!newChart.code.trim()) errs.code = "Informe o código.";
+    if (!newChart.name.trim()) errs.name = "Informe o nome.";
+    if (Object.keys(errs).length > 0) {
+      setChartErrors(errs);
       return;
     }
+    setChartErrors({});
     const id = `tm-${Date.now()}`;
     upsertChart({
       id,
@@ -358,7 +364,7 @@ function MeasurementsPage() {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground" required>
                   Código
                 </Label>
                 <Input
@@ -366,10 +372,14 @@ function MeasurementsPage() {
                   onChange={(e) => setNewChart({ ...newChart, code: e.target.value })}
                   placeholder="TM-BLU-03"
                   className="rounded-lg"
+                  aria-invalid={!!chartErrors.code}
                 />
+                {chartErrors.code && (
+                  <FieldMessage variant="error">{chartErrors.code}</FieldMessage>
+                )}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground" required>
                   Nome
                 </Label>
                 <Input
@@ -377,7 +387,11 @@ function MeasurementsPage() {
                   onChange={(e) => setNewChart({ ...newChart, name: e.target.value })}
                   placeholder="Camisas Oversized"
                   className="rounded-lg"
+                  aria-invalid={!!chartErrors.name}
                 />
+                {chartErrors.name && (
+                  <FieldMessage variant="error">{chartErrors.name}</FieldMessage>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">

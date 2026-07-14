@@ -49,6 +49,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
   const [lotCode, setLotCode] = useState("");
   const [justification, setJustification] = useState("");
   const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<{ itemId?: string; warehouseId?: string; qty?: string; justification?: string }>({});
 
   useEffect(() => {
     if (!open) return;
@@ -66,11 +67,19 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
   }, [open, preselectItemId]);
 
   const handleSubmit = async () => {
-    if (!itemId || !warehouseId) return toast.error("Selecione insumo e armazém.");
+    const next: typeof errors = {};
+    if (!itemId) next.itemId = "Selecione o insumo.";
+    if (!warehouseId) next.warehouseId = "Selecione o armazém.";
     const q = Number(qty);
-    if (!(q > 0)) return toast.error("Quantidade deve ser > 0.");
+    if (!(q > 0)) next.qty = "Quantidade deve ser maior que 0.";
     if (kind === "adjust" && justification.trim().length < 3)
-      return toast.error("Ajuste requer justificativa (mín. 3 caracteres).");
+      next.justification = "Ajuste requer justificativa com no mínimo 3 caracteres.";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
+      return;
+    }
+    setErrors({});
+
 
     setBusy(true);
     const res = await registerMovement({
@@ -103,11 +112,9 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 py-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-              Insumo
-            </Label>
+            <Label required>Insumo</Label>
             <Select value={itemId} onValueChange={setItemId}>
-              <SelectTrigger className="">
+              <SelectTrigger aria-invalid={!!errors.itemId}>
                 <SelectValue placeholder="Selecione o insumo" />
               </SelectTrigger>
               <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
@@ -118,15 +125,14 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 ))}
               </SelectContent>
             </Select>
+            {errors.itemId && <FieldMessage variant="error">{errors.itemId}</FieldMessage>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Armazém
-              </Label>
+              <Label required>Armazém</Label>
               <Select value={warehouseId} onValueChange={setWarehouseId}>
-                <SelectTrigger className="">
+                <SelectTrigger aria-invalid={!!errors.warehouseId}>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
@@ -137,13 +143,12 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                   ))}
                 </SelectContent>
               </Select>
+              {errors.warehouseId && <FieldMessage variant="error">{errors.warehouseId}</FieldMessage>}
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Tipo
-              </Label>
+              <Label>Tipo</Label>
               <Select value={kind} onValueChange={(v) => setKind(v as Kind)}>
-                <SelectTrigger className="">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
@@ -160,26 +165,22 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Quantidade
-              </Label>
+              <Label required>Quantidade</Label>
               <Input
                 value={qty}
                 onChange={(e) => setQty(e.target.value)}
                 type="number"
                 min="0"
                 step="0.01"
-                className=""
+                aria-invalid={!!errors.qty}
               />
+              {errors.qty && <FieldMessage variant="error">{errors.qty}</FieldMessage>}
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Lote (opcional)
-              </Label>
+              <Label>Lote (opcional)</Label>
               <Input
                 value={lotCode}
                 onChange={(e) => setLotCode(e.target.value)}
-                className=""
                 placeholder="LOTE-2601"
               />
             </div>
@@ -192,12 +193,13 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 value={justification}
                 onChange={(e) => setJustification(e.target.value)}
                 rows={3}
-                aria-invalid={!justification.trim()}
+                aria-invalid={!!errors.justification || !justification.trim()}
               />
-              <FieldMessage variant={justification.trim() ? "helper" : "error"}>
-                {justification.trim()
-                  ? "Explique brevemente o motivo do ajuste de estoque."
-                  : "Justificativa obrigatória para ajustes de estoque."}
+              <FieldMessage variant={errors.justification || !justification.trim() ? "error" : "helper"}>
+                {errors.justification
+                  ?? (justification.trim()
+                    ? "Explique brevemente o motivo do ajuste de estoque."
+                    : "Justificativa obrigatória para ajustes de estoque.")}
               </FieldMessage>
             </div>
           )}

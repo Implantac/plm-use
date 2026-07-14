@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heart, Instagram, MapPin, Package, Plus, Send, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { FieldMessage } from "@/components/ui/field-message";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { REGIOES_BR, useInfluencersStore, type Envio, type Influencer } from "@/lib/influencers/store";
 
@@ -29,6 +30,7 @@ function InfluencersPage() {
   const [envioOpen, setEnvioOpen] = useState(false);
   const [novoRef, setNovoRef] = useState("");
   const [novoNome, setNovoNome] = useState("");
+  const [envioErrors, setEnvioErrors] = useState<{ ref?: string; nome?: string }>({});
 
   const totais = useMemo(() => {
     const enviosTot = influencers.reduce((a, i) => a + i.envios.length, 0);
@@ -50,10 +52,16 @@ function InfluencersPage() {
   }, [influencers]);
 
   function registrarEnvio() {
-    if (!sel || !novoRef || !novoNome) {
-      toast.error("Preencha referência e nome da peça.");
+    if (!sel) return;
+    const errs: typeof envioErrors = {};
+    if (!novoRef.trim()) errs.ref = "Informe a referência.";
+    if (!novoNome.trim()) errs.nome = "Informe o nome da peça.";
+    if (Object.keys(errs).length > 0) {
+      setEnvioErrors(errs);
       return;
     }
+    setEnvioErrors({});
+
     const envio: Envio = {
       id: Math.random().toString(36).slice(2, 8),
       ref: novoRef.toUpperCase(),
@@ -272,22 +280,32 @@ function InfluencersPage() {
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Referência</Label>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground" required>Referência</Label>
               <Input
                 value={novoRef}
-                onChange={(e) => setNovoRef(e.target.value)}
+                onChange={(e) => {
+                  setNovoRef(e.target.value);
+                  if (e.target.value.trim()) setEnvioErrors((p) => ({ ...p, ref: undefined }));
+                }}
                 placeholder="ex: VT302"
                 className="bg-white/[0.04] text-white"
+                aria-invalid={!!envioErrors.ref}
               />
+              {envioErrors.ref && <FieldMessage variant="error">{envioErrors.ref}</FieldMessage>}
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Nome da peça</Label>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground" required>Nome da peça</Label>
               <Input
                 value={novoNome}
-                onChange={(e) => setNovoNome(e.target.value)}
+                onChange={(e) => {
+                  setNovoNome(e.target.value);
+                  if (e.target.value.trim()) setEnvioErrors((p) => ({ ...p, nome: undefined }));
+                }}
                 placeholder="ex: Vestido Midi Toscana"
                 className="bg-white/[0.04] text-white"
+                aria-invalid={!!envioErrors.nome}
               />
+              {envioErrors.nome && <FieldMessage variant="error">{envioErrors.nome}</FieldMessage>}
             </div>
             <Button onClick={registrarEnvio} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
               <Send className="h-3.5 w-3.5 mr-1" />

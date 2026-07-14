@@ -30,6 +30,7 @@ import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { toast } from "sonner";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   collectionMap,
   listFilters,
@@ -515,6 +516,7 @@ function SaveFilterDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const hasAny =
     current.categories.length + current.colors.length + current.statuses.length > 0;
 
@@ -535,27 +537,32 @@ function SaveFilterDialog({
           <DialogTitle>Salvar filtro atual</DialogTitle>
         </DialogHeader>
         <div className="space-y-2">
-          <Label className="text-[10px] uppercase tracking-widest">Nome</Label>
+          <Label className="text-[10px] uppercase tracking-widest" required>Nome</Label>
           <Input
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (e.target.value.trim()) setNameError(null);
+            }}
             placeholder="Ex.: Tops terrosos em produção"
+            aria-invalid={!!nameError}
           />
-          <p className="text-[10px] text-muted-foreground">
-            {current.categories.length} categorias · {current.colors.length} cores ·{" "}
-            {current.statuses.length} status
-          </p>
+          <FieldMessage variant={nameError ? "error" : "helper"}>
+            {nameError ??
+              `${current.categories.length} categorias · ${current.colors.length} cores · ${current.statuses.length} status`}
+          </FieldMessage>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancelar
           </Button>
           <Button
- onClick={() => {
+  onClick={() => {
               if (!name.trim()) {
-                toast.error("Dê um nome ao filtro");
+                setNameError("Dê um nome ao filtro para salvá-lo.");
                 return;
               }
+              setNameError(null);
               saveFilter({
                 id: `f-${Date.now()}`,
                 name: name.trim(),
