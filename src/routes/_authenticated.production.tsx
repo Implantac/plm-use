@@ -93,6 +93,8 @@ function ProductionPage() {
       ]}
     >
       <div className="space-y-4">
+        <PCPFlowDiagram />
+
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
             <button
