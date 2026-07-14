@@ -158,6 +158,7 @@ async def main() -> int:
             "password perde aria-invalid após preencher com valor válido",
         )
         await page.screenshot(path=str(SHOTS / "2_invalid_email.png"))
+        diff(await run_axe(page, "invalid_email"), "invalid_email")
 
         # ---------------------------------------------------------------
         # 3. Senha curta
