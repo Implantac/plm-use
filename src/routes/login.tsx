@@ -49,6 +49,16 @@ function Login() {
         const el = document.getElementById(firstInvalid) as HTMLElement | null;
         el?.focus();
       });
+    } else {
+      // Todos os campos válidos: mover o foco para o primeiro elemento
+      // acionável seguinte (submit) para que o leitor de tela anuncie o
+      // próximo passo e nenhum FieldMessage com role="alert" permaneça.
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLElement>(
+          'form button[type="submit"]',
+        );
+        el?.focus();
+      });
     }
     return Object.keys(next).length === 0;
   };
