@@ -173,10 +173,26 @@ function AuthenticatedLayout() {
     [],
   );
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const bestMatchHref = useMemo(() => {
+    const allHrefs = navSections.flatMap((s) => s.items.map((it) => it.href));
+    const matches = allHrefs.filter(
+      (href) => pathname === href || pathname.startsWith(href + "/"),
+    );
+    return matches.sort((a, b) => b.length - a.length)[0];
+  }, [pathname, navSections]);
+
+  const activeSectionId = useMemo(() => {
+    if (!bestMatchHref) return undefined;
+    return navSections.find((s) => s.items.some((it) => it.href === bestMatchHref))?.id;
+  }, [bestMatchHref, navSections]);
+
+  const isActiveItem = (href: string) => href === bestMatchHref;
+
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
-    const path = typeof window !== "undefined" ? window.location.pathname : "";
     const stored = typeof window !== "undefined" ? window.localStorage.getItem("use-moda-sidebar-sections-v2") : null;
-    const initial: Record<string, boolean> = stored
+    return stored
       ? (JSON.parse(stored) as Record<string, boolean>)
       : {
           geral: true,
@@ -188,11 +204,20 @@ function AuthenticatedLayout() {
           insights: false,
           admin: false,
         };
-    navSections.forEach((s) => {
-      if (s.items.some((it) => path.startsWith(it.href))) initial[s.id] = true;
-    });
-    return initial;
   });
+
+  // Sincroniza o grupo ativo com a rota atual — abre automaticamente a seção do processo em uso.
+  useEffect(() => {
+    if (!activeSectionId) return;
+    setOpenSections((prev) => {
+      if (prev[activeSectionId]) return prev;
+      const next = { ...prev, [activeSectionId]: true };
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("use-moda-sidebar-sections-v2", JSON.stringify(next));
+      }
+      return next;
+    });
+  }, [activeSectionId]);
 
   const toggleSection = (id: string) =>
     setOpenSections((prev) => {
