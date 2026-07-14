@@ -1,97 +1,94 @@
-# Plano de evolução — USE MODA PLM
+# Reorganização do USE MODA PLM em fluxo orientado a processo
 
-Princípio: **evoluir sem quebrar**. Nenhuma rota atual será removida; URLs existentes seguem válidas (via redirect quando consolidadas). Nenhuma regra de negócio é alterada. Nenhum store existente é reescrito — apenas estendido.
+Diretriz recebida: transformar o projeto em um PLM orientado ao ciclo de vida do produto, sem recriar nada. O plano abaixo é incremental, reaproveita 100% do que já existe (rotas, tabelas, componentes, hooks, eventos, workflows) e entrega valor em ondas curtas.
 
----
+## Princípios inegociáveis desta reorganização
 
-## Onda 1 — Navegação & UX de comando (A+B)
+- Zero remoção de rotas, tabelas, componentes ou hooks existentes.
+- Zero migration destrutiva. Toda mudança de schema é aditiva (novas colunas/tabelas de suporte, nunca DROP).
+- Toda nova camada de navegação é um *wrapper* sobre o que já está no `src/routes/_authenticated.*`.
+- Todo avanço de etapa emite evento em `entity_events` e respeita `workflow_definitions` / `reference_transitions`.
+- PLM nunca vira ERP: dados de estoque, custo, pedido continuam via `ErpAdapter`.
 
-Ganho de UX imediato, risco baixo. Tudo em frontend.
+## Onda 0 — Auditoria (entrega: documento, zero código)
 
-1. **Sidebar reorganizada** (`src/routes/_authenticated.tsx`)
-   - Reagrupar "PLM · Produto" em 3 sub-grupos colapsáveis: **Pesquisa & Criação** (Pesquisa, Cores, Estampas, Displayagem, Looks), **Coleção** (Coleções, Mapa, Referências), **Engenharia** (Desenvolvimento, Protótipos, Ficha, Medidas, Relatório, CAD).
-   - Reduzir de 14 → 3 linhas visíveis por padrão.
-   - Persistir estado dos grupos em `localStorage`.
-2. **Breadcrumb dinâmico** no header
-   - Novo componente `AppBreadcrumb` derivado de `useRouterState().location.pathname` + mapa `route → label`.
-   - Substitui o texto fixo "USE MODA AI › PLM Cockpit".
-3. **Command Palette (Cmd+K)** — evolução do `GlobalSearch`
-   - Adicionar seção **Quick Actions** contextuais por rota (ex.: em `/references` → "Nova referência", "Duplicar última"; em `/pcp` → "Nova OP").
-   - Seção **Recentes** persistida em `localStorage`.
-   - Seção **Favoritos** (pin/unpin).
+Produzir `.lovable/docs/00-fpef/AUDIT-2026-07.md` mapeando, a partir da árvore atual:
 
-Entregáveis: edição de `_authenticated.tsx`, `GlobalSearch.tsx`, novo `AppBreadcrumb.tsx`, novo `useRecentRoutes.ts`.
+1. Matriz **Rota → Entidade → Etapa do ciclo** (usa as 40+ rotas `_authenticated.*` já listadas em `src/routeTree.gen.ts`).
+2. Componentes reaproveitáveis já existentes (EntityDrawer, EntityTimeline, ModuleLayout, ModuleTabs, PCPFlowDiagram, IniciarPCPDialog, WorkflowStatusMenu, etc.).
+3. Gaps de workflow: quais entidades já têm transições em `workflow_definitions` e quais só usam campo `status`.
+4. Gaps de digital thread: entidades sem `entity_relations` de origem/consequência.
+5. Lista de rotas órfãs (sem entrada de menu) e rotas duplicadas de conceito.
 
----
+Sem esta auditoria escrita, nenhuma onda seguinte começa.
 
-## Onda 2 — Digital Thread nos módulos novos (C+D)
+## Onda 1 — Navegação por processo (só shell, nenhuma rota nova)
 
-Fecha FPEF V4 (contextual) e V7 (event engine) nos módulos criados recentemente.
+Reorganizar `ModuleTabs` / sidebar em 5 grupos cronológicos, apontando para as rotas que já existem:
 
-1. **Adotar `EntityDrawer` + `EntityTimeline`** em `colors`, `prints`, `measurements`, `looks`, `display`, `collection-map`.
-   - Edição de item passa a abrir drawer (padrão referências), não in-page.
-   - Timeline exibe eventos daquela entidade.
-2. **Emissão de `entity_events`** nas mutações dos stores correspondentes.
-   - Estender `cloud-sync.ts` (ou criar `emitEvent` helper) para gravar eventos de `create/update/delete/approve` para cada tipo.
-   - Nova migration: registrar os `entity_type` novos em `entity_events` (sem alterar schema — apenas whitelist se houver).
-3. **`EntityRelations`** nos drawers para expor vínculos (cor → referências que usam; look → referências no board; medida → fichas técnicas vinculadas).
+```text
+DESENVOLVER PRODUTO    research · moodboard · collections · references · cad · tech-sheet · prototypes
+INDUSTRIALIZAR         (novo shell /industrialization sobre tech-sheet + quality + gate)
+PLANEJAR PRODUCAO      (novo shell /planning sobre inventory + suppliers + planner)
+ACOMPANHAR PRODUCAO    production · production.today · quality · supplier-portal
+ENCERRAR               launch · showroom · commercial · analytics
+```
 
-Entregáveis: 6 rotas ajustadas, 6 stores estendidos, 1 migration (apenas se houver enum/whitelist a ampliar).
+Os "novos shells" são páginas *hub* que embutem os componentes existentes via `<ModuleLayout>` + tabs — não novas telas de negócio.
 
----
+## Onda 2 — Industrial Readiness Gate
 
-## Onda 3 — Consolidação de rotas duplicadas (E+F+G)
+Uma tela `/industrialization/gate/$referenceId` (novo shell) que apenas *lê* o estado atual e mostra checklist:
 
-Reduzir sidebar e cliques **sem apagar arquivos**. URLs originais viram redirect para a nova shell com aba pré-selecionada.
+- Piloto aprovado (consulta `pilotos.status = APROVADO`)
+- BOM completa (tech_sheets + itens já existentes)
+- Custo/consumo calculado (PreCostPanel já existe)
+- Operações cadastradas (OperationSequencePanel já existe)
+- Aprovação gerência (nova coluna `references.industrialization_approved_by uuid null` — aditivo)
 
-1. **Coleções unificadas** — nova shell `/collections` com abas: Overview • Mapa • Comparativo • Performance • ROI.
-   - `/collection-map` → redireciona para `/collections?tab=map`.
-2. **IA unificada** — shell `/ai-center` com abas: Copilot • Agentes • Live Context.
-   - `/ai-agents` → redireciona para `/ai-center?tab=agents`.
-3. **Administração unificada** — shell `/admin` com abas: Usuários • Segurança • Auditoria.
-   - `/admin/users` e `/security` → redirecionam.
-4. **Sidebar** reflete estrutura consolidada (menos itens).
+Ação "Liberar para PCP" só habilita quando checklist verde. Emite evento `reference.industrialization_released` em `entity_events` e cria relação em `entity_relations` (reference → central de necessidades).
 
-Entregáveis: 3 wrappers com tabs, 3 rotas antigas viram redirect (`<Navigate />`), sidebar atualizada.
+Migração aditiva mínima: 2 colunas em `references` + 1 linha em `workflow_definitions`.
 
----
+## Onda 3 — Central de Necessidades (porta de entrada do PCP)
 
-## Onda 4 — Lacunas do fluxo (H+I+J)
+Rota `/planning/needs` que consolida o que já existe:
 
-Fecha a sequência lógica completa do desenvolvimento de coleção.
+- Lista referências liberadas pelo Gate (Onda 2).
+- Consome `ErpAdapter` (mock atual) para estoque/saldo.
+- Reaproveita `AbcCoveragePanel`, `ConsumoPanel`, `CapacityPanel`, `SupplierScoreboard`.
+- Botão "Gerar OP" só aparece após análise (registra evento `pcp.op.generated_from_needs`).
 
-1. **Contador de repilotagem visível** (H)
-   - `PilotosPanel` e `ReferenceDrawer` mostram badge "Rodada N".
-   - Deriva do count de registros em `pilotos` por referência (já existe hook `use-pilotos`).
-   - Nenhuma alteração de schema.
-2. **Tema e Família como facetas de Coleção** (I)
-   - Estender `collections/store.ts` com campos `themes[]` e `families[]` (arrays de labels).
-   - Drawer da coleção ganha 2 seções (Tema, Família) editáveis.
-   - Referência ganha selectores `theme_id` / `family_id` opcionais.
-   - Sem nova rota.
-3. **Módulo Compras / Pedido de Compra** (J) — **única rota nova aprovada**
-   - Nova rota `/purchases` sob "Supply Chain".
-   - Nova store `purchases/store.ts` com `PurchaseOrder` (fornecedor, itens, status, vínculo a `stock_reservation`).
-   - Nova migration: tabela `purchase_orders` + `purchase_order_items` com RLS + GRANT + timestamps + trigger + eventos.
-   - Reusa `WorkflowStatusMenu`, `EntityDrawer`, `EntityTimeline`, `ExportMenu`.
+`PCPFlowDiagram` passa a iniciar a partir de `/planning/needs`, não mais do `IniciarPCPDialog` isolado.
 
-Entregáveis Onda 4: 2 componentes atualizados, 1 store estendida, 1 nova store, 1 nova rota, 1 migration.
+## Onda 4 — Digital thread completa
 
----
+Para cada entidade sem relações de origem/consequência (lista sai da auditoria), inserir em `entity_relations` os elos faltantes via trigger ou backfill. Zero UI nova — apenas o timeline existente passa a mostrar mais.
 
-## Regras aplicadas a todas as ondas
+## Onda 5 — QA de regressão
 
-- **Preservar**: rotas atuais, estados, integrações, eventos, RLS, workflows, permissões, timeline, histórico.
-- **Reusar antes de criar**: `EntityDrawer`, `EntityTimeline`, `EntityRelations`, `WorkflowStatusMenu`, `ExportMenu`, `GlobalSearch`, `OptimizedImage`.
-- **Sem cor hardcoded** — tokens do design system.
-- **RLS + GRANT** em toda tabela nova (só Onda 4 cria tabela).
-- **Emitir evento** em toda mutação relevante.
-- **QA por onda**: build limpo, navegação, drawers, timeline, redirects funcionando.
+Playwright (já configurado em `tests/e2e/`) cobrindo:
 
----
+- Todas as rotas `_authenticated.*` continuam abrindo (smoke).
+- Fluxo Pesquisa → Referência → Piloto → Gate → Central → OP em um único percurso.
+- RLS: `use-pilotos.rls.test.tsx` e `use-stock.rls.test.tsx` continuam verdes.
 
-## Ordem de execução
+## Detalhes técnicos
 
-Onda 1 → aprovação → Onda 2 → aprovação → Onda 3 → aprovação → Onda 4.
+- **Migrações**: só aditivas. Padrão H2-03 (GRANT + RLS + policies + trigger `updated_at`). Nenhum DROP, nenhum RENAME.
+- **Workflow**: novas transições entram em `workflow_definitions` (tabela já existe), nunca em `switch` de componente.
+- **Eventos**: cada ação de Gate/Central emite via os triggers já existentes ou via `INSERT INTO entity_events` em server function autenticada com `requireSupabaseAuth`.
+- **Navegação**: `ModuleTabs` recebe uma prop `group` nova (`develop | industrialize | plan | follow | close`) mantendo `admin` atual.
+- **Reuso obrigatório**: `EntityDrawer`, `EntityTimeline`, `ModuleLayout`, `WorkflowStatusMenu`, `PCPFlowDiagram`, `IniciarPCPDialog`, painéis de `techsheet/*`, `inventory/*`, `pcp/*`. Nenhum componente novo se um existente resolve.
+- **Backend**: server functions vivem em `src/lib/**.functions.ts`. Nada de edge function para lógica interna.
 
-Cada onda é auto-contida e não bloqueia rollback da anterior.
+## O que este plano NÃO faz
+
+- Não apaga rotas atuais (`/production`, `/inventory`, `/tech-sheet`, etc.) — elas continuam acessíveis diretamente e passam a ser também alcançadas via os hubs.
+- Não altera `src/integrations/supabase/*` (auto-gen).
+- Não toca UI de módulos que já estão prontos — só adiciona a camada de orquestração cronológica por cima.
+- Não introduz novo design system nem novos tokens.
+
+## Próximo passo pedido ao usuário
+
+Confirmar por qual onda começamos. Recomendação: **Onda 0 (auditoria escrita)** antes de qualquer código, exatamente como a diretriz exige na Fase 1.
