@@ -13,7 +13,7 @@ import {
   XCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useEntityTimeline, type EntityType } from "@/hooks/use-entity-events";
 
 const EVENT_ICON: Record<string, LucideIcon> = {
@@ -52,23 +52,39 @@ export function EntityTimeline({
   onNewCountChange?: (count: number) => void;
 }) {
   const { items, loading } = useEntityTimeline(entityType, entityId);
-  const baselineRef = useRef<number | null>(null);
+  const baselineIdsRef = useRef<Set<string> | null>(null);
+
+  // Dedupe by id defensively — subscription reconnects/replays could deliver
+  // the same event multiple times before the hook's own de-dup catches up.
+  const uniqueItems = useMemo(() => {
+    const seen = new Set<string>();
+    const out: typeof items = [];
+    for (const it of items) {
+      if (seen.has(it.id)) continue;
+      seen.add(it.id);
+      out.push(it);
+    }
+    return out;
+  }, [items]);
 
   useEffect(() => {
     if (loading) return;
-    if (baselineRef.current === null) {
-      baselineRef.current = items.length;
+    const ids = new Set(uniqueItems.map((i) => i.id));
+    if (baselineIdsRef.current === null) {
+      baselineIdsRef.current = ids;
       onNewCountChange?.(0);
       return;
     }
     if (active) {
-      baselineRef.current = items.length;
+      baselineIdsRef.current = ids;
       onNewCountChange?.(0);
     } else {
-      const diff = Math.max(0, items.length - baselineRef.current);
+      const baseline = baselineIdsRef.current;
+      let diff = 0;
+      for (const id of ids) if (!baseline.has(id)) diff++;
       onNewCountChange?.(diff);
     }
-  }, [items.length, active, loading, onNewCountChange]);
+  }, [uniqueItems, active, loading, onNewCountChange]);
 
   if (loading) {
     return (
@@ -78,7 +94,7 @@ export function EntityTimeline({
     );
   }
 
-  if (items.length === 0) {
+  if (uniqueItems.length === 0) {
     return (
       <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
         Sem eventos registrados ainda.
@@ -89,7 +105,7 @@ export function EntityTimeline({
   return (
     <ol className="relative space-y-3">
       <div className="absolute left-[11px] top-1 bottom-1 w-px bg-white/10" />
-      {items.map((it) => {
+      {uniqueItems.map((it) => {
         const Icon = EVENT_ICON[it.event_type] ?? AlertTriangle;
         const label = EVENT_LABEL[it.event_type] ?? it.event_type;
         const ts = new Date(it.created_at);
