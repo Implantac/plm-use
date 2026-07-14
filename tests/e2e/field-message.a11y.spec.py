@@ -21,6 +21,36 @@ from playwright.async_api import async_playwright, expect
 BASE = "http://localhost:8080"
 SHOTS = Path(__file__).parent / "screenshots" / "field-message"
 SHOTS.mkdir(parents=True, exist_ok=True)
+AXE_SRC = (Path(__file__).parent / "vendor" / "axe.min.js").read_text()
+
+
+async def run_axe(page, label: str) -> set[tuple[str, str]]:
+    """Roda axe-core no <form> e devolve fingerprint (rule, target) das
+    violações. Restringe às regras WCAG 2.0/2.1 A e AA."""
+    await page.evaluate(AXE_SRC)
+    result = await page.evaluate(
+        """async () => {
+          const form = document.querySelector('form');
+          const res = await window.axe.run(form, {
+            runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+          });
+          return res.violations.map(v => ({
+            id: v.id,
+            impact: v.impact,
+            nodes: v.nodes.map(n => ({ target: n.target.join(' '), failureSummary: n.failureSummary })),
+          }));
+        }"""
+    )
+    fp: set[tuple[str, str]] = set()
+    for v in result:
+        for n in v["nodes"]:
+            fp.add((v["id"], n["target"]))
+    print(f"  · axe [{label}]: {len(fp)} nó(s) com violação")
+    for v in result:
+        print(f"     - {v['id']} ({v['impact']}) x{len(v['nodes'])}")
+        for n in v["nodes"]:
+            print(f"        · {n['target']}")
+    return fp
 
 
 async def get_attr(locator, name: str) -> str | None:
