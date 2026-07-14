@@ -93,7 +93,16 @@ async def main() -> int:
         )
         await page.screenshot(path=str(SHOTS / "1_login.png"))
 
-        submit = page.locator('form button[type="submit"]')
+        async def force_submit():
+            # Usa requestSubmit para garantir que o handler custom sempre
+            # rode, mesmo com HMR/StrictMode em execução no dev server.
+            await page.evaluate(
+                """() => {
+                  const f = document.querySelector('form');
+                  const btn = f.querySelector('button[type="submit"]');
+                  f.requestSubmit(btn);
+                }"""
+            )
 
         # ------------------------------------------------------------
         # 2. Submit vazio → alert do #email com a primeira mensagem
