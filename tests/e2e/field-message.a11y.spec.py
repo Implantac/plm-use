@@ -136,6 +136,7 @@ async def main() -> int:
             "password aria-invalid=true após submit vazio",
         )
         await page.screenshot(path=str(SHOTS / "1_empty_submit.png"))
+        diff(await run_axe(page, "empty_submit"), "empty_submit")
 
         # ---------------------------------------------------------------
         # 2. E-mail inválido
