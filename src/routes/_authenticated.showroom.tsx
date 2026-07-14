@@ -362,6 +362,7 @@ function FeedbackCard({
               <FieldMessage variant="helper">Selecione a referência avaliada.</FieldMessage>
             )}
           </div>
+          <div>
             <Label>Dimensão</Label>
             <Select value={dim} onValueChange={(v) => setDim(v as ShowroomFeedbackDimension)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
