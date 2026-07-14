@@ -37,10 +37,19 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
   const [resp, setResp] = useState("");
   const [obs, setObs] = useState("");
   const [defeito, setDefeito] = useState("");
+  const [errors, setErrors] = useState<{
+    responsavel?: string;
+    defeito?: string;
+    form?: string;
+  }>({});
 
   const handleSubmit = () => {
-    if (!resp) {
-      toast.error("Informe o responsável");
+    const next: typeof errors = {};
+    if (!resp.trim()) next.responsavel = "Informe o responsável.";
+    if (linha === "2a" && !defeito.trim())
+      next.defeito = "Descreva o tipo de defeito para o retrabalho.";
+    if (Object.keys(next).length > 0) {
+      setErrors(next);
       return;
     }
     const res = registrar({
@@ -55,9 +64,10 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
       defeito: linha === "2a" ? defeito || undefined : undefined,
     });
     if (!res.ok) {
-      toast.error(res.erro ?? "Erro ao registrar passagem");
+      setErrors({ form: res.erro ?? "Erro ao registrar passagem." });
       return;
     }
+    setErrors({});
     toast.success(
       linha === "1a"
         ? `Passagem ${tipo} registrada (${qtd} pç)`
