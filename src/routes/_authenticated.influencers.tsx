@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heart, Instagram, MapPin, Package, Plus, Send, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { FieldMessage } from "@/components/ui/field-message";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { REGIOES_BR, useInfluencersStore, type Envio, type Influencer } from "@/lib/influencers/store";
 
