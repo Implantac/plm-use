@@ -65,10 +65,14 @@ function MeasurementsPage() {
   const selected = charts.find((c) => c.id === selectedId) ?? filtered[0];
 
   const handleCreate = () => {
-    if (!newChart.code.trim() || !newChart.name.trim()) {
-      toast.error("Informe código e nome");
+    const errs: typeof chartErrors = {};
+    if (!newChart.code.trim()) errs.code = "Informe o código.";
+    if (!newChart.name.trim()) errs.name = "Informe o nome.";
+    if (Object.keys(errs).length > 0) {
+      setChartErrors(errs);
       return;
     }
+    setChartErrors({});
     const id = `tm-${Date.now()}`;
     upsertChart({
       id,
