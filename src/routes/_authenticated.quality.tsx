@@ -87,6 +87,7 @@ function QualityPage() {
     responsavel: "",
     prazo: "",
   });
+  const [capaErrors, setCapaErrors] = useState<{ defeito?: string; responsavel?: string; form?: string }>({});
 
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<CapaStatus | "Todas">(
