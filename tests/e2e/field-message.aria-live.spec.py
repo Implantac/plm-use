@@ -108,7 +108,7 @@ async def main() -> int:
         # 2. Submit vazio → alert do #email com a primeira mensagem
         # ------------------------------------------------------------
         print("\n▶ 2. Submit vazio expõe alert com aria-live assertive")
-        await submit.click()
+        await force_submit()
         await page.wait_for_timeout(250)
 
         snap1 = await alert_snapshot(page, "email")
@@ -147,7 +147,7 @@ async def main() -> int:
         print("\n▶ 3. Após correção parcial, alerts anunciam a NOVA mensagem")
         await page.locator("#email").fill("nao-eh-email")
         await page.locator("#password").fill("123")
-        await submit.click()
+        await force_submit()
         await page.wait_for_timeout(250)
 
         snap2 = await alert_snapshot(page, "email")
@@ -183,7 +183,7 @@ async def main() -> int:
         print("\n▶ 4. Corrigir todos os campos remove os alerts")
         await page.locator("#email").fill("fulana@empresa.com")
         await page.locator("#password").fill("segredo123")
-        await submit.click()
+        await force_submit()
         await page.wait_for_timeout(300)
 
         snap3 = await alert_snapshot(page, "email")
