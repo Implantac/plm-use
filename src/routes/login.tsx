@@ -51,14 +51,13 @@ function Login() {
       });
     } else {
       // Todos os campos válidos: mover o foco para o primeiro elemento
-      // acionável seguinte (submit) para que o leitor de tela anuncie o
-      // próximo passo e nenhum FieldMessage com role="alert" permaneça.
-      requestAnimationFrame(() => {
-        const el = document.querySelector<HTMLElement>(
-          'form button[type="submit"]',
-        );
-        el?.focus();
-      });
+      // acionável seguinte (submit) antes que o handler troque o
+      // estado para "loading" e desabilite o botão. Foco síncrono
+      // garante que o leitor de tela anuncie o próximo passo.
+      const el = document.querySelector<HTMLElement>(
+        'form button[type="submit"]',
+      );
+      el?.focus();
     }
     return Object.keys(next).length === 0;
   };
