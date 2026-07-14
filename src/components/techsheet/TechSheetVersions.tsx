@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FieldMessage } from "@/components/ui/field-message";
 import { GitBranch, CheckCircle2, Clock4, Archive, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useTechSheetStore, type TechSheetVersion } from "@/lib/techsheet/store";
