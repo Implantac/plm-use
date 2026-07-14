@@ -447,12 +447,13 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
               </div>
               {mine && !isEditing && (
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                  <button onClick={() => startEdit(c)} className="text-muted-foreground hover:text-primary" aria-label="Editar comentário">
+                  <Button variant="ghost" size="icon-sm" onClick={() => startEdit(c)} aria-label="Editar comentário" className="text-muted-foreground hover:text-primary">
                     <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => void remove(c.id)} className="text-muted-foreground hover:text-rose-400" aria-label="Apagar comentário">
+                  </Button>
+                  <Button variant="ghost" size="icon-sm" onClick={() => void remove(c.id)} aria-label="Apagar comentário" className="text-muted-foreground hover:text-rose-400">
                     <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
+
                 </div>
               )}
             </div>
