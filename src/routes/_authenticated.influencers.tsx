@@ -30,6 +30,7 @@ function InfluencersPage() {
   const [envioOpen, setEnvioOpen] = useState(false);
   const [novoRef, setNovoRef] = useState("");
   const [novoNome, setNovoNome] = useState("");
+  const [envioErrors, setEnvioErrors] = useState<{ ref?: string; nome?: string }>({});
 
   const totais = useMemo(() => {
     const enviosTot = influencers.reduce((a, i) => a + i.envios.length, 0);
