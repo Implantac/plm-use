@@ -285,6 +285,7 @@ function LaunchPage() {
                 <CheckCircle2 className="h-4 w-4 mr-1" />
                 Promover {pickedDecisions.length} item(ns)
               </Button>
+              {promoteError && <FieldMessage variant="error">{promoteError}</FieldMessage>}
             </CardContent>
           </Card>
         </TabsContent>
