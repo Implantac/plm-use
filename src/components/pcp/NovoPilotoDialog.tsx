@@ -210,7 +210,11 @@ export function NovoPilotoDialog({
               onChange={(e) => setSupplierId(e.target.value)}
               placeholder="Opcional"
               maxLength={64}
+              aria-invalid={!!errors.supplier_id}
             />
+            <FieldMessage variant={errors.supplier_id ? "error" : "helper"}>
+              {errors.supplier_id ?? "Formato UUID (ex.: 3f8c…-…-…-…-…). Deixe vazio se não aplicável."}
+            </FieldMessage>
           </div>
 
           <div className="space-y-1.5">
@@ -222,7 +226,11 @@ export function NovoPilotoDialog({
               placeholder="Notas iniciais, briefing, ajustes esperados…"
               maxLength={1000}
               rows={3}
+              aria-invalid={!!errors.observacoes}
             />
+            {errors.observacoes && (
+              <FieldMessage variant="error">{errors.observacoes}</FieldMessage>
+            )}
           </div>
 
           <DialogFooter>
