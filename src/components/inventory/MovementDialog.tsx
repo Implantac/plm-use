@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FieldMessage } from "@/components/ui/field-message";
 import {
   Select,
   SelectContent,
@@ -186,15 +187,18 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
 
           {kind === "adjust" && (
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Justificativa (obrigatória para ajuste)
-              </Label>
+              <Label required>Justificativa</Label>
               <Textarea
                 value={justification}
                 onChange={(e) => setJustification(e.target.value)}
                 rows={3}
-                className=""
+                aria-invalid={!justification.trim()}
               />
+              <FieldMessage variant={justification.trim() ? "helper" : "error"}>
+                {justification.trim()
+                  ? "Explique brevemente o motivo do ajuste de estoque."
+                  : "Justificativa obrigatória para ajustes de estoque."}
+              </FieldMessage>
             </div>
           )}
         </div>
