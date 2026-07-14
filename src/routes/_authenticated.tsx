@@ -94,70 +94,67 @@ function AuthenticatedLayout() {
         ],
       },
       {
-        id: "plm-criacao",
-        label: "PLM · Criação",
+        id: "desenvolver",
+        label: "1 · Desenvolver Produto",
         items: [
           { icon: <Palette className="w-4 h-4" />, label: "Pesquisa & Moodboard", href: "/research" },
           { icon: <Palette className="w-4 h-4" />, label: "Cartela de Cores", href: "/colors" },
           { icon: <FileImage className="w-4 h-4" />, label: "Cartela de Estampas", href: "/prints" },
           { icon: <LayoutTemplate className="w-4 h-4" />, label: "Painel de Displayagem", href: "/display" },
           { icon: <Shirt className="w-4 h-4" />, label: "Coordenados · Looks", href: "/looks" },
-        ],
-      },
-      {
-        id: "plm-colecao",
-        label: "PLM · Coleção",
-        items: [
           { icon: <Layers className="w-4 h-4" />, label: "Coleções", href: "/collections" },
           { icon: <Grid3x3 className="w-4 h-4" />, label: "Mapa de Coleção", href: "/collection-map" },
           { icon: <Fingerprint className="w-4 h-4" />, label: "Núcleo · Referências", href: "/references" },
-        ],
-      },
-      {
-        id: "plm-engenharia",
-        label: "PLM · Engenharia",
-        items: [
           { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
           { icon: <Zap className="w-4 h-4" />, label: "Protótipos", href: "/prototypes" },
-          { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
-          { icon: <Ruler className="w-4 h-4" />, label: "Tabela de Medidas", href: "/measurements" },
-          { icon: <ClipboardList className="w-4 h-4" />, label: "Relatório de Peças", href: "/pieces-report" },
           { icon: <PenTool className="w-4 h-4" />, label: "CAD & Modelagem", href: "/cad" },
         ],
       },
       {
-        id: "pcp",
-        label: "PCP · Produção",
+        id: "industrializar",
+        label: "2 · Industrializar",
         items: [
-          { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
-          { icon: <Zap className="w-4 h-4" />, label: "Planner", href: "/planner" },
+          { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
+          { icon: <Ruler className="w-4 h-4" />, label: "Tabela de Medidas", href: "/measurements" },
+          { icon: <ClipboardList className="w-4 h-4" />, label: "Relatório de Peças", href: "/pieces-report" },
           { icon: <ShieldCheck className="w-4 h-4" />, label: "Qualidade", href: "/quality" },
         ],
       },
       {
-        id: "supply",
-        label: "Supply Chain",
+        id: "planejar",
+        label: "3 · Planejar Produção",
         items: [
+          { icon: <Zap className="w-4 h-4" />, label: "Planner", href: "/planner" },
           { icon: <Box className="w-4 h-4" />, label: "Almoxarifado", href: "/inventory" },
           { icon: <Truck className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
           { icon: <Truck className="w-4 h-4" />, label: "Portal do Fornecedor", href: "/supplier-portal" },
         ],
       },
       {
-        id: "gtm",
-        label: "Go-to-Market",
+        id: "acompanhar",
+        label: "4 · Acompanhar Produção",
         items: [
-          { icon: <Megaphone className="w-4 h-4" />, label: "Marketing", href: "/marketing" },
+          { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
+          { icon: <Package className="w-4 h-4" />, label: "Produção · Hoje", href: "/production/today" },
+        ],
+      },
+      {
+        id: "encerrar",
+        label: "5 · Encerrar",
+        items: [
+          { icon: <Sparkles className="w-4 h-4" />, label: "Lançamento", href: "/launch" },
+          { icon: <LayoutTemplate className="w-4 h-4" />, label: "Showroom", href: "/showroom" },
           { icon: <ShoppingBag className="w-4 h-4" />, label: "Comercial", href: "/commercial" },
+          { icon: <Megaphone className="w-4 h-4" />, label: "Marketing", href: "/marketing" },
           { icon: <Heart className="w-4 h-4" />, label: "Influencers", href: "/influencers" },
+          { icon: <BarChart3 className="w-4 h-4" />, label: "BI Executivo", href: "/analytics" },
+          { icon: <DollarSign className="w-4 h-4" />, label: "Financeiro", href: "/financial" },
         ],
       },
       {
         id: "insights",
         label: "Insights & IA",
         items: [
-          { icon: <BarChart3 className="w-4 h-4" />, label: "BI Executivo", href: "/analytics" },
-          { icon: <DollarSign className="w-4 h-4" />, label: "Financeiro", href: "/financial" },
           { icon: <Sparkles className="w-4 h-4" />, label: "USE AI", href: "/ai-center" },
           { icon: <Bot className="w-4 h-4" />, label: "AI Agents", href: "/ai-agents" },
           { icon: <Globe className="w-4 h-4" />, label: "Digital Twin", href: "/digital-twin" },
@@ -169,6 +166,7 @@ function AuthenticatedLayout() {
         items: [
           { icon: <LockKeyhole className="w-4 h-4" />, label: "Segurança", href: "/security" },
           { icon: <ShieldCheck className="w-4 h-4" />, label: "Admin · Usuários", href: "/admin/users" },
+          { icon: <ClipboardList className="w-4 h-4" />, label: "Auditoria", href: "/audit" },
         ],
       },
     ],
@@ -177,21 +175,19 @@ function AuthenticatedLayout() {
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const path = typeof window !== "undefined" ? window.location.pathname : "";
-    const stored = typeof window !== "undefined" ? window.localStorage.getItem("use-moda-sidebar-sections") : null;
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem("use-moda-sidebar-sections-v2") : null;
     const initial: Record<string, boolean> = stored
       ? (JSON.parse(stored) as Record<string, boolean>)
       : {
           geral: true,
-          "plm-criacao": false,
-          "plm-colecao": false,
-          "plm-engenharia": false,
-          pcp: false,
-          supply: false,
-          gtm: false,
+          desenvolver: true,
+          industrializar: false,
+          planejar: false,
+          acompanhar: false,
+          encerrar: false,
           insights: false,
           admin: false,
         };
-    // Sempre expandir o grupo do path atual
     navSections.forEach((s) => {
       if (s.items.some((it) => path.startsWith(it.href))) initial[s.id] = true;
     });
