@@ -107,7 +107,7 @@ function Login() {
 
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[1fr_480px] bg-[#020617] p-6 relative overflow-hidden">
+    <div className="min-h-dvh grid grid-cols-1 lg:grid-cols-[1fr_480px] bg-[#020617] p-6 relative overflow-hidden">
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.05]"
         style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }}
