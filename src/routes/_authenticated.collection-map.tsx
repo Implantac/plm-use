@@ -516,6 +516,7 @@ function SaveFilterDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const hasAny =
     current.categories.length + current.colors.length + current.statuses.length > 0;
 
