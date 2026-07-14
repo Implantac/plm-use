@@ -10,40 +10,52 @@
  * All colors HSL. No component may hardcode colors.
  * ========================================================================= */
 
-/* ---------- Primitives (HSL triplets — never referenced by components) --- */
+/* ---------- Primitives (HSL triplets — never referenced by components) ---
+ * Paleta extraída da logo USE MODA:
+ *   preto quente → borgonha profundo → ember/copper → highlight dourado
+ * ------------------------------------------------------------------------ */
 :root {
-  /* Neutros (ink) */
-  --ink-0:    0 0% 100%;
-  --ink-50:   220 15% 96%;
-  --ink-200:  220 12% 82%;
-  --ink-400:  220 10% 62%;
-  --ink-600:  220 12% 40%;
-  --ink-800:  222 18% 16%;
-  --ink-900:  222 22% 10%;
-  --ink-950:  222 30% 6%;
-  --ink-1000: 222 40% 3%;
+  /* Neutros (ink) — família preto quente com undertone burgundy */
+  --ink-0:    30 33% 98%;   /* off-white quente */
+  --ink-50:   30 24% 94%;   /* paper */
+  --ink-200:  28 14% 78%;   /* soft */
+  --ink-400:  26 10% 58%;   /* muted body */
+  --ink-600:  22 12% 38%;   /* deep muted */
+  --ink-800:  18 22% 12%;   /* surface elevated */
+  --ink-900:  18 30% 8%;    /* surface */
+  --ink-950:  16 40% 5%;    /* background */
+  --ink-1000: 14 50% 3%;    /* deep sunken */
 
-  /* Brand — azul-elétrico industrial (único) */
-  --brand-50:  210 100% 96%;
-  --brand-200: 210 100% 84%;
-  --brand-500: 210 100% 56%;
-  --brand-700: 210 100% 42%;
-  --brand-900: 210 100% 22%;
+  /* Brand — ember/copper industrial (extraído da logo) */
+  --brand-50:  30 90% 94%;
+  --brand-200: 26 88% 78%;
+  --brand-500: 19 83% 44%;  /* #c04a12 — ember signature */
+  --brand-700: 18 88% 34%;
+  --brand-900: 16 90% 20%;
 
-  /* Status primitives */
-  --info-500:    195 90% 50%;
-  --info-700:    195 90% 36%;
-  --success-500: 152 68% 44%;
-  --success-700: 152 68% 30%;
-  --warning-500: 38 92% 52%;
+  /* Highlight dourado/copper glow (halo, focus, primary-glow) */
+  --glow-500: 27 82% 55%;   /* #e8801f — copper radiante */
+  --glow-700: 24 78% 42%;
+
+  /* Borgonha profundo (accent secundário, entidades premium) */
+  --wine-500: 8 65% 24%;    /* #6b1a12 — deep sienna wine */
+  --wine-700: 6 72% 16%;
+
+  /* Status primitives — recalibrados para paleta quente */
+  --info-500:    195 78% 48%;   /* teal-blue, contraste com ember */
+  --info-700:    195 82% 34%;
+  --success-500: 145 55% 42%;   /* verde oliva-esmeralda, terroso */
+  --success-700: 145 60% 28%;
+  --warning-500: 38 92% 52%;    /* amber puro */
   --warning-700: 38 92% 40%;
-  --danger-500:  358 78% 56%;
-  --danger-700:  358 78% 42%;
-  --neutral-500: 220 12% 50%;
-  --neutral-700: 220 12% 36%;
-  --purple-500:  268 76% 62%;
-  --purple-700:  268 76% 48%;
+  --danger-500:  358 78% 54%;
+  --danger-700:  358 82% 40%;
+  --neutral-500: 22 12% 48%;
+  --neutral-700: 22 12% 34%;
+  --purple-500:  282 58% 58%;   /* orquídea, equilibra o warm */
+  --purple-700:  282 60% 44%;
 }
+
 
 /* ---------- Semantics — LIGHT (default when no .dark) ------------------- */
 :root {
@@ -128,28 +140,32 @@
   --motion-slow:  320ms cubic-bezier(0.16, 1, 0.3, 1);
   --motion-pulse: 1600ms ease-in-out infinite;
 
-  /* Fonts */
-  --font-sans:    "Inter Variable", "Inter", system-ui, sans-serif;
-  --font-heading: "Inter Tight", "Inter Variable", "Inter", system-ui, sans-serif;
+  /* Fonts — DM Serif Display (heróico/editorial) + Fira Sans (industrial legível) */
+  --font-sans:    "Fira Sans", system-ui, sans-serif;
+  --font-heading: "DM Serif Display", "DM Serif Text", "Cormorant Garamond", Georgia, serif;
   --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
 
   /* Density defaults */
   --row-h:  36px;
   --card-p: 12px;
 }
 
-/* ---------- Semantics — DARK (default app theme) ----------------------- */
+/* ---------- Semantics — DARK (default app theme) -----------------------
+ * Superfície: preto quente com undertone burgundy.
+ * Primary: ember/copper (--brand-500) com glow copper (--glow-500).
+ * ------------------------------------------------------------------------ */
 .dark {
   --background:         var(--ink-950);
   --foreground:         var(--ink-50);
   --surface:            var(--ink-900);
   --surface-elevated:   var(--ink-800);
   --surface-sunken:     var(--ink-1000);
-  --muted:              222 18% 14%;
+  --muted:              18 18% 11%;
   --muted-foreground:   var(--ink-400);
-  --border:             222 20% 18%;
-  --border-strong:      222 20% 28%;
-  --ring:               var(--brand-500);
+  --border:             18 24% 15%;
+  --border-strong:      18 28% 24%;
+  --ring:               var(--glow-500);
 
   --card:               var(--surface);
   --card-foreground:    var(--foreground);
@@ -158,25 +174,44 @@
   --input:              var(--border);
 
   --primary:              var(--brand-500);
-  --primary-foreground:   0 0% 100%;
+  --primary-foreground:   var(--ink-0);
+  --primary-glow:         var(--glow-500);
   --secondary:            var(--surface-elevated);
   --secondary-foreground: var(--foreground);
   --accent:               var(--muted);
   --accent-foreground:    var(--foreground);
   --destructive:          var(--danger-500);
-  --destructive-foreground: 0 0% 100%;
+  --destructive-foreground: var(--ink-0);
 
+  /* Sidebar — mais escuro que o main, cria depth */
   --sidebar:                    var(--ink-1000);
   --sidebar-foreground:         var(--foreground);
-  --sidebar-accent:             var(--muted);
+  --sidebar-primary:            var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent:             18 22% 10%;
   --sidebar-accent-foreground:  var(--foreground);
-  --sidebar-border:             var(--border);
+  --sidebar-border:             16 28% 10%;
+  --sidebar-ring:               var(--glow-500);
 
+  /* Elevation dark — mistura contorno interno + sombra ember-tingida */
   --elev-0: none;
   --elev-1: inset 0 0 0 1px hsl(var(--border));
-  --elev-2: inset 0 0 0 1px hsl(var(--border)), 0 8px 16px -4px rgba(0,0,0,0.5);
-  --elev-3: inset 0 0 0 1px hsl(var(--border)), 0 24px 48px -12px rgba(0,0,0,0.6);
+  --elev-2:
+    inset 0 0 0 1px hsl(var(--border)),
+    0 8px 24px -8px hsl(var(--brand-900) / 0.55),
+    0 2px 4px -2px rgba(0,0,0,0.5);
+  --elev-3:
+    inset 0 0 0 1px hsl(var(--border-strong)),
+    0 24px 60px -18px hsl(var(--brand-500) / 0.35),
+    0 10px 24px -8px rgba(0,0,0,0.7);
+
+  /* Signature gradients & glows — usar via utilities abaixo */
+  --gradient-ember:  linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
+  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(18 40% 8%) 100%);
+  --shadow-ember:    0 0 0 1px hsl(var(--brand-500) / 0.35), 0 12px 32px -8px hsl(var(--brand-500) / 0.45);
+  --glow-ember:      0 0 24px -4px hsl(var(--glow-500) / 0.55);
 }
+
 
 /* ---------- Density variants ------------------------------------------ */
 :root[data-density="compact"] { --row-h: 28px; --card-p: 8px;  }
@@ -196,6 +231,9 @@
   --color-popover-foreground:    hsl(var(--popover-foreground));
   --color-primary:               hsl(var(--primary));
   --color-primary-foreground:    hsl(var(--primary-foreground));
+  --color-primary-glow:          hsl(var(--primary-glow, var(--glow-500)));
+  --color-glow:                  hsl(var(--glow-500));
+  --color-wine:                  hsl(var(--wine-500));
   --color-secondary:             hsl(var(--secondary));
   --color-secondary-foreground:  hsl(var(--secondary-foreground));
   --color-muted:                 hsl(var(--muted));
@@ -208,6 +246,7 @@
   --color-border-strong:         hsl(var(--border-strong));
   --color-input:                 hsl(var(--input));
   --color-ring:                  hsl(var(--ring));
+
 
   --color-status-draft:     hsl(var(--status-draft));
   --color-status-progress:  hsl(var(--status-progress));
@@ -285,12 +324,21 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    font-feature-settings: "cv02", "ss01", "ss02", "kern";
+    font-optical-sizing: auto;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  /* Display serif dramático nos títulos heróicos, sans nos operacionais */
+  h1, h2 {
     font-family: var(--font-heading);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
+    font-weight: 400;   /* DM Serif Display já é bold por design */
+    line-height: 1.05;
+  }
+
+  h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    letter-spacing: -0.005em;
     font-weight: 600;
   }
 
@@ -298,6 +346,7 @@
     font-family: var(--font-mono);
     font-variant-ligatures: none;
   }
+
 
   /* Tabular numerals in obvious numeric contexts */
   td.num, th.num, .tabular, [data-tabular] {
@@ -419,17 +468,45 @@
   color: transparent;
 }
 @utility text-gradient-primary {
-  background-image: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.55));
+  background-image: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--glow-500)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
+
+/* ---------- Signature ember gradients & surfaces --------------------- */
+@utility text-gradient-ember {
+  background-image: linear-gradient(120deg, hsl(var(--glow-500)) 0%, hsl(var(--brand-500)) 55%, hsl(var(--wine-500)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility bg-ember {
+  background-image: linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
+}
+@utility bg-forge {
+  background-image:
+    radial-gradient(1200px 600px at 15% -10%, hsl(var(--brand-500) / 0.10), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, hsl(var(--glow-500) / 0.06), transparent 60%),
+    linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(var(--ink-1000)) 100%);
+}
+@utility ring-ember {
+  box-shadow:
+    0 0 0 1px hsl(var(--brand-500) / 0.5),
+    0 0 20px -2px hsl(var(--glow-500) / 0.4);
+}
+@utility glow-ember {
+  box-shadow: 0 0 32px -6px hsl(var(--glow-500) / 0.55);
+}
+
 @utility btn-primary-premium {
-  background-color: hsl(var(--primary));
+  background-image: linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
   color: hsl(var(--primary-foreground));
   border-radius: var(--radius);
-  transition: filter var(--motion-fast), transform var(--motion-fast);
+  box-shadow: 0 8px 24px -8px hsl(var(--brand-500) / 0.55);
+  transition: filter var(--motion-fast), transform var(--motion-fast), box-shadow var(--motion-base);
 }
+
 @utility btn-outline-premium {
   background-color: transparent;
   color: hsl(var(--foreground));
