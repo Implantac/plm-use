@@ -26,9 +26,10 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
 
   async function generate() {
     if (!prompt.trim()) {
-      toast.error("Descreva a peça");
+      setPromptError("Descreva a peça antes de gerar.");
       return;
     }
+    setPromptError(null);
     setBusy(true);
     setSrc(null);
     setIsFinal(false);
