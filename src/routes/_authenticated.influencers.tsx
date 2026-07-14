@@ -280,22 +280,32 @@ function InfluencersPage() {
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Referência</Label>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground" required>Referência</Label>
               <Input
                 value={novoRef}
-                onChange={(e) => setNovoRef(e.target.value)}
+                onChange={(e) => {
+                  setNovoRef(e.target.value);
+                  if (e.target.value.trim()) setEnvioErrors((p) => ({ ...p, ref: undefined }));
+                }}
                 placeholder="ex: VT302"
                 className="bg-white/[0.04] text-white"
+                aria-invalid={!!envioErrors.ref}
               />
+              {envioErrors.ref && <FieldMessage variant="error">{envioErrors.ref}</FieldMessage>}
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Nome da peça</Label>
+              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground" required>Nome da peça</Label>
               <Input
                 value={novoNome}
-                onChange={(e) => setNovoNome(e.target.value)}
+                onChange={(e) => {
+                  setNovoNome(e.target.value);
+                  if (e.target.value.trim()) setEnvioErrors((p) => ({ ...p, nome: undefined }));
+                }}
                 placeholder="ex: Vestido Midi Toscana"
                 className="bg-white/[0.04] text-white"
+                aria-invalid={!!envioErrors.nome}
               />
+              {envioErrors.nome && <FieldMessage variant="error">{envioErrors.nome}</FieldMessage>}
             </div>
             <Button onClick={registrarEnvio} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
               <Send className="h-3.5 w-3.5 mr-1" />
