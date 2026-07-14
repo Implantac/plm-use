@@ -118,37 +118,36 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       </div>
 
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Motivo
-        </Label>
+        <Label required>Motivo</Label>
         <Input
           value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
           placeholder="Ex: Aproveitamento de retalho, defeito de malha..."
-          className=""
+          aria-invalid={!!errors.motivo}
         />
+        {errors.motivo && <FieldMessage variant="error">{errors.motivo}</FieldMessage>}
       </div>
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Responsável
-        </Label>
+        <Label required>Responsável</Label>
         <Input
           value={resp}
           onChange={(e) => setResp(e.target.value)}
-          className=""
+          aria-invalid={!!errors.responsavel}
         />
+        {errors.responsavel && (
+          <FieldMessage variant="error">{errors.responsavel}</FieldMessage>
+        )}
       </div>
       <div>
-        <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Observação
-        </Label>
+        <Label>Observação</Label>
         <Textarea
           value={obs}
           onChange={(e) => setObs(e.target.value)}
           rows={2}
-          className=""
         />
       </div>
+
+      {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
       <Button
  onClick={handleSubmit}
