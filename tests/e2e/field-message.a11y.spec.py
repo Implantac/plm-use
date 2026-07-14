@@ -91,6 +91,21 @@ async def main() -> int:
             "document.querySelectorAll('input').forEach(i => i.removeAttribute('required'));"
         )
 
+        # ---------------------------------------------------------------
+        # Baseline axe · form pristino, sem nenhum erro exibido.
+        # Todos os fluxos abaixo devem se manter ⊆ deste baseline
+        # (ou seja, FieldMessage não pode introduzir novas violações).
+        # ---------------------------------------------------------------
+        baseline_axe = await run_axe(page, "baseline")
+
+        def diff(new: set, label: str) -> None:
+            added = new - baseline_axe
+            if not added:
+                check(True, f"axe [{label}]: nenhuma violação nova vs baseline")
+                return
+            for rule, target in sorted(added):
+                check(False, f"axe [{label}]: nova violação {rule} em {target}")
+
         import re as _re
         submit = page.get_by_role(
             "button", name=_re.compile("Entrar no Sistema", _re.I)
