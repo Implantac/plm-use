@@ -64,6 +64,7 @@ function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (!validate()) return;
 
     setLoading(true);
