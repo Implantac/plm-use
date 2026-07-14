@@ -60,11 +60,15 @@ async def main() -> int:
         import re as _re
         submit = page.get_by_role("button", name=_re.compile("Entrar no Sistema", _re.I))
         await submit.click()
-        await page.wait_for_timeout(300)
-        await page.screenshot(path=str(SHOTS / "0_debug.png"))
-        html_len = await page.locator('[role="alert"]').count()
-        print(f"  debug: role=alert count = {html_len}")
-        print(f"  debug: email aria-invalid = {await get_attr(page.locator('input#email'), 'aria-invalid')}")
+        await page.wait_for_timeout(500)
+        cnt = await page.locator('[role="alert"]').count()
+        print(f"  debug: role=alert count after click = {cnt}, disabled={await submit.get_attribute('disabled')}")
+        if cnt == 0:
+            # fallback: dispatch requestSubmit directly
+            await page.evaluate("document.querySelector('form').requestSubmit()")
+            await page.wait_for_timeout(400)
+            cnt = await page.locator('[role="alert"]').count()
+            print(f"  debug: after requestSubmit count = {cnt}")
 
         email = page.locator("input#email")
         password = page.locator("input#password")
