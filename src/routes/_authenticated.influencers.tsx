@@ -52,10 +52,16 @@ function InfluencersPage() {
   }, [influencers]);
 
   function registrarEnvio() {
-    if (!sel || !novoRef || !novoNome) {
-      toast.error("Preencha referência e nome da peça.");
+    if (!sel) return;
+    const errs: typeof envioErrors = {};
+    if (!novoRef.trim()) errs.ref = "Informe a referência.";
+    if (!novoNome.trim()) errs.nome = "Informe o nome da peça.";
+    if (Object.keys(errs).length > 0) {
+      setEnvioErrors(errs);
       return;
     }
+    setEnvioErrors({});
+
     const envio: Envio = {
       id: Math.random().toString(36).slice(2, 8),
       ref: novoRef.toUpperCase(),
