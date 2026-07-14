@@ -44,7 +44,7 @@ describe("Field a11y auto-wiring", () => {
     expectWired(
       screen.getByPlaceholderText("Nome"),
       screen.getByText("Nome"),
-      screen.getByText("Helper text"),
+      messageEl("Helper text"),
     );
   });
 
