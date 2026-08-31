@@ -168,10 +168,10 @@
   --surface:            var(--ink-900);
   --surface-elevated:   var(--ink-800);
   --surface-sunken:     var(--ink-1000);
-  --muted:              18 18% 11%;
+  --muted:              222 24% 13%;
   --muted-foreground:   var(--ink-400);
-  --border:             18 24% 15%;
-  --border-strong:      18 28% 24%;
+  --border:             220 28% 18%;
+  --border-strong:      218 30% 28%;
   --ring:               var(--glow-500);
 
   --card:               var(--surface);
@@ -195,12 +195,12 @@
   --sidebar-foreground:         var(--foreground);
   --sidebar-primary:            var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent:             18 22% 10%;
+  --sidebar-accent:             222 28% 12%;
   --sidebar-accent-foreground:  var(--foreground);
-  --sidebar-border:             16 28% 10%;
+  --sidebar-border:             224 32% 12%;
   --sidebar-ring:               var(--glow-500);
 
-  /* Elevation dark — mistura contorno interno + sombra ember-tingida */
+  /* Elevation dark — contorno interno + sombra azul-tingida */
   --elev-0: none;
   --elev-1: inset 0 0 0 1px hsl(var(--border));
   --elev-2:
@@ -214,7 +214,7 @@
 
   /* Signature gradients & glows — usar via utilities abaixo */
   --gradient-ember:  linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
-  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(18 40% 8%) 100%);
+  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(224 40% 9%) 100%);
   --shadow-ember:    0 0 0 1px hsl(var(--brand-500) / 0.35), 0 12px 32px -8px hsl(var(--brand-500) / 0.45);
   --glow-ember:      0 0 24px -4px hsl(var(--glow-500) / 0.55);
 }
