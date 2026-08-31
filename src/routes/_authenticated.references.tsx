@@ -170,7 +170,38 @@ function ReferencesPage() {
                       </span>
                     )}
                   </div>
+                  <div
+                    className="mt-3 flex items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <NovoPilotoDialog
+                      referenceId={r.id}
+                      referenciaNome={`${r.code} · ${r.name}`}
+                      trigger={
+                        <Button size="sm" variant="outline" className="h-7 text-[10px]">
+                          <Plus className="mr-1 h-3 w-3" />
+                          Novo piloto
+                        </Button>
+                      }
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 text-[10px]"
+                      onClick={() =>
+                        openEntity({
+                          type: "reference",
+                          id: r.id,
+                          title: r.name,
+                          subtitle: r.code,
+                        })
+                      }
+                    >
+                      Abrir ciclo de vida
+                    </Button>
+                  </div>
                 </CardContent>
+
               </Card>
             ))}
           </div>
