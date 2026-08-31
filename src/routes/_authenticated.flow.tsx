@@ -379,7 +379,7 @@ function FlowPage() {
               >
                 <button
                   type="button"
-                  onClick={() => openEntity("reference", ref.id)}
+                  onClick={() => openEntity({ type: "reference", id: ref.id })}
                   className="min-w-0 flex-1 text-left"
                 >
                   <p className="truncate text-sm font-semibold">
