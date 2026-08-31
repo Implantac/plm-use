@@ -26,6 +26,7 @@ import {
 import { toast } from "sonner";
 import { z } from "zod";
 import { useCreatePiloto } from "@/hooks/use-pilotos";
+import { useSuppliers } from "@/hooks/use-suppliers";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -67,13 +68,14 @@ export function NovoPilotoDialog({
   trigger,
 }: Props) {
   const { create } = useCreatePiloto();
+  const { items: suppliers, loading: loadingSuppliers } = useSuppliers();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [tipo, setTipo] = useState<"prova" | "ajuste" | "final">(defaultTipo);
   const [status, setStatus] = useState<"RASCUNHO" | "EM_DESENVOLVIMENTO">(
     defaultStatus,
   );
-  const [supplierId, setSupplierId] = useState("");
+  const [supplierId, setSupplierId] = useState("none");
   const [observacoes, setObservacoes] = useState(defaultObservacoes);
   const [errors, setErrors] = useState<{ supplier_id?: string; observacoes?: string }>({});
 
@@ -90,7 +92,7 @@ export function NovoPilotoDialog({
   const reset = () => {
     setTipo(defaultTipo);
     setStatus(defaultStatus);
-    setSupplierId("");
+    setSupplierId("none");
     setObservacoes(defaultObservacoes);
     setErrors({});
   };
@@ -100,7 +102,7 @@ export function NovoPilotoDialog({
     const parsed = schema.safeParse({
       tipo,
       status,
-      supplier_id: supplierId || undefined,
+      supplier_id: supplierId === "none" ? undefined : supplierId,
       observacoes: observacoes || undefined,
     });
     if (!parsed.success) {
@@ -203,17 +205,22 @@ export function NovoPilotoDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="supplier">Fornecedor / Facção (UUID)</Label>
-            <Input
-              id="supplier"
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
-              placeholder="Opcional"
-              maxLength={64}
-              aria-invalid={!!errors.supplier_id}
-            />
+            <Label htmlFor="supplier">Fornecedor / Facção</Label>
+            <Select value={supplierId} onValueChange={setSupplierId}>
+              <SelectTrigger id="supplier" aria-invalid={!!errors.supplier_id}>
+                <SelectValue placeholder={loadingSuppliers ? "Carregando…" : "Selecionar"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Sem fornecedor definido</SelectItem>
+                {suppliers.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.code} · {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FieldMessage variant={errors.supplier_id ? "error" : "helper"}>
-              {errors.supplier_id ?? "Formato UUID (ex.: 3f8c…-…-…-…-…). Deixe vazio se não aplicável."}
+              {errors.supplier_id ?? "Quem vai costurar a peça piloto. Pode ser definido depois."}
             </FieldMessage>
           </div>
 

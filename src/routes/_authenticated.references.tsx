@@ -4,20 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Search, Sparkles } from "lucide-react";
-import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -27,12 +17,12 @@ import {
 } from "@/components/ui/select";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
+import { NovaReferenciaDialog } from "@/components/references/NovaReferenciaDialog";
+import { NovoPilotoDialog } from "@/components/pcp/NovoPilotoDialog";
 import {
-  REFERENCE_PRIORITIES,
   REFERENCE_STATUSES,
   REFERENCE_STATUS_LABEL,
   useReferences,
-  type ReferencePriority,
   type ReferenceStatus,
 } from "@/hooks/use-references";
 
@@ -107,28 +97,28 @@ function ReferencesPage() {
               </SelectContent>
             </Select>
           </div>
-          <Dialog open={openNew} onOpenChange={setOpenNew}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                <Plus className="h-3.5 w-3.5 mr-1" />
-                Nova referência
-              </Button>
-            </DialogTrigger>
-            <NewReferenceDialog
-              onCreated={async (created) => {
-                setOpenNew(false);
-                if (created) {
-                  openEntity({
-                    type: "reference",
-                    id: created.id,
-                    title: created.name,
-                    subtitle: created.code,
-                  });
-                }
-              }}
-              onCreate={async (input) => create(input)}
-            />
-          </Dialog>
+          <Button
+            size="sm"
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={() => setOpenNew(true)}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            Nova referência
+          </Button>
+          <NovaReferenciaDialog
+            open={openNew}
+            onOpenChange={setOpenNew}
+            existingCodes={items.map((r) => r.code)}
+            onCreate={(input) => create(input)}
+            onCreated={(created) =>
+              openEntity({
+                type: "reference",
+                id: created.id,
+                title: created.name,
+                subtitle: created.code,
+              })
+            }
+          />
         </div>
 
         {loading ? (
@@ -180,109 +170,43 @@ function ReferencesPage() {
                       </span>
                     )}
                   </div>
+                  <div
+                    className="mt-3 flex items-center gap-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <NovoPilotoDialog
+                      referenceId={r.id}
+                      referenciaNome={`${r.code} · ${r.name}`}
+                      trigger={
+                        <Button size="sm" variant="outline" className="h-7 text-[10px]">
+                          <Plus className="mr-1 h-3 w-3" />
+                          Novo piloto
+                        </Button>
+                      }
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 text-[10px]"
+                      onClick={() =>
+                        openEntity({
+                          type: "reference",
+                          id: r.id,
+                          title: r.name,
+                          subtitle: r.code,
+                        })
+                      }
+                    >
+                      Abrir ciclo de vida
+                    </Button>
+                  </div>
                 </CardContent>
+
               </Card>
             ))}
           </div>
         )}
       </div>
     </ModuleLayout>
-  );
-}
-
-function NewReferenceDialog({
-  onCreate,
-  onCreated,
-}: {
-  onCreate: (input: {
-    code: string;
-    name: string;
-    collection_id?: string;
-    line?: string;
-    theme?: string;
-    season?: string;
-    priority?: ReferencePriority;
-  }) => Promise<{ id: string; name: string; code: string } | null>;
-  onCreated: (created: { id: string; name: string; code: string } | null) => void;
-}) {
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [collection, setCollection] = useState("");
-  const [line, setLine] = useState("");
-  const [theme, setTheme] = useState("");
-  const [season, setSeason] = useState("");
-  const [priority, setPriority] = useState<ReferencePriority>("MEDIA");
-  const [busy, setBusy] = useState(false);
-
-  return (
-    <DialogContent className="glass-card border-white/10 bg-black/95 text-white">
-      <DialogHeader>
-        <DialogTitle>Nova referência</DialogTitle>
-      </DialogHeader>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-1">
-          <Label className="text-[10px] uppercase tracking-wider">Código *</Label>
-          <Input value={code} onChange={(e) => setCode(e.target.value)} placeholder="CM-712" />
-        </div>
-        <div className="col-span-1">
-          <Label className="text-[10px] uppercase tracking-wider">Prioridade</Label>
-          <Select value={priority} onValueChange={(v) => setPriority(v as ReferencePriority)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {REFERENCE_PRIORITIES.map((p) => (
-                <SelectItem key={p} value={p}>
-                  {p}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="col-span-2">
-          <Label className="text-[10px] uppercase tracking-wider">Nome *</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Camiseta manga curta gola V" />
-        </div>
-        <div>
-          <Label className="text-[10px] uppercase tracking-wider">Coleção</Label>
-          <Input value={collection} onChange={(e) => setCollection(e.target.value)} placeholder="Verão 2027" />
-        </div>
-        <div>
-          <Label className="text-[10px] uppercase tracking-wider">Linha</Label>
-          <Input value={line} onChange={(e) => setLine(e.target.value)} placeholder="Casual" />
-        </div>
-        <div>
-          <Label className="text-[10px] uppercase tracking-wider">Tema</Label>
-          <Input value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Beachwear" />
-        </div>
-        <div>
-          <Label className="text-[10px] uppercase tracking-wider">Temporada</Label>
-          <Input value={season} onChange={(e) => setSeason(e.target.value)} placeholder="SS27" />
-        </div>
-      </div>
-      <DialogFooter>
-        <Button
- disabled={busy || !code || !name}
- onClick={async () => {
-            setBusy(true);
-            const r = await onCreate({
-              code: code.trim(),
-              name: name.trim(),
-              collection_id: collection.trim() || undefined,
-              line: line.trim() || undefined,
-              theme: theme.trim() || undefined,
-              season: season.trim() || undefined,
-              priority,
-            });
-            setBusy(false);
-            if (r) toast.success(`Referência ${r.code} criada`);
-            else toast.error("Falha ao criar referência");
-            onCreated(r);
-          }}
-        >
-          Criar
-        </Button>
-      </DialogFooter>
-    </DialogContent>
   );
 }
