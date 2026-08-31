@@ -336,11 +336,11 @@
     font-optical-sizing: auto;
   }
 
-  /* Display serif dramático nos títulos heróicos, sans nos operacionais */
+  /* Headings usam a mesma Camera Plain com peso alto */
   h1, h2 {
     font-family: var(--font-heading);
     letter-spacing: -0.015em;
-    font-weight: 400;   /* DM Serif Display já é bold por design */
+    font-weight: 600;
     line-height: 1.05;
   }
 
