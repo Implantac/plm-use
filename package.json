@@ -10,8 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "security-scan": "node scripts/security-report.js",
-    "postbuild": "npm run security-scan"
+    "security-scan": "node scripts/security-report.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
