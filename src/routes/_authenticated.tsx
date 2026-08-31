@@ -46,6 +46,7 @@ import {
   Ruler,
   ClipboardList,
   Star,
+  Workflow,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,7 @@ function AuthenticatedLayout() {
         label: "Geral",
         items: [
           { icon: <LayoutDashboard className="w-4 h-4" />, label: "Dashboard", href: "/dashboard" },
+          { icon: <Workflow className="w-4 h-4" />, label: "Fluxo do Produto", href: "/flow" },
           { icon: <MessageSquare className="w-4 h-4" />, label: "Colaboração", href: "/feed" },
         ],
       },

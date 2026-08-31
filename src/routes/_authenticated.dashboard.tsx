@@ -199,6 +199,15 @@ function Dashboard() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Button
+                asChild
+                className="text-[10px] tracking-[0.16em]"
+              >
+                <Link to="/flow">
+                  <RouteIcon className="mr-2 h-3.5 w-3.5" />
+                  Abrir fluxo do produto
+                </Link>
+              </Button>
+              <Button
  asChild
  className="text-[10px] tracking-[0.16em]"
  >

@@ -34,6 +34,7 @@ import { Route as AuthenticatedLooksRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
 import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
 import { Route as AuthenticatedInfluencersRouteImport } from './routes/_authenticated.influencers'
+import { Route as AuthenticatedFlowRouteImport } from './routes/_authenticated.flow'
 import { Route as AuthenticatedFinancialRouteImport } from './routes/_authenticated.financial'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
 import { Route as AuthenticatedDisplayRouteImport } from './routes/_authenticated.display'
@@ -182,6 +183,11 @@ const AuthenticatedInfluencersRoute =
     path: '/influencers',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedFlowRoute = AuthenticatedFlowRouteImport.update({
+  id: '/flow',
+  path: '/flow',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedFinancialRoute = AuthenticatedFinancialRouteImport.update({
   id: '/financial',
   path: '/financial',
@@ -305,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/display': typeof AuthenticatedDisplayRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/financial': typeof AuthenticatedFinancialRoute
+  '/flow': typeof AuthenticatedFlowRoute
   '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/launch': typeof AuthenticatedLaunchRoute
@@ -350,6 +357,7 @@ export interface FileRoutesByTo {
   '/display': typeof AuthenticatedDisplayRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/financial': typeof AuthenticatedFinancialRoute
+  '/flow': typeof AuthenticatedFlowRoute
   '/influencers': typeof AuthenticatedInfluencersRoute
   '/inventory': typeof AuthenticatedInventoryRoute
   '/launch': typeof AuthenticatedLaunchRoute
@@ -397,6 +405,7 @@ export interface FileRoutesById {
   '/_authenticated/display': typeof AuthenticatedDisplayRoute
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/financial': typeof AuthenticatedFinancialRoute
+  '/_authenticated/flow': typeof AuthenticatedFlowRoute
   '/_authenticated/influencers': typeof AuthenticatedInfluencersRoute
   '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
   '/_authenticated/launch': typeof AuthenticatedLaunchRoute
@@ -444,6 +453,7 @@ export interface FileRouteTypes {
     | '/display'
     | '/feed'
     | '/financial'
+    | '/flow'
     | '/influencers'
     | '/inventory'
     | '/launch'
@@ -489,6 +499,7 @@ export interface FileRouteTypes {
     | '/display'
     | '/feed'
     | '/financial'
+    | '/flow'
     | '/influencers'
     | '/inventory'
     | '/launch'
@@ -535,6 +546,7 @@ export interface FileRouteTypes {
     | '/_authenticated/display'
     | '/_authenticated/feed'
     | '/_authenticated/financial'
+    | '/_authenticated/flow'
     | '/_authenticated/influencers'
     | '/_authenticated/inventory'
     | '/_authenticated/launch'
@@ -750,6 +762,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInfluencersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/flow': {
+      id: '/_authenticated/flow'
+      path: '/flow'
+      fullPath: '/flow'
+      preLoaderRoute: typeof AuthenticatedFlowRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/financial': {
       id: '/_authenticated/financial'
       path: '/financial'
@@ -929,6 +948,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDisplayRoute: typeof AuthenticatedDisplayRoute
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedFinancialRoute: typeof AuthenticatedFinancialRoute
+  AuthenticatedFlowRoute: typeof AuthenticatedFlowRoute
   AuthenticatedInfluencersRoute: typeof AuthenticatedInfluencersRoute
   AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
   AuthenticatedLaunchRoute: typeof AuthenticatedLaunchRoute
@@ -966,6 +986,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDisplayRoute: AuthenticatedDisplayRoute,
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedFinancialRoute: AuthenticatedFinancialRoute,
+  AuthenticatedFlowRoute: AuthenticatedFlowRoute,
   AuthenticatedInfluencersRoute: AuthenticatedInfluencersRoute,
   AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
   AuthenticatedLaunchRoute: AuthenticatedLaunchRoute,
