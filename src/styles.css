@@ -19,49 +19,48 @@
  * ========================================================================= */
 
 /* ---------- Primitives (HSL triplets — never referenced by components) ---
- * Paleta extraída da logo USE MODA:
- *   preto quente → borgonha profundo → ember/copper → highlight dourado
+ * Paleta em tons de azul — agradável, calma, confiável.
  * ------------------------------------------------------------------------ */
 :root {
-  /* Neutros (ink) — família preto quente com undertone burgundy */
-  --ink-0:    30 33% 98%;   /* off-white quente */
-  --ink-50:   30 24% 94%;   /* paper */
-  --ink-200:  28 14% 78%;   /* soft */
-  --ink-400:  26 10% 58%;   /* muted body */
-  --ink-600:  22 12% 38%;   /* deep muted */
-  --ink-800:  18 22% 12%;   /* surface elevated */
-  --ink-900:  18 30% 8%;    /* surface */
-  --ink-950:  16 40% 5%;    /* background */
-  --ink-1000: 14 50% 3%;    /* deep sunken */
+  /* Neutros (ink) — família slate fria com undertone azul */
+  --ink-0:    210 40% 98%;   /* off-white frio */
+  --ink-50:   214 32% 94%;   /* paper */
+  --ink-200:  213 20% 78%;   /* soft */
+  --ink-400:  215 14% 58%;   /* muted body */
+  --ink-600:  217 16% 40%;   /* deep muted */
+  --ink-800:  222 30% 13%;   /* surface elevated */
+  --ink-900:  224 36% 10%;   /* surface */
+  --ink-950:  226 45% 7%;    /* background */
+  --ink-1000: 228 55% 4%;    /* deep sunken */
 
-  /* Brand — ember/copper industrial (extraído da logo) */
-  --brand-50:  30 90% 94%;
-  --brand-200: 26 88% 78%;
-  --brand-500: 19 83% 44%;  /* #c04a12 — ember signature */
-  --brand-700: 18 88% 34%;
-  --brand-900: 16 90% 20%;
+  /* Brand — azul principal */
+  --brand-50:  214 95% 93%;
+  --brand-200: 213 92% 78%;
+  --brand-500: 217 91% 52%;  /* azul signature */
+  --brand-700: 221 83% 40%;
+  --brand-900: 224 76% 25%;
 
-  /* Highlight dourado/copper glow (halo, focus, primary-glow) */
-  --glow-500: 27 82% 55%;   /* #e8801f — copper radiante */
-  --glow-700: 24 78% 42%;
+  /* Highlight — azul céu radiante (halo, focus, primary-glow) */
+  --glow-500: 199 89% 55%;
+  --glow-700: 201 85% 42%;
 
-  /* Borgonha profundo (accent secundário, entidades premium) */
-  --wine-500: 8 65% 24%;    /* #6b1a12 — deep sienna wine */
-  --wine-700: 6 72% 16%;
+  /* Azul marinho profundo (accent secundário, entidades premium) */
+  --wine-500: 230 55% 28%;
+  --wine-700: 232 62% 18%;
 
-  /* Status primitives — recalibrados para paleta quente */
-  --info-500:    195 78% 48%;   /* teal-blue, contraste com ember */
+  /* Status primitives — recalibrados para paleta fria */
+  --info-500:    195 78% 48%;   /* teal-blue */
   --info-700:    195 82% 34%;
-  --success-500: 145 55% 42%;   /* verde oliva-esmeralda, terroso */
-  --success-700: 145 60% 28%;
-  --warning-500: 38 92% 52%;    /* amber puro */
+  --success-500: 160 60% 42%;   /* verde-azulado */
+  --success-700: 160 65% 28%;
+  --warning-500: 38 92% 52%;    /* amber (mantido para alertas) */
   --warning-700: 38 92% 40%;
   --danger-500:  358 78% 54%;
   --danger-700:  358 82% 40%;
-  --neutral-500: 22 12% 48%;
-  --neutral-700: 22 12% 34%;
-  --purple-500:  282 58% 58%;   /* orquídea, equilibra o warm */
-  --purple-700:  282 60% 44%;
+  --neutral-500: 217 14% 52%;
+  --neutral-700: 217 14% 38%;
+  --purple-500:  255 65% 62%;   /* azul-violeta */
+  --purple-700:  255 62% 46%;
 }
 
 
