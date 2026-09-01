@@ -46,6 +46,7 @@ import { Route as AuthenticatedColorsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenticated.collections'
 import { Route as AuthenticatedCollectionMapRouteImport } from './routes/_authenticated.collection-map'
 import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
+import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
 import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
@@ -247,6 +248,11 @@ const AuthenticatedCadRoute = AuthenticatedCadRouteImport.update({
   path: '/cad',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -300,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/approvals': typeof AuthenticatedApprovalsRoute
   '/cad': typeof AuthenticatedCadRoute
   '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
@@ -346,6 +353,7 @@ export interface FileRoutesByTo {
   '/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
+  '/approvals': typeof AuthenticatedApprovalsRoute
   '/cad': typeof AuthenticatedCadRoute
   '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
@@ -394,6 +402,7 @@ export interface FileRoutesById {
   '/_authenticated/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/_authenticated/ai-center': typeof AuthenticatedAiCenterRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
+  '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/cad': typeof AuthenticatedCadRoute
   '/_authenticated/collection-map': typeof AuthenticatedCollectionMapRoute
   '/_authenticated/collections': typeof AuthenticatedCollectionsRouteWithChildren
@@ -442,6 +451,7 @@ export interface FileRouteTypes {
     | '/ai-agents'
     | '/ai-center'
     | '/analytics'
+    | '/approvals'
     | '/cad'
     | '/collection-map'
     | '/collections'
@@ -488,6 +498,7 @@ export interface FileRouteTypes {
     | '/ai-agents'
     | '/ai-center'
     | '/analytics'
+    | '/approvals'
     | '/cad'
     | '/collection-map'
     | '/collections'
@@ -535,6 +546,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ai-agents'
     | '/_authenticated/ai-center'
     | '/_authenticated/analytics'
+    | '/_authenticated/approvals'
     | '/_authenticated/cad'
     | '/_authenticated/collection-map'
     | '/_authenticated/collections'
@@ -846,6 +858,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCadRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/approvals': {
+      id: '/_authenticated/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/analytics': {
       id: '/_authenticated/analytics'
       path: '/analytics'
@@ -937,6 +956,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAiAgentsRoute: typeof AuthenticatedAiAgentsRoute
   AuthenticatedAiCenterRoute: typeof AuthenticatedAiCenterRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
+  AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
   AuthenticatedCadRoute: typeof AuthenticatedCadRoute
   AuthenticatedCollectionMapRoute: typeof AuthenticatedCollectionMapRoute
   AuthenticatedCollectionsRoute: typeof AuthenticatedCollectionsRouteWithChildren
@@ -975,6 +995,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAiAgentsRoute: AuthenticatedAiAgentsRoute,
   AuthenticatedAiCenterRoute: AuthenticatedAiCenterRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
+  AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
   AuthenticatedCadRoute: AuthenticatedCadRoute,
   AuthenticatedCollectionMapRoute: AuthenticatedCollectionMapRoute,
   AuthenticatedCollectionsRoute: AuthenticatedCollectionsRouteWithChildren,
