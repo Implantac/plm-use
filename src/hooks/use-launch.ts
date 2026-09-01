@@ -104,7 +104,7 @@ export function useLaunch() {
     });
 
     const ch = supabase
-      .channel("launch-live")
+      .channel(`launch-live-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "launch_wave" }, (p) =>
         setWaves((prev) => mergeRow(prev, p)),
       )

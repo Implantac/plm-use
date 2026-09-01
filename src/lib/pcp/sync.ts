@@ -76,7 +76,7 @@ export function usePCPCloudSync(enabled: boolean) {
     });
     subRef.current = unsub;
     const channel = supabase
-      .channel("pcp-live")
+      .channel(`pcp-live-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "pcp_lots" }, () => {
         void hydratePCPFromCloud(true);
       })

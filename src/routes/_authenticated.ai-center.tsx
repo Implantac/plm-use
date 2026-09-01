@@ -68,7 +68,7 @@ function AICenterPage() {
       <div className="flex-1 flex flex-col bg-white/[0.02] border border-white/5 rounded-[3rem] overflow-hidden relative">
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.03]"
-          style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }}
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }}
         />
 
         <header className="p-8 border-b border-white/5 flex justify-between items-center shrink-0">

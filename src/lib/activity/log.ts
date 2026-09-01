@@ -62,7 +62,7 @@ export function useActivityFeed(limit = 30) {
     };
     void load();
     const channel = supabase
-      .channel("activity-live")
+      .channel(`activity-live-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "activity_log" },

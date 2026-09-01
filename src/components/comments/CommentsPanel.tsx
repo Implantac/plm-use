@@ -208,7 +208,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
     })();
 
     const channel = supabase
-      .channel(`comments:${entityType}:${entityId}`)
+      .channel(`comments:${entityType}:${entityId}:${Math.random().toString(36).slice(2, 10)}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "comments", filter: `entity_id=eq.${entityId}` },
