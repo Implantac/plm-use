@@ -183,6 +183,7 @@ const PRIORITY_TONE: Record<string, string> = {
 
 function FlowPage() {
   const { items, loading, nextStatuses, transition } = useReferences();
+  const { items: gates, openGate } = useReferenceGates();
   const { openEntity } = useEntityDrawer();
   const [selected, setSelected] = useState<ReferenceStatus>("IDEIA");
   const [pcpRef, setPcpRef] = useState<ReferenceRow | null>(null);
@@ -194,6 +195,26 @@ function FlowPage() {
     for (const r of items) map.get(r.status)?.push(r);
     return map;
   }, [items]);
+
+  const gateByKey = useMemo(() => {
+    const m = new Map<string, (typeof gates)[number]>();
+    for (const g of gates) m.set(`${g.reference_id}:${g.gate}`, g);
+    return m;
+  }, [gates]);
+
+  const gateFor = (ref: ReferenceRow) => {
+    const def = GATES.find((g) => g.status === ref.status);
+    if (!def) return null;
+    return { def, row: gateByKey.get(`${ref.id}:${def.id}`) ?? null };
+  };
+
+  const handleOpenGate = async (ref: ReferenceRow, gateId: string) => {
+    setBusyId(ref.id);
+    const ok = await openGate(ref.id, gateId);
+    setBusyId(null);
+    if (ok) toast.success(`Gate aberto para ${ref.code}.`);
+    else toast.error("Não foi possível abrir o gate.");
+  };
 
   const active = items.filter(
     (r) => r.status !== "FINALIZADA" && r.status !== "ARQUIVADA",
