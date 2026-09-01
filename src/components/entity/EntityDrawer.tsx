@@ -95,6 +95,8 @@ function ReferenceBody({ id }: { id: string }) {
   const { items, nextStatuses, transition } = useReferences();
   const [row, setRow] = useState<ReferenceRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState("summary");
+  const [newTimelineCount, setNewTimelineCount] = useState(0);
   const { emit } = useEventEmitter();
 
   useEffect(() => {
