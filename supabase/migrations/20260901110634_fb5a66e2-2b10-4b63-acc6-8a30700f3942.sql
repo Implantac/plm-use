@@ -1,0 +1,14 @@
+GRANT EXECUTE ON FUNCTION public.is_member(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.user_has_role_name(uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_any_stock_role(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_stock_write_role(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_any_showroom_role(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_any_launch_role(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.has_supplier_mgmt_role(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.user_belongs_to_supplier(uuid, uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.is_user_mentioned(uuid, text[]) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.can_access_entity_topic(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.can_access_module_topic(text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.can_transition(text, text, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.can_transition_reference(public.reference_status, public.reference_status) TO authenticated;
