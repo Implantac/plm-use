@@ -159,10 +159,8 @@ function ReferenceBody({ id }: { id: string }) {
     }
   };
 
-  const [tab, setTab] = useState("summary");
-  const [newTimelineCount, setNewTimelineCount] = useState(0);
-
   return (
+
     <Tabs value={tab} onValueChange={setTab}>
       <TabsList className="bg-white/[0.04] border border-white/10">
         <TabsTrigger value="summary" className="text-[10px] gap-1">
