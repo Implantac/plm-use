@@ -10,6 +10,7 @@ import {
   Clock,
   Factory,
   Gauge,
+  ShieldCheck,
   Workflow,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -20,6 +21,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { IniciarPCPDialog } from "@/components/pcp/IniciarPCPDialog";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
+import {
+  GATES,
+  GATE_STATUS_LABEL,
+  useReferenceGates,
+  type GateStatus,
+} from "@/hooks/use-reference-gates";
 import {
   REFERENCE_STATUSES,
   REFERENCE_STATUS_LABEL,
@@ -174,6 +181,13 @@ const STAGES: StageDef[] = [
 const daysSince = (iso: string) =>
   Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
 
+const GATE_TONE: Record<GateStatus, string> = {
+  pendente: "border-amber-400/40 text-amber-300",
+  aprovado: "border-emerald-400/40 text-emerald-300",
+  reprovado: "border-destructive/40 text-destructive",
+  dispensado: "border-white/15 text-muted-foreground",
+};
+
 const PRIORITY_TONE: Record<string, string> = {
   URGENTE: "border-destructive/40 text-destructive",
   ALTA: "border-amber-400/40 text-amber-300",
@@ -183,6 +197,7 @@ const PRIORITY_TONE: Record<string, string> = {
 
 function FlowPage() {
   const { items, loading, nextStatuses, transition } = useReferences();
+  const { items: gates, openGate } = useReferenceGates();
   const { openEntity } = useEntityDrawer();
   const [selected, setSelected] = useState<ReferenceStatus>("IDEIA");
   const [pcpRef, setPcpRef] = useState<ReferenceRow | null>(null);
@@ -194,6 +209,26 @@ function FlowPage() {
     for (const r of items) map.get(r.status)?.push(r);
     return map;
   }, [items]);
+
+  const gateByKey = useMemo(() => {
+    const m = new Map<string, (typeof gates)[number]>();
+    for (const g of gates) m.set(`${g.reference_id}:${g.gate}`, g);
+    return m;
+  }, [gates]);
+
+  const gateFor = (ref: ReferenceRow) => {
+    const def = GATES.find((g) => g.status === ref.status);
+    if (!def) return null;
+    return { def, row: gateByKey.get(`${ref.id}:${def.id}`) ?? null };
+  };
+
+  const handleOpenGate = async (ref: ReferenceRow, gateId: string) => {
+    setBusyId(ref.id);
+    const ok = await openGate(ref.id, gateId);
+    setBusyId(null);
+    if (ok) toast.success(`Gate aberto para ${ref.code}.`);
+    else toast.error("Não foi possível abrir o gate.");
+  };
 
   const active = items.filter(
     (r) => r.status !== "FINALIZADA" && r.status !== "ARQUIVADA",
@@ -281,6 +316,13 @@ function FlowPage() {
           </div>
           <Progress value={progress} />
         </div>
+
+        <Button asChild variant="outline" size="sm" className="mt-5">
+          <Link to="/approvals">
+            <ShieldCheck className="mr-2 h-3.5 w-3.5" />
+            Módulo de Aprovações
+          </Link>
+        </Button>
       </header>
 
       {/* Pipeline por fase */}
@@ -401,6 +443,34 @@ function FlowPage() {
                       atrasada
                     </Badge>
                   )}
+                  {(() => {
+                    const g = gateFor(ref);
+                    if (!g) return null;
+                    if (!g.row)
+                      return (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void handleOpenGate(ref, g.def.id)}
+                          disabled={busyId === ref.id}
+                        >
+                          <ShieldCheck className="mr-2 h-3.5 w-3.5" />
+                          Abrir gate
+                        </Button>
+                      );
+                    const st = g.row.status as GateStatus;
+                    return (
+                      <Link to="/approvals">
+                        <Badge variant="outline" className={GATE_TONE[st]}>
+                          <ShieldCheck className="mr-1 h-3 w-3" />
+                          {GATE_STATUS_LABEL[st]}
+                          {g.row.decided_at
+                            ? ` · ${new Date(g.row.decided_at).toLocaleDateString("pt-BR")}`
+                            : ""}
+                        </Badge>
+                      </Link>
+                    );
+                  })()}
                   {ref.status === "ENGENHARIA" && (
                     <Button size="sm" variant="outline" onClick={() => setPcpRef(ref)}>
                       <Factory className="mr-2 h-3.5 w-3.5" />
