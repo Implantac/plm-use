@@ -422,6 +422,34 @@ function FlowPage() {
                       atrasada
                     </Badge>
                   )}
+                  {(() => {
+                    const g = gateFor(ref);
+                    if (!g) return null;
+                    if (!g.row)
+                      return (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => void handleOpenGate(ref, g.def.id)}
+                          disabled={busyId === ref.id}
+                        >
+                          <ShieldCheck className="mr-2 h-3.5 w-3.5" />
+                          Abrir gate
+                        </Button>
+                      );
+                    const st = g.row.status as GateStatus;
+                    return (
+                      <Badge variant="outline" className={GATE_TONE[st]} asChild>
+                        <Link to="/approvals">
+                          <ShieldCheck className="mr-1 h-3 w-3" />
+                          {GATE_STATUS_LABEL[st]}
+                          {g.row.decided_at
+                            ? ` · ${new Date(g.row.decided_at).toLocaleDateString("pt-BR")}`
+                            : ""}
+                        </Link>
+                      </Badge>
+                    );
+                  })()}
                   {ref.status === "ENGENHARIA" && (
                     <Button size="sm" variant="outline" onClick={() => setPcpRef(ref)}>
                       <Factory className="mr-2 h-3.5 w-3.5" />
