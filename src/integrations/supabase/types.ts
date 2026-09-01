@@ -940,6 +940,59 @@ export type Database = {
           },
         ]
       }
+      reference_gate: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          decided_at: string | null
+          decided_by: string | null
+          due_date: string | null
+          gate: string
+          id: string
+          parecer: string | null
+          reference_id: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          due_date?: string | null
+          gate: string
+          id?: string
+          parecer?: string | null
+          reference_id: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          due_date?: string | null
+          gate?: string
+          id?: string
+          parecer?: string | null
+          reference_id?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reference_gate_reference_id_fkey"
+            columns: ["reference_id"]
+            isOneToOne: false
+            referencedRelation: "references"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reference_transitions: {
         Row: {
           created_at: string
