@@ -37,7 +37,7 @@ export function useEntityTimeline(
       });
 
     const ch = supabase
-      .channel(`entity-events-${entityType}-${entityId}`)
+      .channel(`entity-events-${entityType}-${entityId}-${Math.random().toString(36).slice(2, 10)}`)
       .on(
         "postgres_changes",
         {

@@ -88,7 +88,7 @@ export function useShowroom() {
     });
 
     const ch = supabase
-      .channel("showroom-live")
+      .channel(`showroom-live-${Math.random().toString(36).slice(2, 10)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "showroom_sample" }, (payload) => {
         setSamples((prev) => mergeRow(prev, payload));
       })

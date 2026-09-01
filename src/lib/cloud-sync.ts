@@ -171,7 +171,7 @@ export function useModulesCloudSync(enabled: boolean) {
 
       // ---- Realtime: re-hidrata stores em qualquer mudança remota ----
       const channel = supabase
-        .channel("modules-live")
+        .channel(`modules-live-${Math.random().toString(36).slice(2, 10)}`)
         .on("postgres_changes", { event: "*", schema: "public", table: "influencers" }, () => {
           hydrated.inf = false;
           void hydrateInfluencers();
