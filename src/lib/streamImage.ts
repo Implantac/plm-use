@@ -1,45 +1,94 @@
-// Client helper: consome SSE de /api/generate-image e entrega frames parciais + final.
+import { supabase } from "@/integrations/supabase/client";
+
+type ImageEvent = {
+  type?: string;
+  b64_json?: string;
+  data?: Array<{ b64_json?: string }>;
+  error?: string | { message?: string };
+};
+
+function readError(payload: unknown, fallback: string): string {
+  if (!payload || typeof payload !== "object") return fallback;
+  const error = (payload as { error?: unknown }).error;
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object" && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string") return message;
+  }
+  return fallback;
+}
+
 export async function streamImage(
   endpoint: string,
   prompt: string,
   onFrame: (dataUrl: string, final: boolean) => void,
 ): Promise<void> {
+  const { data, error: sessionError } = await supabase.auth.getSession();
+  const accessToken = data.session?.access_token;
+  if (sessionError || !accessToken) throw new Error("Entre na sua conta para gerar imagens.");
+
   const res = await fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
     body: JSON.stringify({ prompt }),
   });
-  if (!res.ok || !res.body) throw new Error(`AI image error: ${res.status}`);
+
+  if (!res.ok || !res.body) {
+    let message = `Falha ao gerar a imagem (${res.status}).`;
+    try {
+      message = readError(await res.json(), message);
+    } catch {
+      // Preserve a useful status-based message when the server returns no JSON.
+    }
+    throw new Error(message);
+  }
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let receivedImage = false;
 
-  for (;;) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const parts = buffer.split("\n\n");
-    buffer = parts.pop() ?? "";
-    for (const part of parts) {
-      const line = part.split("\n").find((l) => l.startsWith("data:"));
-      if (!line) continue;
-      const payload = line.slice(5).trim();
-      if (!payload || payload === "[DONE]") continue;
-      try {
-        const json = JSON.parse(payload) as {
-          type?: string;
-          b64_json?: string;
-          data?: Array<{ b64_json?: string }>;
-        };
-        const b64 =
-          json.b64_json ?? (json.data && json.data[0]?.b64_json) ?? null;
-        if (!b64) continue;
-        const final = json.type === "image.completed" || json.type === "completed";
-        onFrame(`data:image/png;base64,${b64}`, final);
-      } catch {
-        // ignore malformed frames
-      }
+  const consume = (event: string) => {
+    const payload = event
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith("data:"))
+      .map((line) => line.slice(5).trim())
+      .join("\n");
+    if (!payload || payload === "[DONE]") return;
+
+    let json: ImageEvent;
+    try {
+      json = JSON.parse(payload) as ImageEvent;
+    } catch {
+      return;
     }
+
+    if (json.type === "error" || json.error) {
+      throw new Error(readError(json, "O provedor interrompeu a geração da imagem."));
+    }
+
+    const base64 = json.b64_json ?? json.data?.[0]?.b64_json;
+    if (!base64) return;
+    receivedImage = true;
+    const final = json.type === "image.completed" || json.type === "completed";
+    onFrame(`data:image/png;base64,${base64}`, final);
+  };
+
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      buffer += decoder.decode(value, { stream: !done });
+      const events = buffer.split(/\r?\n\r?\n/);
+      buffer = events.pop() ?? "";
+      for (const event of events) consume(event);
+      if (done) break;
+    }
+    if (buffer.trim()) consume(buffer);
+    if (!receivedImage) throw new Error("O provedor concluiu sem retornar uma imagem.");
+  } finally {
+    reader.releaseLock();
   }
 }

@@ -2,10 +2,12 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { ArrowRight, Bot, ImageOff, LoaderCircle, Save, Sparkles } from "lucide-react";
+import { ArrowRight, Bot, Download, ImageOff, LoaderCircle, Save, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
+import { uploadGeneratedImage, storageAssetSource } from "@/lib/storage/assets";
+import { supabase } from "@/integrations/supabase/client";
 import { useReferences } from "@/hooks/use-references";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +41,19 @@ const ProposalSchema = z.object({
 type Proposal = z.infer<typeof ProposalSchema>;
 
 type Briefing = ProductBriefingInput;
+
+const IMAGE_VIEWS = [
+  "frente",
+  "costas",
+  "lateral",
+  "detalhe",
+  "still",
+  "modelo",
+  "editorial",
+  "catálogo",
+  "campanha",
+  "lifestyle",
+] as const;
 
 const EMPTY_BRIEFING: Briefing = {
   description: "",
@@ -94,6 +109,9 @@ export function ProductStudio() {
   const [referenceCode, setReferenceCode] = useState("");
   const [visualView, setVisualView] = useState("frente");
   const [imageSource, setImageSource] = useState<string | null>(null);
+  const [generatedImages, setGeneratedImages] = useState<
+    Array<{ view: string; src: string; storagePath: string; createdAt: string; conceptName: string }>
+  >([]);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [imageBusy, setImageBusy] = useState(false);
@@ -105,6 +123,7 @@ export function ProductStudio() {
   );
 
   function applyProposal(nextProposal: Proposal) {
+    setImageSource(null);
     setProposal(nextProposal);
     setProductName(nextProposal.name || productName || "");
     setProposalText(JSON.stringify(nextProposal, null, 2));
@@ -161,6 +180,7 @@ export function ProductStudio() {
 
     setImageBusy(true);
     setImageSource(null);
+    let latestImage = "";
 
     const prompt = [
       `Fashion product photography for ${proposal.name}`,
@@ -168,19 +188,37 @@ export function ProductStudio() {
       `silhouette ${proposal.silhouette || "clean"}`,
       `materials ${proposal.suggestedMaterials.join(", ") || "tecido"}`,
       `colors ${proposal.colors.join(", ") || "neutros"}`,
+      `garment details ${proposal.details.join(", ") || "preserve the described construction"}`,
+      `visual identity ${proposal.visualIdentity?.join(", ") || briefing.mood || "as described"}`,
       `view ${visualView}`,
-      "premium fashion editorial, consistent garment identity, studio lighting, realistic product photography",
+      "premium fashion editorial, studio lighting, realistic product photography, one garment only, clean composition",
+      "Concept image for design exploration only. Do not add text, labels, logos, technical specifications, or claims about real materials.",
     ].join(", ");
 
     try {
-      await streamImage("/api/generate-image", prompt, (dataUrl, final) => {
+      await streamImage("/api/generate-image", prompt, (dataUrl) => {
+        latestImage = dataUrl;
         setImageSource(dataUrl);
-        if (final) {
-          toast.success(`Visual ${visualView} gerado com sucesso.`);
-        }
       });
-    } catch {
-      toast.error("Não foi possível gerar a imagem do produto. Tente novamente.");
+      const storagePath = await uploadGeneratedImage(latestImage);
+      const createdAt = new Date().toISOString();
+      setGeneratedImages((current) => [
+        {
+          view: visualView,
+          src: latestImage,
+          storagePath: storagePath ?? "",
+          createdAt,
+          conceptName: proposal.name,
+        },
+        ...current,
+      ]);
+      if (storagePath) {
+        toast.success(`Visual ${visualView} gerado e salvo no armazenamento.`);
+      } else {
+        toast.warning("Visual gerado, mas não foi possível salvá-lo no armazenamento.");
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível gerar a imagem.");
     } finally {
       setImageBusy(false);
     }
@@ -214,6 +252,10 @@ export function ProductStudio() {
       visualIdentity: proposal?.visualIdentity?.length ? proposal.visualIdentity : [briefing.mood || "minimalista"],
     });
 
+    const savedImages = generatedImages.filter(
+      (image) => image.storagePath && image.conceptName === (proposal?.name ?? name),
+    );
+
     setSaving(true);
     const created = await create({
       code,
@@ -223,6 +265,7 @@ export function ProductStudio() {
       line: (briefing.line ?? "").trim() || proposal?.line || null,
       theme: (briefing.category ?? "").trim() || proposal?.category || null,
       target_price: parsedPrice,
+      image_url: savedImages[0] ? storageAssetSource(savedImages[0].storagePath) : null,
       status: "IDEIA",
       metadata: {
         source: "ai_product_studio",
@@ -232,12 +275,24 @@ export function ProductStudio() {
         variation_ideas: variationIdeas,
         image_ideas: conceptPayload.imageIdeas,
         visual_identity: conceptPayload.visualIdentity,
+        generated_images: savedImages.map(({ view, storagePath, createdAt }) => ({
+          view,
+          storage_path: storagePath,
+          created_at: createdAt,
+          source_concept: proposal?.name ?? name,
+          status: "concept",
+        })),
         generated_at: new Date().toISOString(),
       },
     });
     setSaving(false);
 
     if (!created) {
+      if (savedImages.length) {
+        await supabase.storage
+          .from("use-moda-assets")
+          .remove(savedImages.map((image) => image.storagePath));
+      }
       toast.error("Não foi possível salvar o rascunho da referência.");
       return;
     }
@@ -517,13 +572,7 @@ export function ProductStudio() {
                     Geração visual
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {[
-                      "frente",
-                      "costas",
-                      "lateral",
-                      "modelo",
-                      "campanha",
-                    ].map((view) => (
+                    {IMAGE_VIEWS.map((view) => (
                       <button
                         key={view}
                         type="button"
@@ -547,9 +596,34 @@ export function ProductStudio() {
                   </Button>
                 </div>
 
+                {imageBusy && !imageSource && (
+                  <div className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-white/15 bg-black/10 text-sm text-muted-foreground" role="status">
+                    <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
+                    Criando visual conceitual de {visualView}…
+                  </div>
+                )}
                 {imageSource && (
                   <div className="mt-3 overflow-hidden rounded-md border border-white/10 bg-black/20">
-                    <img src={imageSource} alt={`${proposal.name} ${visualView}`} className="h-64 w-full object-cover" />
+                    <img src={imageSource} alt={`Conceito visual de ${proposal.name}, ${visualView}`} className="h-64 w-full object-contain" />
+                    <div className="flex items-center justify-between gap-3 p-2 text-xs text-muted-foreground">
+                      <span>Conceito visual · requer validação humana</span>
+                      <a className="inline-flex items-center gap-1 text-primary hover:underline" href={imageSource} download={`${proposal.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${visualView}.png`}>
+                        <Download className="h-3.5 w-3.5" /> Baixar
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {generatedImages.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4" aria-label="Histórico desta sessão">
+                    {generatedImages.map((image, index) => (
+                      <button key={`${image.view}-${image.createdAt}`} type="button" onClick={() => { setImageSource(image.src); setVisualView(image.view); }} className="overflow-hidden rounded border border-white/10 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Visual ${image.view} para ${image.conceptName}`}>
+                        <img src={image.src} alt="" className="aspect-square w-full object-cover" />
+                        <span className="block truncate px-1 pt-1 text-[10px] text-muted-foreground">{image.view}</span>
+                        {image.conceptName !== proposal?.name && (
+                          <span className="block truncate px-1 pb-1 text-[9px] text-muted-foreground">{image.conceptName}</span>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
@@ -564,8 +638,10 @@ export function ProductStudio() {
           )}
           <div className="mt-5 flex items-start gap-2 border-t border-white/10 pt-4 text-xs text-muted-foreground">
             <ImageOff className="mt-0.5 h-4 w-4 shrink-0" />
-            Geração e análise de imagens ainda dependem de um provedor visual configurado. Esta
-            proposta é textual e conceitual.
+            A geração usa o provedor de imagens configurado no servidor. Cada ângulo é gerado como
+            uma imagem independente: a ferramenta tenta seguir a identidade descrita, mas não
+            garante consistência entre vistas. Use os resultados como conceito visual, nunca como
+            ficha técnica ou validação de construção.
           </div>
         </section>
 
