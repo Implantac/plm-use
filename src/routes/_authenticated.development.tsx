@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
+import { ReferenceJourney } from "@/components/reference/ReferenceJourney";
+import { useEntityDrawer } from "@/components/entity/EntityContext";
 import {
   Dialog,
   DialogContent,
@@ -37,6 +39,7 @@ import {
   stageAtual,
   type ReferenceLifecycle,
 } from "@/types/reference";
+import { useReferences } from "@/hooks/use-references";
 
 export const Route = createFileRoute("/_authenticated/development")({
   component: DevelopmentPage,
@@ -373,6 +376,7 @@ function DevelopmentPage() {
         { label: "Prob. média", value: "87%", detail: "fit comercial IA" },
       ]}
     >
+      <DevelopmentReferenceJourney />
       <CentroDeDesenvolvimento />
 
       <div className="flex gap-4 overflow-x-auto pb-4 flex-1 no-scrollbar min-h-155">
@@ -549,6 +553,29 @@ function DevelopmentPage() {
         </DialogContent>
       </Dialog>
     </ModuleLayout>
+  );
+}
+
+function DevelopmentReferenceJourney() {
+  const { items, loading, error } = useReferences();
+  const { openEntity } = useEntityDrawer();
+
+  return (
+    <ReferenceJourney
+      title="Referências do ciclo real"
+      references={items}
+      loading={loading}
+      error={Boolean(error)}
+      limit={6}
+      onOpen={(reference) =>
+        openEntity({
+          type: "reference",
+          id: reference.id,
+          title: reference.name,
+          subtitle: reference.code,
+        })
+      }
+    />
   );
 }
 

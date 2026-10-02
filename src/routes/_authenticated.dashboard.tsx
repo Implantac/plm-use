@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
+import { ReferenceJourney } from "@/components/reference/ReferenceJourney";
 import {
   REFERENCE_STATUS_LABEL,
   useReferences,
@@ -59,6 +60,9 @@ function Dashboard() {
     items.map((item) => item.collection_id).filter((id): id is string => id !== null),
   ).size;
   const recentReferences = items.slice(0, 5);
+  const nextStepReferences = items.filter(
+    (item) => item.status !== "FINALIZADA" && item.status !== "ARQUIVADA",
+  );
 
   const metrics = [
     { label: "Referências ativas", value: activeCount, icon: Scissors, tone: "text-primary" },
@@ -312,33 +316,22 @@ function Dashboard() {
         <Card className="glass-card rounded-lg">
           <CardHeader className="border-b border-white/5 p-5">
             <CardTitle className="text-sm font-semibold text-white">
-              Continuar desenvolvimento
+              Próximo passo do produto
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-2 p-4 sm:grid-cols-2 xl:grid-cols-1">
-            <QuickLink
-              to="/collections"
-              label="Coleções"
-              detail="Planejar o mix"
-              icon={<Layers3 className="h-4 w-4" />}
-            />
-            <QuickLink
-              to="/development"
-              label="Desenvolvimento"
-              detail="Acompanhar etapas"
-              icon={<Scissors className="h-4 w-4" />}
-            />
-            <QuickLink
-              to="/tech-sheet"
-              label="Ficha técnica"
-              detail="Materiais e construção"
-              icon={<Boxes className="h-4 w-4" />}
-            />
-            <QuickLink
-              to="/ai-center"
-              label="AI Product Studio"
-              detail="Assistência à criação"
-              icon={<Sparkles className="h-4 w-4" />}
+          <CardContent className="p-4">
+            <ReferenceJourney
+              references={nextStepReferences}
+              loading={loading}
+              error={Boolean(error)}
+              onOpen={(reference) =>
+                openEntity({
+                  type: "reference",
+                  id: reference.id,
+                  title: reference.name,
+                  subtitle: reference.code,
+                })
+              }
             />
           </CardContent>
         </Card>
@@ -366,32 +359,6 @@ function ActionRow({
       <span className="text-primary">{icon}</span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-medium text-white">{title}</span>
-        <span className="mt-1 block truncate text-xs text-muted-foreground">{detail}</span>
-      </span>
-      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-    </Link>
-  );
-}
-
-function QuickLink({
-  to,
-  label,
-  detail,
-  icon,
-}: {
-  to: string;
-  label: string;
-  detail: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Link
-      to={to}
-      className="flex items-center gap-3 rounded-md p-3 transition-colors hover:bg-white/[0.04]"
-    >
-      <span className="text-primary">{icon}</span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium text-white">{label}</span>
         <span className="mt-1 block truncate text-xs text-muted-foreground">{detail}</span>
       </span>
       <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
