@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type DragEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -196,6 +196,11 @@ function DevelopmentPage() {
     return fromIdx !== -1 && toIdx !== -1 && toIdx === fromIdx + 1;
   };
 
+  const getNextStage = (column: ColumnName) => {
+    const index = flow.indexOf(column);
+    return index >= 0 && index < flow.length - 1 ? flow[index + 1] : null;
+  };
+
   const [draggedTask, setDraggedTask] = useState<{
     task: DevelopmentTask;
     fromColumn: ColumnName;
@@ -208,11 +213,12 @@ function DevelopmentPage() {
   const onDragStartTask = (
     task: DevelopmentTask,
     fromColumn: ColumnName,
-    e: React.DragEvent<HTMLDivElement>,
+    e: DragEvent<HTMLDivElement>,
   ) => {
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("application/x-dev-task", JSON.stringify({ id: task.id, fromColumn }));
     setDraggedTask({ task, fromColumn });
+    setDragOverColumn(null);
     setIsDragging(true);
   };
 
@@ -222,17 +228,16 @@ function DevelopmentPage() {
     setIsDragging(false);
   };
 
-  const onDragOverColumn = (toColumn: ColumnName, e: React.DragEvent) => {
+  const onDragOverColumn = (toColumn: ColumnName, e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!draggedTask) return;
-    if (allowedTransition(draggedTask.fromColumn, toColumn)) {
-      setDragOverColumn(toColumn);
-    } else {
-      setDragOverColumn(null);
-    }
+
+    const isValidDrop = allowedTransition(draggedTask.fromColumn, toColumn);
+    e.dataTransfer.dropEffect = isValidDrop ? "move" : "none";
+    setDragOverColumn(isValidDrop ? toColumn : null);
   };
 
-  const onDropColumn = (toColumn: ColumnName, e: React.DragEvent) => {
+  const onDropColumn = (toColumn: ColumnName, e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!draggedTask) return;
 
@@ -241,14 +246,19 @@ function DevelopmentPage() {
 
     moveTask(task, fromColumn, toColumn);
     setDragOverColumn(null);
+    setDraggedTask(null);
+    setIsDragging(false);
   };
 
   const moveTask = (task: DevelopmentTask, fromColumn: ColumnName, toColumn: ColumnName) => {
     if (fromColumn === toColumn) return;
 
     if (!allowedTransition(fromColumn, toColumn)) {
+      const nextStage = getNextStage(fromColumn);
       toast.error(
-        `Fluxo inválido: mova apenas para a próxima etapa (${fromColumn} → ${flow[flow.indexOf(fromColumn) + 1]})`,
+        nextStage
+          ? `Fluxo inválido: mova apenas para ${nextStage} (${fromColumn} → ${nextStage})`
+          : `Fluxo inválido para ${fromColumn}. Essa etapa não aceita avanço.`,
       );
       return;
     }
@@ -266,7 +276,27 @@ function DevelopmentPage() {
 
       return next;
     });
+
+    toast.success(`Produto movido: ${task.title} → ${toColumn}`);
   };
+  const totalTasks = useMemo(
+    () => columns.reduce((sum, column) => sum + column.tasks.length, 0),
+    [columns],
+  );
+  const pilotsCount = useMemo(
+    () => columns.find((column) => column.name === "Piloto")?.tasks.length ?? 0,
+    [columns],
+  );
+  const urgentCount = useMemo(
+    () =>
+      columns.reduce(
+        (sum, column) =>
+          sum + column.tasks.filter((task) => task.priority === "Urgente").length,
+        0,
+      ),
+    [columns],
+  );
+
   const [editingTask, setEditingTask] = useState<DevelopmentTask | null>(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -335,11 +365,11 @@ function DevelopmentPage() {
       metrics={[
         {
           label: "Referências",
-          value: String(columns.reduce((sum, col) => sum + col.tasks.length, 0)),
+          value: String(totalTasks),
           detail: "em desenvolvimento",
         },
-        { label: "Pilotos", value: "2", detail: "aguardando avaliação" },
-        { label: "Urgentes", value: "1", detail: "bloqueia aprovação" },
+        { label: "Pilotos", value: String(pilotsCount), detail: "aguardando avaliação" },
+        { label: "Urgentes", value: String(urgentCount), detail: "bloqueia aprovação" },
         { label: "Prob. média", value: "87%", detail: "fit comercial IA" },
       ]}
     >
@@ -361,10 +391,10 @@ function DevelopmentPage() {
             </div>
 
             <div
-              className={`flex-1 space-y-4 ${
+              className={`flex-1 space-y-4 rounded-md border border-transparent p-1 transition-all duration-200 ${
                 dragOverColumn === col.name && draggedTask
-                  ? "ring-2 ring-primary/60 rounded-md"
-                  : ""
+                  ? "border-primary/60 bg-primary/5 ring-2 ring-primary/40"
+                  : "border-white/5"
               }`}
               onDragOver={(e) => onDragOverColumn(col.name as ColumnName, e)}
               onDrop={(e) => onDropColumn(col.name as ColumnName, e)}
@@ -382,7 +412,7 @@ function DevelopmentPage() {
                     onDragEnd={onDragEndTask}
                     className={`glass-card rounded-lg border-white/5 hover:border-primary/30 transition-all group relative ${
                       isDragging ? "cursor-grabbing" : "cursor-grab"
-                    } ${draggedTask?.task.id === task.id ? "opacity-70" : "opacity-100"}`}
+                    } ${draggedTask?.task.id === task.id ? "opacity-70 scale-[0.98]" : "opacity-100"}`}
                   >
                     <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                       <ModuleActionMenu

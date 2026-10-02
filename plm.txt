@@ -1,0 +1,1736 @@
+# PROMPT MESTRE — EVOLUÇÃO INTEGRAL DO USE MODA PLM
+
+## 1. MISSÃO
+
+Você está trabalhando sobre um projeto PLM para a indústria da moda.
+
+Repositório atual:
+
+https://github.com/Implantac/plm-use.git
+
+O objetivo NÃO é reconstruir o projeto do zero.
+
+O objetivo é transformar o projeto existente em um **PLM profissional, comercialmente vendável, operacionalmente claro, visualmente premium e fortemente integrado com Inteligência Artificial**, preservando a infraestrutura, funcionalidades, banco, workflows, componentes e regras de negócio que já estejam corretos.
+
+A evolução deve acontecer sobre o projeto existente.
+
+Não crie uma aplicação paralela.
+
+Não substitua o projeto inteiro por uma demonstração.
+
+Não simplifique removendo funcionalidades importantes.
+
+Não transforme o sistema em um ERP.
+
+---
+
+# 2. NOVA DEFINIÇÃO DO PRODUTO
+
+O produto deve ser entendido como:
+
+## USE MODA PLM
+
+### "Da ideia ao produto industrial. Em um único fluxo."
+
+O sistema deve permitir que uma empresa de moda:
+
+1. pesquise tendências;
+2. crie coleções;
+3. desenvolva novos produtos;
+4. utilize IA como estilista;
+5. gere conceitos visuais;
+6. gere imagens de produtos;
+7. transforme conceitos em referências;
+8. desenvolva ficha técnica;
+9. modele;
+10. crie pilotos;
+11. faça ajustes;
+12. desenvolva engenharia;
+13. defina materiais;
+14. defina operações;
+15. estime/calculе custos;
+16. aprove o produto;
+17. entregue o produto ao ERP;
+18. acompanhe produção;
+19. acompanhe qualidade;
+20. acompanhe lançamento;
+21. acompanhe desempenho;
+22. utilize os resultados para melhorar próximas coleções.
+
+O PLM deve ser o sistema de desenvolvimento e inteligência do produto.
+
+ERP continua sendo o sistema transacional/administrativo.
+
+Não duplicar desnecessariamente financeiro, fiscal, estoque, contas a pagar, contas a receber etc.
+
+---
+
+# 3. REGRA ABSOLUTA: NÃO RECONSTRUIR DO ZERO
+
+Antes de alterar qualquer coisa:
+
+1. analisar o repositório;
+2. analisar rotas;
+3. analisar componentes;
+4. analisar hooks;
+5. analisar banco;
+6. analisar migrations;
+7. analisar workflows;
+8. analisar autenticação;
+9. analisar permissões;
+10. analisar integrações;
+11. analisar IA existente;
+12. analisar entidades;
+13. analisar documentação;
+14. identificar funcionalidades reais;
+15. identificar funcionalidades mockadas;
+16. identificar dados hardcoded;
+17. identificar páginas duplicadas;
+18. identificar páginas sem função;
+19. identificar dependências quebradas.
+
+Depois disso, evoluir o projeto existente.
+
+Nunca apagar uma funcionalidade simplesmente porque ela não está contemplada neste prompt.
+
+Primeiro verificar sua função e integrá-la à nova arquitetura.
+
+---
+
+# 4. PRINCIPAL PROBLEMA A SER RESOLVIDO
+
+O sistema atualmente possui muitas funcionalidades válidas, porém apresenta excesso de módulos expostos ao usuário.
+
+A complexidade interna não pode ser transferida para a experiência do usuário.
+
+O usuário não deve precisar entender:
+
+* Digital Thread;
+* Entity Relations;
+* Workflow Engine;
+* Gates;
+* eventos;
+* entidades;
+* integrações;
+* AI Agents;
+* Digital Twin;
+* arquitetura técnica.
+
+Esses mecanismos devem trabalhar por trás da interface.
+
+A experiência deve ser orientada por:
+
+## O QUE ESTOU CRIANDO?
+
+## EM QUE ETAPA ESTÁ?
+
+## O QUE PRECISO FAZER AGORA?
+
+## QUEM PRECISA FAZER?
+
+## O QUE ESTÁ IMPEDINDO O AVANÇO?
+
+---
+
+# 5. NOVO PRINCÍPIO DE UX
+
+O produto deve ser organizado em torno do ciclo:
+
+COLEÇÃO
+↓
+CRIAÇÃO
+↓
+PRODUTO
+↓
+DESENVOLVIMENTO
+↓
+ENGENHARIA
+↓
+APROVAÇÃO
+↓
+ERP
+↓
+PRODUÇÃO
+↓
+MERCADO
+↓
+DESEMPENHO
+↓
+APRENDIZADO
+↓
+PRÓXIMA COLEÇÃO
+
+O Digital Thread continua existindo internamente.
+
+Mas não deve ser apresentado como uma sequência de dezenas de módulos independentes.
+
+---
+
+# 6. NOVA NAVEGAÇÃO
+
+Reorganizar o frontend para uma arquitetura simples.
+
+## INÍCIO
+
+Dashboard executivo.
+
+## CRIAR
+
+* AI Product Studio
+* Pesquisa & Tendências
+* Moodboards
+* Inspirações
+* Croquis
+* Cores
+* Estampas
+* Looks
+
+## COLEÇÕES
+
+* Coleções
+* Mapa da coleção
+* Produtos da coleção
+* Calendário
+* Aprovações
+
+## PRODUTOS
+
+* Referências
+* Desenvolvimento
+* Modelagem
+* Protótipos
+* Ficha Técnica
+* Medidas
+* Materiais
+* Custos
+
+## INDUSTRIAL
+
+* Engenharia
+* BOM
+* Operações
+* Roteiros
+* Fornecedores
+* Pilotos
+* Qualidade
+* PCP
+* Produção
+
+## MERCADO
+
+* Lançamentos
+* Showroom
+* Marketing
+* Influenciadores
+* Comercial
+* Performance
+
+## INTELIGÊNCIA
+
+* Diretor Industrial
+* IA Produto
+* IA Estilo
+* IA Engenharia
+* IA Mercado
+* BI
+* Digital Thread
+
+## INTEGRAÇÕES
+
+* ERP
+* CorelDRAW
+* CAD/Audaces
+* After Effects
+* WMS/ALCIS
+* APIs
+* Webhooks
+
+## ADMINISTRAÇÃO
+
+* Usuários
+* Perfis
+* Segurança
+* Auditoria
+* Configurações
+
+Reduzir a quantidade de itens visíveis simultaneamente.
+
+Agrupar funcionalidades relacionadas.
+
+Utilizar menus expansíveis quando necessário.
+
+---
+
+# 7. NOVO CENTRO DO PRODUTO: AI PRODUCT STUDIO
+
+Esta é uma prioridade máxima.
+
+Criar um novo ambiente chamado:
+
+# AI PRODUCT STUDIO
+
+Ele deve ser uma das principais portas de entrada do sistema.
+
+Não criar apenas um chatbot.
+
+Criar uma verdadeira ferramenta de desenvolvimento de produto assistido por IA.
+
+---
+
+# 8. IA ESTILISTA
+
+A IA deve atuar como uma estilista profissional assistida por inteligência artificial.
+
+Ela deve ser capaz de receber:
+
+* briefing;
+* público;
+* faixa etária;
+* gênero;
+* ocasião;
+* categoria;
+* coleção;
+* estação;
+* posicionamento;
+* preço-alvo;
+* tecido desejado;
+* cores;
+* referências visuais;
+* tendências;
+* inspiração;
+* imagens enviadas pelo usuário;
+* produtos existentes.
+
+A partir disso, gerar propostas de produtos.
+
+Exemplo:
+
+"Crie uma camisa feminina premium de linho para uma coleção verão, público 25-40 anos, preço-alvo de R$ 299, estética minimalista."
+
+A IA deve responder criando uma proposta estruturada.
+
+---
+
+# 9. GERAÇÃO DE PRODUTOS
+
+A IA deve poder gerar:
+
+* nome do produto;
+* descrição;
+* categoria;
+* família;
+* linha;
+* conceito;
+* silhueta;
+* modelagem conceitual;
+* gola;
+* mangas;
+* comprimento;
+* fechamento;
+* bolsos;
+* recortes;
+* detalhes;
+* aviamentos;
+* tecido sugerido;
+* cores;
+* cartela;
+* estampas;
+* variações.
+
+Tudo deve gerar uma estrutura de produto que possa posteriormente virar uma referência real no PLM.
+
+---
+
+# 10. GERAÇÃO DE IMAGENS
+
+Implementar uma camada de geração de imagens integrada à IA.
+
+A interface deve permitir:
+
+### GERAR PRODUTO
+
+Gerar imagens de alta qualidade do produto.
+
+Possibilidades:
+
+* frente;
+* costas;
+* lateral;
+* detalhe;
+* modelo vestindo;
+* still;
+* editorial;
+* catálogo;
+* campanha;
+* lifestyle.
+
+Também permitir:
+
+### GERAR VARIAÇÕES
+
+Exemplo:
+
+Produto original:
+
+Camisa branca de linho.
+
+Variações:
+
+* areia;
+* azul;
+* verde;
+* preto;
+* estampada.
+
+---
+
+# 11. CONSISTÊNCIA VISUAL DO PRODUTO
+
+Esse requisito é obrigatório.
+
+Quando o usuário gerar:
+
+* frente;
+* costas;
+* lateral;
+* modelo;
+* campanha;
+
+a IA deve tentar preservar a identidade do produto.
+
+Não gerar cinco peças diferentes.
+
+A referência deve continuar sendo a mesma.
+
+A interface deve trabalhar com:
+
+## PRODUCT IDENTITY
+
+Manter:
+
+* modelagem;
+* proporções;
+* tecido;
+* cor;
+* detalhes;
+* gola;
+* mangas;
+* aviamentos;
+* estampas;
+* construção visual.
+
+Quando a tecnologia disponível não puder garantir determinado aspecto, a interface deve informar que a imagem é uma visualização conceitual.
+
+Não apresentar uma imagem generativa como ficha técnica definitiva.
+
+---
+
+# 12. CRIAR PRODUTO A PARTIR DE IMAGEM
+
+Permitir:
+
+UPLOAD DE IMAGEM
+
+↓
+
+IA analisa
+
+↓
+
+identifica características
+
+↓
+
+gera conceito
+
+↓
+
+cria produto
+
+↓
+
+gera variações
+
+↓
+
+cria referência
+
+↓
+
+envia para desenvolvimento.
+
+Exemplo:
+
+O usuário envia uma fotografia de uma peça.
+
+A IA deve identificar:
+
+* categoria;
+* silhueta;
+* elementos visuais;
+* cores;
+* materiais prováveis;
+* construção provável.
+
+Depois permitir:
+
+"CRIAR PRODUTO A PARTIR DESTA REFERÊNCIA"
+
+---
+
+# 13. IA ESTILISTA + IA ENGENHEIRA
+
+Não permitir que a IA criativa pare na imagem.
+
+O fluxo deve ser:
+
+## IDEIA
+
+↓
+
+## CONCEITO
+
+↓
+
+## IMAGEM
+
+↓
+
+## PRODUTO
+
+↓
+
+## ENGENHARIA
+
+↓
+
+## FICHA TÉCNICA
+
+↓
+
+## PILOTO
+
+↓
+
+## APROVAÇÃO
+
+A IA Engenharia deve analisar o produto criado e sugerir:
+
+* materiais;
+* componentes;
+* operações;
+* construção;
+* consumo estimado;
+* dificuldades;
+* riscos;
+* possíveis processos;
+* necessidade de terceiros.
+
+Qualquer informação estimada deve ser claramente identificada como:
+
+**ESTIMATIVA DE IA**
+
+e exigir validação humana quando necessário.
+
+Nunca inventar custo real, fornecedor real ou disponibilidade real.
+
+---
+
+# 14. IA DE CUSTO
+
+Criar uma IA especializada em custo.
+
+Ela deve consumir dados reais disponíveis no PLM/ERP.
+
+Considerar:
+
+* tecido;
+* aviamentos;
+* consumo;
+* perdas;
+* mão de obra;
+* operações;
+* terceiros;
+* facção;
+* custos reais;
+* histórico.
+
+Deve conseguir responder:
+
+"Quanto custa produzir este produto?"
+
+"Qual componente mais impacta o custo?"
+
+"Onde existe possibilidade de redução?"
+
+"Qual alteração de construção reduziria custo?"
+
+"Qual preço mantém a margem desejada?"
+
+Sempre diferenciar:
+
+## DADO REAL
+
+de
+
+## ESTIMATIVA
+
+Nunca fabricar valores.
+
+---
+
+# 15. IA DE MERCADO
+
+Criar uma IA capaz de analisar dados reais de vendas quando o ERP estiver integrado.
+
+Analisar:
+
+* vendas;
+* margem;
+* giro;
+* região;
+* cliente;
+* cor;
+* tamanho;
+* coleção;
+* histórico;
+* produtos semelhantes.
+
+A IA deve responder perguntas como:
+
+"Quais características tiveram melhor desempenho nas coleções anteriores?"
+
+"Quais cores possuem maior giro?"
+
+"Quais produtos apresentam baixa performance?"
+
+"Quais características aparecem nos produtos de maior margem?"
+
+A IA deve apresentar evidências e fontes dos dados.
+
+---
+
+# 16. DIRETOR INDUSTRIAL
+
+Manter e evoluir o conceito existente de Diretor Industrial.
+
+Ele deve observar:
+
+* coleções;
+* produtos;
+* pilotos;
+* engenharia;
+* fornecedores;
+* PCP;
+* produção;
+* qualidade;
+* custos;
+* ERP;
+* mercado.
+
+Deve identificar:
+
+* gargalos;
+* atrasos;
+* riscos;
+* inconsistências;
+* oportunidades;
+* tarefas pendentes.
+
+Não criar respostas genéricas.
+
+As respostas precisam estar vinculadas aos dados disponíveis.
+
+---
+
+# 17. IA ORQUESTRADORA
+
+Criar uma camada de orquestração.
+
+Nome conceitual:
+
+## USE AI ORCHESTRATOR
+
+Ela decide qual especialista deve participar.
+
+Exemplo:
+
+Usuário:
+
+"Quero criar uma coleção de verão com 20 produtos."
+
+Orquestrador:
+
+1. IA Estilista;
+2. IA Mercado;
+3. IA Visual;
+4. IA Engenharia;
+5. IA Custo.
+
+Resultado:
+
+Uma coleção estruturada.
+
+---
+
+# 18. APROVAÇÃO HUMANA
+
+A IA nunca deve publicar automaticamente um produto industrial definitivo.
+
+Toda criação deve possuir estados:
+
+* Rascunho IA
+* Revisão
+* Ajuste
+* Aprovado
+* Em Desenvolvimento
+* Piloto
+* Aprovado para Engenharia
+* Liberado para ERP
+
+Criar botões:
+
+**Aceitar**
+
+**Editar**
+
+**Regenerar**
+
+**Criar variação**
+
+**Enviar para desenvolvimento**
+
+**Enviar para aprovação**
+
+---
+
+# 19. NOVA EXPERIÊNCIA DA REFERÊNCIA
+
+Ao abrir uma referência, criar uma tela central de produto.
+
+Exemplo:
+
+# REF-001
+
+## CAMISA LINHO AMALFI
+
+Coleção:
+VERÃO 2027
+
+Status:
+PILOTO
+
+A tela deve possuir:
+
+### VISÃO GERAL
+
+Imagem principal.
+
+Informações principais.
+
+Status.
+
+Responsável.
+
+Coleção.
+
+Categoria.
+
+Linha.
+
+Família.
+
+### CICLO DE VIDA
+
+IDEIA
+✓
+
+CONCEITO
+✓
+
+DESIGN
+✓
+
+MODELAGEM
+✓
+
+PILOTO
+●
+
+ENGENHARIA
+○
+
+APROVAÇÃO
+○
+
+ERP
+○
+
+PRODUÇÃO
+○
+
+MERCADO
+○
+
+### IA
+
+* Melhorar produto
+* Gerar variação
+* Gerar imagem
+* Analisar produto
+* Sugerir materiais
+* Analisar custo
+
+### DOCUMENTOS
+
+* ficha técnica;
+* imagens;
+* desenhos;
+* medidas;
+* BOM;
+* anexos.
+
+### HISTÓRICO
+
+Todos os eventos.
+
+---
+
+# 20. FLUXO DO PRODUTO DEVE SER O CENTRO OPERACIONAL
+
+Evoluir a tela:
+
+/flow
+
+Ela deve representar:
+
+## DA IDEIA AO PRODUTO
+
+Fases:
+
+### 01 CRIAR
+
+Briefing
+Moodboard
+Conceito
+Croqui
+
+### 02 DESENVOLVER
+
+Design
+Modelagem
+Medidas
+Protótipo
+
+### 03 INDUSTRIALIZAR
+
+Ficha técnica
+BOM
+Operações
+Custo
+
+### 04 APROVAR
+
+Revisão
+Aprovação
+Liberação
+
+### 05 PRODUZIR
+
+ERP
+PCP
+OP
+Facção
+Qualidade
+
+### 06 LANÇAR
+
+Showroom
+Marketing
+Comercial
+
+### 07 APRENDER
+
+Vendas
+Margem
+Giro
+Feedback
+
+---
+
+# 21. DASHBOARD
+
+Refazer o dashboard.
+
+Eliminar a sensação de "painel demonstrativo".
+
+Nenhum número deve ser hardcoded.
+
+Não utilizar:
+
+* ROI fictício;
+* margem fictícia;
+* quantidade fictícia;
+* pedidos fictícios;
+* decisões fictícias.
+
+Todos os indicadores devem vir de dados reais.
+
+Se não houver dados:
+
+mostrar:
+
+**Sem dados disponíveis**
+
+ou:
+
+**Aguardando integração ERP**
+
+Nunca inventar.
+
+O dashboard deve priorizar:
+
+* produtos em desenvolvimento;
+* gargalos;
+* atrasos;
+* pilotos;
+* aprovações;
+* produtos liberados;
+* coleções;
+* custos;
+* riscos;
+* indicadores reais do ERP;
+* insights da IA.
+
+---
+
+# 22. REDESIGN COMPLETO DO FRONTEND
+
+Refazer visualmente o frontend.
+
+Não alterar a arquitetura funcional sem necessidade.
+
+Não simplesmente trocar cores.
+
+Fazer redesign de:
+
+* sidebar;
+* header;
+* dashboard;
+* cards;
+* tabelas;
+* formulários;
+* drawers;
+* dialogs;
+* timelines;
+* kanbans;
+* páginas de produto;
+* páginas de coleção;
+* AI Product Studio;
+* telas de aprovação;
+* workflow;
+* relatórios.
+
+---
+
+# 23. NOVA IDENTIDADE VISUAL
+
+Abandonar o excesso de:
+
+* preto;
+* fundo extremamente escuro;
+* contraste exagerado;
+* aparência de dashboard técnico;
+* neon;
+* excesso de bordas;
+* excesso de badges;
+* excesso de uppercase;
+* aparência de ferramenta de engenharia.
+
+O produto é de moda.
+
+A interface precisa transmitir:
+
+* sofisticação;
+* criatividade;
+* tecnologia;
+* precisão;
+* leveza;
+* organização;
+* premium;
+* indústria.
+
+---
+
+# 24. PALETA DE CORES
+
+Criar uma nova identidade visual suave.
+
+Base:
+
+### Ivory
+
+#F7F5F0
+
+### Warm White
+
+#FCFBF8
+
+### Soft Sand
+
+#E9E2D7
+
+### Taupe
+
+#B8ADA0
+
+### Charcoal
+
+#252525
+
+### Soft Graphite
+
+#454545
+
+### Sage
+
+#A8B5A0
+
+### Deep Sage
+
+#71806D
+
+### Terracotta
+
+#C98268
+
+### Soft Gold
+
+#C8A96B
+
+### Soft Blue
+
+#9EAFBC
+
+Usar cores com muito espaço em branco.
+
+O laranja forte atual não deve dominar o sistema.
+
+Pode permanecer como cor de destaque em pontos específicos se fizer sentido para a identidade, mas não como cor predominante.
+
+---
+
+# 25. PRINCÍPIOS VISUAIS
+
+Utilizar:
+
+* fundo claro;
+* muito espaço negativo;
+* tipografia elegante;
+* hierarquia clara;
+* cards discretos;
+* sombras suaves;
+* bordas sutis;
+* imagens grandes;
+* grids limpos;
+* ícones discretos;
+* microinterações;
+* animações moderadas.
+
+Evitar:
+
+* excesso de gradientes;
+* neon;
+* cards demais;
+* números gigantes;
+* 20 KPIs simultaneamente;
+* menus gigantes;
+* excesso de badges;
+* interface com aparência de template SaaS genérico.
+
+---
+
+# 26. REFERÊNCIA VISUAL
+
+A experiência deve combinar:
+
+**PLM profissional + software enterprise + design editorial de moda + tecnologia AI.**
+
+Não copiar visualmente nenhum concorrente.
+
+Criar identidade própria.
+
+---
+
+# 27. RESPONSIVIDADE
+
+O sistema deve funcionar perfeitamente em:
+
+* desktop;
+* notebook;
+* tablet;
+* celular.
+
+No desktop:
+
+sidebar organizada.
+
+No tablet:
+
+sidebar compacta.
+
+No celular:
+
+menu offcanvas.
+
+As páginas de produto devem ser especialmente bem adaptadas ao mobile.
+
+---
+
+# 28. COMPONENTES GLOBAIS
+
+Criar/normalizar:
+
+* PageHeader;
+* Breadcrumb;
+* ProductHeader;
+* StatusBadge;
+* WorkflowTimeline;
+* ProductLifecycle;
+* AIActionBar;
+* AIInsightCard;
+* DataCard;
+* EmptyState;
+* LoadingState;
+* ErrorState;
+* ApprovalPanel;
+* ActivityTimeline;
+* EntityDrawer;
+* ImageGallery;
+* ProductVariantSelector;
+* CollectionCard;
+* ProductCard;
+* CostSummary;
+* AIStudioWorkspace.
+
+Todos devem possuir identidade visual consistente.
+
+---
+
+# 29. DADOS MOCKADOS
+
+Executar auditoria de todo o projeto procurando:
+
+* hardcoded;
+* mocks;
+* arrays estáticos;
+* números fictícios;
+* decisões fictícias;
+* KPIs fictícios;
+* produtos fictícios;
+* custos fictícios.
+
+Remover dados fictícios das telas operacionais.
+
+Quando dados reais não existirem, utilizar estados vazios profissionais.
+
+Exemplo:
+
+"Você ainda não possui produtos nesta coleção."
+
+Não inventar:
+
+"186 produtos."
+
+---
+
+# 30. BANCO E MODELO DE DOMÍNIO
+
+Preservar entidades existentes.
+
+Completar as entidades que a arquitetura já identificou como necessárias:
+
+* Collection;
+* Theme;
+* Line;
+* Family;
+* Reference;
+* Color;
+* Grade;
+* Measurement Table;
+* Tech Sheet;
+* Pilot;
+* Engineering;
+* BOM;
+* Operation;
+* Route;
+* Cost;
+* Facção Order;
+* CAPA;
+* Approval;
+* Entity Events;
+* Entity Relations.
+
+Evitar criar duplicidades.
+
+Cada entidade deve possuir:
+
+* id;
+* timestamps;
+* created_by;
+* updated_by;
+* status;
+* histórico;
+* comentários quando aplicável;
+* anexos quando aplicável;
+* relações.
+
+---
+
+# 31. WORKFLOW
+
+O workflow deve ser obrigatório.
+
+Nenhum frontend deve alterar status diretamente.
+
+Toda transição deve:
+
+1. validar regra;
+2. verificar permissões;
+3. verificar requisitos;
+4. verificar gates;
+5. registrar evento;
+6. registrar usuário;
+7. registrar data;
+8. registrar origem;
+9. atualizar status.
+
+Implementar de fato:
+
+* requires_role;
+* requires_checklist;
+* SLA;
+* histórico;
+* auditoria.
+
+---
+
+# 32. ERP
+
+Manter claramente a fronteira:
+
+PLM = produto.
+
+ERP = transação.
+
+Criar integração preparada para:
+
+* produtos;
+* fornecedores;
+* materiais;
+* custos;
+* estoque;
+* pedidos;
+* OP;
+* clientes;
+* vendas;
+* margem.
+
+A integração deve possuir:
+
+* status;
+* logs;
+* retries;
+* erros;
+* sincronização;
+* timestamp;
+* origem;
+* destino.
+
+---
+
+# 33. INTEGRAÇÕES CRIATIVAS
+
+Preparar arquitetura para:
+
+### CorelDRAW
+
+* exportar briefing;
+* exportar referências;
+* enviar artes;
+* receber versões;
+* versionar arquivos.
+
+### CAD/Audaces
+
+* modelagem;
+* arquivos;
+* versões;
+* grade;
+* encaixe;
+* ficha.
+
+### After Effects
+
+* campanhas;
+* animações;
+* vídeos;
+* apresentações.
+
+### WMS / ALCIS
+
+Não conectar diretamente se o ERP for o integrador principal.
+
+Preferir:
+
+PLM → ERP/Integration Hub → WMS.
+
+---
+
+# 34. IA E SEGURANÇA
+
+Nunca expor chaves de IA no frontend.
+
+Toda chamada de IA deve ocorrer em backend/server action seguro.
+
+Implementar:
+
+* logs;
+* controle de uso;
+* timeout;
+* retry;
+* tratamento de erro;
+* fallback;
+* controle por tenant;
+* proteção contra vazamento de dados;
+* isolamento de contexto.
+
+---
+
+# 35. IA NÃO DEVE INVENTAR DADOS
+
+Regra absoluta:
+
+A IA pode:
+
+* criar;
+* sugerir;
+* estimar;
+* interpretar;
+* analisar;
+* gerar.
+
+Mas deve diferenciar:
+
+**DADO REAL**
+
+**ESTIMATIVA**
+
+**SUGESTÃO**
+
+**CONCEITO GERADO**
+
+Nunca apresentar uma estimativa como dado real.
+
+---
+
+# 36. EXPERIÊNCIA DO AI PRODUCT STUDIO
+
+Criar uma interface visual diferenciada.
+
+Layout recomendado:
+
+```text
+┌──────────────────────────────────────────────┐
+│ AI PRODUCT STUDIO                            │
+├──────────────┬───────────────────┬───────────┤
+│ BRIEFING     │ VISUAL             │ PRODUTO   │
+│              │                   │           │
+│ público      │                   │ categoria │
+│ coleção      │    IMAGEM         │ tecido    │
+│ preço        │    GERADA         │ cores     │
+│ ocasião      │                   │ detalhes  │
+│              │                   │           │
+│ [CRIAR]      │ [VARIAÇÕES]       │ [SALVAR]  │
+└──────────────┴───────────────────┴───────────┘
+```
+
+Depois:
+
+```text
+CONCEITO
+↓
+VISUAL
+↓
+PRODUTO
+↓
+ENGENHARIA
+↓
+CUSTO
+↓
+APROVAÇÃO
+```
+
+---
+
+# 37. GALERIA DE CRIAÇÃO
+
+Permitir:
+
+* salvar conceito;
+* duplicar;
+* gerar variações;
+* comparar;
+* favoritar;
+* descartar;
+* transformar em produto;
+* anexar à coleção.
+
+Criar histórico das gerações.
+
+---
+
+# 38. VERSIONAMENTO
+
+Toda alteração importante deve criar versão.
+
+Exemplo:
+
+Produto:
+
+V1 — conceito inicial
+
+V2 — manga alterada
+
+V3 — tecido alterado
+
+V4 — gola alterada
+
+V5 — aprovado
+
+Nunca apagar silenciosamente a versão anterior.
+
+---
+
+# 39. CRITÉRIO DE QUALIDADE
+
+Não considerar a tarefa concluída apenas porque:
+
+* a página abre;
+* o botão existe;
+* o layout está bonito.
+
+Considerar concluído somente quando:
+
+1. fluxo funciona;
+2. dados persistem;
+3. permissões funcionam;
+4. workflow funciona;
+5. auditoria funciona;
+6. estados de erro funcionam;
+7. estados vazios funcionam;
+8. mobile funciona;
+9. dados não são inventados;
+10. IA funciona ou possui integração real configurável;
+11. produto criado pode entrar no workflow;
+12. referências podem ser desenvolvidas;
+13. aprovação funciona;
+14. integração ERP está preparada;
+15. não existem links quebrados;
+16. não existem rotas mortas;
+17. não existem telas demonstrativas disfarçadas de funcionalidade real.
+
+---
+
+# 40. TESTES OBRIGATÓRIOS
+
+Executar testes de:
+
+### Autenticação
+
+* login;
+* logout;
+* sessão;
+* tenant.
+
+### Produto
+
+* criar;
+* editar;
+* visualizar;
+* versionar;
+* arquivar.
+
+### Workflow
+
+* transição válida;
+* transição inválida;
+* permissão;
+* gate;
+* auditoria.
+
+### IA
+
+* geração;
+* erro;
+* timeout;
+* regeneração;
+* salvamento;
+* histórico.
+
+### Imagens
+
+* upload;
+* geração;
+* armazenamento;
+* visualização;
+* associação ao produto.
+
+### Responsividade
+
+* 1440px;
+* 1280px;
+* 1024px;
+* 768px;
+* 390px.
+
+---
+
+# 41. REGRA PARA IMPLEMENTAÇÃO
+
+Não faça tudo em uma única alteração descontrolada.
+
+Trabalhe em fases.
+
+## FASE 1
+
+Auditoria técnica.
+
+## FASE 2
+
+Nova arquitetura UX.
+
+## FASE 3
+
+Redesign visual.
+
+## FASE 4
+
+Novo dashboard.
+
+## FASE 5
+
+Novo fluxo do produto.
+
+## FASE 6
+
+Product Workspace.
+
+## FASE 7
+
+AI Product Studio.
+
+## FASE 8
+
+IA Estilista + geração de imagens.
+
+## FASE 9
+
+IA Engenharia + Custo.
+
+## FASE 10
+
+IA Mercado + Diretor Industrial.
+
+## FASE 11
+
+Integrações.
+
+## FASE 12
+
+Testes.
+
+---
+
+# 42. REGRA FUNDAMENTAL PARA A IA DESENVOLVEDORA
+
+Antes de criar qualquer tela nova, pergunte:
+
+> "Essa funcionalidade pertence ao ciclo de desenvolvimento do produto?"
+
+Se sim, integrá-la ao fluxo.
+
+Se não, verificar se deve ser:
+
+* integração;
+* administração;
+* inteligência;
+* configuração.
+
+Não criar mais um módulo isolado.
+
+---
+
+# 43. REGRA CONTRA COMPLEXIDADE
+
+Sempre preferir:
+
+UMA TELA CONTEXTUAL
+
+em vez de:
+
+CINCO TELAS PARA A MESMA TAREFA.
+
+Sempre que possível:
+
+* drawer;
+* modal;
+* stepper;
+* tabs contextuais;
+* timeline;
+* painel lateral.
+
+Não obrigar o usuário a navegar pelo menu para completar uma tarefa.
+
+---
+
+# 44. REGRA DE EXPERIÊNCIA
+
+O usuário deve conseguir realizar as seguintes tarefas sem precisar conhecer a arquitetura do sistema:
+
+### Tarefa 1
+
+Criar uma coleção.
+
+### Tarefa 2
+
+Criar um produto usando IA.
+
+### Tarefa 3
+
+Gerar imagens.
+
+### Tarefa 4
+
+Transformar imagem em referência.
+
+### Tarefa 5
+
+Criar ficha técnica.
+
+### Tarefa 6
+
+Criar piloto.
+
+### Tarefa 7
+
+Aprovar produto.
+
+### Tarefa 8
+
+Liberar para ERP.
+
+### Tarefa 9
+
+Acompanhar produção.
+
+### Tarefa 10
+
+Analisar desempenho.
+
+Se qualquer uma dessas tarefas exigir navegar por uma sequência confusa de módulos, corrigir.
+
+---
+
+# 45. RESULTADO FINAL ESPERADO
+
+O projeto deve parecer e funcionar como um verdadeiro:
+
+# ENTERPRISE FASHION PLM + AI PRODUCT DEVELOPMENT PLATFORM
+
+e não como:
+
+* dashboard demonstrativo;
+* coleção de telas;
+* ERP disfarçado;
+* chatbot;
+* catálogo;
+* protótipo visual.
+
+A percepção final deve ser:
+
+> "Este sistema entende como uma empresa de moda cria e industrializa produtos."
+
+---
+
+# 46. FRASE CENTRAL DO PRODUTO
+
+Utilizar como referência de posicionamento:
+
+## USE MODA PLM
+
+### Da ideia ao produto industrial. Em um único fluxo.
+
+E como proposta de valor:
+
+### "Crie com IA. Desenvolva com precisão. Industrialize com controle. Aprenda com o mercado."
+
+---
+
+# 47. DEFINIÇÃO DE PRONTO
+
+O trabalho só estará concluído quando:
+
+* a navegação estiver simplificada;
+* o frontend estiver completamente redesenhado;
+* a identidade visual estiver profissional e suave;
+* o ciclo do produto estiver claro;
+* a referência for o objeto central;
+* o fluxo for operacional;
+* o dashboard utilizar dados reais;
+* o AI Product Studio existir;
+* a IA Estilista funcionar;
+* geração de imagens estiver integrada;
+* imagens puderem virar produtos;
+* produtos puderem virar referências;
+* referências puderem seguir o workflow;
+* IA Engenharia estiver integrada;
+* IA de custo estiver preparada;
+* IA de mercado estiver preparada;
+* Diretor Industrial estiver conectado aos dados;
+* versionamento estiver funcionando;
+* auditoria estiver funcionando;
+* ERP continuar separado do PLM;
+* integrações estiverem arquitetadas;
+* mobile estiver funcionando;
+* não existirem telas meramente conceituais;
+* não existirem números fictícios apresentados como reais;
+* não existirem fluxos quebrados.
+
+## IMPORTANTE
+
+Não apenas altere o código.
+
+Primeiro compreenda o produto.
+
+Depois reorganize.
+
+Depois implemente.
+
+Depois teste.
+
+Depois faça uma auditoria final.
+
+Se uma funcionalidade existente estiver correta, preserve-a.
+
+Se estiver incompleta, complete-a.
+
+Se estiver mal posicionada, reorganize-a.
+
+Se estiver duplicada, consolide-a.
+
+Se estiver apenas simulada, transforme-a em funcionalidade real ou deixe explicitamente claro que depende de integração.
+
+O objetivo final não é produzir mais telas.
+
+É produzir um **PLM de moda realmente utilizável, compreensível, escalável e comercializável, com IA capaz de participar de todo o processo de criação e desenvolvimento do produto.**

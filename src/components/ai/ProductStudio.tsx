@@ -12,6 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  buildConceptPrompt,
+  buildVariationIdeas,
+  normalizeProductProposal,
+  type ProductBriefingInput,
+} from "./product-studio.utils";
 
 const ProposalSchema = z.object({
   name: z.string(),
@@ -25,26 +31,19 @@ const ProposalSchema = z.object({
   colors: z.array(z.string()),
   variations: z.array(z.string()),
   validationNotes: z.array(z.string()),
+  imageIdeas: z.array(z.string()).optional(),
+  visualIdentity: z.array(z.string()).optional(),
 });
 
 type Proposal = z.infer<typeof ProposalSchema>;
 
-type Briefing = {
-  description: string;
-  audience: string;
-  occasion: string;
-  category: string;
-  collection: string;
-  season: string;
-  line: string;
-  targetPrice: string;
-  fabric: string;
-  colors: string;
-};
+type Briefing = ProductBriefingInput;
 
 const EMPTY_BRIEFING: Briefing = {
   description: "",
   audience: "",
+  gender: "",
+  ageRange: "",
   occasion: "",
   category: "",
   collection: "",
@@ -53,6 +52,8 @@ const EMPTY_BRIEFING: Briefing = {
   targetPrice: "",
   fabric: "",
   colors: "",
+  mood: "",
+  inspiration: "",
 };
 
 function nextReferenceCode(existingCodes: string[]) {
@@ -66,21 +67,6 @@ function nextReferenceCode(existingCodes: string[]) {
   return candidate;
 }
 
-function buildBriefing(briefing: Briefing) {
-  return [
-    `Descrição: ${briefing.description}`,
-    `Público: ${briefing.audience || "não informado"}`,
-    `Ocasião: ${briefing.occasion || "não informada"}`,
-    `Categoria: ${briefing.category || "não informada"}`,
-    `Coleção: ${briefing.collection || "não informada"}`,
-    `Temporada: ${briefing.season || "não informada"}`,
-    `Linha: ${briefing.line || "não informada"}`,
-    `Preço-alvo informado pelo usuário: ${briefing.targetPrice || "não informado"}`,
-    `Tecido desejado: ${briefing.fabric || "não informado"}`,
-    `Cores: ${briefing.colors || "não informadas"}`,
-  ].join("\n");
-}
-
 function parseProposal(reply: string): Proposal | null {
   const jsonText = reply
     .trim()
@@ -88,8 +74,9 @@ function parseProposal(reply: string): Proposal | null {
     .replace(/\s*```$/, "");
   try {
     const parsed: unknown = JSON.parse(jsonText);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     const result = ProposalSchema.safeParse(parsed);
-    return result.success ? result.data : null;
+    return result.success ? normalizeProductProposal(result.data) : null;
   } catch {
     return null;
   }
@@ -108,6 +95,16 @@ export function ProductStudio() {
   const [saving, setSaving] = useState(false);
 
   const suggestedCode = useMemo(() => nextReferenceCode(items.map((item) => item.code)), [items]);
+  const variationIdeas = useMemo(
+    () => (proposal ? buildVariationIdeas(proposal, briefing) : []),
+    [proposal, briefing],
+  );
+
+  function applyProposal(nextProposal: Proposal) {
+    setProposal(nextProposal);
+    setProductName(nextProposal.name || productName || "");
+    setProposalText(JSON.stringify(nextProposal, null, 2));
+  }
 
   function updateBriefing<K extends keyof Briefing>(key: K, value: Briefing[K]) {
     setBriefing((current) => ({ ...current, [key]: value }));
@@ -126,15 +123,7 @@ export function ProductStudio() {
       const result = await ask({
         data: {
           agent: "fashion",
-          message: [
-            "Crie uma proposta conceitual de produto de moda com base no briefing.",
-            "Retorne somente JSON válido, sem markdown, usando exatamente estas chaves:",
-            "name, description, category, family, line, silhouette, details (array de strings), suggestedMaterials (array de strings), colors (array de strings), variations (array de strings), validationNotes (array de strings).",
-            "Não invente fornecedor, disponibilidade, custo real, vendas ou margem.",
-            "Materiais, construção e cores são sugestões conceituais e precisam de validação humana.",
-            "Não afirme que uma imagem foi gerada.",
-          ].join(" "),
-          context: buildBriefing(briefing),
+          message: buildConceptPrompt(briefing),
         },
       });
       if (!result.ok) {
@@ -144,8 +133,9 @@ export function ProductStudio() {
 
       setProposalText(result.reply);
       const parsed = parseProposal(result.reply);
-      setProposal(parsed);
-      setProductName(parsed?.name ?? "");
+      if (parsed) {
+        applyProposal(parsed);
+      }
       setReferenceCode((current) => current || suggestedCode);
       if (!parsed) {
         toast.warning(
@@ -173,27 +163,38 @@ export function ProductStudio() {
       return;
     }
 
-    const parsedPrice = briefing.targetPrice.trim() ? Number(briefing.targetPrice) : null;
+    const targetPriceValue = briefing.targetPrice ?? "";
+    const parsedPrice = targetPriceValue.trim() ? Number(targetPriceValue) : null;
     if (parsedPrice !== null && (!Number.isFinite(parsedPrice) || parsedPrice < 0)) {
       toast.error("Informe um preço-alvo válido ou deixe o campo vazio.");
       return;
     }
 
+    const conceptPayload = normalizeProductProposal({
+      ...proposal,
+      variations: variationIdeas.length ? variationIdeas : proposal?.variations ?? [],
+      imageIdeas: proposal?.imageIdeas?.length ? proposal.imageIdeas : ["frente", "costas", "lateral", "modelo", "campanha"],
+      visualIdentity: proposal?.visualIdentity?.length ? proposal.visualIdentity : [briefing.mood || "minimalista"],
+    });
+
     setSaving(true);
     const created = await create({
       code,
       name,
-      collection_id: briefing.collection.trim() || null,
-      season: briefing.season.trim() || null,
-      line: briefing.line.trim() || proposal?.line || null,
-      theme: briefing.category.trim() || proposal?.category || null,
+      collection_id: (briefing.collection ?? "").trim() || null,
+      season: (briefing.season ?? "").trim() || null,
+      line: (briefing.line ?? "").trim() || proposal?.line || null,
+      theme: (briefing.category ?? "").trim() || proposal?.category || null,
       target_price: parsedPrice,
       status: "IDEIA",
       metadata: {
         source: "ai_product_studio",
         review_status: "RASCUNHO_IA",
-        generation_brief: buildBriefing(briefing),
-        generated_concept: proposalText,
+        generation_brief: buildConceptPrompt(briefing),
+        generated_concept: JSON.stringify(conceptPayload, null, 2),
+        variation_ideas: variationIdeas,
+        image_ideas: conceptPayload.imageIdeas,
+        visual_identity: conceptPayload.visualIdentity,
         generated_at: new Date().toISOString(),
       },
     });
@@ -262,8 +263,28 @@ export function ProductStudio() {
                 id="studio-audience"
                 value={briefing.audience}
                 onChange={(event) => updateBriefing("audience", event.target.value)}
-                placeholder="Faixa etária, gênero, posicionamento"
+                placeholder="Faixa etária, público, posicionamento"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="studio-gender">Gênero</Label>
+                <Input
+                  id="studio-gender"
+                  value={briefing.gender}
+                  onChange={(event) => updateBriefing("gender", event.target.value)}
+                  placeholder="Feminino, masculino..."
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="studio-age-range">Faixa etária</Label>
+                <Input
+                  id="studio-age-range"
+                  value={briefing.ageRange}
+                  onChange={(event) => updateBriefing("ageRange", event.target.value)}
+                  placeholder="25-40"
+                />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -282,6 +303,26 @@ export function ProductStudio() {
                   value={briefing.category}
                   onChange={(event) => updateBriefing("category", event.target.value)}
                   placeholder="Camisas, vestidos…"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="studio-mood">Mood</Label>
+                <Input
+                  id="studio-mood"
+                  value={briefing.mood}
+                  onChange={(event) => updateBriefing("mood", event.target.value)}
+                  placeholder="Minimalista, urbano…"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="studio-inspiration">Inspiração</Label>
+                <Input
+                  id="studio-inspiration"
+                  value={briefing.inspiration}
+                  onChange={(event) => updateBriefing("inspiration", event.target.value)}
+                  placeholder="Praia, arquitetura…"
                 />
               </div>
             </div>
@@ -389,11 +430,30 @@ export function ProductStudio() {
             </div>
           ) : proposal ? (
             <div className="mt-5 space-y-5">
-              <div>
-                <h3 className="text-lg font-semibold text-white">{proposal.name}</h3>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-                  {proposal.description}
-                </p>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">{proposal.name}</h3>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+                    {proposal.description}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const nextIdeas = buildVariationIdeas(proposal, briefing);
+                    const nextProposal = normalizeProductProposal({
+                      ...proposal,
+                      variations: nextIdeas,
+                      imageIdeas: proposal.imageIdeas?.length ? proposal.imageIdeas : ["frente", "costas", "lateral", "modelo", "campanha"],
+                      visualIdentity: proposal.visualIdentity?.length ? proposal.visualIdentity : [briefing.mood || "minimalista"],
+                    });
+                    applyProposal(nextProposal);
+                  }}
+                >
+                  Gerar variações
+                </Button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <ConceptField
@@ -408,7 +468,9 @@ export function ProductStudio() {
                 />
                 <ConceptList label="Cores sugeridas · validar" values={proposal.colors} />
                 <ConceptList label="Detalhes de construção" values={proposal.details} />
-                <ConceptList label="Variações conceituais" values={proposal.variations} />
+                <ConceptList label="Identidade visual" values={proposal.visualIdentity ?? [briefing.mood || "minimalista"]} />
+                <ConceptList label="Direções de imagem" values={proposal.imageIdeas ?? ["frente", "costas", "modelo", "campanha"]} />
+                <ConceptList label="Variações conceituais" values={variationIdeas.length ? variationIdeas : proposal.variations} />
                 <ConceptList label="Pontos para revisão humana" values={proposal.validationNotes} />
               </div>
             </div>
