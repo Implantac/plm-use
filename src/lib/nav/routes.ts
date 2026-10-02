@@ -83,7 +83,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   // Insights & IA
   { path: "/analytics", label: "BI Executivo", group: "insights", crumbs: ["Insights"] },
   { path: "/financial", label: "Financeiro", group: "insights", crumbs: ["Insights"] },
-  { path: "/ai-center", label: "USE AI", group: "insights", crumbs: ["Insights"] },
+  { path: "/ai-center", label: "AI Product Studio", group: "plm-criacao", crumbs: ["PLM", "Criação"] },
   { path: "/ai-agents", label: "AI Agents", group: "insights", crumbs: ["Insights"] },
   { path: "/digital-twin", label: "Digital Twin", group: "insights", crumbs: ["Insights"] },
 

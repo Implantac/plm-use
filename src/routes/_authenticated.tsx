@@ -102,7 +102,7 @@ function AuthenticatedLayout() {
         items: [
           {
             icon: <Sparkles className="w-4 h-4" />,
-            label: "USE AI · em evolução",
+            label: "AI Product Studio",
             href: "/ai-center",
           },
           { icon: <Palette className="w-4 h-4" />, label: "Pesquisa & Moodboard", href: "/research" },
@@ -438,11 +438,14 @@ function AuthenticatedLayout() {
               )}
             </Button>
             <Button
- size="sm"
- className="gap-2-label text-primary-foreground active:scale-[0.98]"
- >
-              <Sparkles className="w-4 h-4" />
-              USE AI Copilot
+              asChild
+              size="sm"
+              className="gap-2-label text-primary-foreground active:scale-[0.98]"
+            >
+              <Link to="/ai-center">
+                <Sparkles className="w-4 h-4" />
+                AI Product Studio
+              </Link>
             </Button>
           </div>
         </header>

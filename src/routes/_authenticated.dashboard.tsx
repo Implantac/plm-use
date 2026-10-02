@@ -336,7 +336,7 @@ function Dashboard() {
             />
             <QuickLink
               to="/ai-center"
-              label="USE AI · em evolução"
+              label="AI Product Studio"
               detail="Assistência à criação"
               icon={<Sparkles className="h-4 w-4" />}
             />

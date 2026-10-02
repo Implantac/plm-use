@@ -56,7 +56,7 @@ const AGENTS: Record<
     icon: Megaphone,
     color: "text-amber-300",
     sugestoes: [
-      "Quais influencers tiveram melhor ROI no último ciclo?",
+      "Quais métricas reais de influencers estão disponíveis? Cite as fontes e sinalize quando faltarem dados.",
       "Em qual região investir mais a próxima campanha?",
       "Que peças têm maior potencial de viralizar?",
     ],

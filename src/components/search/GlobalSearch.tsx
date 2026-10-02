@@ -71,7 +71,7 @@ const MODULES: Entry[] = [
   { id: "m-fin", title: "Financeiro", module: "Navegação", icon: <DollarSign className="w-4 h-4" />, path: "/financial" },
   { id: "m-bi", title: "BI Executivo", module: "Navegação", icon: <BarChart3 className="w-4 h-4" />, path: "/analytics" },
   { id: "m-inf", title: "Influencers", module: "Navegação", icon: <Heart className="w-4 h-4" />, path: "/influencers" },
-  { id: "m-ai", title: "USE AI", module: "Navegação", icon: <Sparkles className="w-4 h-4" />, path: "/ai-center" },
+  { id: "m-ai", title: "AI Product Studio", module: "Navegação", icon: <Sparkles className="w-4 h-4" />, path: "/ai-center" },
   { id: "m-agents", title: "AI Agents", module: "Navegação", icon: <Bot className="w-4 h-4" />, path: "/ai-agents" },
   { id: "m-twin", title: "Digital Twin", module: "Navegação", icon: <Globe className="w-4 h-4" />, path: "/digital-twin" },
   { id: "m-feed", title: "Colaboração", module: "Navegação", icon: <MessageSquare className="w-4 h-4" />, path: "/feed" },
@@ -259,7 +259,7 @@ export function GlobalSearch() {
                   <CommandIcon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">USE AI Copilot</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">AI Product Studio</p>
                   <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
                     Consultar inteligência aplicada
                   </p>
