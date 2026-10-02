@@ -57,13 +57,23 @@ export const Route = createFileRoute("/_authenticated/flow")({
   }),
 });
 
-type PhaseId = "desenvolver" | "industrializar" | "produzir" | "encerrar";
+type PhaseId =
+  | "criar"
+  | "desenvolver"
+  | "industrializar"
+  | "aprovar"
+  | "produzir"
+  | "lancar"
+  | "aprender";
 
 const PHASES: Record<PhaseId, { label: string; hint: string }> = {
-  desenvolver: { label: "1 · Desenvolver", hint: "Da ideia ao croqui aprovado" },
-  industrializar: { label: "2 · Industrializar", hint: "Modelagem, piloto e engenharia" },
-  produzir: { label: "3 · Produzir", hint: "PCP, facção e qualidade" },
-  encerrar: { label: "4 · Encerrar", hint: "Lançamento e pós-venda" },
+  criar: { label: "01 · Criar", hint: "Briefing, moodboard, conceito e croqui" },
+  desenvolver: { label: "02 · Desenvolver", hint: "Design, modelagem, medidas e protótipo" },
+  industrializar: { label: "03 · Industrializar", hint: "Ficha técnica, BOM, operações e custo" },
+  aprovar: { label: "04 · Aprovar", hint: "Revisão, aprovação e liberação" },
+  produzir: { label: "05 · Produzir", hint: "ERP, PCP, OP, facção e qualidade" },
+  lancar: { label: "06 · Lançar", hint: "Showroom, marketing e comercial" },
+  aprender: { label: "07 · Aprender", hint: "Vendas, margem, giro e feedback" },
 };
 
 interface StageDef {
@@ -74,69 +84,62 @@ interface StageDef {
   href: string;
   hrefLabel: string;
   next?: ReferenceStatus;
-  slaDays: number;
 }
 
 const STAGES: StageDef[] = [
   {
     status: "IDEIA",
-    phase: "desenvolver",
+    phase: "criar",
     owner: "Estilo",
     action: "Detalhar briefing e moodboard",
     href: "/research",
     hrefLabel: "Pesquisa & Moodboard",
     next: "CROQUI",
-    slaDays: 5,
   },
   {
     status: "CROQUI",
-    phase: "desenvolver",
+    phase: "criar",
     owner: "Estilo",
     action: "Desenhar croqui e definir cartela",
     href: "/development",
     hrefLabel: "Desenvolvimento",
     next: "MODELAGEM",
-    slaDays: 5,
   },
   {
     status: "MODELAGEM",
-    phase: "industrializar",
+    phase: "desenvolver",
     owner: "Modelagem",
     action: "Interpretar molde e grade",
     href: "/cad",
     hrefLabel: "CAD & Modelagem",
     next: "PILOTO",
-    slaDays: 7,
   },
   {
     status: "PILOTO",
-    phase: "industrializar",
+    phase: "desenvolver",
     owner: "Pilotagem",
     action: "Costurar e avaliar peça-piloto",
     href: "/prototypes",
     hrefLabel: "Protótipos",
     next: "APROVACAO",
-    slaDays: 7,
   },
   {
     status: "AJUSTE",
-    phase: "industrializar",
+    phase: "desenvolver",
     owner: "Modelagem",
     action: "Aplicar correções da prova",
     href: "/measurements",
     hrefLabel: "Tabela de Medidas",
     next: "PILOTO",
-    slaDays: 4,
   },
   {
     status: "APROVACAO",
-    phase: "industrializar",
+    phase: "aprovar",
     owner: "Produto",
     action: "Aprovar piloto e liberar engenharia",
     href: "/prototypes",
     hrefLabel: "Protótipos",
     next: "ENGENHARIA",
-    slaDays: 3,
   },
   {
     status: "ENGENHARIA",
@@ -146,7 +149,6 @@ const STAGES: StageDef[] = [
     href: "/tech-sheet",
     hrefLabel: "Ficha Técnica",
     next: "PRODUCAO",
-    slaDays: 5,
   },
   {
     status: "PRODUCAO",
@@ -156,25 +158,22 @@ const STAGES: StageDef[] = [
     href: "/production",
     hrefLabel: "Produção",
     next: "FINALIZADA",
-    slaDays: 20,
   },
   {
     status: "FINALIZADA",
-    phase: "encerrar",
+    phase: "lancar",
     owner: "Comercial",
     action: "Lançar, vender e medir margem",
     href: "/launch",
     hrefLabel: "Lançamento",
-    slaDays: 30,
   },
   {
     status: "ARQUIVADA",
-    phase: "encerrar",
+    phase: "aprender",
     owner: "Produto",
-    action: "Histórico para próximas coleções",
+    action: "Consultar histórico e registrar aprendizados",
     href: "/collections",
     hrefLabel: "Coleções",
-    slaDays: 0,
   },
 ];
 
@@ -196,7 +195,7 @@ const PRIORITY_TONE: Record<string, string> = {
 };
 
 function FlowPage() {
-  const { items, loading, nextStatuses, transition } = useReferences();
+  const { items, loading, error, nextStatuses, transition } = useReferences();
   const { items: gates, openGate } = useReferenceGates();
   const { openEntity } = useEntityDrawer();
   const [selected, setSelected] = useState<ReferenceStatus>("IDEIA");
@@ -230,26 +229,27 @@ function FlowPage() {
     else toast.error("Não foi possível abrir o gate.");
   };
 
-  const active = items.filter(
-    (r) => r.status !== "FINALIZADA" && r.status !== "ARQUIVADA",
+  const active = useMemo(
+    () => items.filter((r) => r.status !== "FINALIZADA" && r.status !== "ARQUIVADA"),
+    [items],
   );
 
-  const stageOf = (status: ReferenceStatus) =>
-    STAGES.find((s) => s.status === status);
+  const stageOf = (status: ReferenceStatus) => STAGES.find((s) => s.status === status);
 
-  const bottlenecks = useMemo(
+  const oldestUpdates = useMemo(
     () =>
       active
         .map((r) => ({ ref: r, days: daysSince(r.updated_at), stage: stageOf(r.status) }))
-        .filter((x) => x.stage && x.days > x.stage.slaDays)
         .sort((a, b) => b.days - a.days)
         .slice(0, 6),
     [active],
   );
 
+  const awaitingApproval = items.filter((r) => r.status === "APROVACAO").length;
   const readyForPcp = items.filter((r) => r.status === "ENGENHARIA");
   const finished = items.filter((r) => r.status === "FINALIZADA").length;
   const progress = items.length ? Math.round((finished / items.length) * 100) : 0;
+  const valueState = loading || error ? "—" : undefined;
 
   const advance = async (ref: ReferenceRow) => {
     const stage = stageOf(ref.status);
@@ -265,9 +265,7 @@ function FlowPage() {
     const ok = await transition(ref, target, "Avanço pelo Fluxo do Produto");
     setBusyId(null);
     if (ok) {
-      toast.success(
-        `${ref.code} avançou para ${REFERENCE_STATUS_LABEL[target]}.`,
-      );
+      toast.success(`${ref.code} avançou para ${REFERENCE_STATUS_LABEL[target]}.`);
     } else {
       toast.error("Não foi possível avançar a referência.");
     }
@@ -278,6 +276,25 @@ function FlowPage() {
 
   return (
     <div className="space-y-6 pb-12">
+      {error && (
+        <div
+          role="alert"
+          className="rounded-md border border-rose-400/30 bg-rose-400/5 p-4 text-sm text-muted-foreground"
+        >
+          Não foi possível carregar as referências. Verifique sua conexão e tente novamente mais
+          tarde.
+        </div>
+      )}
+      {!loading && !error && items.length === 0 && (
+        <div className="flex flex-col gap-3 rounded-md border border-dashed border-white/15 bg-white/[0.02] p-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            Sem referências disponíveis. Crie um produto para iniciar o ciclo.
+          </p>
+          <Button asChild size="sm" variant="outline">
+            <Link to="/references">Criar referência</Link>
+          </Button>
+        </div>
+      )}
       <header className="rounded-lg border border-white/10 bg-white/[0.025] p-5 md:p-6">
         <div className="flex items-center gap-2 text-primary">
           <Workflow className="h-4 w-4" />
@@ -289,21 +306,25 @@ function FlowPage() {
           Fluxo do Produto
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Uma linha só, da ideia à peça vendida. Cada etapa mostra o que está
-          parado, quem é o dono e qual é a próxima ação — sem procurar módulo.
+          Acompanhe o produto da criação ao aprendizado. Cada etapa mostra o que está em andamento e
+          a próxima ação disponível.
         </p>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
-          <Metric label="Referências ativas" value={String(active.length)} icon={Gauge} />
           <Metric
-            label="Atrasadas (fora do SLA)"
-            value={String(bottlenecks.length)}
-            icon={AlertTriangle}
-            tone="text-amber-300"
+            label="Referências ativas"
+            value={valueState ?? String(active.length)}
+            icon={Gauge}
+          />
+          <Metric
+            label="Aguardando aprovação"
+            value={valueState ?? String(awaitingApproval)}
+            icon={ShieldCheck}
+            tone="text-sky-300"
           />
           <Metric
             label="Prontas para o PCP"
-            value={String(readyForPcp.length)}
+            value={valueState ?? String(readyForPcp.length)}
             icon={Factory}
             tone="text-emerald-300"
           />
@@ -311,10 +332,10 @@ function FlowPage() {
 
         <div className="mt-5">
           <div className="mb-2 flex justify-between text-2xs uppercase tracking-[0.18em] text-muted-foreground">
-            <span>Coleção concluída</span>
-            <span>{progress}%</span>
+            <span>Referências finalizadas</span>
+            <span>{valueState ?? (items.length ? `${progress}%` : "Sem dados")}</span>
           </div>
-          <Progress value={progress} />
+          <Progress value={loading || error ? 0 : progress} />
         </div>
 
         <Button asChild variant="outline" size="sm" className="mt-5">
@@ -338,9 +359,6 @@ function FlowPage() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {STAGES.filter((s) => s.phase === phase).map((stage) => {
                 const list = byStatus.get(stage.status) ?? [];
-                const late = list.filter(
-                  (r) => daysSince(r.updated_at) > stage.slaDays,
-                ).length;
                 const isSelected = selected === stage.status;
                 return (
                   <button
@@ -358,21 +376,31 @@ function FlowPage() {
                       <span className="text-sm font-semibold">
                         {REFERENCE_STATUS_LABEL[stage.status]}
                       </span>
-                      <span className="text-lg font-bold tabular-nums">{list.length}</span>
+                      <span className="text-lg font-bold tabular-nums">
+                        {valueState ?? String(list.length)}
+                      </span>
                     </div>
                     <p className="mt-1 text-2xs uppercase tracking-[0.16em] text-muted-foreground">
                       {stage.owner}
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground">{stage.action}</p>
-                    {late > 0 && (
-                      <Badge variant="outline" className="mt-3 border-amber-400/40 text-amber-300">
-                        <Clock className="mr-1 h-3 w-3" />
-                        {late} fora do SLA
-                      </Badge>
-                    )}
                   </button>
                 );
               })}
+              {phase === "aprender" && (
+                <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.02] p-4 sm:col-span-2 lg:col-span-4">
+                  <p className="text-sm font-medium">Desempenho de mercado</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Vendas, margem, giro e feedback serão exibidos quando houver dados confiáveis
+                    integrados.
+                  </p>
+                  <Button asChild variant="link" size="sm" className="mt-2 h-auto p-0">
+                    <Link to="/analytics">
+                      Abrir indicadores <ArrowRight className="ml-1 h-3 w-3" />
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -383,11 +411,12 @@ function FlowPage() {
         <CardHeader className="flex flex-row items-center justify-between gap-3">
           <div>
             <CardTitle className="text-base">
-              {REFERENCE_STATUS_LABEL[selected]} · {selectedItems.length} referência(s)
+              {REFERENCE_STATUS_LABEL[selected]} ·{" "}
+              {valueState ?? `${selectedItems.length} referência(s)`}
             </CardTitle>
             {selectedStage && (
               <p className="mt-1 text-xs text-muted-foreground">
-                Dono: {selectedStage.owner} · Próxima ação: {selectedStage.action}
+                Área responsável: {selectedStage.owner} · Próxima ação: {selectedStage.action}
               </p>
             )}
           </div>
@@ -406,14 +435,18 @@ function FlowPage() {
               Carregando fluxo...
             </p>
           )}
-          {!loading && selectedItems.length === 0 && (
+          {error && (
+            <p role="alert" className="py-6 text-center text-xs text-muted-foreground">
+              Não foi possível carregar as referências desta etapa.
+            </p>
+          )}
+          {!loading && !error && selectedItems.length === 0 && (
             <p className="py-6 text-center text-xs text-muted-foreground">
               Nenhuma referência nesta etapa.
             </p>
           )}
           {selectedItems.map((ref) => {
             const days = daysSince(ref.updated_at);
-            const late = selectedStage ? days > selectedStage.slaDays : false;
             return (
               <div
                 key={ref.id}
@@ -438,11 +471,6 @@ function FlowPage() {
                   >
                     {ref.priority}
                   </Badge>
-                  {late && (
-                    <Badge variant="outline" className="border-amber-400/40 text-amber-300">
-                      atrasada
-                    </Badge>
-                  )}
                   {(() => {
                     const g = gateFor(ref);
                     if (!g) return null;
@@ -495,27 +523,33 @@ function FlowPage() {
         </CardContent>
       </Card>
 
-      {/* Gargalos */}
+      {/* Atualização mais recente das referências em andamento */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <AlertTriangle className="h-4 w-4 text-amber-300" />
-            Gargalos do fluxo
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            Referências há mais tempo sem atualização
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {bottlenecks.length === 0 ? (
+          {loading ? (
+            <p className="py-4 text-xs text-muted-foreground">Carregando referências…</p>
+          ) : error ? (
+            <p className="py-4 text-xs text-muted-foreground">
+              Não foi possível calcular a atividade recente.
+            </p>
+          ) : oldestUpdates.length === 0 ? (
             <p className="flex items-center gap-2 py-4 text-xs text-muted-foreground">
               <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-              Nenhuma referência fora do SLA. Fluxo saudável.
+              Nenhuma referência ativa para exibir.
             </p>
           ) : (
-            bottlenecks.map(({ ref, days, stage }) => (
+            oldestUpdates.map(({ ref, days, stage }) => (
               <button
                 key={ref.id}
                 type="button"
                 onClick={() => setSelected(ref.status)}
-                className="flex w-full items-center justify-between gap-3 rounded-md border border-amber-400/20 bg-amber-400/5 p-3 text-left hover:border-amber-400/40"
+                className="flex w-full items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.02] p-3 text-left hover:border-primary/30"
               >
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-semibold">
@@ -525,8 +559,8 @@ function FlowPage() {
                     {REFERENCE_STATUS_LABEL[ref.status]} · {stage?.owner}
                   </span>
                 </span>
-                <span className="shrink-0 text-xs font-bold text-amber-300">
-                  {days}d parada
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  Atualizada há {days}d
                 </span>
               </button>
             ))

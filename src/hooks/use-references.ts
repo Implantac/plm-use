@@ -23,12 +23,7 @@ export const REFERENCE_STATUSES: ReferenceStatus[] = [
   "ARQUIVADA",
 ];
 
-export const REFERENCE_PRIORITIES: ReferencePriority[] = [
-  "BAIXA",
-  "MEDIA",
-  "ALTA",
-  "URGENTE",
-];
+export const REFERENCE_PRIORITIES: ReferencePriority[] = ["BAIXA", "MEDIA", "ALTA", "URGENTE"];
 
 export const REFERENCE_STATUS_LABEL: Record<ReferenceStatus, string> = {
   IDEIA: "Ideia",
@@ -50,6 +45,7 @@ export function useReferences() {
   const [items, setItems] = useState<ReferenceRow[]>([]);
   const [transitions, setTransitions] = useState<TransitionRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -57,36 +53,43 @@ export function useReferences() {
     Promise.all([
       supabase.from("references").select("*").order("created_at", { ascending: false }),
       supabase.from("reference_transitions").select("*").eq("is_active", true),
-    ]).then(([refs, trs]) => {
-      if (cancelled) return;
-      if (refs.data) setItems(refs.data as ReferenceRow[]);
-      if (trs.data) setTransitions(trs.data as TransitionRow[]);
-      setLoading(false);
-    });
+    ])
+      .then(([refs, trs]) => {
+        if (cancelled) return;
+        if (refs.error) {
+          setError(refs.error.message);
+        } else {
+          setItems(refs.data ?? []);
+          setError(null);
+        }
+        if (trs.data) setTransitions(trs.data as TransitionRow[]);
+        setLoading(false);
+      })
+      .catch((cause: unknown) => {
+        if (cancelled) return;
+        setError(cause instanceof Error ? cause.message : "Falha ao carregar referências.");
+        setLoading(false);
+      });
 
     const ch = supabase
       .channel(`references-live-${Math.random().toString(36).slice(2, 10)}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "references" },
-        (payload) => {
-          setItems((prev) => {
-            if (payload.eventType === "INSERT") {
-              const row = payload.new as ReferenceRow;
-              return prev.some((p) => p.id === row.id) ? prev : [row, ...prev];
-            }
-            if (payload.eventType === "UPDATE") {
-              const row = payload.new as ReferenceRow;
-              return prev.map((p) => (p.id === row.id ? row : p));
-            }
-            if (payload.eventType === "DELETE") {
-              const o = payload.old as { id: string };
-              return prev.filter((p) => p.id !== o.id);
-            }
-            return prev;
-          });
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "references" }, (payload) => {
+        setItems((prev) => {
+          if (payload.eventType === "INSERT") {
+            const row = payload.new as ReferenceRow;
+            return prev.some((p) => p.id === row.id) ? prev : [row, ...prev];
+          }
+          if (payload.eventType === "UPDATE") {
+            const row = payload.new as ReferenceRow;
+            return prev.map((p) => (p.id === row.id ? row : p));
+          }
+          if (payload.eventType === "DELETE") {
+            const o = payload.old as { id: string };
+            return prev.filter((p) => p.id !== o.id);
+          }
+          return prev;
+        });
+      })
       .subscribe();
 
     return () => {
@@ -111,8 +114,7 @@ export function useReferences() {
   );
 
   const canTransition = useCallback(
-    (from: ReferenceStatus, to: ReferenceStatus) =>
-      (transitionsMap.get(from) ?? []).includes(to),
+    (from: ReferenceStatus, to: ReferenceStatus) => (transitionsMap.get(from) ?? []).includes(to),
     [transitionsMap],
   );
 
@@ -160,10 +162,7 @@ export function useReferences() {
           to_status: to,
           note: note ?? null,
           actor: user.id,
-          actor_name:
-            (user.user_metadata?.full_name as string | undefined) ??
-            user.email ??
-            null,
+          actor_name: (user.user_metadata?.full_name as string | undefined) ?? user.email ?? null,
           payload: { code: ref.code } as never,
         });
       }
@@ -199,10 +198,7 @@ export function useReferences() {
       if (!user) return null;
       const { data, error } = await supabase
         .from("references")
-        .upsert(
-          { ...input, created_by: user.id, updated_by: user.id },
-          { onConflict: "code" },
-        )
+        .upsert({ ...input, created_by: user.id, updated_by: user.id }, { onConflict: "code" })
         .select()
         .single();
       if (error || !data) return null;
@@ -214,6 +210,7 @@ export function useReferences() {
   return {
     items,
     loading,
+    error,
     transitions,
     nextStatuses,
     canTransition,
