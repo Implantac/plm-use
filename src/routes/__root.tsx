@@ -113,11 +113,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "preconnect",
-        href: "https://cdn.gpteng.co",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "preconnect",
         href: "https://fonts.googleapis.com",
       },
       {
@@ -127,9 +122,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
       },
-
     ],
   }),
   shellComponent: RootShell,

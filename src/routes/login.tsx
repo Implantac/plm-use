@@ -107,21 +107,15 @@ function Login() {
 
 
   return (
-    <div className="min-h-dvh grid grid-cols-1 lg:grid-cols-[1fr_480px] bg-[#020617] p-6 relative overflow-hidden">
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.05]"
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")` }}
-      />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
-
+    <div className="min-h-dvh grid grid-cols-1 lg:grid-cols-[1fr_480px] bg-background p-6 relative overflow-hidden">
       <div className="relative z-10 hidden lg:flex flex-col justify-between p-8">
         <img src="/assets/logo.png" alt="USE MODA" className="h-12 w-fit" />
         <div className="max-w-2xl space-y-8">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-primary">
               Enterprise Access
             </p>
-            <h1 className="mt-4 text-5xl font-bold tracking-tight text-white">
+            <h1 className="mt-4 text-5xl font-semibold text-white">
               Acesse o cockpit PLM da sua operação.
             </h1>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
@@ -138,17 +132,17 @@ function Login() {
             ].map((item) => (
               <div
                 key={item.label}
-                className="rounded-lg border border-white/10 bg-white/[0.035] p-4"
+                className="rounded-md border border-white/10 bg-white/[0.025] p-4"
               >
                 <item.icon className="h-5 w-5 text-primary" />
-                <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-white">
+                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.06em] text-white">
                   {item.label}
                 </p>
               </div>
             ))}
           </div>
         </div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           LGPD ready - auditoria ativa - backup automático
         </p>
       </div>
@@ -156,15 +150,13 @@ function Login() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative z-10 self-center justify-self-center w-full max-w-md p-8 rounded-lg border border-white/10 bg-white/[0.035] backdrop-blur-3xl space-y-8 glass-card"
+        className="relative z-10 self-center justify-self-center w-full max-w-md p-8 rounded-lg border border-border bg-surface-elevated space-y-8 glass-card"
       >
         <div className="text-center">
           <div className="mb-8 flex justify-center">
             <img src="/assets/logo.png" alt="USE MODA" className="h-16 w-auto" />
           </div>
-          <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-[0.3em] mt-4">
-            PLM Intelligence Hub Access
-          </p>
+          <p className="text-muted-foreground text-xs font-medium mt-4">Acesso ao USE MODA PLM</p>
         </div>
 
         <div className="flex gap-1 p-1 rounded-md bg-white/5 border border-white/5">
@@ -173,7 +165,7 @@ function Login() {
               key={m}
               type="button"
               onClick={() => setMode(m)}
-              className={`flex-1 py-2 rounded text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${
+              className={`flex-1 py-2 rounded text-sm font-semibold transition-colors ${
                 mode === m ? "bg-primary text-white" : "text-muted-foreground hover:text-white"
               }`}
             >
@@ -185,10 +177,7 @@ function Login() {
         <form className="space-y-5" onSubmit={handleSubmit}>
           {mode === "signup" && (
             <div className="space-y-3">
-              <Label
-                htmlFor="fullName"
-                className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-4"
-              >
+              <Label htmlFor="fullName" className="text-xs font-medium text-muted-foreground">
                 Nome completo
               </Label>
               <Input
@@ -207,10 +196,7 @@ function Login() {
             </div>
           )}
           <div className="space-y-3">
-            <Label
-              htmlFor="email"
-              className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-4"
-            >
+            <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">
               E-mail Corporativo
             </Label>
             <Input
@@ -229,10 +215,7 @@ function Login() {
             )}
           </div>
           <div className="space-y-3">
-            <Label
-              htmlFor="password"
-              className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-4"
-            >
+            <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">
               Senha
             </Label>
             <Input
@@ -259,7 +242,7 @@ function Login() {
           <Button
  type="submit"
  aria-busy={loading}
- className="w-full text-[10px] tracking-[0.2em] bg-primary hover:bg-primary/90 text-white mt-4 border-none shadow-lg hover:shadow-primary/20"
+ className="w-full h-11 text-sm font-semibold tracking-normal bg-primary hover:bg-primary/90 text-primary-foreground mt-4 border-none shadow-sm hover:shadow-md"
  >
             {loading
               ? "Processando..."
@@ -271,7 +254,7 @@ function Login() {
  type="button"
  variant="outline"
  onClick={handleGoogle}
- className="w-full text-[10px] tracking-[0.16em] bg-white/5"
+ className="w-full text-sm tracking-normal bg-white/5"
  >
             Continuar com Google
           </Button>
@@ -279,7 +262,7 @@ function Login() {
 
 
         <div className="text-center pt-6 border-t border-white/5">
-          <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em]">
+          <p className="text-xs text-muted-foreground">
             Acesso exclusivo para empresas parceiras.{" "}
             <Link to="/" className="text-primary hover:text-white transition-colors">
               Voltar

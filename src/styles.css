@@ -4,14 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-  font-family: "Camera Plain";
-  src: url('https://cdn.gpteng.co/mcp-widgets/v1/fonts/CameraPlainVariable.woff2') format('woff2');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* =========================================================================
  * DESIGN SYSTEM — Documento 05
  * 3-layer tokens: Primitives → Semantics → Components
@@ -19,62 +11,62 @@
  * ========================================================================= */
 
 /* ---------- Primitives (HSL triplets — never referenced by components) ---
- * Paleta em tons de azul — agradável, calma, confiável.
+ * Neutros de grafite, verde-jade de marca e acentos de status distintos.
  * ------------------------------------------------------------------------ */
 :root {
-  /* Neutros (ink) — família slate fria com undertone azul */
-  --ink-0:    210 40% 98%;   /* off-white frio */
-  --ink-50:   214 32% 94%;   /* paper */
-  --ink-200:  213 20% 78%;   /* soft */
-  --ink-400:  215 14% 58%;   /* muted body */
-  --ink-600:  217 16% 40%;   /* deep muted */
-  --ink-800:  222 30% 13%;   /* surface elevated */
-  --ink-900:  224 36% 10%;   /* surface */
-  --ink-950:  226 45% 7%;    /* background */
-  --ink-1000: 228 55% 4%;    /* deep sunken */
+  /* Ink neutral: warmer graphite rather than blue slate */
+  --ink-0:    0 0% 98%;
+  --ink-50:   210 8% 94%;
+  --ink-200:  210 7% 77%;
+  --ink-400:  210 6% 61%;
+  --ink-600:  215 7% 40%;
+  --ink-800:  220 7% 15%;
+  --ink-900:  220 8% 11%;
+  --ink-950:  225 8% 8%;
+  --ink-1000: 225 10% 5%;
 
-  /* Brand — azul principal */
-  --brand-50:  214 95% 93%;
-  --brand-200: 213 92% 78%;
-  --brand-500: 217 91% 52%;  /* azul signature */
-  --brand-700: 221 83% 40%;
-  --brand-900: 224 76% 25%;
+  /* Brand: atelier jade */
+  --brand-50:  150 36% 93%;
+  --brand-200: 151 34% 76%;
+  --brand-500: 153 44% 36%;
+  --brand-700: 154 48% 28%;
+  --brand-900: 156 48% 19%;
 
-  /* Highlight — azul céu radiante (halo, focus, primary-glow) */
-  --glow-500: 199 89% 55%;
-  --glow-700: 201 85% 42%;
+  /* A restrained coral highlight complements the jade */
+  --glow-500:  10 70% 59%;
+  --glow-700:  11 65% 45%;
 
-  /* Azul marinho profundo (accent secundário, entidades premium) */
-  --wine-500: 230 55% 28%;
-  --wine-700: 232 62% 18%;
+  /* Premium accent */
+  --wine-500: 344 34% 31%;
+  --wine-700: 344 38% 19%;
 
-  /* Status primitives — recalibrados para paleta fria */
-  --info-500:    195 78% 48%;   /* teal-blue */
-  --info-700:    195 82% 34%;
-  --success-500: 160 60% 42%;   /* verde-azulado */
-  --success-700: 160 65% 28%;
-  --warning-500: 38 92% 52%;    /* amber (mantido para alertas) */
-  --warning-700: 38 92% 40%;
-  --danger-500:  358 78% 54%;
-  --danger-700:  358 82% 40%;
-  --neutral-500: 217 14% 52%;
-  --neutral-700: 217 14% 38%;
-  --purple-500:  255 65% 62%;   /* azul-violeta */
-  --purple-700:  255 62% 46%;
+  /* Status colors stay visually distinct */
+  --info-500:    199 68% 48%;
+  --info-700:    199 68% 34%;
+  --success-500: 151 45% 39%;
+  --success-700: 153 48% 27%;
+  --warning-500: 42 82% 49%;
+  --warning-700: 40 78% 37%;
+  --danger-500:  3 70% 52%;
+  --danger-700:  3 72% 39%;
+  --neutral-500: 210 6% 50%;
+  --neutral-700: 212 7% 36%;
+  --purple-500:  279 42% 56%;
+  --purple-700:  280 43% 42%;
 }
 
 
 /* ---------- Semantics — LIGHT (default when no .dark) ------------------- */
 :root {
-  --background:         0 0% 100%;
+  --background:         0 0% 99%;
   --foreground:         var(--ink-900);
-  --surface:            220 20% 98%;
+  --surface:            210 14% 97%;
   --surface-elevated:   0 0% 100%;
-  --surface-sunken:     220 20% 96%;
-  --muted:              220 20% 94%;
+  --surface-sunken:     210 12% 94%;
+  --muted:              210 12% 93%;
   --muted-foreground:   var(--ink-600);
-  --border:             220 15% 88%;
-  --border-strong:      220 15% 76%;
+  --border:             210 10% 87%;
+  --border-strong:      210 9% 75%;
   --ring:               var(--brand-500);
 
   --card:               var(--surface);
@@ -147,9 +139,9 @@
   --motion-slow:  320ms cubic-bezier(0.16, 1, 0.3, 1);
   --motion-pulse: 1600ms ease-in-out infinite;
 
-  /* Fonts — Camera Plain Variable (sans + headings) */
-  --font-sans:    "Camera Plain", system-ui, sans-serif;
-  --font-heading: "Camera Plain", system-ui, sans-serif;
+  /* DM Sans for dense tools; Cormorant for editorial page titles */
+  --font-sans:    "DM Sans", sans-serif;
+  --font-heading: "Cormorant Garamond", Georgia, serif;
   --font-mono:    "JetBrains Mono", ui-monospace, monospace;
 
 
@@ -159,20 +151,22 @@
 }
 
 /* ---------- Semantics — DARK (default app theme) -----------------------
- * Superfície: preto quente com undertone burgundy.
- * Primary: ember/copper (--brand-500) com glow copper (--glow-500).
+ * Superfícies de grafite com jade como cor de ação e coral só para destaque.
  * ------------------------------------------------------------------------ */
 .dark {
-  --background:         var(--ink-950);
+  --brand-500:          151 47% 57%;
+  --brand-700:          152 46% 47%;
+  --brand-900:          154 46% 25%;
+  --background:         225 8% 8%;
   --foreground:         var(--ink-50);
-  --surface:            var(--ink-900);
-  --surface-elevated:   var(--ink-800);
-  --surface-sunken:     var(--ink-1000);
-  --muted:              222 24% 13%;
+  --surface:            225 7% 11%;
+  --surface-elevated:   225 7% 15%;
+  --surface-sunken:     225 10% 5%;
+  --muted:              225 7% 17%;
   --muted-foreground:   var(--ink-400);
-  --border:             220 28% 18%;
-  --border-strong:      218 30% 28%;
-  --ring:               var(--glow-500);
+  --border:             220 7% 22%;
+  --border-strong:      220 7% 31%;
+  --ring:               var(--brand-500);
 
   --card:               var(--surface);
   --card-foreground:    var(--foreground);
@@ -182,7 +176,7 @@
 
   --primary:              var(--brand-500);
   --primary-foreground:   var(--ink-0);
-  --primary-glow:         var(--glow-500);
+  --primary-glow:         var(--brand-500);
   --secondary:            var(--surface-elevated);
   --secondary-foreground: var(--foreground);
   --accent:               var(--muted);
@@ -190,33 +184,34 @@
   --destructive:          var(--danger-500);
   --destructive-foreground: var(--ink-0);
 
-  /* Sidebar — mais escuro que o main, cria depth */
+  /* Sidebar uses a subtle value shift, not a separate blue-black */
   --sidebar:                    var(--ink-1000);
   --sidebar-foreground:         var(--foreground);
   --sidebar-primary:            var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent:             222 28% 12%;
+  --sidebar-accent:             225 8% 13%;
   --sidebar-accent-foreground:  var(--foreground);
-  --sidebar-border:             224 32% 12%;
-  --sidebar-ring:               var(--glow-500);
+  --sidebar-border:             225 8% 14%;
+  --sidebar-ring:               var(--brand-500);
 
-  /* Elevation dark — contorno interno + sombra azul-tingida */
+  /* Elevation dark: quiet neutral edges, minimal colored shadow */
   --elev-0: none;
   --elev-1: inset 0 0 0 1px hsl(var(--border));
   --elev-2:
     inset 0 0 0 1px hsl(var(--border)),
-    0 8px 24px -8px hsl(var(--brand-900) / 0.55),
+    0 8px 24px -8px hsl(var(--brand-900) / 0.24),
     0 2px 4px -2px rgba(0,0,0,0.5);
   --elev-3:
     inset 0 0 0 1px hsl(var(--border-strong)),
-    0 24px 60px -18px hsl(var(--brand-500) / 0.35),
+    0 24px 60px -18px hsl(var(--brand-500) / 0.16),
     0 10px 24px -8px rgba(0,0,0,0.7);
 
-  /* Signature gradients & glows — usar via utilities abaixo */
+  /* Signature gradients & glows — kept subtle for the product workspace */
   --gradient-ember:  linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
-  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(224 40% 9%) 100%);
-  --shadow-ember:    0 0 0 1px hsl(var(--brand-500) / 0.35), 0 12px 32px -8px hsl(var(--brand-500) / 0.45);
-  --glow-ember:      0 0 24px -4px hsl(var(--glow-500) / 0.55);
+  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(225 8% 6%) 100%);
+  --shadow-ember:    0 0 0 1px hsl(var(--brand-500) / 0.24), 0 12px 32px -8px hsl(var(--brand-500) / 0.18);
+  --glow-ember:      0 0 24px -4px hsl(var(--brand-500) / 0.25);
+  color-scheme: dark;
 }
 
 
@@ -296,23 +291,23 @@
   --font-heading: var(--font-heading);
   --font-mono:    var(--font-mono);
 
-  /* Typography scale — industrial, compact */
-  --text-2xs:              10px;
-  --text-2xs--line-height: 14px;
-  --text-xs:               11px;
-  --text-xs--line-height:  16px;
-  --text-sm:               13px;
-  --text-sm--line-height:  18px;
+  /* Typography scale: comfortable reading without dashboard bloat */
+  --text-2xs:              11px;
+  --text-2xs--line-height: 15px;
+  --text-xs:               12px;
+  --text-xs--line-height:  17px;
+  --text-sm:               14px;
+  --text-sm--line-height:  20px;
   --text-base:             15px;
-  --text-base--line-height:22px;
+  --text-base--line-height:23px;
   --text-lg:               17px;
-  --text-lg--line-height:  24px;
+  --text-lg--line-height:  25px;
   --text-xl:               20px;
   --text-xl--line-height:  28px;
-  --text-2xl:              24px;
-  --text-2xl--line-height: 32px;
-  --text-3xl:              30px;
-  --text-3xl--line-height: 38px;
+  --text-2xl:              25px;
+  --text-2xl--line-height: 33px;
+  --text-3xl:              32px;
+  --text-3xl--line-height: 40px;
 }
 
 /* ---------- Base ------------------------------------------------------- */
@@ -322,7 +317,7 @@
   }
 
   html {
-    color-scheme: dark;
+    color-scheme: light;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -335,17 +330,16 @@
     font-optical-sizing: auto;
   }
 
-  /* Headings usam a mesma Camera Plain com peso alto */
-  h1, h2 {
+  h1 {
     font-family: var(--font-heading);
-    letter-spacing: -0.015em;
+    letter-spacing: 0;
     font-weight: 600;
-    line-height: 1.05;
+    line-height: 1.08;
   }
 
-  h3, h4, h5, h6 {
+  h2, h3, h4, h5, h6 {
     font-family: var(--font-sans);
-    letter-spacing: -0.005em;
+    letter-spacing: 0;
     font-weight: 600;
   }
 
@@ -384,8 +378,8 @@
 
 @utility uppercase-label {
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 10px;
+  letter-spacing: 0.08em;
+  font-size: 11px;
   line-height: 14px;
   font-weight: 600;
 }
@@ -493,8 +487,7 @@
 }
 @utility bg-forge {
   background-image:
-    radial-gradient(1200px 600px at 15% -10%, hsl(var(--brand-500) / 0.10), transparent 55%),
-    radial-gradient(900px 500px at 100% 0%, hsl(var(--glow-500) / 0.06), transparent 60%),
+    radial-gradient(1200px 600px at 15% -10%, hsl(var(--brand-500) / 0.08), transparent 55%),
     linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(var(--ink-1000)) 100%);
 }
 @utility ring-ember {
@@ -503,7 +496,7 @@
     0 0 20px -2px hsl(var(--glow-500) / 0.4);
 }
 @utility glow-ember {
-  box-shadow: 0 0 32px -6px hsl(var(--glow-500) / 0.55);
+  box-shadow: 0 0 32px -6px hsl(var(--brand-500) / 0.28);
 }
 
 

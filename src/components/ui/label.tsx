@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useFieldContext } from "@/components/ui/field";
 
 const labelVariants = cva(
-  "text-[10px] font-semibold uppercase tracking-[0.18em] leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+  "text-xs font-medium tracking-normal leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
   {
     variants: {
       variant: {
@@ -16,9 +16,9 @@ const labelVariants = cva(
         error: "text-destructive",
       },
       size: {
-        default: "text-[10px] tracking-[0.18em]",
-        sm: "text-[9px] tracking-[0.22em]",
-        md: "text-xs tracking-wide normal-case font-medium",
+        default: "text-xs tracking-normal normal-case font-medium",
+        sm: "text-[11px] tracking-normal normal-case font-medium",
+        md: "text-xs tracking-normal normal-case font-medium",
       },
     },
     defaultVariants: {
@@ -29,7 +29,8 @@ const labelVariants = cva(
 );
 
 interface LabelProps
-  extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
+  extends
+    React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
     VariantProps<typeof labelVariants> {
   required?: boolean;
 }

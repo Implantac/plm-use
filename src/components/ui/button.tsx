@@ -16,15 +16,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Primary — ember/copper gradient signature CTA
+        // Primary — clear, solid action color for a work-focused interface
         default: [
           "text-primary-foreground border border-transparent",
-          "bg-[linear-gradient(135deg,hsl(var(--brand-500))_0%,hsl(var(--glow-500))_100%)]",
-          "shadow-[0_8px_24px_-8px_hsl(var(--brand-500)/0.55)]",
-          "hover:brightness-110 hover:shadow-[0_10px_28px_-8px_hsl(var(--brand-500)/0.7)]",
-          "active:brightness-95",
+          "bg-primary shadow-sm hover:bg-primary/90 hover:shadow-md active:bg-primary/95",
         ].join(" "),
-        // Secondary — quiet surface, ember hover ring
+        // Secondary — quiet surface with a restrained jade hover
         secondary: [
           "bg-secondary text-secondary-foreground border border-border",
           "hover:bg-accent hover:border-border-strong hover:text-foreground",
@@ -37,15 +34,15 @@ const buttonVariants = cva(
           "hover:brightness-110 hover:shadow-[0_8px_22px_-8px_hsl(var(--destructive)/0.75)]",
           "active:brightness-95",
         ].join(" "),
-        // Outline — ember focus tint on hover
+        // Outline — restrained jade tint on hover
         outline: [
           "border border-border-strong bg-transparent text-foreground",
           "hover:bg-primary/10 hover:border-primary/50 hover:text-foreground",
           "active:bg-primary/15",
         ].join(" "),
-        // Ghost — minimal, subtle ember tint on hover
+        // Ghost — minimal, subtle jade tint on hover
         ghost: "text-foreground hover:bg-primary/10 hover:text-foreground active:bg-primary/15",
-        // Link — ember underline
+        // Link — jade underline
         link: "text-primary underline-offset-4 hover:underline hover:text-[hsl(var(--glow-500))]",
       },
       size: {
