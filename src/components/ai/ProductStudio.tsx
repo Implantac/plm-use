@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ArrowRight, Bot, ImageOff, LoaderCircle, Save, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
+import { streamImage } from "@/lib/streamImage";
 import { useReferences } from "@/hooks/use-references";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { Badge } from "@/components/ui/badge";
@@ -91,8 +92,11 @@ export function ProductStudio() {
   const [proposal, setProposal] = useState<Proposal | null>(null);
   const [productName, setProductName] = useState("");
   const [referenceCode, setReferenceCode] = useState("");
+  const [visualView, setVisualView] = useState("frente");
+  const [imageSource, setImageSource] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [imageBusy, setImageBusy] = useState(false);
 
   const suggestedCode = useMemo(() => nextReferenceCode(items.map((item) => item.code)), [items]);
   const variationIdeas = useMemo(
@@ -146,6 +150,39 @@ export function ProductStudio() {
       toast.error("Não foi possível gerar a proposta. Tente novamente.");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function generateVisual() {
+    if (!proposal || !proposal.name) {
+      toast.error("Gere uma proposta antes de criar a imagem.");
+      return;
+    }
+
+    setImageBusy(true);
+    setImageSource(null);
+
+    const prompt = [
+      `Fashion product photography for ${proposal.name}`,
+      `category ${proposal.category || "moda"}`,
+      `silhouette ${proposal.silhouette || "clean"}`,
+      `materials ${proposal.suggestedMaterials.join(", ") || "tecido"}`,
+      `colors ${proposal.colors.join(", ") || "neutros"}`,
+      `view ${visualView}`,
+      "premium fashion editorial, consistent garment identity, studio lighting, realistic product photography",
+    ].join(", ");
+
+    try {
+      await streamImage("/api/generate-image", prompt, (dataUrl, final) => {
+        setImageSource(dataUrl);
+        if (final) {
+          toast.success(`Visual ${visualView} gerado com sucesso.`);
+        }
+      });
+    } catch {
+      toast.error("Não foi possível gerar a imagem do produto. Tente novamente.");
+    } finally {
+      setImageBusy(false);
     }
   }
 
@@ -472,6 +509,49 @@ export function ProductStudio() {
                 <ConceptList label="Direções de imagem" values={proposal.imageIdeas ?? ["frente", "costas", "modelo", "campanha"]} />
                 <ConceptList label="Variações conceituais" values={variationIdeas.length ? variationIdeas : proposal.variations} />
                 <ConceptList label="Pontos para revisão humana" values={proposal.validationNotes} />
+              </div>
+
+              <div className="rounded-md border border-white/10 bg-white/[0.025] p-3">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                    Geração visual
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      "frente",
+                      "costas",
+                      "lateral",
+                      "modelo",
+                      "campanha",
+                    ].map((view) => (
+                      <button
+                        key={view}
+                        type="button"
+                        onClick={() => setVisualView(view)}
+                        className={`rounded-full border px-2 py-1 text-[9px] uppercase tracking-[0.15em] transition ${
+                          visualView === view
+                            ? "border-primary/40 bg-primary/10 text-primary"
+                            : "border-white/10 bg-transparent text-muted-foreground"
+                        }`}
+                      >
+                        {view}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button type="button" variant="outline" onClick={() => void generateVisual()} disabled={imageBusy} className="w-full">
+                    {imageBusy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    Gerar visual {visualView}
+                  </Button>
+                </div>
+
+                {imageSource && (
+                  <div className="mt-3 overflow-hidden rounded-md border border-white/10 bg-black/20">
+                    <img src={imageSource} alt={`${proposal.name} ${visualView}`} className="h-64 w-full object-cover" />
+                  </div>
+                )}
               </div>
             </div>
           ) : (
