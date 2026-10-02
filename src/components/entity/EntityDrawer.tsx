@@ -4,8 +4,11 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
+  Check,
+  Circle,
   GitBranch,
   History,
+  ImageOff,
   Layers,
   Link2,
   Loader2,
@@ -17,6 +20,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/OptimizedImage";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useReferences, REFERENCE_STATUS_LABEL, type ReferenceRow } from "@/hooks/use-references";
@@ -35,6 +39,18 @@ const ENTITY_LABEL: Record<string, string> = {
   facao_order: "Ordem de Facção",
   supplier: "Fornecedor",
 };
+
+const PRODUCT_LIFECYCLE = [
+  "IDEIA",
+  "CROQUI",
+  "MODELAGEM",
+  "PILOTO",
+  "AJUSTE",
+  "APROVACAO",
+  "ENGENHARIA",
+  "PRODUCAO",
+  "FINALIZADA",
+] as const;
 
 export function EntityDrawer({
   entity,
@@ -95,6 +111,7 @@ function ReferenceBody({ id }: { id: string }) {
   const { items, nextStatuses, transition } = useReferences();
   const [row, setRow] = useState<ReferenceRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [tab, setTab] = useState("summary");
   const [newTimelineCount, setNewTimelineCount] = useState(0);
   const { emit } = useEventEmitter();
@@ -109,16 +126,25 @@ function ReferenceBody({ id }: { id: string }) {
     // fallback direto ao banco
     let cancelled = false;
     setLoading(true);
+    setLoadError(false);
     supabase
       .from("references")
       .select("*")
       .eq("id", id)
       .maybeSingle()
-      .then(({ data }) => {
-        if (cancelled) return;
-        setRow((data as ReferenceRow | null) ?? null);
-        setLoading(false);
-      });
+      .then(
+        ({ data, error }) => {
+          if (cancelled) return;
+          setRow((data as ReferenceRow | null) ?? null);
+          setLoadError(Boolean(error));
+          setLoading(false);
+        },
+        () => {
+          if (cancelled) return;
+          setLoadError(true);
+          setLoading(false);
+        },
+      );
     return () => {
       cancelled = true;
     };
@@ -137,10 +163,17 @@ function ReferenceBody({ id }: { id: string }) {
   if (!row) {
     return (
       <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
-        Referência não encontrada.
+        {loadError
+          ? "Não foi possível carregar esta referência. Verifique a conexão e tente novamente."
+          : "Referência não encontrada."}
       </div>
     );
   }
+
+  const lifecycleIndex = PRODUCT_LIFECYCLE.indexOf(
+    row.status as (typeof PRODUCT_LIFECYCLE)[number],
+  );
+  const currentNext = next[0];
 
   const doTransition = async (to: typeof row.status) => {
     const ok = await transition(row, to);
@@ -160,11 +193,10 @@ function ReferenceBody({ id }: { id: string }) {
   };
 
   return (
-
     <Tabs value={tab} onValueChange={setTab}>
-      <TabsList className="bg-white/[0.04] border border-white/10">
+      <TabsList className="w-full justify-start overflow-x-auto bg-white/[0.04] border border-white/10">
         <TabsTrigger value="summary" className="text-[10px] gap-1">
-          <Package className="h-3 w-3" /> Resumo
+          <Package className="h-3 w-3" /> Produto
         </TabsTrigger>
         <TabsTrigger value="workflow" className="text-[10px] gap-1">
           <GitBranch className="h-3 w-3" /> Workflow
@@ -182,39 +214,139 @@ function ReferenceBody({ id }: { id: string }) {
         </TabsTrigger>
       </TabsList>
 
-
-      <TabsContent value="summary" className="mt-4 space-y-3">
-        <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] p-3">
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Código</p>
-            <p className="text-lg font-bold text-white">{row.code}</p>
+      <TabsContent value="summary" className="mt-4 space-y-5">
+        <section className="grid gap-4 sm:grid-cols-[minmax(150px,0.75fr)_1.25fr]">
+          <div className="overflow-hidden rounded-md border border-white/10 bg-white/[0.03]">
+            {row.image_url ? (
+              <OptimizedImage
+                src={row.image_url}
+                alt={`Imagem principal de ${row.name}`}
+                aspectRatio="portrait"
+                priority
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex aspect-[3/4] flex-col items-center justify-center gap-2 px-4 text-center text-muted-foreground">
+                <ImageOff className="h-6 w-6" />
+                <span className="text-xs">Imagem principal ainda não adicionada</span>
+              </div>
+            )}
           </div>
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Status</p>
-            <Badge className="mt-1 bg-primary/15 text-primary border-primary/30">
-              {REFERENCE_STATUS_LABEL[row.status]}
-            </Badge>
+          <div className="space-y-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase text-primary">{row.code}</p>
+              <h2 className="mt-1 text-xl font-semibold text-white">{row.name}</h2>
+              <Badge className="mt-2 bg-primary/15 text-primary border-primary/30">
+                {REFERENCE_STATUS_LABEL[row.status]}
+              </Badge>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <Field label="Coleção" value={row.collection_id ?? "Não vinculada"} />
+              <Field label="Linha" value={row.line ?? "Não definida"} />
+              <Field label="Tema" value={row.theme ?? "Não definido"} />
+              <Field label="Temporada" value={row.season ?? "Não definida"} />
+              <Field label="Prioridade" value={row.priority} />
+              <Field
+                label="Meta de custo (não realizado)"
+                value={
+                  row.target_cost != null ? `R$ ${Number(row.target_cost).toFixed(2)}` : "Sem meta"
+                }
+              />
+              <Field
+                label="Meta de preço (não realizado)"
+                value={
+                  row.target_price != null
+                    ? `R$ ${Number(row.target_price).toFixed(2)}`
+                    : "Sem meta"
+                }
+              />
+              <Field label="ERP" value={row.erp_product_id ?? "Ainda não vinculado"} />
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-2 gap-2 text-[11px]">
-          <Field label="Nome" value={row.name} />
-          <Field label="Coleção" value={row.collection_id ?? "—"} />
-          <Field label="Linha" value={row.line ?? "—"} />
-          <Field label="Tema" value={row.theme ?? "—"} />
-          <Field label="Temporada" value={row.season ?? "—"} />
-          <Field label="Prioridade" value={row.priority} />
-          <Field
-            label="Custo alvo"
-            value={row.target_cost != null ? `R$ ${Number(row.target_cost).toFixed(2)}` : "—"}
-          />
-          <Field
-            label="Preço alvo"
-            value={row.target_price != null ? `R$ ${Number(row.target_price).toFixed(2)}` : "—"}
-          />
-          <Field label="ERP produto" value={row.erp_product_id ?? "—"} />
-          <Field label="Criada em" value={new Date(row.created_at).toLocaleDateString("pt-BR")} />
-        </div>
+        <section aria-labelledby="reference-lifecycle-title" className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <h3 id="reference-lifecycle-title" className="text-sm font-semibold text-white">
+              Ciclo de vida
+            </h3>
+            <span className="text-[10px] text-muted-foreground">
+              Etapa atual: {REFERENCE_STATUS_LABEL[row.status]}
+            </span>
+          </div>
+          {row.status === "ARQUIVADA" ? (
+            <p className="rounded-md border border-white/10 bg-white/[0.02] p-3 text-xs text-muted-foreground">
+              Esta referência está arquivada e permanece disponível no histórico.
+            </p>
+          ) : (
+            <ol className="flex gap-2 overflow-x-auto pb-2">
+              {PRODUCT_LIFECYCLE.map((status, index) => {
+                const complete = lifecycleIndex >= 0 && index < lifecycleIndex;
+                const current = index === lifecycleIndex;
+                return (
+                  <li
+                    key={status}
+                    className="flex min-w-[76px] flex-1 flex-col items-center gap-2 text-center"
+                  >
+                    <span
+                      aria-current={current ? "step" : undefined}
+                      className={`flex h-7 w-7 items-center justify-center rounded-full border ${
+                        current
+                          ? "border-primary bg-primary/15 text-primary"
+                          : complete
+                            ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-300"
+                            : "border-white/15 text-muted-foreground"
+                      }`}
+                    >
+                      {complete ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Circle className="h-2.5 w-2.5" />
+                      )}
+                    </span>
+                    <span
+                      className={`text-[9px] leading-tight ${current ? "text-primary" : "text-muted-foreground"}`}
+                    >
+                      {REFERENCE_STATUS_LABEL[status]}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </section>
+
+        <section className="space-y-3 border-t border-white/10 pt-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-white">Próximo passo</h3>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Transições disponíveis conforme o workflow desta referência.
+              </p>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => setTab("relations")}>
+              <Link2 className="mr-1.5 h-3.5 w-3.5" /> Ver vínculos
+            </Button>
+          </div>
+          {currentNext ? (
+            <Button size="sm" onClick={() => void doTransition(currentNext)}>
+              Avançar para {REFERENCE_STATUS_LABEL[currentNext]}
+              <ArrowRight className="ml-2 h-3.5 w-3.5" />
+            </Button>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Nenhuma transição disponível nesta etapa.
+            </p>
+          )}
+        </section>
+
+        <section className="rounded-md border border-dashed border-white/15 bg-white/[0.02] p-4">
+          <h3 className="text-sm font-medium text-white">Documentos e ficha técnica</h3>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            Os anexos da referência ainda não estão conectados a este workspace. A rota de ficha
+            técnica atual não está vinculada a um registro real desta referência.
+          </p>
+        </section>
       </TabsContent>
 
       <TabsContent value="workflow" className="mt-4">
@@ -231,11 +363,11 @@ function ReferenceBody({ id }: { id: string }) {
             <div className="flex flex-wrap gap-2">
               {next.map((s) => (
                 <Button
- key={s}
- size="sm"
- variant="outline"
- className="border-primary/30 text-primary hover:bg-primary/10"
- onClick={() => doTransition(s)}
+                  key={s}
+                  size="sm"
+                  variant="outline"
+                  className="border-primary/30 text-primary hover:bg-primary/10"
+                  onClick={() => doTransition(s)}
                 >
                   <ArrowRight className="h-3 w-3 mr-1" />
                   {REFERENCE_STATUS_LABEL[s]}
@@ -254,7 +386,6 @@ function ReferenceBody({ id }: { id: string }) {
           onNewCountChange={setNewTimelineCount}
         />
       </TabsContent>
-
 
       <TabsContent value="relations" className="mt-4">
         <EntityRelations entityType="reference" entityId={row.id} />
