@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-const ImageRequest = z.object({ prompt: z.string().trim().min(1).max(4000) });
+const ImageRequest = z.object({
+  prompt: z.string().trim().min(1).max(4000),
+  referenceImage: z.string().max(15_000_000).optional(),
+});
 
 function jsonError(message: string, status: number) {
   return Response.json({ error: message }, { status });
@@ -52,8 +55,32 @@ export const Route = createFileRoute("/api/generate-image")({
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return jsonError("O provedor de imagens não está configurado.", 503);
 
+        const model = "openai/gpt-image-2.5-sunburst";
+        const reference = parsed.data.referenceImage;
         let upstream: Response;
         try {
+          if (reference) {
+            const match = /^data:(image\/[a-z+]+);base64,(.+)$/.exec(reference);
+            if (!match) return jsonError("Imagem de referência inválida.", 400);
+            const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0));
+            const form = new FormData();
+            form.append("model", model);
+            form.append("prompt", parsed.data.prompt);
+            form.append("quality", "high");
+            form.append("stream", "true");
+            form.append("partial_images", "2");
+            form.append("image", new Blob([bytes], { type: match[1] }), "reference.png");
+            upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/edits", {
+              method: "POST",
+              signal: request.signal,
+              headers: {
+                Authorization: `Bearer ${key}`,
+                "Lovable-API-Key": key,
+                "X-Lovable-AIG-SDK": "raw",
+              },
+              body: form,
+            });
+          } else {
           upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
             method: "POST",
             signal: request.signal,
@@ -64,13 +91,14 @@ export const Route = createFileRoute("/api/generate-image")({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              model: "openai/gpt-image-2",
+              model,
               prompt: parsed.data.prompt,
               quality: "high",
               stream: true,
               partial_images: 2,
             }),
           });
+          }
         } catch (error) {
           if (request.signal.aborted) return new Response(null, { status: 499 });
           console.error("Image provider request failed", error);
