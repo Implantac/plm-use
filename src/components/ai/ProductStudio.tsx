@@ -42,6 +42,27 @@ type Proposal = z.infer<typeof ProposalSchema>;
 
 type Briefing = ProductBriefingInput;
 
+function normalizeTextList(value: unknown, keys: string[]): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.map((entry) => {
+    if (typeof entry === "string") return entry;
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) return entry;
+    const record = entry as Record<string, unknown>;
+    const details = keys
+      .map((key) => record[key])
+      .filter((part): part is string => typeof part === "string" && Boolean(part.trim()));
+    return details.join(" — ");
+  });
+}
+
+function normalizeVisualIdentity(value: unknown): unknown {
+  if (Array.isArray(value)) return normalizeTextList(value, ["mood", "aesthetic", "targetVibe"]);
+  if (!value || typeof value !== "object") return value;
+  return Object.values(value as Record<string, unknown>).filter(
+    (entry): entry is string => typeof entry === "string" && Boolean(entry.trim()),
+  );
+}
+
 const IMAGE_VIEWS = [
   "frente",
   "costas",
@@ -91,7 +112,14 @@ function parseProposal(reply: string): Proposal | null {
   try {
     const parsed: unknown = JSON.parse(jsonText);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    const result = ProposalSchema.safeParse(parsed);
+    const proposalData = parsed as Record<string, unknown>;
+    const normalized = {
+      ...proposalData,
+      variations: normalizeTextList(proposalData.variations, ["name", "description"]),
+      imageIdeas: normalizeTextList(proposalData.imageIdeas, ["view", "concept"]),
+      visualIdentity: normalizeVisualIdentity(proposalData.visualIdentity),
+    };
+    const result = ProposalSchema.safeParse(normalized);
     return result.success ? normalizeProductProposal(result.data) : null;
   } catch {
     return null;
