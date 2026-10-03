@@ -252,7 +252,7 @@ export function ProductStudio() {
       const createdAt = new Date().toISOString();
       setGeneratedImages((current) => [
         {
-          view: visualView,
+          view: viewLabel,
           src: latestImage,
           storagePath: storagePath ?? "",
           createdAt,
@@ -261,7 +261,7 @@ export function ProductStudio() {
         ...current,
       ]);
       if (storagePath) {
-        toast.success(`Visual ${visualView} gerado e salvo no armazenamento.`);
+        toast.success(`Visual ${viewLabel} gerado e salvo no armazenamento.`);
       } else {
         toast.warning("Visual gerado, mas não foi possível salvá-lo no armazenamento.");
       }
@@ -637,6 +637,10 @@ export function ProductStudio() {
                   </div>
                 </div>
 
+                <label className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <input type="checkbox" checked={keepIdentity} onChange={(e) => setKeepIdentity(e.target.checked)} className="accent-primary" />
+                  Manter identidade do produto (usa o primeiro visual como referência)
+                </label>
                 <div className="flex items-center gap-2">
                   <Button type="button" variant="outline" onClick={() => void generateVisual()} disabled={imageBusy} className="w-full">
                     {imageBusy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
@@ -644,6 +648,17 @@ export function ProductStudio() {
                   </Button>
                 </div>
 
+                <div className="mt-3 space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Variações de cor</p>
+                  <Input value={variationColors} onChange={(e) => setVariationColors(e.target.value)} placeholder="areia, azul, preto" className="text-xs" />
+                  <div className="flex flex-wrap gap-2">
+                    {variationColors.split(",").map((c) => c.trim()).filter(Boolean).slice(0, 8).map((color) => (
+                      <Button key={color} type="button" size="sm" variant="outline" disabled={imageBusy} onClick={() => void generateVisual(color)}>
+                        {color}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
                 {imageBusy && !imageSource && (
                   <div className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-white/15 bg-black/10 text-sm text-muted-foreground" role="status">
                     <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
