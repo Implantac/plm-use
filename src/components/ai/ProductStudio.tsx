@@ -106,20 +106,34 @@ function nextReferenceCode(existingCodes: string[]) {
 }
 
 function parseProposal(reply: string): Proposal | null {
-  const jsonText = reply
-    .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/, "");
+  const match = reply.match(/\{[\s\S]*\}/);
+  if (!match) return null;
+  const LIST_KEYS = ["name", "title", "angle", "view", "part", "element", "material", "color", "concept", "description", "note"];
+  const list = (v: unknown) => {
+    const arr = normalizeTextList(Array.isArray(v) ? v : v == null ? [] : [v], LIST_KEYS);
+    return (arr as unknown[]).filter((x): x is string => typeof x === "string" && Boolean(x.trim()));
+  };
+  const str = (v: unknown) => (typeof v === "string" ? v : v == null ? "" : String(v));
   try {
-    const parsed: unknown = JSON.parse(jsonText);
+    const parsed: unknown = JSON.parse(match[0]);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
-    const proposalData = parsed as Record<string, unknown>;
+    const d = parsed as Record<string, unknown>;
     const normalized = {
-      ...proposalData,
-      variations: normalizeTextList(proposalData.variations, ["name", "description"]),
-      imageIdeas: normalizeTextList(proposalData.imageIdeas, ["view", "concept"]),
-      visualIdentity: normalizeVisualIdentity(proposalData.visualIdentity),
+      name: str(d.name),
+      description: str(d.description),
+      category: str(d.category),
+      family: str(d.family),
+      line: str(d.line),
+      silhouette: str(d.silhouette),
+      details: list(d.details),
+      suggestedMaterials: list(d.suggestedMaterials),
+      colors: list(d.colors),
+      variations: list(d.variations),
+      validationNotes: list(d.validationNotes),
+      imageIdeas: list(d.imageIdeas),
+      visualIdentity: normalizeVisualIdentity(d.visualIdentity),
     };
+    if (!normalized.name) return null;
     const result = ProposalSchema.safeParse(normalized);
     return result.success ? normalizeProductProposal(result.data) : null;
   } catch {
