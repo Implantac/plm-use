@@ -237,8 +237,8 @@ export function ProductStudio() {
           `This is the exact same garment shown in the reference image. Preserve its silhouette, proportions, fabric, color, collar, sleeves, trims, prints and construction exactly.`,
           variationColor
             ? `Change ONLY the color/print to ${variationColor}; keep the same view and composition.`
-            : `Show it as: ${visualView} view, premium fashion photography, studio lighting.`,
-          "One garment only. No text, labels or logos.",
+            : `Show it as: ${visualView} view, premium fashion product shot.`,
+          "Garment isolated on a fully transparent background, no floor, no shadow, no backdrop. One garment only. No text, labels or logos.",
         ].join(" ")
       : [
           `Fashion product photography for ${proposal.name}`,
@@ -249,7 +249,7 @@ export function ProductStudio() {
           `garment details ${proposal.details.join(", ") || "preserve the described construction"}`,
           `visual identity ${proposal.visualIdentity?.join(", ") || briefing.mood || "as described"}`,
           `view ${visualView}`,
-          "premium fashion editorial, studio lighting, realistic product photography, one garment only, clean composition",
+          "premium fashion product shot, garment isolated on a fully transparent background, no floor, no shadow, no backdrop, one garment only, clean composition",
           "Concept image for design exploration only. Do not add text, labels, logos, technical specifications, or claims about real materials.",
         ].join(", ");
 
