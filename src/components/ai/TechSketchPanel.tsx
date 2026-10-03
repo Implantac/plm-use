@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Download, LoaderCircle, PencilRuler } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
+import { listOfficialModels, sketchDataUrl } from "@/lib/official-models";
 
 type Measure = { point: string; value: string; tolerance?: string; how?: string };
 type SketchSpec = { measures: Measure[]; details: string[] };
@@ -28,11 +31,14 @@ function parseSpec(reply: string): SketchSpec | null {
 
 export function TechSketchPanel({ productName, summary }: { productName: string; summary: string }) {
   const ask = useServerFn(askAgent);
+  const { data: models = [] } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
+  const [modelId, setModelId] = useState("");
   const [size, setSize] = useState("M");
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [isFinal, setIsFinal] = useState(false);
   const [spec, setSpec] = useState<SketchSpec | null>(null);
+  const official = models.find((m) => m.id === modelId);
 
   async function generate() {
     setBusy(true);
@@ -40,19 +46,26 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
     setIsFinal(false);
     setSpec(null);
     try {
+      const officialBlock = official
+        ? `\n\nMODELO OFICIAL DA EMPRESA "${official.nome}" (tamanho base ${official.tamanho_base}) — USE ESTAS MEDIDAS REAIS COMO BASE, sem inventar valores. Se o tamanho pedido (${size}) for diferente do base, aplique gradação proporcional e indique. Mantenha os mesmos pontos de medida e tolerâncias, ajustando só o que a peça abaixo exigir:\n${official.medidas.map((m) => `- ${m.point}: ${m.value}${m.tolerance ? ` (${m.tolerance})` : ""}${m.how ? ` — ${m.how}` : ""}`).join("\n")}${official.detalhes ? `\nDetalhes construtivos oficiais: ${official.detalhes}` : ""}`
+        : "";
       const specPromise = ask({
         data: {
           agent: "fashion",
-          message: `Você é modelista. Para a peça abaixo, tamanho ${size}, monte a TABELA DE MEDIDAS DA PEÇA PRONTA (não do corpo) partindo das medidas corporais da norma ABNT NBR 16060 (feminino) / NBR 16933 (masculino) para esse tamanho e somando a folga adequada à silhueta. Use os pontos de medida reais desta peça (ex.: 1/2 busto a 2,5 cm da cava, 1/2 cintura, 1/2 barra, comprimento total do ponto mais alto do ombro, largura de ombro, comprimento de manga, 1/2 punho, altura e circunferência de gola, profundidade de cava). Para cada medida informe valor em cm, tolerância (±) e como medir. Liste os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, quantidade e diâmetro de botões, entretela, acabamento de barra). Responda SOMENTE JSON: {"measures":[{"point":"1/2 busto","value":"52 cm","tolerance":"±1 cm","how":"2,5 cm abaixo da cava, de lado a lado"}],"details":["..."]}\n\nPeça: ${summary}`,
+          message: `Você é modelista. Para a peça abaixo, tamanho ${size}, monte a TABELA DE MEDIDAS DA PEÇA PRONTA (não do corpo) partindo das medidas corporais da norma ABNT NBR 16060 (feminino) / NBR 16933 (masculino) para esse tamanho e somando a folga adequada à silhueta. Use os pontos de medida reais desta peça (ex.: 1/2 busto a 2,5 cm da cava, 1/2 cintura, 1/2 barra, comprimento total do ponto mais alto do ombro, largura de ombro, comprimento de manga, 1/2 punho, altura e circunferência de gola, profundidade de cava). Para cada medida informe valor em cm, tolerância (±) e como medir. Liste os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, quantidade e diâmetro de botões, entretela, acabamento de barra). Responda SOMENTE JSON: {"measures":[{"point":"1/2 busto","value":"52 cm","tolerance":"±1 cm","how":"2,5 cm abaixo da cava, de lado a lado"}],"details":["..."]}${officialBlock}\n\nPeça: ${summary}`,
         },
       });
+      const reference = official?.sketch_path ? await sketchDataUrl(official.sketch_path) : null;
       const imagePromise = streamImage(
         "/api/generate-image",
-        `Technical fashion flat sketch (desenho técnico / flat drawing) of: ${summary}. Front and back views side by side, black line art on a fully transparent background, precise clean vector-style lines, visible stitching lines, seams, topstitching, buttons and trims, dimension lines with arrows indicating measurement points (no numbers needed). No model, no shading, no color, no logos.`,
+        reference
+          ? `Using the attached official company technical drawing as the exact base block (same proportions, line style and construction), redraw it as a technical fashion flat sketch of: ${summary}. Keep front and back views, black line art on a fully transparent background, clean vector-style lines, stitching, seams, topstitching, buttons and trims, dimension lines with arrows. Change only what the description requires. No model, no shading, no color, no logos.`
+          : `Technical fashion flat sketch (desenho técnico / flat drawing) of: ${summary}. Front and back views side by side, black line art on a fully transparent background, precise clean vector-style lines, visible stitching lines, seams, topstitching, buttons and trims, dimension lines with arrows indicating measurement points (no numbers needed). No model, no shading, no color, no logos.`,
         (src, final) => {
           setImage(src);
           if (final) setIsFinal(true);
         },
+        reference ?? undefined,
       ).then(() => setIsFinal(true));
       const [specResult] = await Promise.allSettled([specPromise, imagePromise]).then((r) => {
         if (r[1].status === "rejected") toast.error(r[1].reason instanceof Error ? r[1].reason.message : "Falha ao gerar o desenho.");
@@ -76,7 +89,21 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
         <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">
           <PencilRuler className="h-3.5 w-3.5 text-primary" /> Desenho técnico
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            aria-label="Modelo oficial de referência"
+            value={modelId}
+            onChange={(e) => {
+              setModelId(e.target.value);
+              const m = models.find((x) => x.id === e.target.value);
+              if (m) setSize(m.tamanho_base);
+            }}
+            className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground"
+          >
+            <option value="">Sem modelo oficial (ABNT)</option>
+            {models.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+          </select>
+          <Link to="/official-models" className="text-xs text-primary hover:underline">Gerenciar</Link>
           <Input value={size} onChange={(e) => setSize(e.target.value)} aria-label="Tamanho base" className="h-8 w-16 text-xs" />
           <Button type="button" size="sm" onClick={() => void generate()} disabled={busy}>
             {busy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <PencilRuler className="mr-2 h-4 w-4" />}
@@ -107,7 +134,7 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
       {spec && (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <table className="w-full text-xs">
-            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {size} · base ABNT</caption>
+            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {size} · {official ? `base oficial: ${official.nome}` : "base ABNT"}</caption>
             <tbody>
               {spec.measures.map((m) => (
                 <tr key={m.point} className="border-b border-white/5">

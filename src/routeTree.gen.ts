@@ -28,6 +28,7 @@ import { Route as AuthenticatedProductionRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPrintsRouteImport } from './routes/_authenticated.prints'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedPiecesReportRouteImport } from './routes/_authenticated.pieces-report'
+import { Route as AuthenticatedOfficialModelsRouteImport } from './routes/_authenticated.official-models'
 import { Route as AuthenticatedMeasurementsRouteImport } from './routes/_authenticated.measurements'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
 import { Route as AuthenticatedLooksRouteImport } from './routes/_authenticated.looks'
@@ -150,6 +151,12 @@ const AuthenticatedPiecesReportRoute =
   AuthenticatedPiecesReportRouteImport.update({
     id: '/pieces-report',
     path: '/pieces-report',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedOfficialModelsRoute =
+  AuthenticatedOfficialModelsRouteImport.update({
+    id: '/official-models',
+    path: '/official-models',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedMeasurementsRoute =
@@ -325,6 +332,7 @@ export interface FileRoutesByFullPath {
   '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/measurements': typeof AuthenticatedMeasurementsRoute
+  '/official-models': typeof AuthenticatedOfficialModelsRoute
   '/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
@@ -372,6 +380,7 @@ export interface FileRoutesByTo {
   '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
   '/measurements': typeof AuthenticatedMeasurementsRoute
+  '/official-models': typeof AuthenticatedOfficialModelsRoute
   '/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
@@ -421,6 +430,7 @@ export interface FileRoutesById {
   '/_authenticated/looks': typeof AuthenticatedLooksRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
   '/_authenticated/measurements': typeof AuthenticatedMeasurementsRoute
+  '/_authenticated/official-models': typeof AuthenticatedOfficialModelsRoute
   '/_authenticated/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/prints': typeof AuthenticatedPrintsRoute
@@ -470,6 +480,7 @@ export interface FileRouteTypes {
     | '/looks'
     | '/marketing'
     | '/measurements'
+    | '/official-models'
     | '/pieces-report'
     | '/planner'
     | '/prints'
@@ -517,6 +528,7 @@ export interface FileRouteTypes {
     | '/looks'
     | '/marketing'
     | '/measurements'
+    | '/official-models'
     | '/pieces-report'
     | '/planner'
     | '/prints'
@@ -565,6 +577,7 @@ export interface FileRouteTypes {
     | '/_authenticated/looks'
     | '/_authenticated/marketing'
     | '/_authenticated/measurements'
+    | '/_authenticated/official-models'
     | '/_authenticated/pieces-report'
     | '/_authenticated/planner'
     | '/_authenticated/prints'
@@ -730,6 +743,13 @@ declare module '@tanstack/react-router' {
       path: '/pieces-report'
       fullPath: '/pieces-report'
       preLoaderRoute: typeof AuthenticatedPiecesReportRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/official-models': {
+      id: '/_authenticated/official-models'
+      path: '/official-models'
+      fullPath: '/official-models'
+      preLoaderRoute: typeof AuthenticatedOfficialModelsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/measurements': {
@@ -975,6 +995,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedLooksRoute: typeof AuthenticatedLooksRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
   AuthenticatedMeasurementsRoute: typeof AuthenticatedMeasurementsRoute
+  AuthenticatedOfficialModelsRoute: typeof AuthenticatedOfficialModelsRoute
   AuthenticatedPiecesReportRoute: typeof AuthenticatedPiecesReportRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedPrintsRoute: typeof AuthenticatedPrintsRoute
@@ -1014,6 +1035,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedLooksRoute: AuthenticatedLooksRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
   AuthenticatedMeasurementsRoute: AuthenticatedMeasurementsRoute,
+  AuthenticatedOfficialModelsRoute: AuthenticatedOfficialModelsRoute,
   AuthenticatedPiecesReportRoute: AuthenticatedPiecesReportRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedPrintsRoute: AuthenticatedPrintsRoute,
