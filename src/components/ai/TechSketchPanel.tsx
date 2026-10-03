@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
 
-type Measure = { point: string; value: string };
+type Measure = { point: string; value: string; tolerance?: string; how?: string };
 type SketchSpec = { measures: Measure[]; details: string[] };
 
 function parseSpec(reply: string): SketchSpec | null {
@@ -17,7 +17,7 @@ function parseSpec(reply: string): SketchSpec | null {
     const raw = JSON.parse(match[0]) as Partial<SketchSpec>;
     return {
       measures: Array.isArray(raw.measures)
-        ? raw.measures.filter((m) => m && m.point).map((m) => ({ point: String(m.point), value: String(m.value ?? "") }))
+        ? raw.measures.filter((m) => m && m.point).map((m) => ({ point: String(m.point), value: String(m.value ?? ""), tolerance: m.tolerance ? String(m.tolerance) : undefined, how: m.how ? String(m.how) : undefined }))
         : [],
       details: Array.isArray(raw.details) ? raw.details.map(String) : [],
     };
@@ -43,7 +43,7 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
       const specPromise = ask({
         data: {
           agent: "fashion",
-          message: `Para a peça abaixo, tamanho ${size}, proponha uma tabela de medidas estimadas em cm (pontos de medida padrão da modelagem: busto, cintura, quadril, comprimento total, ombro, manga, gola, barra, etc. conforme a peça) e os detalhes construtivos (costuras, pespontos, aviamentos, recortes, acabamentos). Responda SOMENTE JSON: {"measures":[{"point":"Busto","value":"96 cm"}],"details":["..."]}\n\nPeça: ${summary}`,
+          message: `Você é modelista. Para a peça abaixo, tamanho ${size}, monte a TABELA DE MEDIDAS DA PEÇA PRONTA (não do corpo) partindo das medidas corporais da norma ABNT NBR 16060 (feminino) / NBR 16933 (masculino) para esse tamanho e somando a folga adequada à silhueta. Use os pontos de medida reais desta peça (ex.: 1/2 busto a 2,5 cm da cava, 1/2 cintura, 1/2 barra, comprimento total do ponto mais alto do ombro, largura de ombro, comprimento de manga, 1/2 punho, altura e circunferência de gola, profundidade de cava). Para cada medida informe valor em cm, tolerância (±) e como medir. Liste os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, quantidade e diâmetro de botões, entretela, acabamento de barra). Responda SOMENTE JSON: {"measures":[{"point":"1/2 busto","value":"52 cm","tolerance":"±1 cm","how":"2,5 cm abaixo da cava, de lado a lado"}],"details":["..."]}\n\nPeça: ${summary}`,
         },
       });
       const imagePromise = streamImage(
@@ -107,12 +107,13 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
       {spec && (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <table className="w-full text-xs">
-            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas estimadas · tam. {size}</caption>
+            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {size} · base ABNT</caption>
             <tbody>
               {spec.measures.map((m) => (
                 <tr key={m.point} className="border-b border-white/5">
-                  <td className="py-1 text-muted-foreground">{m.point}</td>
+                  <td className="py-1 text-muted-foreground" title={m.how}>{m.point}{m.how && <span className="block text-[10px] opacity-70">{m.how}</span>}</td>
                   <td className="py-1 text-right font-medium text-foreground">{m.value}</td>
+                  <td className="py-1 pl-2 text-right text-muted-foreground">{m.tolerance}</td>
                 </tr>
               ))}
             </tbody>
