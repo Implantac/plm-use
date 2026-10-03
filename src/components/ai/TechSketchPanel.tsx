@@ -1,3 +1,4 @@
+import { ImageExportMenu } from "@/components/export/ImageExportMenu";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
@@ -121,9 +122,7 @@ export function TechSketchPanel({ productName, summary, modelId = "", onModelCha
           <img src={image} alt={`Desenho técnico de ${productName}`} className={`h-72 w-full object-contain transition-[filter] duration-500 ${isFinal ? "" : "blur-md"}`} />
           {isFinal && (
             <div className="flex justify-end p-2 text-xs">
-              <a href={image} download={`desenho-tecnico-${Date.now()}.png`} className="inline-flex items-center gap-1 text-primary hover:underline">
-                <Download className="h-3.5 w-3.5" /> Baixar
-              </a>
+              <ImageExportMenu src={image} baseName={`desenho-tecnico-${Date.now()}`} />
             </div>
           )}
         </div>
