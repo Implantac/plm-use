@@ -59,6 +59,8 @@ export const Route = createFileRoute("/api/generate-image")({
             signal: request.signal,
             headers: {
               Authorization: `Bearer ${key}`,
+              "Lovable-API-Key": key,
+              "X-Lovable-AIG-SDK": "raw",
               "Content-Type": "application/json",
             },
             body: JSON.stringify({

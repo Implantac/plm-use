@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 type ImageEvent = {
   type?: string;
   b64_json?: string;
+  partial_image_b64?: string;
   data?: Array<{ b64_json?: string }>;
   error?: string | { message?: string };
+  message?: string;
 };
 
 function readError(payload: unknown, fallback: string): string {
@@ -52,8 +54,9 @@ export async function streamImage(
   let receivedImage = false;
 
   const consume = (event: string) => {
-    const payload = event
-      .split(/\r?\n/)
+    const lines = event.split(/\r?\n/);
+    const eventName = lines.find((line) => line.startsWith("event:"))?.slice(6).trim();
+    const payload = lines
       .filter((line) => line.startsWith("data:"))
       .map((line) => line.slice(5).trim())
       .join("\n");
@@ -66,14 +69,21 @@ export async function streamImage(
       return;
     }
 
-    if (json.type === "error" || json.error) {
-      throw new Error(readError(json, "O provedor interrompeu a geração da imagem."));
+    if (json.type === "error" || eventName === "error" || json.error) {
+      throw new Error(
+        readError(json, json.message ?? "O provedor interrompeu a geração da imagem."),
+      );
     }
 
-    const base64 = json.b64_json ?? json.data?.[0]?.b64_json;
+    const type = json.type ?? eventName;
+    const base64 = json.b64_json ?? json.partial_image_b64 ?? json.data?.[0]?.b64_json;
     if (!base64) return;
     receivedImage = true;
-    const final = json.type === "image.completed" || json.type === "completed";
+    const final =
+      type === "image_generation.completed" ||
+      type === "image_edit.completed" ||
+      type === "image.completed" ||
+      type === "completed";
     onFrame(`data:image/png;base64,${base64}`, final);
   };
 
