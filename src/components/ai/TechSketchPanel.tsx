@@ -29,16 +29,17 @@ function parseSpec(reply: string): SketchSpec | null {
   }
 }
 
-export function TechSketchPanel({ productName, summary }: { productName: string; summary: string }) {
+export function TechSketchPanel({ productName, summary, modelId = "", onModelChange }: { productName: string; summary: string; modelId?: string; onModelChange?: (id: string) => void }) {
   const ask = useServerFn(askAgent);
   const { data: models = [] } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
-  const [modelId, setModelId] = useState("");
+  const setModelId = (id: string) => onModelChange?.(id);
   const [size, setSize] = useState("M");
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [isFinal, setIsFinal] = useState(false);
   const [spec, setSpec] = useState<SketchSpec | null>(null);
   const official = models.find((m) => m.id === modelId);
+  const shownSize = official ? official.tamanho_base : size;
 
   async function generate() {
     setBusy(true);
@@ -46,13 +47,12 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
     setIsFinal(false);
     setSpec(null);
     try {
-      const officialBlock = official
-        ? `\n\nMODELO OFICIAL DA EMPRESA "${official.nome}" (tamanho base ${official.tamanho_base}) — USE ESTAS MEDIDAS REAIS COMO BASE, sem inventar valores. Se o tamanho pedido (${size}) for diferente do base, aplique gradação proporcional e indique. Mantenha os mesmos pontos de medida e tolerâncias, ajustando só o que a peça abaixo exigir:\n${official.medidas.map((m) => `- ${m.point}: ${m.value}${m.tolerance ? ` (${m.tolerance})` : ""}${m.how ? ` — ${m.how}` : ""}`).join("\n")}${official.detalhes ? `\nDetalhes construtivos oficiais: ${official.detalhes}` : ""}`
-        : "";
       const specPromise = ask({
         data: {
           agent: "fashion",
-          message: `Você é modelista. Para a peça abaixo, tamanho ${size}, monte a TABELA DE MEDIDAS DA PEÇA PRONTA (não do corpo) partindo das medidas corporais da norma ABNT NBR 16060 (feminino) / NBR 16933 (masculino) para esse tamanho e somando a folga adequada à silhueta. Use os pontos de medida reais desta peça (ex.: 1/2 busto a 2,5 cm da cava, 1/2 cintura, 1/2 barra, comprimento total do ponto mais alto do ombro, largura de ombro, comprimento de manga, 1/2 punho, altura e circunferência de gola, profundidade de cava). Para cada medida informe valor em cm, tolerância (±) e como medir. Liste os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, quantidade e diâmetro de botões, entretela, acabamento de barra). Responda SOMENTE JSON: {"measures":[{"point":"1/2 busto","value":"52 cm","tolerance":"±1 cm","how":"2,5 cm abaixo da cava, de lado a lado"}],"details":["..."]}${officialBlock}\n\nPeça: ${summary}`,
+          message: official
+            ? `Você é modelista. A tabela de medidas desta peça é a tabela OFICIAL abaixo e não deve ser alterada. Liste apenas os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, botões, entretela, acabamento de barra), coerentes com essas medidas. Responda SOMENTE JSON: {"measures":[],"details":["..."]}\n\n${officialMeasuresBlock(official)}\n\nPeça: ${summary}`
+            : `Você é modelista. Para a peça abaixo, tamanho ${size}, monte a TABELA DE MEDIDAS DA PEÇA PRONTA (não do corpo) partindo das medidas corporais da norma ABNT NBR 16060 (feminino) / NBR 16933 (masculino) para esse tamanho e somando a folga adequada à silhueta. Use os pontos de medida reais desta peça (ex.: 1/2 busto a 2,5 cm da cava, 1/2 cintura, 1/2 barra, comprimento total do ponto mais alto do ombro, largura de ombro, comprimento de manga, 1/2 punho, altura e circunferência de gola, profundidade de cava). Para cada medida informe valor em cm, tolerância (±) e como medir. Liste os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, quantidade e diâmetro de botões, entretela, acabamento de barra). Responda SOMENTE JSON: {"measures":[{"point":"1/2 busto","value":"52 cm","tolerance":"±1 cm","how":"2,5 cm abaixo da cava, de lado a lado"}],"details":["..."]}\n\nPeça: ${summary}`,
         },
       });
       const reference = official?.sketch_path ? await sketchDataUrl(official.sketch_path) : null;
@@ -74,7 +74,9 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
       if (specResult.status === "fulfilled") {
         if (specResult.value.ok) {
           const parsed = parseSpec(specResult.value.reply);
-          if (parsed) setSpec(parsed);
+          // Com modelo oficial, a tabela exibida é SEMPRE a real; a IA contribui só com detalhes.
+          if (official) setSpec({ measures: official.medidas, details: parsed?.details.length ? parsed.details : (official.detalhes ? [official.detalhes] : []) });
+          else if (parsed) setSpec(parsed);
           else toast.warning("As medidas vieram em formato inesperado.");
         } else toast.error(specResult.value.error);
       } else toast.error("Não foi possível gerar as medidas.");
@@ -93,18 +95,14 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
           <select
             aria-label="Modelo oficial de referência"
             value={modelId}
-            onChange={(e) => {
-              setModelId(e.target.value);
-              const m = models.find((x) => x.id === e.target.value);
-              if (m) setSize(m.tamanho_base);
-            }}
+            onChange={(e) => setModelId(e.target.value)}
             className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground"
           >
             <option value="">Sem modelo oficial (ABNT)</option>
             {models.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
           </select>
           <Link to="/official-models" className="text-xs text-primary hover:underline">Gerenciar</Link>
-          <Input value={size} onChange={(e) => setSize(e.target.value)} aria-label="Tamanho base" className="h-8 w-16 text-xs" />
+          <Input value={official ? official.tamanho_base : size} onChange={(e) => setSize(e.target.value)} disabled={!!official} aria-label="Tamanho base" className="h-8 w-16 text-xs" />
           <Button type="button" size="sm" onClick={() => void generate()} disabled={busy}>
             {busy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <PencilRuler className="mr-2 h-4 w-4" />}
             Gerar esboço
