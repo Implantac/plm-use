@@ -708,9 +708,7 @@ export function ProductStudio() {
                     <img src={imageSource} alt={`Conceito visual de ${proposal.name}, ${visualView}`} className="h-64 w-full object-contain" />
                     <div className="flex items-center justify-between gap-3 p-2 text-xs text-muted-foreground">
                       <span>Conceito visual · requer validação humana</span>
-                      <a className="inline-flex items-center gap-1 text-primary hover:underline" href={imageSource} download={`${proposal.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${visualView}.png`}>
-                        <Download className="h-3.5 w-3.5" /> Baixar
-                      </a>
+                      <ImageExportMenu src={imageSource} baseName={`${proposal.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${visualView}`} />
                     </div>
                   </div>
                 )}
