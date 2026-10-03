@@ -208,7 +208,7 @@
 
   /* Signature gradients & glows — kept subtle for the product workspace */
   --gradient-ember:  linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
-  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(225 8% 6%) 100%);
+  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(18 14% 6%) 100%);
   --shadow-ember:    0 0 0 1px hsl(var(--brand-500) / 0.24), 0 12px 32px -8px hsl(var(--brand-500) / 0.18);
   --glow-ember:      0 0 24px -4px hsl(var(--brand-500) / 0.25);
   color-scheme: dark;
