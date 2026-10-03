@@ -134,7 +134,7 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
       {spec && (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <table className="w-full text-xs">
-            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {size} · base ABNT</caption>
+            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {size} · {official ? `base oficial: ${official.nome}` : "base ABNT"}</caption>
             <tbody>
               {spec.measures.map((m) => (
                 <tr key={m.point} className="border-b border-white/5">
