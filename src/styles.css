@@ -154,18 +154,18 @@
  * Superfícies de grafite com jade como cor de ação e coral só para destaque.
  * ------------------------------------------------------------------------ */
 .dark {
-  --brand-500:          151 47% 57%;
-  --brand-700:          152 46% 47%;
-  --brand-900:          154 46% 25%;
-  --background:         225 8% 8%;
+  --brand-500:          26 78% 58%;
+  --brand-700:          24 74% 47%;
+  --brand-900:          22 70% 30%;
+  --background:         20 12% 8%;
   --foreground:         var(--ink-50);
-  --surface:            225 7% 11%;
-  --surface-elevated:   225 7% 15%;
-  --surface-sunken:     225 10% 5%;
-  --muted:              225 7% 17%;
+  --surface:            20 10% 11%;
+  --surface-elevated:   20 10% 15%;
+  --surface-sunken:     18 14% 5%;
+  --muted:              20 9% 17%;
   --muted-foreground:   var(--ink-400);
-  --border:             220 7% 22%;
-  --border-strong:      220 7% 31%;
+  --border:             20 9% 22%;
+  --border-strong:      20 9% 31%;
   --ring:               var(--brand-500);
 
   --card:               var(--surface);
@@ -189,9 +189,9 @@
   --sidebar-foreground:         var(--foreground);
   --sidebar-primary:            var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent:             225 8% 13%;
+  --sidebar-accent:             20 10% 13%;
   --sidebar-accent-foreground:  var(--foreground);
-  --sidebar-border:             225 8% 14%;
+  --sidebar-border:             20 10% 14%;
   --sidebar-ring:               var(--brand-500);
 
   /* Elevation dark: quiet neutral edges, minimal colored shadow */
