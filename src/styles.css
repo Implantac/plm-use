@@ -14,31 +14,31 @@
  * Neutros de grafite, verde-jade de marca e acentos de status distintos.
  * ------------------------------------------------------------------------ */
 :root {
-  /* Ink neutral: warmer graphite rather than blue slate */
-  --ink-0:    0 0% 98%;
-  --ink-50:   210 8% 94%;
-  --ink-200:  210 7% 77%;
-  --ink-400:  210 6% 61%;
-  --ink-600:  215 7% 40%;
-  --ink-800:  220 7% 15%;
-  --ink-900:  220 8% 11%;
-  --ink-950:  225 8% 8%;
-  --ink-1000: 225 10% 5%;
+  /* Ink neutral: warm near-black, matches the logo's dark copper */
+  --ink-0:    30 20% 98%;
+  --ink-50:   30 12% 94%;
+  --ink-200:  28 9% 77%;
+  --ink-400:  26 7% 61%;
+  --ink-600:  24 8% 40%;
+  --ink-800:  22 10% 15%;
+  --ink-900:  20 11% 11%;
+  --ink-950:  20 12% 8%;
+  --ink-1000: 18 14% 5%;
 
-  /* Brand: atelier jade */
-  --brand-50:  150 36% 93%;
-  --brand-200: 151 34% 76%;
-  --brand-500: 153 44% 36%;
-  --brand-700: 154 48% 28%;
-  --brand-900: 156 48% 19%;
+  /* Brand: soft burnt orange / copper, from the logo */
+  --brand-50:  28 60% 93%;
+  --brand-200: 27 62% 76%;
+  --brand-500: 24 72% 46%;
+  --brand-700: 22 74% 36%;
+  --brand-900: 20 70% 24%;
 
-  /* A restrained coral highlight complements the jade */
-  --glow-500:  10 70% 59%;
-  --glow-700:  11 65% 45%;
+  /* Soft amber highlight complements the copper */
+  --glow-500:  32 85% 58%;
+  --glow-700:  30 80% 45%;
 
-  /* Premium accent */
-  --wine-500: 344 34% 31%;
-  --wine-700: 344 38% 19%;
+  /* Premium accent: deep bronze */
+  --wine-500: 18 45% 32%;
+  --wine-700: 16 48% 20%;
 
   /* Status colors stay visually distinct */
   --info-500:    199 68% 48%;
@@ -49,8 +49,8 @@
   --warning-700: 40 78% 37%;
   --danger-500:  3 70% 52%;
   --danger-700:  3 72% 39%;
-  --neutral-500: 210 6% 50%;
-  --neutral-700: 212 7% 36%;
+  --neutral-500: 26 6% 50%;
+  --neutral-700: 24 7% 36%;
   --purple-500:  279 42% 56%;
   --purple-700:  280 43% 42%;
 }
@@ -58,15 +58,15 @@
 
 /* ---------- Semantics — LIGHT (default when no .dark) ------------------- */
 :root {
-  --background:         0 0% 99%;
+  --background:         30 25% 99%;
   --foreground:         var(--ink-900);
-  --surface:            210 14% 97%;
-  --surface-elevated:   0 0% 100%;
-  --surface-sunken:     210 12% 94%;
-  --muted:              210 12% 93%;
+  --surface:            30 16% 97%;
+  --surface-elevated:   30 20% 100%;
+  --surface-sunken:     28 14% 94%;
+  --muted:              28 14% 93%;
   --muted-foreground:   var(--ink-600);
-  --border:             210 10% 87%;
-  --border-strong:      210 9% 75%;
+  --border:             26 12% 87%;
+  --border-strong:      24 11% 75%;
   --ring:               var(--brand-500);
 
   --card:               var(--surface);
@@ -154,18 +154,18 @@
  * Superfícies de grafite com jade como cor de ação e coral só para destaque.
  * ------------------------------------------------------------------------ */
 .dark {
-  --brand-500:          151 47% 57%;
-  --brand-700:          152 46% 47%;
-  --brand-900:          154 46% 25%;
-  --background:         225 8% 8%;
+  --brand-500:          26 78% 58%;
+  --brand-700:          24 74% 47%;
+  --brand-900:          22 70% 30%;
+  --background:         20 12% 8%;
   --foreground:         var(--ink-50);
-  --surface:            225 7% 11%;
-  --surface-elevated:   225 7% 15%;
-  --surface-sunken:     225 10% 5%;
-  --muted:              225 7% 17%;
+  --surface:            20 10% 11%;
+  --surface-elevated:   20 10% 15%;
+  --surface-sunken:     18 14% 5%;
+  --muted:              20 9% 17%;
   --muted-foreground:   var(--ink-400);
-  --border:             220 7% 22%;
-  --border-strong:      220 7% 31%;
+  --border:             20 9% 22%;
+  --border-strong:      20 9% 31%;
   --ring:               var(--brand-500);
 
   --card:               var(--surface);
@@ -189,9 +189,9 @@
   --sidebar-foreground:         var(--foreground);
   --sidebar-primary:            var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent:             225 8% 13%;
+  --sidebar-accent:             20 10% 13%;
   --sidebar-accent-foreground:  var(--foreground);
-  --sidebar-border:             225 8% 14%;
+  --sidebar-border:             20 10% 14%;
   --sidebar-ring:               var(--brand-500);
 
   /* Elevation dark: quiet neutral edges, minimal colored shadow */
@@ -208,7 +208,7 @@
 
   /* Signature gradients & glows — kept subtle for the product workspace */
   --gradient-ember:  linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
-  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(225 8% 6%) 100%);
+  --gradient-forge:  linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(18 14% 6%) 100%);
   --shadow-ember:    0 0 0 1px hsl(var(--brand-500) / 0.24), 0 12px 32px -8px hsl(var(--brand-500) / 0.18);
   --glow-ember:      0 0 24px -4px hsl(var(--brand-500) / 0.25);
   color-scheme: dark;
