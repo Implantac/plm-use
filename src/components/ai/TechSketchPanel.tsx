@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
-import { listOfficialModels, sketchDataUrl } from "@/lib/official-models";
+import { listOfficialModels, officialMeasuresBlock, sketchDataUrl } from "@/lib/official-models";
 
 type Measure = { point: string; value: string; tolerance?: string; how?: string };
 type SketchSpec = { measures: Measure[]; details: string[] };
@@ -132,7 +132,7 @@ export function TechSketchPanel({ productName, summary, modelId = "", onModelCha
       {spec && (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <table className="w-full text-xs">
-            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {size} · {official ? `base oficial: ${official.nome}` : "base ABNT"}</caption>
+            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {shownSize} · {official ? `tabela oficial: ${official.nome}` : "base ABNT"}</caption>
             <tbody>
               {spec.measures.map((m) => (
                 <tr key={m.point} className="border-b border-white/5">
