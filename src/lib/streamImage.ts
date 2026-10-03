@@ -24,6 +24,7 @@ export async function streamImage(
   endpoint: string,
   prompt: string,
   onFrame: (dataUrl: string, final: boolean) => void,
+  referenceImage?: string,
 ): Promise<void> {
   const { data, error: sessionError } = await supabase.auth.getSession();
   const accessToken = data.session?.access_token;
@@ -35,7 +36,7 @@ export async function streamImage(
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify(referenceImage ? { prompt, referenceImage } : { prompt }),
   });
 
   if (!res.ok || !res.body) {

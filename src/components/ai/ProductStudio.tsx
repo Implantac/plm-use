@@ -143,6 +143,8 @@ export function ProductStudio() {
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [imageBusy, setImageBusy] = useState(false);
+  const [keepIdentity, setKeepIdentity] = useState(true);
+  const [variationColors, setVariationColors] = useState("areia, azul, verde, preto, estampada");
 
   const suggestedCode = useMemo(() => nextReferenceCode(items.map((item) => item.code)), [items]);
   const variationIdeas = useMemo(
@@ -200,39 +202,57 @@ export function ProductStudio() {
     }
   }
 
-  async function generateVisual() {
+  async function generateVisual(variationColor?: string) {
     if (!proposal || !proposal.name) {
       toast.error("Gere uma proposta antes de criar a imagem.");
       return;
     }
 
+    const anchor = keepIdentity
+      ? [...generatedImages].reverse().find((img) => img.conceptName === proposal.name && !img.view.startsWith("variação"))
+      : undefined;
+    const viewLabel = variationColor ? `variação ${variationColor}` : visualView;
+
     setImageBusy(true);
     setImageSource(null);
     let latestImage = "";
 
-    const prompt = [
-      `Fashion product photography for ${proposal.name}`,
-      `category ${proposal.category || "moda"}`,
-      `silhouette ${proposal.silhouette || "clean"}`,
-      `materials ${proposal.suggestedMaterials.join(", ") || "tecido"}`,
-      `colors ${proposal.colors.join(", ") || "neutros"}`,
-      `garment details ${proposal.details.join(", ") || "preserve the described construction"}`,
-      `visual identity ${proposal.visualIdentity?.join(", ") || briefing.mood || "as described"}`,
-      `view ${visualView}`,
-      "premium fashion editorial, studio lighting, realistic product photography, one garment only, clean composition",
-      "Concept image for design exploration only. Do not add text, labels, logos, technical specifications, or claims about real materials.",
-    ].join(", ");
+    const prompt = anchor
+      ? [
+          `This is the exact same garment shown in the reference image. Preserve its silhouette, proportions, fabric, color, collar, sleeves, trims, prints and construction exactly.`,
+          variationColor
+            ? `Change ONLY the color/print to ${variationColor}; keep the same view and composition.`
+            : `Show it as: ${visualView} view, premium fashion photography, studio lighting.`,
+          "One garment only. No text, labels or logos.",
+        ].join(" ")
+      : [
+          `Fashion product photography for ${proposal.name}`,
+          `category ${proposal.category || "moda"}`,
+          `silhouette ${proposal.silhouette || "clean"}`,
+          `materials ${proposal.suggestedMaterials.join(", ") || "tecido"}`,
+          `colors ${variationColor || proposal.colors.join(", ") || "neutros"}`,
+          `garment details ${proposal.details.join(", ") || "preserve the described construction"}`,
+          `visual identity ${proposal.visualIdentity?.join(", ") || briefing.mood || "as described"}`,
+          `view ${visualView}`,
+          "premium fashion editorial, studio lighting, realistic product photography, one garment only, clean composition",
+          "Concept image for design exploration only. Do not add text, labels, logos, technical specifications, or claims about real materials.",
+        ].join(", ");
 
     try {
-      await streamImage("/api/generate-image", prompt, (dataUrl) => {
-        latestImage = dataUrl;
-        setImageSource(dataUrl);
-      });
+      await streamImage(
+        "/api/generate-image",
+        prompt,
+        (dataUrl) => {
+          latestImage = dataUrl;
+          setImageSource(dataUrl);
+        },
+        anchor?.src,
+      );
       const storagePath = await uploadGeneratedImage(latestImage);
       const createdAt = new Date().toISOString();
       setGeneratedImages((current) => [
         {
-          view: visualView,
+          view: viewLabel,
           src: latestImage,
           storagePath: storagePath ?? "",
           createdAt,
@@ -241,7 +261,7 @@ export function ProductStudio() {
         ...current,
       ]);
       if (storagePath) {
-        toast.success(`Visual ${visualView} gerado e salvo no armazenamento.`);
+        toast.success(`Visual ${viewLabel} gerado e salvo no armazenamento.`);
       } else {
         toast.warning("Visual gerado, mas não foi possível salvá-lo no armazenamento.");
       }
@@ -617,6 +637,10 @@ export function ProductStudio() {
                   </div>
                 </div>
 
+                <label className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <input type="checkbox" checked={keepIdentity} onChange={(e) => setKeepIdentity(e.target.checked)} className="accent-primary" />
+                  Manter identidade do produto (usa o primeiro visual como referência)
+                </label>
                 <div className="flex items-center gap-2">
                   <Button type="button" variant="outline" onClick={() => void generateVisual()} disabled={imageBusy} className="w-full">
                     {imageBusy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
@@ -624,6 +648,17 @@ export function ProductStudio() {
                   </Button>
                 </div>
 
+                <div className="mt-3 space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Variações de cor</p>
+                  <Input value={variationColors} onChange={(e) => setVariationColors(e.target.value)} placeholder="areia, azul, preto" className="text-xs" />
+                  <div className="flex flex-wrap gap-2">
+                    {variationColors.split(",").map((c) => c.trim()).filter(Boolean).slice(0, 8).map((color) => (
+                      <Button key={color} type="button" size="sm" variant="outline" disabled={imageBusy} onClick={() => void generateVisual(color)}>
+                        {color}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
                 {imageBusy && !imageSource && (
                   <div className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-white/15 bg-black/10 text-sm text-muted-foreground" role="status">
                     <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
