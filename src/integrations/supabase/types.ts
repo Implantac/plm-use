@@ -653,7 +653,9 @@ export type Database = {
       }
       official_models: {
         Row: {
+          ativa: boolean
           categoria: string | null
+          colecao: string | null
           created_at: string
           created_by: string | null
           detalhes: string | null
@@ -665,7 +667,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ativa?: boolean
           categoria?: string | null
+          colecao?: string | null
           created_at?: string
           created_by?: string | null
           detalhes?: string | null
@@ -677,7 +681,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ativa?: boolean
           categoria?: string | null
+          colecao?: string | null
           created_at?: string
           created_by?: string | null
           detalhes?: string | null

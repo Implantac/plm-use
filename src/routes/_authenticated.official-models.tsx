@@ -13,6 +13,7 @@ import {
   OFFICIAL_BUCKET,
   listOfficialModels,
   parseMeasureTable,
+  setActiveForCollection,
   sketchSignedUrl,
   type OfficialMeasure,
   type OfficialModel,
@@ -21,9 +22,9 @@ import {
 export const Route = createFileRoute("/_authenticated/official-models")({
   head: () => ({
     meta: [
-      { title: "Modelos oficiais — USE MODA PLM" },
+      { title: "Tabelas de medidas por coleção — USE MODA PLM" },
       { name: "description", content: "Cadastre tabelas de medidas e desenhos técnicos oficiais para a IA usar como referência." },
-      { property: "og:title", content: "Modelos oficiais — USE MODA PLM" },
+      { property: "og:title", content: "Tabelas de medidas por coleção — USE MODA PLM" },
       { property: "og:description", content: "Tabelas de medidas e desenhos técnicos reais como referência da IA." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -32,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/official-models")({
   component: OfficialModelsPage,
 });
 
-const EMPTY = { id: "", nome: "", categoria: "", tamanho_base: "M", detalhes: "", medidas: [] as OfficialMeasure[], sketch_path: null as string | null };
+const EMPTY = { id: "", nome: "", categoria: "", tamanho_base: "M", detalhes: "", medidas: [] as OfficialMeasure[], sketch_path: null as string | null, colecao: "" };
 
 function OfficialModelsPage() {
   const qc = useQueryClient();
@@ -41,6 +42,19 @@ function OfficialModelsPage() {
   const [sketchFile, setSketchFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [filter, setFilter] = useState("");
+  const collections = Array.from(new Set(models.map((m) => m.colecao).filter((c): c is string => !!c)));
+  const visible = filter ? models.filter((m) => (m.colecao ?? "") === filter) : models;
+
+  async function makeActive(m: OfficialModel) {
+    try {
+      await setActiveForCollection(m);
+      toast.success(`"${m.nome}" agora é a tabela oficial de ${m.colecao}.`);
+      await qc.invalidateQueries({ queryKey: ["official-models"] });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Falha ao trocar a tabela.");
+    }
+  }
 
   useEffect(() => {
     if (sketchFile) {
@@ -54,7 +68,7 @@ function OfficialModelsPage() {
 
   function edit(m: OfficialModel) {
     setSketchFile(null);
-    setForm({ id: m.id, nome: m.nome, categoria: m.categoria ?? "", tamanho_base: m.tamanho_base, detalhes: m.detalhes ?? "", medidas: m.medidas, sketch_path: m.sketch_path });
+    setForm({ id: m.id, nome: m.nome, categoria: m.categoria ?? "", tamanho_base: m.tamanho_base, detalhes: m.detalhes ?? "", medidas: m.medidas, sketch_path: m.sketch_path, colecao: m.colecao ?? "" });
   }
 
   async function loadTable(file: File) {
@@ -82,7 +96,7 @@ function OfficialModelsPage() {
         if (error) throw error;
         sketch_path = path;
       }
-      const row = { nome: form.nome.trim(), categoria: form.categoria || null, tamanho_base: form.tamanho_base || "M", detalhes: form.detalhes || null, medidas, sketch_path };
+      const row = { nome: form.nome.trim(), categoria: form.categoria || null, tamanho_base: form.tamanho_base || "M", detalhes: form.detalhes || null, medidas, sketch_path, colecao: form.colecao.trim() || null };
       const { error } = form.id
         ? await supabase.from("official_models").update(row).eq("id", form.id)
         : await supabase.from("official_models").insert(row);
@@ -109,8 +123,8 @@ function OfficialModelsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
       <header>
-        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground"><Ruler className="h-6 w-6 text-primary" /> Modelos oficiais</h1>
-        <p className="text-sm text-muted-foreground">Carregue a tabela de medidas e o desenho técnico da sua empresa. No AI Product Studio, escolha o modelo e a IA usa esses dados reais como base.</p>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground"><Ruler className="h-6 w-6 text-primary" /> Tabelas de medidas</h1>
+        <p className="text-sm text-muted-foreground">Cadastre a tabela oficial de cada coleção, com desenho técnico. Marque qual é a oficial da coleção — o AI Product Studio a usa automaticamente quando a proposta for dessa coleção.</p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -120,11 +134,16 @@ function OfficialModelsPage() {
           </Button>
           {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
           {!isLoading && !models.length && <p className="text-sm text-muted-foreground">Nenhum modelo cadastrado.</p>}
-          {models.map((m) => (
+          <select aria-label="Filtrar por coleção" value={filter} onChange={(e) => setFilter(e.target.value)} className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground">
+            <option value="">Todas as coleções</option>
+            {collections.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          {visible.map((m) => (
             <div key={m.id} className={`flex items-center justify-between rounded-md border p-2 ${form.id === m.id ? "border-primary" : "border-border"}`}>
               <button type="button" className="text-left text-sm" onClick={() => edit(m)}>
                 <span className="block font-medium text-foreground">{m.nome}</span>
-                <span className="text-xs text-muted-foreground">{m.categoria || "—"} · tam. {m.tamanho_base} · {m.medidas.length} medidas</span>
+                <span className="text-xs text-muted-foreground">{m.colecao || "Sem coleção"} · {m.categoria || "—"} · tam. {m.tamanho_base} · {m.medidas.length} medidas</span>
+                {m.ativa ? <span className="mt-1 inline-block rounded bg-primary/15 px-1.5 text-[10px] font-semibold text-primary">Oficial da coleção</span> : m.colecao ? <span role="button" tabIndex={0} className="mt-1 inline-block text-[10px] text-primary hover:underline" onClick={(e) => { e.stopPropagation(); void makeActive(m); }} onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); void makeActive(m); } }}>Tornar oficial</span> : null}
               </button>
               <Button type="button" size="icon" variant="ghost" aria-label={`Excluir ${m.nome}`} onClick={() => void remove(m)}><Trash2 className="h-4 w-4" /></Button>
             </div>
@@ -132,7 +151,8 @@ function OfficialModelsPage() {
         </aside>
 
         <section className="space-y-4 rounded-md border border-border p-4">
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-4">
+            <div className="space-y-1"><Label htmlFor="om-col">Coleção</Label><Input id="om-col" list="om-cols" value={form.colecao} onChange={(e) => setForm({ ...form, colecao: e.target.value })} placeholder="Verão 2027" /><datalist id="om-cols">{collections.map((c) => <option key={c} value={c} />)}</datalist></div>
             <div className="space-y-1"><Label htmlFor="om-nome">Nome</Label><Input id="om-nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Camisa feminina base" /></div>
             <div className="space-y-1"><Label htmlFor="om-cat">Categoria</Label><Input id="om-cat" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} placeholder="Camisa" /></div>
             <div className="space-y-1"><Label htmlFor="om-tam">Tamanho base</Label><Input id="om-tam" value={form.tamanho_base} onChange={(e) => setForm({ ...form, tamanho_base: e.target.value })} /></div>

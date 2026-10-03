@@ -114,7 +114,7 @@ function AuthenticatedLayout() {
           { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
           { icon: <PenTool className="w-4 h-4" />, label: "Modelagem", href: "/cad" },
           { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
-          { icon: <PenTool className="w-4 h-4" />, label: "Modelos Oficiais", href: "/official-models" },
+          { icon: <PenTool className="w-4 h-4" />, label: "Tabelas de Medidas", href: "/official-models" },
         ],
       },
       {

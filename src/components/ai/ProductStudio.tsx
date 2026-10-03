@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
 import { useQuery } from "@tanstack/react-query";
-import { listOfficialModels, officialMeasuresBlock } from "@/lib/official-models";
+import { activeForCollection, listOfficialModels, officialMeasuresBlock } from "@/lib/official-models";
 import { uploadGeneratedImage, storageAssetSource } from "@/lib/storage/assets";
 import { supabase } from "@/integrations/supabase/client";
 import { useReferences } from "@/hooks/use-references";
@@ -165,6 +165,11 @@ export function ProductStudio() {
   const { data: officialModels = [] } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
   const [officialId, setOfficialId] = useState("");
   const official = officialModels.find((m) => m.id === officialId);
+  // Troca automaticamente para a tabela oficial da coleção informada no briefing.
+  const collectionActive = activeForCollection(officialModels, briefing.collection);
+  useEffect(() => {
+    if (collectionActive) setOfficialId(collectionActive.id);
+  }, [collectionActive?.id]);
 
   const suggestedCode = useMemo(() => nextReferenceCode(items.map((item) => item.code)), [items]);
   const variationIdeas = useMemo(
@@ -415,9 +420,9 @@ export function ProductStudio() {
                 className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground"
               >
                 <option value="">Nenhum — IA estima pela ABNT</option>
-                {officialModels.map((m) => <option key={m.id} value={m.id}>{m.nome} · tam. {m.tamanho_base}</option>)}
+                {officialModels.map((m) => <option key={m.id} value={m.id}>{m.colecao ? `${m.colecao} — ` : ""}{m.nome} · tam. {m.tamanho_base}{m.ativa ? " (oficial)" : ""}</option>)}
               </select>
-              <Link to="/official-models" className="text-xs text-primary hover:underline">Cadastrar modelo oficial</Link>
+              <Link to="/official-models" className="text-xs text-primary hover:underline">Gerenciar tabelas por coleção</Link>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="studio-description">Ideia do produto *</Label>
