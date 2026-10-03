@@ -49,3 +49,8 @@ export async function sketchDataUrl(path: string): Promise<string | null> {
     reader.readAsDataURL(data);
   });
 }
+
+/** Bloco de prompt que obriga a IA a usar a tabela real, sem estimar. */
+export function officialMeasuresBlock(m: OfficialModel): string {
+  return `MODELO OFICIAL DA EMPRESA "${m.nome}" (tamanho base ${m.tamanho_base}). As medidas abaixo são a tabela REAL e definitiva: não estime, não altere e não invente outras medidas. Baseie silhueta, proporções e detalhes nelas:\n${m.medidas.map((x) => `- ${x.point}: ${x.value}${x.tolerance ? ` (${x.tolerance})` : ""}${x.how ? ` — ${x.how}` : ""}`).join("\n")}${m.detalhes ? `\nDetalhes construtivos oficiais: ${m.detalhes}` : ""}`;
+}

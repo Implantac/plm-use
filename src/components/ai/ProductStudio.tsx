@@ -6,6 +6,8 @@ import { ArrowRight, Bot, Download, ImageOff, LoaderCircle, Save, Sparkles } fro
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
+import { useQuery } from "@tanstack/react-query";
+import { listOfficialModels, officialMeasuresBlock } from "@/lib/official-models";
 import { uploadGeneratedImage, storageAssetSource } from "@/lib/storage/assets";
 import { supabase } from "@/integrations/supabase/client";
 import { useReferences } from "@/hooks/use-references";
@@ -160,6 +162,9 @@ export function ProductStudio() {
   const [imageBusy, setImageBusy] = useState(false);
   const [keepIdentity, setKeepIdentity] = useState(true);
   const [variationColors, setVariationColors] = useState("areia, azul, verde, preto, estampada");
+  const { data: officialModels = [] } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
+  const [officialId, setOfficialId] = useState("");
+  const official = officialModels.find((m) => m.id === officialId);
 
   const suggestedCode = useMemo(() => nextReferenceCode(items.map((item) => item.code)), [items]);
   const variationIdeas = useMemo(
@@ -191,7 +196,7 @@ export function ProductStudio() {
       const result = await ask({
         data: {
           agent: "fashion",
-          message: buildConceptPrompt(briefing),
+          message: buildConceptPrompt(briefing) + (official ? `\n\n${officialMeasuresBlock(official)}` : ""),
         },
       });
       if (!result.ok) {
@@ -401,6 +406,19 @@ export function ProductStudio() {
             <p className="mt-1 text-xs text-muted-foreground">Contexto fornecido por você</p>
           </div>
           <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="studio-official">Modelo oficial (medidas reais)</Label>
+              <select
+                id="studio-official"
+                value={officialId}
+                onChange={(event) => setOfficialId(event.target.value)}
+                className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground"
+              >
+                <option value="">Nenhum — IA estima pela ABNT</option>
+                {officialModels.map((m) => <option key={m.id} value={m.id}>{m.nome} · tam. {m.tamanho_base}</option>)}
+              </select>
+              <Link to="/official-models" className="text-xs text-primary hover:underline">Cadastrar modelo oficial</Link>
+            </div>
             <div className="space-y-1.5">
               <Label htmlFor="studio-description">Ideia do produto *</Label>
               <Textarea
@@ -709,6 +727,8 @@ export function ProductStudio() {
               <TechSketchPanel
                 productName={proposal.name}
                 summary={[proposal.name, proposal.category, proposal.silhouette, proposal.suggestedMaterials.join(", "), proposal.details.join(", ")].filter(Boolean).join("; ")}
+                modelId={officialId}
+                onModelChange={setOfficialId}
               />
             </div>
           ) : (
