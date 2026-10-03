@@ -13,6 +13,7 @@ import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TechSketchPanel } from "./TechSketchPanel";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -690,6 +691,11 @@ export function ProductStudio() {
                   </div>
                 )}
               </div>
+
+              <TechSketchPanel
+                productName={proposal.name}
+                summary={[proposal.name, proposal.category, proposal.silhouette, proposal.suggestedMaterials.join(", "), proposal.details.join(", ")].filter(Boolean).join("; ")}
+              />
             </div>
           ) : (
             <div className="mt-5 rounded-md border border-white/10 bg-white/[0.025] p-4">
