@@ -9,61 +9,60 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AuditRouteImport } from './routes/audit'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
-import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authenticated.tech-sheet'
-import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
-import { Route as AuthenticatedSupplierPortalRouteImport } from './routes/_authenticated.supplier-portal'
-import { Route as AuthenticatedShowroomRouteImport } from './routes/_authenticated.showroom'
-import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
-import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
-import { Route as AuthenticatedReferencesRouteImport } from './routes/_authenticated.references'
-import { Route as AuthenticatedQualityRouteImport } from './routes/_authenticated.quality'
-import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authenticated.prototypes'
-import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated.production'
-import { Route as AuthenticatedPrintsRouteImport } from './routes/_authenticated.prints'
-import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
-import { Route as AuthenticatedPiecesReportRouteImport } from './routes/_authenticated.pieces-report'
-import { Route as AuthenticatedMeasurementsRouteImport } from './routes/_authenticated.measurements'
-import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
-import { Route as AuthenticatedLooksRouteImport } from './routes/_authenticated.looks'
-import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
-import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
-import { Route as AuthenticatedInfluencersRouteImport } from './routes/_authenticated.influencers'
-import { Route as AuthenticatedFlowRouteImport } from './routes/_authenticated.flow'
-import { Route as AuthenticatedFinancialRouteImport } from './routes/_authenticated.financial'
-import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
-import { Route as AuthenticatedDisplayRouteImport } from './routes/_authenticated.display'
-import { Route as AuthenticatedDigitalTwinRouteImport } from './routes/_authenticated.digital-twin'
-import { Route as AuthenticatedDevelopmentRouteImport } from './routes/_authenticated.development'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
-import { Route as AuthenticatedCommercialRouteImport } from './routes/_authenticated.commercial'
-import { Route as AuthenticatedColorsRouteImport } from './routes/_authenticated.colors'
-import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenticated.collections'
-import { Route as AuthenticatedCollectionMapRouteImport } from './routes/_authenticated.collection-map'
-import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
-import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
-import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
-import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuditRouteImport } from './routes/audit'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
-import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
-import { Route as AuthenticatedCollectionsCompareRouteImport } from './routes/_authenticated.collections.compare'
+import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
+import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
+import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
+import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
+import { Route as AuthenticatedCollectionMapRouteImport } from './routes/_authenticated.collection-map'
+import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenticated.collections'
+import { Route as AuthenticatedColorsRouteImport } from './routes/_authenticated.colors'
+import { Route as AuthenticatedCommercialRouteImport } from './routes/_authenticated.commercial'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedDevelopmentRouteImport } from './routes/_authenticated.development'
+import { Route as AuthenticatedDigitalTwinRouteImport } from './routes/_authenticated.digital-twin'
+import { Route as AuthenticatedDisplayRouteImport } from './routes/_authenticated.display'
+import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated.feed'
+import { Route as AuthenticatedFinancialRouteImport } from './routes/_authenticated.financial'
+import { Route as AuthenticatedFlowRouteImport } from './routes/_authenticated.flow'
+import { Route as AuthenticatedInfluencersRouteImport } from './routes/_authenticated.influencers'
+import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated.inventory'
+import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
+import { Route as AuthenticatedLooksRouteImport } from './routes/_authenticated.looks'
+import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
+import { Route as AuthenticatedMeasurementsRouteImport } from './routes/_authenticated.measurements'
+import { Route as AuthenticatedPiecesReportRouteImport } from './routes/_authenticated.pieces-report'
+import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
+import { Route as AuthenticatedPrintsRouteImport } from './routes/_authenticated.prints'
+import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated.production'
+import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authenticated.prototypes'
+import { Route as AuthenticatedQualityRouteImport } from './routes/_authenticated.quality'
+import { Route as AuthenticatedReferencesRouteImport } from './routes/_authenticated.references'
+import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
+import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
+import { Route as AuthenticatedShowroomRouteImport } from './routes/_authenticated.showroom'
+import { Route as AuthenticatedSupplierPortalRouteImport } from './routes/_authenticated.supplier-portal'
+import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
+import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authenticated.tech-sheet'
+import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
-import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
+import { Route as AuthenticatedCollectionsCompareRouteImport } from './routes/_authenticated.collections.compare'
+import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
 import { Route as ApiPublicCronAbcClassifyRouteImport } from './routes/api/public/cron/abc-classify'
+import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuditRoute = AuditRouteImport.update({
@@ -71,111 +70,98 @@ const AuditRoute = AuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
-  id: '/api/generate-image',
-  path: '/api/generate-image',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedTechSheetRoute = AuthenticatedTechSheetRouteImport.update({
-  id: '/tech-sheet',
-  path: '/tech-sheet',
+const AuthenticatedAiAgentsRoute = AuthenticatedAiAgentsRouteImport.update({
+  id: '/ai-agents',
+  path: '/ai-agents',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
-  id: '/suppliers',
-  path: '/suppliers',
+const AuthenticatedAiCenterRoute = AuthenticatedAiCenterRouteImport.update({
+  id: '/ai-center',
+  path: '/ai-center',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedSupplierPortalRoute =
-  AuthenticatedSupplierPortalRouteImport.update({
-    id: '/supplier-portal',
-    path: '/supplier-portal',
+const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCadRoute = AuthenticatedCadRouteImport.update({
+  id: '/cad',
+  path: '/cad',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCollectionMapRoute =
+  AuthenticatedCollectionMapRouteImport.update({
+    id: '/collection-map',
+    path: '/collection-map',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedShowroomRoute = AuthenticatedShowroomRouteImport.update({
-  id: '/showroom',
-  path: '/showroom',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedResearchRoute = AuthenticatedResearchRouteImport.update({
-  id: '/research',
-  path: '/research',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedReferencesRoute = AuthenticatedReferencesRouteImport.update({
-  id: '/references',
-  path: '/references',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedQualityRoute = AuthenticatedQualityRouteImport.update({
-  id: '/quality',
-  path: '/quality',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedPrototypesRoute = AuthenticatedPrototypesRouteImport.update({
-  id: '/prototypes',
-  path: '/prototypes',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
-  id: '/production',
-  path: '/production',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedPrintsRoute = AuthenticatedPrintsRouteImport.update({
-  id: '/prints',
-  path: '/prints',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
-  id: '/planner',
-  path: '/planner',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedPiecesReportRoute =
-  AuthenticatedPiecesReportRouteImport.update({
-    id: '/pieces-report',
-    path: '/pieces-report',
+const AuthenticatedCollectionsRoute =
+  AuthenticatedCollectionsRouteImport.update({
+    id: '/collections',
+    path: '/collections',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedMeasurementsRoute =
-  AuthenticatedMeasurementsRouteImport.update({
-    id: '/measurements',
-    path: '/measurements',
+const AuthenticatedColorsRoute = AuthenticatedColorsRouteImport.update({
+  id: '/colors',
+  path: '/colors',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCommercialRoute = AuthenticatedCommercialRouteImport.update({
+  id: '/commercial',
+  path: '/commercial',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDevelopmentRoute =
+  AuthenticatedDevelopmentRouteImport.update({
+    id: '/development',
+    path: '/development',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
-  id: '/marketing',
-  path: '/marketing',
+const AuthenticatedDigitalTwinRoute =
+  AuthenticatedDigitalTwinRouteImport.update({
+    id: '/digital-twin',
+    path: '/digital-twin',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDisplayRoute = AuthenticatedDisplayRouteImport.update({
+  id: '/display',
+  path: '/display',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedLooksRoute = AuthenticatedLooksRouteImport.update({
-  id: '/looks',
-  path: '/looks',
+const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedLaunchRoute = AuthenticatedLaunchRouteImport.update({
-  id: '/launch',
-  path: '/launch',
+const AuthenticatedFinancialRoute = AuthenticatedFinancialRouteImport.update({
+  id: '/financial',
+  path: '/financial',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
+const AuthenticatedFlowRoute = AuthenticatedFlowRouteImport.update({
+  id: '/flow',
+  path: '/flow',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedInfluencersRoute =
@@ -184,117 +170,131 @@ const AuthenticatedInfluencersRoute =
     path: '/influencers',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedFlowRoute = AuthenticatedFlowRouteImport.update({
-  id: '/flow',
-  path: '/flow',
+const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedFinancialRoute = AuthenticatedFinancialRouteImport.update({
-  id: '/financial',
-  path: '/financial',
+const AuthenticatedLaunchRoute = AuthenticatedLaunchRouteImport.update({
+  id: '/launch',
+  path: '/launch',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
-  id: '/feed',
-  path: '/feed',
+const AuthenticatedLooksRoute = AuthenticatedLooksRouteImport.update({
+  id: '/looks',
+  path: '/looks',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedDisplayRoute = AuthenticatedDisplayRouteImport.update({
-  id: '/display',
-  path: '/display',
+const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedDigitalTwinRoute =
-  AuthenticatedDigitalTwinRouteImport.update({
-    id: '/digital-twin',
-    path: '/digital-twin',
+const AuthenticatedMeasurementsRoute =
+  AuthenticatedMeasurementsRouteImport.update({
+    id: '/measurements',
+    path: '/measurements',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedDevelopmentRoute =
-  AuthenticatedDevelopmentRouteImport.update({
-    id: '/development',
-    path: '/development',
+const AuthenticatedPiecesReportRoute =
+  AuthenticatedPiecesReportRouteImport.update({
+    id: '/pieces-report',
+    path: '/pieces-report',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedPlannerRoute = AuthenticatedPlannerRouteImport.update({
+  id: '/planner',
+  path: '/planner',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCommercialRoute = AuthenticatedCommercialRouteImport.update({
-  id: '/commercial',
-  path: '/commercial',
+const AuthenticatedPrintsRoute = AuthenticatedPrintsRouteImport.update({
+  id: '/prints',
+  path: '/prints',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedColorsRoute = AuthenticatedColorsRouteImport.update({
-  id: '/colors',
-  path: '/colors',
+const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
+  id: '/production',
+  path: '/production',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedCollectionsRoute =
-  AuthenticatedCollectionsRouteImport.update({
-    id: '/collections',
-    path: '/collections',
+const AuthenticatedPrototypesRoute = AuthenticatedPrototypesRouteImport.update({
+  id: '/prototypes',
+  path: '/prototypes',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedQualityRoute = AuthenticatedQualityRouteImport.update({
+  id: '/quality',
+  path: '/quality',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedReferencesRoute = AuthenticatedReferencesRouteImport.update({
+  id: '/references',
+  path: '/references',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedResearchRoute = AuthenticatedResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedShowroomRoute = AuthenticatedShowroomRouteImport.update({
+  id: '/showroom',
+  path: '/showroom',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSupplierPortalRoute =
+  AuthenticatedSupplierPortalRouteImport.update({
+    id: '/supplier-portal',
+    path: '/supplier-portal',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedCollectionMapRoute =
-  AuthenticatedCollectionMapRouteImport.update({
-    id: '/collection-map',
-    path: '/collection-map',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedCadRoute = AuthenticatedCadRouteImport.update({
-  id: '/cad',
-  path: '/cad',
+const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
-  id: '/approvals',
-  path: '/approvals',
+const AuthenticatedTechSheetRoute = AuthenticatedTechSheetRouteImport.update({
+  id: '/tech-sheet',
+  path: '/tech-sheet',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
+  id: '/api/generate-image',
+  path: '/api/generate-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAiCenterRoute = AuthenticatedAiCenterRouteImport.update({
-  id: '/ai-center',
-  path: '/ai-center',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedAiAgentsRoute = AuthenticatedAiAgentsRouteImport.update({
-  id: '/ai-agents',
-  path: '/ai-agents',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedProductionTodayRoute =
-  AuthenticatedProductionTodayRouteImport.update({
-    id: '/today',
-    path: '/today',
-    getParentRoute: () => AuthenticatedProductionRoute,
-  } as any)
 const AuthenticatedCollectionsCompareRoute =
   AuthenticatedCollectionsCompareRouteImport.update({
     id: '/compare',
     path: '/compare',
     getParentRoute: () => AuthenticatedCollectionsRoute,
   } as any)
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const ApiPublicCronLaunchPerformanceRoute =
-  ApiPublicCronLaunchPerformanceRouteImport.update({
-    id: '/api/public/cron/launch-performance',
-    path: '/api/public/cron/launch-performance',
-    getParentRoute: () => rootRouteImport,
+const AuthenticatedProductionTodayRoute =
+  AuthenticatedProductionTodayRouteImport.update({
+    id: '/today',
+    path: '/today',
+    getParentRoute: () => AuthenticatedProductionRoute,
   } as any)
 const ApiPublicCronAbcClassifyRoute =
   ApiPublicCronAbcClassifyRouteImport.update({
     id: '/api/public/cron/abc-classify',
     path: '/api/public/cron/abc-classify',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicCronLaunchPerformanceRoute =
+  ApiPublicCronLaunchPerformanceRouteImport.update({
+    id: '/api/public/cron/launch-performance',
+    path: '/api/public/cron/launch-performance',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -599,25 +599,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/audit': {
-      id: '/audit'
-      path: '/audit'
-      fullPath: '/audit'
-      preLoaderRoute: typeof AuditRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -627,249 +613,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/generate-image': {
-      id: '/api/generate-image'
-      path: '/api/generate-image'
-      fullPath: '/api/generate-image'
-      preLoaderRoute: typeof ApiGenerateImageRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/tech-sheet': {
-      id: '/_authenticated/tech-sheet'
-      path: '/tech-sheet'
-      fullPath: '/tech-sheet'
-      preLoaderRoute: typeof AuthenticatedTechSheetRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/suppliers': {
-      id: '/_authenticated/suppliers'
-      path: '/suppliers'
-      fullPath: '/suppliers'
-      preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/supplier-portal': {
-      id: '/_authenticated/supplier-portal'
-      path: '/supplier-portal'
-      fullPath: '/supplier-portal'
-      preLoaderRoute: typeof AuthenticatedSupplierPortalRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/showroom': {
-      id: '/_authenticated/showroom'
-      path: '/showroom'
-      fullPath: '/showroom'
-      preLoaderRoute: typeof AuthenticatedShowroomRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/security': {
-      id: '/_authenticated/security'
-      path: '/security'
-      fullPath: '/security'
-      preLoaderRoute: typeof AuthenticatedSecurityRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/research': {
-      id: '/_authenticated/research'
-      path: '/research'
-      fullPath: '/research'
-      preLoaderRoute: typeof AuthenticatedResearchRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/references': {
-      id: '/_authenticated/references'
-      path: '/references'
-      fullPath: '/references'
-      preLoaderRoute: typeof AuthenticatedReferencesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/quality': {
-      id: '/_authenticated/quality'
-      path: '/quality'
-      fullPath: '/quality'
-      preLoaderRoute: typeof AuthenticatedQualityRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/prototypes': {
-      id: '/_authenticated/prototypes'
-      path: '/prototypes'
-      fullPath: '/prototypes'
-      preLoaderRoute: typeof AuthenticatedPrototypesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/production': {
-      id: '/_authenticated/production'
-      path: '/production'
-      fullPath: '/production'
-      preLoaderRoute: typeof AuthenticatedProductionRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/prints': {
-      id: '/_authenticated/prints'
-      path: '/prints'
-      fullPath: '/prints'
-      preLoaderRoute: typeof AuthenticatedPrintsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/planner': {
-      id: '/_authenticated/planner'
-      path: '/planner'
-      fullPath: '/planner'
-      preLoaderRoute: typeof AuthenticatedPlannerRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/pieces-report': {
-      id: '/_authenticated/pieces-report'
-      path: '/pieces-report'
-      fullPath: '/pieces-report'
-      preLoaderRoute: typeof AuthenticatedPiecesReportRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/measurements': {
-      id: '/_authenticated/measurements'
-      path: '/measurements'
-      fullPath: '/measurements'
-      preLoaderRoute: typeof AuthenticatedMeasurementsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/marketing': {
-      id: '/_authenticated/marketing'
-      path: '/marketing'
-      fullPath: '/marketing'
-      preLoaderRoute: typeof AuthenticatedMarketingRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/looks': {
-      id: '/_authenticated/looks'
-      path: '/looks'
-      fullPath: '/looks'
-      preLoaderRoute: typeof AuthenticatedLooksRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/launch': {
-      id: '/_authenticated/launch'
-      path: '/launch'
-      fullPath: '/launch'
-      preLoaderRoute: typeof AuthenticatedLaunchRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/inventory': {
-      id: '/_authenticated/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/influencers': {
-      id: '/_authenticated/influencers'
-      path: '/influencers'
-      fullPath: '/influencers'
-      preLoaderRoute: typeof AuthenticatedInfluencersRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/flow': {
-      id: '/_authenticated/flow'
-      path: '/flow'
-      fullPath: '/flow'
-      preLoaderRoute: typeof AuthenticatedFlowRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/financial': {
-      id: '/_authenticated/financial'
-      path: '/financial'
-      fullPath: '/financial'
-      preLoaderRoute: typeof AuthenticatedFinancialRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/feed': {
-      id: '/_authenticated/feed'
-      path: '/feed'
-      fullPath: '/feed'
-      preLoaderRoute: typeof AuthenticatedFeedRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/display': {
-      id: '/_authenticated/display'
-      path: '/display'
-      fullPath: '/display'
-      preLoaderRoute: typeof AuthenticatedDisplayRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/digital-twin': {
-      id: '/_authenticated/digital-twin'
-      path: '/digital-twin'
-      fullPath: '/digital-twin'
-      preLoaderRoute: typeof AuthenticatedDigitalTwinRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/development': {
-      id: '/_authenticated/development'
-      path: '/development'
-      fullPath: '/development'
-      preLoaderRoute: typeof AuthenticatedDevelopmentRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/commercial': {
-      id: '/_authenticated/commercial'
-      path: '/commercial'
-      fullPath: '/commercial'
-      preLoaderRoute: typeof AuthenticatedCommercialRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/colors': {
-      id: '/_authenticated/colors'
-      path: '/colors'
-      fullPath: '/colors'
-      preLoaderRoute: typeof AuthenticatedColorsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/collections': {
-      id: '/_authenticated/collections'
-      path: '/collections'
-      fullPath: '/collections'
-      preLoaderRoute: typeof AuthenticatedCollectionsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/collection-map': {
-      id: '/_authenticated/collection-map'
-      path: '/collection-map'
-      fullPath: '/collection-map'
-      preLoaderRoute: typeof AuthenticatedCollectionMapRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/cad': {
-      id: '/_authenticated/cad'
-      path: '/cad'
-      fullPath: '/cad'
-      preLoaderRoute: typeof AuthenticatedCadRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/approvals': {
-      id: '/_authenticated/approvals'
-      path: '/approvals'
-      fullPath: '/approvals'
-      preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/analytics': {
-      id: '/_authenticated/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
+    '/_authenticated/ai-agents': {
+      id: '/_authenticated/ai-agents'
+      path: '/ai-agents'
+      fullPath: '/ai-agents'
+      preLoaderRoute: typeof AuthenticatedAiAgentsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/ai-center': {
@@ -879,26 +648,243 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAiCenterRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/ai-agents': {
-      id: '/_authenticated/ai-agents'
-      path: '/ai-agents'
-      fullPath: '/ai-agents'
-      preLoaderRoute: typeof AuthenticatedAiAgentsRouteImport
+    '/_authenticated/analytics': {
+      id: '/_authenticated/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/production/today': {
-      id: '/_authenticated/production/today'
-      path: '/today'
-      fullPath: '/production/today'
-      preLoaderRoute: typeof AuthenticatedProductionTodayRouteImport
-      parentRoute: typeof AuthenticatedProductionRoute
+    '/_authenticated/approvals': {
+      id: '/_authenticated/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/collections/compare': {
-      id: '/_authenticated/collections/compare'
-      path: '/compare'
-      fullPath: '/collections/compare'
-      preLoaderRoute: typeof AuthenticatedCollectionsCompareRouteImport
-      parentRoute: typeof AuthenticatedCollectionsRoute
+    '/_authenticated/cad': {
+      id: '/_authenticated/cad'
+      path: '/cad'
+      fullPath: '/cad'
+      preLoaderRoute: typeof AuthenticatedCadRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/collection-map': {
+      id: '/_authenticated/collection-map'
+      path: '/collection-map'
+      fullPath: '/collection-map'
+      preLoaderRoute: typeof AuthenticatedCollectionMapRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/collections': {
+      id: '/_authenticated/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof AuthenticatedCollectionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/colors': {
+      id: '/_authenticated/colors'
+      path: '/colors'
+      fullPath: '/colors'
+      preLoaderRoute: typeof AuthenticatedColorsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/commercial': {
+      id: '/_authenticated/commercial'
+      path: '/commercial'
+      fullPath: '/commercial'
+      preLoaderRoute: typeof AuthenticatedCommercialRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/development': {
+      id: '/_authenticated/development'
+      path: '/development'
+      fullPath: '/development'
+      preLoaderRoute: typeof AuthenticatedDevelopmentRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/digital-twin': {
+      id: '/_authenticated/digital-twin'
+      path: '/digital-twin'
+      fullPath: '/digital-twin'
+      preLoaderRoute: typeof AuthenticatedDigitalTwinRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/display': {
+      id: '/_authenticated/display'
+      path: '/display'
+      fullPath: '/display'
+      preLoaderRoute: typeof AuthenticatedDisplayRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/feed': {
+      id: '/_authenticated/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof AuthenticatedFeedRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/financial': {
+      id: '/_authenticated/financial'
+      path: '/financial'
+      fullPath: '/financial'
+      preLoaderRoute: typeof AuthenticatedFinancialRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/flow': {
+      id: '/_authenticated/flow'
+      path: '/flow'
+      fullPath: '/flow'
+      preLoaderRoute: typeof AuthenticatedFlowRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/influencers': {
+      id: '/_authenticated/influencers'
+      path: '/influencers'
+      fullPath: '/influencers'
+      preLoaderRoute: typeof AuthenticatedInfluencersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/inventory': {
+      id: '/_authenticated/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/launch': {
+      id: '/_authenticated/launch'
+      path: '/launch'
+      fullPath: '/launch'
+      preLoaderRoute: typeof AuthenticatedLaunchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/looks': {
+      id: '/_authenticated/looks'
+      path: '/looks'
+      fullPath: '/looks'
+      preLoaderRoute: typeof AuthenticatedLooksRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/marketing': {
+      id: '/_authenticated/marketing'
+      path: '/marketing'
+      fullPath: '/marketing'
+      preLoaderRoute: typeof AuthenticatedMarketingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/measurements': {
+      id: '/_authenticated/measurements'
+      path: '/measurements'
+      fullPath: '/measurements'
+      preLoaderRoute: typeof AuthenticatedMeasurementsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pieces-report': {
+      id: '/_authenticated/pieces-report'
+      path: '/pieces-report'
+      fullPath: '/pieces-report'
+      preLoaderRoute: typeof AuthenticatedPiecesReportRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/planner': {
+      id: '/_authenticated/planner'
+      path: '/planner'
+      fullPath: '/planner'
+      preLoaderRoute: typeof AuthenticatedPlannerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/prints': {
+      id: '/_authenticated/prints'
+      path: '/prints'
+      fullPath: '/prints'
+      preLoaderRoute: typeof AuthenticatedPrintsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/production': {
+      id: '/_authenticated/production'
+      path: '/production'
+      fullPath: '/production'
+      preLoaderRoute: typeof AuthenticatedProductionRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/prototypes': {
+      id: '/_authenticated/prototypes'
+      path: '/prototypes'
+      fullPath: '/prototypes'
+      preLoaderRoute: typeof AuthenticatedPrototypesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quality': {
+      id: '/_authenticated/quality'
+      path: '/quality'
+      fullPath: '/quality'
+      preLoaderRoute: typeof AuthenticatedQualityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/references': {
+      id: '/_authenticated/references'
+      path: '/references'
+      fullPath: '/references'
+      preLoaderRoute: typeof AuthenticatedReferencesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/research': {
+      id: '/_authenticated/research'
+      path: '/research'
+      fullPath: '/research'
+      preLoaderRoute: typeof AuthenticatedResearchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/security': {
+      id: '/_authenticated/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof AuthenticatedSecurityRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/showroom': {
+      id: '/_authenticated/showroom'
+      path: '/showroom'
+      fullPath: '/showroom'
+      preLoaderRoute: typeof AuthenticatedShowroomRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/supplier-portal': {
+      id: '/_authenticated/supplier-portal'
+      path: '/supplier-portal'
+      fullPath: '/supplier-portal'
+      preLoaderRoute: typeof AuthenticatedSupplierPortalRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/suppliers': {
+      id: '/_authenticated/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/tech-sheet': {
+      id: '/_authenticated/tech-sheet'
+      path: '/tech-sheet'
+      fullPath: '/tech-sheet'
+      preLoaderRoute: typeof AuthenticatedTechSheetRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/generate-image': {
+      id: '/api/generate-image'
+      path: '/api/generate-image'
+      fullPath: '/api/generate-image'
+      preLoaderRoute: typeof ApiGenerateImageRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
@@ -907,18 +893,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/api/public/cron/launch-performance': {
-      id: '/api/public/cron/launch-performance'
-      path: '/api/public/cron/launch-performance'
-      fullPath: '/api/public/cron/launch-performance'
-      preLoaderRoute: typeof ApiPublicCronLaunchPerformanceRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/collections/compare': {
+      id: '/_authenticated/collections/compare'
+      path: '/compare'
+      fullPath: '/collections/compare'
+      preLoaderRoute: typeof AuthenticatedCollectionsCompareRouteImport
+      parentRoute: typeof AuthenticatedCollectionsRoute
+    }
+    '/_authenticated/production/today': {
+      id: '/_authenticated/production/today'
+      path: '/today'
+      fullPath: '/production/today'
+      preLoaderRoute: typeof AuthenticatedProductionTodayRouteImport
+      parentRoute: typeof AuthenticatedProductionRoute
     }
     '/api/public/cron/abc-classify': {
       id: '/api/public/cron/abc-classify'
       path: '/api/public/cron/abc-classify'
       fullPath: '/api/public/cron/abc-classify'
       preLoaderRoute: typeof ApiPublicCronAbcClassifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/launch-performance': {
+      id: '/api/public/cron/launch-performance'
+      path: '/api/public/cron/launch-performance'
+      fullPath: '/api/public/cron/launch-performance'
+      preLoaderRoute: typeof ApiPublicCronLaunchPerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
