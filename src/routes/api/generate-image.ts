@@ -117,15 +117,16 @@ export const Route = createFileRoute("/api/generate-image")({
         }
 
         if (!upstream.ok || !upstream.body) {
-          const status = upstream.status === 429 ? 429 : upstream.status === 402 ? 402 : 502;
-          const message =
-            status === 429
-              ? "Muitas gerações em pouco tempo. Aguarde e tente novamente."
-              : status === 402
-                ? "Créditos de IA indisponíveis no momento."
-                : "Não foi possível gerar esta imagem. Tente novamente.";
-          console.error("Image provider rejected request", upstream.status, await upstream.text());
-          return jsonError(message, status);
+          let safeMessage = "Não foi possível gerar esta imagem. Tente novamente.";
+          try {
+            const providerBody = await upstream.json() as { error?: { message?: string } | string; message?: string };
+            safeMessage = typeof providerBody.error === "string"
+              ? providerBody.error
+              : providerBody.error?.message ?? providerBody.message ?? safeMessage;
+          } catch {
+            // Keep the safe local message when the provider did not return JSON.
+          }
+          return jsonError(safeMessage, upstream.status);
         }
 
         return new Response(upstream.body, {

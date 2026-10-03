@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { ArrowRight, Bot, Download, ImageOff, ImagePlus, LoaderCircle, Save, Sparkles, Trash2 } from "lucide-react";
+import { ArrowRight, Bot, ImageOff, ImagePlus, LoaderCircle, Save, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
@@ -475,11 +475,12 @@ export function ProductStudio() {
         variation_ideas: variationIdeas,
         image_ideas: conceptPayload.imageIdeas,
         visual_identity: conceptPayload.visualIdentity,
-        generated_images: savedImages.map(({ view, storagePath, createdAt }) => ({
+        generated_images: savedImages.map(({ view, storagePath, createdAt, application }) => ({
           view,
           storage_path: storagePath,
           created_at: createdAt,
           source_concept: proposal?.name ?? name,
+          application: application ?? null,
           status: "concept",
         })),
         generated_at: new Date().toISOString(),
@@ -786,18 +787,16 @@ export function ProductStudio() {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {IMAGE_VIEWS.map((view) => (
-                      <button
+                      <Button
                         key={view}
                         type="button"
+                        size="xs"
+                        variant={visualView === view ? "secondary" : "ghost"}
                         onClick={() => setVisualView(view)}
-                        className={`rounded-full border px-2 py-1 text-[9px] uppercase tracking-[0.15em] transition ${
-                          visualView === view
-                            ? "border-primary/40 bg-primary/10 text-primary"
-                            : "border-white/10 bg-transparent text-muted-foreground"
-                        }`}
+                        className="h-6 rounded-full px-2 text-[9px] uppercase"
                       >
                         {view}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -824,6 +823,79 @@ export function ProductStudio() {
                     ))}
                   </div>
                 </div>
+
+                <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">Aplicar logo ou estampa</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Use o visual exibido como peça base.</p>
+                  </div>
+
+                  <Field invalid={Boolean(artworkError)}>
+                    <Label htmlFor="studio-artwork-upload">Arquivo da arte</Label>
+                    <Input
+                      id="studio-artwork-upload"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={(event) => void selectArtwork(event.target.files?.[0])}
+                      className="text-xs file:mr-3 file:border-0 file:bg-transparent file:text-xs file:font-medium file:text-foreground"
+                    />
+                    <FieldMessage variant={artworkError ? "error" : "helper"}>
+                      {artworkError || "PNG, JPG ou WEBP, até 10 MB."}
+                    </FieldMessage>
+                  </Field>
+
+                  {artwork && (
+                    <div className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.025] p-2">
+                      <img src={artwork.dataUrl} alt="Prévia da arte enviada" className="h-16 w-16 shrink-0 rounded-sm object-contain" />
+                      <span className="min-w-0 flex-1 truncate text-xs text-foreground">{artwork.name}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label="Remover arte"
+                        title="Remover arte"
+                        onClick={() => {
+                          setArtwork(null);
+                          setArtworkError("");
+                        }}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  )}
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Field>
+                      <Label>Posição na peça</Label>
+                      <Select value={artworkPlacement} onValueChange={setArtworkPlacement}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {ARTWORK_PLACEMENTS.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <Field>
+                      <Label>Técnica</Label>
+                      <Select value={artworkTechnique} onValueChange={setArtworkTechnique}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {ARTWORK_TECHNIQUES.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  </div>
+
+                  <Button
+                    type="button"
+                    className="w-full"
+                    disabled={!artwork || !imageSource || imageBusy}
+                    onClick={() => void applyArtwork()}
+                  >
+                    {imageBusy ? <LoaderCircle className="animate-spin" /> : <ImagePlus />}
+                    Aplicar arte no visual
+                  </Button>
+                  {!imageSource && <FieldMessage>Gere ou escolha um visual da peça antes de aplicar a arte.</FieldMessage>}
+                </div>
                 {imageBusy && !imageSource && (
                   <div className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-white/15 bg-black/10 text-sm text-muted-foreground" role="status">
                     <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
@@ -841,14 +913,14 @@ export function ProductStudio() {
                 )}
                 {generatedImages.length > 0 && (
                   <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4" aria-label="Histórico desta sessão">
-                    {generatedImages.map((image, index) => (
-                      <button key={`${image.view}-${image.createdAt}`} type="button" onClick={() => { setImageSource(image.src); setVisualView(image.view); }} className="overflow-hidden rounded border border-white/10 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Visual ${image.view} para ${image.conceptName}`}>
+                    {generatedImages.map((image) => (
+                      <Button key={`${image.view}-${image.createdAt}`} type="button" variant="ghost" onClick={() => { setImageSource(image.src); if (!image.application) setVisualView(image.view); }} className="h-auto min-w-0 flex-col items-stretch overflow-hidden rounded border border-white/10 p-0 text-left" aria-label={`Visual ${image.view} para ${image.conceptName}`}>
                         <img src={image.src} alt="" className="aspect-square w-full object-cover" />
                         <span className="block truncate px-1 pt-1 text-[10px] text-muted-foreground">{image.view}</span>
                         {image.conceptName !== proposal?.name && (
                           <span className="block truncate px-1 pb-1 text-[9px] text-muted-foreground">{image.conceptName}</span>
                         )}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
