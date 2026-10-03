@@ -67,6 +67,8 @@ export const Route = createFileRoute("/api/generate-image")({
             form.append("model", model);
             form.append("prompt", parsed.data.prompt);
             form.append("quality", "high");
+            form.append("background", "transparent");
+            form.append("output_format", "png");
             form.append("stream", "true");
             form.append("partial_images", "2");
             form.append("image", new Blob([bytes], { type: match[1] }), "reference.png");
@@ -94,6 +96,8 @@ export const Route = createFileRoute("/api/generate-image")({
               model,
               prompt: parsed.data.prompt,
               quality: "high",
+              background: "transparent",
+              output_format: "png",
               stream: true,
               partial_images: 2,
             }),

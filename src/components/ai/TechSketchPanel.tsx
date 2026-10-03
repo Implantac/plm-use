@@ -48,7 +48,7 @@ export function TechSketchPanel({ productName, summary }: { productName: string;
       });
       const imagePromise = streamImage(
         "/api/generate-image",
-        `Technical fashion flat sketch (desenho técnico / flat drawing) of: ${summary}. Front and back views side by side, black line art on pure white background, precise clean vector-style lines, visible stitching lines, seams, topstitching, buttons and trims, dimension lines with arrows indicating measurement points (no numbers needed). No model, no shading, no color, no logos.`,
+        `Technical fashion flat sketch (desenho técnico / flat drawing) of: ${summary}. Front and back views side by side, black line art on a fully transparent background, precise clean vector-style lines, visible stitching lines, seams, topstitching, buttons and trims, dimension lines with arrows indicating measurement points (no numbers needed). No model, no shading, no color, no logos.`,
         (src, final) => {
           setImage(src);
           if (final) setIsFinal(true);
