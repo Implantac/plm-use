@@ -651,6 +651,45 @@ export type Database = {
         }
         Relationships: []
       }
+      official_models: {
+        Row: {
+          categoria: string | null
+          created_at: string
+          created_by: string | null
+          detalhes: string | null
+          id: string
+          medidas: Json
+          nome: string
+          sketch_path: string | null
+          tamanho_base: string
+          updated_at: string
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string
+          created_by?: string | null
+          detalhes?: string | null
+          id?: string
+          medidas?: Json
+          nome: string
+          sketch_path?: string | null
+          tamanho_base?: string
+          updated_at?: string
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string
+          created_by?: string | null
+          detalhes?: string | null
+          id?: string
+          medidas?: Json
+          nome?: string
+          sketch_path?: string | null
+          tamanho_base?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pcp_lots: {
         Row: {
           code: string
