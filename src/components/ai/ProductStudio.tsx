@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { ArrowRight, Bot, Download, ImageOff, LoaderCircle, Save, Sparkles } from "lucide-react";
+import { ArrowRight, Bot, Download, ImageOff, ImagePlus, LoaderCircle, Save, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { streamImage } from "@/lib/streamImage";
@@ -19,6 +19,15 @@ import { Input } from "@/components/ui/input";
 import { TechSketchPanel } from "./TechSketchPanel";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Field } from "@/components/ui/field";
+import { FieldMessage } from "@/components/ui/field-message";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   buildConceptPrompt,
   buildVariationIdeas,
@@ -79,6 +88,38 @@ const IMAGE_VIEWS = [
   "campanha",
   "lifestyle",
 ] as const;
+
+const ARTWORK_PLACEMENTS = [
+  { value: "centro-frente", label: "Centro da frente" },
+  { value: "peito-esquerdo", label: "Peito esquerdo" },
+  { value: "peito-direito", label: "Peito direito" },
+  { value: "centro-costas", label: "Centro das costas" },
+  { value: "manga-esquerda", label: "Manga esquerda" },
+  { value: "manga-direita", label: "Manga direita" },
+  { value: "frente-bone", label: "Frente do boné" },
+  { value: "lateral-esquerda-bone", label: "Lateral esquerda do boné" },
+  { value: "lateral-direita-bone", label: "Lateral direita do boné" },
+  { value: "traseira-bone", label: "Traseira do boné" },
+] as const;
+
+const ARTWORK_TECHNIQUES = [
+  { value: "silk", label: "Silk screen" },
+  { value: "bordado", label: "Bordado" },
+  { value: "sublimacao", label: "Sublimação" },
+  { value: "dtf", label: "DTF" },
+] as const;
+
+const MAX_ARTWORK_BYTES = 10 * 1024 * 1024;
+const ACCEPTED_ARTWORK_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Arquivo inválido."));
+    reader.onerror = () => reject(new Error("Não foi possível ler a imagem."));
+    reader.readAsDataURL(file);
+  });
+}
 
 const EMPTY_BRIEFING: Briefing = {
   description: "",
@@ -156,13 +197,24 @@ export function ProductStudio() {
   const [visualView, setVisualView] = useState("frente");
   const [imageSource, setImageSource] = useState<string | null>(null);
   const [generatedImages, setGeneratedImages] = useState<
-    Array<{ view: string; src: string; storagePath: string; createdAt: string; conceptName: string }>
+    Array<{
+      view: string;
+      src: string;
+      storagePath: string;
+      createdAt: string;
+      conceptName: string;
+      application?: { artworkName: string; placement: string; technique: string };
+    }>
   >([]);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [imageBusy, setImageBusy] = useState(false);
   const [keepIdentity, setKeepIdentity] = useState(true);
   const [variationColors, setVariationColors] = useState("areia, azul, verde, preto, estampada");
+  const [artwork, setArtwork] = useState<{ name: string; dataUrl: string } | null>(null);
+  const [artworkError, setArtworkError] = useState("");
+  const [artworkPlacement, setArtworkPlacement] = useState("centro-frente");
+  const [artworkTechnique, setArtworkTechnique] = useState("silk");
   const { data: officialModels = [] } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
   const [officialId, setOfficialId] = useState("");
   const official = officialModels.find((m) => m.id === officialId);
@@ -293,6 +345,80 @@ export function ProductStudio() {
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não foi possível gerar a imagem.");
+    } finally {
+      setImageBusy(false);
+    }
+  }
+
+  async function selectArtwork(file: File | undefined) {
+    setArtworkError("");
+    if (!file) return;
+    if (!ACCEPTED_ARTWORK_TYPES.has(file.type)) {
+      setArtworkError("Envie uma imagem PNG, JPG ou WEBP.");
+      return;
+    }
+    if (file.size > MAX_ARTWORK_BYTES) {
+      setArtworkError("A imagem deve ter no máximo 10 MB.");
+      return;
+    }
+    try {
+      setArtwork({ name: file.name, dataUrl: await fileToDataUrl(file) });
+    } catch (error) {
+      setArtworkError(error instanceof Error ? error.message : "Não foi possível ler a imagem.");
+    }
+  }
+
+  async function applyArtwork() {
+    if (!proposal || !imageSource || !artwork || imageBusy) return;
+    const placement = ARTWORK_PLACEMENTS.find((item) => item.value === artworkPlacement)?.label ?? artworkPlacement;
+    const technique = ARTWORK_TECHNIQUES.find((item) => item.value === artworkTechnique)?.label ?? artworkTechnique;
+    const sourceGarment = imageSource;
+    const viewLabel = `${visualView} · ${technique} · ${placement}`;
+    const prompt = [
+      "Reference image 1 is the exact garment base. Preserve its silhouette, proportions, construction, fabric, color, camera angle, lighting and transparent background exactly.",
+      "Reference image 2 is the exact artwork/logo to apply. Preserve its shapes, spelling, colors, proportions and visual identity without redesigning it.",
+      `Apply the artwork at: ${placement}. Application technique: ${technique}.`,
+      artworkTechnique === "bordado"
+        ? "Render realistic embroidery thread, stitch direction and subtle raised texture."
+        : artworkTechnique === "silk"
+          ? "Render clean screen-print ink integrated with the textile surface."
+          : artworkTechnique === "sublimacao"
+            ? "Render dye-sublimation integrated into the fabric fibers with no raised edge."
+            : "Render a clean DTF transfer with accurate color and a subtle film finish.",
+      "Keep the artwork readable and naturally scaled for the selected placement. Do not add any other text, logo, label or decoration. Return one isolated garment on a fully transparent background, with no floor or shadow.",
+    ].join(" ");
+
+    setImageBusy(true);
+    setImageSource(null);
+    let latestImage = "";
+    try {
+      await streamImage(
+        "/api/generate-image",
+        prompt,
+        (dataUrl) => {
+          latestImage = dataUrl;
+          setImageSource(dataUrl);
+        },
+        [sourceGarment, artwork.dataUrl],
+      );
+      const storagePath = await uploadGeneratedImage(latestImage);
+      const createdAt = new Date().toISOString();
+      setGeneratedImages((current) => [
+        {
+          view: viewLabel,
+          src: latestImage,
+          storagePath: storagePath ?? "",
+          createdAt,
+          conceptName: proposal.name,
+          application: { artworkName: artwork.name, placement, technique },
+        },
+        ...current,
+      ]);
+      if (storagePath) toast.success("Arte aplicada e visual salvo no armazenamento.");
+      else toast.warning("Arte aplicada, mas não foi possível salvar o visual no armazenamento.");
+    } catch (error) {
+      setImageSource(sourceGarment);
+      toast.error(error instanceof Error ? error.message : "Não foi possível aplicar a arte.");
     } finally {
       setImageBusy(false);
     }

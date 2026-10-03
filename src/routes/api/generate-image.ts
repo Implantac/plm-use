@@ -5,6 +5,7 @@ import { z } from "zod";
 const ImageRequest = z.object({
   prompt: z.string().trim().min(1).max(4000),
   referenceImage: z.string().max(15_000_000).optional(),
+  referenceImages: z.array(z.string().max(15_000_000)).min(1).max(2).optional(),
 });
 
 function jsonError(message: string, status: number) {
@@ -56,13 +57,10 @@ export const Route = createFileRoute("/api/generate-image")({
         if (!key) return jsonError("O provedor de imagens não está configurado.", 503);
 
         const model = "openai/gpt-image-2.5-sunburst";
-        const reference = parsed.data.referenceImage;
+        const references = parsed.data.referenceImages ?? (parsed.data.referenceImage ? [parsed.data.referenceImage] : []);
         let upstream: Response;
         try {
-          if (reference) {
-            const match = /^data:(image\/[a-z+]+);base64,(.+)$/.exec(reference);
-            if (!match) return jsonError("Imagem de referência inválida.", 400);
-            const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0));
+          if (references.length) {
             const form = new FormData();
             form.append("model", model);
             form.append("prompt", parsed.data.prompt);
@@ -71,7 +69,16 @@ export const Route = createFileRoute("/api/generate-image")({
             form.append("output_format", "png");
             form.append("stream", "true");
             form.append("partial_images", "2");
-            form.append("image", new Blob([bytes], { type: match[1] }), "reference.png");
+            for (const [index, reference] of references.entries()) {
+              const match = /^data:(image\/[a-z+]+);base64,(.+)$/.exec(reference);
+              if (!match) return jsonError("Imagem de referência inválida.", 400);
+              const bytes = Uint8Array.from(atob(match[2]), (character) => character.charCodeAt(0));
+              form.append(
+                references.length === 1 ? "image" : "image[]",
+                new Blob([bytes], { type: match[1] }),
+                `reference-${index + 1}.png`,
+              );
+            }
             upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/edits", {
               method: "POST",
               signal: request.signal,
