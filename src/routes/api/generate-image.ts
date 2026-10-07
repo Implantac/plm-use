@@ -126,6 +126,8 @@ export const Route = createFileRoute("/api/generate-image")({
           } catch {
             // Keep the safe local message when the provider did not return JSON.
           }
+          if (upstream.status === 402) safeMessage = "Créditos de IA esgotados. Adicione créditos ao workspace para voltar a gerar imagens.";
+          if (upstream.status === 429) safeMessage = "Limite temporário de geração. Tente novamente em alguns segundos.";
           return jsonError(safeMessage, upstream.status);
         }
 
