@@ -15,6 +15,7 @@ import {
   nextStep,
   usePassages,
   useRegisterPassages,
+  useChangeItemRoute,
   type PassageMove,
   type ProdRoute,
   type ProductionOrder,
@@ -170,6 +171,9 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                           </span>
                         ))}
                       </div>
+                      {!passages.some((p) => p.production_order_item_id === i.id && p.type !== "desvio") && (
+                        <AltRouteForm itemId={i.id} currentRouteId={i.route_id} routes={routes} />
+                      )}
                     </div>
                   );
                 })}
@@ -197,5 +201,37 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function AltRouteForm({ itemId, currentRouteId, routes }: { itemId: string; currentRouteId: string; routes: { id: string; code: string; name: string }[] }) {
+  const change = useChangeItemRoute();
+  const [open, setOpen] = useState(false);
+  const [routeId, setRouteId] = useState("");
+  const [reason, setReason] = useState("");
+  const [err, setErr] = useState<string | null>(null);
+  if (!open) return <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setOpen(true)}>Usar rota alternativa</Button>;
+  const submit = () => {
+    if (!routeId) return setErr("Escolha a rota alternativa.");
+    if (reason.trim().length < 5) return setErr("Escreva a justificativa (mínimo 5 caracteres).");
+    setErr(null);
+    change.mutate({ itemId, routeId, reason: reason.trim() }, {
+      onSuccess: () => { toast.success("Rota alternativa aplicada."); setOpen(false); setReason(""); setRouteId(""); },
+      onError: (e) => toast.error(e instanceof Error ? e.message : "Não foi possível trocar a rota."),
+    });
+  };
+  return (
+    <div className="rounded-md border border-border p-2 space-y-2">
+      <select aria-label="Rota alternativa" value={routeId} onChange={(e) => setRouteId(e.target.value)} className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm">
+        <option value="">Escolha a rota alternativa</option>
+        {routes.filter((r) => r.id !== currentRouteId).map((r) => <option key={r.id} value={r.id}>{r.code} · {r.name}</option>)}
+      </select>
+      <Textarea aria-label="Justificativa" placeholder="Justificativa da troca de rota" value={reason} onChange={(e) => setReason(e.target.value)} rows={2} />
+      {err && <FieldMessage tone="error">{err}</FieldMessage>}
+      <div className="flex gap-2">
+        <Button size="sm" onClick={submit} disabled={change.isPending}>Aplicar rota</Button>
+        <Button size="sm" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+      </div>
+    </div>
   );
 }
