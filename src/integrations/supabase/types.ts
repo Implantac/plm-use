@@ -2524,6 +2524,7 @@ export type Database = {
         Returns: boolean
       }
       can_access_module_topic: { Args: { _topic: string }; Returns: boolean }
+      can_plan_pcp: { Args: { _uid: string }; Returns: boolean }
       can_transition: {
         Args: { _entity_type: string; _from: string; _to: string }
         Returns: boolean
