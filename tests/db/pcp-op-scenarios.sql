@@ -8,6 +8,8 @@ BEGIN
   SELECT id INTO v FROM profiles WHERE id NOT IN (SELECT user_id FROM user_roles WHERE role IN ('admin','manager','pcp','operator')) LIMIT 1;
   PERFORM set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true);
   SELECT id INTO r1 FROM production_routes WHERE code='R01';
+  EXECUTE 'SET LOCAL ROLE authenticated';
+  SELECT id INTO r1 FROM production_routes WHERE code='R01';
   SELECT id INTO r2 FROM production_routes WHERE code='R02';
   INSERT INTO production_orders(number, status, priority) VALUES ('OP-TESTE', 'em_producao', 'media') RETURNING id INTO op;
   INSERT INTO production_order_items(production_order_id, reference_code, color, route_id, quantity_planned) VALUES (op,'T-1','Preto',r1,500) RETURNING id INTO it1;
