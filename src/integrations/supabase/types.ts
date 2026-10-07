@@ -2536,6 +2536,10 @@ export type Database = {
         Returns: boolean
       }
       can_write_pcp: { Args: { _uid: string }; Returns: boolean }
+      change_item_route: {
+        Args: { _item_id: string; _reason: string; _route_id: string }
+        Returns: undefined
+      }
       classify_abc: {
         Args: { _a_threshold?: number; _b_threshold?: number }
         Returns: {

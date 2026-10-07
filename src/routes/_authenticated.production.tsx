@@ -17,6 +17,7 @@ import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
 import { TorreDeControle } from "@/components/pcp/TorreDeControle";
+import { OpSummary } from "@/components/pcp/op/OpSummary";
 import { CapacityPanel } from "@/components/pcp/CapacityPanel";
 import { LotesGantt } from "@/components/pcp/LotesGantt";
 import { LoteTimeline } from "@/components/pcp/LoteTimeline";
@@ -239,12 +240,15 @@ function ProductionPage() {
             </CardContent>
           </Card>
         ) : view === "torre" ? (
+          <div className="space-y-4">
+          <OpSummary />
           <TorreDeControle
             lotes={lotes}
             onSelectLote={(l) =>
               setLoteSelecionado({ lote: l, setor: l.referencias[0]?.setor_atual ?? "Costura" })
             }
           />
+          </div>
         ) : (
           <LotesGantt
             lotes={lotes}

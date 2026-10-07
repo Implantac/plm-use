@@ -1,5 +1,6 @@
 // Produção do Dia — visão operacional simplificada por setor.
 // PLM-only: lê o store de lotes e mostra "o que produzir hoje" em cada setor.
+import { OpSummary } from "@/components/pcp/op/OpSummary";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
@@ -91,6 +92,7 @@ function ProductionTodayPage() {
       ]}
     >
       <div className="space-y-4">
+        <OpSummary sector={setor} />
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <Button asChild variant="outline" size="sm" >
             <Link to="/production">

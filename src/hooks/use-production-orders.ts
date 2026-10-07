@@ -137,6 +137,17 @@ export function useRegisterPassages() {
   });
 }
 
+export function useChangeItemRoute() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: { itemId: string; routeId: string; reason: string }) => {
+      const { error } = await supabase.rpc("change_item_route", { _item_id: a.itemId, _route_id: a.routeId, _reason: a.reason });
+      if (error) throw error;
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["pcp-op"] }),
+  });
+}
+
 export function nextStep(route: ProdRoute | undefined, stepId: string): RouteStep | null {
   if (!route) return null;
   const cur = route.steps.find((s) => s.id === stepId);
