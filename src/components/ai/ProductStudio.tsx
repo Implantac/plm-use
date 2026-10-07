@@ -7,6 +7,7 @@ import { ArrowRight, Bot, ImageOff, ImagePlus, LoaderCircle, Save, Sparkles, Tra
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { nativeProposal } from "@/lib/ai/native-agent";
+import { nativeVisualPng } from "@/lib/ai/native-visual";
 import { streamImage } from "@/lib/streamImage";
 import { useQuery } from "@tanstack/react-query";
 import { activeForCollection, listOfficialModels, officialMeasuresBlock } from "@/lib/official-models";
@@ -211,6 +212,7 @@ export function ProductStudio() {
   const [saving, setSaving] = useState(false);
   const [imageBusy, setImageBusy] = useState(false);
   const [keepIdentity, setKeepIdentity] = useState(true);
+  const [nativeVisual, setNativeVisual] = useState(true);
   const [variationColors, setVariationColors] = useState("areia, azul, verde, preto, estampada");
   const [artwork, setArtwork] = useState<{ name: string; dataUrl: string } | null>(null);
   const [artworkError, setArtworkError] = useState("");
@@ -318,15 +320,26 @@ export function ProductStudio() {
         ].join(", ");
 
     try {
-      await streamImage(
-        "/api/generate-image",
-        prompt,
-        (dataUrl) => {
-          latestImage = dataUrl;
-          setImageSource(dataUrl);
-        },
-        anchor?.src,
-      );
+      if (nativeVisual) {
+        latestImage = await nativeVisualPng({
+          family: proposal.family,
+          category: proposal.category,
+          name: proposal.name,
+          color: variationColor || proposal.colors[0],
+          view: visualView,
+        });
+        setImageSource(latestImage);
+      } else {
+        await streamImage(
+          "/api/generate-image",
+          prompt,
+          (dataUrl) => {
+            latestImage = dataUrl;
+            setImageSource(dataUrl);
+          },
+          anchor?.src,
+        );
+      }
       const storagePath = await uploadGeneratedImage(latestImage);
       const createdAt = new Date().toISOString();
       setGeneratedImages((current) => [
@@ -818,6 +831,10 @@ export function ProductStudio() {
                 <label className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
                   <input type="checkbox" checked={keepIdentity} onChange={(e) => setKeepIdentity(e.target.checked)} className="accent-primary" />
                   Manter identidade do produto (usa o primeiro visual como referência)
+                </label>
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <input type="checkbox" checked={nativeVisual} onChange={(e) => setNativeVisual(e.target.checked)} className="accent-primary" />
+                  Agente nativo (desenho local, sem consumir créditos)
                 </label>
                 <div className="flex items-center gap-2">
                   <Button type="button" variant="outline" onClick={() => void generateVisual()} disabled={imageBusy} className="w-full">
