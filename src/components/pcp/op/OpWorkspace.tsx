@@ -227,7 +227,7 @@ function AltRouteForm({ itemId, currentRouteId, routes }: { itemId: string; curr
         {routes.filter((r) => r.id !== currentRouteId).map((r) => <option key={r.id} value={r.id}>{r.code} · {r.name}</option>)}
       </select>
       <Textarea aria-label="Justificativa" placeholder="Justificativa da troca de rota" value={reason} onChange={(e) => setReason(e.target.value)} rows={2} />
-      {err && <FieldMessage tone="error">{err}</FieldMessage>}
+      {err && <FieldMessage variant="error">{err}</FieldMessage>}
       <div className="flex gap-2">
         <Button size="sm" onClick={submit} disabled={change.isPending}>Aplicar rota</Button>
         <Button size="sm" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
