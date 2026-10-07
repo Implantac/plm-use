@@ -10,7 +10,7 @@ import { Route as RouteIcon, Search } from "lucide-react";
 import { useProductionOrders, useProductionRoutes, type ProductionOrder } from "@/hooks/use-production-orders";
 import { OpWorkspace } from "./OpWorkspace";
 import { NovaOpDialog } from "./NovaOpDialog";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import { opPermissions } from "@/lib/pcp/op-permissions";
 
 const SECTOR_ORDER = ["Compras", "CAD", "Corte", "Silk", "Costura", "Terceirizados", "Acabamento", "Expedição"];
@@ -27,7 +27,7 @@ function isLate(o: ProductionOrder) {
 
 export function OpKanban() {
   const { data: orders = [], isLoading, error } = useProductionOrders();
-  const { canPlan } = opPermissions(useAuth().roles);
+  const { canPlan } = opPermissions(useUserRoles(useAuth().user?.id).roles);
   const { data: routes = [] } = useProductionRoutes();
   const [q, setQ] = useState("");
   const [statusF, setStatusF] = useState("all");

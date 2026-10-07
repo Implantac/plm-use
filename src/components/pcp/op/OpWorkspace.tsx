@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FieldMessage } from "@/components/ui/field-message";
 import { EntityTimeline } from "@/components/entity/EntityTimeline";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import { opPermissions } from "@/lib/pcp/op-permissions";
 import {
   nextStep,
@@ -29,7 +29,7 @@ interface Row { key: string; itemId: string; label: string; stepId: string; avai
 const TYPE_LABEL: Record<string, string> = { total: "Total", parcial: "Parcial", retorno: "Retorno", perda: "Perda", desvio: "Desvio", ajuste: "Ajuste" };
 
 export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder | null; routes: ProdRoute[]; onClose: () => void }) {
-  const { roles } = useAuth();
+  const { roles } = useUserRoles(useAuth().user?.id);
   const { canPlan, canMove } = opPermissions(roles);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [mode, setMode] = useState<"total" | "parcial" | "perda">("total");
