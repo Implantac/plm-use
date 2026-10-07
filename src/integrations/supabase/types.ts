@@ -218,6 +218,45 @@ export type Database = {
         }
         Relationships: []
       }
+      configuration_routes: {
+        Row: {
+          configuration_id: string
+          created_at: string
+          id: string
+          is_default: boolean
+          route_id: string
+        }
+        Insert: {
+          configuration_id: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          route_id: string
+        }
+        Update: {
+          configuration_id?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          route_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "configuration_routes_configuration_id_fkey"
+            columns: ["configuration_id"]
+            isOneToOne: false
+            referencedRelation: "product_configurations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "configuration_routes_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "production_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       entity_events: {
         Row: {
           actor: string | null
@@ -862,6 +901,357 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      product_configurations: {
+        Row: {
+          active: boolean
+          base_product: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          active?: boolean
+          base_product: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          active?: boolean
+          base_product?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      production_item_step_balance: {
+        Row: {
+          item_id: string
+          quantity: number
+          step_id: string
+          updated_at: string
+        }
+        Insert: {
+          item_id: string
+          quantity?: number
+          step_id: string
+          updated_at?: string
+        }
+        Update: {
+          item_id?: string
+          quantity?: number
+          step_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_item_step_balance_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "production_order_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_item_step_balance_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "production_route_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      production_order_items: {
+        Row: {
+          color: string | null
+          configuration_id: string | null
+          created_at: string
+          id: string
+          production_order_id: string
+          quantity_lost: number
+          quantity_planned: number
+          quantity_produced: number
+          reference_code: string
+          reference_name: string | null
+          route_id: string
+          route_override_reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          configuration_id?: string | null
+          created_at?: string
+          id?: string
+          production_order_id: string
+          quantity_lost?: number
+          quantity_planned: number
+          quantity_produced?: number
+          reference_code: string
+          reference_name?: string | null
+          route_id: string
+          route_override_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          configuration_id?: string | null
+          created_at?: string
+          id?: string
+          production_order_id?: string
+          quantity_lost?: number
+          quantity_planned?: number
+          quantity_produced?: number
+          reference_code?: string
+          reference_name?: string | null
+          route_id?: string
+          route_override_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_order_items_configuration_id_fkey"
+            columns: ["configuration_id"]
+            isOneToOne: false
+            referencedRelation: "product_configurations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_order_items_production_order_id_fkey"
+            columns: ["production_order_id"]
+            isOneToOne: false
+            referencedRelation: "production_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_order_items_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "production_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      production_orders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          erp_op_id: string | null
+          id: string
+          notes: string | null
+          number: string
+          planned_end: string | null
+          planned_start: string | null
+          priority: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          erp_op_id?: string | null
+          id?: string
+          notes?: string | null
+          number: string
+          planned_end?: string | null
+          planned_start?: string | null
+          priority?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          erp_op_id?: string | null
+          id?: string
+          notes?: string | null
+          number?: string
+          planned_end?: string | null
+          planned_start?: string | null
+          priority?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      production_passages: {
+        Row: {
+          batch_id: string
+          created_at: string
+          destination_step_id: string | null
+          id: string
+          observation: string | null
+          origin_step_id: string | null
+          production_order_id: string
+          production_order_item_id: string
+          quantity: number
+          responsible_id: string | null
+          responsible_name: string | null
+          route_id: string
+          type: string
+        }
+        Insert: {
+          batch_id: string
+          created_at?: string
+          destination_step_id?: string | null
+          id?: string
+          observation?: string | null
+          origin_step_id?: string | null
+          production_order_id: string
+          production_order_item_id: string
+          quantity: number
+          responsible_id?: string | null
+          responsible_name?: string | null
+          route_id: string
+          type: string
+        }
+        Update: {
+          batch_id?: string
+          created_at?: string
+          destination_step_id?: string | null
+          id?: string
+          observation?: string | null
+          origin_step_id?: string | null
+          production_order_id?: string
+          production_order_item_id?: string
+          quantity?: number
+          responsible_id?: string | null
+          responsible_name?: string | null
+          route_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_passages_destination_step_id_fkey"
+            columns: ["destination_step_id"]
+            isOneToOne: false
+            referencedRelation: "production_route_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_passages_origin_step_id_fkey"
+            columns: ["origin_step_id"]
+            isOneToOne: false
+            referencedRelation: "production_route_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_passages_production_order_id_fkey"
+            columns: ["production_order_id"]
+            isOneToOne: false
+            referencedRelation: "production_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_passages_production_order_item_id_fkey"
+            columns: ["production_order_item_id"]
+            isOneToOne: false
+            referencedRelation: "production_order_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_passages_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "production_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      production_route_steps: {
+        Row: {
+          created_at: string
+          id: string
+          mandatory: boolean
+          operation: string
+          outsourced: boolean
+          route_id: string
+          sector: string
+          sequence: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mandatory?: boolean
+          operation: string
+          outsourced?: boolean
+          route_id: string
+          sector: string
+          sequence: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mandatory?: boolean
+          operation?: string
+          outsourced?: boolean
+          route_id?: string
+          sector?: string
+          sequence?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_route_steps_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "production_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      production_routes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -2145,6 +2535,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_write_pcp: { Args: { _uid: string }; Returns: boolean }
       classify_abc: {
         Args: { _a_threshold?: number; _b_threshold?: number }
         Returns: {
@@ -2170,6 +2561,10 @@ export type Database = {
       is_user_mentioned: {
         Args: { _mentions: string[]; _uid: string }
         Returns: boolean
+      }
+      register_passages: {
+        Args: { _moves: Json; _observation?: string }
+        Returns: string
       }
       user_belongs_to_supplier: {
         Args: { _supplier_id: string; _uid: string }

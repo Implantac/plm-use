@@ -26,6 +26,7 @@ import {
   type PCPStepId,
 } from "@/components/pcp/PCPFlowDiagram";
 import { ExportMenu } from "@/components/export/ExportMenu";
+import { OpKanban } from "@/components/pcp/op/OpKanban";
 import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
 import {
   SETORES_PCP,
@@ -64,7 +65,7 @@ function ProductionPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const flowRef = useRef<HTMLDivElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [view, setView] = useState<"kanban" | "torre" | "gantt">("kanban");
+  const [view, setView] = useState<"kanban" | "torre" | "gantt" | "op">("kanban");
   const [selRef, setSelRef] = useState<{
     loteNumero: string;
     ref: ReferenciaLote;
@@ -172,6 +173,17 @@ function ProductionPage() {
               <GanttChart className="h-3.5 w-3.5" />
               Gantt
             </button>
+            <button
+              onClick={() => setView("op")}
+              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+                view === "op"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:text-white"
+              }`}
+            >
+              <GitBranch className="h-3.5 w-3.5" />
+              Por OP / Rota
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <ExportMenu
@@ -207,7 +219,9 @@ function ProductionPage() {
           </div>
         </div>
 
-        {view === "kanban" ? (
+        {view === "op" ? (
+          <OpKanban />
+        ) : view === "kanban" ? (
           <Card className="glass-card rounded-lg">
             <CardContent className="p-4 overflow-x-auto">
               <div className="flex gap-4 min-w-max pb-2">
