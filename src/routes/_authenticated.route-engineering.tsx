@@ -48,7 +48,7 @@ function RouteEngineering() {
   };
 
   return (
-    <ModuleLayout title="Engenharia de Rotas" subtitle="Rotas produtivas e sequência de etapas">
+    <ModuleLayout title="Engenharia de Rotas" subtitle="Rotas produtivas e sequência de etapas" version="PCP">
       <Card className="glass-card rounded-lg">
         <CardContent className="p-4 flex flex-wrap gap-2 items-end">
           <div className="space-y-1"><Label htmlFor="rc">Código</Label><Input id="rc" value={code} maxLength={20} onChange={(e) => setCode(e.target.value)} className="w-28" /></div>
