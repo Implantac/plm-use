@@ -19,10 +19,17 @@ export function opProgress(o: ProductionOrder) {
   return planned ? Math.round((done / planned) * 100) : 0;
 }
 
+function isLate(o: ProductionOrder) {
+  return !!o.planned_end && new Date(o.planned_end + "T23:59") < new Date() && opProgress(o) < 100;
+}
+
 export function OpKanban() {
   const { data: orders = [], isLoading, error } = useProductionOrders();
   const { data: routes = [] } = useProductionRoutes();
   const [q, setQ] = useState("");
+  const [statusF, setStatusF] = useState("all");
+  const [routeF, setRouteF] = useState("all");
+  const [onlyLate, setOnlyLate] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
 
   const stepSector = useMemo(() => {
@@ -33,6 +40,9 @@ export function OpKanban() {
 
   const filtered = orders.filter((o) => {
     const t = q.trim().toLowerCase();
+    if (statusF !== "all" && o.status !== statusF) return false;
+    if (routeF !== "all" && !o.items.some((i) => i.route_id === routeF)) return false;
+    if (onlyLate && !isLate(o)) return false;
     if (!t) return true;
     return o.number.toLowerCase().includes(t) || o.items.some((i) => i.reference_code.toLowerCase().includes(t));
   });
@@ -65,6 +75,15 @@ export function OpKanban() {
           <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input aria-label="Buscar OP ou referência" placeholder="Buscar OP ou referência" value={q} onChange={(e) => setQ(e.target.value)} className="pl-8 h-9" />
         </div>
+        <select aria-label="Filtrar por status" value={statusF} onChange={(e) => setStatusF(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+          <option value="all">Todos os status</option>
+          {[...new Set(orders.map((o) => o.status))].map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
+        </select>
+        <select aria-label="Filtrar por rota" value={routeF} onChange={(e) => setRouteF(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+          <option value="all">Todas as rotas</option>
+          {routes.map((r) => <option key={r.id} value={r.id}>{r.code} · {r.name}</option>)}
+        </select>
+        <Button size="sm" variant={onlyLate ? "default" : "outline"} onClick={() => setOnlyLate((v) => !v)}>Só atrasadas</Button>
         <NovaOpDialog orders={orders} routes={routes} />
         <Button asChild size="sm" variant="outline">
           <Link to="/route-engineering"><RouteIcon className="h-3.5 w-3.5 mr-1" />Engenharia de Rotas</Link>
@@ -85,7 +104,7 @@ export function OpKanban() {
                     <Badge variant="outline" className="text-[10px]">{cards.reduce((a, c) => a + c.qty, 0)} pç</Badge>
                   </div>
                   {cards.map(({ order, qty }) => {
-                    const late = order.planned_end && new Date(order.planned_end) < new Date() && opProgress(order) < 100;
+                    const late = isLate(order);
                     return (
                       <button key={order.id} onClick={() => setOpenId(order.id)} className="w-full text-left rounded-md border border-border bg-card/50 p-3 hover:border-primary/50 transition">
                         <div className="flex justify-between items-start">
