@@ -123,6 +123,7 @@ function AuthenticatedLayout() {
         items: [
           { icon: <ShieldCheck className="w-4 h-4" />, label: "Qualidade", href: "/quality" },
           { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
+          { icon: <Package className="w-4 h-4" />, label: "Engenharia de Rotas", href: "/route-engineering" },
           { icon: <Box className="w-4 h-4" />, label: "Inventário", href: "/inventory" },
           { icon: <Truck className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
         ],

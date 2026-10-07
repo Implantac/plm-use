@@ -67,6 +67,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
 
   // PCP
   { path: "/production", label: "Produção", group: "pcp", crumbs: ["PCP"] },
+  { path: "/route-engineering", label: "Engenharia de Rotas", group: "pcp", crumbs: ["PCP"] },
   { path: "/planner", label: "Planner", group: "pcp", crumbs: ["PCP"] },
   { path: "/quality", label: "Qualidade", group: "pcp", crumbs: ["PCP"] },
 

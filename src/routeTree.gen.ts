@@ -45,6 +45,7 @@ import { Route as AuthenticatedPrototypesRouteImport } from './routes/_authentic
 import { Route as AuthenticatedQualityRouteImport } from './routes/_authenticated.quality'
 import { Route as AuthenticatedReferencesRouteImport } from './routes/_authenticated.references'
 import { Route as AuthenticatedResearchRouteImport } from './routes/_authenticated.research'
+import { Route as AuthenticatedRouteEngineeringRouteImport } from './routes/_authenticated.route-engineering'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated.security'
 import { Route as AuthenticatedShowroomRouteImport } from './routes/_authenticated.showroom'
 import { Route as AuthenticatedSupplierPortalRouteImport } from './routes/_authenticated.supplier-portal'
@@ -244,6 +245,12 @@ const AuthenticatedResearchRoute = AuthenticatedResearchRouteImport.update({
   path: '/research',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedRouteEngineeringRoute =
+  AuthenticatedRouteEngineeringRouteImport.update({
+    id: '/route-engineering',
+    path: '/route-engineering',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
   id: '/security',
   path: '/security',
@@ -341,6 +348,7 @@ export interface FileRoutesByFullPath {
   '/quality': typeof AuthenticatedQualityRoute
   '/references': typeof AuthenticatedReferencesRoute
   '/research': typeof AuthenticatedResearchRoute
+  '/route-engineering': typeof AuthenticatedRouteEngineeringRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/showroom': typeof AuthenticatedShowroomRoute
   '/supplier-portal': typeof AuthenticatedSupplierPortalRoute
@@ -389,6 +397,7 @@ export interface FileRoutesByTo {
   '/quality': typeof AuthenticatedQualityRoute
   '/references': typeof AuthenticatedReferencesRoute
   '/research': typeof AuthenticatedResearchRoute
+  '/route-engineering': typeof AuthenticatedRouteEngineeringRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/showroom': typeof AuthenticatedShowroomRoute
   '/supplier-portal': typeof AuthenticatedSupplierPortalRoute
@@ -439,6 +448,7 @@ export interface FileRoutesById {
   '/_authenticated/quality': typeof AuthenticatedQualityRoute
   '/_authenticated/references': typeof AuthenticatedReferencesRoute
   '/_authenticated/research': typeof AuthenticatedResearchRoute
+  '/_authenticated/route-engineering': typeof AuthenticatedRouteEngineeringRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/showroom': typeof AuthenticatedShowroomRoute
   '/_authenticated/supplier-portal': typeof AuthenticatedSupplierPortalRoute
@@ -489,6 +499,7 @@ export interface FileRouteTypes {
     | '/quality'
     | '/references'
     | '/research'
+    | '/route-engineering'
     | '/security'
     | '/showroom'
     | '/supplier-portal'
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/quality'
     | '/references'
     | '/research'
+    | '/route-engineering'
     | '/security'
     | '/showroom'
     | '/supplier-portal'
@@ -586,6 +598,7 @@ export interface FileRouteTypes {
     | '/_authenticated/quality'
     | '/_authenticated/references'
     | '/_authenticated/research'
+    | '/_authenticated/route-engineering'
     | '/_authenticated/security'
     | '/_authenticated/showroom'
     | '/_authenticated/supplier-portal'
@@ -864,6 +877,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedResearchRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/route-engineering': {
+      id: '/_authenticated/route-engineering'
+      path: '/route-engineering'
+      fullPath: '/route-engineering'
+      preLoaderRoute: typeof AuthenticatedRouteEngineeringRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/security': {
       id: '/_authenticated/security'
       path: '/security'
@@ -1004,6 +1024,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedQualityRoute: typeof AuthenticatedQualityRoute
   AuthenticatedReferencesRoute: typeof AuthenticatedReferencesRoute
   AuthenticatedResearchRoute: typeof AuthenticatedResearchRoute
+  AuthenticatedRouteEngineeringRoute: typeof AuthenticatedRouteEngineeringRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedShowroomRoute: typeof AuthenticatedShowroomRoute
   AuthenticatedSupplierPortalRoute: typeof AuthenticatedSupplierPortalRoute
@@ -1044,6 +1065,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedQualityRoute: AuthenticatedQualityRoute,
   AuthenticatedReferencesRoute: AuthenticatedReferencesRoute,
   AuthenticatedResearchRoute: AuthenticatedResearchRoute,
+  AuthenticatedRouteEngineeringRoute: AuthenticatedRouteEngineeringRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedShowroomRoute: AuthenticatedShowroomRoute,
   AuthenticatedSupplierPortalRoute: AuthenticatedSupplierPortalRoute,
