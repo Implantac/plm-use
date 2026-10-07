@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ArrowRight, Bot, ImageOff, ImagePlus, LoaderCircle, Save, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
+import { nativeProposal } from "@/lib/ai/native-agent";
 import { streamImage } from "@/lib/streamImage";
 import { useQuery } from "@tanstack/react-query";
 import { activeForCollection, listOfficialModels, officialMeasuresBlock } from "@/lib/official-models";
@@ -705,6 +706,19 @@ export function ProductStudio() {
               <Sparkles className="mr-2 h-4 w-4" />
             )}
             {generating ? "Criando conceito…" : "Gerar proposta"}
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              if (!briefing.description.trim()) return;
+              applyProposal(nativeProposal(briefing) as Proposal);
+              setReferenceCode((current) => current || suggestedCode);
+              toast.success("Proposta criada pelo agente nativo, sem usar créditos.");
+            }}
+            disabled={generating || !briefing.description.trim()}
+          >
+            Gerar com agente nativo (sem créditos)
           </Button>
         </section>
 
