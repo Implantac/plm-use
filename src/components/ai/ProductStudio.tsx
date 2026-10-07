@@ -832,6 +832,10 @@ export function ProductStudio() {
                   <input type="checkbox" checked={keepIdentity} onChange={(e) => setKeepIdentity(e.target.checked)} className="accent-primary" />
                   Manter identidade do produto (usa o primeiro visual como referência)
                 </label>
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <input type="checkbox" checked={nativeVisual} onChange={(e) => setNativeVisual(e.target.checked)} className="accent-primary" />
+                  Agente nativo (desenho local, sem consumir créditos)
+                </label>
                 <div className="flex items-center gap-2">
                   <Button type="button" variant="outline" onClick={() => void generateVisual()} disabled={imageBusy} className="w-full">
                     {imageBusy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
