@@ -2524,6 +2524,7 @@ export type Database = {
         Returns: boolean
       }
       can_access_module_topic: { Args: { _topic: string }; Returns: boolean }
+      can_plan_pcp: { Args: { _uid: string }; Returns: boolean }
       can_transition: {
         Args: { _entity_type: string; _from: string; _to: string }
         Returns: boolean
@@ -2616,6 +2617,9 @@ export type Database = {
         | "stock_movement"
         | "stock_reservation"
         | "supplier"
+        | "production_order"
+        | "production_order_item"
+        | "production_route"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -2817,6 +2821,9 @@ export const Constants = {
         "stock_movement",
         "stock_reservation",
         "supplier",
+        "production_order",
+        "production_order_item",
+        "production_route",
       ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [

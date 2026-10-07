@@ -38,6 +38,14 @@ const EVENT_LABEL: Record<string, string> = {
   attached: "Anexo adicionado",
   linked: "Relação criada",
   erp_synced: "Sincronização ERP",
+  "production.order.created": "OP criada",
+  "production.order.status_changed": "Status da OP",
+  "production.passage.total": "Passagem total",
+  "production.passage.parcial": "Passagem parcial",
+  "production.passage.retorno": "Retorno de etapa",
+  "production.passage.perda": "Perda registrada",
+  "production.passage.desvio": "Rota alternativa",
+  "production.passage.ajuste": "Ajuste",
 };
 
 export function EntityTimeline({
