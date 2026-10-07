@@ -9,6 +9,7 @@ import { Link } from "@tanstack/react-router";
 import { Route as RouteIcon, Search } from "lucide-react";
 import { useProductionOrders, useProductionRoutes, type ProductionOrder } from "@/hooks/use-production-orders";
 import { OpWorkspace } from "./OpWorkspace";
+import { NovaOpDialog } from "./NovaOpDialog";
 
 const SECTOR_ORDER = ["Compras", "CAD", "Corte", "Silk", "Costura", "Terceirizados", "Acabamento", "Expedição"];
 
@@ -64,6 +65,7 @@ export function OpKanban() {
           <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input aria-label="Buscar OP ou referência" placeholder="Buscar OP ou referência" value={q} onChange={(e) => setQ(e.target.value)} className="pl-8 h-9" />
         </div>
+        <NovaOpDialog orders={orders} routes={routes} />
         <Button asChild size="sm" variant="outline">
           <Link to="/route-engineering"><RouteIcon className="h-3.5 w-3.5 mr-1" />Engenharia de Rotas</Link>
         </Button>
