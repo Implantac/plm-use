@@ -11,6 +11,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FieldMessage } from "@/components/ui/field-message";
+import { EntityTimeline } from "@/components/entity/EntityTimeline";
+import { useAuth } from "@/hooks/use-auth";
+import { opPermissions } from "@/lib/pcp/op-permissions";
 import {
   nextStep,
   usePassages,
@@ -26,6 +29,8 @@ interface Row { key: string; itemId: string; label: string; stepId: string; avai
 const TYPE_LABEL: Record<string, string> = { total: "Total", parcial: "Parcial", retorno: "Retorno", perda: "Perda", desvio: "Desvio", ajuste: "Ajuste" };
 
 export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder | null; routes: ProdRoute[]; onClose: () => void }) {
+  const { roles } = useAuth();
+  const { canPlan, canMove } = opPermissions(roles);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [mode, setMode] = useState<"total" | "parcial" | "perda">("total");
   const [qty, setQty] = useState<Record<string, string>>({});
@@ -96,6 +101,7 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                 <TabsTrigger value="itens">Itens e passagem</TabsTrigger>
                 <TabsTrigger value="rotas">Rotas</TabsTrigger>
                 <TabsTrigger value="historico">Histórico</TabsTrigger>
+                <TabsTrigger value="timeline">Linha do tempo</TabsTrigger>
               </TabsList>
 
               <TabsContent value="itens" className="space-y-4">
@@ -149,9 +155,13 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                   <Textarea id="op-obs" value={obs} onChange={(e) => setObs(e.target.value)} maxLength={500} rows={2} />
                 </div>
                 {errorMsg && <FieldMessage variant="error">{errorMsg}</FieldMessage>}
-                <Button onClick={submit} disabled={register.isPending || !chosen.length}>
-                  {register.isPending ? "Registrando…" : `Passar ${chosen.length} item(ns) selecionado(s)`}
-                </Button>
+                {canMove ? (
+                  <Button onClick={submit} disabled={register.isPending || !chosen.length}>
+                    {register.isPending ? "Registrando…" : `Passar ${chosen.length} item(ns) selecionado(s)`}
+                  </Button>
+                ) : (
+                  <FieldMessage>Seu perfil só pode visualizar. Passagens são feitas por PCP, líder ou operador.</FieldMessage>
+                )}
               </TabsContent>
 
               <TabsContent value="rotas" className="space-y-3">
@@ -171,7 +181,7 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                           </span>
                         ))}
                       </div>
-                      {!passages.some((p) => p.production_order_item_id === i.id && p.type !== "desvio") && (
+                      {canPlan && !passages.some((p) => p.production_order_item_id === i.id && p.type !== "desvio") && (
                         <AltRouteForm itemId={i.id} currentRouteId={i.route_id} routes={routes} />
                       )}
                     </div>
@@ -195,6 +205,10 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                     })}
                   </ul>
                 )}
+              </TabsContent>
+
+              <TabsContent value="timeline">
+                <EntityTimeline entityType="production_order" entityId={order.id} />
               </TabsContent>
             </Tabs>
           </>

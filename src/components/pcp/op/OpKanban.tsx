@@ -10,6 +10,8 @@ import { Route as RouteIcon, Search } from "lucide-react";
 import { useProductionOrders, useProductionRoutes, type ProductionOrder } from "@/hooks/use-production-orders";
 import { OpWorkspace } from "./OpWorkspace";
 import { NovaOpDialog } from "./NovaOpDialog";
+import { useAuth } from "@/hooks/use-auth";
+import { opPermissions } from "@/lib/pcp/op-permissions";
 
 const SECTOR_ORDER = ["Compras", "CAD", "Corte", "Silk", "Costura", "Terceirizados", "Acabamento", "Expedição"];
 
@@ -25,6 +27,7 @@ function isLate(o: ProductionOrder) {
 
 export function OpKanban() {
   const { data: orders = [], isLoading, error } = useProductionOrders();
+  const { canPlan } = opPermissions(useAuth().roles);
   const { data: routes = [] } = useProductionRoutes();
   const [q, setQ] = useState("");
   const [statusF, setStatusF] = useState("all");
@@ -84,7 +87,7 @@ export function OpKanban() {
           {routes.map((r) => <option key={r.id} value={r.id}>{r.code} · {r.name}</option>)}
         </select>
         <Button size="sm" variant={onlyLate ? "default" : "outline"} onClick={() => setOnlyLate((v) => !v)}>Só atrasadas</Button>
-        <NovaOpDialog orders={orders} routes={routes} />
+        {canPlan && <NovaOpDialog orders={orders} routes={routes} />}
         <Button asChild size="sm" variant="outline">
           <Link to="/route-engineering"><RouteIcon className="h-3.5 w-3.5 mr-1" />Engenharia de Rotas</Link>
         </Button>
