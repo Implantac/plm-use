@@ -70,7 +70,6 @@ export function nativeVisualSvg(input: Input) {
 <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>
 <pattern id="print" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="${fill}"/><circle cx="10" cy="10" r="6" fill="${shade(fill, 0.6)}"/><circle cx="30" cy="30" r="6" fill="${shade(fill, 1.3)}"/></pattern></defs>
 <g>${shape(kind, back, fill, dark, printed)}</g>
-<g opacity=".6" style="mix-blend-mode:multiply">${shape(kind, back, "url(#g)", "none", false).replace(/stroke-dasharray="[^"]*"/g, "")}</g>
 </svg>`;
 }
 
