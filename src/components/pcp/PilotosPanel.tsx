@@ -1,7 +1,7 @@
 // V5 · Painel de Pilotos dentro do ReferenciaDrawer.
 // Resolve o UUID da referência pelo código, lista pilotos por rodada
 // e permite criar novo piloto + avançar workflow via WorkflowStatusMenu.
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, Camera, RotateCcw, AlertTriangle, CheckCircle2, Workflow } from "lucide-react";
 import { IniciarPCPDialog } from "./IniciarPCPDialog";
 import { Badge } from "@/components/ui/badge";
@@ -18,8 +18,7 @@ const REPILOT_TOAST_SUCCESS_CLASS = STATUS_TOAST_CLASS.success;
 const REPILOT_TOAST_ERROR_CLASS = STATUS_TOAST_CLASS.error;
 const REPILOT_BADGE_SUCCESS_CLASS = `text-[9px] gap-1 ${STATUS_BADGE_CLASS.success}`;
 const REPILOT_BADGE_ERROR_CLASS = `text-[9px] gap-1 ${STATUS_BADGE_CLASS.error}`;
-const REPILOT_BANNER_ERROR_CLASS =
-  "border-status-rejected/40 bg-status-rejected/[0.08]";
+const REPILOT_BANNER_ERROR_CLASS = "border-status-rejected/40 bg-status-rejected/[0.08]";
 const REPILOT_BANNER_TEXT_ERROR = "text-status-rejected";
 const REPILOT_BANNER_TEXT_SUCCESS = "text-status-approved";
 
@@ -72,9 +71,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     return () => clearTimeout(t);
   }, [confirmedRodada]);
 
-  const confirmRepilot = async (
-    p: import("@/hooks/use-pilotos").Piloto,
-  ): Promise<void> => {
+  const confirmRepilot = async (p: import("@/hooks/use-pilotos").Piloto): Promise<void> => {
     setRepiloting({ active: true, rodada: p.rodada });
     try {
       await refetch();
@@ -88,8 +85,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     } catch (e) {
       // Rollback: remove a rodada otimista e expõe o erro no banner.
       removeLocal(p.id);
-      const message =
-        e instanceof Error ? e.message : "Falha ao confirmar rodada";
+      const message = e instanceof Error ? e.message : "Falha ao confirmar rodada";
       setRepilotError({
         message,
         optimisticId: p.id,
@@ -131,19 +127,18 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   if (!referenceId) {
     return (
       <div className="rounded-md border border-white/10 bg-white/[0.03] p-4 text-[11px] text-muted-foreground">
-        Referência <span className="font-mono text-white">{referenciaRef}</span>{" "}
-        ainda não está cadastrada em <code>references</code>. Crie-a no módulo
-        Desenvolvimento para habilitar pilotos.
+        Referência <span className="font-mono text-white">{referenciaRef}</span> ainda não está
+        cadastrada em <code>references</code>. Crie-a no módulo Desenvolvimento para habilitar
+        pilotos.
       </div>
     );
   }
 
   // H · Estado atual da repilotagem: rodada mais alta + seu status.
-  const current = useMemo(() => {
-    if (!items.length) return null;
-    // items já vem ordenado por rodada desc
-    return items[0];
-  }, [items]);
+  // (Sem useMemo: o cálculo é `items[0]` e o hook aqui violaria
+  // react-hooks/rules-of-hooks — ele roda depois dos early-returns acima.
+  // O memo não comprava nada.)
+  const current = items.length ? items[0] : null; // items já vem ordenado por rodada desc
   const canRepilot =
     !!current &&
     (current.status === "APROVADO" ||
@@ -174,19 +169,13 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       {current && (
         <div
           className={`rounded-md border p-3 flex items-center justify-between gap-3 ${
-            repilotError
-              ? REPILOT_BANNER_ERROR_CLASS
-              : "border-primary/25 bg-primary/[0.06]"
+            repilotError ? REPILOT_BANNER_ERROR_CLASS : "border-primary/25 bg-primary/[0.06]"
           }`}
         >
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-wider text-primary/80">
-              Estado atual
-            </p>
+            <p className="text-[10px] uppercase tracking-wider text-primary/80">Estado atual</p>
             <div className="mt-1 flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-bold text-white">
-                Rodada {current.rodada}
-              </span>
+              <span className="text-sm font-bold text-white">Rodada {current.rodada}</span>
               <Badge variant="outline" className="text-[9px] border-white/20">
                 {current.tipo}
               </Badge>
@@ -206,22 +195,16 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
                   Reexecução R{repilotError.piloto.rodada} falhou
                 </Badge>
               )}
-              {confirmedRodada != null &&
-                !repiloting.active &&
-                !repilotError && (
-                  <Badge
-                    variant="outline"
-                    className={REPILOT_BADGE_SUCCESS_CLASS}
-                  >
-                    <CheckCircle2 className="h-2.5 w-2.5" />
-                    Reexecução R{confirmedRodada} confirmada
-                  </Badge>
-                )}
+              {confirmedRodada != null && !repiloting.active && !repilotError && (
+                <Badge variant="outline" className={REPILOT_BADGE_SUCCESS_CLASS}>
+                  <CheckCircle2 className="h-2.5 w-2.5" />
+                  Reexecução R{confirmedRodada} confirmada
+                </Badge>
+              )}
             </div>
             {repiloting.active ? (
               <p className="mt-1 text-[10px] text-primary/80">
-                Aguardando confirmação do servidor para a Rodada{" "}
-                {repiloting.rodada}…
+                Aguardando confirmação do servidor para a Rodada {repiloting.rodada}…
               </p>
             ) : repilotError ? (
               <p className={`mt-1 text-[10px] ${REPILOT_BANNER_TEXT_ERROR}`}>
@@ -241,54 +224,52 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
           </div>
           {repilotError ? (
             <Button
- size="sm"
- variant="outline"
- className="gap-1 shrink-0 border-status-rejected/50 text-status-rejected hover:bg-status-rejected/10"
- onClick={() => void retryConfirmation()}
+              size="sm"
+              variant="outline"
+              className="gap-1 shrink-0 border-status-rejected/50 text-status-rejected hover:bg-status-rejected/10"
+              onClick={() => void retryConfirmation()}
             >
               <RotateCcw className="h-3 w-3" />
               Tentar novamente
             </Button>
           ) : (
-          <NovoPilotoDialog
-            referenceId={referenceId}
-            referenciaNome={referenciaNome}
-            currentRodada={current.rodada}
-            defaultTipo={nextTipo}
-            defaultStatus="EM_DESENVOLVIMENTO"
-            defaultObservacoes={
-              current.status === "AJUSTE_SOLICITADO"
-                ? `Repilotagem após ajuste solicitado na rodada ${current.rodada}.`
-                : current.status === "REPROVADO"
-                  ? `Repilotagem após reprovação da rodada ${current.rodada}.`
-                  : `Nova rodada a partir da rodada ${current.rodada}.`
-            }
-            onCreated={handleCreated}
-            trigger={
-              <Button
- size="sm"
- variant="default"
- className="gap-1 shrink-0"
- disabled={!canRepilot || repiloting.active}
- title={
- repiloting.active
- ? "Aguardando confirmação do servidor…"
- : canRepilot
- ? `Reexecutar como rodada ${current.rodada + 1}`
- : "Avalie a rodada atual para reexecutar"
- }
- >
-                {repiloting.active ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <RotateCcw className="h-3 w-3" />
-                )}
-                {repiloting.active
-                  ? "Reexecutando…"
-                  : `Reexecutar (R${current.rodada + 1})`}
-              </Button>
-            }
-          />
+            <NovoPilotoDialog
+              referenceId={referenceId}
+              referenciaNome={referenciaNome}
+              currentRodada={current.rodada}
+              defaultTipo={nextTipo}
+              defaultStatus="EM_DESENVOLVIMENTO"
+              defaultObservacoes={
+                current.status === "AJUSTE_SOLICITADO"
+                  ? `Repilotagem após ajuste solicitado na rodada ${current.rodada}.`
+                  : current.status === "REPROVADO"
+                    ? `Repilotagem após reprovação da rodada ${current.rodada}.`
+                    : `Nova rodada a partir da rodada ${current.rodada}.`
+              }
+              onCreated={handleCreated}
+              trigger={
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="gap-1 shrink-0"
+                  disabled={!canRepilot || repiloting.active}
+                  title={
+                    repiloting.active
+                      ? "Aguardando confirmação do servidor…"
+                      : canRepilot
+                        ? `Reexecutar como rodada ${current.rodada + 1}`
+                        : "Avalie a rodada atual para reexecutar"
+                  }
+                >
+                  {repiloting.active ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <RotateCcw className="h-3 w-3" />
+                  )}
+                  {repiloting.active ? "Reexecutando…" : `Reexecutar (R${current.rodada + 1})`}
+                </Button>
+              }
+            />
           )}
         </div>
       )}
@@ -300,13 +281,11 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               <Workflow className="h-3 w-3" /> Handoff PLM → PCP
             </p>
             <p className="mt-1 text-[11px] text-white/90">
-              Piloto R{current.rodada} aprovado. Inicie o fluxo do PCP para
-              abrir a Ordem de Produção de{" "}
-              <span className="font-bold">{referenciaNome}</span>.
+              Piloto R{current.rodada} aprovado. Inicie o fluxo do PCP para abrir a Ordem de
+              Produção de <span className="font-bold">{referenciaNome}</span>.
             </p>
             <p className="mt-0.5 text-[10px] text-white/60">
-              Analisar produção → almoxarifado → organizar → finalizar OP →
-              rota → lançar no Kanban.
+              Analisar produção → almoxarifado → organizar → finalizar OP → rota → lançar no Kanban.
             </p>
           </div>
           <Button
@@ -328,46 +307,31 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
         referenciaNome={referenciaNome}
       />
 
-
-
-
-
-
-
       {loading ? (
         <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
           <Loader2 className="h-3 w-3 animate-spin" /> Carregando…
         </div>
       ) : items.length === 0 ? (
         <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
-          Nenhum piloto criado. Clique em "Novo piloto" para iniciar a 1ª
-          rodada.
+          Nenhum piloto criado. Clique em "Novo piloto" para iniciar a 1ª rodada.
         </div>
       ) : (
         <div className="space-y-2">
           {items.map((p) => (
-            <div
-              key={p.id}
-              className="rounded-md border border-white/10 bg-white/[0.03] p-3"
-            >
+            <div key={p.id} className="rounded-md border border-white/10 bg-white/[0.03] p-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
                       Rodada {p.rodada}
                     </span>
-                    <Badge
-                      variant="outline"
-                      className="text-[9px] border-white/20"
-                    >
+                    <Badge variant="outline" className="text-[9px] border-white/20">
                       {p.tipo}
                     </Badge>
                     <StatusBadge status={p.status} />
                   </div>
                   {p.observacoes && (
-                    <p className="mt-1 text-[11px] text-white/80 line-clamp-2">
-                      {p.observacoes}
-                    </p>
+                    <p className="mt-1 text-[11px] text-white/80 line-clamp-2">{p.observacoes}</p>
                   )}
                   <p className="mt-1 text-[10px] text-muted-foreground">
                     Criado {new Date(p.created_at).toLocaleString()}

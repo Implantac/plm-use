@@ -1,10 +1,28 @@
 // Lovable Cloud sync para módulos colaborativos (influencers, quality CAPA, tech sheets).
 // Padrão: hidrata uma vez por sessão; subscribes empurram debounced upserts.
 import { useEffect } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useInfluencersStore, type Influencer, type Envio } from "@/lib/influencers/store";
 import { useQualityStore, type CapaAction } from "@/lib/quality/store";
 import { useTechSheetStore } from "@/lib/techsheet/store";
+
+// Upsert com rosto: falhas de sync eram silenciosas — o usuário via "salvo"
+// na UI local enquanto o banco não recebia nada. Toast marca o conflito
+// visível; o store local continua autor da tela (o retry vem no próximo
+// change do store, que reempurra a linha inteira).
+async function pushOrWarn(
+  table: "influencers" | "quality_capa" | "tech_sheets",
+  rows: unknown[],
+  onConflict: string,
+  label: string,
+) {
+  const { error } = await supabase.from(table).upsert(rows as never, { onConflict });
+  if (error) {
+    console.error(`[cloud-sync] falha ao salvar ${label}:`, error.message);
+    toast.error(`Não foi possível salvar ${label} na nuvem. Tente novamente.`);
+  }
+}
 
 const debouncers = new Map<string, ReturnType<typeof setTimeout>>();
 function debounce(key: string, fn: () => void, ms = 800) {
@@ -17,22 +35,26 @@ const hydrated = { inf: false, capa: false, ts: false };
 
 // ---------- INFLUENCERS ----------
 async function pushInfluencer(i: Influencer, uid: string) {
-  await supabase.from("influencers").upsert(
-    {
-      id: i.id.length === 36 ? i.id : undefined,
-      nome: i.nome,
-      handle: i.handle,
-      regiao: i.regiao,
-      uf: i.uf,
-      seguidores: i.seguidores,
-      segmento: i.segmento,
-      perfil: i.perfil,
-      custo_medio: i.custoMedio,
-      vendas_geradas: i.vendasGeradas,
-      envios: i.envios as unknown as never,
-      created_by: uid,
-    },
-    { onConflict: "id" },
+  await pushOrWarn(
+    "influencers",
+    [
+      {
+        id: i.id.length === 36 ? i.id : undefined,
+        nome: i.nome,
+        handle: i.handle,
+        regiao: i.regiao,
+        uf: i.uf,
+        seguidores: i.seguidores,
+        segmento: i.segmento,
+        perfil: i.perfil,
+        custo_medio: i.custoMedio,
+        vendas_geradas: i.vendasGeradas,
+        envios: i.envios as unknown as never,
+        created_by: uid,
+      },
+    ],
+    "id",
+    "o influenciador",
   );
 }
 
@@ -78,7 +100,7 @@ async function pushCapaAll(uid: string) {
     criada: c.criada,
     created_by: uid,
   }));
-  await supabase.from("quality_capa").upsert(rows, { onConflict: "id" });
+  await pushOrWarn("quality_capa", rows, "id", "as ações CAPA");
 }
 
 async function hydrateCapa() {
@@ -116,7 +138,7 @@ async function pushTechSheetsAll(uid: string) {
     created_by: uid,
   }));
   if (rows.length === 0) return;
-  await supabase.from("tech_sheets").upsert(rows, { onConflict: "ref" });
+  await pushOrWarn("tech_sheets", rows, "ref", "as fichas técnicas");
 }
 
 async function hydrateTechSheets() {
@@ -140,7 +162,7 @@ export function useModulesCloudSync(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
-    let unsubs: Array<() => void> = [];
+    const unsubs: Array<() => void> = [];
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
       const uid = u.user?.id;

@@ -2,8 +2,19 @@
 // Realtime via Supabase channel — mensagens novas aparecem ao vivo.
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Send, Trash2, Loader2, MessageSquare, Pencil, History, X, Check,
-  Paperclip, Download, FileText, Image as ImageIcon, Maximize2,
+  Send,
+  Trash2,
+  Loader2,
+  MessageSquare,
+  Pencil,
+  History,
+  X,
+  Check,
+  Paperclip,
+  Download,
+  FileText,
+  Image as ImageIcon,
+  Maximize2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -41,7 +52,8 @@ const downloadCache = createSignedUrlCache(
     const { data, error } = await supabase.storage
       .from(BUCKET)
       .createSignedUrl(storage_path, DOWNLOAD_TTL, { download: file_name });
-    if (error || !data?.signedUrl) throw new Error(error?.message ?? "Falha ao gerar link de download");
+    if (error || !data?.signedUrl)
+      throw new Error(error?.message ?? "Falha ao gerar link de download");
     return data.signedUrl;
   },
   { ttlMs: DOWNLOAD_TTL * 1000, max: DOWNLOAD_CACHE_MAX, refreshMarginMs: REFRESH_MARGIN_MS },
@@ -126,7 +138,9 @@ function renderMessage(msg: string) {
   const parts = msg.split(/(@[\w.-]+)/g);
   return parts.map((p, i) =>
     p.startsWith("@") ? (
-      <span key={i} className="text-primary font-semibold">{p}</span>
+      <span key={i} className="text-primary font-semibold">
+        {p}
+      </span>
     ) : (
       <span key={i}>{p}</span>
     ),
@@ -197,7 +211,10 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         const { data: atts } = await supabase
           .from("comment_attachments")
           .select("*")
-          .in("comment_id", list.map((c) => c.id));
+          .in(
+            "comment_id",
+            list.map((c) => c.id),
+          );
         const grouped: Record<string, Attachment[]> = {};
         for (const a of (atts ?? []) as Attachment[]) {
           (grouped[a.comment_id] ??= []).push(a);
@@ -286,7 +303,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
   const uploadAttachments = async (commentId: string, files: File[]) => {
     if (!user || files.length === 0) return;
     for (const file of files) {
-      const safe = file.name.replace(/[^\w.\-]+/g, "_");
+      const safe = file.name.replace(/[^\w.-]+/g, "_");
       const path = `${user.id}/comments/${commentId}/${crypto.randomUUID()}_${safe}`;
       const { error: upErr } = await supabase.storage
         .from(BUCKET)
@@ -374,7 +391,9 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
   };
 
   return (
-    <div className={`rounded-md border border-white/10 bg-white/[0.025] flex flex-col ${className ?? ""}`}>
+    <div
+      className={`rounded-md border border-white/10 bg-white/[0.025] flex flex-col ${className ?? ""}`}
+    >
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
         <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white font-bold">
           <MessageSquare className="w-3.5 h-3.5 text-primary" /> {title}
@@ -419,10 +438,19 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                       className="resize-none text-[12px]"
                     />
                     <div className="flex gap-1.5">
-                      <Button size="sm" className="h-6 text-[10px]" onClick={() => void saveEdit(c.id)}>
+                      <Button
+                        size="sm"
+                        className="h-6 text-[10px]"
+                        onClick={() => void saveEdit(c.id)}
+                      >
                         <Check className="w-3 h-3 mr-1" /> Salvar
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-6 text-[10px]" onClick={cancelEdit}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 text-[10px]"
+                        onClick={cancelEdit}
+                      >
                         <X className="w-3 h-3 mr-1" /> Cancelar
                       </Button>
                     </div>
@@ -447,13 +475,24 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
               </div>
               {mine && !isEditing && (
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                  <Button variant="ghost" size="icon-sm" onClick={() => startEdit(c)} aria-label="Editar comentário" className="text-muted-foreground hover:text-primary">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => startEdit(c)}
+                    aria-label="Editar comentário"
+                    className="text-muted-foreground hover:text-primary"
+                  >
                     <Pencil className="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon-sm" onClick={() => void remove(c.id)} aria-label="Apagar comentário" className="text-muted-foreground hover:text-rose-400">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => void remove(c.id)}
+                    aria-label="Apagar comentário"
+                    className="text-muted-foreground hover:text-rose-400"
+                  >
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
-
                 </div>
               )}
             </div>
@@ -479,7 +518,10 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         {pendingFiles.length > 0 && (
           <ul className="flex flex-wrap gap-1.5">
             {pendingFiles.map((f, i) => (
-              <li key={i} className="flex items-center gap-1.5 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] text-white/80">
+              <li
+                key={i}
+                className="flex items-center gap-1.5 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[10px] text-white/80"
+              >
                 <FileText className="w-3 h-3 text-primary" />
                 <span className="truncate max-w-[160px]">{f.name}</span>
                 <span className="text-muted-foreground">{fmtSize(f.size)}</span>
@@ -507,10 +549,10 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
               }}
             />
             <Button
- size="sm"
- variant="ghost"
- className="text-[10px] gap-1"
- onClick={() => fileInputRef.current?.click()}
+              size="sm"
+              variant="ghost"
+              className="text-[10px] gap-1"
+              onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip className="w-3.5 h-3.5" /> Anexar
             </Button>
@@ -519,12 +561,16 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
             </span>
           </div>
           <Button
- size="sm"
- disabled={sending || (!draft.trim() && pendingFiles.length === 0) || !user}
- onClick={() => void send()}
+            size="sm"
+            disabled={sending || (!draft.trim() && pendingFiles.length === 0) || !user}
+            onClick={() => void send()}
             className="gap-1.5"
           >
-            {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+            {sending ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Send className="w-3.5 h-3.5" />
+            )}
             Enviar
           </Button>
         </div>
@@ -561,7 +607,9 @@ function HistoryButton({ commentId }: { commentId: string }) {
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-96 p-3 bg-background/95 border-white/10">
-        <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-white mb-2">Histórico</div>
+        <div className="text-[10px] uppercase tracking-[0.18em] font-bold text-white mb-2">
+          Histórico
+        </div>
         {loading && (
           <div className="flex justify-center py-4 text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -575,11 +623,16 @@ function HistoryButton({ commentId }: { commentId: string }) {
             {revisions.map((r) => (
               <li key={r.id} className="border-l-2 border-white/10 pl-2">
                 <div className="text-[9px] text-muted-foreground">{timeAgo(r.edited_at)}</div>
-                <div className="text-[11px] text-white/80 whitespace-pre-wrap">{r.previous_message}</div>
+                <div className="text-[11px] text-white/80 whitespace-pre-wrap">
+                  {r.previous_message}
+                </div>
                 {Array.isArray(r.previous_attachments) && r.previous_attachments.length > 0 && (
                   <ul className="mt-1 space-y-0.5">
                     {r.previous_attachments.map((a, i) => (
-                      <li key={i} className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <li
+                        key={i}
+                        className="text-[10px] text-muted-foreground flex items-center gap-1"
+                      >
                         <FileText className="w-2.5 h-2.5" />
                         <button
                           onClick={() => void downloadAttachment(a.storage_path, a.file_name)}
@@ -732,7 +785,9 @@ export function AttachmentItem({
             <FileText className="w-3 h-3 text-primary shrink-0" />
           )}
           <span className="truncate flex-1">{attachment.file_name}</span>
-          <span className="text-[9px] text-muted-foreground shrink-0">{fmtSize(attachment.size_bytes)}</span>
+          <span className="text-[9px] text-muted-foreground shrink-0">
+            {fmtSize(attachment.size_bytes)}
+          </span>
           <button
             onClick={() => void handleDownload()}
             disabled={downloading}
@@ -755,9 +810,7 @@ export function AttachmentItem({
             </button>
           )}
         </div>
-        {downloadError && (
-          <div className="text-[9px] text-rose-400 pl-5">{downloadError}</div>
-        )}
+        {downloadError && <div className="text-[9px] text-rose-400 pl-5">{downloadError}</div>}
       </div>
     </li>
   );

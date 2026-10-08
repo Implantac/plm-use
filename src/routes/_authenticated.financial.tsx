@@ -42,7 +42,13 @@ function FinancialPage() {
     // Em produção, virá do ERP financeiro.
 
     { id: 1, label: "Contas a Receber (B2B)", val: "R$ 342k", due: "15 dias", source: "vendas" },
-    { id: 2, label: "Contas a Pagar (Suppliers)", val: "R$ 124k", due: "08 dias", source: "producao" },
+    {
+      id: 2,
+      label: "Contas a Pagar (Suppliers)",
+      val: "R$ 124k",
+      due: "08 dias",
+      source: "producao",
+    },
     { id: 3, label: "Impostos/Fiscal", val: "R$ 42k", due: "02 dias", source: "outros" },
   ]);
   type Transaction = (typeof transactions)[number] & { source?: string };
@@ -63,11 +69,17 @@ function FinancialPage() {
         label: transaction.label,
         val: transaction.val,
         due: transaction.due,
-        source: (transaction as any).source ?? "marketing",
+        // `source` chega como string do form; só as fontes conhecidas entram,
+        // senão cai no default — substitui o `as any` que mascará o cast.
+        source: (["marketing", "vendas", "producao", "estoque", "outros"] as const).includes(
+          transaction.source as (typeof formData)["source"],
+        )
+          ? (transaction.source as (typeof formData)["source"])
+          : "marketing",
       });
     } else {
       setEditingTransaction(null);
-      setFormData({ label: "", val: "", due: "", source: "marketing" as any });
+      setFormData({ label: "", val: "", due: "", source: "marketing" });
     }
     setIsDialogOpen(true);
   };
@@ -79,13 +91,13 @@ function FinancialPage() {
       );
       toast.success("Lançamento financeiro atualizado");
     } else {
-      const newTrans = {
+      const newTrans: { id: number } & typeof formData = {
         id: Date.now(),
         ...formData,
       };
 
       // Normaliza payload legado caso o usuário não preencha fonte
-      if (!newTrans.source) (newTrans as any).source = "marketing";
+      if (!newTrans.source) newTrans.source = "marketing";
       setTransactions([newTrans, ...transactions]);
       toast.success("Nova transação registrada");
     }
@@ -112,16 +124,10 @@ function FinancialPage() {
       ]}
     >
       <div className="flex justify-end gap-4 mb-8">
-        <Button
- variant="outline"
- className="text-[10px] tracking-[0.16em] gap-2"
- >
+        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
           <FileText className="w-4 h-4" /> DRE Gerencial
         </Button>
-        <Button
- variant="outline"
- className="text-[10px] tracking-[0.16em] gap-2"
- >
+        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
           <Wallet className="w-4 h-4" /> Conciliação
         </Button>
       </div>
@@ -288,7 +294,7 @@ function FinancialPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      source: e.target.value as any,
+                      source: e.target.value as typeof formData.source,
                     })
                   }
                   className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
@@ -320,17 +326,10 @@ function FinancialPage() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button
- variant="ghost"
- onClick={() => setIsDialogOpen(false)}
-              className="text-[10px]"
-            >
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
               Cancelar
             </Button>
-            <Button
- onClick={handleSave}
- className="text-[10px]"
- >
+            <Button onClick={handleSave} className="text-[10px]">
               Efetivar Lançamento
             </Button>
           </DialogFooter>
