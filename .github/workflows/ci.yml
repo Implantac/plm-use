@@ -1,0 +1,52 @@
+# CI mínima do USE MODA PLM — o gate que faltava (revisão 08/10/2026, P0-3).
+#
+# Ordem deliberada: formatação → lint → tipos → testes → build.
+# O `prettier --check` vem primeiro porque erros de estilo dominavam o eslint
+# (todos com --fix disponível); separá-los dá sinais melhores no PR.
+#
+# E2E (tests/e2e/*.spec.py, Playwright/Python) não roda aqui: precisa de um
+# servidor com env Supabase e chromium. Ficou planejado para o runner de
+# staging quando o ambiente existir (ver TODO "staging").
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NODE_OPTIONS: "--max-old-space-size=6144" # build precisa de >1.3 GB; folga p/ nitro
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.16" # >=22.12 exigido pelo wrapper Lovable (package.json engines)
+          cache: npm
+
+      - name: Install (npm ci — lock é o de registro do package-lock.json)
+        run: npm ci
+
+      - name: Prettier (estilo)
+        run: npx prettier --check .
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Testes unitários (Vitest)
+        run: npm test
+
+      - name: Build (vite + nitro, preset cloudflare-module)
+        run: npm run build

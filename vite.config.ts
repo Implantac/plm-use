@@ -12,4 +12,17 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      // O wrapper acima já define host/port/strictPort para o sandbox do Lovable, mas
+      // não libera hosts de preview externos — o dev server respondia HTTP 403
+      // ("Blocked request. This host is not allowed.") para o host do sandbox de
+      // preview, o que impedia abrir o app fora do Lovable.
+      //
+      // `true` desativa a checagem por completo, o que é aceitável num dev server
+      // (ele só escuta quem consegue alcançar a porta). Estes hosts são de
+      // desenvolvimento/preview — nenhum deles é domínio de produção.
+      allowedHosts: true,
+    },
+  },
 });
