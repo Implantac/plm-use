@@ -8,12 +8,23 @@ export type LaunchItemRow = Database["public"]["Tables"]["launch_item"]["Row"];
 export type LaunchHandoffRow = Database["public"]["Tables"]["launch_handoff"]["Row"];
 
 export type LaunchWaveStatus =
-  | "rascunho" | "em_revisao" | "aprovada" | "publicada"
-  | "em_producao" | "lancada" | "encerrada" | "cancelada";
+  | "rascunho"
+  | "em_revisao"
+  | "aprovada"
+  | "publicada"
+  | "em_producao"
+  | "lancada"
+  | "encerrada"
+  | "cancelada";
 
 export type LaunchItemStatus =
-  | "proposto" | "validado" | "aprovado" | "em_producao"
-  | "disponivel" | "esgotado" | "descontinuado";
+  | "proposto"
+  | "validado"
+  | "aprovado"
+  | "em_producao"
+  | "disponivel"
+  | "esgotado"
+  | "descontinuado";
 
 export const WAVE_STATUS_LABEL: Record<LaunchWaveStatus, string> = {
   rascunho: "Rascunho",

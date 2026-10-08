@@ -26,11 +26,11 @@ export function ExportMenu({ title, filename, rows, columns, label = "Exportar" 
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
- variant="outline"
- size="sm"
- disabled={disabled}
- className="bg-white/5 hover:bg-white/10 text-[10px] tracking-[0.18em]"
- >
+          variant="outline"
+          size="sm"
+          disabled={disabled}
+          className="bg-white/5 hover:bg-white/10 text-[10px] tracking-[0.18em]"
+        >
           <Download className="w-3.5 h-3.5 mr-2" />
           {label}
         </Button>
@@ -44,7 +44,9 @@ export function ExportMenu({ title, filename, rows, columns, label = "Exportar" 
           className="text-[11px] cursor-pointer"
           onClick={() => {
             downloadCsv(filename, rows, columns);
-            toast.success("CSV exportado", { description: `${rows.length} linhas · ${filename}.csv` });
+            toast.success("CSV exportado", {
+              description: `${rows.length} linhas · ${filename}.csv`,
+            });
           }}
         >
           <FileSpreadsheet className="w-3.5 h-3.5 mr-2" /> Baixar CSV

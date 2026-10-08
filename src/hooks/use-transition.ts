@@ -4,10 +4,7 @@ import { useCallback, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import {
-  performTransition,
-  type TransitionResult,
-} from "@/lib/workflow/transition.functions";
+import { performTransition, type TransitionResult } from "@/lib/workflow/transition.functions";
 import type { WorkflowEntityType } from "@/hooks/use-workflow";
 
 // Mapa entity_type → query keys que devem ser invalidadas após a transição.
@@ -50,9 +47,7 @@ export function useWorkflowTransition(entityType: WorkflowEntityType) {
         // Invalida coleções e a entidade específica + timeline de eventos
         const keys = INVALIDATION_KEYS[entityType] ?? [[entityType]];
         await Promise.all([
-          ...keys.map((key) =>
-            queryClient.invalidateQueries({ queryKey: key }),
-          ),
+          ...keys.map((key) => queryClient.invalidateQueries({ queryKey: key })),
           queryClient.invalidateQueries({
             queryKey: ["entity_events", entityType, input.entity_id],
           }),

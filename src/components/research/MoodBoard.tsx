@@ -18,10 +18,26 @@ const REFS = [
 
 const PALETA = ["#1a1d2e", "#d4b896", "#6b8e7f", "#c9a87c", "#3a4a5c", "#e8d5b7"];
 const TECIDOS = [
-  { nome: "Linho Off-White", cor: "#ece4d2", textura: "linear-gradient(135deg, #ece4d2 0%, #d4c8a8 100%)" },
-  { nome: "Malha Pima", cor: "#cdb6a3", textura: "linear-gradient(135deg, #cdb6a3 0%, #a89378 100%)" },
-  { nome: "Sarja Verde Sage", cor: "#6b8e7f", textura: "linear-gradient(135deg, #7ba090 0%, #5a7d6e 100%)" },
-  { nome: "Voil Tabaco", cor: "#9a7c5a", textura: "linear-gradient(135deg, #b08e6a 0%, #7a5e3e 100%)" },
+  {
+    nome: "Linho Off-White",
+    cor: "#ece4d2",
+    textura: "linear-gradient(135deg, #ece4d2 0%, #d4c8a8 100%)",
+  },
+  {
+    nome: "Malha Pima",
+    cor: "#cdb6a3",
+    textura: "linear-gradient(135deg, #cdb6a3 0%, #a89378 100%)",
+  },
+  {
+    nome: "Sarja Verde Sage",
+    cor: "#6b8e7f",
+    textura: "linear-gradient(135deg, #7ba090 0%, #5a7d6e 100%)",
+  },
+  {
+    nome: "Voil Tabaco",
+    cor: "#9a7c5a",
+    textura: "linear-gradient(135deg, #b08e6a 0%, #7a5e3e 100%)",
+  },
 ];
 
 export function MoodBoard() {
@@ -55,9 +71,7 @@ export function MoodBoard() {
     const path = await uploadAsset(file, "moodboard");
     setUploading(false);
     if (!path) return toast.error("Falha no upload");
-    const { data } = await supabase.storage
-      .from("use-moda-assets")
-      .createSignedUrl(path, 3600);
+    const { data } = await supabase.storage.from("use-moda-assets").createSignedUrl(path, 3600);
     if (data?.signedUrl) {
       setImgs((arr) => [data.signedUrl, ...arr]);
       toast.success("Imagem enviada ao Cloud");
@@ -77,8 +91,15 @@ export function MoodBoard() {
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {imgs.map((src, i) => (
-          <div key={src + i} className="aspect-[3/4] rounded-md overflow-hidden border border-white/10 bg-white/5 group relative">
-            <img src={src} alt={`ref ${i}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+          <div
+            key={src + i}
+            className="aspect-[3/4] rounded-md overflow-hidden border border-white/10 bg-white/5 group relative"
+          >
+            <img
+              src={src}
+              alt={`ref ${i}`}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            />
           </div>
         ))}
         <label className="aspect-[3/4] rounded-md border border-dashed border-white/15 bg-white/[0.02] flex flex-col items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/40 cursor-pointer transition">
@@ -90,16 +111,39 @@ export function MoodBoard() {
           <span className="text-[9px] uppercase tracking-widest font-bold">
             {uploading ? "Enviando" : "Upload"}
           </span>
-          <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={(e) => {
-            const f = e.target.files?.[0]; if (!f) return;
-            void handleUpload(f);
-          }} />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            disabled={uploading}
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (!f) return;
+              void handleUpload(f);
+            }}
+          />
         </label>
       </div>
 
       <div className="flex gap-2">
-        <Input value={novo} onChange={(e) => setNovo(e.target.value)} placeholder="Cole URL de referência" className="text-[11px]" />
-        <Button size="sm" className="gap-1" onClick={() => { if (novo) { setImgs([novo, ...imgs]); setNovo(""); } }}><Plus className="w-3.5 h-3.5" /> Adicionar</Button>
+        <Input
+          value={novo}
+          onChange={(e) => setNovo(e.target.value)}
+          placeholder="Cole URL de referência"
+          className="text-[11px]"
+        />
+        <Button
+          size="sm"
+          className="gap-1"
+          onClick={() => {
+            if (novo) {
+              setImgs([novo, ...imgs]);
+              setNovo("");
+            }
+          }}
+        >
+          <Plus className="w-3.5 h-3.5" /> Adicionar
+        </Button>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6 border-t border-white/5 pt-6">
@@ -110,8 +154,13 @@ export function MoodBoard() {
           <div className="flex gap-3 flex-wrap">
             {PALETA.map((c) => (
               <div key={c} className="space-y-1 text-center">
-                <div className="w-16 h-20 rounded-md border border-white/10 shadow-lg" style={{ background: c }} />
-                <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">{c}</span>
+                <div
+                  className="w-16 h-20 rounded-md border border-white/10 shadow-lg"
+                  style={{ background: c }}
+                />
+                <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
+                  {c}
+                </span>
               </div>
             ))}
           </div>
@@ -122,11 +171,19 @@ export function MoodBoard() {
           </h4>
           <div className="space-y-2">
             {TECIDOS.map((t) => (
-              <div key={t.nome} className="flex items-center gap-3 p-2 rounded-md border border-white/10 bg-white/[0.02]">
-                <div className="w-14 h-10 rounded-md border border-white/10" style={{ background: t.textura }} />
+              <div
+                key={t.nome}
+                className="flex items-center gap-3 p-2 rounded-md border border-white/10 bg-white/[0.02]"
+              >
+                <div
+                  className="w-14 h-10 rounded-md border border-white/10"
+                  style={{ background: t.textura }}
+                />
                 <div className="flex-1">
                   <p className="text-[11px] font-bold text-white">{t.nome}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-muted-foreground">{t.cor}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                    {t.cor}
+                  </p>
                 </div>
               </div>
             ))}

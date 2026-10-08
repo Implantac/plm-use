@@ -149,7 +149,9 @@ export function NovaReferenciaDialog({
       if (p) toast.success(`Referência ${created.code} criada com piloto rodada ${p.rodada}`);
       else toast.warning(`Referência ${created.code} criada, mas o piloto falhou`);
     } else {
-      toast.success(`Referência ${created.code} criada em ${REFERENCE_STATUS_LABEL[created.status]}`);
+      toast.success(
+        `Referência ${created.code} criada em ${REFERENCE_STATUS_LABEL[created.status]}`,
+      );
     }
     setBusy(false);
     onOpenChange(false);
@@ -162,7 +164,8 @@ export function NovaReferenciaDialog({
         <DialogHeader>
           <DialogTitle>Nova referência</DialogTitle>
           <DialogDescription>
-            Identifique a peça, escolha a etapa inicial do ciclo de vida e, se quiser, já abra o piloto.
+            Identifique a peça, escolha a etapa inicial do ciclo de vida e, se quiser, já abra o
+            piloto.
           </DialogDescription>
         </DialogHeader>
 
@@ -252,15 +255,30 @@ export function NovaReferenciaDialog({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="ref-line">Linha</Label>
-                <Input id="ref-line" value={line} onChange={(e) => setLine(e.target.value)} placeholder="Casual" />
+                <Input
+                  id="ref-line"
+                  value={line}
+                  onChange={(e) => setLine(e.target.value)}
+                  placeholder="Casual"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="ref-theme">Tema</Label>
-                <Input id="ref-theme" value={theme} onChange={(e) => setTheme(e.target.value)} placeholder="Beachwear" />
+                <Input
+                  id="ref-theme"
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
+                  placeholder="Beachwear"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="ref-season">Temporada</Label>
-                <Input id="ref-season" value={season} onChange={(e) => setSeason(e.target.value)} placeholder="SS27" />
+                <Input
+                  id="ref-season"
+                  value={season}
+                  onChange={(e) => setSeason(e.target.value)}
+                  placeholder="SS27"
+                />
               </div>
             </div>
           </section>

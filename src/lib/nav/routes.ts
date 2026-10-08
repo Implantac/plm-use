@@ -28,7 +28,10 @@ export type RouteMeta = {
   quickActions?: QuickAction[];
 };
 
-export const NAV_GROUPS: Record<RouteMeta["group"], { id: RouteMeta["group"]; label: string; parent?: string }> = {
+export const NAV_GROUPS: Record<
+  RouteMeta["group"],
+  { id: RouteMeta["group"]; label: string; parent?: string }
+> = {
   geral: { id: "geral", label: "Geral" },
   "plm-criacao": { id: "plm-criacao", label: "Pesquisa & Criação", parent: "PLM · Produto" },
   "plm-colecao": { id: "plm-colecao", label: "Coleção", parent: "PLM · Produto" },
@@ -47,23 +50,94 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
 
   // PLM · Pesquisa & Criação
   { path: "/research", label: "Pesquisa", group: "plm-criacao", crumbs: ["PLM", "Criação"] },
-  { path: "/colors", label: "Cartela de Cores", group: "plm-criacao", crumbs: ["PLM", "Criação"], quickActions: [{ id: "new-color", label: "Nova cor", event: "quick:new-color" }] },
-  { path: "/prints", label: "Cartela de Estampas", group: "plm-criacao", crumbs: ["PLM", "Criação"], quickActions: [{ id: "new-print", label: "Nova estampa", event: "quick:new-print" }] },
-  { path: "/display", label: "Painel de Displayagem", group: "plm-criacao", crumbs: ["PLM", "Criação"] },
-  { path: "/looks", label: "Coordenados · Looks", group: "plm-criacao", crumbs: ["PLM", "Criação"], quickActions: [{ id: "new-look", label: "Novo look", event: "quick:new-look" }] },
+  {
+    path: "/colors",
+    label: "Cartela de Cores",
+    group: "plm-criacao",
+    crumbs: ["PLM", "Criação"],
+    quickActions: [{ id: "new-color", label: "Nova cor", event: "quick:new-color" }],
+  },
+  {
+    path: "/prints",
+    label: "Cartela de Estampas",
+    group: "plm-criacao",
+    crumbs: ["PLM", "Criação"],
+    quickActions: [{ id: "new-print", label: "Nova estampa", event: "quick:new-print" }],
+  },
+  {
+    path: "/display",
+    label: "Painel de Displayagem",
+    group: "plm-criacao",
+    crumbs: ["PLM", "Criação"],
+  },
+  {
+    path: "/looks",
+    label: "Coordenados · Looks",
+    group: "plm-criacao",
+    crumbs: ["PLM", "Criação"],
+    quickActions: [{ id: "new-look", label: "Novo look", event: "quick:new-look" }],
+  },
 
   // PLM · Coleção
-  { path: "/collections", label: "Coleções", group: "plm-colecao", crumbs: ["PLM", "Coleção"], quickActions: [{ id: "new-collection", label: "Nova coleção", event: "quick:new-collection" }] },
-  { path: "/collection-map", label: "Mapa de Coleção", group: "plm-colecao", crumbs: ["PLM", "Coleção"] },
-  { path: "/references", label: "Núcleo · Referências", group: "plm-colecao", crumbs: ["PLM", "Coleção"], quickActions: [{ id: "new-ref", label: "Nova referência", event: "quick:new-reference" }] },
+  {
+    path: "/collections",
+    label: "Coleções",
+    group: "plm-colecao",
+    crumbs: ["PLM", "Coleção"],
+    quickActions: [{ id: "new-collection", label: "Nova coleção", event: "quick:new-collection" }],
+  },
+  {
+    path: "/collection-map",
+    label: "Mapa de Coleção",
+    group: "plm-colecao",
+    crumbs: ["PLM", "Coleção"],
+  },
+  {
+    path: "/references",
+    label: "Núcleo · Referências",
+    group: "plm-colecao",
+    crumbs: ["PLM", "Coleção"],
+    quickActions: [{ id: "new-ref", label: "Nova referência", event: "quick:new-reference" }],
+  },
 
   // PLM · Engenharia
-  { path: "/development", label: "Desenvolvimento", group: "plm-engenharia", crumbs: ["PLM", "Engenharia"] },
-  { path: "/prototypes", label: "Protótipos", group: "plm-engenharia", crumbs: ["PLM", "Engenharia"], quickActions: [{ id: "new-piloto", label: "Novo piloto", event: "quick:new-piloto" }] },
-  { path: "/tech-sheet", label: "Ficha Técnica", group: "plm-engenharia", crumbs: ["PLM", "Engenharia"] },
-  { path: "/measurements", label: "Tabela de Medidas", group: "plm-engenharia", crumbs: ["PLM", "Engenharia"] },
-  { path: "/pieces-report", label: "Relatório de Peças", group: "plm-engenharia", crumbs: ["PLM", "Engenharia"] },
-  { path: "/cad", label: "CAD & Modelagem", group: "plm-engenharia", crumbs: ["PLM", "Engenharia"] },
+  {
+    path: "/development",
+    label: "Desenvolvimento",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+  },
+  {
+    path: "/prototypes",
+    label: "Protótipos",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+    quickActions: [{ id: "new-piloto", label: "Novo piloto", event: "quick:new-piloto" }],
+  },
+  {
+    path: "/tech-sheet",
+    label: "Ficha Técnica",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+  },
+  {
+    path: "/measurements",
+    label: "Tabela de Medidas",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+  },
+  {
+    path: "/pieces-report",
+    label: "Relatório de Peças",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+  },
+  {
+    path: "/cad",
+    label: "CAD & Modelagem",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+  },
 
   // PCP
   { path: "/production", label: "Produção", group: "pcp", crumbs: ["PCP"] },
@@ -84,7 +158,12 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   // Insights & IA
   { path: "/analytics", label: "BI Executivo", group: "insights", crumbs: ["Insights"] },
   { path: "/financial", label: "Financeiro", group: "insights", crumbs: ["Insights"] },
-  { path: "/ai-center", label: "AI Product Studio", group: "plm-criacao", crumbs: ["PLM", "Criação"] },
+  {
+    path: "/ai-center",
+    label: "AI Product Studio",
+    group: "plm-criacao",
+    crumbs: ["PLM", "Criação"],
+  },
   { path: "/ai-agents", label: "AI Agents", group: "insights", crumbs: ["Insights"] },
   { path: "/digital-twin", label: "Digital Twin", group: "insights", crumbs: ["Insights"] },
 
@@ -97,9 +176,9 @@ export function findRouteMeta(pathname: string): RouteMeta | undefined {
   // Match exato, senão prefixo mais longo.
   const exact = ROUTE_REGISTRY.find((r) => r.path === pathname);
   if (exact) return exact;
-  return ROUTE_REGISTRY
-    .filter((r) => pathname.startsWith(r.path + "/"))
-    .sort((a, b) => b.path.length - a.path.length)[0];
+  return ROUTE_REGISTRY.filter((r) => pathname.startsWith(r.path + "/")).sort(
+    (a, b) => b.path.length - a.path.length,
+  )[0];
 }
 
 export function dispatchQuickAction(event: string) {

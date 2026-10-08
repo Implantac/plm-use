@@ -16,10 +16,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const HOT_PATH = "shared/hot.png";
 const N = 4;
@@ -123,9 +120,7 @@ describe("CommentsPanel E2E — falha concorrente e ausência de cache corrompid
     //    essa nova tentativa DEVEM ser deduplicados (mesmo inflight).
     for (let i = 1; i < N; i++) fireEvent.click(retries[i]);
     await flush();
-    const afterConcurrentRetries = createSignedUrl.mock.calls.filter(
-      ([p]) => p === HOT_PATH,
-    );
+    const afterConcurrentRetries = createSignedUrl.mock.calls.filter(([p]) => p === HOT_PATH);
     expect(afterConcurrentRetries).toHaveLength(2); // ainda 2, não 2+N-1
     expect(deferredFor.get(HOT_PATH)?.length).toBe(1);
 
@@ -145,9 +140,7 @@ describe("CommentsPanel E2E — falha concorrente e ausência de cache corrompid
     expect(sharedUrl).toMatch(/\?v=1$/);
 
     // 6) Sanidade: um mount NOVO subsequente reusa o cache repopulado (HIT).
-    const callsAfterSuccess = createSignedUrl.mock.calls.filter(
-      ([p]) => p === HOT_PATH,
-    ).length;
+    const callsAfterSuccess = createSignedUrl.mock.calls.filter(([p]) => p === HOT_PATH).length;
     render(
       <AttachmentItem
         attachment={imgAttachment("hot-late")}
@@ -156,9 +149,9 @@ describe("CommentsPanel E2E — falha concorrente e ausência de cache corrompid
       />,
     );
     await flush();
-    expect(
-      createSignedUrl.mock.calls.filter(([p]) => p === HOT_PATH),
-    ).toHaveLength(callsAfterSuccess);
+    expect(createSignedUrl.mock.calls.filter(([p]) => p === HOT_PATH)).toHaveLength(
+      callsAfterSuccess,
+    );
     expect(screen.getByAltText("hot-late.png").getAttribute("src")).toBe(sharedUrl);
   });
 });

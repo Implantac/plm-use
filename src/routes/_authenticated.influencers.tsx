@@ -5,19 +5,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Heart, Instagram, MapPin, Package, Plus, Send, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
-import { REGIOES_BR, useInfluencersStore, type Envio, type Influencer } from "@/lib/influencers/store";
+import {
+  REGIOES_BR,
+  useInfluencersStore,
+  type Envio,
+  type Influencer,
+} from "@/lib/influencers/store";
 
 export const Route = createFileRoute("/_authenticated/influencers")({
   component: InfluencersPage,
@@ -96,13 +96,20 @@ function InfluencersPage() {
               i.envios.filter((e) => e.engajamento).reduce((a, e) => a + (e.engajamento ?? 0), 0) /
                 Math.max(1, i.envios.filter((e) => e.engajamento).length) || 0;
             return (
-              <Card key={i.id} className="glass-card rounded-lg hover:border-primary/30 transition cursor-pointer" onClick={() => setSel(i)}>
+              <Card
+                key={i.id}
+                className="glass-card rounded-lg hover:border-primary/30 transition cursor-pointer"
+                onClick={() => setSel(i)}
+              >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="flex-1 min-w-[220px]">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-bold text-white">{i.nome}</p>
-                        <Badge variant="outline" className="text-[9px] border-primary/40 text-primary">
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] border-primary/40 text-primary"
+                        >
                           {i.perfil}
                         </Badge>
                       </div>
@@ -111,13 +118,18 @@ function InfluencersPage() {
                         <MapPin className="h-3 w-3" /> {i.uf} • {i.segmento}
                       </p>
                       <p className="text-[10px] text-muted-foreground mt-1">
-                        {(i.seguidores / 1000).toFixed(0)}k seguidores • R$ {i.custoMedio.toLocaleString("pt-BR")} médio/envio
+                        {(i.seguidores / 1000).toFixed(0)}k seguidores • R${" "}
+                        {i.custoMedio.toLocaleString("pt-BR")} médio/envio
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Vendas geradas</p>
+                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                        Vendas geradas
+                      </p>
                       <p className="text-2xl font-bold text-emerald-300">{i.vendasGeradas}</p>
-                      <p className="text-[10px] text-muted-foreground">{i.envios.length} envios • {eng.toFixed(1)}% eng</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {i.envios.length} envios • {eng.toFixed(1)}% eng
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -169,7 +181,7 @@ function InfluencersPage() {
                 ROI estimado:{" "}
                 <span className="text-emerald-300 font-bold">
                   {totais.investido > 0
-                    ? `${Math.round((totais.vendasTot * 350) / totais.investido * 100)}%`
+                    ? `${Math.round(((totais.vendasTot * 350) / totais.investido) * 100)}%`
                     : "—"}
                 </span>{" "}
                 (ticket médio R$ 350)
@@ -199,8 +211,8 @@ function InfluencersPage() {
                   Histórico de envios ({sel.envios.length})
                 </p>
                 <Button
- size="sm"
- onClick={() => setEnvioOpen(true)}
+                  size="sm"
+                  onClick={() => setEnvioOpen(true)}
                   className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />
@@ -242,9 +254,7 @@ function InfluencersPage() {
                         {e.status}
                       </Badge>
                       {e.engajamento && (
-                        <p className="text-[10px] text-emerald-300 mt-1">
-                          {e.engajamento}% eng
-                        </p>
+                        <p className="text-[10px] text-emerald-300 mt-1">{e.engajamento}% eng</p>
                       )}
                     </div>
                   </div>
@@ -253,17 +263,25 @@ function InfluencersPage() {
 
               <div className="mt-3 grid grid-cols-3 gap-2 text-center">
                 <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Vendas</p>
+                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                    Vendas
+                  </p>
                   <p className="text-lg font-bold text-emerald-300">{sel.vendasGeradas}</p>
                 </div>
                 <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Custo médio</p>
-                  <p className="text-lg font-bold text-white">R$ {sel.custoMedio.toLocaleString("pt-BR")}</p>
+                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                    Custo médio
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    R$ {sel.custoMedio.toLocaleString("pt-BR")}
+                  </p>
                 </div>
                 <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Conversão</p>
+                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                    Conversão
+                  </p>
                   <p className="text-lg font-bold text-primary">
-                    {((sel.vendasGeradas / Math.max(1, sel.envios.length)) | 0)}/envio
+                    {(sel.vendasGeradas / Math.max(1, sel.envios.length)) | 0}/envio
                   </p>
                 </div>
               </div>
@@ -280,7 +298,12 @@ function InfluencersPage() {
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground" required>Referência</Label>
+              <Label
+                className="text-[10px] uppercase tracking-wider text-muted-foreground"
+                required
+              >
+                Referência
+              </Label>
               <Input
                 value={novoRef}
                 onChange={(e) => {
@@ -294,7 +317,12 @@ function InfluencersPage() {
               {envioErrors.ref && <FieldMessage variant="error">{envioErrors.ref}</FieldMessage>}
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground" required>Nome da peça</Label>
+              <Label
+                className="text-[10px] uppercase tracking-wider text-muted-foreground"
+                required
+              >
+                Nome da peça
+              </Label>
               <Input
                 value={novoNome}
                 onChange={(e) => {
@@ -307,7 +335,10 @@ function InfluencersPage() {
               />
               {envioErrors.nome && <FieldMessage variant="error">{envioErrors.nome}</FieldMessage>}
             </div>
-            <Button onClick={registrarEnvio} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button
+              onClick={registrarEnvio}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
               <Send className="h-3.5 w-3.5 mr-1" />
               Registrar envio
             </Button>

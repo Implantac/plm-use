@@ -29,9 +29,7 @@ export async function logActivity(input: LogInput) {
   const user = u.user;
   if (!user) return;
   const user_name =
-    (user.user_metadata?.full_name as string | undefined) ??
-    user.email?.split("@")[0] ??
-    "Usuário";
+    (user.user_metadata?.full_name as string | undefined) ?? user.email?.split("@")[0] ?? "Usuário";
   await supabase.from("activity_log").insert({
     user_id: user.id,
     user_name,

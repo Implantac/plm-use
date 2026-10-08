@@ -77,10 +77,18 @@ export function ConsumoPanel({ items }: { items: ConsumoItem[] }) {
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-[10px]">
                   <span className="text-muted-foreground">
-                    Prev <span className="text-white font-bold">{i.previsto}{i.unit}</span>
+                    Prev{" "}
+                    <span className="text-white font-bold">
+                      {i.previsto}
+                      {i.unit}
+                    </span>
                   </span>
                   <span className="text-muted-foreground">
-                    Real <span className="text-white font-bold">{i.real}{i.unit}</span>
+                    Real{" "}
+                    <span className="text-white font-bold">
+                      {i.real}
+                      {i.unit}
+                    </span>
                   </span>
                   <span className={`font-bold text-right ${cor}`}>
                     {desvioAbs > 0 ? "+" : ""}

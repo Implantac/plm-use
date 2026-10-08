@@ -76,7 +76,13 @@ describe("CommentsPanel E2E — política LRU do signed-url-cache", () => {
 
     // 4) "Clique em preview" no anexo EVICTADO (bulk/1.png) — o AttachmentItem
     //    dispara getPreviewUrl no mount; cache MISS → novo createSignedUrl.
-    render(<AttachmentItem attachment={imgAttachment("bulk/1.png", "evicted")} canRemove={false} onRemove={() => {}} />);
+    render(
+      <AttachmentItem
+        attachment={imgAttachment("bulk/1.png", "evicted")}
+        canRemove={false}
+        onRemove={() => {}}
+      />,
+    );
     await flush();
 
     const evictedImg = screen.getByAltText("evicted.png");
@@ -88,7 +94,13 @@ describe("CommentsPanel E2E — política LRU do signed-url-cache", () => {
     // 5) "Clique em preview" no anexo PROMOVIDO (bulk/0.png) — permanece em
     //    cache; nenhum novo createSignedUrl é chamado e a URL é a mesma.
     cleanup();
-    render(<AttachmentItem attachment={imgAttachment("bulk/0.png", "promoted")} canRemove={false} onRemove={() => {}} />);
+    render(
+      <AttachmentItem
+        attachment={imgAttachment("bulk/0.png", "promoted")}
+        canRemove={false}
+        onRemove={() => {}}
+      />,
+    );
     await flush();
 
     const promotedImg = screen.getByAltText("promoted.png");

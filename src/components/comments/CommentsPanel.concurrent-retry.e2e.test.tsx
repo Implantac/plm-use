@@ -15,10 +15,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const HOT_PATH = "shared/retry.png";
 const N = 5;
@@ -91,9 +88,7 @@ describe("CommentsPanel E2E — retries concorrentes compartilham 1 fetch", () =
     expect(retryButtons).toHaveLength(N);
     expect(queue.get(HOT_PATH)?.length ?? 0).toBe(0);
 
-    const callsBeforeRetry = createSignedUrl.mock.calls.filter(
-      ([p]) => p === HOT_PATH,
-    ).length;
+    const callsBeforeRetry = createSignedUrl.mock.calls.filter(([p]) => p === HOT_PATH).length;
 
     // 3) N cliques SIMULTÂNEOS em "Tentar novamente" (sem flush entre eles).
     //    Todos devem cair no mesmo inflight — 1 único novo createSignedUrl.
@@ -102,9 +97,7 @@ describe("CommentsPanel E2E — retries concorrentes compartilham 1 fetch", () =
     });
     await flush();
 
-    const callsAfterRetry = createSignedUrl.mock.calls.filter(
-      ([p]) => p === HOT_PATH,
-    ).length;
+    const callsAfterRetry = createSignedUrl.mock.calls.filter(([p]) => p === HOT_PATH).length;
     expect(callsAfterRetry - callsBeforeRetry).toBe(1);
     expect(queue.get(HOT_PATH)?.length).toBe(1); // apenas 1 inflight pendente
 

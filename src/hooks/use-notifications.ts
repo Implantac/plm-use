@@ -15,10 +15,7 @@ export type Notification = {
   created_at: string;
 };
 
-export type NewNotification = Pick<
-  Notification,
-  "external_id" | "severity" | "title"
-> &
+export type NewNotification = Pick<Notification, "external_id" | "severity" | "title"> &
   Partial<Pick<Notification, "detail" | "source" | "href">>;
 
 export function useNotifications() {
@@ -106,15 +103,9 @@ export function useNotifications() {
     [user, items],
   );
 
-  const markAsRead = useCallback(
-    async (id: string) => {
-      await supabase
-        .from("notifications")
-        .update({ read_at: new Date().toISOString() })
-        .eq("id", id);
-    },
-    [],
-  );
+  const markAsRead = useCallback(async (id: string) => {
+    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+  }, []);
 
   const markAllAsRead = useCallback(async () => {
     if (!user) return;

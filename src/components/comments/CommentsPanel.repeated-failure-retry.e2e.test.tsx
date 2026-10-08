@@ -15,10 +15,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const PATH = "repeat/x.png";
 const SUCCESS_URL = "https://signed.test/repeat/x.png?v=finally";
@@ -57,11 +54,7 @@ async function flush() {
 describe("CommentsPanel E2E — retries repetidos até recuperar", () => {
   it("cada retry após falha gera novo createSignedUrl; sucesso final exibe a URL e passa a servir do cache", async () => {
     // Sequência: falha 1 → falha 2 → falha 3 → sucesso.
-    const failures = [
-      "erro #1: timeout",
-      "erro #2: 500",
-      "erro #3: token inválido",
-    ];
+    const failures = ["erro #1: timeout", "erro #2: 500", "erro #3: token inválido"];
     for (const msg of failures) queue.push({ data: null, error: { message: msg } });
     queue.push({ data: { signedUrl: SUCCESS_URL }, error: null });
 

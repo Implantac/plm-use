@@ -45,29 +45,29 @@ piloto, ficha técnica ou compra.
 
 ## 3. Entradas
 
-| # | Entrada | Origem | Formato | Obrigatória? |
-|---|---------|--------|---------|--------------|
-| 1 | Moodboard da estação | Pesquisa (V2) | `MoodBoard` (`src/components/research/MoodBoard.tsx`) | SIM |
-| 2 | Tendências macro | Pesquisa | anotações + imagens | SIM |
-| 3 | Cartela de cores/tecidos | Pesquisa/Compras | lista com fornecedor sugerido | SIM |
-| 4 | Histórico de venda da estação anterior | ERP (via `ErpAdapter`, V9) | contrato `queryErp` | SIM |
-| 5 | Meta comercial da estação | Diretoria Comercial | número + mix por canal | SIM |
-| 6 | Orçamento de desenvolvimento | Diretoria Industrial | valor teto por coleção | SIM |
-| 7 | Calendário macro | PCP | datas-âncora (kickoff, mostruário, entrega) | SIM |
+| #   | Entrada                                | Origem                     | Formato                                               | Obrigatória? |
+| --- | -------------------------------------- | -------------------------- | ----------------------------------------------------- | ------------ |
+| 1   | Moodboard da estação                   | Pesquisa (V2)              | `MoodBoard` (`src/components/research/MoodBoard.tsx`) | SIM          |
+| 2   | Tendências macro                       | Pesquisa                   | anotações + imagens                                   | SIM          |
+| 3   | Cartela de cores/tecidos               | Pesquisa/Compras           | lista com fornecedor sugerido                         | SIM          |
+| 4   | Histórico de venda da estação anterior | ERP (via `ErpAdapter`, V9) | contrato `queryErp`                                   | SIM          |
+| 5   | Meta comercial da estação              | Diretoria Comercial        | número + mix por canal                                | SIM          |
+| 6   | Orçamento de desenvolvimento           | Diretoria Industrial       | valor teto por coleção                                | SIM          |
+| 7   | Calendário macro                       | PCP                        | datas-âncora (kickoff, mostruário, entrega)           | SIM          |
 
 Rastreabilidade: toda entrada vira registro em `collection_inputs` ligado a
 `collections.id` via `entity_relations` (H2-06).
 
 ## 4. Saídas
 
-| # | Saída | Destino | Entidade / Evento | Obrigatória? |
-|---|-------|---------|-------------------|--------------|
-| 1 | Coleção criada | H9-02 | `collections` + evento `collection.created` | SIM |
-| 2 | Carta-coleção aprovada | Todos os elos seguintes | `collections.status='aprovada'` + evento `collection.approved` | SIM |
-| 3 | Mix planejado por categoria | H9-02, H9-06 | `collection_targets` (categoria, qtde, ticket) | SIM |
-| 4 | Calendário macro | H9-08 (PCP) | `collection_calendar` (marco, data, responsável) | SIM |
-| 5 | Meta comercial e orçamento | H9-13, BI (V10) | campos em `collections` | SIM |
-| 6 | Timeline pública | UI (EntityTimeline) | leitura de `entity_events` | SIM |
+| #   | Saída                       | Destino                 | Entidade / Evento                                              | Obrigatória? |
+| --- | --------------------------- | ----------------------- | -------------------------------------------------------------- | ------------ |
+| 1   | Coleção criada              | H9-02                   | `collections` + evento `collection.created`                    | SIM          |
+| 2   | Carta-coleção aprovada      | Todos os elos seguintes | `collections.status='aprovada'` + evento `collection.approved` | SIM          |
+| 3   | Mix planejado por categoria | H9-02, H9-06            | `collection_targets` (categoria, qtde, ticket)                 | SIM          |
+| 4   | Calendário macro            | H9-08 (PCP)             | `collection_calendar` (marco, data, responsável)               | SIM          |
+| 5   | Meta comercial e orçamento  | H9-13, BI (V10)         | campos em `collections`                                        | SIM          |
+| 6   | Timeline pública            | UI (EntityTimeline)     | leitura de `entity_events`                                     | SIM          |
 
 ## 5. Regras de negócio (V6)
 
@@ -82,12 +82,12 @@ Rastreabilidade: toda entrada vira registro em `collection_inputs` ligado a
 - **R5:** Não é permitido mais de uma coleção `em_desenvolvimento` por
   estação/marca — evita canibalização.
 
-| Regra | Camada | Referência |
-|-------|--------|------------|
-| R1    | DB — trigger `check_collection_ready_for_review` | migration H9-01 |
-| R2    | DB — policy + `has_role` (V6, H3-03) | migration H9-01 |
-| R3    | DB — trigger `prevent_edit_when_approved` | migration H9-01 |
-| R4    | DB — trigger em §R1 | migration H9-01 |
+| Regra | Camada                                                        | Referência      |
+| ----- | ------------------------------------------------------------- | --------------- |
+| R1    | DB — trigger `check_collection_ready_for_review`              | migration H9-01 |
+| R2    | DB — policy + `has_role` (V6, H3-03)                          | migration H9-01 |
+| R3    | DB — trigger `prevent_edit_when_approved`                     | migration H9-01 |
+| R4    | DB — trigger em §R1                                           | migration H9-01 |
 | R5    | DB — unique index parcial `WHERE status='em_desenvolvimento'` | migration H9-01 |
 
 ## 6. Workflow (V8 / H2-05)
@@ -108,16 +108,16 @@ rascunho → em_desenvolvimento → em_revisao → aprovada
 
 ## 7. Eventos emitidos (V7 / H2-04)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `collection.created`      | INSERT `collections` | id, nome, estação, autor | Timeline, BI |
-| `collection.input.added`  | vínculo em `collection_inputs` | collection_id, input_type, ref_id | Timeline |
-| `collection.target.set`   | UPSERT `collection_targets` | categoria, qtde, ticket | BI, H9-06 |
-| `collection.calendar.set` | UPSERT `collection_calendar` | marco, data | PCP (H9-08) |
-| `collection.submitted_for_review` | status → `em_revisao` | id, autor | Diretoria |
-| `collection.approved`     | status → `aprovada` | id, aprovadores[] | Todos os elos seguintes |
-| `collection.rejected`     | status → `reprovada` | id, motivo | Estilo |
-| `collection.archived`     | status → `arquivada` | id | BI, arquivamento |
+| `event_type`                      | Quando                         | Payload mínimo                    | Consumido por           |
+| --------------------------------- | ------------------------------ | --------------------------------- | ----------------------- |
+| `collection.created`              | INSERT `collections`           | id, nome, estação, autor          | Timeline, BI            |
+| `collection.input.added`          | vínculo em `collection_inputs` | collection_id, input_type, ref_id | Timeline                |
+| `collection.target.set`           | UPSERT `collection_targets`    | categoria, qtde, ticket           | BI, H9-06               |
+| `collection.calendar.set`         | UPSERT `collection_calendar`   | marco, data                       | PCP (H9-08)             |
+| `collection.submitted_for_review` | status → `em_revisao`          | id, autor                         | Diretoria               |
+| `collection.approved`             | status → `aprovada`            | id, aprovadores[]                 | Todos os elos seguintes |
+| `collection.rejected`             | status → `reprovada`           | id, motivo                        | Estilo                  |
+| `collection.archived`             | status → `arquivada`           | id                                | BI, arquivamento        |
 
 Consumidores usam `use-entity-events` + `EntityTimeline` (H4-04).
 
@@ -135,7 +135,7 @@ Consumidores usam `use-entity-events` + `EntityTimeline` (H4-04).
 
 - **Rota principal:** `/collections` (`_authenticated.collections.tsx`).
 - **Drawer contextual:** `EntityDrawer` com tabs
-  *Visão · Mix · Calendário · Timeline · Relações · IA*.
+  _Visão · Mix · Calendário · Timeline · Relações · IA_.
 - **Componentes reutilizados:**
   `EntityTimeline`, `EntityRelations`, `WorkflowStatusMenu`,
   `MoodBoard`, `CollectionPerformance`, `CollectionROI`.
@@ -147,10 +147,10 @@ Consumidores usam `use-entity-events` + `EntityTimeline` (H4-04).
 ## 10. IA (V11 / H5)
 
 - **Agentes (V13):**
-  - *Coordenador Estilo* — sugere mix a partir do histórico + tendência.
-  - *Especialista Tendências* — valida cartela contra sinais externos.
-  - *Especialista PCP* — critica o calendário contra capacidade real.
-  - *Especialista Custo/Margem* — critica meta comercial vs. orçamento.
+  - _Coordenador Estilo_ — sugere mix a partir do histórico + tendência.
+  - _Especialista Tendências_ — valida cartela contra sinais externos.
+  - _Especialista PCP_ — critica o calendário contra capacidade real.
+  - _Especialista Custo/Margem_ — critica meta comercial vs. orçamento.
 - **Perguntas que os agentes devem responder:**
   - "Qual mix maximiza margem dentro do orçamento?"
   - "Qual data-âncora está incompatível com capacidade?"
@@ -163,13 +163,13 @@ Consumidores usam `use-entity-events` + `EntityTimeline` (H4-04).
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| Aderência ao calendário | referências entregues no prazo ÷ total | % | ≥ 80% | PCP |
-| Cobertura da meta comercial | faturamento realizado ÷ meta | % | ≥ 95% | Comercial |
-| Aderência ao orçamento de desenvolvimento | custo real ÷ orçamento | % | ≤ 100% | Industrial |
-| Taxa de aproveitamento | referências vendidas ÷ referências desenvolvidas | % | ≥ 70% | Produto |
-| Lead time da coleção | data aprovação − data kickoff | dias | ≤ 45 | Coordenador Desenvolvimento |
+| KPI                                       | Fórmula                                          | Unidade | Meta   | Responsável                 |
+| ----------------------------------------- | ------------------------------------------------ | ------- | ------ | --------------------------- |
+| Aderência ao calendário                   | referências entregues no prazo ÷ total           | %       | ≥ 80%  | PCP                         |
+| Cobertura da meta comercial               | faturamento realizado ÷ meta                     | %       | ≥ 95%  | Comercial                   |
+| Aderência ao orçamento de desenvolvimento | custo real ÷ orçamento                           | %       | ≤ 100% | Industrial                  |
+| Taxa de aproveitamento                    | referências vendidas ÷ referências desenvolvidas | %       | ≥ 70%  | Produto                     |
+| Lead time da coleção                      | data aprovação − data kickoff                    | dias    | ≤ 45   | Coordenador Desenvolvimento |
 
 Fonte: derivados de `entity_events` + `collections` + ERP — nenhuma contagem manual.
 
@@ -222,14 +222,14 @@ Fonte: derivados de `entity_events` + `collections` + ERP — nenhuma contagem m
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve | Limitação | Como superamos |
-|-----|--------------|-----------|----------------|
-| Centric | Line planning module robusto, integrado a buying calendar | UI densa, licenciamento caro | Wizard de 4 passos + IA sugerindo mix |
-| PTC FlexPLM | Season Plan + Assortment Planning enterprise | Curva de aprendizado, dependência TI | Fluxo drawer contextual, sem tela cheia |
-| Lectra Kubix Link | Collection plan atrelado a material library | Foca material, fraco em meta comercial | Meta + orçamento como campos de 1ª classe |
-| Gerber Yunique | Calendar + line sheet colaborativos | UI legada | Timeline evento-a-evento em tempo real |
-| Collection Moda (BR) | Ficha de coleção prática, aderência à confecção | Sem IA, sem BI derivado de eventos | IA especialista + KPIs por evento |
-| Audaces Idea | Ecossistema CAD forte | Não cobre planejamento de coleção | Este playbook cobre o gap |
+| PLM                  | Como resolve                                              | Limitação                              | Como superamos                            |
+| -------------------- | --------------------------------------------------------- | -------------------------------------- | ----------------------------------------- |
+| Centric              | Line planning module robusto, integrado a buying calendar | UI densa, licenciamento caro           | Wizard de 4 passos + IA sugerindo mix     |
+| PTC FlexPLM          | Season Plan + Assortment Planning enterprise              | Curva de aprendizado, dependência TI   | Fluxo drawer contextual, sem tela cheia   |
+| Lectra Kubix Link    | Collection plan atrelado a material library               | Foca material, fraco em meta comercial | Meta + orçamento como campos de 1ª classe |
+| Gerber Yunique       | Calendar + line sheet colaborativos                       | UI legada                              | Timeline evento-a-evento em tempo real    |
+| Collection Moda (BR) | Ficha de coleção prática, aderência à confecção           | Sem IA, sem BI derivado de eventos     | IA especialista + KPIs por evento         |
+| Audaces Idea         | Ecossistema CAD forte                                     | Não cobre planejamento de coleção      | Este playbook cobre o gap                 |
 
 Padrão mental comum: **coleção = artefato planejado com mix + calendário +
 meta**, aprovado por diretoria antes de qualquer desenvolvimento.
@@ -238,16 +238,16 @@ auditável + aderência a ERP nacional**.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Prob. | Mitigação |
-|-------|---------|-------|-----------|
-| Aprovação sem meta clara | Coleção sem foco comercial | média | R2 dupla assinatura + R4 trigger |
-| Calendário irreal | Atraso em cascata | alta | Agente PCP critica antes da aprovação |
-| Coleção clonada perde histórico | Perda de contexto | baixa | Versionamento em `collections.version` + `entity_relations` mantém link |
-| Orçamento estourado silenciosamente | Prejuízo | média | KPI §11 acompanhado em BI + alerta |
-| IA sugerir mix fora do orçamento | Ruído | média | Guardrail §10 — sugestão auditável, nunca autônoma |
+| Risco                               | Impacto                    | Prob. | Mitigação                                                               |
+| ----------------------------------- | -------------------------- | ----- | ----------------------------------------------------------------------- |
+| Aprovação sem meta clara            | Coleção sem foco comercial | média | R2 dupla assinatura + R4 trigger                                        |
+| Calendário irreal                   | Atraso em cascata          | alta  | Agente PCP critica antes da aprovação                                   |
+| Coleção clonada perde histórico     | Perda de contexto          | baixa | Versionamento em `collections.version` + `entity_relations` mantém link |
+| Orçamento estourado silenciosamente | Prejuízo                   | média | KPI §11 acompanhado em BI + alerta                                      |
+| IA sugerir mix fora do orçamento    | Ruído                      | média | Guardrail §10 — sugestão auditável, nunca autônoma                      |
 
 ## 17. Changelog
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Software House IA | criação inicial do playbook |
+| Data       | Versão | Autor             | Mudança                     |
+| ---------- | ------ | ----------------- | --------------------------- |
+| 2026-07-07 | 0.1    | Software House IA | criação inicial do playbook |

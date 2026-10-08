@@ -4,7 +4,10 @@ import { cn } from "@/lib/utils";
 import { useFieldContext } from "@/components/ui/field";
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"textarea">>(
-  ({ className, id, "aria-describedby": describedBy, "aria-invalid": ariaInvalid, ...props }, ref) => {
+  (
+    { className, id, "aria-describedby": describedBy, "aria-invalid": ariaInvalid, ...props },
+    ref,
+  ) => {
     const field = useFieldContext();
     const resolvedId = id ?? field?.controlId;
     const resolvedDescribedBy = describedBy ?? field?.messageId;

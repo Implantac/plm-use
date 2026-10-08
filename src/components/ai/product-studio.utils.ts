@@ -40,11 +40,15 @@ export function normalizeProductProposal(raw: Partial<ProductProposal> = {}): Pr
     line: raw.line ?? "",
     silhouette: raw.silhouette ?? "",
     details: Array.isArray(raw.details) ? raw.details.filter(Boolean) : [],
-    suggestedMaterials: Array.isArray(raw.suggestedMaterials) ? raw.suggestedMaterials.filter(Boolean) : [],
+    suggestedMaterials: Array.isArray(raw.suggestedMaterials)
+      ? raw.suggestedMaterials.filter(Boolean)
+      : [],
     colors: Array.isArray(raw.colors) ? raw.colors.filter(Boolean) : [],
     variations: Array.isArray(raw.variations) ? raw.variations.filter(Boolean) : [],
     validationNotes: Array.isArray(raw.validationNotes) ? raw.validationNotes.filter(Boolean) : [],
-    imageIdeas: Array.isArray(raw.imageIdeas) ? raw.imageIdeas.filter(Boolean) : ["frente", "costas", "modelo", "campanha"],
+    imageIdeas: Array.isArray(raw.imageIdeas)
+      ? raw.imageIdeas.filter(Boolean)
+      : ["frente", "costas", "modelo", "campanha"],
     visualIdentity: Array.isArray(raw.visualIdentity) ? raw.visualIdentity.filter(Boolean) : [],
   };
 }

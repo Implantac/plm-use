@@ -3,13 +3,7 @@
 // tabela `looks` + `look_items` quando o schema entrar.
 import { useSyncExternalStore } from "react";
 
-export type LookOccasion =
-  | "casual"
-  | "trabalho"
-  | "festa"
-  | "resort"
-  | "esporte"
-  | "streetwear";
+export type LookOccasion = "casual" | "trabalho" | "festa" | "resort" | "esporte" | "streetwear";
 
 export type LookStatus = "rascunho" | "aprovado" | "arquivado";
 
@@ -43,12 +37,21 @@ const seed: Look[] = [
     occasion: "trabalho",
     status: "aprovado",
     tags: ["tailoring", "monocromia", "linho"],
-    stylingNotes:
-      "Blazer over com regata de seda por dentro. Calça pantalona. Sandália mule.",
+    stylingNotes: "Blazer over com regata de seda por dentro. Calça pantalona. Sandália mule.",
     items: [
-      { refCode: "REF-1042", refName: "Blazer Linho Argila", role: "peça-chave", colorHex: "#c8b6a0" },
+      {
+        refCode: "REF-1042",
+        refName: "Blazer Linho Argila",
+        role: "peça-chave",
+        colorHex: "#c8b6a0",
+      },
       { refCode: "REF-1043", refName: "Regata Seda Off", role: "complemento", colorHex: "#f5efe6" },
-      { refCode: "REF-1044", refName: "Pantalona Linho Argila", role: "complemento", colorHex: "#c8b6a0" },
+      {
+        refCode: "REF-1044",
+        refName: "Pantalona Linho Argila",
+        role: "complemento",
+        colorHex: "#c8b6a0",
+      },
       { refCode: "REF-2011", refName: "Mule Couro Nude", role: "calçado", colorHex: "#d9b899" },
     ],
     coverColor: "#c8b6a0",
@@ -62,12 +65,21 @@ const seed: Look[] = [
     occasion: "resort",
     status: "aprovado",
     tags: ["crochê", "praia", "colorido"],
-    stylingNotes:
-      "Saída de praia crochê sobre biquíni. Chapéu palha. Sandália rasteira.",
+    stylingNotes: "Saída de praia crochê sobre biquíni. Chapéu palha. Sandália rasteira.",
     items: [
-      { refCode: "REF-1101", refName: "Saída Crochê Coral", role: "peça-chave", colorHex: "#e8785a" },
+      {
+        refCode: "REF-1101",
+        refName: "Saída Crochê Coral",
+        role: "peça-chave",
+        colorHex: "#e8785a",
+      },
       { refCode: "REF-1102", refName: "Biquíni Coral", role: "complemento", colorHex: "#e8785a" },
-      { refCode: "REF-2020", refName: "Chapéu Palha Natural", role: "acessório", colorHex: "#d4b891" },
+      {
+        refCode: "REF-2020",
+        refName: "Chapéu Palha Natural",
+        role: "acessório",
+        colorHex: "#d4b891",
+      },
     ],
     coverColor: "#e8785a",
     createdAt: new Date(Date.now() - 86400000 * 8).toISOString(),
@@ -82,7 +94,12 @@ const seed: Look[] = [
     tags: ["denim", "neon", "oversized"],
     stylingNotes: "Jaqueta jeans oversized. Top neon. Cargo baggy. Tênis chunky.",
     items: [
-      { refCode: "REF-1310", refName: "Jaqueta Denim Wash", role: "peça-chave", colorHex: "#7fa3c9" },
+      {
+        refCode: "REF-1310",
+        refName: "Jaqueta Denim Wash",
+        role: "peça-chave",
+        colorHex: "#7fa3c9",
+      },
       { refCode: "REF-1311", refName: "Top Neon", role: "complemento", colorHex: "#c6ff3d" },
       { refCode: "REF-1312", refName: "Cargo Baggy", role: "complemento", colorHex: "#4b5a48" },
       { refCode: "REF-2110", refName: "Chunky Sneaker", role: "calçado", colorHex: "#f0f0f0" },
@@ -192,7 +209,9 @@ export function addItemToLook(lookId: string, item: LookItem) {
   const l = looks.find((x) => x.id === lookId);
   if (!l) return;
   if (l.items.some((i) => i.refCode === item.refCode)) return;
-  looks = looks.map((x) => (x.id === lookId ? { ...x, items: [...x.items, item], updatedAt: new Date().toISOString() } : x));
+  looks = looks.map((x) =>
+    x.id === lookId ? { ...x, items: [...x.items, item], updatedAt: new Date().toISOString() } : x,
+  );
   emit();
   emitLocalEvent({
     entity_type: "look",
@@ -207,7 +226,13 @@ export function removeItemFromLook(lookId: string, refCode: string) {
   if (!l) return;
   const removed = l.items.find((i) => i.refCode === refCode);
   looks = looks.map((x) =>
-    x.id === lookId ? { ...x, items: x.items.filter((i) => i.refCode !== refCode), updatedAt: new Date().toISOString() } : x,
+    x.id === lookId
+      ? {
+          ...x,
+          items: x.items.filter((i) => i.refCode !== refCode),
+          updatedAt: new Date().toISOString(),
+        }
+      : x,
   );
   emit();
   emitLocalEvent({

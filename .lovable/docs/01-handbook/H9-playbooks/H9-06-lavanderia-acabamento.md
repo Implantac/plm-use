@@ -64,16 +64,16 @@ lavanderia é terceira.
 
 ## 3. Entradas
 
-| # | Entrada | Origem | Formato | Obrigatória? |
-|---|---------|--------|---------|--------------|
-| 1 | Peças costuradas concluídas | H9-05 | `sewing_orders.status='concluida'` + `sewing_batches` reconciliados | SIM |
-| 2 | OP de acabamento liberada | H9-08 | `production_orders.status='liberada_acabamento'` | SIM |
-| 3 | Receita de lavanderia/efeito | H9-09 (Engenharia) | `wash_recipes` (produto, dosagem, tempo, tolerâncias) | SIM |
-| 4 | Ficha de acabamentos | H9-09 | `finishing_specs` (aviamento final, medidas alvo) | SIM |
-| 5 | Cadastro de lavanderias ativas | ERP via `ErpAdapter` (V9) | `queryErp('suppliers?type=lavanderia')` | SIM (se terceira) |
-| 6 | SLA por lavanderia | Suppliers | `supplier_slas` (lead time, preço peça, capacidade) | SIM (se terceira) |
-| 7 | Estoque de aviamentos finais e químicos | ERP via `ErpAdapter` | `queryErp('finishing_stock')` | SIM |
-| 8 | Padrão de defeito (respingo, esgarçamento, encolhimento) | H9-07 | `defect_catalog` | recomendado |
+| #   | Entrada                                                  | Origem                    | Formato                                                             | Obrigatória?      |
+| --- | -------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------- | ----------------- |
+| 1   | Peças costuradas concluídas                              | H9-05                     | `sewing_orders.status='concluida'` + `sewing_batches` reconciliados | SIM               |
+| 2   | OP de acabamento liberada                                | H9-08                     | `production_orders.status='liberada_acabamento'`                    | SIM               |
+| 3   | Receita de lavanderia/efeito                             | H9-09 (Engenharia)        | `wash_recipes` (produto, dosagem, tempo, tolerâncias)               | SIM               |
+| 4   | Ficha de acabamentos                                     | H9-09                     | `finishing_specs` (aviamento final, medidas alvo)                   | SIM               |
+| 5   | Cadastro de lavanderias ativas                           | ERP via `ErpAdapter` (V9) | `queryErp('suppliers?type=lavanderia')`                             | SIM (se terceira) |
+| 6   | SLA por lavanderia                                       | Suppliers                 | `supplier_slas` (lead time, preço peça, capacidade)                 | SIM (se terceira) |
+| 7   | Estoque de aviamentos finais e químicos                  | ERP via `ErpAdapter`      | `queryErp('finishing_stock')`                                       | SIM               |
+| 8   | Padrão de defeito (respingo, esgarçamento, encolhimento) | H9-07                     | `defect_catalog`                                                    | recomendado       |
 
 Rastreabilidade: `entity_relations` (H2-06) — `production_order` →
 `finishing_order` → `finishing_batch` → `finishing_step` (lavagem,
@@ -81,20 +81,20 @@ passadoria, acabamento, revisão, embalagem) → `pack_unit`.
 
 ## 4. Saídas
 
-| # | Saída | Destino | Entidade / Evento | Obrigatória? |
-|---|-------|---------|-------------------|--------------|
-| 1 | OP de acabamento criada | Lavanderia / Célula | `finishing_orders` + `finishing_order.created` | SIM |
-| 2 | Lote enviado para lavanderia terceira | Lavanderia externa | `finishing_batches` + `batch.sent_to_lavanderia` | condicional |
-| 3 | Ciclo de lavagem executado | Timeline / BI | `finishing_steps` (kind=`wash`) + `wash.executed` | SIM |
-| 4 | Medição de encolhimento/efeito | H9-07 | `wash_measurements` + `wash.measured` | SIM |
-| 5 | Passagem/acabamento/revisão registrados | Timeline / BI | `finishing_steps` (kind=`press`/`finish`/`review`) + `finishing.step.registered` | SIM |
-| 6 | Ocorrência de acabamento | H9-07 | `finishing_occurrences` + `finishing.occurrence.opened` | condicional |
-| 7 | Peças embaladas por SKU | H9-11 (estoque acabado) | `pack_units` + `pack.registered` | SIM |
-| 8 | Retorno de lavanderia conciliado | Estoque WIP | `batch.returned` + `batch.reconciled` | SIM (se terceira) |
-| 9 | OP de acabamento concluída | H9-07 / Expedição | `finishing_orders.status='concluida'` + `finishing_order.completed` | SIM |
-| 10 | Baixa de químicos/aviamentos no ERP | ERP | `writeErp('finishing_movement')` (idempotente) | SIM |
-| 11 | Fatura de lavanderia pronta para conferência | Financeiro | `writeErp('lavanderia_invoice_ready')` | SIM (se terceira) |
-| 12 | Timeline pública | UI (EntityTimeline / LoteTimeline) | leitura de `entity_events` | SIM |
+| #   | Saída                                        | Destino                            | Entidade / Evento                                                                | Obrigatória?      |
+| --- | -------------------------------------------- | ---------------------------------- | -------------------------------------------------------------------------------- | ----------------- |
+| 1   | OP de acabamento criada                      | Lavanderia / Célula                | `finishing_orders` + `finishing_order.created`                                   | SIM               |
+| 2   | Lote enviado para lavanderia terceira        | Lavanderia externa                 | `finishing_batches` + `batch.sent_to_lavanderia`                                 | condicional       |
+| 3   | Ciclo de lavagem executado                   | Timeline / BI                      | `finishing_steps` (kind=`wash`) + `wash.executed`                                | SIM               |
+| 4   | Medição de encolhimento/efeito               | H9-07                              | `wash_measurements` + `wash.measured`                                            | SIM               |
+| 5   | Passagem/acabamento/revisão registrados      | Timeline / BI                      | `finishing_steps` (kind=`press`/`finish`/`review`) + `finishing.step.registered` | SIM               |
+| 6   | Ocorrência de acabamento                     | H9-07                              | `finishing_occurrences` + `finishing.occurrence.opened`                          | condicional       |
+| 7   | Peças embaladas por SKU                      | H9-11 (estoque acabado)            | `pack_units` + `pack.registered`                                                 | SIM               |
+| 8   | Retorno de lavanderia conciliado             | Estoque WIP                        | `batch.returned` + `batch.reconciled`                                            | SIM (se terceira) |
+| 9   | OP de acabamento concluída                   | H9-07 / Expedição                  | `finishing_orders.status='concluida'` + `finishing_order.completed`              | SIM               |
+| 10  | Baixa de químicos/aviamentos no ERP          | ERP                                | `writeErp('finishing_movement')` (idempotente)                                   | SIM               |
+| 11  | Fatura de lavanderia pronta para conferência | Financeiro                         | `writeErp('lavanderia_invoice_ready')`                                           | SIM (se terceira) |
+| 12  | Timeline pública                             | UI (EntityTimeline / LoteTimeline) | leitura de `entity_events`                                                       | SIM               |
 
 ## 5. Regras de negócio (V6)
 
@@ -130,18 +130,18 @@ passadoria, acabamento, revisão, embalagem) → `pack_unit`.
 - **R10:** Trocar `wash_recipe` de uma OP em execução é proibido — obriga
   cancelar a OP e criar nova versão (imutabilidade da receita aplicada).
 
-| Regra | Camada | Referência |
-|-------|--------|------------|
-| R1 | DB — trigger `check_finishing_order_prereqs` | migration H9-06 |
-| R2 | DB — CHECK + trigger `validate_wash_payload` | migration H9-06 |
-| R3 | DB — trigger `enforce_wash_measurement_tolerance` | migration H9-06 |
-| R4 | DB — trigger `validate_pack_units` | migration H9-06 |
-| R5 | DB — trigger `check_finishing_order_completion` | migration H9-06 |
-| R6 | DB — trigger `reconcile_lavanderia_batch` | migration H9-06 |
-| R7 | DB — trigger `open_capa_on_finishing_deviation` | migration H9-06 |
-| R8 | Server fn — chave idempotência no `ErpAdapter` (H6-02) | `src/lib/erp/*.functions.ts` |
-| R9 | Server route pública com HMAC (H6-05) | `src/routes/api/public/finishing-collector.ts` |
-| R10 | DB — trigger `prevent_recipe_swap_when_running` | migration H9-06 |
+| Regra | Camada                                                 | Referência                                     |
+| ----- | ------------------------------------------------------ | ---------------------------------------------- |
+| R1    | DB — trigger `check_finishing_order_prereqs`           | migration H9-06                                |
+| R2    | DB — CHECK + trigger `validate_wash_payload`           | migration H9-06                                |
+| R3    | DB — trigger `enforce_wash_measurement_tolerance`      | migration H9-06                                |
+| R4    | DB — trigger `validate_pack_units`                     | migration H9-06                                |
+| R5    | DB — trigger `check_finishing_order_completion`        | migration H9-06                                |
+| R6    | DB — trigger `reconcile_lavanderia_batch`              | migration H9-06                                |
+| R7    | DB — trigger `open_capa_on_finishing_deviation`        | migration H9-06                                |
+| R8    | Server fn — chave idempotência no `ErpAdapter` (H6-02) | `src/lib/erp/*.functions.ts`                   |
+| R9    | Server route pública com HMAC (H6-05)                  | `src/routes/api/public/finishing-collector.ts` |
+| R10   | DB — trigger `prevent_recipe_swap_when_running`        | migration H9-06                                |
 
 ## 6. Workflow (V8 / H2-05)
 
@@ -174,25 +174,25 @@ preparado → enviado → em_lavagem_externa → retornado → reconciliado
 
 ## 7. Eventos emitidos (V7 / H2-04)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `finishing_order.created`      | INSERT `finishing_orders` | production_order_id, recipe_id, faccao/interno | Timeline, BI, PCP |
-| `batch.prepared`               | INSERT `finishing_batches` | order_id, sewing_batch_ids[] | Lavanderia |
-| `batch.sent_to_lavanderia`     | envio efetivado | batch_id, lavanderia_id, pieces, sla_due | Suppliers, BI |
-| `wash.executed`                | `finishing_steps.kind='wash'` | batch_id, recipe_id, duration_min, temp_c | BI, Qualidade |
-| `wash.measured`                | `wash_measurements` gravada | batch_id, shrink_pct[], efeito | BI, Qualidade |
-| `finishing.step.registered`    | passadoria/acabamento/revisão | batch_id, kind, operator, pieces | BI, cronoanálise |
-| `finishing.occurrence.opened`  | INSERT `finishing_occurrences` | batch_id, tipo, responsável | H9-07 |
-| `finishing.occurrence.resolved`| ocorrência fechada | occurrence_id | Timeline |
-| `pack.registered`              | INSERT `pack_units` | batch_id, sku, qty | H9-11, BI |
-| `batch.returned`               | volta da lavanderia | batch_id, returned_pieces | Estoque WIP |
-| `batch.reconciled`             | conciliação OK | batch_id, delta_pieces | Financeiro |
-| `finishing.capa.opened`        | R7 aciona CAPA | batch_id, motivo | H9-07 |
-| `finishing_order.completed`    | status → `concluida` | order_id, total_packed | H9-07/H9-11, BI |
-| `finishing_order.cancelled`    | status → `cancelada` | order_id, motivo | PCP |
-| `finishing.movement.written`   | baixa químicos/aviamentos no ERP | order_id, ref_erp | ERP, BI |
-| `lavanderia.invoice.ready`     | R8 aciona ERP | order_id, lavanderia_id, ref_erp | Financeiro |
-| `batch.late`                   | cron detecta SLA vencido | batch_id, days_late | Suppliers, PCP |
+| `event_type`                    | Quando                           | Payload mínimo                                 | Consumido por     |
+| ------------------------------- | -------------------------------- | ---------------------------------------------- | ----------------- |
+| `finishing_order.created`       | INSERT `finishing_orders`        | production_order_id, recipe_id, faccao/interno | Timeline, BI, PCP |
+| `batch.prepared`                | INSERT `finishing_batches`       | order_id, sewing_batch_ids[]                   | Lavanderia        |
+| `batch.sent_to_lavanderia`      | envio efetivado                  | batch_id, lavanderia_id, pieces, sla_due       | Suppliers, BI     |
+| `wash.executed`                 | `finishing_steps.kind='wash'`    | batch_id, recipe_id, duration_min, temp_c      | BI, Qualidade     |
+| `wash.measured`                 | `wash_measurements` gravada      | batch_id, shrink_pct[], efeito                 | BI, Qualidade     |
+| `finishing.step.registered`     | passadoria/acabamento/revisão    | batch_id, kind, operator, pieces               | BI, cronoanálise  |
+| `finishing.occurrence.opened`   | INSERT `finishing_occurrences`   | batch_id, tipo, responsável                    | H9-07             |
+| `finishing.occurrence.resolved` | ocorrência fechada               | occurrence_id                                  | Timeline          |
+| `pack.registered`               | INSERT `pack_units`              | batch_id, sku, qty                             | H9-11, BI         |
+| `batch.returned`                | volta da lavanderia              | batch_id, returned_pieces                      | Estoque WIP       |
+| `batch.reconciled`              | conciliação OK                   | batch_id, delta_pieces                         | Financeiro        |
+| `finishing.capa.opened`         | R7 aciona CAPA                   | batch_id, motivo                               | H9-07             |
+| `finishing_order.completed`     | status → `concluida`             | order_id, total_packed                         | H9-07/H9-11, BI   |
+| `finishing_order.cancelled`     | status → `cancelada`             | order_id, motivo                               | PCP               |
+| `finishing.movement.written`    | baixa químicos/aviamentos no ERP | order_id, ref_erp                              | ERP, BI           |
+| `lavanderia.invoice.ready`      | R8 aciona ERP                    | order_id, lavanderia_id, ref_erp               | Financeiro        |
+| `batch.late`                    | cron detecta SLA vencido         | batch_id, days_late                            | Suppliers, PCP    |
 
 Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 `TorreDeControle`, `LivePCPWidget`, `SupplierScoreboard`.
@@ -215,14 +215,14 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 
 ## 9. UX (V4 / H4)
 
-- **Rota principal:** `/production` (subseção *Acabamento & Lavanderia*)
+- **Rota principal:** `/production` (subseção _Acabamento & Lavanderia_)
   reusando `TorreDeControle`, `LotesGantt`, `KanbanColumn`.
 - **Rota dedicada de lavanderias:** `/suppliers` (filtro
   `type='lavanderia'`) reusando `SupplierScoreboard`.
 - **Drawer contextual:** `FinishingOrderDrawer` (novo, análogo a
-  `SewingOrderDrawer`) com tabs *Receita · Lotes · Lavagem · Medições ·
+  `SewingOrderDrawer`) com tabs _Receita · Lotes · Lavagem · Medições ·
   Passadoria/Acabamento · Revisão · Embalagem · Ocorrências · Timeline
-  · Relações · IA*.
+  · Relações · IA_.
 - **Componentes reutilizados:** `EntityTimeline`, `EntityRelations`,
   `WorkflowStatusMenu`, `LoteTimeline`, `LoteCard`, `KanbanColumn`,
   `PassagemForm`, `OcorrenciaForm`, `ErpBadge`, `SupplierScoreboard`,
@@ -238,16 +238,16 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 ## 10. IA (V11 / H5)
 
 - **Agentes (V13):**
-  - *Especialista Lavanderia* — recomenda receita para atingir efeito-alvo
+  - _Especialista Lavanderia_ — recomenda receita para atingir efeito-alvo
     com base em histórico de tecido × lavagem × resultado.
-  - *Especialista Acabamento* — critica ficha de acabamento vs. tempo
+  - _Especialista Acabamento_ — critica ficha de acabamento vs. tempo
     padrão e sugere reordenação de linha.
-  - *Especialista Qualidade* — cruza encolhimento/efeito com padrão de
+  - _Especialista Qualidade_ — cruza encolhimento/efeito com padrão de
     defeito por lavanderia (link com H9-07).
-  - *Especialista Facções (lavanderia)* — recomenda melhor lavanderia
+  - _Especialista Facções (lavanderia)_ — recomenda melhor lavanderia
     por receita considerando SLA, preço, histórico de divergência.
-  - *Especialista PCP* — antecipa impacto de atraso no mostruário/expedição.
-  - *Especialista Custo/Margem* — mostra impacto da dosagem real de
+  - _Especialista PCP_ — antecipa impacto de atraso no mostruário/expedição.
+  - _Especialista Custo/Margem_ — mostra impacto da dosagem real de
     químicos no custo unitário (link com H9-13 custo & margem).
 - **Perguntas que os agentes devem responder:**
   - "Qual receita atinge o tom pretendido nesse tecido?"
@@ -264,16 +264,16 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| Acerto de efeito no 1º ciclo | `wash.measured` OK ÷ total `wash.executed` | % | ≥ 90% | Lavanderia |
-| Encolhimento fora da faixa | `wash_measurements` fora da tolerância ÷ total | % | ≤ 5% | Qualidade |
-| OPs no prazo | `finishing_order.completed` até `pcp_due` ÷ total | % | ≥ 95% | PCP |
-| Taxa de reprocesso | ocorrências `reprocesso` ÷ total OPs | % | ≤ 2% | Qualidade |
-| Rastreabilidade externa | lavanderia com `finishing.step.registered` < 24h ÷ ativas | % | ≥ 98% | Suppliers |
-| Divergência média por lavanderia | Σ `|returned - sent|` ÷ `Σ sent` | % | ≤ 1% | Suppliers |
-| Custo real de químicos por SKU | `finishing.movement.written` ÷ `Σ pack_units.qty` | R$/pç | ≤ meta H9-13 | Custo/Margem |
-| Lead time lavanderia externa | `batch.reconciled` − `batch.sent_to_lavanderia` | dias | ≤ SLA | Suppliers |
+| KPI                              | Fórmula                                                   | Unidade         | Meta         | Responsável  |
+| -------------------------------- | --------------------------------------------------------- | --------------- | ------------ | ------------ |
+| Acerto de efeito no 1º ciclo     | `wash.measured` OK ÷ total `wash.executed`                | %               | ≥ 90%        | Lavanderia   |
+| Encolhimento fora da faixa       | `wash_measurements` fora da tolerância ÷ total            | %               | ≤ 5%         | Qualidade    |
+| OPs no prazo                     | `finishing_order.completed` até `pcp_due` ÷ total         | %               | ≥ 95%        | PCP          |
+| Taxa de reprocesso               | ocorrências `reprocesso` ÷ total OPs                      | %               | ≤ 2%         | Qualidade    |
+| Rastreabilidade externa          | lavanderia com `finishing.step.registered` < 24h ÷ ativas | %               | ≥ 98%        | Suppliers    |
+| Divergência média por lavanderia | Σ `                                                       | returned - sent | `÷`Σ sent`   | %            | ≤ 1% | Suppliers |
+| Custo real de químicos por SKU   | `finishing.movement.written` ÷ `Σ pack_units.qty`         | R$/pç           | ≤ meta H9-13 | Custo/Margem |
+| Lead time lavanderia externa     | `batch.reconciled` − `batch.sent_to_lavanderia`           | dias            | ≤ SLA        | Suppliers    |
 
 Fonte: derivados de `entity_events` + `finishing_*` + ERP. Sem contagem manual.
 
@@ -345,14 +345,14 @@ Fonte: derivados de `entity_events` + `finishing_*` + ERP. Sem contagem manual.
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve | Limitação | Como superamos |
-|-----|--------------|-----------|----------------|
-| Centric | Trata acabamento como etapa genérica de shop-floor | Sem receita de lavanderia estruturada | `wash_recipes` + medição obrigatória com tolerância |
-| PTC FlexPLM | Módulo Wash/Finishing como add-on | Alto custo, longa implantação | Nativo, com CAPA automática por desvio |
-| Lectra Kubix Link | Foco em CAD/material, fraco em lavanderia | Não cobre outsourcing de lavanderia | Lavanderia como cidadão de 1ª classe com HMAC |
-| Gerber Yunique | Colaboração global, sem foco em receita de lavagem | Sem tempo real | Timeline evento-a-evento + `SupplierScoreboard` |
-| Collection Moda (BR) | Ficha de acabamento textual + planilha para lavanderia | Sem rastreabilidade e sem KPI vivo | Rastreabilidade externa a cada 24h como KPI |
-| Audaces | Não cobre lavanderia/acabamento | — | Este playbook cobre gap na cadeia BR (jeans em especial) |
+| PLM                  | Como resolve                                           | Limitação                             | Como superamos                                           |
+| -------------------- | ------------------------------------------------------ | ------------------------------------- | -------------------------------------------------------- |
+| Centric              | Trata acabamento como etapa genérica de shop-floor     | Sem receita de lavanderia estruturada | `wash_recipes` + medição obrigatória com tolerância      |
+| PTC FlexPLM          | Módulo Wash/Finishing como add-on                      | Alto custo, longa implantação         | Nativo, com CAPA automática por desvio                   |
+| Lectra Kubix Link    | Foco em CAD/material, fraco em lavanderia              | Não cobre outsourcing de lavanderia   | Lavanderia como cidadão de 1ª classe com HMAC            |
+| Gerber Yunique       | Colaboração global, sem foco em receita de lavagem     | Sem tempo real                        | Timeline evento-a-evento + `SupplierScoreboard`          |
+| Collection Moda (BR) | Ficha de acabamento textual + planilha para lavanderia | Sem rastreabilidade e sem KPI vivo    | Rastreabilidade externa a cada 24h como KPI              |
+| Audaces              | Não cobre lavanderia/acabamento                        | —                                     | Este playbook cobre gap na cadeia BR (jeans em especial) |
 
 Padrão mental comum: **acabamento = receita + medição + embalagem SKU**.
 Nossa superação: **receita imutável durante a execução (R10), medição
@@ -361,21 +361,21 @@ com mesmo rigor da interna, webhook seguro e IA multi-especialista**.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Prob. | Mitigação |
-|-------|---------|-------|-----------|
-| Efeito de lavagem fora do alvo | Retrabalho / peça perdida | alta | R3 medição obrigatória + agente Lavanderia |
-| Encolhimento maior que tolerância | Peça fora da grade | alta | R3 bloqueia avanço + R7 CAPA |
-| Lote sumir em lavanderia externa | Prejuízo + atraso | alta | R6 conciliação + `batch.late` cron + KPI rastreabilidade externa |
-| Passagem falsa (peças infladas) | Fatura errada | média | R2/R4 + R9 HMAC + auditoria por evento |
-| Divergência aceita sem análise | Perda contínua | média | R7 CAPA + agente Facções (lavanderia) |
-| Troca de receita durante execução | Perda de rastreabilidade | baixa | R10 imutabilidade |
-| Fatura duplicada no ERP | Prejuízo financeiro | média | R8 idempotência + testes contract H7 |
-| Vazamento de preço entre lavanderias | Legal/competitivo | baixa | RLS por `lavanderia_id` no terminal |
-| IA sugerir receita nova sem base | Desperdício químico | baixa | Guardrail §10 — IA sugere, humano aprova |
-| Peças embaladas em SKU errado | Erro de expedição | média | R4 validação + revisão em linha antes da embalagem |
+| Risco                                | Impacto                   | Prob. | Mitigação                                                        |
+| ------------------------------------ | ------------------------- | ----- | ---------------------------------------------------------------- |
+| Efeito de lavagem fora do alvo       | Retrabalho / peça perdida | alta  | R3 medição obrigatória + agente Lavanderia                       |
+| Encolhimento maior que tolerância    | Peça fora da grade        | alta  | R3 bloqueia avanço + R7 CAPA                                     |
+| Lote sumir em lavanderia externa     | Prejuízo + atraso         | alta  | R6 conciliação + `batch.late` cron + KPI rastreabilidade externa |
+| Passagem falsa (peças infladas)      | Fatura errada             | média | R2/R4 + R9 HMAC + auditoria por evento                           |
+| Divergência aceita sem análise       | Perda contínua            | média | R7 CAPA + agente Facções (lavanderia)                            |
+| Troca de receita durante execução    | Perda de rastreabilidade  | baixa | R10 imutabilidade                                                |
+| Fatura duplicada no ERP              | Prejuízo financeiro       | média | R8 idempotência + testes contract H7                             |
+| Vazamento de preço entre lavanderias | Legal/competitivo         | baixa | RLS por `lavanderia_id` no terminal                              |
+| IA sugerir receita nova sem base     | Desperdício químico       | baixa | Guardrail §10 — IA sugere, humano aprova                         |
+| Peças embaladas em SKU errado        | Erro de expedição         | média | R4 validação + revisão em linha antes da embalagem               |
 
 ## 17. Changelog
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Software House IA | criação inicial do playbook |
+| Data       | Versão | Autor             | Mudança                     |
+| ---------- | ------ | ----------------- | --------------------------- |
+| 2026-07-07 | 0.1    | Software House IA | criação inicial do playbook |

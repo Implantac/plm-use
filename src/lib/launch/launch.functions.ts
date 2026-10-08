@@ -58,7 +58,11 @@ export const promoteShowroomDecisions = createServerFn({ method: "POST" })
 
     const approved = (decs ?? []).filter((d) => d.decision === "aprovada");
     if (approved.length === 0) {
-      return { ok: false as const, reason: "Nenhuma decisão aprovada nas selecionadas", created: 0 };
+      return {
+        ok: false as const,
+        reason: "Nenhuma decisão aprovada nas selecionadas",
+        created: 0,
+      };
     }
 
     const rows = approved.map((d) => ({

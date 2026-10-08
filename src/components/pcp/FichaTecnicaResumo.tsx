@@ -28,9 +28,7 @@ const PROCESSOS_MOCK = [
 ];
 
 export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
-  const grade = referencia.grade
-    ? Object.entries(referencia.grade)
-    : [];
+  const grade = referencia.grade ? Object.entries(referencia.grade) : [];
 
   return (
     <div className="space-y-4">
@@ -47,12 +45,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
             {colecao ? ` • ${colecao}` : ""}
           </p>
         </div>
-        <Button
- asChild
- size="sm"
- variant="outline"
- className="text-[10px] tracking-[0.15em] gap-1"
- >
+        <Button asChild size="sm" variant="outline" className="text-[10px] tracking-[0.15em] gap-1">
           <Link to="/tech-sheet" search={{ ref: referencia.ref }}>
             Abrir ficha completa <ExternalLink className="h-3 w-3" />
           </Link>
@@ -77,13 +70,8 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
         ) : (
           <div className="grid grid-cols-5 gap-2">
             {grade.map(([tam, qtd]) => (
-              <div
-                key={tam}
-                className="rounded border border-white/10 bg-white/5 py-2 text-center"
-              >
-                <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
-                  {tam}
-                </p>
+              <div key={tam} className="rounded border border-white/10 bg-white/5 py-2 text-center">
+                <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{tam}</p>
                 <p className="text-sm font-bold text-white">{qtd}</p>
               </div>
             ))}
@@ -105,13 +93,9 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
             <tbody className="divide-y divide-white/5">
               {MATERIAIS_MOCK.map((m) => (
                 <tr key={m.nome}>
-                  <td className="px-3 py-2 text-primary/80 text-[10px] uppercase">
-                    {m.tipo}
-                  </td>
+                  <td className="px-3 py-2 text-primary/80 text-[10px] uppercase">{m.tipo}</td>
                   <td className="px-3 py-2 text-white">{m.nome}</td>
-                  <td className="px-3 py-2 text-right text-muted-foreground">
-                    {m.consumo}
-                  </td>
+                  <td className="px-3 py-2 text-right text-muted-foreground">{m.consumo}</td>
                   <td className="px-3 py-2 text-right text-white">{m.custo}</td>
                 </tr>
               ))}

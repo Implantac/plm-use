@@ -45,13 +45,20 @@ function save(blob: Blob, name: string) {
 }
 
 const toBlob = (c: HTMLCanvasElement, type: string, q?: number) =>
-  new Promise<Blob>((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error("Falha ao gerar imagem"))), type, q));
+  new Promise<Blob>((res, rej) =>
+    c.toBlob((b) => (b ? res(b) : rej(new Error("Falha ao gerar imagem"))), type, q),
+  );
 
 async function pdfBlob(c: HTMLCanvasElement) {
   const { jsPDF } = await import("jspdf");
   const pt = (px: number) => (px * 72) / 150;
-  const w = pt(c.width), h = pt(c.height);
-  const doc = new jsPDF({ orientation: w > h ? "landscape" : "portrait", unit: "pt", format: [w, h] });
+  const w = pt(c.width),
+    h = pt(c.height);
+  const doc = new jsPDF({
+    orientation: w > h ? "landscape" : "portrait",
+    unit: "pt",
+    format: [w, h],
+  });
   doc.addImage(c.toDataURL("image/png"), "PNG", 0, 0, w, h);
   return doc.output("blob");
 }
@@ -64,7 +71,10 @@ function epsBlob(src: HTMLCanvasElement) {
   let line = "";
   for (let i = 0; i < data.length; i += 4) {
     for (let k = 0; k < 3; k++) line += data[i + k].toString(16).padStart(2, "0");
-    if (line.length >= 120) { hex.push(line); line = ""; }
+    if (line.length >= 120) {
+      hex.push(line);
+      line = "";
+    }
   }
   if (line) hex.push(line);
   const ps = `%!PS-Adobe-3.0 EPSF-3.0
@@ -93,11 +103,17 @@ export async function exportImage(src: string, baseName: string, format: ExportF
   const c = await loadCanvas(src);
   const name = `${baseName}.${format}`;
   switch (format) {
-    case "png": return save(await toBlob(c, "image/png"), name);
-    case "jpg": return save(await toBlob(flatten(c), "image/jpeg", 0.95), name);
-    case "pdf": return save(await pdfBlob(c), name);
-    case "ai": return save(new Blob([await pdfBlob(c)], { type: "application/postscript" }), name);
-    case "eps": return save(epsBlob(c), name);
-    case "psd": return save(await psdBlob(c, baseName), name);
+    case "png":
+      return save(await toBlob(c, "image/png"), name);
+    case "jpg":
+      return save(await toBlob(flatten(c), "image/jpeg", 0.95), name);
+    case "pdf":
+      return save(await pdfBlob(c), name);
+    case "ai":
+      return save(new Blob([await pdfBlob(c)], { type: "application/postscript" }), name);
+    case "eps":
+      return save(epsBlob(c), name);
+    case "psd":
+      return save(await psdBlob(c, baseName), name);
   }
 }

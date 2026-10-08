@@ -16,10 +16,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const PATH = "recover/x.png";
 const SUCCESS_URL = "https://signed.test/recover/x.png?v=recovered";

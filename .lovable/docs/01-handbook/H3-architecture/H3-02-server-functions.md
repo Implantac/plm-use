@@ -3,6 +3,7 @@
 Três formas de rodar código no servidor. Escolher errado gera bug sutil.
 
 ## `createServerFn` (padrão)
+
 Use para **toda** lógica interna que a UI chama: leituras, escritas,
 transições de workflow, chamadas ao ERP mediadas, geração de PDF, etc.
 
@@ -13,7 +14,9 @@ transições de workflow, chamadas ao ERP mediadas, geração de PDF, etc.
 - Localização: `src/lib/**/*.functions.ts`
 
 ## Server routes (`src/routes/api/public/*`)
+
 Só para **entradas externas**:
+
 - Webhook ERP → verificar HMAC antes de escrever
 - Cron pg_cron ou scheduler externo
 - Callback OAuth de terceiros
@@ -21,7 +24,9 @@ Só para **entradas externas**:
 Nunca use como "API interna" — a UI deve chamar server function.
 
 ## Supabase Edge Functions
+
 **Não usar** para lógica de app. Reservadas para:
+
 - Webhooks que precisam entrar na rede do Supabase
 - Jobs disparados por trigger de banco (`pg_net`)
 
@@ -29,6 +34,7 @@ Se está criando `supabase/functions/<x>/index.ts` para algo que a UI chama:
 está errado, migre para `createServerFn`.
 
 ## Regras cruzadas
+
 - Server fn com `requireSupabaseAuth` **nunca** roda em loader de rota pública
   (SSR não tem sessão → 401 no build). Chamar do componente via
   `useServerFn` ou colocar rota sob `_authenticated/`.

@@ -12,9 +12,7 @@ export function KanbanColumn({ setor, lotes, onSelectLote }: Props) {
   return (
     <div className="flex w-[300px] flex-shrink-0 flex-col">
       <div className="mb-3 flex items-center justify-between px-1">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-white">
-          {setor}
-        </h3>
+        <h3 className="text-[11px] font-bold uppercase tracking-[0.16em] text-white">{setor}</h3>
         <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[9px] font-bold text-primary">
           {lotes.length}
         </span>

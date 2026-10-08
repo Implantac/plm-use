@@ -141,11 +141,22 @@ function AIAgentsPage() {
       metrics={[
         { label: "Agente", value: A.label, detail: "ativo" },
         { label: "Mensagens", value: String(chat.length), detail: "na sessão" },
-        { label: "Contexto", value: agent === "pcp" ? `${lotes.length} lotes` : agent === "marketing" ? `${influencers.length} influencers` : "Coleção", detail: "injetado" },
+        {
+          label: "Contexto",
+          value:
+            agent === "pcp"
+              ? `${lotes.length} lotes`
+              : agent === "marketing"
+                ? `${influencers.length} influencers`
+                : "Coleção",
+          detail: "injetado",
+        },
         { label: "Modelo", value: "Gemini 3", detail: "Flash" },
       ]}
     >
-      <div className="mb-4"><ModuleTabs group="ai" /></div>
+      <div className="mb-4">
+        <ModuleTabs group="ai" />
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Sidebar de agentes */}
         <div className="space-y-2">
@@ -266,7 +277,7 @@ function AIAgentsPage() {
                 disabled={loading}
               />
               <Button
- onClick={() => enviar()}
+                onClick={() => enviar()}
                 disabled={loading || !input.trim()}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 self-end"
               >

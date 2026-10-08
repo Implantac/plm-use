@@ -5,6 +5,7 @@ próprio e catálogo de ferramentas limitado. Espelha os departamentos da
 Software House (FPEF V13).
 
 ## Estrutura
+
 Registro em `src/lib/ai/agents.functions.ts`:
 
 ```ts
@@ -19,6 +20,7 @@ Registro em `src/lib/ai/agents.functions.ts`:
 ```
 
 ## Perfis mínimos (Onda 3 — expandir gradualmente)
+
 - **Diretoria:** CEO, CTO, Diretor Produto, Diretor Industrial
 - **Moda:** Estilo, Engenharia, Modelagem, Pilotagem, Lavanderia,
   Acabamento, Tendências
@@ -30,16 +32,19 @@ Registro em `src/lib/ai/agents.functions.ts`:
 - **BI:** Analista, Modelagem dimensional
 
 ## Como escolher perfil
+
 Ferramenta `router` decide via: entidade em foco + intenção do usuário +
 role do usuário logado. Nunca todos os agentes ao mesmo tempo.
 
 ## Regras
+
 - Cada agente **só** enxerga ferramentas do seu escopo (menor privilégio).
 - Nunca dois agentes escrevem no mesmo evento. Roteador consolida.
 - Handoff explícito: agente A pode "pedir ajuda" ao agente B via server fn
   registrada — não improviso no prompt.
 
 ## Anti-padrões
+
 - Um "agente geral" que sabe tudo.
 - Prompt de 2000 tokens listando 40 papéis.
 - Agente que escreve no banco direto.

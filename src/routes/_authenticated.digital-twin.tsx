@@ -118,10 +118,10 @@ function DigitalTwinPage() {
               { label: "Cost", active: false },
             ].map((btn, i) => (
               <Button
- key={i}
- variant="ghost"
- className={`w-28 text-[9px] border ${btn.active ? "bg-primary text-white" : "bg-white/5 text-muted-foreground"}`}
- >
+                key={i}
+                variant="ghost"
+                className={`w-28 text-[9px] border ${btn.active ? "bg-primary text-white" : "bg-white/5 text-muted-foreground"}`}
+              >
                 {btn.label}
               </Button>
             ))}
@@ -162,9 +162,7 @@ function DigitalTwinPage() {
               se aumentarmos a produção da blusa amalfi em 20%, o tempo de entrega das calças urban
               será impactado em +5 dias úteis.
             </p>
-            <Button className="w-full text-[9px] tracking-[0.16em]">
-              Testar Cenário
-            </Button>
+            <Button className="w-full text-[9px] tracking-[0.16em]">Testar Cenário</Button>
           </Card>
 
           <Card className="glass-card rounded-lg p-6">

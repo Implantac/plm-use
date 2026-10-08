@@ -20,13 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -82,9 +76,7 @@ function LooksPage() {
       if (occasionFilter !== "all" && l.occasion !== occasionFilter) return false;
       if (
         search &&
-        !`${l.name} ${l.season} ${l.tags.join(" ")}`
-          .toLowerCase()
-          .includes(search.toLowerCase())
+        !`${l.name} ${l.season} ${l.tags.join(" ")}`.toLowerCase().includes(search.toLowerCase())
       )
         return false;
       return true;
@@ -99,8 +91,8 @@ function LooksPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Coordenados · Looks</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Agrupe referências em looks reutilizáveis para displayagem, showroom e
-            catálogo comercial.
+            Agrupe referências em looks reutilizáveis para displayagem, showroom e catálogo
+            comercial.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -136,24 +128,38 @@ function LooksPage() {
           </div>
           <div className="w-40">
             <label className="uppercase-label text-muted-foreground">Status</label>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as LookStatus | "all")}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => setStatusFilter(v as LookStatus | "all")}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
                 {STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
+                  <SelectItem key={s} value={s}>
+                    {STATUS_LABEL[s]}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="w-40">
             <label className="uppercase-label text-muted-foreground">Ocasião</label>
-            <Select value={occasionFilter} onValueChange={(v) => setOccasionFilter(v as LookOccasion | "all")}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={occasionFilter}
+              onValueChange={(v) => setOccasionFilter(v as LookOccasion | "all")}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas</SelectItem>
                 {OCCASIONS.map((o) => (
-                  <SelectItem key={o} value={o}>{OCCASION_LABEL[o]}</SelectItem>
+                  <SelectItem key={o} value={o}>
+                    {OCCASION_LABEL[o]}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -258,15 +264,15 @@ function LookDetail({ look }: { look: Look }) {
           <p className="uppercase-label text-muted-foreground mb-2">Tags</p>
           <div className="flex flex-wrap gap-1">
             {look.tags.map((t) => (
-              <Badge key={t} variant="outline" className="text-2xs">{t}</Badge>
+              <Badge key={t} variant="outline" className="text-2xs">
+                {t}
+              </Badge>
             ))}
           </div>
         </div>
 
         <div>
-          <p className="uppercase-label text-muted-foreground mb-2">
-            Peças ({look.items.length})
-          </p>
+          <p className="uppercase-label text-muted-foreground mb-2">Peças ({look.items.length})</p>
           <div className="space-y-1.5">
             {look.items.map((item) => (
               <div
@@ -278,9 +284,7 @@ function LookDetail({ look }: { look: Look }) {
                   style={{ background: item.colorHex ?? "#999" }}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">
-                    {item.refName}
-                  </p>
+                  <p className="text-xs font-medium text-foreground truncate">{item.refName}</p>
                   <p className="text-2xs text-muted-foreground">
                     {item.refCode} · {item.role}
                   </p>
@@ -307,20 +311,24 @@ function LookDetail({ look }: { look: Look }) {
                 toast.success(`Look marcado como ${STATUS_LABEL[v as LookStatus]}`);
               }}
             >
-              <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="text-xs">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {STATUSES.map((s) => (
-                  <SelectItem key={s} value={s}>{STATUS_LABEL[s]}</SelectItem>
+                  <SelectItem key={s} value={s}>
+                    {STATUS_LABEL[s]}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-center gap-2">
             <Button
- variant="outline"
- size="sm"
- className="flex-1 gap-1"
- onClick={() => {
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-1"
+              onClick={() => {
                 duplicateLook(look.id);
                 toast.success("Look duplicado como rascunho.");
               }}
@@ -328,10 +336,10 @@ function LookDetail({ look }: { look: Look }) {
               <Copy className="w-3.5 h-3.5" /> Duplicar
             </Button>
             <Button
- variant="outline"
- size="sm"
- className="flex-1 gap-1 text-status-blocked hover:text-status-blocked"
- onClick={() => {
+              variant="outline"
+              size="sm"
+              className="flex-1 gap-1 text-status-blocked hover:text-status-blocked"
+              onClick={() => {
                 if (confirm(`Excluir "${look.name}"?`)) {
                   removeLook(look.id);
                   toast.success("Look excluído.");
@@ -364,7 +372,8 @@ function AddItemForm({ lookId }: { lookId: string }) {
           role,
           colorHex: color,
         });
-        setCode(""); setName("");
+        setCode("");
+        setName("");
         toast.success("Peça adicionada.");
       }}
       className="mt-3 grid grid-cols-2 gap-2"
@@ -382,7 +391,9 @@ function AddItemForm({ lookId }: { lookId: string }) {
         className="text-xs col-span-1"
       />
       <Select value={role} onValueChange={(v) => setRole(v as LookItem["role"])}>
-        <SelectTrigger className="text-xs col-span-1"><SelectValue /></SelectTrigger>
+        <SelectTrigger className="text-xs col-span-1">
+          <SelectValue />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="peça-chave">Peça-chave</SelectItem>
           <SelectItem value="complemento">Complemento</SelectItem>
@@ -397,7 +408,9 @@ function AddItemForm({ lookId }: { lookId: string }) {
           onChange={(e) => setColor(e.target.value)}
           className="w-10 p-0.5 shrink-0"
         />
-        <Button type="submit" size="sm" className="flex-1 text-xs">Adicionar</Button>
+        <Button type="submit" size="sm" className="flex-1 text-xs">
+          Adicionar
+        </Button>
       </div>
     </form>
   );
@@ -427,7 +440,10 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
             season: season.trim(),
             occasion,
             status: "rascunho",
-            tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+            tags: tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean),
             stylingNotes: notes.trim(),
             items: [],
             coverColor: color,
@@ -451,10 +467,14 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
           <div>
             <label className="uppercase-label text-muted-foreground">Ocasião</label>
             <Select value={occasion} onValueChange={(v) => setOccasion(v as LookOccasion)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {OCCASIONS.map((o) => (
-                  <SelectItem key={o} value={o}>{OCCASION_LABEL[o]}</SelectItem>
+                  <SelectItem key={o} value={o}>
+                    {OCCASION_LABEL[o]}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -472,7 +492,11 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
           </div>
           <div>
             <label className="uppercase-label text-muted-foreground">Tags (vírgula)</label>
-            <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="denim, oversized, monocromia" />
+            <Input
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="denim, oversized, monocromia"
+            />
           </div>
         </div>
         <div>

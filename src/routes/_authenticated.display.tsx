@@ -73,8 +73,7 @@ function DisplayRoute() {
   );
 
   const [selectedId, setSelectedId] = useState<string>(boards[0]?.id ?? "");
-  const selected =
-    boards.find((b) => b.id === selectedId) ?? boards[0];
+  const selected = boards.find((b) => b.id === selectedId) ?? boards[0];
 
   const metrics = useMemo(() => {
     const total = boards.length;
@@ -253,10 +252,10 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
             />
           </label>
           <Button
- variant="outline"
- size="sm"
- className="gap-2"
- onClick={() => {
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => {
               upsertBoard({
                 ...board,
                 id: `board-${Date.now()}`,
@@ -271,9 +270,9 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
           </Button>
           {board.status !== "aprovada" && (
             <Button
- size="sm"
- className="gap-2"
- onClick={() => {
+              size="sm"
+              className="gap-2"
+              onClick={() => {
                 upsertBoard({ ...board, status: "aprovada" });
                 toast.success("Painel aprovado — pronto para showroom");
               }}

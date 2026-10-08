@@ -44,7 +44,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-001",
     name: "Blusa Linho Amalfi",
     category: "Top",
-    image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=400",
     colorHex: "#F3E9C8",
     price: 289,
   },
@@ -52,7 +53,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-014",
     name: "Calça Wide Terracota",
     category: "Bottom",
-    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=400",
     colorHex: "#C86B4A",
     price: 429,
   },
@@ -60,7 +62,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-021",
     name: "Vestido Midi Botânica",
     category: "Dress",
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=400",
     colorHex: "#3E8E4C",
     price: 599,
   },
@@ -68,7 +71,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-032",
     name: "Camisa Oversized Cru",
     category: "Top",
-    image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&q=80&w=400",
     colorHex: "#EDE7DA",
     price: 349,
   },
@@ -76,7 +80,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-045",
     name: "Saia Slip Âmbar",
     category: "Bottom",
-    image: "https://images.unsplash.com/photo-1583496661160-fb5886a13d44?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1583496661160-fb5886a13d44?auto=format&fit=crop&q=80&w=400",
     colorHex: "#D9A05B",
     price: 379,
   },
@@ -84,7 +89,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-052",
     name: "Blazer Alfaiataria Concreto",
     category: "Outerwear",
-    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=400",
     colorHex: "#8C8A85",
     price: 849,
   },
@@ -92,7 +98,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-063",
     name: "Bolsa Estruturada Índigo",
     category: "Acessório",
-    image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&q=80&w=400",
     colorHex: "#1F3A5F",
     price: 459,
   },
@@ -100,7 +107,8 @@ export const refCatalog: RefCatalog[] = [
     code: "V24-071",
     name: "Sandália Trama Palha",
     category: "Calçado",
-    image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=400",
+    image:
+      "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&q=80&w=400",
     colorHex: "#D6C7A1",
     price: 399,
   },
@@ -118,10 +126,54 @@ export const boardsSeed: DisplayBoard[] = [
     updatedAt: "2026-07-01",
     bgColor: "#F3E9C8",
     items: [
-      { id: "i1", refCode: "V24-001", refName: "Blusa Linho Amalfi", image: refCatalog[0].image, category: "Top", colorHex: "#F3E9C8", price: 289, x: 12, y: 18, w: 22 },
-      { id: "i2", refCode: "V24-014", refName: "Calça Wide Terracota", image: refCatalog[1].image, category: "Bottom", colorHex: "#C86B4A", price: 429, x: 40, y: 28, w: 24 },
-      { id: "i3", refCode: "V24-063", refName: "Bolsa Estruturada Índigo", image: refCatalog[6].image, category: "Acessório", colorHex: "#1F3A5F", price: 459, x: 70, y: 20, w: 16 },
-      { id: "i4", refCode: "V24-071", refName: "Sandália Trama Palha", image: refCatalog[7].image, category: "Calçado", colorHex: "#D6C7A1", price: 399, x: 72, y: 62, w: 18 },
+      {
+        id: "i1",
+        refCode: "V24-001",
+        refName: "Blusa Linho Amalfi",
+        image: refCatalog[0].image,
+        category: "Top",
+        colorHex: "#F3E9C8",
+        price: 289,
+        x: 12,
+        y: 18,
+        w: 22,
+      },
+      {
+        id: "i2",
+        refCode: "V24-014",
+        refName: "Calça Wide Terracota",
+        image: refCatalog[1].image,
+        category: "Bottom",
+        colorHex: "#C86B4A",
+        price: 429,
+        x: 40,
+        y: 28,
+        w: 24,
+      },
+      {
+        id: "i3",
+        refCode: "V24-063",
+        refName: "Bolsa Estruturada Índigo",
+        image: refCatalog[6].image,
+        category: "Acessório",
+        colorHex: "#1F3A5F",
+        price: 459,
+        x: 70,
+        y: 20,
+        w: 16,
+      },
+      {
+        id: "i4",
+        refCode: "V24-071",
+        refName: "Sandália Trama Palha",
+        image: refCatalog[7].image,
+        category: "Calçado",
+        colorHex: "#D6C7A1",
+        price: 399,
+        x: 72,
+        y: 62,
+        w: 18,
+      },
     ],
   },
   {
@@ -135,8 +187,30 @@ export const boardsSeed: DisplayBoard[] = [
     updatedAt: "2026-07-05",
     bgColor: "#B8A48C",
     items: [
-      { id: "i5", refCode: "V24-032", refName: "Camisa Oversized Cru", image: refCatalog[3].image, category: "Top", colorHex: "#EDE7DA", price: 349, x: 18, y: 22, w: 24 },
-      { id: "i6", refCode: "V24-052", refName: "Blazer Alfaiataria Concreto", image: refCatalog[5].image, category: "Outerwear", colorHex: "#8C8A85", price: 849, x: 50, y: 20, w: 26 },
+      {
+        id: "i5",
+        refCode: "V24-032",
+        refName: "Camisa Oversized Cru",
+        image: refCatalog[3].image,
+        category: "Top",
+        colorHex: "#EDE7DA",
+        price: 349,
+        x: 18,
+        y: 22,
+        w: 24,
+      },
+      {
+        id: "i6",
+        refCode: "V24-052",
+        refName: "Blazer Alfaiataria Concreto",
+        image: refCatalog[5].image,
+        category: "Outerwear",
+        colorHex: "#8C8A85",
+        price: 849,
+        x: 50,
+        y: 20,
+        w: 26,
+      },
     ],
   },
 ];
@@ -184,7 +258,9 @@ export function addItem(boardId: string, item: BoardItem) {
   const b = getBoard(boardId);
   if (!b) return;
   boards = boards.map((x) =>
-    x.id === boardId ? { ...x, items: [...x.items, item], updatedAt: new Date().toISOString().slice(0, 10) } : x,
+    x.id === boardId
+      ? { ...x, items: [...x.items, item], updatedAt: new Date().toISOString().slice(0, 10) }
+      : x,
   );
   listeners.forEach((l) => l());
   emitLocalEvent({
@@ -200,7 +276,11 @@ export function moveItem(boardId: string, itemId: string, x: number, y: number) 
   if (!b) return;
   boards = boards.map((br) =>
     br.id === boardId
-      ? { ...br, items: br.items.map((i) => (i.id === itemId ? { ...i, x, y } : i)), updatedAt: new Date().toISOString().slice(0, 10) }
+      ? {
+          ...br,
+          items: br.items.map((i) => (i.id === itemId ? { ...i, x, y } : i)),
+          updatedAt: new Date().toISOString().slice(0, 10),
+        }
       : br,
   );
   listeners.forEach((l) => l());
@@ -212,7 +292,11 @@ export function resizeItem(boardId: string, itemId: string, w: number) {
   if (!b) return;
   boards = boards.map((br) =>
     br.id === boardId
-      ? { ...br, items: br.items.map((i) => (i.id === itemId ? { ...i, w } : i)), updatedAt: new Date().toISOString().slice(0, 10) }
+      ? {
+          ...br,
+          items: br.items.map((i) => (i.id === itemId ? { ...i, w } : i)),
+          updatedAt: new Date().toISOString().slice(0, 10),
+        }
       : br,
   );
   listeners.forEach((l) => l());
@@ -224,7 +308,11 @@ export function removeItem(boardId: string, itemId: string) {
   const removed = b.items.find((i) => i.id === itemId);
   boards = boards.map((br) =>
     br.id === boardId
-      ? { ...br, items: br.items.filter((i) => i.id !== itemId), updatedAt: new Date().toISOString().slice(0, 10) }
+      ? {
+          ...br,
+          items: br.items.filter((i) => i.id !== itemId),
+          updatedAt: new Date().toISOString().slice(0, 10),
+        }
       : br,
   );
   listeners.forEach((l) => l());

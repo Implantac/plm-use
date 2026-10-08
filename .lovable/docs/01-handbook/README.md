@@ -14,17 +14,17 @@ implementa, testa, entrega e evolui cada pedaço do produto.
 (`H0-README.md`, `H1-README.md`, …). Documentos são numerados dentro da série
 (`H1-01`, `H1-02`, …) para permitir crescimento sem quebrar referências.
 
-| Série | Tema | Estado |
-|---|---|---|
-| **H0** | Fundamentos e princípios | 🟢 pronto |
-| **H1** | Discovery & Product Design | 🟢 pronto |
-| **H2** | Domain Modeling & Data | 🟢 pronto |
-| **H3** | Architecture & Backend | 🟢 pronto |
-| **H4** | Frontend & UX Engineering | 🟢 pronto |
-| **H5** | IA Industrial & Agentes | 🟢 pronto |
-| **H6** | Integrações (ERP, CAD, e-commerce, terceiros) | 🟢 pronto |
-| **H7** | Qualidade, testes e observabilidade | 🟢 pronto |
-| **H8** | Operação, DevOps, segurança e compliance | 🟢 pronto |
+| Série  | Tema                                              | Estado             |
+| ------ | ------------------------------------------------- | ------------------ |
+| **H0** | Fundamentos e princípios                          | 🟢 pronto          |
+| **H1** | Discovery & Product Design                        | 🟢 pronto          |
+| **H2** | Domain Modeling & Data                            | 🟢 pronto          |
+| **H3** | Architecture & Backend                            | 🟢 pronto          |
+| **H4** | Frontend & UX Engineering                         | 🟢 pronto          |
+| **H5** | IA Industrial & Agentes                           | 🟢 pronto          |
+| **H6** | Integrações (ERP, CAD, e-commerce, terceiros)     | 🟢 pronto          |
+| **H7** | Qualidade, testes e observabilidade               | 🟢 pronto          |
+| **H8** | Operação, DevOps, segurança e compliance          | 🟢 pronto          |
 | **H9** | Playbooks por processo de moda (cadeia produtiva) | 🟡 template pronto |
 
 Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
@@ -34,13 +34,13 @@ Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
 - [H0 — Fundamentos](./H0-fundamentals/README.md)
 - [H1 — Discovery & Product Design](./H1-discovery/README.md)
 - [H2 — Domain Modeling & Data](./H2-domain/README.md)
-- H3 — Architecture & Backend *(a criar)*
-- H4 — Frontend & UX Engineering *(a criar)*
-- H5 — IA Industrial & Agentes *(a criar)*
-- H6 — Integrações *(a criar)*
-- H7 — Qualidade e observabilidade *(a criar)*
-- H8 — Operação, segurança e compliance *(a criar)*
-- H9 — Playbooks por processo de moda *(a criar)*
+- H3 — Architecture & Backend _(a criar)_
+- H4 — Frontend & UX Engineering _(a criar)_
+- H5 — IA Industrial & Agentes _(a criar)_
+- H6 — Integrações _(a criar)_
+- H7 — Qualidade e observabilidade _(a criar)_
+- H8 — Operação, segurança e compliance _(a criar)_
+- H9 — Playbooks por processo de moda _(a criar)_
 
 Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
 
@@ -61,15 +61,15 @@ Legenda: 🟢 pronto · 🟡 parcial · 🔴 planejado
 ## Índices das séries
 
 - [H0 — Fundamentos](./H0-fundamentals/README.md)
-- H1 — Discovery & Product Design *(a criar)*
-- H2 — Domain Modeling & Data *(a criar)*
-- H3 — Architecture & Backend *(a criar)*
-- H4 — Frontend & UX Engineering *(a criar)*
-- H5 — IA Industrial & Agentes *(a criar)*
-- H6 — Integrações *(a criar)*
-- H7 — Qualidade e observabilidade *(a criar)*
-- H8 — Operação, segurança e compliance *(a criar)*
-- H9 — Playbooks por processo de moda *(a criar)*
+- H1 — Discovery & Product Design _(a criar)_
+- H2 — Domain Modeling & Data _(a criar)_
+- H3 — Architecture & Backend _(a criar)_
+- H4 — Frontend & UX Engineering _(a criar)_
+- H5 — IA Industrial & Agentes _(a criar)_
+- H6 — Integrações _(a criar)_
+- H7 — Qualidade e observabilidade _(a criar)_
+- H8 — Operação, segurança e compliance _(a criar)_
+- H9 — Playbooks por processo de moda _(a criar)_
 
 ## Roadmap de escrita (ondas)
 

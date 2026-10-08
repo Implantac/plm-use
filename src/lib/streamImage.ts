@@ -62,7 +62,10 @@ export async function streamImage(
 
   const consume = (event: string) => {
     const lines = event.split(/\r?\n/);
-    const eventName = lines.find((line) => line.startsWith("event:"))?.slice(6).trim();
+    const eventName = lines
+      .find((line) => line.startsWith("event:"))
+      ?.slice(6)
+      .trim();
     const payload = lines
       .filter((line) => line.startsWith("data:"))
       .map((line) => line.slice(5).trim())

@@ -24,8 +24,15 @@ import {
 } from "@/components/ui/select";
 import type { StockItem } from "@/hooks/use-stock";
 
-interface Warehouse { id: string; code: string; name: string }
-interface RefRow { id: string; label: string }
+interface Warehouse {
+  id: string;
+  code: string;
+  name: string;
+}
+interface RefRow {
+  id: string;
+  label: string;
+}
 
 type RefType = "pcp_lot" | "piloto" | "op";
 
@@ -131,16 +138,22 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="glass-card border-white/10 bg-black/95 text-white rounded-lg p-6 max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold uppercase tracking-tight">Nova reserva</DialogTitle>
+          <DialogTitle className="text-xl font-bold uppercase tracking-tight">
+            Nova reserva
+          </DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 py-4">
           <div className="space-y-2">
             <Label required>Insumo</Label>
             <Select value={itemId} onValueChange={setItemId}>
-              <SelectTrigger aria-invalid={!!errors.itemId}><SelectValue placeholder="Selecione o insumo" /></SelectTrigger>
+              <SelectTrigger aria-invalid={!!errors.itemId}>
+                <SelectValue placeholder="Selecione o insumo" />
+              </SelectTrigger>
               <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
                 {items.map((it) => (
-                  <SelectItem key={it.id} value={it.id}>{it.code} — {it.name}</SelectItem>
+                  <SelectItem key={it.id} value={it.id}>
+                    {it.code} — {it.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -151,18 +164,31 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
             <div className="space-y-2">
               <Label required>Armazém</Label>
               <Select value={warehouseId} onValueChange={setWarehouseId}>
-                <SelectTrigger aria-invalid={!!errors.warehouseId}><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectTrigger aria-invalid={!!errors.warehouseId}>
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
                   {warehouses.map((w) => (
-                    <SelectItem key={w.id} value={w.id}>{w.code}</SelectItem>
+                    <SelectItem key={w.id} value={w.id}>
+                      {w.code}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {errors.warehouseId && <FieldMessage variant="error">{errors.warehouseId}</FieldMessage>}
+              {errors.warehouseId && (
+                <FieldMessage variant="error">{errors.warehouseId}</FieldMessage>
+              )}
             </div>
             <div className="space-y-2">
               <Label required>Quantidade</Label>
-              <Input value={qty} onChange={(e) => setQty(e.target.value)} type="number" min="0" step="0.01" aria-invalid={!!errors.qty} />
+              <Input
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+                type="number"
+                min="0"
+                step="0.01"
+                aria-invalid={!!errors.qty}
+              />
               {errors.qty && <FieldMessage variant="error">{errors.qty}</FieldMessage>}
             </div>
           </div>
@@ -171,7 +197,9 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
             <div className="space-y-2">
               <Label>Tipo</Label>
               <Select value={refType} onValueChange={(v) => setRefType(v as RefType)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent className="bg-black/95 border-white/10 text-white">
                   <SelectItem value="pcp_lot">Lote PCP</SelectItem>
                   <SelectItem value="piloto">Piloto</SelectItem>
@@ -182,16 +210,27 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
             <div className="space-y-2">
               <Label required>Referência</Label>
               {refType === "op" ? (
-                <Input value={refId} onChange={(e) => setRefId(e.target.value)} placeholder="UUID da OP" aria-invalid={!!errors.refId} />
+                <Input
+                  value={refId}
+                  onChange={(e) => setRefId(e.target.value)}
+                  placeholder="UUID da OP"
+                  aria-invalid={!!errors.refId}
+                />
               ) : (
                 <Select value={refId} onValueChange={setRefId}>
-                  <SelectTrigger aria-invalid={!!errors.refId}><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectTrigger aria-invalid={!!errors.refId}>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
                   <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
                     {refs.map((r) => (
-                      <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
+                      <SelectItem key={r.id} value={r.id}>
+                        {r.label}
+                      </SelectItem>
                     ))}
                     {refs.length === 0 && (
-                      <div className="px-3 py-2 text-xs text-muted-foreground">Nenhum registro.</div>
+                      <div className="px-3 py-2 text-xs text-muted-foreground">
+                        Nenhum registro.
+                      </div>
                     )}
                   </SelectContent>
                 </Select>
@@ -201,13 +240,24 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Observações</Label>
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="" />
+            <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              Observações
+            </Label>
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+              className=""
+            />
           </div>
         </div>
         <DialogFooter className="gap-3">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-[10px]">Cancelar</Button>
-          <Button onClick={handleSubmit} disabled={busy} className="text-[10px]">Reservar</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-[10px]">
+            Cancelar
+          </Button>
+          <Button onClick={handleSubmit} disabled={busy} className="text-[10px]">
+            Reservar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

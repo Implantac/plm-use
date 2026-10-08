@@ -1,13 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Bell,
-  AlertTriangle,
-  Clock,
-  TrendingDown,
-  Package,
-  CheckCheck,
-  X,
-} from "lucide-react";
+import { Bell, AlertTriangle, Clock, TrendingDown, Package, CheckCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { usePCPStore } from "@/lib/pcp/store";
@@ -36,8 +28,7 @@ function relativeTime(iso: string) {
 export function AlertsBell() {
   const lotes = usePCPStore((s) => s.lotes);
   const [open, setOpen] = useState(false);
-  const { items, unreadCount, syncDerived, markAsRead, markAllAsRead, remove } =
-    useNotifications();
+  const { items, unreadCount, syncDerived, markAsRead, markAllAsRead, remove } = useNotifications();
 
   const derived = useMemo<NewNotification[]>(() => {
     const out: NewNotification[] = [];
@@ -113,10 +104,10 @@ export function AlertsBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
- variant="ghost"
- size="icon"
- className="w-10 bg-white/5 border hover:bg-white/10 relative group"
- >
+          variant="ghost"
+          size="icon"
+          className="w-10 bg-white/5 border hover:bg-white/10 relative group"
+        >
           <Bell className="w-4 h-4 text-muted-foreground group-hover:text-white" />
           {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-bold flex items-center justify-center bg-rose-500 text-white ring-2 ring-background">
@@ -125,10 +116,7 @@ export function AlertsBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className="w-[420px] p-0 glass-card border-white/10 bg-black/95"
-      >
+      <PopoverContent align="end" className="w-[420px] p-0 glass-card border-white/10 bg-black/95">
         <div className="p-4 border-b border-white/10 flex items-center justify-between">
           <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2">
             <AlertTriangle className="w-3.5 h-3.5 text-primary" /> Alertas
@@ -178,9 +166,7 @@ export function AlertsBell() {
                     {!isRead && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
                     <p className="text-[11px] font-bold text-white truncate">{n.title}</p>
                   </div>
-                  {n.detail && (
-                    <p className="text-[10px] text-muted-foreground">{n.detail}</p>
-                  )}
+                  {n.detail && <p className="text-[10px] text-muted-foreground">{n.detail}</p>}
                   <p className="text-[9px] text-muted-foreground/60 uppercase tracking-[0.16em] mt-1">
                     {n.source} · {relativeTime(n.created_at)}
                   </p>

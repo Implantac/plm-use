@@ -63,8 +63,7 @@ export const Route = createFileRoute("/_authenticated/prints")({
       { property: "og:title", content: "Cartela de Estampas · USE MODA PLM" },
       {
         property: "og:description",
-        content:
-          "Cadastre estampas, controle versões e vincule à ficha técnica.",
+        content: "Cadastre estampas, controle versões e vincule à ficha técnica.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -361,9 +360,9 @@ function PrintDetail({ print }: { print: PrintAsset }) {
             <NewVersionDialog printId={print.id} />
             {print.status !== "aprovada" && (
               <Button
- size="sm"
- className="gap-2"
- onClick={() => {
+                size="sm"
+                className="gap-2"
+                onClick={() => {
                   upsertPrint({ ...print, status: "aprovada" });
                   toast.success(`${print.code} aprovada`);
                 }}
@@ -372,10 +371,10 @@ function PrintDetail({ print }: { print: PrintAsset }) {
               </Button>
             )}
             <Button
- variant="outline"
- size="sm"
- className="gap-2"
- onClick={() => toast.info("Análise IA em breve")}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => toast.info("Análise IA em breve")}
             >
               <Sparkles className="h-3.5 w-3.5" /> Análise IA
             </Button>
@@ -421,15 +420,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
   );
 }
 
-function MetaCell({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function MetaCell({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5">
       <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-muted-foreground">
@@ -465,7 +456,9 @@ function NewVersionDialog({ printId }: { printId: string }) {
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[10px] uppercase tracking-widest" required>Rótulo</Label>
+              <Label className="text-[10px] uppercase tracking-widest" required>
+                Rótulo
+              </Label>
               <Input
                 value={label}
                 onChange={(e) => {
@@ -479,7 +472,10 @@ function NewVersionDialog({ printId }: { printId: string }) {
             </div>
             <div>
               <Label className="text-[10px] uppercase tracking-widest">Formato</Label>
-              <Select value={format} onValueChange={(v) => setFormat(v as PrintAsset["fileFormat"])}>
+              <Select
+                value={format}
+                onValueChange={(v) => setFormat(v as PrintAsset["fileFormat"])}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -514,7 +510,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
             Cancelar
           </Button>
           <Button
-  onClick={() => {
+            onClick={() => {
               if (!label.trim()) {
                 setLabelError("Dê um rótulo à versão (ex.: v2).");
                 return;

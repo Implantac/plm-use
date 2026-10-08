@@ -24,11 +24,33 @@ import {
   type ProductionOrder,
 } from "@/hooks/use-production-orders";
 
-interface Row { key: string; itemId: string; label: string; stepId: string; available: number; route?: ProdRoute }
+interface Row {
+  key: string;
+  itemId: string;
+  label: string;
+  stepId: string;
+  available: number;
+  route?: ProdRoute;
+}
 
-const TYPE_LABEL: Record<string, string> = { total: "Total", parcial: "Parcial", retorno: "Retorno", perda: "Perda", desvio: "Desvio", ajuste: "Ajuste" };
+const TYPE_LABEL: Record<string, string> = {
+  total: "Total",
+  parcial: "Parcial",
+  retorno: "Retorno",
+  perda: "Perda",
+  desvio: "Desvio",
+  ajuste: "Ajuste",
+};
 
-export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder | null; routes: ProdRoute[]; onClose: () => void }) {
+export function OpWorkspace({
+  order,
+  routes,
+  onClose,
+}: {
+  order: ProductionOrder | null;
+  routes: ProdRoute[];
+  onClose: () => void;
+}) {
   const { roles } = useUserRoles(useAuth().user?.id);
   const { canPlan, canMove } = opPermissions(roles);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -62,7 +84,12 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
 
   const chosen = rows.filter((r) => selected[r.key]);
 
-  const reset = () => { setSelected({}); setQty({}); setObs(""); setErrorMsg(null); };
+  const reset = () => {
+    setSelected({});
+    setQty({});
+    setObs("");
+    setErrorMsg(null);
+  };
 
   const submit = async () => {
     setErrorMsg(null);
@@ -70,9 +97,16 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
     const moves: PassageMove[] = [];
     for (const r of chosen) {
       const n = mode === "total" ? r.available : Number(qty[r.key]);
-      if (!Number.isInteger(n) || n <= 0) return setErrorMsg(`Informe uma quantidade válida para ${r.label}.`);
-      if (n > r.available) return setErrorMsg(`${r.label}: passar (${n}) é maior que o disponível (${r.available}).`);
-      moves.push({ item_id: r.itemId, origin_step_id: r.stepId, quantity: n, type: mode === "total" ? "total" : mode });
+      if (!Number.isInteger(n) || n <= 0)
+        return setErrorMsg(`Informe uma quantidade válida para ${r.label}.`);
+      if (n > r.available)
+        return setErrorMsg(`${r.label}: passar (${n}) é maior que o disponível (${r.available}).`);
+      moves.push({
+        item_id: r.itemId,
+        origin_step_id: r.stepId,
+        quantity: n,
+        type: mode === "total" ? "total" : mode,
+      });
     }
     if (mode === "perda" && !obs.trim()) return setErrorMsg("Informe o motivo da perda.");
     try {
@@ -85,7 +119,15 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
   };
 
   return (
-    <Dialog open={!!order} onOpenChange={(o) => { if (!o) { reset(); onClose(); } }}>
+    <Dialog
+      open={!!order}
+      onOpenChange={(o) => {
+        if (!o) {
+          reset();
+          onClose();
+        }
+      }}
+    >
       <DialogContent className="max-w-4xl max-h-[90dvh] overflow-y-auto">
         {order && (
           <>
@@ -108,39 +150,99 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                   {order.items.map((i) => (
                     <div key={i.id} className="rounded-md border border-border p-2">
-                      <p className="font-bold">{i.reference_code} {i.color && `· ${i.color}`}</p>
+                      <p className="font-bold">
+                        {i.reference_code} {i.color && `· ${i.color}`}
+                      </p>
                       <p className="text-muted-foreground">{routeById.get(i.route_id)?.name}</p>
-                      <p>{i.quantity_produced}/{i.quantity_planned} prontas · {i.quantity_lost} perdas</p>
+                      <p>
+                        {i.quantity_produced}/{i.quantity_planned} prontas · {i.quantity_lost}{" "}
+                        perdas
+                      </p>
                     </div>
                   ))}
                 </div>
 
-                <RadioGroup value={mode} onValueChange={(v) => setMode(v as typeof mode)} className="flex gap-4">
-                  <div className="flex items-center gap-2"><RadioGroupItem value="total" id="m-total" /><Label htmlFor="m-total">Total disponível</Label></div>
-                  <div className="flex items-center gap-2"><RadioGroupItem value="parcial" id="m-parcial" /><Label htmlFor="m-parcial">Parcial</Label></div>
-                  <div className="flex items-center gap-2"><RadioGroupItem value="perda" id="m-perda" /><Label htmlFor="m-perda">Perda</Label></div>
+                <RadioGroup
+                  value={mode}
+                  onValueChange={(v) => setMode(v as typeof mode)}
+                  className="flex gap-4"
+                >
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="total" id="m-total" />
+                    <Label htmlFor="m-total">Total disponível</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="parcial" id="m-parcial" />
+                    <Label htmlFor="m-parcial">Parcial</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="perda" id="m-perda" />
+                    <Label htmlFor="m-perda">Perda</Label>
+                  </div>
                 </RadioGroup>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead className="text-[10px] uppercase text-muted-foreground">
-                      <tr><th className="p-2 text-left" /><th className="p-2 text-left">Item</th><th className="p-2 text-left">Etapa atual</th><th className="p-2 text-left">Próxima etapa</th><th className="p-2 text-right">Disponível</th><th className="p-2 text-right">Passar</th></tr>
+                      <tr>
+                        <th className="p-2 text-left" />
+                        <th className="p-2 text-left">Item</th>
+                        <th className="p-2 text-left">Etapa atual</th>
+                        <th className="p-2 text-left">Próxima etapa</th>
+                        <th className="p-2 text-right">Disponível</th>
+                        <th className="p-2 text-right">Passar</th>
+                      </tr>
                     </thead>
                     <tbody>
-                      {rows.length === 0 && <tr><td colSpan={6} className="p-4 text-center text-muted-foreground">Todos os itens foram concluídos.</td></tr>}
+                      {rows.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="p-4 text-center text-muted-foreground">
+                            Todos os itens foram concluídos.
+                          </td>
+                        </tr>
+                      )}
                       {rows.map((r) => {
                         const cur = stepById.get(r.stepId);
                         const nx = nextStep(r.route, r.stepId);
                         return (
                           <tr key={r.key} className="border-t border-border">
-                            <td className="p-2"><Checkbox aria-label={`Selecionar ${r.label}`} checked={!!selected[r.key]} onCheckedChange={(c) => setSelected((s) => ({ ...s, [r.key]: !!c }))} /></td>
+                            <td className="p-2">
+                              <Checkbox
+                                aria-label={`Selecionar ${r.label}`}
+                                checked={!!selected[r.key]}
+                                onCheckedChange={(c) =>
+                                  setSelected((s) => ({ ...s, [r.key]: !!c }))
+                                }
+                              />
+                            </td>
                             <td className="p-2 font-medium">{r.label}</td>
-                            <td className="p-2">{cur ? `${cur.sector} · ${cur.operation}` : "—"}</td>
-                            <td className="p-2 text-muted-foreground">{mode === "perda" ? "Baixa por perda" : nx ? `${nx.sector} · ${nx.operation}` : "Finalizar (produzido)"}</td>
+                            <td className="p-2">
+                              {cur ? `${cur.sector} · ${cur.operation}` : "—"}
+                            </td>
+                            <td className="p-2 text-muted-foreground">
+                              {mode === "perda"
+                                ? "Baixa por perda"
+                                : nx
+                                  ? `${nx.sector} · ${nx.operation}`
+                                  : "Finalizar (produzido)"}
+                            </td>
                             <td className="p-2 text-right">{r.available}</td>
                             <td className="p-2 text-right">
-                              {mode === "total" ? r.available : (
-                                <Input aria-label={`Quantidade para ${r.label}`} type="number" min={1} max={r.available} className="h-8 w-24 ml-auto text-right" value={qty[r.key] ?? ""} onChange={(e) => setQty((q) => ({ ...q, [r.key]: e.target.value }))} disabled={!selected[r.key]} />
+                              {mode === "total" ? (
+                                r.available
+                              ) : (
+                                <Input
+                                  aria-label={`Quantidade para ${r.label}`}
+                                  type="number"
+                                  min={1}
+                                  max={r.available}
+                                  className="h-8 w-24 ml-auto text-right"
+                                  value={qty[r.key] ?? ""}
+                                  onChange={(e) =>
+                                    setQty((q) => ({ ...q, [r.key]: e.target.value }))
+                                  }
+                                  disabled={!selected[r.key]}
+                                />
                               )}
                             </td>
                           </tr>
@@ -151,16 +253,28 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="op-obs">Observação {mode === "perda" && "(motivo obrigatório)"}</Label>
-                  <Textarea id="op-obs" value={obs} onChange={(e) => setObs(e.target.value)} maxLength={500} rows={2} />
+                  <Label htmlFor="op-obs">
+                    Observação {mode === "perda" && "(motivo obrigatório)"}
+                  </Label>
+                  <Textarea
+                    id="op-obs"
+                    value={obs}
+                    onChange={(e) => setObs(e.target.value)}
+                    maxLength={500}
+                    rows={2}
+                  />
                 </div>
                 {errorMsg && <FieldMessage variant="error">{errorMsg}</FieldMessage>}
                 {canMove ? (
                   <Button onClick={submit} disabled={register.isPending || !chosen.length}>
-                    {register.isPending ? "Registrando…" : `Passar ${chosen.length} item(ns) selecionado(s)`}
+                    {register.isPending
+                      ? "Registrando…"
+                      : `Passar ${chosen.length} item(ns) selecionado(s)`}
                   </Button>
                 ) : (
-                  <FieldMessage>Seu perfil só pode visualizar. Passagens são feitas por PCP, líder ou operador.</FieldMessage>
+                  <FieldMessage>
+                    Seu perfil só pode visualizar. Passagens são feitas por PCP, líder ou operador.
+                  </FieldMessage>
                 )}
               </TabsContent>
 
@@ -170,27 +284,41 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                   const at = new Map(i.balances.map((b) => [b.step_id, b.quantity]));
                   return (
                     <div key={i.id} className="space-y-1">
-                      <p className="text-sm font-bold">{i.reference_code} {i.color && `· ${i.color}`} — {r?.name}</p>
+                      <p className="text-sm font-bold">
+                        {i.reference_code} {i.color && `· ${i.color}`} — {r?.name}
+                      </p>
                       <div className="flex flex-wrap gap-1 items-center">
                         {r?.steps.map((s, idx) => (
                           <span key={s.id} className="flex items-center gap-1">
-                            <Badge variant={at.get(s.id) ? "default" : "outline"} className="text-[10px]">
-                              {s.sequence}. {s.operation}{at.get(s.id) ? ` · ${at.get(s.id)}` : ""}{s.outsourced ? " (terc.)" : ""}
+                            <Badge
+                              variant={at.get(s.id) ? "default" : "outline"}
+                              className="text-[10px]"
+                            >
+                              {s.sequence}. {s.operation}
+                              {at.get(s.id) ? ` · ${at.get(s.id)}` : ""}
+                              {s.outsourced ? " (terc.)" : ""}
                             </Badge>
-                            {idx < r.steps.length - 1 && <span className="text-muted-foreground">→</span>}
+                            {idx < r.steps.length - 1 && (
+                              <span className="text-muted-foreground">→</span>
+                            )}
                           </span>
                         ))}
                       </div>
-                      {canPlan && !passages.some((p) => p.production_order_item_id === i.id && p.type !== "desvio") && (
-                        <AltRouteForm itemId={i.id} currentRouteId={i.route_id} routes={routes} />
-                      )}
+                      {canPlan &&
+                        !passages.some(
+                          (p) => p.production_order_item_id === i.id && p.type !== "desvio",
+                        ) && (
+                          <AltRouteForm itemId={i.id} currentRouteId={i.route_id} routes={routes} />
+                        )}
                     </div>
                   );
                 })}
               </TabsContent>
 
               <TabsContent value="historico">
-                {passages.length === 0 ? <p className="text-sm text-muted-foreground">Nenhuma movimentação ainda.</p> : (
+                {passages.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Nenhuma movimentação ainda.</p>
+                ) : (
                   <ul className="space-y-2 text-xs">
                     {passages.map((p) => {
                       const item = order.items.find((i) => i.id === p.production_order_item_id);
@@ -198,8 +326,20 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
                       const d = p.destination_step_id ? stepById.get(p.destination_step_id) : null;
                       return (
                         <li key={p.id} className="rounded-md border border-border p-2">
-                          <span className="font-bold">{item?.reference_code} {item?.color}</span> · {o?.operation ?? "—"} → {d?.operation ?? (p.type === "perda" ? "perda" : "concluído")} · {p.quantity} pç · <Badge variant="outline" className="text-[10px]">{TYPE_LABEL[p.type] ?? p.type}</Badge>
-                          <div className="text-muted-foreground">{p.responsible_name ?? "—"} · {new Date(p.created_at).toLocaleString("pt-BR")}{p.observation ? ` · ${p.observation}` : ""}</div>
+                          <span className="font-bold">
+                            {item?.reference_code} {item?.color}
+                          </span>{" "}
+                          · {o?.operation ?? "—"} →{" "}
+                          {d?.operation ?? (p.type === "perda" ? "perda" : "concluído")} ·{" "}
+                          {p.quantity} pç ·{" "}
+                          <Badge variant="outline" className="text-[10px]">
+                            {TYPE_LABEL[p.type] ?? p.type}
+                          </Badge>
+                          <div className="text-muted-foreground">
+                            {p.responsible_name ?? "—"} ·{" "}
+                            {new Date(p.created_at).toLocaleString("pt-BR")}
+                            {p.observation ? ` · ${p.observation}` : ""}
+                          </div>
                         </li>
                       );
                     })}
@@ -218,33 +358,76 @@ export function OpWorkspace({ order, routes, onClose }: { order: ProductionOrder
   );
 }
 
-function AltRouteForm({ itemId, currentRouteId, routes }: { itemId: string; currentRouteId: string; routes: { id: string; code: string; name: string }[] }) {
+function AltRouteForm({
+  itemId,
+  currentRouteId,
+  routes,
+}: {
+  itemId: string;
+  currentRouteId: string;
+  routes: { id: string; code: string; name: string }[];
+}) {
   const change = useChangeItemRoute();
   const [open, setOpen] = useState(false);
   const [routeId, setRouteId] = useState("");
   const [reason, setReason] = useState("");
   const [err, setErr] = useState<string | null>(null);
-  if (!open) return <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setOpen(true)}>Usar rota alternativa</Button>;
+  if (!open)
+    return (
+      <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setOpen(true)}>
+        Usar rota alternativa
+      </Button>
+    );
   const submit = () => {
     if (!routeId) return setErr("Escolha a rota alternativa.");
     if (reason.trim().length < 5) return setErr("Escreva a justificativa (mínimo 5 caracteres).");
     setErr(null);
-    change.mutate({ itemId, routeId, reason: reason.trim() }, {
-      onSuccess: () => { toast.success("Rota alternativa aplicada."); setOpen(false); setReason(""); setRouteId(""); },
-      onError: (e) => toast.error(e instanceof Error ? e.message : "Não foi possível trocar a rota."),
-    });
+    change.mutate(
+      { itemId, routeId, reason: reason.trim() },
+      {
+        onSuccess: () => {
+          toast.success("Rota alternativa aplicada.");
+          setOpen(false);
+          setReason("");
+          setRouteId("");
+        },
+        onError: (e) =>
+          toast.error(e instanceof Error ? e.message : "Não foi possível trocar a rota."),
+      },
+    );
   };
   return (
     <div className="rounded-md border border-border p-2 space-y-2">
-      <select aria-label="Rota alternativa" value={routeId} onChange={(e) => setRouteId(e.target.value)} className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm">
+      <select
+        aria-label="Rota alternativa"
+        value={routeId}
+        onChange={(e) => setRouteId(e.target.value)}
+        className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm"
+      >
         <option value="">Escolha a rota alternativa</option>
-        {routes.filter((r) => r.id !== currentRouteId).map((r) => <option key={r.id} value={r.id}>{r.code} · {r.name}</option>)}
+        {routes
+          .filter((r) => r.id !== currentRouteId)
+          .map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.code} · {r.name}
+            </option>
+          ))}
       </select>
-      <Textarea aria-label="Justificativa" placeholder="Justificativa da troca de rota" value={reason} onChange={(e) => setReason(e.target.value)} rows={2} />
+      <Textarea
+        aria-label="Justificativa"
+        placeholder="Justificativa da troca de rota"
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        rows={2}
+      />
       {err && <FieldMessage variant="error">{err}</FieldMessage>}
       <div className="flex gap-2">
-        <Button size="sm" onClick={submit} disabled={change.isPending}>Aplicar rota</Button>
-        <Button size="sm" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+        <Button size="sm" onClick={submit} disabled={change.isPending}>
+          Aplicar rota
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setOpen(false)}>
+          Cancelar
+        </Button>
       </div>
     </div>
   );

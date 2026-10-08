@@ -12,23 +12,23 @@ usando o template canônico `H9-00-template.md`.
 
 ## Elos previstos (Onda E)
 
-| # | Playbook | Elo (V2) | Estado |
-|---|----------|----------|--------|
-| 01 | [Coleção](./H9-01-colecao.md) | Briefing → Coleção aprovada | 🟡 |
-| 02 | [Desenvolvimento](./H9-02-desenvolvimento.md) | Croqui → Referência → Piloto → Aprovação | 🟡 |
-| 03 | [Modelagem](./H9-03-modelagem.md) | Molde-mãe → Grade → Encaixe → Validação | 🟡 |
-| 04 | [Corte](./H9-04-corte.md) | Enfesto → Corte → Fardos etiquetados | 🟡 |
-| 05 | [Costura & Facções](./H9-05-costura-faccoes.md) | Distribuição → Passagens → Facção → Peças costuradas | 🟡 |
-| 06 | [Lavanderia & Acabamento](./H9-06-lavanderia-acabamento.md) | Lavagem → Passadoria → Revisão → Embalagem | 🟡 |
-| 07 | [Qualidade & CAPA](./H9-07-qualidade-capa.md) | Inspeção final + ações corretivas | 🟡 |
-| 08 | [Expedição & Estoque PA](./H9-08-expedicao-estoque.md) | Entrada PA → Alocação → Picking → Conferência → Despacho | 🟡 |
-| 09 | [Mostruário](./H9-09-mostruario.md) | Peça-mãe → Kits → Ficha digital → Feedback → Go/No-Go | 🟡 |
-| 10 | [Lançamento](./H9-10-lancamento.md) | Wave comercial → Handoff ERP → Sell-through | 🟡 |
-| 11 | Engenharia de Produto | BOM / BOP / consumo | 🔴 |
-| 12 | Compras & MRP | Suprimentos | 🔴 |
-| 13 | Estoque & Recebimento (MP) | Almoxarifado matéria-prima | 🔴 |
-| 14 | Comercial pós-lançamento | Pedido → Faturamento (via ERP) | 🔴 |
-| 15 | Pós-venda & Aprendizado | Pós-venda + retro para V1 | 🔴 |
+| #   | Playbook                                                    | Elo (V2)                                                 | Estado |
+| --- | ----------------------------------------------------------- | -------------------------------------------------------- | ------ |
+| 01  | [Coleção](./H9-01-colecao.md)                               | Briefing → Coleção aprovada                              | 🟡     |
+| 02  | [Desenvolvimento](./H9-02-desenvolvimento.md)               | Croqui → Referência → Piloto → Aprovação                 | 🟡     |
+| 03  | [Modelagem](./H9-03-modelagem.md)                           | Molde-mãe → Grade → Encaixe → Validação                  | 🟡     |
+| 04  | [Corte](./H9-04-corte.md)                                   | Enfesto → Corte → Fardos etiquetados                     | 🟡     |
+| 05  | [Costura & Facções](./H9-05-costura-faccoes.md)             | Distribuição → Passagens → Facção → Peças costuradas     | 🟡     |
+| 06  | [Lavanderia & Acabamento](./H9-06-lavanderia-acabamento.md) | Lavagem → Passadoria → Revisão → Embalagem               | 🟡     |
+| 07  | [Qualidade & CAPA](./H9-07-qualidade-capa.md)               | Inspeção final + ações corretivas                        | 🟡     |
+| 08  | [Expedição & Estoque PA](./H9-08-expedicao-estoque.md)      | Entrada PA → Alocação → Picking → Conferência → Despacho | 🟡     |
+| 09  | [Mostruário](./H9-09-mostruario.md)                         | Peça-mãe → Kits → Ficha digital → Feedback → Go/No-Go    | 🟡     |
+| 10  | [Lançamento](./H9-10-lancamento.md)                         | Wave comercial → Handoff ERP → Sell-through              | 🟡     |
+| 11  | Engenharia de Produto                                       | BOM / BOP / consumo                                      | 🔴     |
+| 12  | Compras & MRP                                               | Suprimentos                                              | 🔴     |
+| 13  | Estoque & Recebimento (MP)                                  | Almoxarifado matéria-prima                               | 🔴     |
+| 14  | Comercial pós-lançamento                                    | Pedido → Faturamento (via ERP)                           | 🔴     |
+| 15  | Pós-venda & Aprendizado                                     | Pós-venda + retro para V1                                | 🔴     |
 
 Legenda: 🔴 planejado · 🟡 parcial · 🟢 pronto
 

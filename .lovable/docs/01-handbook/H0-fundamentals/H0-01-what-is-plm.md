@@ -24,6 +24,7 @@ marketing e comercial.
 ## Métrica de valor
 
 Um PLM entrega valor quando:
+
 1. Tempo entre briefing e coleção lançada **cai**.
 2. Retrabalho por informação desatualizada **cai**.
 3. % de peças aprovadas de primeira **sobe**.

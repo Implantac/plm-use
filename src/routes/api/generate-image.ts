@@ -57,7 +57,9 @@ export const Route = createFileRoute("/api/generate-image")({
         if (!key) return jsonError("O provedor de imagens não está configurado.", 503);
 
         const model = "openai/gpt-image-2.5-sunburst";
-        const references = parsed.data.referenceImages ?? (parsed.data.referenceImage ? [parsed.data.referenceImage] : []);
+        const references =
+          parsed.data.referenceImages ??
+          (parsed.data.referenceImage ? [parsed.data.referenceImage] : []);
         let upstream: Response;
         try {
           if (references.length) {
@@ -90,25 +92,25 @@ export const Route = createFileRoute("/api/generate-image")({
               body: form,
             });
           } else {
-          upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
-            method: "POST",
-            signal: request.signal,
-            headers: {
-              Authorization: `Bearer ${key}`,
-              "Lovable-API-Key": key,
-              "X-Lovable-AIG-SDK": "raw",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model,
-              prompt: parsed.data.prompt,
-              quality: "high",
-              background: "transparent",
-              output_format: "png",
-              stream: true,
-              partial_images: 2,
-            }),
-          });
+            upstream = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+              method: "POST",
+              signal: request.signal,
+              headers: {
+                Authorization: `Bearer ${key}`,
+                "Lovable-API-Key": key,
+                "X-Lovable-AIG-SDK": "raw",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model,
+                prompt: parsed.data.prompt,
+                quality: "high",
+                background: "transparent",
+                output_format: "png",
+                stream: true,
+                partial_images: 2,
+              }),
+            });
           }
         } catch (error) {
           if (request.signal.aborted) return new Response(null, { status: 499 });
@@ -119,15 +121,22 @@ export const Route = createFileRoute("/api/generate-image")({
         if (!upstream.ok || !upstream.body) {
           let safeMessage = "Não foi possível gerar esta imagem. Tente novamente.";
           try {
-            const providerBody = await upstream.json() as { error?: { message?: string } | string; message?: string };
-            safeMessage = typeof providerBody.error === "string"
-              ? providerBody.error
-              : providerBody.error?.message ?? providerBody.message ?? safeMessage;
+            const providerBody = (await upstream.json()) as {
+              error?: { message?: string } | string;
+              message?: string;
+            };
+            safeMessage =
+              typeof providerBody.error === "string"
+                ? providerBody.error
+                : (providerBody.error?.message ?? providerBody.message ?? safeMessage);
           } catch {
             // Keep the safe local message when the provider did not return JSON.
           }
-          if (upstream.status === 402) safeMessage = "Créditos de IA esgotados. Adicione créditos ao workspace para voltar a gerar imagens.";
-          if (upstream.status === 429) safeMessage = "Limite temporário de geração. Tente novamente em alguns segundos.";
+          if (upstream.status === 402)
+            safeMessage =
+              "Créditos de IA esgotados. Adicione créditos ao workspace para voltar a gerar imagens.";
+          if (upstream.status === 429)
+            safeMessage = "Limite temporário de geração. Tente novamente em alguns segundos.";
           return jsonError(safeMessage, upstream.status);
         }
 

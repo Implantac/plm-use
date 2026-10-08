@@ -37,8 +37,6 @@ Todo playbook H9 herda estas regras — quebrá-las é bug de escopo, não featu
 
 ---
 
-
-
 ## 0. Identificação
 
 - **Elo da cadeia (V2):** <ex.: Pesquisa & Moodboard>
@@ -65,21 +63,23 @@ Uma frase: **por que** esse elo existe na cadeia e **qual dor** ele resolve.
 
 ## 3. Entradas (inputs)
 
-| # | Entrada | Origem (elo/sistema) | Formato | Obrigatória? |
-|---|---------|----------------------|---------|--------------|
-| 1 |         |                      |         |              |
+| #   | Entrada | Origem (elo/sistema) | Formato | Obrigatória? |
+| --- | ------- | -------------------- | ------- | ------------ |
+| 1   |         |                      |         |              |
 
 Regras:
+
 - Toda entrada precisa ser rastreável a uma entidade do catálogo (H2-02).
 - Entrada vinda de ERP passa por `ErpAdapter` (V9 / H6-02) — nunca query direta.
 
 ## 4. Saídas (outputs)
 
-| # | Saída | Destino (elo/sistema) | Entidade / Evento | Obrigatória? |
-|---|-------|-----------------------|-------------------|--------------|
-| 1 |       |                       |                   |              |
+| #   | Saída | Destino (elo/sistema) | Entidade / Evento | Obrigatória? |
+| --- | ----- | --------------------- | ----------------- | ------------ |
+| 1   |       |                       |                   |              |
 
 Regras:
+
 - Toda saída relevante emite `entity_events` (V7 / H2-04).
 - Mudanças de estado passam por `workflow_definitions` (V8 / H2-05).
 
@@ -92,7 +92,7 @@ Regras:
 Onde cada regra é aplicada:
 
 | Regra | Camada (DB / server fn / client) | Referência de código |
-|-------|----------------------------------|----------------------|
+| ----- | -------------------------------- | -------------------- |
 | R1    |                                  |                      |
 
 ## 6. Workflow (V8)
@@ -108,7 +108,7 @@ Onde cada regra é aplicada:
 ## 7. Eventos emitidos (V7)
 
 | `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
+| ------------ | ------ | -------------- | ------------- |
 |              |        |                |               |
 
 ## 8. Integrações (H6)
@@ -135,7 +135,7 @@ Onde cada regra é aplicada:
 ## 11. BI (V10)
 
 | KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
+| --- | ------- | ------- | ---- | ----------- |
 |     |         |         |      |             |
 
 Fonte: derivado de `entity_events` sempre que possível — nunca contagem manual.
@@ -183,14 +183,14 @@ Cite acima **apenas** os que o playbook realmente usa; remova os demais.
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve este elo | Limitação | Como superamos |
-|-----|-----------------------|-----------|----------------|
-| Centric         | | | |
-| PTC FlexPLM     | | | |
-| Lectra Kubix    | | | |
-| Gerber Yunique  | | | |
-| Collection Moda | | | |
-| Audaces Idea    | | | |
+| PLM             | Como resolve este elo | Limitação | Como superamos |
+| --------------- | --------------------- | --------- | -------------- |
+| Centric         |                       |           |                |
+| PTC FlexPLM     |                       |           |                |
+| Lectra Kubix    |                       |           |                |
+| Gerber Yunique  |                       |           |                |
+| Collection Moda |                       |           |                |
+| Audaces Idea    |                       |           |                |
 
 Padrão mental comum extraído:
 Nossa aposta de superação (menos cliques / drawer / IA / aderência BR):
@@ -198,11 +198,11 @@ Nossa aposta de superação (menos cliques / drawer / IA / aderência BR):
 ## 16. Riscos e mitigação
 
 | Risco | Impacto | Probabilidade | Mitigação |
-|-------|---------|---------------|-----------|
+| ----- | ------- | ------------- | --------- |
 |       |         |               |           |
 
 ## 17. Changelog do playbook
 
 | Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
+| ---- | ------ | ----- | ------- |
 |      | 0.1    |       | criação |

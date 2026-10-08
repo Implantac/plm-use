@@ -7,10 +7,7 @@ import type { EntityType } from "@/hooks/use-entity-events";
 
 export type EntityRelation = Database["public"]["Tables"]["entity_relations"]["Row"];
 
-export function useEntityRelations(
-  entityType: EntityType | null,
-  entityId: string | null,
-) {
+export function useEntityRelations(entityType: EntityType | null, entityId: string | null) {
   const { user } = useAuth();
   const [outgoing, setOutgoing] = useState<EntityRelation[]>([]);
   const [incoming, setIncoming] = useState<EntityRelation[]>([]);
@@ -30,11 +27,7 @@ export function useEntityRelations(
         .select("*")
         .eq("from_type", entityType)
         .eq("from_id", entityId),
-      supabase
-        .from("entity_relations")
-        .select("*")
-        .eq("to_type", entityType)
-        .eq("to_id", entityId),
+      supabase.from("entity_relations").select("*").eq("to_type", entityType).eq("to_id", entityId),
     ]);
     setOutgoing((out.data ?? []) as EntityRelation[]);
     setIncoming((inn.data ?? []) as EntityRelation[]);

@@ -52,25 +52,25 @@ para PCP. Fecha o ciclo Qualidade → Mostruário → Lançamento → Produção
   operar canal (site, loja, atacado).
 - **Elo anterior:** H9-09 · Mostruário
 - **Elo posterior:** H9-11 · Engenharia de Produto (BOM/BOP final)
-  + retro para H9-01 · Coleção via `launch.performance.updated`.
+  - retro para H9-01 · Coleção via `launch.performance.updated`.
 
 ## 3. Entradas (inputs)
 
-| # | Entrada | Origem | Formato | Obrigatória? |
-|---|---------|--------|---------|--------------|
-| 1 | Decisão aprovada de mostruário | `showroom_decision` (H9-09) | linha `decision = 'aprovada'` | sim |
-| 2 | Referência | `references` | id + status ≥ APROVADA | sim |
-| 3 | Preço/EAN sugerido | ERP via `ErpAdapter.getSku()` | cache ≤ 60s | não (só leitura) |
-| 4 | Capacidade/lead time histórico | `entity_events` (PCP) | agregação | não |
+| #   | Entrada                        | Origem                        | Formato                       | Obrigatória?     |
+| --- | ------------------------------ | ----------------------------- | ----------------------------- | ---------------- |
+| 1   | Decisão aprovada de mostruário | `showroom_decision` (H9-09)   | linha `decision = 'aprovada'` | sim              |
+| 2   | Referência                     | `references`                  | id + status ≥ APROVADA        | sim              |
+| 3   | Preço/EAN sugerido             | ERP via `ErpAdapter.getSku()` | cache ≤ 60s                   | não (só leitura) |
+| 4   | Capacidade/lead time histórico | `entity_events` (PCP)         | agregação                     | não              |
 
 ## 4. Saídas (outputs)
 
-| # | Saída | Destino | Entidade / Evento | Obrigatória? |
-|---|-------|---------|-------------------|--------------|
-| 1 | Wave publicada | Comercial + PCP | `launch_wave` / `launch.wave.status_changed` | sim |
-| 2 | Handoff PCP | ERP (produção) | `launch_handoff` / `launch.handoff.sent` | sim |
-| 3 | Handoff Comercial | ERP (catálogo) | `launch_handoff` / `launch.handoff.sent` | sim |
-| 4 | Snapshot sell-through | Dashboard/BI | `launch.performance.updated` | não |
+| #   | Saída                 | Destino         | Entidade / Evento                            | Obrigatória? |
+| --- | --------------------- | --------------- | -------------------------------------------- | ------------ |
+| 1   | Wave publicada        | Comercial + PCP | `launch_wave` / `launch.wave.status_changed` | sim          |
+| 2   | Handoff PCP           | ERP (produção)  | `launch_handoff` / `launch.handoff.sent`     | sim          |
+| 3   | Handoff Comercial     | ERP (catálogo)  | `launch_handoff` / `launch.handoff.sent`     | sim          |
+| 4   | Snapshot sell-through | Dashboard/BI    | `launch.performance.updated`                 | não          |
 
 ## 5. Regras de negócio (V6)
 
@@ -80,13 +80,13 @@ para PCP. Fecha o ciclo Qualidade → Mostruário → Lançamento → Produção
 - **R4:** Nenhum campo de preço/custo/estoque em `public.launch_*`.
 - **R5:** Cancelar wave só via transição `cancelada` — nunca DELETE (exceto admin).
 
-| Regra | Camada | Referência |
-|-------|--------|------------|
-| R1 | DB trigger | `enforce_launch_item_from_approved_decision` |
-| R2 | server fn `transitionLaunchWave` | `src/lib/launch/transition.functions.ts` |
-| R3 | DB trigger | `enforce_launch_handoff_immutability` |
-| R4 | code review | H9-00 fronteira |
-| R5 | RLS + workflow | `workflow_definitions` |
+| Regra | Camada                           | Referência                                   |
+| ----- | -------------------------------- | -------------------------------------------- |
+| R1    | DB trigger                       | `enforce_launch_item_from_approved_decision` |
+| R2    | server fn `transitionLaunchWave` | `src/lib/launch/transition.functions.ts`     |
+| R3    | DB trigger                       | `enforce_launch_handoff_immutability`        |
+| R4    | code review                      | H9-00 fronteira                              |
+| R5    | RLS + workflow                   | `workflow_definitions`                       |
 
 ## 6. Workflow (V8)
 
@@ -103,15 +103,15 @@ launch_item: proposto → validado → aprovado → em_producao → disponivel �
 
 ## 7. Eventos emitidos (V7)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `launch.wave.created` | INSERT wave | `codigo`, `colecao` | Timeline, BI |
-| `launch.wave.status_changed` | UPDATE status | `from`, `to` | Timeline, workflow |
-| `launch.item.added` | INSERT item | `reference_id`, `showroom_decision_id` | Timeline |
-| `launch.item.status_changed` | UPDATE status | `from`, `to` | Timeline |
-| `launch.handoff.sent` | INSERT handoff | `destino`, `idempotency_key` | ERP, auditoria |
-| `launch.handoff.confirmed` | UPDATE `synced_at` | `erp_id`, `erp_source` | BI |
-| `launch.performance.updated` | Cron sell-through | `ref_ids`, `janela` | Dashboard |
+| `event_type`                 | Quando             | Payload mínimo                         | Consumido por      |
+| ---------------------------- | ------------------ | -------------------------------------- | ------------------ |
+| `launch.wave.created`        | INSERT wave        | `codigo`, `colecao`                    | Timeline, BI       |
+| `launch.wave.status_changed` | UPDATE status      | `from`, `to`                           | Timeline, workflow |
+| `launch.item.added`          | INSERT item        | `reference_id`, `showroom_decision_id` | Timeline           |
+| `launch.item.status_changed` | UPDATE status      | `from`, `to`                           | Timeline           |
+| `launch.handoff.sent`        | INSERT handoff     | `destino`, `idempotency_key`           | ERP, auditoria     |
+| `launch.handoff.confirmed`   | UPDATE `synced_at` | `erp_id`, `erp_source`                 | BI                 |
+| `launch.performance.updated` | Cron sell-through  | `ref_ids`, `janela`                    | Dashboard          |
 
 ## 8. Integrações (H6)
 
@@ -136,12 +136,12 @@ launch_item: proposto → validado → aprovado → em_producao → disponivel �
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| `time_to_launch` | avg(publicada − decisão_aprovada) | dias úteis | < 10 | coordenador_produto |
-| `handoff_success_rate` | confirmed / sent | % | > 98 | pcp |
-| `sell_through_D30` | ERP: venda 30d / meta | % | > 60 | comercial |
-| `waves_publicadas_mes` | count(publicada) | # | plano | diretor_produto |
+| KPI                    | Fórmula                           | Unidade    | Meta  | Responsável         |
+| ---------------------- | --------------------------------- | ---------- | ----- | ------------------- |
+| `time_to_launch`       | avg(publicada − decisão_aprovada) | dias úteis | < 10  | coordenador_produto |
+| `handoff_success_rate` | confirmed / sent                  | %          | > 98  | pcp                 |
+| `sell_through_D30`     | ERP: venda 30d / meta             | %          | > 60  | comercial           |
+| `waves_publicadas_mes` | count(publicada)                  | #          | plano | diretor_produto     |
 
 Derivados de `entity_events` (+ `ErpAdapter.getSellThrough`).
 
@@ -183,30 +183,30 @@ Derivados de `entity_events` (+ `ErpAdapter.getSellThrough`).
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve este elo | Limitação | Como superamos |
-|-----|-----------------------|-----------|----------------|
-| Centric | "Assortment Planning" pesado, telas separadas do dev | Fricção coordenador↔PCP | Wave em uma tela, promoção 1-clique do showroom |
-| PTC FlexPLM | Workflow rígido baseado em Windchill | Baixa aderência BR | Workflow em tabela, edição sem redeploy |
-| Lectra Kubix | Bom em pré-coleção, fraco em handoff ERP | Integração custom | `ErpAdapter` padronizado + idempotência |
-| Gerber Yunique | Foco em desenvolvimento, sem lançamento | Reinvenção fora | Ciclo fechado até `sell_through` |
-| Collection Moda | Forte no comercial BR | Rastreabilidade fraca | Timeline unificada + eventos |
-| Audaces Idea | Foco em modelagem/corte | Sem visão comercial | Wave conectada ao mostruário |
+| PLM             | Como resolve este elo                                | Limitação               | Como superamos                                  |
+| --------------- | ---------------------------------------------------- | ----------------------- | ----------------------------------------------- |
+| Centric         | "Assortment Planning" pesado, telas separadas do dev | Fricção coordenador↔PCP | Wave em uma tela, promoção 1-clique do showroom |
+| PTC FlexPLM     | Workflow rígido baseado em Windchill                 | Baixa aderência BR      | Workflow em tabela, edição sem redeploy         |
+| Lectra Kubix    | Bom em pré-coleção, fraco em handoff ERP             | Integração custom       | `ErpAdapter` padronizado + idempotência         |
+| Gerber Yunique  | Foco em desenvolvimento, sem lançamento              | Reinvenção fora         | Ciclo fechado até `sell_through`                |
+| Collection Moda | Forte no comercial BR                                | Rastreabilidade fraca   | Timeline unificada + eventos                    |
+| Audaces Idea    | Foco em modelagem/corte                              | Sem visão comercial     | Wave conectada ao mostruário                    |
 
 **Padrão comum:** wave desconectada do desenvolvimento e do ERP.
 **Nossa aposta:** promoção 1-clique showroom→wave, handoff idempotente, timeline única, sugestão de IA sobre feedback estruturado.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Probabilidade | Mitigação |
-|-------|---------|---------------|-----------|
-| Duplicar SKU/preço no PLM | alto | média | Adapter obrigatório; campos proibidos |
-| Handoff duplicado no ERP | alto | baixa | `idempotency_key` + `payload_hash` |
-| Vazamento de meta via realtime | médio | média | Tópicos escopados; payload mínimo |
-| Item lançado sem decisão aprovada | alto | baixa | Trigger de validação |
-| Cron sem auth | alto | baixa | HMAC obrigatório |
+| Risco                             | Impacto | Probabilidade | Mitigação                             |
+| --------------------------------- | ------- | ------------- | ------------------------------------- |
+| Duplicar SKU/preço no PLM         | alto    | média         | Adapter obrigatório; campos proibidos |
+| Handoff duplicado no ERP          | alto    | baixa         | `idempotency_key` + `payload_hash`    |
+| Vazamento de meta via realtime    | médio   | média         | Tópicos escopados; payload mínimo     |
+| Item lançado sem decisão aprovada | alto    | baixa         | Trigger de validação                  |
+| Cron sem auth                     | alto    | baixa         | HMAC obrigatório                      |
 
 ## 17. Changelog do playbook
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-08 | 0.1 | Squad PLM | criação (🟡 parcial, aguarda migração+server fns) |
+| Data       | Versão | Autor     | Mudança                                           |
+| ---------- | ------ | --------- | ------------------------------------------------- |
+| 2026-07-08 | 0.1    | Squad PLM | criação (🟡 parcial, aguarda migração+server fns) |

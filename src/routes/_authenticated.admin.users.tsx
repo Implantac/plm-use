@@ -75,7 +75,11 @@ function AdminUsersPage() {
 
   if (rolesLoading) {
     return (
-      <ModuleLayout title="Administração de Usuários" subtitle="Carregando permissões..." version="ADMIN">
+      <ModuleLayout
+        title="Administração de Usuários"
+        subtitle="Carregando permissões..."
+        version="ADMIN"
+      >
         <div className="flex items-center justify-center py-20 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
         </div>
@@ -89,7 +93,9 @@ function AdminUsersPage() {
         <div className="rounded-md border border-white/10 bg-white/5 p-10 text-center text-muted-foreground">
           <ShieldOff className="w-10 h-10 mx-auto mb-4 opacity-40" />
           <p className="text-xs uppercase tracking-[0.2em]">Sem permissão de administrador</p>
-          <p className="text-[11px] mt-2 opacity-70">Solicite a um admin que conceda o papel <b>admin</b> ao seu usuário.</p>
+          <p className="text-[11px] mt-2 opacity-70">
+            Solicite a um admin que conceda o papel <b>admin</b> ao seu usuário.
+          </p>
         </div>
       </ModuleLayout>
     );
@@ -101,7 +107,9 @@ function AdminUsersPage() {
       subtitle={`${rows.length} usuários · papéis e permissões`}
       version="ADMIN"
     >
-      <div className="mb-4"><ModuleTabs group="admin" /></div>
+      <div className="mb-4">
+        <ModuleTabs group="admin" />
+      </div>
       {loading ? (
         <div className="flex items-center justify-center py-20 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin" />
@@ -124,7 +132,9 @@ function AdminUsersPage() {
                   <td className="px-4 py-3 text-muted-foreground">{r.job_title ?? "—"}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1 flex-wrap">
-                      {r.roles.length === 0 && <span className="text-muted-foreground text-[10px]">sem papéis</span>}
+                      {r.roles.length === 0 && (
+                        <span className="text-muted-foreground text-[10px]">sem papéis</span>
+                      )}
                       {r.roles.map((role) => (
                         <Badge key={role} variant="outline" className="text-[9px] uppercase">
                           {role}
@@ -138,11 +148,11 @@ function AdminUsersPage() {
                         const has = r.roles.includes(role);
                         return (
                           <Button
- key={role}
- size="sm"
- variant={has ? "default" : "outline"}
- className="h-7 text-[9px] tracking-wider"
- onClick={() => toggleRole(r.id, role, has)}
+                            key={role}
+                            size="sm"
+                            variant={has ? "default" : "outline"}
+                            className="h-7 text-[9px] tracking-wider"
+                            onClick={() => toggleRole(r.id, role, has)}
                           >
                             {has ? "−" : "+"} {role}
                           </Button>

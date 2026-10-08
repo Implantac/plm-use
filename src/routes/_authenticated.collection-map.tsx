@@ -2,16 +2,7 @@
 // Visão matricial modelo × cor × grade com filtros salvos por usuário.
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Grid3x3,
-  Save,
-  Trash2,
-  Bookmark,
-  DollarSign,
-  Package,
-  Filter,
-  X,
-} from "lucide-react";
+import { Grid3x3, Save, Trash2, Bookmark, DollarSign, Package, Filter, X } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,19 +67,12 @@ const STATUS_DOT: Record<MatrixCell["status"], string> = {
   cancelado: "bg-red-400",
 };
 
-const ALL_STATUSES: MatrixCell["status"][] = [
-  "planejado",
-  "em_producao",
-  "concluido",
-  "cancelado",
-];
+const ALL_STATUSES: MatrixCell["status"][] = ["planejado", "em_producao", "concluido", "cancelado"];
 
 function CollectionMapRoute() {
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<MatrixCell["status"][]>(
-    [],
-  );
+  const [selectedStatuses, setSelectedStatuses] = useState<MatrixCell["status"][]>([]);
   const [q, setQ] = useState("");
 
   const filters = useSyncExternalStore(
@@ -106,17 +90,13 @@ function CollectionMapRoute() {
   );
   const allColors = useMemo(() => {
     const map = new Map<string, string>();
-    collectionMap.rows.forEach((r) =>
-      r.cells.forEach((c) => map.set(c.colorHex, c.colorName)),
-    );
+    collectionMap.rows.forEach((r) => r.cells.forEach((c) => map.set(c.colorHex, c.colorName)));
     return Array.from(map.entries()); // [hex, name]
   }, []);
 
   const filteredRows = useMemo(() => {
     return collectionMap.rows
-      .filter((r) =>
-        selectedCats.length === 0 ? true : selectedCats.includes(r.category),
-      )
+      .filter((r) => (selectedCats.length === 0 ? true : selectedCats.includes(r.category)))
       .filter((r) =>
         q
           ? r.refCode.toLowerCase().includes(q.toLowerCase()) ||
@@ -126,15 +106,9 @@ function CollectionMapRoute() {
       .map((r) => ({
         ...r,
         cells: r.cells
+          .filter((c) => (selectedColors.length === 0 ? true : selectedColors.includes(c.colorHex)))
           .filter((c) =>
-            selectedColors.length === 0
-              ? true
-              : selectedColors.includes(c.colorHex),
-          )
-          .filter((c) =>
-            selectedStatuses.length === 0
-              ? true
-              : selectedStatuses.includes(c.status),
+            selectedStatuses.length === 0 ? true : selectedStatuses.includes(c.status),
           ),
       }))
       .filter((r) => r.cells.length > 0);
@@ -143,14 +117,8 @@ function CollectionMapRoute() {
   const metrics = useMemo(() => {
     const totalRows = filteredRows.length;
     const totalUnits = filteredRows.reduce((s, r) => s + rowTotal(r), 0);
-    const totalRevenue = filteredRows.reduce(
-      (s, r) => s + rowTotal(r) * r.price,
-      0,
-    );
-    const totalCost = filteredRows.reduce(
-      (s, r) => s + rowTotal(r) * r.cost,
-      0,
-    );
+    const totalRevenue = filteredRows.reduce((s, r) => s + rowTotal(r) * r.price, 0);
+    const totalCost = filteredRows.reduce((s, r) => s + rowTotal(r) * r.cost, 0);
     const margin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 0;
     return [
       { label: "Modelos", value: String(totalRows), detail: "no recorte" },
@@ -186,7 +154,9 @@ function CollectionMapRoute() {
       searchPlaceholder="Buscar referência"
       metrics={metrics}
     >
-      <div className="mb-4"><ModuleTabs group="collections" /></div>
+      <div className="mb-4">
+        <ModuleTabs group="collections" />
+      </div>
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         {/* Barra de filtros */}
         <div className="space-y-4">
@@ -197,7 +167,7 @@ function CollectionMapRoute() {
                 <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
                   Filtros
                 </span>
-                {(selectedCats.length + selectedColors.length + selectedStatuses.length > 0) && (
+                {selectedCats.length + selectedColors.length + selectedStatuses.length > 0 && (
                   <button
                     type="button"
                     onClick={clearFilters}
@@ -242,9 +212,7 @@ function CollectionMapRoute() {
                         title={name}
                         onClick={() =>
                           setSelectedColors((prev) =>
-                            prev.includes(hex)
-                              ? prev.filter((x) => x !== hex)
-                              : [...prev, hex],
+                            prev.includes(hex) ? prev.filter((x) => x !== hex) : [...prev, hex],
                           )
                         }
                         className={`h-6 w-6 rounded-full border-2 transition-all ${
@@ -310,9 +278,7 @@ function CollectionMapRoute() {
                     onClick={() => applyFilter(f)}
                     className="flex-1 min-w-0 text-left"
                   >
-                    <p className="text-xs font-semibold text-white truncate">
-                      {f.name}
-                    </p>
+                    <p className="text-xs font-semibold text-white truncate">{f.name}</p>
                     <p className="text-[9px] text-muted-foreground truncate">
                       {f.categories.length + f.colors.length + f.statuses.length} critérios
                     </p>
@@ -339,9 +305,7 @@ function CollectionMapRoute() {
           <CardContent className="p-0">
             <div className="p-4 border-b border-white/5 flex items-center gap-2">
               <Grid3x3 className="h-4 w-4 text-primary" />
-              <h2 className="text-sm font-semibold text-white">
-                {collectionMap.name}
-              </h2>
+              <h2 className="text-sm font-semibold text-white">{collectionMap.name}</h2>
               <Badge variant="outline" className="text-[9px] uppercase tracking-widest">
                 {collectionMap.season}
               </Badge>
@@ -416,7 +380,9 @@ function CollectionMapRoute() {
                             variant="outline"
                             className="text-[9px] uppercase tracking-widest gap-1"
                           >
-                            <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[cell.status]}`} />
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[cell.status]}`}
+                            />
                             {STATUS_LABEL[cell.status]}
                           </Badge>
                         </td>
@@ -425,10 +391,7 @@ function CollectionMapRoute() {
                   )}
                   {filteredRows.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={9}
-                        className="p-8 text-center text-xs text-muted-foreground"
-                      >
+                      <td colSpan={9} className="p-8 text-center text-xs text-muted-foreground">
                         Nenhuma linha bate com o filtro atual.
                       </td>
                     </tr>
@@ -447,11 +410,7 @@ function RefCell({ row }: { row: MatrixRow }) {
   return (
     <div className="flex gap-2 items-start">
       <div className="h-14 w-14 rounded overflow-hidden border border-white/10 flex-shrink-0">
-        <OptimizedImage
-          src={row.image}
-          alt={row.refName}
-          className="h-full w-full object-cover"
-        />
+        <OptimizedImage src={row.image} alt={row.refName} className="h-full w-full object-cover" />
       </div>
       <div className="min-w-0">
         <p className="text-[10px] font-mono text-muted-foreground">{row.refCode}</p>
@@ -473,9 +432,7 @@ function RefCell({ row }: { row: MatrixRow }) {
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[9px] uppercase tracking-widest text-muted-foreground/70 mb-1">
-        {label}
-      </p>
+      <p className="text-[9px] uppercase tracking-widest text-muted-foreground/70 mb-1">{label}</p>
       <div className="flex flex-wrap gap-1">{children}</div>
     </div>
   );
@@ -517,18 +474,12 @@ function SaveFilterDialog({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
-  const hasAny =
-    current.categories.length + current.colors.length + current.statuses.length > 0;
+  const hasAny = current.categories.length + current.colors.length + current.statuses.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
- variant="outline"
- size="sm"
- className="w-full gap-2"
- disabled={!hasAny}
- >
+        <Button variant="outline" size="sm" className="w-full gap-2" disabled={!hasAny}>
           <Save className="h-3.5 w-3.5" /> Salvar filtro
         </Button>
       </DialogTrigger>
@@ -537,7 +488,9 @@ function SaveFilterDialog({
           <DialogTitle>Salvar filtro atual</DialogTitle>
         </DialogHeader>
         <div className="space-y-2">
-          <Label className="text-[10px] uppercase tracking-widest" required>Nome</Label>
+          <Label className="text-[10px] uppercase tracking-widest" required>
+            Nome
+          </Label>
           <Input
             value={name}
             onChange={(e) => {
@@ -557,7 +510,7 @@ function SaveFilterDialog({
             Cancelar
           </Button>
           <Button
-  onClick={() => {
+            onClick={() => {
               if (!name.trim()) {
                 setNameError("Dê um nome ao filtro para salvá-lo.");
                 return;

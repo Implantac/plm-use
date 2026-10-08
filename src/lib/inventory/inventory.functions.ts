@@ -205,10 +205,7 @@ export const listWarehouses = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase } = context;
-    const { data, error } = await supabase
-      .from("warehouse")
-      .select("*")
-      .order("code");
+    const { data, error } = await supabase.from("warehouse").select("*").order("code");
     if (error) return { ok: false as const, reason: error.message, warehouses: [] };
     return { ok: true as const, warehouses: data ?? [] };
   });

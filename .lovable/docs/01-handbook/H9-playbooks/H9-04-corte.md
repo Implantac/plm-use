@@ -53,31 +53,31 @@ descer para costura — evitando gargalo e retrabalho em H9-10.
 
 ## 3. Entradas
 
-| # | Entrada | Origem | Formato | Obrigatória? |
-|---|---------|--------|---------|--------------|
-| 1 | OP liberada para corte | H9-08 | `production_orders.status='liberada_corte'` | SIM |
-| 2 | Encaixe aceito | H9-03 | `markers.status='aceito'` (yield, consumo/m) | SIM |
-| 3 | Grade e mix de tamanhos por OP | H9-08 | `production_order_sizes` | SIM |
-| 4 | Estoque de tecido disponível | ERP via `ErpAdapter` (V9) | `queryErp('fabric_stock')` | SIM |
-| 5 | Ficha de tecido (largura útil, encolhimento) | H9-06 / ERP | `queryErp('fabric_specs')` | SIM |
-| 6 | Capacidade da sala de corte | H9-08 | vagas de enfesto/dia | SIM |
-| 7 | Padrões de defeito conhecidos | H9-12 | tabela `defect_catalog` | recomendado |
+| #   | Entrada                                      | Origem                    | Formato                                      | Obrigatória? |
+| --- | -------------------------------------------- | ------------------------- | -------------------------------------------- | ------------ |
+| 1   | OP liberada para corte                       | H9-08                     | `production_orders.status='liberada_corte'`  | SIM          |
+| 2   | Encaixe aceito                               | H9-03                     | `markers.status='aceito'` (yield, consumo/m) | SIM          |
+| 3   | Grade e mix de tamanhos por OP               | H9-08                     | `production_order_sizes`                     | SIM          |
+| 4   | Estoque de tecido disponível                 | ERP via `ErpAdapter` (V9) | `queryErp('fabric_stock')`                   | SIM          |
+| 5   | Ficha de tecido (largura útil, encolhimento) | H9-06 / ERP               | `queryErp('fabric_specs')`                   | SIM          |
+| 6   | Capacidade da sala de corte                  | H9-08                     | vagas de enfesto/dia                         | SIM          |
+| 7   | Padrões de defeito conhecidos                | H9-12                     | tabela `defect_catalog`                      | recomendado  |
 
 Rastreabilidade: `entity_relations` (H2-06) — `production_order` →
 `cut_order` → `spread` → `cut_bundle`.
 
 ## 4. Saídas
 
-| # | Saída | Destino | Entidade / Evento | Obrigatória? |
-|---|-------|---------|-------------------|--------------|
-| 1 | Ordem de corte criada | Sala de Corte | `cut_orders` + `cut_order.created` | SIM |
-| 2 | Enfesto planejado/executado | Cortador | `spreads` + `spread.executed` | SIM |
-| 3 | Consumo real de tecido | ERP / MRP (H9-06) | `spreads.consumed_m` + `spread.consumption.reconciled` | SIM |
-| 4 | Fardos etiquetados | H9-10 | `cut_bundles` + `bundle.labeled` | SIM |
-| 5 | Defeitos de tecido registrados | H9-12 | `cut_defects` + `cut.defect.registered` | condicional |
-| 6 | OP de corte concluída | H9-10 | `cut_orders.status='concluida'` + `cut_order.completed` | SIM |
-| 7 | Baixa de estoque de tecido | ERP via `ErpAdapter` | `writeErp('fabric_movement')` | SIM |
-| 8 | Timeline pública | UI (EntityTimeline) | leitura de `entity_events` | SIM |
+| #   | Saída                          | Destino              | Entidade / Evento                                       | Obrigatória? |
+| --- | ------------------------------ | -------------------- | ------------------------------------------------------- | ------------ |
+| 1   | Ordem de corte criada          | Sala de Corte        | `cut_orders` + `cut_order.created`                      | SIM          |
+| 2   | Enfesto planejado/executado    | Cortador             | `spreads` + `spread.executed`                           | SIM          |
+| 3   | Consumo real de tecido         | ERP / MRP (H9-06)    | `spreads.consumed_m` + `spread.consumption.reconciled`  | SIM          |
+| 4   | Fardos etiquetados             | H9-10                | `cut_bundles` + `bundle.labeled`                        | SIM          |
+| 5   | Defeitos de tecido registrados | H9-12                | `cut_defects` + `cut.defect.registered`                 | condicional  |
+| 6   | OP de corte concluída          | H9-10                | `cut_orders.status='concluida'` + `cut_order.completed` | SIM          |
+| 7   | Baixa de estoque de tecido     | ERP via `ErpAdapter` | `writeErp('fabric_movement')`                           | SIM          |
+| 8   | Timeline pública               | UI (EntityTimeline)  | leitura de `entity_events`                              | SIM          |
 
 ## 5. Regras de negócio (V6)
 
@@ -97,15 +97,15 @@ Rastreabilidade: `entity_relations` (H2-06) — `production_order` →
 - **R7:** `cut_defect` acima de X% da metragem do enfesto dispara CAPA
   automaticamente (H9-12) — regra em trigger, não só no client.
 
-| Regra | Camada | Referência |
-|-------|--------|------------|
-| R1 | DB — trigger `check_cut_order_prereqs` | migration H9-04 |
-| R2 | DB — trigger `enforce_spread_math` | migration H9-04 |
-| R3 | DB — trigger `require_justification_on_deviation` | migration H9-04 |
-| R4 | DB — CHECK + trigger `validate_bundle_labels` | migration H9-04 |
-| R5 | DB — trigger `check_cut_order_completion` | migration H9-04 |
-| R6 | Server fn — chave de idempotência no `ErpAdapter` (H6-02) | `src/lib/erp/*.functions.ts` |
-| R7 | DB — trigger `open_capa_on_high_defect_rate` | migration H9-04 |
+| Regra | Camada                                                    | Referência                   |
+| ----- | --------------------------------------------------------- | ---------------------------- |
+| R1    | DB — trigger `check_cut_order_prereqs`                    | migration H9-04              |
+| R2    | DB — trigger `enforce_spread_math`                        | migration H9-04              |
+| R3    | DB — trigger `require_justification_on_deviation`         | migration H9-04              |
+| R4    | DB — CHECK + trigger `validate_bundle_labels`             | migration H9-04              |
+| R5    | DB — trigger `check_cut_order_completion`                 | migration H9-04              |
+| R6    | Server fn — chave de idempotência no `ErpAdapter` (H6-02) | `src/lib/erp/*.functions.ts` |
+| R7    | DB — trigger `open_capa_on_high_defect_rate`              | migration H9-04              |
 
 ## 6. Workflow (V8 / H2-05)
 
@@ -133,18 +133,18 @@ planejado → em_execucao → executado → reconciliado
 
 ## 7. Eventos emitidos (V7 / H2-04)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `cut_order.created`                | INSERT `cut_orders` | production_order_id, ref, meta_pcs | Timeline, BI, PCP |
-| `spread.planned`                   | INSERT `spreads` | cut_order_id, layers, marker_id | Cortador |
-| `spread.executed`                  | status → `executado` | spread_id, consumed_m, operator | BI |
-| `spread.consumption.reconciled`    | conciliação com previsto | spread_id, delta_pp, justification? | MRP, BI |
-| `bundle.labeled`                   | INSERT/UPDATE `cut_bundles` | spread_id, size, color, pieces_count | H9-10 |
-| `cut.defect.registered`            | INSERT `cut_defects` | spread_id, tipo, metragem | H9-12 |
-| `cut.capa.opened`                  | R7 aciona CAPA | cut_order_id, defect_rate | H9-12 |
-| `cut_order.completed`              | status → `concluida` | cut_order_id, total_pieces | H9-10, BI |
-| `cut_order.cancelled`              | status → `cancelada` | cut_order_id, motivo | PCP |
-| `fabric.movement.written`          | R6 baixa no ERP | cut_order_id, ref_erp, m | ERP, BI |
+| `event_type`                    | Quando                      | Payload mínimo                       | Consumido por     |
+| ------------------------------- | --------------------------- | ------------------------------------ | ----------------- |
+| `cut_order.created`             | INSERT `cut_orders`         | production_order_id, ref, meta_pcs   | Timeline, BI, PCP |
+| `spread.planned`                | INSERT `spreads`            | cut_order_id, layers, marker_id      | Cortador          |
+| `spread.executed`               | status → `executado`        | spread_id, consumed_m, operator      | BI                |
+| `spread.consumption.reconciled` | conciliação com previsto    | spread_id, delta_pp, justification?  | MRP, BI           |
+| `bundle.labeled`                | INSERT/UPDATE `cut_bundles` | spread_id, size, color, pieces_count | H9-10             |
+| `cut.defect.registered`         | INSERT `cut_defects`        | spread_id, tipo, metragem            | H9-12             |
+| `cut.capa.opened`               | R7 aciona CAPA              | cut_order_id, defect_rate            | H9-12             |
+| `cut_order.completed`           | status → `concluida`        | cut_order_id, total_pieces           | H9-10, BI         |
+| `cut_order.cancelled`           | status → `cancelada`        | cut_order_id, motivo                 | PCP               |
+| `fabric.movement.written`       | R6 baixa no ERP             | cut_order_id, ref_erp, m             | ERP, BI           |
 
 Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 `TorreDeControle`, `LivePCPWidget`.
@@ -163,11 +163,11 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 
 ## 9. UX (V4 / H4)
 
-- **Rota principal:** `/production` (subseção *Corte*) reusando
+- **Rota principal:** `/production` (subseção _Corte_) reusando
   `TorreDeControle`, `LotesGantt`, `KanbanColumn`.
 - **Drawer contextual:** `CutOrderDrawer` (novo, análogo a
-  `ReferenciaDrawer`) com tabs *Encaixe · Enfesto · Fardos · Defeitos
-  · Timeline · Relações · IA*.
+  `ReferenciaDrawer`) com tabs _Encaixe · Enfesto · Fardos · Defeitos
+  · Timeline · Relações · IA_.
 - **Componentes reutilizados:** `EntityTimeline`, `EntityRelations`,
   `WorkflowStatusMenu`, `LoteTimeline`, `KanbanColumn`, `ErpBadge`,
   `LivePCPWidget`.
@@ -182,12 +182,12 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 ## 10. IA (V11 / H5)
 
 - **Agentes (V13):**
-  - *Especialista Corte* — critica plano de enfesto vs. capacidade e
+  - _Especialista Corte_ — critica plano de enfesto vs. capacidade e
     sugere ordem de execução para reduzir troca de tecido.
-  - *Especialista PCP* — antecipa impacto de atraso do corte na costura.
-  - *Especialista MRP* — cruza consumo real vs. saldo de tecido e alerta
+  - _Especialista PCP_ — antecipa impacto de atraso do corte na costura.
+  - _Especialista MRP_ — cruza consumo real vs. saldo de tecido e alerta
     ruptura projetada.
-  - *Especialista Qualidade* — reconhece padrões de defeito recorrente
+  - _Especialista Qualidade_ — reconhece padrões de defeito recorrente
     por fornecedor de tecido (link com H9-12).
 - **Perguntas que os agentes devem responder:**
   - "Qual sequência de enfesto minimiza troca de tecido hoje?"
@@ -201,13 +201,13 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| Desvio de consumo vs. encaixe | (`consumed_m` − previsto) ÷ previsto | pp | ≤ 3 | Corte |
-| OPs cortadas no prazo | `cut_order.completed` até `pcp_due` ÷ total | % | ≥ 95% | PCP |
-| Taxa de defeito de tecido detectado no corte | m defeituoso ÷ m enfestado | % | ≤ 5% | Qualidade |
-| Aderência de peças cortadas à meta | `Σ pieces_count` ÷ meta_pcs | % | ≥ 99% | Corte |
-| Tempo médio de enfesto por rolo | Σ tempo enfesto ÷ nº rolos | min | ≤ meta interna | Corte |
+| KPI                                          | Fórmula                                     | Unidade | Meta           | Responsável |
+| -------------------------------------------- | ------------------------------------------- | ------- | -------------- | ----------- |
+| Desvio de consumo vs. encaixe                | (`consumed_m` − previsto) ÷ previsto        | pp      | ≤ 3            | Corte       |
+| OPs cortadas no prazo                        | `cut_order.completed` até `pcp_due` ÷ total | %       | ≥ 95%          | PCP         |
+| Taxa de defeito de tecido detectado no corte | m defeituoso ÷ m enfestado                  | %       | ≤ 5%           | Qualidade   |
+| Aderência de peças cortadas à meta           | `Σ pieces_count` ÷ meta_pcs                 | %       | ≥ 99%          | Corte       |
+| Tempo médio de enfesto por rolo              | Σ tempo enfesto ÷ nº rolos                  | min     | ≤ meta interna | Corte       |
 
 Fonte: derivados de `entity_events` + `cut_orders` + `spreads` + `cut_bundles`.
 Sem contagem manual.
@@ -266,14 +266,14 @@ Sem contagem manual.
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve | Limitação | Como superamos |
-|-----|--------------|-----------|----------------|
-| Centric | Cut planning acoplado a marker do CAD | Requer suite CAD proprietária | Encaixe agnóstico + baixa ERP idempotente |
-| PTC FlexPLM | Cut order + shop-floor via módulos separados | Alto custo de integração | Coletor de sala via webhook público simples |
-| Lectra Kubix / Vector | Salas de corte automatizadas, benchmarks | Ecossistema fechado | Rendimento real como KPI vivo, aberto |
-| Gerber Yunique / AccuMark | Marker + cut room integrados | UI legada | Timeline em tempo real + drawer contextual |
-| Collection Moda (BR) | Ficha de corte manual, planilha | Sem conciliação automática de consumo | R3 justificativa + reconciliação evento-a-evento |
-| Audaces Neocut | Corte automatizado + gestão de sala | Não é PLM — não amarra à cadeia | Este playbook amarra corte à Digital Thread |
+| PLM                       | Como resolve                                 | Limitação                             | Como superamos                                   |
+| ------------------------- | -------------------------------------------- | ------------------------------------- | ------------------------------------------------ |
+| Centric                   | Cut planning acoplado a marker do CAD        | Requer suite CAD proprietária         | Encaixe agnóstico + baixa ERP idempotente        |
+| PTC FlexPLM               | Cut order + shop-floor via módulos separados | Alto custo de integração              | Coletor de sala via webhook público simples      |
+| Lectra Kubix / Vector     | Salas de corte automatizadas, benchmarks     | Ecossistema fechado                   | Rendimento real como KPI vivo, aberto            |
+| Gerber Yunique / AccuMark | Marker + cut room integrados                 | UI legada                             | Timeline em tempo real + drawer contextual       |
+| Collection Moda (BR)      | Ficha de corte manual, planilha              | Sem conciliação automática de consumo | R3 justificativa + reconciliação evento-a-evento |
+| Audaces Neocut            | Corte automatizado + gestão de sala          | Não é PLM — não amarra à cadeia       | Este playbook amarra corte à Digital Thread      |
 
 Padrão mental comum: **corte = enfesto + consumo + fardos etiquetados**,
 com rendimento medido. Nossa superação: **baixa ERP idempotente + CAPA
@@ -281,18 +281,18 @@ automática por defeito + fila offline no coletor + IA multi-especialista**.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Prob. | Mitigação |
-|-------|---------|-------|-----------|
-| Baixa duplicada no ERP | Estoque negativo, prejuízo | média | R6 idempotência + testes contract H7 |
-| Enfesto executado sem encaixe aceito | Consumo descontrolado | baixa | R1 trigger |
-| Consumo real muito acima do previsto sem justificativa | Custo estourado | alta | R3 + KPI §11 monitorado |
-| Fardo etiquetado errado | Costura da grade errada | média | R4 + validação do coletor (HMAC + código único) |
-| Defeito de tecido só descoberto na costura | Retrabalho caro | alta | Registro no corte + R7 CAPA + agente Qualidade |
-| Perda de dados por queda de rede na sala | Ordem sem baixa | média | Fila offline no coletor + reconciliação por evento |
-| IA sugerir sequência que quebra prioridade do PCP | Atraso | baixa | Guardrail §10 + agente PCP valida |
+| Risco                                                  | Impacto                    | Prob. | Mitigação                                          |
+| ------------------------------------------------------ | -------------------------- | ----- | -------------------------------------------------- |
+| Baixa duplicada no ERP                                 | Estoque negativo, prejuízo | média | R6 idempotência + testes contract H7               |
+| Enfesto executado sem encaixe aceito                   | Consumo descontrolado      | baixa | R1 trigger                                         |
+| Consumo real muito acima do previsto sem justificativa | Custo estourado            | alta  | R3 + KPI §11 monitorado                            |
+| Fardo etiquetado errado                                | Costura da grade errada    | média | R4 + validação do coletor (HMAC + código único)    |
+| Defeito de tecido só descoberto na costura             | Retrabalho caro            | alta  | Registro no corte + R7 CAPA + agente Qualidade     |
+| Perda de dados por queda de rede na sala               | Ordem sem baixa            | média | Fila offline no coletor + reconciliação por evento |
+| IA sugerir sequência que quebra prioridade do PCP      | Atraso                     | baixa | Guardrail §10 + agente PCP valida                  |
 
 ## 17. Changelog
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Software House IA | criação inicial do playbook |
+| Data       | Versão | Autor             | Mudança                     |
+| ---------- | ------ | ----------------- | --------------------------- |
+| 2026-07-07 | 0.1    | Software House IA | criação inicial do playbook |

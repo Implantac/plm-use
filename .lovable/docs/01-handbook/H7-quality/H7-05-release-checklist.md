@@ -3,6 +3,7 @@
 Antes de publicar (FPEF V12 — Design Review final).
 
 ## Código
+
 - [ ] Build passa (`bun run build`).
 - [ ] TypeScript sem erro (`tsgo`).
 - [ ] Lint sem erro.
@@ -12,6 +13,7 @@ Antes de publicar (FPEF V12 — Design Review final).
 - [ ] Nenhum secret em código.
 
 ## Banco
+
 - [ ] Migração revisada — GRANTs presentes, RLS habilitada, policies por ação.
 - [ ] Índices nas FKs e colunas filtradas.
 - [ ] Trigger de `updated_at` e de eventos onde aplicável.
@@ -19,6 +21,7 @@ Antes de publicar (FPEF V12 — Design Review final).
 - [ ] Rollback plan documentado.
 
 ## Produto
+
 - [ ] Passou pelas 10 perguntas do Design Review (FPEF V13).
 - [ ] KPIs de sucesso definidos e mensuráveis.
 - [ ] Timeline mostra o novo evento.
@@ -26,18 +29,21 @@ Antes de publicar (FPEF V12 — Design Review final).
 - [ ] Drawer contextual atualizado quando entidade nova.
 
 ## UX
+
 - [ ] Contraste AA validado.
 - [ ] Teclado navega tudo.
 - [ ] Estados vazio, carregando, erro implementados.
 - [ ] Textos em pt-BR, tom coerente com voz do produto.
 
 ## IA (se aplicável)
+
 - [ ] Agente com escopo estreito.
 - [ ] Contexto redigido (sem PII/financeiro).
 - [ ] Custo estimado por request documentado.
 - [ ] Auditoria via `ai_suggested` funciona.
 
 ## Segurança
+
 - [ ] `security--get_scan_results` sem novo `error`.
 - [ ] Warnings novos justificados na `security-memory`.
 - [ ] Nenhuma policy `FOR ALL USING (true)`.

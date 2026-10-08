@@ -57,31 +57,31 @@ linha e rastreabilidade de todo lote, mesmo fora dos muros da fábrica.
 
 ## 3. Entradas
 
-| # | Entrada | Origem | Formato | Obrigatória? |
-|---|---------|--------|---------|--------------|
-| 1 | Fardos etiquetados | H9-04 | `cut_bundles.status='labeled'` | SIM |
-| 2 | OP de costura liberada | H9-08 | `production_orders.status='liberada_costura'` | SIM |
-| 3 | Roteiro de operações (tempo padrão) | H9-03 / Cronoanálise | `sewing_routes` (operação, tempo, seq) | SIM |
-| 4 | Capacidade de célula/facção | H9-08 | `capacity_slots` por semana | SIM |
-| 5 | Cadastro de facções ativas | ERP via `ErpAdapter` (V9) | `queryErp('suppliers?type=faccao')` | SIM |
-| 6 | SLA por facção | Comercial/Suppliers | `supplier_slas` (lead time, preço peça) | SIM |
-| 7 | Padrões de defeito conhecidos | H9-07 | `defect_catalog` | recomendado |
+| #   | Entrada                             | Origem                    | Formato                                       | Obrigatória? |
+| --- | ----------------------------------- | ------------------------- | --------------------------------------------- | ------------ |
+| 1   | Fardos etiquetados                  | H9-04                     | `cut_bundles.status='labeled'`                | SIM          |
+| 2   | OP de costura liberada              | H9-08                     | `production_orders.status='liberada_costura'` | SIM          |
+| 3   | Roteiro de operações (tempo padrão) | H9-03 / Cronoanálise      | `sewing_routes` (operação, tempo, seq)        | SIM          |
+| 4   | Capacidade de célula/facção         | H9-08                     | `capacity_slots` por semana                   | SIM          |
+| 5   | Cadastro de facções ativas          | ERP via `ErpAdapter` (V9) | `queryErp('suppliers?type=faccao')`           | SIM          |
+| 6   | SLA por facção                      | Comercial/Suppliers       | `supplier_slas` (lead time, preço peça)       | SIM          |
+| 7   | Padrões de defeito conhecidos       | H9-07                     | `defect_catalog`                              | recomendado  |
 
 Rastreabilidade: `entity_relations` (H2-06) —
 `production_order` → `sewing_order` → `sewing_batch` → `sewing_passage`.
 
 ## 4. Saídas
 
-| # | Saída | Destino | Entidade / Evento | Obrigatória? |
-|---|-------|---------|-------------------|--------------|
-| 1 | OP de costura criada | Célula/Facção | `sewing_orders` + `sewing_order.created` | SIM |
-| 2 | Lote enviado para facção | Facção | `sewing_batches` + `batch.sent_to_faccao` | condicional |
-| 3 | Passagem registrada por operação | Timeline / BI | `sewing_passages` + `passage.registered` | SIM |
-| 4 | Ocorrência de costura | H9-07, célula | `sewing_occurrences` + `sewing.occurrence.opened` | condicional |
-| 5 | Retorno de facção conciliado | Estoque WIP | `batch.returned` + `batch.reconciled` | SIM (se faccão) |
-| 6 | OP de costura concluída | H9-06 | `sewing_orders.status='concluida'` + `sewing_order.completed` | SIM |
-| 7 | Fatura de facção pronta para conferência | Financeiro / ERP | `writeErp('faccao_invoice_ready')` | SIM (se facção) |
-| 8 | Timeline pública | UI (EntityTimeline / LoteTimeline) | leitura de `entity_events` | SIM |
+| #   | Saída                                    | Destino                            | Entidade / Evento                                             | Obrigatória?    |
+| --- | ---------------------------------------- | ---------------------------------- | ------------------------------------------------------------- | --------------- |
+| 1   | OP de costura criada                     | Célula/Facção                      | `sewing_orders` + `sewing_order.created`                      | SIM             |
+| 2   | Lote enviado para facção                 | Facção                             | `sewing_batches` + `batch.sent_to_faccao`                     | condicional     |
+| 3   | Passagem registrada por operação         | Timeline / BI                      | `sewing_passages` + `passage.registered`                      | SIM             |
+| 4   | Ocorrência de costura                    | H9-07, célula                      | `sewing_occurrences` + `sewing.occurrence.opened`             | condicional     |
+| 5   | Retorno de facção conciliado             | Estoque WIP                        | `batch.returned` + `batch.reconciled`                         | SIM (se faccão) |
+| 6   | OP de costura concluída                  | H9-06                              | `sewing_orders.status='concluida'` + `sewing_order.completed` | SIM             |
+| 7   | Fatura de facção pronta para conferência | Financeiro / ERP                   | `writeErp('faccao_invoice_ready')`                            | SIM (se facção) |
+| 8   | Timeline pública                         | UI (EntityTimeline / LoteTimeline) | leitura de `entity_events`                                    | SIM             |
 
 ## 5. Regras de negócio (V6)
 
@@ -107,16 +107,16 @@ Rastreabilidade: `entity_relations` (H2-06) —
   do webhook (`/api/public/sewing-collector`) ou registrada por usuário
   autenticado com `has_role('encarregado_faccao')`.
 
-| Regra | Camada | Referência |
-|-------|--------|------------|
-| R1 | DB — trigger `check_sewing_order_prereqs` | migration H9-05 |
-| R2 | DB — CHECK + trigger `validate_passage_payload` | migration H9-05 |
-| R3 | DB — trigger `enforce_route_sequence` | migration H9-05 |
-| R4 | DB — trigger `reconcile_faccao_batch` | migration H9-05 |
-| R5 | DB — trigger `check_sewing_order_completion` | migration H9-05 |
-| R6 | Server fn — chave idempotência no `ErpAdapter` (H6-02) | `src/lib/erp/*.functions.ts` |
-| R7 | DB — trigger `open_capa_on_batch_divergence` | migration H9-05 |
-| R8 | Server route pública com HMAC (H6-05) | `src/routes/api/public/sewing-collector.ts` |
+| Regra | Camada                                                 | Referência                                  |
+| ----- | ------------------------------------------------------ | ------------------------------------------- |
+| R1    | DB — trigger `check_sewing_order_prereqs`              | migration H9-05                             |
+| R2    | DB — CHECK + trigger `validate_passage_payload`        | migration H9-05                             |
+| R3    | DB — trigger `enforce_route_sequence`                  | migration H9-05                             |
+| R4    | DB — trigger `reconcile_faccao_batch`                  | migration H9-05                             |
+| R5    | DB — trigger `check_sewing_order_completion`           | migration H9-05                             |
+| R6    | Server fn — chave idempotência no `ErpAdapter` (H6-02) | `src/lib/erp/*.functions.ts`                |
+| R7    | DB — trigger `open_capa_on_batch_divergence`           | migration H9-05                             |
+| R8    | Server route pública com HMAC (H6-05)                  | `src/routes/api/public/sewing-collector.ts` |
 
 ## 6. Workflow (V8 / H2-05)
 
@@ -147,21 +147,21 @@ preparado → enviado → em_producao_externa → retornado → reconciliado
 
 ## 7. Eventos emitidos (V7 / H2-04)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `sewing_order.created`         | INSERT `sewing_orders` | production_order_id, cell/faccao | Timeline, BI, PCP |
-| `batch.prepared`               | INSERT `sewing_batches` | order_id, bundle_ids[] | Cell/Facção |
-| `batch.sent_to_faccao`         | envio efetivado | batch_id, faccao_id, pieces, sla_due | Facção, BI |
-| `passage.registered`           | INSERT `sewing_passages` | batch_id, operation_id, operator/faccao, pieces | BI, cronoanálise |
-| `sewing.occurrence.opened`     | INSERT `sewing_occurrences` | batch_id, tipo, responsável | H9-07 |
-| `sewing.occurrence.resolved`   | ocorrência fechada | occurrence_id | Timeline |
-| `batch.returned`               | volta da facção | batch_id, returned_pieces | Estoque WIP |
-| `batch.reconciled`             | conciliação OK | batch_id, delta_pieces | Financeiro |
-| `sewing.capa.opened`           | R7 aciona CAPA | batch_id, divergence_pct | H9-07 |
-| `sewing_order.completed`       | status → `concluida` | order_id, total_pieces | H9-06, BI |
-| `sewing_order.cancelled`       | status → `cancelada` | order_id, motivo | PCP |
-| `faccao.invoice.ready`         | R6 aciona ERP | order_id, faccao_id, ref_erp | Financeiro |
-| `batch.late`                   | cron detecta SLA vencido | batch_id, days_late | Suppliers, PCP |
+| `event_type`                 | Quando                      | Payload mínimo                                  | Consumido por     |
+| ---------------------------- | --------------------------- | ----------------------------------------------- | ----------------- |
+| `sewing_order.created`       | INSERT `sewing_orders`      | production_order_id, cell/faccao                | Timeline, BI, PCP |
+| `batch.prepared`             | INSERT `sewing_batches`     | order_id, bundle_ids[]                          | Cell/Facção       |
+| `batch.sent_to_faccao`       | envio efetivado             | batch_id, faccao_id, pieces, sla_due            | Facção, BI        |
+| `passage.registered`         | INSERT `sewing_passages`    | batch_id, operation_id, operator/faccao, pieces | BI, cronoanálise  |
+| `sewing.occurrence.opened`   | INSERT `sewing_occurrences` | batch_id, tipo, responsável                     | H9-07             |
+| `sewing.occurrence.resolved` | ocorrência fechada          | occurrence_id                                   | Timeline          |
+| `batch.returned`             | volta da facção             | batch_id, returned_pieces                       | Estoque WIP       |
+| `batch.reconciled`           | conciliação OK              | batch_id, delta_pieces                          | Financeiro        |
+| `sewing.capa.opened`         | R7 aciona CAPA              | batch_id, divergence_pct                        | H9-07             |
+| `sewing_order.completed`     | status → `concluida`        | order_id, total_pieces                          | H9-06, BI         |
+| `sewing_order.cancelled`     | status → `cancelada`        | order_id, motivo                                | PCP               |
+| `faccao.invoice.ready`       | R6 aciona ERP               | order_id, faccao_id, ref_erp                    | Financeiro        |
+| `batch.late`                 | cron detecta SLA vencido    | batch_id, days_late                             | Suppliers, PCP    |
 
 Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 `TorreDeControle`, `LivePCPWidget`, `SupplierScoreboard`.
@@ -181,12 +181,12 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 
 ## 9. UX (V4 / H4)
 
-- **Rota principal:** `/production` (subseção *Costura*) reusando
+- **Rota principal:** `/production` (subseção _Costura_) reusando
   `TorreDeControle`, `LotesGantt`, `KanbanColumn`.
 - **Rota dedicada de facções:** `/suppliers` reusando `SupplierScoreboard`.
 - **Drawer contextual:** `SewingOrderDrawer` (novo, análogo a
-  `ReferenciaDrawer`) com tabs *Roteiro · Lotes · Passagens · Facção
-  · Ocorrências · Timeline · Relações · IA*.
+  `ReferenciaDrawer`) com tabs _Roteiro · Lotes · Passagens · Facção
+  · Ocorrências · Timeline · Relações · IA_.
 - **Componentes reutilizados:** `EntityTimeline`, `EntityRelations`,
   `WorkflowStatusMenu`, `LoteTimeline`, `LoteCard`, `KanbanColumn`,
   `PassagemForm`, `OcorrenciaForm`, `ErpBadge`, `SupplierScoreboard`,
@@ -202,15 +202,15 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 ## 10. IA (V11 / H5)
 
 - **Agentes (V13):**
-  - *Especialista Costura* — critica balanceamento da célula por
+  - _Especialista Costura_ — critica balanceamento da célula por
     operação com base em tempo padrão vs. real.
-  - *Especialista Facções* — recomenda melhor facção por categoria
+  - _Especialista Facções_ — recomenda melhor facção por categoria
     considerando SLA, preço, histórico de divergência.
-  - *Especialista Cronoanálise* — sinaliza operações com tempo padrão
+  - _Especialista Cronoanálise_ — sinaliza operações com tempo padrão
     defasado (real cronicamente > padrão em > N% dos apontamentos).
-  - *Especialista PCP* — antecipa impacto de atraso da costura no
+  - _Especialista PCP_ — antecipa impacto de atraso da costura no
     acabamento e mostruário.
-  - *Especialista Qualidade* — cruza ocorrência com combinação
+  - _Especialista Qualidade_ — cruza ocorrência com combinação
     tecido × modelagem × facção.
 - **Perguntas que os agentes devem responder:**
   - "Qual facção está mais confiável para essa categoria hoje?"
@@ -227,14 +227,14 @@ Consumidores: `EntityTimeline`, `LoteTimeline`, `use-entity-events`,
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| Eficiência real vs. padrão | (Σ pcs × tempo padrão) ÷ (horas reais × 60) | % | ≥ 85% | Costura |
-| OPs no prazo | `sewing_order.completed` até `pcp_due` ÷ total | % | ≥ 95% | PCP |
-| Taxa de retrabalho | ocorrências `retrabalho` ÷ total OPs | % | ≤ 3% | Qualidade |
-| Rastreabilidade externa | facção com `passage.registered` < 24h ÷ facções ativas | % | ≥ 98% | Suppliers |
-| Divergência média por facção | Σ `|returned - sent|` ÷ `Σ sent` | % | ≤ 1% | Suppliers |
-| Lead time médio de facção | `batch.reconciled` − `batch.sent_to_faccao` | dias | ≤ SLA | Facções |
+| KPI                          | Fórmula                                                | Unidade         | Meta       | Responsável |
+| ---------------------------- | ------------------------------------------------------ | --------------- | ---------- | ----------- |
+| Eficiência real vs. padrão   | (Σ pcs × tempo padrão) ÷ (horas reais × 60)            | %               | ≥ 85%      | Costura     |
+| OPs no prazo                 | `sewing_order.completed` até `pcp_due` ÷ total         | %               | ≥ 95%      | PCP         |
+| Taxa de retrabalho           | ocorrências `retrabalho` ÷ total OPs                   | %               | ≤ 3%       | Qualidade   |
+| Rastreabilidade externa      | facção com `passage.registered` < 24h ÷ facções ativas | %               | ≥ 98%      | Suppliers   |
+| Divergência média por facção | Σ `                                                    | returned - sent | `÷`Σ sent` | %           | ≤ 1% | Suppliers |
+| Lead time médio de facção    | `batch.reconciled` − `batch.sent_to_faccao`            | dias            | ≤ SLA      | Facções     |
 
 Fonte: derivados de `entity_events` + `sewing_*` + ERP. Sem contagem manual.
 
@@ -297,14 +297,14 @@ Fonte: derivados de `entity_events` + `sewing_*` + ERP. Sem contagem manual.
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve | Limitação | Como superamos |
-|-----|--------------|-----------|----------------|
-| Centric | Sourcing + shop floor via módulos separados | Alto custo, integração longa | Facção como cidadão de 1ª classe no PLM |
-| PTC FlexPLM | Vendor management robusto | Complexo para PMEs | Webhook HMAC simples + coletor offline |
-| Lectra Kubix Link | Foco em CAD e material, fraco em facção | Não cobre bem outsourcing | R4 conciliação + R7 CAPA automática |
-| Gerber Yunique | Colaboração global com fornecedores | UI legada, sem tempo real | Timeline em tempo real + `SupplierScoreboard` |
-| Collection Moda (BR) | Controle de facção via planilha/WhatsApp | Sem rastreabilidade eventos | Passagem obrigatória a cada 24h como KPI vivo |
-| Audaces | Não cobre gestão de facção | — | Este playbook cobre o gap na cadeia BR |
+| PLM                  | Como resolve                                | Limitação                    | Como superamos                                |
+| -------------------- | ------------------------------------------- | ---------------------------- | --------------------------------------------- |
+| Centric              | Sourcing + shop floor via módulos separados | Alto custo, integração longa | Facção como cidadão de 1ª classe no PLM       |
+| PTC FlexPLM          | Vendor management robusto                   | Complexo para PMEs           | Webhook HMAC simples + coletor offline        |
+| Lectra Kubix Link    | Foco em CAD e material, fraco em facção     | Não cobre bem outsourcing    | R4 conciliação + R7 CAPA automática           |
+| Gerber Yunique       | Colaboração global com fornecedores         | UI legada, sem tempo real    | Timeline em tempo real + `SupplierScoreboard` |
+| Collection Moda (BR) | Controle de facção via planilha/WhatsApp    | Sem rastreabilidade eventos  | Passagem obrigatória a cada 24h como KPI vivo |
+| Audaces              | Não cobre gestão de facção                  | —                            | Este playbook cobre o gap na cadeia BR        |
 
 Padrão mental comum: **costura = distribuição + passagem + conciliação**,
 interno ou externo. Nossa superação: **facção com mesmo rigor de célula
@@ -313,18 +313,18 @@ externa a cada 24h**.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Prob. | Mitigação |
-|-------|---------|-------|-----------|
-| Lote sumir em facção | Prejuízo + atraso | alta | R4 conciliação + `batch.late` cron + KPI rastreabilidade externa |
-| Passagem falsa (peças infladas) | Fatura errada | média | R3 sequência + R8 HMAC + auditoria por evento |
-| Divergência aceita sem análise | Perda contínua | média | R7 CAPA + agente Facções |
-| Facção sem SLA cadastrado | Sem cobrança de prazo | baixa | R1/R2 exigem `sewing_routes` e cadastro |
-| Fatura duplicada no ERP | Prejuízo financeiro | média | R6 idempotência + testes contract H7 |
-| Vazamento de custo entre facções | Legal/competitivo | baixa | RLS por `faccao_id` no terminal |
-| IA escolher facção enviesada | Contrato desigual | baixa | Guardrail §10 — IA sugere, humano decide |
+| Risco                            | Impacto               | Prob. | Mitigação                                                        |
+| -------------------------------- | --------------------- | ----- | ---------------------------------------------------------------- |
+| Lote sumir em facção             | Prejuízo + atraso     | alta  | R4 conciliação + `batch.late` cron + KPI rastreabilidade externa |
+| Passagem falsa (peças infladas)  | Fatura errada         | média | R3 sequência + R8 HMAC + auditoria por evento                    |
+| Divergência aceita sem análise   | Perda contínua        | média | R7 CAPA + agente Facções                                         |
+| Facção sem SLA cadastrado        | Sem cobrança de prazo | baixa | R1/R2 exigem `sewing_routes` e cadastro                          |
+| Fatura duplicada no ERP          | Prejuízo financeiro   | média | R6 idempotência + testes contract H7                             |
+| Vazamento de custo entre facções | Legal/competitivo     | baixa | RLS por `faccao_id` no terminal                                  |
+| IA escolher facção enviesada     | Contrato desigual     | baixa | Guardrail §10 — IA sugere, humano decide                         |
 
 ## 17. Changelog
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Software House IA | criação inicial do playbook |
+| Data       | Versão | Autor             | Mudança                     |
+| ---------- | ------ | ----------------- | --------------------------- |
+| 2026-07-07 | 0.1    | Software House IA | criação inicial do playbook |

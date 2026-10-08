@@ -19,20 +19,35 @@ export async function listOfficialModels(): Promise<OfficialModel[]> {
   const { data, error } = await supabase
     .from("official_models")
     .select("id, nome, categoria, tamanho_base, medidas, detalhes, sketch_path, colecao, ativa")
-    .order("colecao", { nullsFirst: false }).order("nome");
+    .order("colecao", { nullsFirst: false })
+    .order("nome");
   if (error) throw error;
-  return (data ?? []).map((r) => ({ ...r, medidas: Array.isArray(r.medidas) ? (r.medidas as OfficialMeasure[]) : [] }));
+  return (data ?? []).map((r) => ({
+    ...r,
+    medidas: Array.isArray(r.medidas) ? (r.medidas as OfficialMeasure[]) : [],
+  }));
 }
 
 /** Lê CSV/TXT: ponto de medida; valor; tolerância; como medir (separador ; , ou tab). */
 export function parseMeasureTable(text: string): OfficialMeasure[] {
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  const rows = lines.map((l) => l.split(/\t|;|,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map((c) => c.replace(/^"|"$/g, "").trim()));
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const rows = lines.map((l) =>
+    l.split(/\t|;|,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map((c) => c.replace(/^"|"$/g, "").trim()),
+  );
   const first = rows[0]?.join(" ").toLowerCase() ?? "";
-  const body = /ponto|medida|point|valor/.test(first) && !/\d/.test(rows[0]?.[1] ?? "") ? rows.slice(1) : rows;
+  const body =
+    /ponto|medida|point|valor/.test(first) && !/\d/.test(rows[0]?.[1] ?? "") ? rows.slice(1) : rows;
   return body
     .filter((r) => r[0])
-    .map((r) => ({ point: r[0], value: r[1] ?? "", tolerance: r[2] || undefined, how: r[3] || undefined }));
+    .map((r) => ({
+      point: r[0],
+      value: r[1] ?? "",
+      tolerance: r[2] || undefined,
+      how: r[3] || undefined,
+    }));
 }
 
 export async function sketchSignedUrl(path: string): Promise<string | null> {
@@ -60,9 +75,16 @@ export function officialMeasuresBlock(m: OfficialModel): string {
 /** Define a tabela como a oficial da coleção (desativa as demais da mesma coleção). */
 export async function setActiveForCollection(m: OfficialModel) {
   if (!m.colecao) throw new Error("Informe a coleção antes de tornar oficial.");
-  const { error: e1 } = await supabase.from("official_models").update({ ativa: false }).ilike("colecao", m.colecao).neq("id", m.id);
+  const { error: e1 } = await supabase
+    .from("official_models")
+    .update({ ativa: false })
+    .ilike("colecao", m.colecao)
+    .neq("id", m.id);
   if (e1) throw e1;
-  const { error: e2 } = await supabase.from("official_models").update({ ativa: true }).eq("id", m.id);
+  const { error: e2 } = await supabase
+    .from("official_models")
+    .update({ ativa: true })
+    .eq("id", m.id);
   if (e2) throw e2;
 }
 

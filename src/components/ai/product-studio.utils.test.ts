@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildConceptPrompt, buildVariationIdeas, normalizeProductProposal } from "./product-studio.utils";
+import {
+  buildConceptPrompt,
+  buildVariationIdeas,
+  normalizeProductProposal,
+} from "./product-studio.utils";
 
 describe("product-studio utils", () => {
   it("constrói um prompt completo a partir do briefing", () => {

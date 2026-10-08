@@ -49,9 +49,7 @@ export function useEntityTimeline(
         (payload) => {
           const e = payload.new as EntityEvent;
           if (e.entity_type !== entityType) return;
-          setItems((prev) =>
-            prev.some((p) => p.id === e.id) ? prev : [e, ...prev],
-          );
+          setItems((prev) => (prev.some((p) => p.id === e.id) ? prev : [e, ...prev]));
         },
       )
       .subscribe();

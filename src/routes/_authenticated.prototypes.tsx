@@ -135,7 +135,6 @@ function PrototypesPage() {
 
   useEffect(() => onQuickAction("quick:new-piloto", () => handleOpenDialog()), []);
 
-
   const handleSave = () => {
     if (editingPrototype) {
       setPrototypes(
@@ -267,10 +266,10 @@ function PrototypesPage() {
                     </span>
                   </div>
                   <Button
- variant="ghost"
- size="sm"
- className="gap-1.5 text-[10px] tracking-[0.14em] text-primary hover:bg-primary/10"
- onClick={() =>
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-[10px] tracking-[0.14em] text-primary hover:bg-primary/10"
+                    onClick={() =>
                       openEntity({
                         type: "piloto",
                         id: prototype.id,
@@ -281,7 +280,6 @@ function PrototypesPage() {
                   >
                     <GitBranch className="h-3.5 w-3.5" /> Trilha
                   </Button>
-
                 </div>
               </CardContent>
             </Card>
@@ -361,17 +359,10 @@ function PrototypesPage() {
             ))}
           </div>
           <DialogFooter className="gap-3">
-            <Button
- variant="ghost"
- onClick={() => setIsDialogOpen(false)}
-              className="text-[10px]"
-            >
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
               Cancelar
             </Button>
-            <Button
- onClick={handleSave}
- className="text-[10px]"
- >
+            <Button onClick={handleSave} className="text-[10px]">
               Salvar protótipo
             </Button>
           </DialogFooter>

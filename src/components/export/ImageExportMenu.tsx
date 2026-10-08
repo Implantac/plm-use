@@ -27,15 +27,30 @@ export function ImageExportMenu({ src, baseName }: { src: string; baseName: stri
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" size="sm" variant="ghost" disabled={busy} className="h-7 gap-1 px-2 text-xs text-primary">
-          {busy ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />} Exportar
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          disabled={busy}
+          className="h-7 gap-1 px-2 text-xs text-primary"
+        >
+          {busy ? (
+            <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Download className="h-3.5 w-3.5" />
+          )}{" "}
+          Exportar
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuLabel>Exportar como</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {EXPORT_FORMATS.map((f) => (
-          <DropdownMenuItem key={f.id} onSelect={() => void run(f.id)} className="flex flex-col items-start">
+          <DropdownMenuItem
+            key={f.id}
+            onSelect={() => void run(f.id)}
+            className="flex flex-col items-start"
+          >
             <span className="text-sm">{f.label}</span>
             <span className="text-[11px] text-muted-foreground">{f.hint}</span>
           </DropdownMenuItem>

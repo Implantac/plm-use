@@ -15,19 +15,19 @@ Referenciamos via `erp_id` + `ErpAdapter` (FPEF V9, `src/lib/erp/`).
 
 ## Divisão de responsabilidades
 
-| Área | PLM | ERP |
-|---|---|---|
-| Pesquisa/moodboard/tendência | ✅ | ❌ |
-| Ficha técnica (BOM/BOP) | ✅ | ❌ (recebe pronta) |
-| Piloto, aprovação, pilotagem | ✅ | ❌ |
-| Engenharia de produto | ✅ | ❌ (recebe pronta) |
-| Cadastro de SKU | ❌ (referencia) | ✅ |
-| Estoque físico | ❌ | ✅ |
-| Compras (pedido/NF) | ❌ (sugere necessidade) | ✅ |
-| PCP planejamento | ✅ (visão coleção) | ✅ (execução fabril) |
-| Qualidade (CAPA, defeitos) | ✅ | ❌ |
-| Comercial (performance coleção) | ✅ (analítico) | ✅ (transacional) |
-| Financeiro | ❌ | ✅ |
+| Área                            | PLM                     | ERP                  |
+| ------------------------------- | ----------------------- | -------------------- |
+| Pesquisa/moodboard/tendência    | ✅                      | ❌                   |
+| Ficha técnica (BOM/BOP)         | ✅                      | ❌ (recebe pronta)   |
+| Piloto, aprovação, pilotagem    | ✅                      | ❌                   |
+| Engenharia de produto           | ✅                      | ❌ (recebe pronta)   |
+| Cadastro de SKU                 | ❌ (referencia)         | ✅                   |
+| Estoque físico                  | ❌                      | ✅                   |
+| Compras (pedido/NF)             | ❌ (sugere necessidade) | ✅                   |
+| PCP planejamento                | ✅ (visão coleção)      | ✅ (execução fabril) |
+| Qualidade (CAPA, defeitos)      | ✅                      | ❌                   |
+| Comercial (performance coleção) | ✅ (analítico)          | ✅ (transacional)    |
+| Financeiro                      | ❌                      | ✅                   |
 
 ## Como o PLM aparece "sobre" o ERP
 

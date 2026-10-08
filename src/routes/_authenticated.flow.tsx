@@ -58,13 +58,7 @@ export const Route = createFileRoute("/_authenticated/flow")({
 });
 
 type PhaseId =
-  | "criar"
-  | "desenvolver"
-  | "industrializar"
-  | "aprovar"
-  | "produzir"
-  | "lancar"
-  | "aprender";
+  "criar" | "desenvolver" | "industrializar" | "aprovar" | "produzir" | "lancar" | "aprender";
 
 const PHASES: Record<PhaseId, { label: string; hint: string }> = {
   criar: { label: "01 · Criar", hint: "Briefing, moodboard, conceito e croqui" },

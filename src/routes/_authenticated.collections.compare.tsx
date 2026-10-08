@@ -179,7 +179,9 @@ function CompareCollectionsPage() {
         { label: "Fonte", value: "PLM · Showroom · ERP", detail: "agregado" },
       ]}
     >
-      <div className="mb-4"><ModuleTabs group="collections" /></div>
+      <div className="mb-4">
+        <ModuleTabs group="collections" />
+      </div>
       <div className="mb-6 flex items-end gap-4 flex-wrap">
         <div className="min-w-[240px] flex-1 space-y-2">
           <label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
@@ -200,12 +202,12 @@ function CompareCollectionsPage() {
         </div>
 
         <Button
- type="button"
- onClick={swap}
- variant="ghost"
- className="border"
- aria-label="Inverter coleções"
- >
+          type="button"
+          onClick={swap}
+          variant="ghost"
+          className="border"
+          aria-label="Inverter coleções"
+        >
           <ArrowLeftRight className="h-4 w-4" />
         </Button>
 
@@ -227,11 +229,7 @@ function CompareCollectionsPage() {
           </Select>
         </div>
 
-        <Button
- asChild
- variant="ghost"
- className="border text-[10px] tracking-[0.14em]"
- >
+        <Button asChild variant="ghost" className="border text-[10px] tracking-[0.14em]">
           <Link to="/collections">Voltar</Link>
         </Button>
       </div>
@@ -257,12 +255,8 @@ function CompareCollectionsPage() {
                 {METRIC_ROWS.map((row) => {
                   const la = row.num(left);
                   const rb = row.num(right);
-                  const leftWins =
-                    la !== rb &&
-                    (row.higherIsBetter ? la > rb : la < rb);
-                  const rightWins =
-                    la !== rb &&
-                    (row.higherIsBetter ? rb > la : rb < la);
+                  const leftWins = la !== rb && (row.higherIsBetter ? la > rb : la < rb);
+                  const rightWins = la !== rb && (row.higherIsBetter ? rb > la : rb < la);
                   return (
                     <div
                       key={row.key}
@@ -294,9 +288,7 @@ function CompareCollectionsPage() {
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                 Leitura rápida
               </p>
-              <p className="text-sm leading-relaxed text-white/85">
-                {readingSummary(left, right)}
-              </p>
+              <p className="text-sm leading-relaxed text-white/85">{readingSummary(left, right)}</p>
             </CardContent>
           </Card>
         </div>

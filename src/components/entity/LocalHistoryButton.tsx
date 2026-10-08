@@ -30,11 +30,11 @@ export function LocalHistoryButton({
   return (
     <>
       <Button
- type="button"
- variant={variant}
- size={size}
- className={className}
- onClick={(e) => {
+        type="button"
+        variant={variant}
+        size={size}
+        className={className}
+        onClick={(e) => {
           e.stopPropagation();
           setOpen(true);
         }}
@@ -48,9 +48,7 @@ export function LocalHistoryButton({
             <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary">
               {LOCAL_ENTITY_LABEL[entityType]}
             </p>
-            <SheetTitle className="text-base mt-1 truncate">
-              {entityLabel ?? entityId}
-            </SheetTitle>
+            <SheetTitle className="text-base mt-1 truncate">{entityLabel ?? entityId}</SheetTitle>
           </SheetHeader>
           <div className="p-5">
             <LocalEntityTimeline entityType={entityType} entityId={entityId} />

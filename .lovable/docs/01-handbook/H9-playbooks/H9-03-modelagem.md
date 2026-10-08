@@ -49,34 +49,34 @@ em todas as tamanhos e consuma tecido dentro do orçado.
 
 ## 3. Entradas
 
-| # | Entrada | Origem | Formato | Obrigatória? |
-|---|---------|--------|---------|--------------|
-| 1 | Referência com ficha inicial | H9-02 | `references.status='em_desenvolvimento'` + `reference_specs` | SIM |
-| 2 | Grade de tamanhos alvo | Comercial | tabela de medidas por segmento | SIM |
-| 3 | Tecido principal (largura útil, encolhimento) | Compras / ERP | `queryErp('fabric_specs')` | SIM |
-| 4 | Molde-mãe pré-existente (reuso) | PDM/CAD | arquivo `.plt`/`.dxf` + hash | opcional |
-| 5 | Histórico de rendimento por categoria | ERP via `ErpAdapter` (V9) | `queryErp('marker_yield_history')` | recomendado |
-| 6 | Capacidade da sala de modelagem | PCP | vagas por semana | SIM |
+| #   | Entrada                                       | Origem                    | Formato                                                      | Obrigatória? |
+| --- | --------------------------------------------- | ------------------------- | ------------------------------------------------------------ | ------------ |
+| 1   | Referência com ficha inicial                  | H9-02                     | `references.status='em_desenvolvimento'` + `reference_specs` | SIM          |
+| 2   | Grade de tamanhos alvo                        | Comercial                 | tabela de medidas por segmento                               | SIM          |
+| 3   | Tecido principal (largura útil, encolhimento) | Compras / ERP             | `queryErp('fabric_specs')`                                   | SIM          |
+| 4   | Molde-mãe pré-existente (reuso)               | PDM/CAD                   | arquivo `.plt`/`.dxf` + hash                                 | opcional     |
+| 5   | Histórico de rendimento por categoria         | ERP via `ErpAdapter` (V9) | `queryErp('marker_yield_history')`                           | recomendado  |
+| 6   | Capacidade da sala de modelagem               | PCP                       | vagas por semana                                             | SIM          |
 
 Rastreabilidade: `entity_relations` (H2-06) — `reference` → `pattern` →
 `pattern_grade` → `marker`.
 
 ## 4. Saídas
 
-| # | Saída | Destino | Entidade / Evento | Obrigatória? |
-|---|-------|---------|-------------------|--------------|
-| 1 | Molde-mãe criado | H9-02, PDM | `patterns` + `pattern.created` | SIM |
-| 2 | Grade (tamanhos graduados) | Piloto/Produção | `pattern_grades` + `pattern.grade.set` | SIM |
-| 3 | Encaixe (marker) medido | H9-05, H9-09 | `markers` + `marker.measured` | SIM |
-| 4 | Rendimento aceito | Engenharia (H9-05) | `markers.yield_pct` + `marker.accepted` | SIM |
-| 5 | Molde validado | H9-02 piloto + H9-05 | `patterns.status='validado'` + `pattern.validated` | SIM |
-| 6 | Arquivo CAD versionado | PDM | storage privado + hash em `patterns.cad_hash` | SIM |
-| 7 | Timeline pública | UI (EntityTimeline) | leitura de `entity_events` | SIM |
+| #   | Saída                      | Destino              | Entidade / Evento                                  | Obrigatória? |
+| --- | -------------------------- | -------------------- | -------------------------------------------------- | ------------ |
+| 1   | Molde-mãe criado           | H9-02, PDM           | `patterns` + `pattern.created`                     | SIM          |
+| 2   | Grade (tamanhos graduados) | Piloto/Produção      | `pattern_grades` + `pattern.grade.set`             | SIM          |
+| 3   | Encaixe (marker) medido    | H9-05, H9-09         | `markers` + `marker.measured`                      | SIM          |
+| 4   | Rendimento aceito          | Engenharia (H9-05)   | `markers.yield_pct` + `marker.accepted`            | SIM          |
+| 5   | Molde validado             | H9-02 piloto + H9-05 | `patterns.status='validado'` + `pattern.validated` | SIM          |
+| 6   | Arquivo CAD versionado     | PDM                  | storage privado + hash em `patterns.cad_hash`      | SIM          |
+| 7   | Timeline pública           | UI (EntityTimeline)  | leitura de `entity_events`                         | SIM          |
 
 ## 5. Regras de negócio (V6)
 
 - **R1:** Não é possível criar `pattern_grade` sem `patterns.status IN
-  ('em_construcao','em_revisao')` e sem base `pattern_id` definida.
+('em_construcao','em_revisao')` e sem base `pattern_id` definida.
 - **R2:** Não é possível criar `marker` sem `pattern_grade` completa (todos
   os tamanhos-alvo presentes).
 - **R3:** `marker.status='aceito'` exige `yield_pct >= min_yield_by_category`
@@ -91,14 +91,14 @@ Rastreabilidade: `entity_relations` (H2-06) — `reference` → `pattern` →
 - **R6:** Upload de arquivo CAD sem hash SHA-256 é rejeitado no server
   (trigger + validação `zod` na server function).
 
-| Regra | Camada | Referência |
-|-------|--------|------------|
-| R1 | DB — trigger `check_pattern_state_for_grade` | migration H9-03 |
-| R2 | DB — trigger `check_grade_complete_for_marker` | migration H9-03 |
-| R3 | DB — trigger `enforce_yield_threshold` | migration H9-03 |
-| R4 | DB — policy + `has_role` + trigger `require_accepted_marker` | migration H9-03 |
-| R5 | DB — trigger `bump_pattern_version` (BEFORE UPDATE) | migration H9-03 |
-| R6 | Server fn — `zod` schema + trigger `reject_cad_without_hash` | `src/lib/patterns/*.functions.ts` |
+| Regra | Camada                                                       | Referência                        |
+| ----- | ------------------------------------------------------------ | --------------------------------- |
+| R1    | DB — trigger `check_pattern_state_for_grade`                 | migration H9-03                   |
+| R2    | DB — trigger `check_grade_complete_for_marker`               | migration H9-03                   |
+| R3    | DB — trigger `enforce_yield_threshold`                       | migration H9-03                   |
+| R4    | DB — policy + `has_role` + trigger `require_accepted_marker` | migration H9-03                   |
+| R5    | DB — trigger `bump_pattern_version` (BEFORE UPDATE)          | migration H9-03                   |
+| R6    | Server fn — `zod` schema + trigger `reject_cad_without_hash` | `src/lib/patterns/*.functions.ts` |
 
 ## 6. Workflow (V8 / H2-05)
 
@@ -127,23 +127,23 @@ esboço → medido → em_revisao → aceito
 
 ## 7. Eventos emitidos (V7 / H2-04)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `pattern.created`         | INSERT `patterns` | id, reference_id, base_pattern_id | Timeline, BI |
-| `pattern.grade.set`       | UPSERT `pattern_grades` | pattern_id, sizes[] | H9-02, H9-05 |
-| `pattern.cad.uploaded`    | novo arquivo CAD | pattern_id, hash, size | PDM, Timeline |
-| `marker.created`          | INSERT `markers` | pattern_id, tecido, largura | Timeline |
-| `marker.measured`         | rendimento calculado | marker_id, yield_pct, consumo_m | BI |
-| `marker.accepted`         | status → `aceito` | marker_id, aprovador, justification? | H9-05, H9-09 |
-| `marker.rejected`         | status → `rejeitado` | marker_id, motivo | Modelagem |
-| `pattern.submitted_for_review` | status → `em_revisao` | pattern_id | Especialista Modelagem |
-| `pattern.validated`       | status → `validado` | pattern_id, assinante, version | H9-02, H9-05, BI |
-| `pattern.rejected`        | status → `reprovado` | pattern_id, motivo | Modelagem |
-| `pattern.archived`        | status → `arquivado` | pattern_id | Arquivo |
-| `pattern.reuse.linked`    | reuso de molde-mãe | new_pattern_id, base_pattern_id | BI |
+| `event_type`                   | Quando                  | Payload mínimo                       | Consumido por          |
+| ------------------------------ | ----------------------- | ------------------------------------ | ---------------------- |
+| `pattern.created`              | INSERT `patterns`       | id, reference_id, base_pattern_id    | Timeline, BI           |
+| `pattern.grade.set`            | UPSERT `pattern_grades` | pattern_id, sizes[]                  | H9-02, H9-05           |
+| `pattern.cad.uploaded`         | novo arquivo CAD        | pattern_id, hash, size               | PDM, Timeline          |
+| `marker.created`               | INSERT `markers`        | pattern_id, tecido, largura          | Timeline               |
+| `marker.measured`              | rendimento calculado    | marker_id, yield_pct, consumo_m      | BI                     |
+| `marker.accepted`              | status → `aceito`       | marker_id, aprovador, justification? | H9-05, H9-09           |
+| `marker.rejected`              | status → `rejeitado`    | marker_id, motivo                    | Modelagem              |
+| `pattern.submitted_for_review` | status → `em_revisao`   | pattern_id                           | Especialista Modelagem |
+| `pattern.validated`            | status → `validado`     | pattern_id, assinante, version       | H9-02, H9-05, BI       |
+| `pattern.rejected`             | status → `reprovado`    | pattern_id, motivo                   | Modelagem              |
+| `pattern.archived`             | status → `arquivado`    | pattern_id                           | Arquivo                |
+| `pattern.reuse.linked`         | reuso de molde-mãe      | new_pattern_id, base_pattern_id      | BI                     |
 
 Consumidores: `EntityTimeline`, `ReferenceTimeline`, `use-entity-events`,
-`ReferenciaDrawer` (nova tab *Modelagem*).
+`ReferenciaDrawer` (nova tab _Modelagem_).
 
 ## 8. Integrações (H6)
 
@@ -159,10 +159,10 @@ Consumidores: `EntityTimeline`, `ReferenceTimeline`, `use-entity-events`,
 
 ## 9. UX (V4 / H4)
 
-- **Rota principal:** `/references` (aba *Modelagem* no `ReferenciaDrawer`)
-  + tela dedicada `/prototypes` já existente.
-- **Drawer contextual:** nova aba *Modelagem* com sub-abas
-  *Molde · Grade · Encaixe · CAD · Timeline · IA*.
+- **Rota principal:** `/references` (aba _Modelagem_ no `ReferenciaDrawer`)
+  - tela dedicada `/prototypes` já existente.
+- **Drawer contextual:** nova aba _Modelagem_ com sub-abas
+  _Molde · Grade · Encaixe · CAD · Timeline · IA_.
 - **Componentes a reutilizar:** `EntityTimeline`, `EntityRelations`,
   `WorkflowStatusMenu`, `ReferenciaDrawer`, `TechSheetVersions`,
   `BomBopPanel` (leitura), `ErpBadge`.
@@ -177,13 +177,13 @@ Consumidores: `EntityTimeline`, `ReferenceTimeline`, `use-entity-events`,
 ## 10. IA (V11 / H5)
 
 - **Agentes (V13):**
-  - *Especialista Modelagem* — sugere reuso de molde-mãe com base em
+  - _Especialista Modelagem_ — sugere reuso de molde-mãe com base em
     similaridade de ficha (`reference_specs`) + histórico.
-  - *Especialista Corte* — critica rendimento esperado vs. meta da
+  - _Especialista Corte_ — critica rendimento esperado vs. meta da
     categoria e sugere reorganização de encaixe.
-  - *Especialista Custo/Margem* — traduz rendimento em impacto de custo
+  - _Especialista Custo/Margem_ — traduz rendimento em impacto de custo
     de tecido (link com H9-05).
-  - *Especialista Pilotagem* — antecipa risco de reprova do piloto por
+  - _Especialista Pilotagem_ — antecipa risco de reprova do piloto por
     padrões da grade (ex.: cava/manga incoerente).
 - **Perguntas que os agentes devem responder:**
   - "Existe molde-mãe reusável para essa referência?"
@@ -197,13 +197,13 @@ Consumidores: `EntityTimeline`, `ReferenceTimeline`, `use-entity-events`,
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| Rendimento médio de encaixe | Σ `marker.yield_pct` aceitos ÷ n | % | ≥ 85% | Modelagem |
-| Reuso de molde-mãe | `pattern.reuse.linked` ÷ `pattern.created` | % | ≥ 40% | Modelagem |
-| Lead time referência → molde validado | `pattern.validated` − `reference.approved` | dias úteis | ≤ 5 | Coord. Desenvolvimento |
-| Retrabalho de graduação | patterns com > 1 `pattern.rejected` ÷ total | % | ≤ 15% | Modelagem |
-| Encaixes abaixo do mínimo aceitos | `marker.accepted` com `justification IS NOT NULL` ÷ aceitos | % | ≤ 10% | Coord. Engenharia |
+| KPI                                   | Fórmula                                                     | Unidade    | Meta  | Responsável            |
+| ------------------------------------- | ----------------------------------------------------------- | ---------- | ----- | ---------------------- |
+| Rendimento médio de encaixe           | Σ `marker.yield_pct` aceitos ÷ n                            | %          | ≥ 85% | Modelagem              |
+| Reuso de molde-mãe                    | `pattern.reuse.linked` ÷ `pattern.created`                  | %          | ≥ 40% | Modelagem              |
+| Lead time referência → molde validado | `pattern.validated` − `reference.approved`                  | dias úteis | ≤ 5   | Coord. Desenvolvimento |
+| Retrabalho de graduação               | patterns com > 1 `pattern.rejected` ÷ total                 | %          | ≤ 15% | Modelagem              |
+| Encaixes abaixo do mínimo aceitos     | `marker.accepted` com `justification IS NOT NULL` ÷ aceitos | %          | ≤ 10% | Coord. Engenharia      |
 
 Fonte: derivados de `entity_events` + `patterns` + `markers`. Sem contagem manual.
 
@@ -261,14 +261,14 @@ Fonte: derivados de `entity_events` + `patterns` + `markers`. Sem contagem manua
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve | Limitação | Como superamos |
-|-----|--------------|-----------|----------------|
-| Centric | Pattern & marker module integrado a sample | Depende de CAD proprietário caro | Storage privado + hash + agnóstico de CAD |
-| PTC FlexPLM | Bill of Labor + integração Gerber | Fora do alcance de PMEs brasileiras | Fluxo simples, aderente a `.plt`/`.dxf` livres |
-| Lectra Kubix Link | Modaris + Diamino nativos, benchmark de rendimento | Ecossistema fechado Lectra | Rendimento medido dentro do PLM + agente Corte |
-| Gerber Yunique | Pattern versioning + AccuMark link | UI legada, sem IA | Timeline + agente sugere reuso de molde-mãe |
-| Collection Moda (BR) | Cadastro de molde/grade prático | Sem controle de rendimento nem reuso | KPI de rendimento e reuso como 1ª classe |
-| Audaces Idea | Ecossistema CAD forte (Idea/Molde/Encaixe) | Não é PLM — não amarra evento/workflow | Este playbook amarra CAD à cadeia digital |
+| PLM                  | Como resolve                                       | Limitação                              | Como superamos                                 |
+| -------------------- | -------------------------------------------------- | -------------------------------------- | ---------------------------------------------- |
+| Centric              | Pattern & marker module integrado a sample         | Depende de CAD proprietário caro       | Storage privado + hash + agnóstico de CAD      |
+| PTC FlexPLM          | Bill of Labor + integração Gerber                  | Fora do alcance de PMEs brasileiras    | Fluxo simples, aderente a `.plt`/`.dxf` livres |
+| Lectra Kubix Link    | Modaris + Diamino nativos, benchmark de rendimento | Ecossistema fechado Lectra             | Rendimento medido dentro do PLM + agente Corte |
+| Gerber Yunique       | Pattern versioning + AccuMark link                 | UI legada, sem IA                      | Timeline + agente sugere reuso de molde-mãe    |
+| Collection Moda (BR) | Cadastro de molde/grade prático                    | Sem controle de rendimento nem reuso   | KPI de rendimento e reuso como 1ª classe       |
+| Audaces Idea         | Ecossistema CAD forte (Idea/Molde/Encaixe)         | Não é PLM — não amarra evento/workflow | Este playbook amarra CAD à cadeia digital      |
 
 Padrão mental comum: **molde = base + grade + encaixe medido, versionado**.
 Nossa superação: **hash CAD obrigatório + rendimento como KPI vivo +
@@ -276,17 +276,17 @@ reuso de molde-mãe sugerido por IA + workflow imutável após validado**.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Prob. | Mitigação |
-|-------|---------|-------|-----------|
-| Molde validado com grade incompleta | Piloto ruim em tamanhos extremos | média | R2 + R4 (server) |
-| Encaixe aceito abaixo da meta sem justificativa | Custo de tecido estourado | alta | R3 + KPI §11 monitorado |
-| Arquivo CAD substituído sem versão | Perda de histórico industrial | baixa | R5 versionamento + hash |
-| Reuso de molde-mãe indevido | Peça não veste | baixa | Agente sugere, humano decide (guardrail §10) |
-| Vazamento de propriedade intelectual (CAD) | Legal/competitivo | baixa | Bucket privado + URL assinada TTL curto |
-| IA aceitar encaixe automaticamente | Custo/risco não auditado | média | Guardrail §10 — IA nunca aceita, só sugere |
+| Risco                                           | Impacto                          | Prob. | Mitigação                                    |
+| ----------------------------------------------- | -------------------------------- | ----- | -------------------------------------------- |
+| Molde validado com grade incompleta             | Piloto ruim em tamanhos extremos | média | R2 + R4 (server)                             |
+| Encaixe aceito abaixo da meta sem justificativa | Custo de tecido estourado        | alta  | R3 + KPI §11 monitorado                      |
+| Arquivo CAD substituído sem versão              | Perda de histórico industrial    | baixa | R5 versionamento + hash                      |
+| Reuso de molde-mãe indevido                     | Peça não veste                   | baixa | Agente sugere, humano decide (guardrail §10) |
+| Vazamento de propriedade intelectual (CAD)      | Legal/competitivo                | baixa | Bucket privado + URL assinada TTL curto      |
+| IA aceitar encaixe automaticamente              | Custo/risco não auditado         | média | Guardrail §10 — IA nunca aceita, só sugere   |
 
 ## 17. Changelog
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Software House IA | criação inicial do playbook |
+| Data       | Versão | Autor             | Mudança                     |
+| ---------- | ------ | ----------------- | --------------------------- |
+| 2026-07-07 | 0.1    | Software House IA | criação inicial do playbook |

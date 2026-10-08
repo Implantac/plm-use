@@ -21,7 +21,14 @@ function parseSpec(reply: string): SketchSpec | null {
     const raw = JSON.parse(match[0]) as Partial<SketchSpec>;
     return {
       measures: Array.isArray(raw.measures)
-        ? raw.measures.filter((m) => m && m.point).map((m) => ({ point: String(m.point), value: String(m.value ?? ""), tolerance: m.tolerance ? String(m.tolerance) : undefined, how: m.how ? String(m.how) : undefined }))
+        ? raw.measures
+            .filter((m) => m && m.point)
+            .map((m) => ({
+              point: String(m.point),
+              value: String(m.value ?? ""),
+              tolerance: m.tolerance ? String(m.tolerance) : undefined,
+              how: m.how ? String(m.how) : undefined,
+            }))
         : [],
       details: Array.isArray(raw.details) ? raw.details.map(String) : [],
     };
@@ -30,9 +37,22 @@ function parseSpec(reply: string): SketchSpec | null {
   }
 }
 
-export function TechSketchPanel({ productName, summary, modelId = "", onModelChange }: { productName: string; summary: string; modelId?: string; onModelChange?: (id: string) => void }) {
+export function TechSketchPanel({
+  productName,
+  summary,
+  modelId = "",
+  onModelChange,
+}: {
+  productName: string;
+  summary: string;
+  modelId?: string;
+  onModelChange?: (id: string) => void;
+}) {
   const ask = useServerFn(askAgent);
-  const { data: models = [] } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
+  const { data: models = [] } = useQuery({
+    queryKey: ["official-models"],
+    queryFn: listOfficialModels,
+  });
   const setModelId = (id: string) => onModelChange?.(id);
   const [size, setSize] = useState("M");
   const [busy, setBusy] = useState(false);
@@ -69,14 +89,25 @@ export function TechSketchPanel({ productName, summary, modelId = "", onModelCha
         reference ?? undefined,
       ).then(() => setIsFinal(true));
       const [specResult] = await Promise.allSettled([specPromise, imagePromise]).then((r) => {
-        if (r[1].status === "rejected") toast.error(r[1].reason instanceof Error ? r[1].reason.message : "Falha ao gerar o desenho.");
+        if (r[1].status === "rejected")
+          toast.error(
+            r[1].reason instanceof Error ? r[1].reason.message : "Falha ao gerar o desenho.",
+          );
         return [r[0]];
       });
       if (specResult.status === "fulfilled") {
         if (specResult.value.ok) {
           const parsed = parseSpec(specResult.value.reply);
           // Com modelo oficial, a tabela exibida é SEMPRE a real; a IA contribui só com detalhes.
-          if (official) setSpec({ measures: official.medidas, details: parsed?.details.length ? parsed.details : (official.detalhes ? [official.detalhes] : []) });
+          if (official)
+            setSpec({
+              measures: official.medidas,
+              details: parsed?.details.length
+                ? parsed.details
+                : official.detalhes
+                  ? [official.detalhes]
+                  : [],
+            });
           else if (parsed) setSpec(parsed);
           else toast.warning("As medidas vieram em formato inesperado.");
         } else toast.error(specResult.value.error);
@@ -100,26 +131,49 @@ export function TechSketchPanel({ productName, summary, modelId = "", onModelCha
             className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground"
           >
             <option value="">Sem modelo oficial (ABNT)</option>
-            {models.map((m) => <option key={m.id} value={m.id}>{m.nome}</option>)}
+            {models.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nome}
+              </option>
+            ))}
           </select>
-          <Link to="/official-models" className="text-xs text-primary hover:underline">Gerenciar</Link>
-          <Input value={official ? official.tamanho_base : size} onChange={(e) => setSize(e.target.value)} disabled={!!official} aria-label="Tamanho base" className="h-8 w-16 text-xs" />
+          <Link to="/official-models" className="text-xs text-primary hover:underline">
+            Gerenciar
+          </Link>
+          <Input
+            value={official ? official.tamanho_base : size}
+            onChange={(e) => setSize(e.target.value)}
+            disabled={!!official}
+            aria-label="Tamanho base"
+            className="h-8 w-16 text-xs"
+          />
           <Button type="button" size="sm" onClick={() => void generate()} disabled={busy}>
-            {busy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <PencilRuler className="mr-2 h-4 w-4" />}
+            {busy ? (
+              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <PencilRuler className="mr-2 h-4 w-4" />
+            )}
             Gerar esboço
           </Button>
         </div>
       </div>
 
       {busy && !image && (
-        <div className="flex h-56 items-center justify-center gap-2 rounded-md border border-dashed border-white/15 text-sm text-muted-foreground" role="status">
+        <div
+          className="flex h-56 items-center justify-center gap-2 rounded-md border border-dashed border-white/15 text-sm text-muted-foreground"
+          role="status"
+        >
           <LoaderCircle className="h-5 w-5 animate-spin text-primary" /> Desenhando frente e costas…
         </div>
       )}
 
       {image && (
         <div className="overflow-hidden rounded-md border border-white/10 bg-background">
-          <img src={image} alt={`Desenho técnico de ${productName}`} className={`h-72 w-full object-contain transition-[filter] duration-500 ${isFinal ? "" : "blur-md"}`} />
+          <img
+            src={image}
+            alt={`Desenho técnico de ${productName}`}
+            className={`h-72 w-full object-contain transition-[filter] duration-500 ${isFinal ? "" : "blur-md"}`}
+          />
           {isFinal && (
             <div className="flex justify-end p-2 text-xs">
               <ImageExportMenu src={image} baseName={`desenho-tecnico-${Date.now()}`} />
@@ -131,11 +185,17 @@ export function TechSketchPanel({ productName, summary, modelId = "", onModelCha
       {spec && (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <table className="w-full text-xs">
-            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Medidas da peça pronta · tam. {shownSize} · {official ? `tabela oficial: ${official.nome}` : "base ABNT"}</caption>
+            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+              Medidas da peça pronta · tam. {shownSize} ·{" "}
+              {official ? `tabela oficial: ${official.nome}` : "base ABNT"}
+            </caption>
             <tbody>
               {spec.measures.map((m) => (
                 <tr key={m.point} className="border-b border-white/5">
-                  <td className="py-1 text-muted-foreground" title={m.how}>{m.point}{m.how && <span className="block text-[10px] opacity-70">{m.how}</span>}</td>
+                  <td className="py-1 text-muted-foreground" title={m.how}>
+                    {m.point}
+                    {m.how && <span className="block text-[10px] opacity-70">{m.how}</span>}
+                  </td>
                   <td className="py-1 text-right font-medium text-foreground">{m.value}</td>
                   <td className="py-1 pl-2 text-right text-muted-foreground">{m.tolerance}</td>
                 </tr>
@@ -143,16 +203,21 @@ export function TechSketchPanel({ productName, summary, modelId = "", onModelCha
             </tbody>
           </table>
           <div>
-            <p className="mb-1 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">Detalhes construtivos</p>
+            <p className="mb-1 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+              Detalhes construtivos
+            </p>
             <ul className="list-disc space-y-1 pl-4 text-xs text-foreground">
-              {spec.details.map((d) => <li key={d}>{d}</li>)}
+              {spec.details.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
             </ul>
           </div>
         </div>
       )}
 
       <p className="mt-3 text-[11px] text-muted-foreground">
-        Esboço e medidas são sugestões da IA para iniciar a modelagem — valide com a tabela de medidas oficial antes da ficha técnica.
+        Esboço e medidas são sugestões da IA para iniciar a modelagem — valide com a tabela de
+        medidas oficial antes da ficha técnica.
       </p>
     </div>
   );

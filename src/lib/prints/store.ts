@@ -234,7 +234,12 @@ export function addVersion(printId: string, v: PrintVersion) {
   if (!p) return;
   prints = prints.map((x) =>
     x.id === printId
-      ? { ...x, versions: [v, ...x.versions], cover: v.image, updatedAt: new Date().toISOString().slice(0, 10) }
+      ? {
+          ...x,
+          versions: [v, ...x.versions],
+          cover: v.image,
+          updatedAt: new Date().toISOString().slice(0, 10),
+        }
       : x,
   );
   listeners.forEach((l) => l());

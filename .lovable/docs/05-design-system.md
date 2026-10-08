@@ -37,40 +37,40 @@ Formato canônico: HSL (compatível com o `hsl(var(--x))` do Tailwind v4 configu
 
 ### 3.1 Neutros (base do dark)
 
-| Token          | HSL              | Uso                                    |
-|----------------|------------------|----------------------------------------|
-| `--ink-0`      | `0 0% 100%`      | Texto máximo contraste                 |
-| `--ink-50`     | `220 15% 96%`    | Texto principal (light mode)           |
-| `--ink-200`    | `220 12% 82%`    | Texto secundário                       |
-| `--ink-400`    | `220 10% 62%`    | Texto muted                            |
-| `--ink-600`    | `220 12% 40%`    | Borders sutis (light)                  |
-| `--ink-800`    | `222 18% 16%`    | Superfície elevada (dark)              |
-| `--ink-900`    | `222 22% 10%`    | Superfície (dark)                      |
-| `--ink-950`    | `222 30% 6%`     | Background base (dark)                 |
-| `--ink-1000`   | `222 40% 3%`     | Background profundo (dark)             |
+| Token        | HSL           | Uso                          |
+| ------------ | ------------- | ---------------------------- |
+| `--ink-0`    | `0 0% 100%`   | Texto máximo contraste       |
+| `--ink-50`   | `220 15% 96%` | Texto principal (light mode) |
+| `--ink-200`  | `220 12% 82%` | Texto secundário             |
+| `--ink-400`  | `220 10% 62%` | Texto muted                  |
+| `--ink-600`  | `220 12% 40%` | Borders sutis (light)        |
+| `--ink-800`  | `222 18% 16%` | Superfície elevada (dark)    |
+| `--ink-900`  | `222 22% 10%` | Superfície (dark)            |
+| `--ink-950`  | `222 30% 6%`  | Background base (dark)       |
+| `--ink-1000` | `222 40% 3%`  | Background profundo (dark)   |
 
 ### 3.2 Primary (marca — único)
 
 Azul-elétrico industrial. Uma cor, cinco pesos.
 
-| Token          | HSL              |
-|----------------|------------------|
-| `--brand-50`   | `210 100% 96%`   |
-| `--brand-200`  | `210 100% 84%`   |
-| `--brand-500`  | `210 100% 56%`   |  ← primary
-| `--brand-700`  | `210 100% 42%`   |
-| `--brand-900`  | `210 100% 22%`   |
+| Token         | HSL            |
+| ------------- | -------------- |
+| `--brand-50`  | `210 100% 96%` |
+| `--brand-200` | `210 100% 84%` |
+| `--brand-500` | `210 100% 56%` | ← primary |
+| `--brand-700` | `210 100% 42%` |
+| `--brand-900` | `210 100% 22%` |
 
 ### 3.3 Cores de status (semântica de workflow — §7)
 
-| Papel     | Base          | HSL 500          | HSL 700          |
-|-----------|---------------|------------------|------------------|
-| Info      | Ciano         | `195 90% 50%`    | `195 90% 36%`    |
-| Success   | Verde         | `152 68% 44%`    | `152 68% 30%`    |
-| Warning   | Âmbar         | `38 92% 52%`     | `38 92% 40%`     |
-| Danger    | Vermelho      | `358 78% 56%`    | `358 78% 42%`    |
-| Neutral   | Cinza-azulado | `220 12% 50%`    | `220 12% 36%`    |
-| Purple    | Roxo (IA)     | `268 76% 62%`    | `268 76% 48%`    |
+| Papel   | Base          | HSL 500       | HSL 700       |
+| ------- | ------------- | ------------- | ------------- |
+| Info    | Ciano         | `195 90% 50%` | `195 90% 36%` |
+| Success | Verde         | `152 68% 44%` | `152 68% 30%` |
+| Warning | Âmbar         | `38 92% 52%`  | `38 92% 40%`  |
+| Danger  | Vermelho      | `358 78% 56%` | `358 78% 42%` |
+| Neutral | Cinza-azulado | `220 12% 50%` | `220 12% 36%` |
+| Purple  | Roxo (IA)     | `268 76% 62%` | `268 76% 48%` |
 
 Purple é reservado para superfícies do Copiloto/IA — separar visualmente da operação.
 
@@ -82,58 +82,58 @@ Definidos em `src/styles.css`. Nomes iguais aos que a UI shadcn já usa, para m�
 
 ### 4.1 Superfície e texto
 
-| Semântico              | Dark (default)         | Light                  | Uso                                       |
-|------------------------|------------------------|------------------------|-------------------------------------------|
-| `--background`         | `--ink-950`            | `0 0% 100%`            | Fundo da app                              |
-| `--foreground`         | `--ink-50`             | `--ink-900`            | Texto padrão                              |
-| `--surface`            | `--ink-900`            | `220 20% 98%`          | Cards, painéis                            |
-| `--surface-elevated`   | `--ink-800`            | `0 0% 100%`            | Drawer, dialog, popover                   |
-| `--surface-sunken`     | `--ink-1000`           | `220 20% 96%`          | Fundo de listas densas, code             |
-| `--muted`              | `222 18% 14%`          | `220 20% 94%`          | Chip fundo, skeleton                      |
-| `--muted-foreground`   | `--ink-400`            | `--ink-600`            | Legendas, hints                           |
-| `--border`             | `222 20% 18%`          | `220 15% 88%`          | Divisores discretos                       |
-| `--border-strong`      | `222 20% 28%`          | `220 15% 76%`          | Divisores enfáticos, tabelas              |
-| `--ring`               | `--brand-500`          | `--brand-500`          | Foco de teclado                           |
+| Semântico            | Dark (default) | Light         | Uso                          |
+| -------------------- | -------------- | ------------- | ---------------------------- |
+| `--background`       | `--ink-950`    | `0 0% 100%`   | Fundo da app                 |
+| `--foreground`       | `--ink-50`     | `--ink-900`   | Texto padrão                 |
+| `--surface`          | `--ink-900`    | `220 20% 98%` | Cards, painéis               |
+| `--surface-elevated` | `--ink-800`    | `0 0% 100%`   | Drawer, dialog, popover      |
+| `--surface-sunken`   | `--ink-1000`   | `220 20% 96%` | Fundo de listas densas, code |
+| `--muted`            | `222 18% 14%`  | `220 20% 94%` | Chip fundo, skeleton         |
+| `--muted-foreground` | `--ink-400`    | `--ink-600`   | Legendas, hints              |
+| `--border`           | `222 20% 18%`  | `220 15% 88%` | Divisores discretos          |
+| `--border-strong`    | `222 20% 28%`  | `220 15% 76%` | Divisores enfáticos, tabelas |
+| `--ring`             | `--brand-500`  | `--brand-500` | Foco de teclado              |
 
 ### 4.2 Interativos
 
-| Semântico             | Valor                                        |
-|-----------------------|----------------------------------------------|
-| `--primary`           | `--brand-500`                                |
-| `--primary-foreground`| `0 0% 100%`                                  |
-| `--secondary`         | `--surface-elevated`                         |
-| `--secondary-foreground` | `--foreground`                            |
-| `--accent`            | `--muted`                                    |
-| `--accent-foreground` | `--foreground`                               |
-| `--destructive`       | `--status-danger`                            |
-| `--destructive-foreground` | `0 0% 100%`                             |
+| Semântico                  | Valor                |
+| -------------------------- | -------------------- |
+| `--primary`                | `--brand-500`        |
+| `--primary-foreground`     | `0 0% 100%`          |
+| `--secondary`              | `--surface-elevated` |
+| `--secondary-foreground`   | `--foreground`       |
+| `--accent`                 | `--muted`            |
+| `--accent-foreground`      | `--foreground`       |
+| `--destructive`            | `--status-danger`    |
+| `--destructive-foreground` | `0 0% 100%`          |
 
 ### 4.3 Status (mapeamento único — usado em Badge, Kanban, Timeline)
 
-| Semântico              | Valor           | Aparece em                              |
-|------------------------|-----------------|-----------------------------------------|
-| `--status-draft`       | `--ink-400`     | Rascunho, Ideia                         |
-| `--status-progress`    | `--status-warning-500` | Em execução, Em progresso        |
-| `--status-review`      | `--status-info-500`    | Em revisão, Aguardando aprovação |
-| `--status-approved`    | `--status-success-500` | Aprovado, Concluído, Carimbado   |
-| `--status-rejected`    | `--status-danger-500`  | Reprovado, Cancelado             |
-| `--status-blocked`     | `--status-danger-700`  | Bloqueado, Atrasado (pulsante)   |
-| `--status-archived`    | `--ink-600`     | Arquivado                              |
+| Semântico           | Valor                  | Aparece em                       |
+| ------------------- | ---------------------- | -------------------------------- |
+| `--status-draft`    | `--ink-400`            | Rascunho, Ideia                  |
+| `--status-progress` | `--status-warning-500` | Em execução, Em progresso        |
+| `--status-review`   | `--status-info-500`    | Em revisão, Aguardando aprovação |
+| `--status-approved` | `--status-success-500` | Aprovado, Concluído, Carimbado   |
+| `--status-rejected` | `--status-danger-500`  | Reprovado, Cancelado             |
+| `--status-blocked`  | `--status-danger-700`  | Bloqueado, Atrasado (pulsante)   |
+| `--status-archived` | `--ink-600`            | Arquivado                        |
 
 Cada semântico de status tem também `-foreground` (texto sobre) e `-surface` (fundo suave a 12% de alpha para badges).
 
 ### 4.4 Entidades (cores para diferenciar tipos em listas, feed, timeline)
 
-| Semântico               | Base            | Tipo                                    |
-|-------------------------|-----------------|-----------------------------------------|
-| `--entity-reference`    | brand           | Referência                              |
-| `--entity-tech-sheet`   | purple          | Ficha Técnica                           |
-| `--entity-piloto`       | info            | Piloto                                  |
-| `--entity-lote`         | warning         | Lote / OP                               |
-| `--entity-capa`         | danger          | CAPA / Qualidade                        |
-| `--entity-faccao`       | success         | Facção                                  |
-| `--entity-collection`   | neutral         | Coleção                                 |
-| `--entity-ai`           | purple          | Copiloto                                |
+| Semântico             | Base    | Tipo             |
+| --------------------- | ------- | ---------------- |
+| `--entity-reference`  | brand   | Referência       |
+| `--entity-tech-sheet` | purple  | Ficha Técnica    |
+| `--entity-piloto`     | info    | Piloto           |
+| `--entity-lote`       | warning | Lote / OP        |
+| `--entity-capa`       | danger  | CAPA / Qualidade |
+| `--entity-faccao`     | success | Facção           |
+| `--entity-collection` | neutral | Coleção          |
+| `--entity-ai`         | purple  | Copiloto         |
 
 Uso: apenas para ícone e barra lateral do card/linha. **Não pinta o card inteiro.**
 
@@ -143,26 +143,26 @@ Uso: apenas para ícone e barra lateral do card/linha. **Não pinta o card intei
 
 ### 5.1 Famílias
 
-| Papel          | Fonte                                | Fallback                    |
-|----------------|--------------------------------------|-----------------------------|
-| Sans (UI)      | **Inter Variable**                   | `system-ui, sans-serif`     |
-| Display        | **Inter Tight** (weight 600–700)     | Inter                       |
-| Mono (códigos, SKU, hash) | **JetBrains Mono**        | `ui-monospace, monospace`   |
+| Papel                     | Fonte                            | Fallback                  |
+| ------------------------- | -------------------------------- | ------------------------- |
+| Sans (UI)                 | **Inter Variable**               | `system-ui, sans-serif`   |
+| Display                   | **Inter Tight** (weight 600–700) | Inter                     |
+| Mono (códigos, SKU, hash) | **JetBrains Mono**               | `ui-monospace, monospace` |
 
 Carregadas via `<link>` no `src/routes/__root.tsx` (Tailwind v4 Lightning CSS não resolve `@import` remoto — regra do template).
 
 ### 5.2 Escala (compacta, industrial)
 
-| Token          | Tamanho   | Line-height | Uso                                    |
-|----------------|-----------|-------------|----------------------------------------|
-| `text-2xs`     | 10px      | 14px        | Uppercase labels, kbd, badges muito pequenos |
-| `text-xs`      | 11px      | 16px        | Corpo denso (tabelas, kanban, drawer)  |
-| `text-sm`      | 13px      | 18px        | Corpo padrão                           |
-| `text-base`    | 15px      | 22px        | Formulários, leitura                   |
-| `text-lg`      | 17px      | 24px        | Subtítulos                             |
-| `text-xl`      | 20px      | 28px        | Título de seção                        |
-| `text-2xl`     | 24px      | 32px        | Título de página                       |
-| `text-3xl`     | 30px      | 38px        | Hero, dashboards                       |
+| Token       | Tamanho | Line-height | Uso                                          |
+| ----------- | ------- | ----------- | -------------------------------------------- |
+| `text-2xs`  | 10px    | 14px        | Uppercase labels, kbd, badges muito pequenos |
+| `text-xs`   | 11px    | 16px        | Corpo denso (tabelas, kanban, drawer)        |
+| `text-sm`   | 13px    | 18px        | Corpo padrão                                 |
+| `text-base` | 15px    | 22px        | Formulários, leitura                         |
+| `text-lg`   | 17px    | 24px        | Subtítulos                                   |
+| `text-xl`   | 20px    | 28px        | Título de seção                              |
+| `text-2xl`  | 24px    | 32px        | Título de página                             |
+| `text-3xl`  | 30px    | 38px        | Hero, dashboards                             |
 
 Weights: 400 (body), 500 (ênfase), 600 (subtítulo), 700 (título). Nunca 300 (ilegível em telas pequenas).
 
@@ -183,11 +183,11 @@ Base 4px. Escala Tailwind default (`0, 0.5, 1, 2, 3, 4, 6, 8, 12, 16, 20, 24`).
 
 Três densidades globais, comutáveis pelo usuário em Preferências (persistido em `profiles.ui_density`).
 
-| Densidade   | Altura de linha em tabela | Padding de card | Uso primário                |
-|-------------|---------------------------|-----------------|-----------------------------|
-| `compact`   | 28px                      | 8px             | PCP torre, Kanban, chão fab.|
-| `default`   | 36px (padrão)             | 12px            | Uso geral                   |
-| `cozy`      | 44px                      | 16px            | Editor, formulários longos  |
+| Densidade | Altura de linha em tabela | Padding de card | Uso primário                 |
+| --------- | ------------------------- | --------------- | ---------------------------- |
+| `compact` | 28px                      | 8px             | PCP torre, Kanban, chão fab. |
+| `default` | 36px (padrão)             | 12px            | Uso geral                    |
+| `cozy`    | 44px                      | 16px            | Editor, formulários longos   |
 
 Implementado com atributo `data-density` no `<html>` + variáveis `--row-h`, `--card-p`.
 
@@ -204,17 +204,17 @@ Implementado com atributo `data-density` no `<html>` + variáveis `--row-h`, `--
 
 Cada estado do Doc 03 mapeia para um único par (cor semântica, ícone). Sem exceção.
 
-| Estado (Doc 03)          | Cor `--status-*` | Ícone (lucide)     |
-|--------------------------|------------------|--------------------|
-| IDEIA, RASCUNHO          | draft            | `Circle`           |
-| CROQUI, MODELAGEM        | progress         | `PenTool`          |
-| EM_REVISAO               | review           | `Eye`              |
-| EM_EXECUCAO, EM_PRODUCAO | progress         | `Loader2` (spin)   |
-| PILOTO, AJUSTE           | info             | `Beaker`           |
-| APROVADO, CARIMBADA, CONCLUIDA | approved   | `CheckCircle2`     |
-| REPROVADO, CANCELADA     | rejected         | `XCircle`          |
-| ATRASADO, BLOQUEADO      | blocked          | `AlertOctagon` (pulse) |
-| ARQUIVADA                | archived         | `Archive`          |
+| Estado (Doc 03)                | Cor `--status-*` | Ícone (lucide)         |
+| ------------------------------ | ---------------- | ---------------------- |
+| IDEIA, RASCUNHO                | draft            | `Circle`               |
+| CROQUI, MODELAGEM              | progress         | `PenTool`              |
+| EM_REVISAO                     | review           | `Eye`                  |
+| EM_EXECUCAO, EM_PRODUCAO       | progress         | `Loader2` (spin)       |
+| PILOTO, AJUSTE                 | info             | `Beaker`               |
+| APROVADO, CARIMBADA, CONCLUIDA | approved         | `CheckCircle2`         |
+| REPROVADO, CANCELADA           | rejected         | `XCircle`              |
+| ATRASADO, BLOQUEADO            | blocked          | `AlertOctagon` (pulse) |
+| ARQUIVADA                      | archived         | `Archive`              |
 
 Badge padrão: `bg-status-{x}-surface text-status-{x} border-status-{x}/30`. Nunca outros esquemas.
 
@@ -224,22 +224,22 @@ Badge padrão: `bg-status-{x}-surface text-status-{x} border-status-{x}/30`. Nun
 
 Elevação parcimoniosa. Dark mode não usa `shadow-xl` — usa **linhas** e **superfícies mais claras**.
 
-| Token           | Dark                                             | Light                              |
-|-----------------|--------------------------------------------------|------------------------------------|
-| `--elev-0`      | superfície base, sem sombra                      | `0 1px 0 rgba(0,0,0,0.03)`         |
-| `--elev-1`      | `inset 0 0 0 1px hsl(var(--border))`             | `0 1px 2px rgba(16,24,40,.06)`     |
-| `--elev-2`      | idem elev-1 + `--surface-elevated`               | `0 4px 8px -2px rgba(16,24,40,.08)`|
+| Token                        | Dark                                        | Light                                 |
+| ---------------------------- | ------------------------------------------- | ------------------------------------- |
+| `--elev-0`                   | superfície base, sem sombra                 | `0 1px 0 rgba(0,0,0,0.03)`            |
+| `--elev-1`                   | `inset 0 0 0 1px hsl(var(--border))`        | `0 1px 2px rgba(16,24,40,.06)`        |
+| `--elev-2`                   | idem elev-1 + `--surface-elevated`          | `0 4px 8px -2px rgba(16,24,40,.08)`   |
 | `--elev-3` (drawer, popover) | elev-1 + `0 24px 48px -12px rgba(0,0,0,.6)` | `0 12px 24px -8px rgba(16,24,40,.14)` |
 
 Raios:
 
-| Token         | Valor  | Uso                                    |
-|---------------|--------|----------------------------------------|
-| `--radius-sm` | 4px    | badge, chip, kbd                       |
-| `--radius`    | 8px    | button, input, card                    |
-| `--radius-md` | 10px   | drawer/dialog                          |
-| `--radius-lg` | 14px   | painéis grandes, hero                  |
-| `--radius-pill` | 999px| avatar, tag circular                   |
+| Token           | Valor | Uso                   |
+| --------------- | ----- | --------------------- |
+| `--radius-sm`   | 4px   | badge, chip, kbd      |
+| `--radius`      | 8px   | button, input, card   |
+| `--radius-md`   | 10px  | drawer/dialog         |
+| `--radius-lg`   | 14px  | painéis grandes, hero |
+| `--radius-pill` | 999px | avatar, tag circular  |
 
 ---
 
@@ -247,12 +247,12 @@ Raios:
 
 Framer Motion + CSS. Duração curta, easing consistente.
 
-| Token            | Duração | Easing                                    | Uso                          |
-|------------------|---------|-------------------------------------------|------------------------------|
-| `--motion-fast`  | 120ms   | `cubic-bezier(0.2, 0, 0, 1)`              | hover, focus                 |
-| `--motion-base`  | 200ms   | `cubic-bezier(0.2, 0, 0, 1)`              | drawer, dialog, dropdown     |
-| `--motion-slow`  | 320ms   | `cubic-bezier(0.16, 1, 0.3, 1)` (spring)  | páginas, kanban re-order     |
-| `--motion-pulse` | 1600ms  | `ease-in-out infinite`                    | status "blocked", realtime   |
+| Token            | Duração | Easing                                   | Uso                        |
+| ---------------- | ------- | ---------------------------------------- | -------------------------- |
+| `--motion-fast`  | 120ms   | `cubic-bezier(0.2, 0, 0, 1)`             | hover, focus               |
+| `--motion-base`  | 200ms   | `cubic-bezier(0.2, 0, 0, 1)`             | drawer, dialog, dropdown   |
+| `--motion-slow`  | 320ms   | `cubic-bezier(0.16, 1, 0.3, 1)` (spring) | páginas, kanban re-order   |
+| `--motion-pulse` | 1600ms  | `ease-in-out infinite`                   | status "blocked", realtime |
 
 Regra: `@media (prefers-reduced-motion: reduce)` zera todas as durações não essenciais.
 
@@ -268,23 +268,23 @@ Biblioteca única: **lucide-react**. Tamanhos: `h-3` (12px), `h-3.5` (14px), `h-
 
 Mapa oficial módulo → ícone:
 
-| Módulo          | Ícone            |
-|-----------------|------------------|
-| Meu Dia         | `Sun`            |
-| Coleções        | `Layers`         |
-| Desenvolvimento | `Sparkles`       |
-| Engenharia      | `Cog`            |
-| Piloto          | `Beaker`         |
-| PCP             | `Factory`        |
-| APS/MRP         | `CalendarRange`  |
-| Facções         | `Building2`      |
-| Qualidade/CAPA  | `ShieldAlert`    |
-| Custos          | `DollarSign`     |
-| BI              | `BarChart3`      |
-| Copiloto        | `Bot`            |
-| Admin           | `Settings`       |
-| Feed            | `Activity`       |
-| Alertas         | `Bell`           |
+| Módulo          | Ícone           |
+| --------------- | --------------- |
+| Meu Dia         | `Sun`           |
+| Coleções        | `Layers`        |
+| Desenvolvimento | `Sparkles`      |
+| Engenharia      | `Cog`           |
+| Piloto          | `Beaker`        |
+| PCP             | `Factory`       |
+| APS/MRP         | `CalendarRange` |
+| Facções         | `Building2`     |
+| Qualidade/CAPA  | `ShieldAlert`   |
+| Custos          | `DollarSign`    |
+| BI              | `BarChart3`     |
+| Copiloto        | `Bot`           |
+| Admin           | `Settings`      |
+| Feed            | `Activity`      |
+| Alertas         | `Bell`          |
 
 ---
 
@@ -308,7 +308,7 @@ Qualquer variação exige novo token ou nova variant no `components/ui/*` — nu
 ## 12. Dark / Light
 
 - Dark é default (`data-theme="dark"` no `<html>` na inicialização).
-- Light gerado *invertendo apenas semânticos*. Primitivos não mudam.
+- Light gerado _invertendo apenas semânticos_. Primitivos não mudam.
 - Comutador em Perfil salva `profiles.theme` (`dark|light|system`).
 - Nunca condicional de tema em componente (`if (theme === 'dark')`) — apenas semânticos.
 
@@ -316,13 +316,13 @@ Qualquer variação exige novo token ou nova variant no `components/ui/*` — nu
 
 ## 13. Estados de dados na UI
 
-| Estado          | Componente                                     |
-|-----------------|------------------------------------------------|
-| Loading (lista) | `<Skeleton />` com mesma altura do item final  |
-| Loading (inline)| `Loader2` (12–14px, spin) + label              |
-| Empty           | Ícone (24px) + título + subtítulo + CTA        |
-| Error           | Card `border-destructive/40 bg-destructive/5`  |
-| Realtime update | Chip discreto "Atualizado agora" no header     |
+| Estado           | Componente                                    |
+| ---------------- | --------------------------------------------- |
+| Loading (lista)  | `<Skeleton />` com mesma altura do item final |
+| Loading (inline) | `Loader2` (12–14px, spin) + label             |
+| Empty            | Ícone (24px) + título + subtítulo + CTA       |
+| Error            | Card `border-destructive/40 bg-destructive/5` |
+| Realtime update  | Chip discreto "Atualizado agora" no header    |
 
 Nunca "spinner central em tela inteira".
 
@@ -345,17 +345,17 @@ O sistema de tokens já suporta troca de marca: um cliente pode redefinir `--bra
 
 ## 16. Auditoria hoje vs alvo
 
-| Item                          | Hoje                                              | Alvo                                          |
-|-------------------------------|---------------------------------------------------|-----------------------------------------------|
-| `src/styles.css`              | Tema custom parcial, tokens misturados            | Reescrever com 3 camadas §2 e semânticos §4   |
-| Uso de `text-white`/`bg-black`| Presente em vários componentes                    | Substituir por semânticos (`text-foreground`) |
-| Fontes                        | Sistema, sem carregamento explícito                | Inter Variable + JetBrains Mono via `<link>`  |
-| Escala tipográfica            | Mistura `text-[10px]`, `text-[11px]` inline       | Trocar por tokens `text-2xs`/`text-xs`        |
-| Densidade                     | Fixa, apertada em drawer                          | 3 densidades comutáveis (`data-density`)      |
-| Cores de status               | Cada tela define                                  | Tokens únicos `--status-*` e Badge padrão     |
-| Elevação                      | `shadow-lg` em vários lugares                     | `--elev-*` tokenizados, uso raro no dark      |
-| Ícones                        | Lucide, tamanhos inconsistentes                   | Padrão `h-3.5`/`h-4`, stroke 1.5              |
-| Dark/Light                    | Só dark, hardcoded                                 | Semânticos invertíveis, toggle em Perfil      |
+| Item                           | Hoje                                        | Alvo                                          |
+| ------------------------------ | ------------------------------------------- | --------------------------------------------- |
+| `src/styles.css`               | Tema custom parcial, tokens misturados      | Reescrever com 3 camadas §2 e semânticos §4   |
+| Uso de `text-white`/`bg-black` | Presente em vários componentes              | Substituir por semânticos (`text-foreground`) |
+| Fontes                         | Sistema, sem carregamento explícito         | Inter Variable + JetBrains Mono via `<link>`  |
+| Escala tipográfica             | Mistura `text-[10px]`, `text-[11px]` inline | Trocar por tokens `text-2xs`/`text-xs`        |
+| Densidade                      | Fixa, apertada em drawer                    | 3 densidades comutáveis (`data-density`)      |
+| Cores de status                | Cada tela define                            | Tokens únicos `--status-*` e Badge padrão     |
+| Elevação                       | `shadow-lg` em vários lugares               | `--elev-*` tokenizados, uso raro no dark      |
+| Ícones                         | Lucide, tamanhos inconsistentes             | Padrão `h-3.5`/`h-4`, stroke 1.5              |
+| Dark/Light                     | Só dark, hardcoded                          | Semânticos invertíveis, toggle em Perfil      |
 
 A migração é feita na **Sprint 1 do Doc 24 (Fundação Visual)** — primeira coisa que entra em código depois dos documentos.
 
@@ -376,6 +376,7 @@ A migração é feita na **Sprint 1 do Doc 24 (Fundação Visual)** — primeira
 ## 18. Fronteiras deste documento
 
 Este documento NÃO define:
+
 - Componentes concretos (Button, Badge, Drawer) e suas props → **Doc 07 (Component Library)**.
 - Estrutura de pastas e arquivos de código → **Doc 06 (Arquitetura Frontend)**.
 - Copy final de tela → **Doc 08 (Content Guide)**.

@@ -53,8 +53,7 @@ beforeEach(() => {
     }
     return new Promise((resolve) => {
       pending.set(path, {
-        resolve: (url: string) =>
-          resolve({ data: { signedUrl: url }, error: null } as never),
+        resolve: (url: string) => resolve({ data: { signedUrl: url }, error: null } as never),
         count: (existing?.count ?? 0) + 1,
       });
     });
@@ -107,9 +106,7 @@ describe("CommentsPanel E2E — dedup concorrente com pressão de LRU", () => {
 
     // 3) Deve haver EXATAMENTE 1 chamada a createSignedUrl para HOT_PATH,
     //    apesar de N mounts simultâneos — dedup via `inflight` do cache.
-    const hotCalls = createSignedUrl.mock.calls.filter(
-      ([p]) => p === HOT_PATH,
-    );
+    const hotCalls = createSignedUrl.mock.calls.filter(([p]) => p === HOT_PATH);
     expect(hotCalls).toHaveLength(1);
     expect(pending.get(HOT_PATH)?.count).toBe(1);
 
@@ -151,9 +148,7 @@ describe("CommentsPanel E2E — dedup concorrente com pressão de LRU", () => {
       />,
     );
     await flush();
-    expect(
-      createSignedUrl.mock.calls.filter(([p]) => p === COLD_PATH),
-    ).toHaveLength(1);
+    expect(createSignedUrl.mock.calls.filter(([p]) => p === COLD_PATH)).toHaveLength(1);
     resolveAll(COLD_PATH);
     await flush();
     expect(screen.getByAltText("cold.png").getAttribute("src")).toMatch(

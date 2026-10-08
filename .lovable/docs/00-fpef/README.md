@@ -14,22 +14,22 @@
 
 ## Os 14 Volumes
 
-| # | Volume | Estado | Arquivo |
-|---|--------|--------|---------|
-| 1 | Product Vision | 🟡 parcial | [01-product-vision.md](./01-product-vision.md) |
-| 2 | Conhecimento da Moda | 🟡 parcial | [02-fashion-knowledge.md](./02-fashion-knowledge.md) |
-| 3 | Digital Thread | 🟠 núcleo criado, cadeia incompleta | [03-digital-thread.md](./03-digital-thread.md) |
-| 4 | UX Bible | 🟡 drawer existe, uso parcial | [04-ux-bible.md](./04-ux-bible.md) |
-| 5 | Domain Model | 🟠 entidades soltas, sem catálogo | [05-domain-model.md](./05-domain-model.md) |
-| 6 | Business Rules | 🟡 escritas em docs, não executáveis | [06-business-rules.md](./06-business-rules.md) |
-| 7 | Event Engine | 🟢 funcional | [07-event-engine.md](./07-event-engine.md) |
-| 8 | Workflow Engine | 🟠 só References | [08-workflow-engine.md](./08-workflow-engine.md) |
-| 9 | ERP Connector | 🟢 mock funcional, sem HTTP | [09-erp-connector.md](./09-erp-connector.md) |
-| 10 | BI | 🟡 telas soltas, sem catálogo de KPIs | [10-bi.md](./10-bi.md) |
-| 11 | IA Industrial | 🟠 3 agentes, sem contexto de eventos | [11-ai-industrial.md](./11-ai-industrial.md) |
-| 12 | Quality Assurance | 🔴 checklist não formalizado | [12-quality-assurance.md](./12-quality-assurance.md) |
-| 13 | Software House (Design Review) | 🟢 constituição escrita | [13-software-house.md](./13-software-house.md) |
-| 14 | Competitive Intelligence | 🟢 protocolo escrito | [14-competitive-intelligence.md](./14-competitive-intelligence.md) |
+| #   | Volume                         | Estado                                | Arquivo                                                            |
+| --- | ------------------------------ | ------------------------------------- | ------------------------------------------------------------------ |
+| 1   | Product Vision                 | 🟡 parcial                            | [01-product-vision.md](./01-product-vision.md)                     |
+| 2   | Conhecimento da Moda           | 🟡 parcial                            | [02-fashion-knowledge.md](./02-fashion-knowledge.md)               |
+| 3   | Digital Thread                 | 🟠 núcleo criado, cadeia incompleta   | [03-digital-thread.md](./03-digital-thread.md)                     |
+| 4   | UX Bible                       | 🟡 drawer existe, uso parcial         | [04-ux-bible.md](./04-ux-bible.md)                                 |
+| 5   | Domain Model                   | 🟠 entidades soltas, sem catálogo     | [05-domain-model.md](./05-domain-model.md)                         |
+| 6   | Business Rules                 | 🟡 escritas em docs, não executáveis  | [06-business-rules.md](./06-business-rules.md)                     |
+| 7   | Event Engine                   | 🟢 funcional                          | [07-event-engine.md](./07-event-engine.md)                         |
+| 8   | Workflow Engine                | 🟠 só References                      | [08-workflow-engine.md](./08-workflow-engine.md)                   |
+| 9   | ERP Connector                  | 🟢 mock funcional, sem HTTP           | [09-erp-connector.md](./09-erp-connector.md)                       |
+| 10  | BI                             | 🟡 telas soltas, sem catálogo de KPIs | [10-bi.md](./10-bi.md)                                             |
+| 11  | IA Industrial                  | 🟠 3 agentes, sem contexto de eventos | [11-ai-industrial.md](./11-ai-industrial.md)                       |
+| 12  | Quality Assurance              | 🔴 checklist não formalizado          | [12-quality-assurance.md](./12-quality-assurance.md)               |
+| 13  | Software House (Design Review) | 🟢 constituição escrita               | [13-software-house.md](./13-software-house.md)                     |
+| 14  | Competitive Intelligence       | 🟢 protocolo escrito                  | [14-competitive-intelligence.md](./14-competitive-intelligence.md) |
 
 Legenda: 🟢 pronto · 🟡 parcial · 🟠 gap significativo · 🔴 inexistente
 
@@ -43,6 +43,7 @@ independente de tecnologia.
 ## Como usar
 
 **Antes de codar uma tela nova ou módulo:**
+
 1. Leia V1 (visão) e V5 (entidades envolvidas).
 2. Consulte V6 (regras) e V8 (workflow) da entidade em questão.
 3. Aplique V4 (drawer contextual, não nova rota se possível).

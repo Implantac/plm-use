@@ -200,10 +200,7 @@ function AnalyticsPage() {
       ]}
     >
       <div className="flex justify-end gap-4 mb-8">
-        <Button
- variant="outline"
- className="text-[10px] tracking-[0.2em] gap-2"
- >
+        <Button variant="outline" className="text-[10px] tracking-[0.2em] gap-2">
           <Download className="w-4 h-4" /> Exportar Relatórios
         </Button>
       </div>
@@ -558,17 +555,10 @@ function AnalyticsPage() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button
- variant="ghost"
- onClick={() => setIsDialogOpen(false)}
-              className="text-[10px]"
-            >
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
               Cancelar
             </Button>
-            <Button
- onClick={handleSave}
- className="text-[10px]"
- >
+            <Button onClick={handleSave} className="text-[10px]">
               Salvar Indicador
             </Button>
           </DialogFooter>

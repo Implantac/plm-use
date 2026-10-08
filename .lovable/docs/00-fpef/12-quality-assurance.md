@@ -19,6 +19,7 @@ Uma resposta NÃO = tela incompleta. Ponto.
 - [ ] **12. UX** — usa `EntityDrawer` quando contexto permite? (V4)
 
 ## Perguntas guiadas para módulo novo (antes de codar)
+
 1. Descubra como a confecção realmente trabalha essa etapa (V2)
 2. Mapeie regras (V6)
 3. Mapeie exceções (V6)
@@ -28,10 +29,12 @@ Uma resposta NÃO = tela incompleta. Ponto.
 7. **Só então** implemente
 
 ## Gaps
+
 - Este checklist não é enforçado por PR template nem por lint
 - Sem "gate" técnico impedindo merge de tela sem timeline/evento
 
 ## Onde vai ser executado
+
 - PR template: `.github/pull_request_template.md` (não existe ainda — futuro)
 - Comentário obrigatório em `plan--create` para features novas
 - Auditoria manual periódica

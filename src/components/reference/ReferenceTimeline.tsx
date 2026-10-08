@@ -22,9 +22,7 @@ export function ReferenceTimeline({ lifecycle, compact }: Props) {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            Progresso
-          </p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Progresso</p>
           <p className="text-lg font-bold text-primary">{pct}%</p>
         </div>
       </div>
@@ -81,9 +79,7 @@ function StageRow({
   return (
     <li className="flex items-start gap-3">
       <div className="flex flex-col items-center">
-        <span
-          className={`flex h-6 w-6 items-center justify-center rounded-full border ${tone}`}
-        >
+        <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${tone}`}>
           {icon}
         </span>
         {!isLast && <span className="h-full min-h-[18px] w-px bg-white/10" />}

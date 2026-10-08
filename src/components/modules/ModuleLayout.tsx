@@ -56,10 +56,7 @@ export function ModuleLayout({
               />
             </div>
             {onAdd && (
-              <Button
- onClick={onAdd}
- className="text-[10px] tracking-[0.16em] gap-2"
- >
+              <Button onClick={onAdd} className="text-[10px] tracking-[0.16em] gap-2">
                 <Plus className="w-4 h-4" /> Adicionar
               </Button>
             )}
@@ -109,10 +106,10 @@ export function ModuleActionMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
- variant="ghost"
- size="icon"
- className="text-muted-foreground hover:text-primary transition-colors"
- >
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground hover:text-primary transition-colors"
+        >
           <MoreVertical className="w-4 h-4" />
         </Button>
       </DropdownMenuTrigger>

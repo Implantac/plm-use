@@ -1,12 +1,7 @@
 // Drawer completo de CAPA — workflow real com estados, 5 Porquês, causa-raiz,
 // ações imediata/corretiva/preventiva, evidências e timeline imutável.
 import { useEffect, useMemo, useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,27 +34,21 @@ import { Network } from "lucide-react";
 
 const STATUS_STYLES: Record<CapaStatus, string> = {
   Aberta: "bg-sky-500/15 text-sky-300 border-sky-400/30",
-  "Investigação": "bg-violet-500/15 text-violet-300 border-violet-400/30",
-  "Ação": "bg-amber-500/15 text-amber-300 border-amber-400/30",
-  "Verificação": "bg-cyan-500/15 text-cyan-300 border-cyan-400/30",
-  "Concluída": "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
+  Investigação: "bg-violet-500/15 text-violet-300 border-violet-400/30",
+  Ação: "bg-amber-500/15 text-amber-300 border-amber-400/30",
+  Verificação: "bg-cyan-500/15 text-cyan-300 border-cyan-400/30",
+  Concluída: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
   Reprovada: "bg-rose-500/15 text-rose-300 border-rose-400/30",
 };
 
 const SEV_STYLES: Record<CapaSeveridade, string> = {
   Baixa: "bg-white/5 text-white/70 border-white/10",
-  "Média": "bg-sky-500/10 text-sky-300 border-sky-400/25",
+  Média: "bg-sky-500/10 text-sky-300 border-sky-400/25",
   Alta: "bg-amber-500/10 text-amber-300 border-amber-400/25",
-  "Crítica": "bg-rose-500/15 text-rose-300 border-rose-400/40",
+  Crítica: "bg-rose-500/15 text-rose-300 border-rose-400/40",
 };
 
-const STEPS: CapaStatus[] = [
-  "Aberta",
-  "Investigação",
-  "Ação",
-  "Verificação",
-  "Concluída",
-];
+const STEPS: CapaStatus[] = ["Aberta", "Investigação", "Ação", "Verificação", "Concluída"];
 
 interface Props {
   capa: Capa | null;
@@ -77,10 +66,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
   const [local, setLocal] = useState<Capa | null>(capa);
   useEffect(() => setLocal(capa), [capa]);
 
-  const events = useMemo(
-    () => (local ? eventsOf(local.id) : []),
-    [local, eventsOf],
-  );
+  const events = useMemo(() => (local ? eventsOf(local.id) : []), [local, eventsOf]);
 
   const { openEntity } = useEntityDrawer();
 
@@ -145,16 +131,10 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 {local.defeito}
               </SheetTitle>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] ${STATUS_STYLES[local.status]}`}
-                >
+                <Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[local.status]}`}>
                   {local.status}
                 </Badge>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] ${SEV_STYLES[local.severidade]}`}
-                >
+                <Badge variant="outline" className={`text-[10px] ${SEV_STYLES[local.severidade]}`}>
                   {local.severidade}
                 </Badge>
                 <Badge variant="outline" className="text-[10px] border-white/20">
@@ -172,10 +152,10 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             </div>
             <div className="flex items-center gap-1">
               <Button
- variant="ghost"
- size="icon"
- title="Abrir na visão universal"
- onClick={() =>
+                variant="ghost"
+                size="icon"
+                title="Abrir na visão universal"
+                onClick={() =>
                   openEntity({
                     type: "capa",
                     id: local.id,
@@ -188,11 +168,11 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 <Network className="h-4 w-4" />
               </Button>
               <Button
- variant="ghost"
- size="icon"
- onClick={onClose}
- className="text-muted-foreground"
- >
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="text-muted-foreground"
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -217,9 +197,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                     {done ? <CheckCircle2 className="h-3 w-3" /> : <span>{i + 1}</span>}
                     {s}
                   </div>
-                  {i < STEPS.length - 1 && (
-                    <ArrowRight className="h-3 w-3 text-white/20" />
-                  )}
+                  {i < STEPS.length - 1 && <ArrowRight className="h-3 w-3 text-white/20" />}
                 </div>
               );
             })}
@@ -248,9 +226,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             <Field label="Causa-raiz">
               <Textarea
                 value={local.causa_raiz ?? ""}
-                onChange={(e) =>
-                  setLocal({ ...local, causa_raiz: e.target.value })
-                }
+                onChange={(e) => setLocal({ ...local, causa_raiz: e.target.value })}
                 onBlur={() =>
                   local.causa_raiz !== capa?.causa_raiz &&
                   persistPatch({ causa_raiz: local.causa_raiz }, "Causa-raiz atualizada")
@@ -266,21 +242,17 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                     key={i}
                     className="flex items-start gap-2 rounded-md border border-white/10 bg-white/[0.03] p-2 text-[11px]"
                   >
-                    <span className="text-primary font-bold w-5 shrink-0">
-                      {i + 1}.
-                    </span>
+                    <span className="text-primary font-bold w-5 shrink-0">{i + 1}.</span>
                     <span className="flex-1">{p}</span>
                     <Button
- variant="ghost"
- size="icon"
- className="h-6 w-6"
- onClick={() => {
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={() => {
                         removePorque(i);
                         persistPatch(
                           {
-                            cinco_porques: local.cinco_porques.filter(
-                              (_, x) => x !== i,
-                            ),
+                            cinco_porques: local.cinco_porques.filter((_, x) => x !== i),
                           },
                           "Porquê removido",
                         );
@@ -300,31 +272,19 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
-                          const arr = [
-                            ...local.cinco_porques,
-                            porqueDraft.trim(),
-                          ].filter(Boolean);
+                          const arr = [...local.cinco_porques, porqueDraft.trim()].filter(Boolean);
                           setPorqueDraft("");
-                          persistPatch(
-                            { cinco_porques: arr },
-                            "Porquê adicionado",
-                          );
+                          persistPatch({ cinco_porques: arr }, "Porquê adicionado");
                         }
                       }}
                     />
                     <Button
- size="sm"
- onClick={() => {
+                      size="sm"
+                      onClick={() => {
                         if (!porqueDraft.trim()) return;
-                        const arr = [
-                          ...local.cinco_porques,
-                          porqueDraft.trim(),
-                        ];
+                        const arr = [...local.cinco_porques, porqueDraft.trim()];
                         setPorqueDraft("");
-                        persistPatch(
-                          { cinco_porques: arr },
-                          "Porquê adicionado",
-                        );
+                        persistPatch({ cinco_porques: arr }, "Porquê adicionado");
                       }}
                     >
                       <Plus className="h-3 w-3" />
@@ -350,9 +310,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             <ActionField
               label="Ação preventiva"
               value={local.acao_preventiva}
-              onSave={(v) =>
-                persistPatch({ acao_preventiva: v }, "Ação preventiva")
-              }
+              onSave={(v) => persistPatch({ acao_preventiva: v }, "Ação preventiva")}
             />
             <Field label="Eficácia verificada">
               <select
@@ -375,9 +333,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
           {/* Evidências */}
           <TabsContent value="evidencias" className="mt-4 space-y-3">
             {local.evidencias.length === 0 && (
-              <p className="text-[11px] text-muted-foreground">
-                Nenhuma evidência anexada.
-              </p>
+              <p className="text-[11px] text-muted-foreground">Nenhuma evidência anexada.</p>
             )}
             {local.evidencias.map((e, i) => (
               <div
@@ -394,10 +350,10 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   {e.label}
                 </a>
                 <Button
- variant="ghost"
- size="icon"
- className="h-6 w-6"
- onClick={() => {
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => {
                     const arr = local.evidencias.filter((_, x) => x !== i);
                     removeEvidencia(i);
                     persistPatch({ evidencias: arr }, "Evidência removida");
@@ -422,8 +378,8 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   className="text-[11px] flex-1"
                 />
                 <Button
- size="sm"
- onClick={() => {
+                  size="sm"
+                  onClick={() => {
                     if (!evUrl.trim()) return;
                     const arr = [
                       ...local.evidencias,
@@ -445,9 +401,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
           {/* Timeline */}
           <TabsContent value="timeline" className="mt-4 space-y-2">
             {events.length === 0 ? (
-              <p className="text-[11px] text-muted-foreground">
-                Nenhum evento registrado ainda.
-              </p>
+              <p className="text-[11px] text-muted-foreground">Nenhum evento registrado ainda.</p>
             ) : (
               events.map((e) => (
                 <div
@@ -469,9 +423,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   )}
                   {e.note && <p className="mt-1 text-white">{e.note}</p>}
                   {e.actor_name && (
-                    <p className="mt-1 text-[10px] text-muted-foreground">
-                      por {e.actor_name}
-                    </p>
+                    <p className="mt-1 text-[10px] text-muted-foreground">por {e.actor_name}</p>
                   )}
                 </div>
               ))
@@ -490,31 +442,27 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
           <div className="flex flex-wrap gap-2">
             {nextStatuses(local.status).map((to) => (
               <Button
- key={to}
- size="sm"
- variant={to === "Reprovada" ? "outline" : "default"}
-  className={
-  to === "Reprovada"
-  ? "border-rose-400/40 text-rose-300 hover:bg-rose-500/10"
-  : ""
-  }
+                key={to}
+                size="sm"
+                variant={to === "Reprovada" ? "outline" : "default"}
+                className={
+                  to === "Reprovada" ? "border-rose-400/40 text-rose-300 hover:bg-rose-500/10" : ""
+                }
 
- onClick={() => doTransition(to)}
+                onClick={() => doTransition(to)}
               >
                 <ArrowRight className="h-3 w-3 mr-1" /> {to}
               </Button>
             ))}
             {nextStatuses(local.status).length === 0 && (
-              <p className="text-[11px] text-muted-foreground">
-                Fluxo encerrado.
-              </p>
+              <p className="text-[11px] text-muted-foreground">Fluxo encerrado.</p>
             )}
             <div className="flex-1" />
             <Button
- size="sm"
- variant="ghost"
- className="text-rose-400 hover:bg-rose-500/10"
- onClick={async () => {
+              size="sm"
+              variant="ghost"
+              className="text-rose-400 hover:bg-rose-500/10"
+              onClick={async () => {
                 await remove(local.id);
                 statusToast.success("CAPA removida");
                 onClose();
@@ -529,13 +477,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
   );
 }
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
       <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -605,12 +547,7 @@ function MetaRow({
       <Field label="Severidade">
         <select
           defaultValue={local.severidade}
-          onChange={(e) =>
-            onSave(
-              { severidade: e.target.value as CapaSeveridade },
-              "Severidade",
-            )
-          }
+          onChange={(e) => onSave({ severidade: e.target.value as CapaSeveridade }, "Severidade")}
           className="h-8 w-full bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
         >
           {CAPA_SEVERIDADES.map((s) => (

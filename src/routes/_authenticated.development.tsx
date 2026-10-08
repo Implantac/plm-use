@@ -29,16 +29,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import {
-  filtrarLifecycles,
-  useReferenceStore,
-  type DevFilter,
-} from "@/lib/reference/store";
-import {
-  percentualLifecycle,
-  stageAtual,
-  type ReferenceLifecycle,
-} from "@/types/reference";
+import { filtrarLifecycles, useReferenceStore, type DevFilter } from "@/lib/reference/store";
+import { percentualLifecycle, stageAtual, type ReferenceLifecycle } from "@/types/reference";
 import { useReferences } from "@/hooks/use-references";
 
 export const Route = createFileRoute("/_authenticated/development")({
@@ -293,8 +285,7 @@ function DevelopmentPage() {
   const urgentCount = useMemo(
     () =>
       columns.reduce(
-        (sum, column) =>
-          sum + column.tasks.filter((task) => task.priority === "Urgente").length,
+        (sum, column) => sum + column.tasks.filter((task) => task.priority === "Urgente").length,
         0,
       ),
     [columns],
@@ -380,7 +371,6 @@ function DevelopmentPage() {
       <CentroDeDesenvolvimento />
 
       <div className="flex gap-4 overflow-x-auto pb-4 flex-1 no-scrollbar min-h-155">
-
         {columns.map((col, i) => (
           <div key={i} className="min-w-73 flex flex-col gap-4">
             <div className="flex items-center justify-between px-1 mb-1">
@@ -536,17 +526,10 @@ function DevelopmentPage() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button
- variant="ghost"
- onClick={() => setIsDialogOpen(false)}
-              className="text-[10px]"
-            >
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
               Cancelar
             </Button>
-            <Button
- onClick={handleSave}
- className="text-[10px]"
- >
+            <Button onClick={handleSave} className="text-[10px]">
               Salvar no Kanban
             </Button>
           </DialogFooter>
@@ -614,10 +597,7 @@ function CentroDeDesenvolvimento() {
     return out;
   }, [lifecycles]);
 
-  const filtered = useMemo(
-    () => filtrarLifecycles(lifecycles, filter),
-    [lifecycles, filter],
-  );
+  const filtered = useMemo(() => filtrarLifecycles(lifecycles, filter), [lifecycles, filter]);
 
   return (
     <section className="mb-8 space-y-5">
@@ -626,9 +606,7 @@ function CentroDeDesenvolvimento() {
           <p className="text-[10px] uppercase tracking-[0.25em] text-primary">
             Centro de Desenvolvimento
           </p>
-          <h2 className="text-lg font-bold text-white">
-            Visão única da coleção
-          </h2>
+          <h2 className="text-lg font-bold text-white">Visão única da coleção</h2>
         </div>
         <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           {filtered.length} {filtered.length === 1 ? "referência" : "referências"}
@@ -667,9 +645,7 @@ function CentroDeDesenvolvimento() {
       {filter !== "todos" && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {filtered.length === 0 ? (
-            <p className="text-[11px] text-muted-foreground italic">
-              Nada neste filtro. ✨
-            </p>
+            <p className="text-[11px] text-muted-foreground italic">Nada neste filtro. ✨</p>
           ) : (
             filtered.map((lc) => <LifecycleCard key={lc.ref} lc={lc} />)
           )}
@@ -682,8 +658,7 @@ function CentroDeDesenvolvimento() {
 function LifecycleCard({ lc }: { lc: ReferenceLifecycle }) {
   const pct = percentualLifecycle(lc);
   const stage = stageAtual(lc);
-  const atrasada =
-    !!lc.prazo && pct < 100 && new Date(lc.prazo).getTime() < Date.now();
+  const atrasada = !!lc.prazo && pct < 100 && new Date(lc.prazo).getTime() < Date.now();
 
   return (
     <Link

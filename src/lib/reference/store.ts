@@ -167,50 +167,55 @@ interface ReferenceState {
   getOrCreate(ref: string, nome: string): ReferenceLifecycle;
 }
 
-export const useReferenceStore = create<ReferenceState>()(persist((set, get) => ({
-  lifecycles: seed,
+export const useReferenceStore = create<ReferenceState>()(
+  persist(
+    (set, get) => ({
+      lifecycles: seed,
 
-  upsert(lc) {
-    set((s) => {
-      const idx = s.lifecycles.findIndex((x) => x.ref === lc.ref);
-      const next = [...s.lifecycles];
-      if (idx >= 0) next[idx] = lc;
-      else next.push(lc);
-      return { lifecycles: next };
-    });
-  },
+      upsert(lc) {
+        set((s) => {
+          const idx = s.lifecycles.findIndex((x) => x.ref === lc.ref);
+          const next = [...s.lifecycles];
+          if (idx >= 0) next[idx] = lc;
+          else next.push(lc);
+          return { lifecycles: next };
+        });
+      },
 
-  setStageStatus(ref, stageId, status, extras) {
-    set((s) => ({
-      lifecycles: s.lifecycles.map((lc) =>
-        lc.ref !== ref
-          ? lc
-          : {
-              ...lc,
-              stages: lc.stages.map((st) =>
-                st.id !== stageId
-                  ? st
-                  : {
-                      ...st,
-                      status,
-                      data: nowISO(),
-                      responsavel: extras?.responsavel ?? st.responsavel,
-                      comentario: extras?.comentario ?? st.comentario,
-                    },
-              ),
-            },
-      ),
-    }));
-  },
+      setStageStatus(ref, stageId, status, extras) {
+        set((s) => ({
+          lifecycles: s.lifecycles.map((lc) =>
+            lc.ref !== ref
+              ? lc
+              : {
+                  ...lc,
+                  stages: lc.stages.map((st) =>
+                    st.id !== stageId
+                      ? st
+                      : {
+                          ...st,
+                          status,
+                          data: nowISO(),
+                          responsavel: extras?.responsavel ?? st.responsavel,
+                          comentario: extras?.comentario ?? st.comentario,
+                        },
+                  ),
+                },
+          ),
+        }));
+      },
 
-  getOrCreate(ref, nome) {
-    const existing = get().lifecycles.find((l) => l.ref === ref);
-    if (existing) return existing;
-    const novo = emptyLifecycle(ref, nome);
-    set((s) => ({ lifecycles: [...s.lifecycles, novo] }));
-    return novo;
-  },
-}), { name: "use-moda:reference" }));
+      getOrCreate(ref, nome) {
+        const existing = get().lifecycles.find((l) => l.ref === ref);
+        if (existing) return existing;
+        const novo = emptyLifecycle(ref, nome);
+        set((s) => ({ lifecycles: [...s.lifecycles, novo] }));
+        return novo;
+      },
+    }),
+    { name: "use-moda:reference" },
+  ),
+);
 
 // Selectors / filtros do Centro de Desenvolvimento ------------------------
 export type DevFilter =
@@ -233,9 +238,7 @@ export function filtrarLifecycles(
           l.stages.find((s) => s.id === "piloto")?.status === "pendente",
       );
     case "sem_ficha":
-      return list.filter(
-        (l) => l.stages.find((s) => s.id === "engenharia")?.status === "pendente",
-      );
+      return list.filter((l) => l.stages.find((s) => s.id === "engenharia")?.status === "pendente");
     case "aguardando_aprovacao":
       return list.filter((l) =>
         l.stages.some(

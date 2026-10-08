@@ -3,20 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  BarChart3,
-  Clock,
-  AlertTriangle,
-  Repeat,
-  TrendingUp,
-  CheckCircle2,
-} from "lucide-react";
+import { BarChart3, Clock, AlertTriangle, Repeat, TrendingUp, CheckCircle2 } from "lucide-react";
 import { useReferenceStore, filtrarLifecycles } from "@/lib/reference/store";
-import {
-  percentualLifecycle,
-  stageAtual,
-  type ReferenceLifecycle,
-} from "@/types/reference";
+import { percentualLifecycle, stageAtual, type ReferenceLifecycle } from "@/types/reference";
 
 export const Route = createFileRoute("/_authenticated/pieces-report")({
   component: PiecesReportPage,
@@ -35,8 +24,7 @@ function repilotagens(lc: ReferenceLifecycle): number {
   // Conta quantos estágios de piloto/prova foram reprovados no histórico.
   return lc.stages.filter(
     (s) =>
-      (s.id === "piloto" || s.id === "prova" || s.id === "ajustes") &&
-      s.status === "reprovado",
+      (s.id === "piloto" || s.id === "prova" || s.id === "ajustes") && s.status === "reprovado",
   ).length;
 }
 
@@ -57,8 +45,7 @@ function PiecesReportPage() {
       const stage = stageAtual(lc);
       const dias = diasEmEtapa(lc);
       const rep = repilotagens(lc);
-      const atrasada =
-        !!lc.prazo && pct < 100 && new Date(lc.prazo).getTime() < Date.now();
+      const atrasada = !!lc.prazo && pct < 100 && new Date(lc.prazo).getTime() < Date.now();
       const updated = ultimaAtualizacao(lc);
       return { lc, pct, stage, dias, rep, atrasada, updated };
     });
@@ -68,9 +55,7 @@ function PiecesReportPage() {
     const arr = [...enriched];
     switch (sort) {
       case "atrasadas":
-        return arr.sort(
-          (a, b) => Number(b.atrasada) - Number(a.atrasada) || b.dias - a.dias,
-        );
+        return arr.sort((a, b) => Number(b.atrasada) - Number(a.atrasada) || b.dias - a.dias);
       case "lentas":
         return arr.sort((a, b) => b.dias - a.dias);
       case "repilotadas":
@@ -228,27 +213,17 @@ function PiecesReportPage() {
                             style={{ width: `${pct}%` }}
                           />
                         </div>
-                        <span className="tabular-nums text-white w-10 text-right">
-                          {pct}%
-                        </span>
-                        {pct >= 100 && (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        )}
+                        <span className="tabular-nums text-white w-10 text-right">{pct}%</span>
+                        {pct >= 100 && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
                       </div>
                     </td>
                     <td className="p-3 text-right text-[10px]">
                       {lc.prazo ? (
                         <span
-                          className={
-                            atrasada
-                              ? "text-rose-300 font-bold"
-                              : "text-muted-foreground"
-                          }
+                          className={atrasada ? "text-rose-300 font-bold" : "text-muted-foreground"}
                         >
                           {lc.prazo}
-                          {atrasada && (
-                            <AlertTriangle className="inline w-3 h-3 ml-1" />
-                          )}
+                          {atrasada && <AlertTriangle className="inline w-3 h-3 ml-1" />}
                         </span>
                       ) : (
                         <span className="text-muted-foreground">—</span>

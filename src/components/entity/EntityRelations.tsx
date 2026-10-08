@@ -44,9 +44,7 @@ export function EntityRelations({
 
   return (
     <div className="space-y-4">
-      {outgoing.length > 0 && (
-        <Section title="Vinculada a" items={outgoing} onUnlink={unlink} />
-      )}
+      {outgoing.length > 0 && <Section title="Vinculada a" items={outgoing} onUnlink={unlink} />}
       {incoming.length > 0 && (
         <Section title="Recebe vínculo de" items={incoming} onUnlink={unlink} incoming />
       )}
@@ -68,9 +66,7 @@ function Section({
   const { openEntity } = useEntityDrawer();
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">
-        {title}
-      </p>
+      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">{title}</p>
       <ul className="space-y-1.5">
         {items.map((r) => {
           const type = incoming ? r.from_type : r.to_type;
@@ -112,9 +108,9 @@ function Section({
               </div>
               {!incoming && (
                 <Button
- variant="ghost"
- size="sm"
- onClick={() => onUnlink(r.id)}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onUnlink(r.id)}
                   className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-300"
                   title="Desvincular"
                 >

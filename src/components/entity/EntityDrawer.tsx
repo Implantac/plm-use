@@ -174,9 +174,10 @@ function ReferenceBody({ id }: { id: string }) {
     row.status as (typeof PRODUCT_LIFECYCLE)[number],
   );
   const currentNext = next[0];
-  const metadata = row.metadata && typeof row.metadata === "object" && !Array.isArray(row.metadata)
-    ? (row.metadata as Record<string, unknown>)
-    : {};
+  const metadata =
+    row.metadata && typeof row.metadata === "object" && !Array.isArray(row.metadata)
+      ? (row.metadata as Record<string, unknown>)
+      : {};
   const generatedImages = Array.isArray(metadata.generated_images)
     ? metadata.generated_images.flatMap((entry) => {
         if (!entry || typeof entry !== "object" || Array.isArray(entry)) return [];
@@ -289,18 +290,24 @@ function ReferenceBody({ id }: { id: string }) {
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {generatedImages.map((image, index) => (
-                <div key={`${image.path}-${index}`} className="overflow-hidden rounded-md border border-white/10">
+                <div
+                  key={`${image.path}-${index}`}
+                  className="overflow-hidden rounded-md border border-white/10"
+                >
                   <OptimizedImage
                     src={`storage://use-moda-assets/${image.path}`}
                     alt={`Conceito visual ${image.view} de ${row.name}`}
                     aspectRatio="portrait"
                   />
-                  <p className="px-2 py-1.5 text-xs capitalize text-muted-foreground">{image.view}</p>
+                  <p className="px-2 py-1.5 text-xs capitalize text-muted-foreground">
+                    {image.view}
+                  </p>
                 </div>
               ))}
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Conceitos de IA para exploração. Validar a peça e sua construção antes do desenvolvimento.
+              Conceitos de IA para exploração. Validar a peça e sua construção antes do
+              desenvolvimento.
             </p>
           </section>
         )}

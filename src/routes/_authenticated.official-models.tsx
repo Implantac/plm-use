@@ -23,9 +23,16 @@ export const Route = createFileRoute("/_authenticated/official-models")({
   head: () => ({
     meta: [
       { title: "Tabelas de medidas por coleção — USE MODA PLM" },
-      { name: "description", content: "Cadastre tabelas de medidas e desenhos técnicos oficiais para a IA usar como referência." },
+      {
+        name: "description",
+        content:
+          "Cadastre tabelas de medidas e desenhos técnicos oficiais para a IA usar como referência.",
+      },
       { property: "og:title", content: "Tabelas de medidas por coleção — USE MODA PLM" },
-      { property: "og:description", content: "Tabelas de medidas e desenhos técnicos reais como referência da IA." },
+      {
+        property: "og:description",
+        content: "Tabelas de medidas e desenhos técnicos reais como referência da IA.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -33,17 +40,31 @@ export const Route = createFileRoute("/_authenticated/official-models")({
   component: OfficialModelsPage,
 });
 
-const EMPTY = { id: "", nome: "", categoria: "", tamanho_base: "M", detalhes: "", medidas: [] as OfficialMeasure[], sketch_path: null as string | null, colecao: "" };
+const EMPTY = {
+  id: "",
+  nome: "",
+  categoria: "",
+  tamanho_base: "M",
+  detalhes: "",
+  medidas: [] as OfficialMeasure[],
+  sketch_path: null as string | null,
+  colecao: "",
+};
 
 function OfficialModelsPage() {
   const qc = useQueryClient();
-  const { data: models = [], isLoading } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
+  const { data: models = [], isLoading } = useQuery({
+    queryKey: ["official-models"],
+    queryFn: listOfficialModels,
+  });
   const [form, setForm] = useState(EMPTY);
   const [sketchFile, setSketchFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState("");
-  const collections = Array.from(new Set(models.map((m) => m.colecao).filter((c): c is string => !!c)));
+  const collections = Array.from(
+    new Set(models.map((m) => m.colecao).filter((c): c is string => !!c)),
+  );
   const visible = filter ? models.filter((m) => (m.colecao ?? "") === filter) : models;
 
   async function makeActive(m: OfficialModel) {
@@ -68,7 +89,16 @@ function OfficialModelsPage() {
 
   function edit(m: OfficialModel) {
     setSketchFile(null);
-    setForm({ id: m.id, nome: m.nome, categoria: m.categoria ?? "", tamanho_base: m.tamanho_base, detalhes: m.detalhes ?? "", medidas: m.medidas, sketch_path: m.sketch_path, colecao: m.colecao ?? "" });
+    setForm({
+      id: m.id,
+      nome: m.nome,
+      categoria: m.categoria ?? "",
+      tamanho_base: m.tamanho_base,
+      detalhes: m.detalhes ?? "",
+      medidas: m.medidas,
+      sketch_path: m.sketch_path,
+      colecao: m.colecao ?? "",
+    });
   }
 
   async function loadTable(file: File) {
@@ -79,7 +109,10 @@ function OfficialModelsPage() {
   }
 
   function setRow(i: number, patch: Partial<OfficialMeasure>) {
-    setForm((f) => ({ ...f, medidas: f.medidas.map((m, j) => (j === i ? { ...m, ...patch } : m)) }));
+    setForm((f) => ({
+      ...f,
+      medidas: f.medidas.map((m, j) => (j === i ? { ...m, ...patch } : m)),
+    }));
   }
 
   async function save() {
@@ -92,11 +125,21 @@ function OfficialModelsPage() {
       if (sketchFile) {
         const ext = sketchFile.name.split(".").pop() || "png";
         const path = `${crypto.randomUUID()}.${ext}`;
-        const { error } = await supabase.storage.from(OFFICIAL_BUCKET).upload(path, sketchFile, { contentType: sketchFile.type });
+        const { error } = await supabase.storage
+          .from(OFFICIAL_BUCKET)
+          .upload(path, sketchFile, { contentType: sketchFile.type });
         if (error) throw error;
         sketch_path = path;
       }
-      const row = { nome: form.nome.trim(), categoria: form.categoria || null, tamanho_base: form.tamanho_base || "M", detalhes: form.detalhes || null, medidas, sketch_path, colecao: form.colecao.trim() || null };
+      const row = {
+        nome: form.nome.trim(),
+        categoria: form.categoria || null,
+        tamanho_base: form.tamanho_base || "M",
+        detalhes: form.detalhes || null,
+        medidas,
+        sketch_path,
+        colecao: form.colecao.trim() || null,
+      };
       const { error } = form.id
         ? await supabase.from("official_models").update(row).eq("id", form.id)
         : await supabase.from("official_models").insert(row);
@@ -123,39 +166,136 @@ function OfficialModelsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
       <header>
-        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground"><Ruler className="h-6 w-6 text-primary" /> Tabelas de medidas</h1>
-        <p className="text-sm text-muted-foreground">Cadastre a tabela oficial de cada coleção, com desenho técnico. Marque qual é a oficial da coleção — o AI Product Studio a usa automaticamente quando a proposta for dessa coleção.</p>
+        <h1 className="flex items-center gap-2 text-2xl font-semibold text-foreground">
+          <Ruler className="h-6 w-6 text-primary" /> Tabelas de medidas
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Cadastre a tabela oficial de cada coleção, com desenho técnico. Marque qual é a oficial da
+          coleção — o AI Product Studio a usa automaticamente quando a proposta for dessa coleção.
+        </p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <aside className="space-y-2">
-          <Button type="button" variant="outline" className="w-full" onClick={() => { setForm(EMPTY); setSketchFile(null); }}>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              setForm(EMPTY);
+              setSketchFile(null);
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" /> Novo modelo
           </Button>
           {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
-          {!isLoading && !models.length && <p className="text-sm text-muted-foreground">Nenhum modelo cadastrado.</p>}
-          <select aria-label="Filtrar por coleção" value={filter} onChange={(e) => setFilter(e.target.value)} className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground">
+          {!isLoading && !models.length && (
+            <p className="text-sm text-muted-foreground">Nenhum modelo cadastrado.</p>
+          )}
+          <select
+            aria-label="Filtrar por coleção"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground"
+          >
             <option value="">Todas as coleções</option>
-            {collections.map((c) => <option key={c} value={c}>{c}</option>)}
+            {collections.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
           </select>
           {visible.map((m) => (
-            <div key={m.id} className={`flex items-center justify-between rounded-md border p-2 ${form.id === m.id ? "border-primary" : "border-border"}`}>
+            <div
+              key={m.id}
+              className={`flex items-center justify-between rounded-md border p-2 ${form.id === m.id ? "border-primary" : "border-border"}`}
+            >
               <button type="button" className="text-left text-sm" onClick={() => edit(m)}>
                 <span className="block font-medium text-foreground">{m.nome}</span>
-                <span className="text-xs text-muted-foreground">{m.colecao || "Sem coleção"} · {m.categoria || "—"} · tam. {m.tamanho_base} · {m.medidas.length} medidas</span>
-                {m.ativa ? <span className="mt-1 inline-block rounded bg-primary/15 px-1.5 text-[10px] font-semibold text-primary">Oficial da coleção</span> : m.colecao ? <span role="button" tabIndex={0} className="mt-1 inline-block text-[10px] text-primary hover:underline" onClick={(e) => { e.stopPropagation(); void makeActive(m); }} onKeyDown={(e) => { if (e.key === "Enter") { e.stopPropagation(); void makeActive(m); } }}>Tornar oficial</span> : null}
+                <span className="text-xs text-muted-foreground">
+                  {m.colecao || "Sem coleção"} · {m.categoria || "—"} · tam. {m.tamanho_base} ·{" "}
+                  {m.medidas.length} medidas
+                </span>
+                {m.ativa ? (
+                  <span className="mt-1 inline-block rounded bg-primary/15 px-1.5 text-[10px] font-semibold text-primary">
+                    Oficial da coleção
+                  </span>
+                ) : m.colecao ? (
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="mt-1 inline-block text-[10px] text-primary hover:underline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void makeActive(m);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.stopPropagation();
+                        void makeActive(m);
+                      }
+                    }}
+                  >
+                    Tornar oficial
+                  </span>
+                ) : null}
               </button>
-              <Button type="button" size="icon" variant="ghost" aria-label={`Excluir ${m.nome}`} onClick={() => void remove(m)}><Trash2 className="h-4 w-4" /></Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                aria-label={`Excluir ${m.nome}`}
+                onClick={() => void remove(m)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           ))}
         </aside>
 
         <section className="space-y-4 rounded-md border border-border p-4">
           <div className="grid gap-3 sm:grid-cols-4">
-            <div className="space-y-1"><Label htmlFor="om-col">Coleção</Label><Input id="om-col" list="om-cols" value={form.colecao} onChange={(e) => setForm({ ...form, colecao: e.target.value })} placeholder="Verão 2027" /><datalist id="om-cols">{collections.map((c) => <option key={c} value={c} />)}</datalist></div>
-            <div className="space-y-1"><Label htmlFor="om-nome">Nome</Label><Input id="om-nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Camisa feminina base" /></div>
-            <div className="space-y-1"><Label htmlFor="om-cat">Categoria</Label><Input id="om-cat" value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} placeholder="Camisa" /></div>
-            <div className="space-y-1"><Label htmlFor="om-tam">Tamanho base</Label><Input id="om-tam" value={form.tamanho_base} onChange={(e) => setForm({ ...form, tamanho_base: e.target.value })} /></div>
+            <div className="space-y-1">
+              <Label htmlFor="om-col">Coleção</Label>
+              <Input
+                id="om-col"
+                list="om-cols"
+                value={form.colecao}
+                onChange={(e) => setForm({ ...form, colecao: e.target.value })}
+                placeholder="Verão 2027"
+              />
+              <datalist id="om-cols">
+                {collections.map((c) => (
+                  <option key={c} value={c} />
+                ))}
+              </datalist>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="om-nome">Nome</Label>
+              <Input
+                id="om-nome"
+                value={form.nome}
+                onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                placeholder="Camisa feminina base"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="om-cat">Categoria</Label>
+              <Input
+                id="om-cat"
+                value={form.categoria}
+                onChange={(e) => setForm({ ...form, categoria: e.target.value })}
+                placeholder="Camisa"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="om-tam">Tamanho base</Label>
+              <Input
+                id="om-tam"
+                value={form.tamanho_base}
+                onChange={(e) => setForm({ ...form, tamanho_base: e.target.value })}
+              />
+            </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -163,45 +303,113 @@ function OfficialModelsPage() {
               <div className="flex items-center justify-between">
                 <Label>Tabela de medidas</Label>
                 <Button asChild size="sm" variant="outline">
-                  <label className="cursor-pointer"><FileUp className="mr-2 h-4 w-4" /> Carregar CSV
-                    <input type="file" accept=".csv,.txt,.tsv" className="sr-only" onChange={(e) => { const f = e.target.files?.[0]; if (f) void loadTable(f); e.target.value = ""; }} />
+                  <label className="cursor-pointer">
+                    <FileUp className="mr-2 h-4 w-4" /> Carregar CSV
+                    <input
+                      type="file"
+                      accept=".csv,.txt,.tsv"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) void loadTable(f);
+                        e.target.value = "";
+                      }}
+                    />
                   </label>
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">Colunas: ponto de medida; valor; tolerância; como medir. Exporte do Excel como CSV.</p>
+              <p className="text-xs text-muted-foreground">
+                Colunas: ponto de medida; valor; tolerância; como medir. Exporte do Excel como CSV.
+              </p>
               <div className="max-h-80 space-y-1 overflow-auto">
                 {form.medidas.map((m, i) => (
                   <div key={i} className="grid grid-cols-[1fr_80px_70px_32px] gap-1">
-                    <Input aria-label="Ponto de medida" value={m.point} onChange={(e) => setRow(i, { point: e.target.value })} className="h-8 text-xs" />
-                    <Input aria-label="Valor" value={m.value} onChange={(e) => setRow(i, { value: e.target.value })} className="h-8 text-xs" />
-                    <Input aria-label="Tolerância" value={m.tolerance ?? ""} onChange={(e) => setRow(i, { tolerance: e.target.value })} className="h-8 text-xs" />
-                    <Button type="button" size="icon" variant="ghost" className="h-8 w-8" aria-label="Remover medida" onClick={() => setForm({ ...form, medidas: form.medidas.filter((_, j) => j !== i) })}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <Input
+                      aria-label="Ponto de medida"
+                      value={m.point}
+                      onChange={(e) => setRow(i, { point: e.target.value })}
+                      className="h-8 text-xs"
+                    />
+                    <Input
+                      aria-label="Valor"
+                      value={m.value}
+                      onChange={(e) => setRow(i, { value: e.target.value })}
+                      className="h-8 text-xs"
+                    />
+                    <Input
+                      aria-label="Tolerância"
+                      value={m.tolerance ?? ""}
+                      onChange={(e) => setRow(i, { tolerance: e.target.value })}
+                      className="h-8 text-xs"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8"
+                      aria-label="Remover medida"
+                      onClick={() =>
+                        setForm({ ...form, medidas: form.medidas.filter((_, j) => j !== i) })
+                      }
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
                 ))}
               </div>
-              <Button type="button" size="sm" variant="ghost" onClick={() => setForm({ ...form, medidas: [...form.medidas, { point: "", value: "" }] })}><Plus className="mr-2 h-4 w-4" /> Adicionar medida</Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  setForm({ ...form, medidas: [...form.medidas, { point: "", value: "" }] })
+                }
+              >
+                <Plus className="mr-2 h-4 w-4" /> Adicionar medida
+              </Button>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Desenho técnico oficial</Label>
                 <Button asChild size="sm" variant="outline">
-                  <label className="cursor-pointer"><ImageUp className="mr-2 h-4 w-4" /> Carregar imagem
-                    <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(e) => setSketchFile(e.target.files?.[0] ?? null)} />
+                  <label className="cursor-pointer">
+                    <ImageUp className="mr-2 h-4 w-4" /> Carregar imagem
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      className="sr-only"
+                      onChange={(e) => setSketchFile(e.target.files?.[0] ?? null)}
+                    />
                   </label>
                 </Button>
               </div>
               <div className="flex h-64 items-center justify-center rounded-md border border-dashed border-border bg-background">
-                {preview ? <img src={preview} alt="Desenho técnico oficial" className="h-full w-full object-contain" /> : <span className="text-xs text-muted-foreground">PNG, JPG ou WEBP</span>}
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Desenho técnico oficial"
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span className="text-xs text-muted-foreground">PNG, JPG ou WEBP</span>
+                )}
               </div>
               <Label htmlFor="om-det">Detalhes construtivos</Label>
-              <Textarea id="om-det" rows={4} value={form.detalhes} onChange={(e) => setForm({ ...form, detalhes: e.target.value })} placeholder="Pesponto 6 mm, 7 botões 11 mm, entretela na gola…" />
+              <Textarea
+                id="om-det"
+                rows={4}
+                value={form.detalhes}
+                onChange={(e) => setForm({ ...form, detalhes: e.target.value })}
+                placeholder="Pesponto 6 mm, 7 botões 11 mm, entretela na gola…"
+              />
             </div>
           </div>
 
           <div className="flex justify-end">
             <Button type="button" onClick={() => void save()} disabled={saving}>
-              {saving && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />} Salvar modelo oficial
+              {saving && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />} Salvar modelo
+              oficial
             </Button>
           </div>
         </section>

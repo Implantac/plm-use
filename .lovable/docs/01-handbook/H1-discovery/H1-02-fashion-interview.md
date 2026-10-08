@@ -14,41 +14,49 @@ o software imagina.
 ## Perguntas por persona
 
 ### Estilo / Desenvolvimento
+
 - Como você decide que uma referência vai virar peça?
 - Como você registra a inspiração hoje?
 - O que acontece quando o piloto volta reprovado?
 
 ### Modelagem / Pilotagem
+
 - Quantas rodadas de piloto uma peça leva em média?
 - Onde você registra a correção?
 - Como o estilo sabe que a peça foi corrigida?
 
 ### Engenharia
+
 - Quando a ficha técnica é "final"?
 - Quem pode alterar ficha após aprovada?
 - Como você comunica mudança de ficha para compras/produção?
 
 ### Compras / PCP
+
 - Como você sabe que precisa comprar X metros de tecido?
 - O que acontece se o fornecedor atrasa?
 - Onde você registra a decisão de trocar fornecedor?
 
 ### Produção / Facções
+
 - Como você distribui um lote para uma facção?
 - Como a facção reporta produção parcial?
 - O que acontece quando aparece defeito no meio do lote?
 
 ### Qualidade
+
 - O que dispara uma CAPA?
 - Como você garante que a correção foi aplicada nos próximos lotes?
 
 ### Comercial / Marketing
+
 - Como você mede sucesso de coleção hoje?
 - Quando você decide reordem?
 
 ## Saída
 
 Relatório de entrevista com:
+
 - Persona + data
 - Fluxo real (setas em papel, foto do quadro)
 - Artefatos coletados

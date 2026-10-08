@@ -54,34 +54,36 @@ governado pelo ERP.
 
 ## 3. Entradas (inputs)
 
-| # | Entrada | Origem (elo/sistema) | Formato | Obrigatória? |
-|---|---------|----------------------|---------|--------------|
-| 1 | SKU aprovado + qty (`sku.released`) | H9-07 | evento `entity_events` | Sim |
-| 2 | Pedido comercial (cliente, itens, prazo, transportadora) | ERP via `ErpAdapter` | contrato H6-02 | Sim |
-| 3 | Saldo de PA vigente | ERP via `ErpAdapter.getStock` | contrato H6-02 | Sim |
-| 4 | Regra de alocação (FIFO/FEFO/prioridade cliente) | Config PLM | `shipment_allocation_rule` | Sim |
-| 5 | Endereço de entrega + janela | ERP (pedido) | contrato H6-02 | Sim |
-| 6 | Checklist de conferência da família/canal | Config Qualidade | `shipment_checklist_template` | Sim |
-| 7 | CAPA aberta bloqueando SKU (se houver) | H9-07 | `quality_capa.status` | Sim |
+| #   | Entrada                                                  | Origem (elo/sistema)          | Formato                       | Obrigatória? |
+| --- | -------------------------------------------------------- | ----------------------------- | ----------------------------- | ------------ |
+| 1   | SKU aprovado + qty (`sku.released`)                      | H9-07                         | evento `entity_events`        | Sim          |
+| 2   | Pedido comercial (cliente, itens, prazo, transportadora) | ERP via `ErpAdapter`          | contrato H6-02                | Sim          |
+| 3   | Saldo de PA vigente                                      | ERP via `ErpAdapter.getStock` | contrato H6-02                | Sim          |
+| 4   | Regra de alocação (FIFO/FEFO/prioridade cliente)         | Config PLM                    | `shipment_allocation_rule`    | Sim          |
+| 5   | Endereço de entrega + janela                             | ERP (pedido)                  | contrato H6-02                | Sim          |
+| 6   | Checklist de conferência da família/canal                | Config Qualidade              | `shipment_checklist_template` | Sim          |
+| 7   | CAPA aberta bloqueando SKU (se houver)                   | H9-07                         | `quality_capa.status`         | Sim          |
 
 Regras:
+
 - Toda entrada rastreável a entidade do catálogo (H2-02).
 - **Nunca** ler estoque/pedido do ERP direto — só via `ErpAdapter`
   (H6-02), com cache ≤ 60s.
 
 ## 4. Saídas (outputs)
 
-| # | Saída | Destino (elo/sistema) | Entidade / Evento | Obrigatória? |
-|---|-------|-----------------------|-------------------|--------------|
-| 1 | Entrada em PA registrada no ERP | ERP | `writeErp('pa_receipt')` + `pa.receipt.written` | Sim |
-| 2 | Onda de picking | Chão de expedição | `shipment_wave` + `wave.opened` | Sim |
-| 3 | Conferência aprovada por pedido | PLM | `shipment_check` + `shipment.checked` | Sim |
-| 4 | Divergência de picking (SKU/qty) | PLM + Qualidade | `shipment.divergence.registered` | Condicional |
-| 5 | Solicitação de NF/romaneio ao ERP | ERP | `writeErp('shipment_dispatch')` + `shipment.dispatch.requested` | Sim |
-| 6 | Coleta confirmada pela transportadora | PLM | `shipment.dispatched` | Sim |
-| 7 | Alerta ao Comercial sobre atraso previsto | PLM | `shipment.delay.alert` | Condicional |
+| #   | Saída                                     | Destino (elo/sistema) | Entidade / Evento                                               | Obrigatória? |
+| --- | ----------------------------------------- | --------------------- | --------------------------------------------------------------- | ------------ |
+| 1   | Entrada em PA registrada no ERP           | ERP                   | `writeErp('pa_receipt')` + `pa.receipt.written`                 | Sim          |
+| 2   | Onda de picking                           | Chão de expedição     | `shipment_wave` + `wave.opened`                                 | Sim          |
+| 3   | Conferência aprovada por pedido           | PLM                   | `shipment_check` + `shipment.checked`                           | Sim          |
+| 4   | Divergência de picking (SKU/qty)          | PLM + Qualidade       | `shipment.divergence.registered`                                | Condicional  |
+| 5   | Solicitação de NF/romaneio ao ERP         | ERP                   | `writeErp('shipment_dispatch')` + `shipment.dispatch.requested` | Sim          |
+| 6   | Coleta confirmada pela transportadora     | PLM                   | `shipment.dispatched`                                           | Sim          |
+| 7   | Alerta ao Comercial sobre atraso previsto | PLM                   | `shipment.delay.alert`                                          | Condicional  |
 
 Regras:
+
 - Toda saída relevante emite `entity_events` (V7 / H2-04).
 - Mudanças de estado passam por `workflow_definitions` (V8 / H2-05).
 - **Nenhuma saída grava saldo, preço ou dado fiscal em `public.*`.**
@@ -114,7 +116,7 @@ Regras:
   **nunca** calcula imposto, **nunca** grava número de NF em `public.*`.
   Guarda apenas `erp_dispatch_id` + `erp_synced_at`.
 - **R7 — Coleta exige comprovante:** transição `aguardando_coleta →
-  despachado` exige `carrier_ref` (código do conhecimento) e evidência
+despachado` exige `carrier_ref` (código do conhecimento) e evidência
   (foto/PDF). Sem isso, sem `shipment.dispatched`.
 - **R8 — Sem espelhar estoque nem financeiro:** proibido em qualquer
   `public.*` deste elo: `stock_qty`, `price`, `cost`, `nf_number`,
@@ -126,23 +128,24 @@ Regras:
 
 Onde cada regra é aplicada:
 
-| Regra | Camada | Referência de código |
-|-------|--------|----------------------|
-| R1    | server fn + DB check | `allocateSku.functions.ts` + `check_can_allocate_sku()` |
-| R2    | server fn | `writePaReceipt.functions.ts` (usa `ErpAdapter`) |
-| R3    | server fn | `allocateOrder.functions.ts` |
-| R4    | DB (check) + server fn | `closeShipmentCheck.functions.ts` |
-| R5    | trigger DB | `trg_shipment_divergence` |
-| R6    | server fn | `requestErpDispatch.functions.ts` |
-| R7    | server fn | `markDispatched.functions.ts` |
-| R8    | code review + lint schema | migration + PR check |
-| R9    | cron (H6-05) | `shipment_delay_watchdog` cron a cada 15 min |
+| Regra | Camada                    | Referência de código                                    |
+| ----- | ------------------------- | ------------------------------------------------------- |
+| R1    | server fn + DB check      | `allocateSku.functions.ts` + `check_can_allocate_sku()` |
+| R2    | server fn                 | `writePaReceipt.functions.ts` (usa `ErpAdapter`)        |
+| R3    | server fn                 | `allocateOrder.functions.ts`                            |
+| R4    | DB (check) + server fn    | `closeShipmentCheck.functions.ts`                       |
+| R5    | trigger DB                | `trg_shipment_divergence`                               |
+| R6    | server fn                 | `requestErpDispatch.functions.ts`                       |
+| R7    | server fn                 | `markDispatched.functions.ts`                           |
+| R8    | code review + lint schema | migration + PR check                                    |
+| R9    | cron (H6-05)              | `shipment_delay_watchdog` cron a cada 15 min            |
 
 ## 6. Workflow (V8)
 
 Duas máquinas em `workflow_definitions` polimórfico.
 
 **`shipment` (documento de expedição por pedido/onda):**
+
 ```text
 criada → alocada → em_separacao → em_conferencia → conferida
                                                  ↘ divergente → em_conferencia
@@ -151,6 +154,7 @@ criada → alocada → em_separacao → em_conferencia → conferida
 ```
 
 **`shipment_wave` (agrupamento de picking):**
+
 ```text
 aberta → em_execução → concluída
                      ↘ pausada → em_execução
@@ -158,7 +162,7 @@ aberta → em_execução → concluída
 
 - Máquina registrada em `workflow_definitions`? SIM (`shipment`, `shipment_wave`).
 - Transições proibidas: `criada → despachado` (pula tudo); `divergente →
-  aguardando_coleta` (precisa reconferir); `qualquer → despachado` sem
+aguardando_coleta` (precisa reconferir); `qualquer → despachado` sem
   `erp_dispatch_id`.
 - Quem pode transicionar:
   - alocar / abrir onda / picking / conferir → `expedicao`
@@ -168,18 +172,18 @@ aberta → em_execução → concluída
 
 ## 7. Eventos emitidos (V7)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `pa.receipt.written` | R2 sucesso no ERP | `{sku_id, qty, batch_id, erp_id}` | BI, PCP |
-| `shipment.created` | pedido virou expedição | `{order_id, promised_at, carrier}` | Comercial |
-| `wave.opened` | onda criada | `{wave_id, itens_count}` | Torre expedição |
-| `pick.registered` | item bipado no picking | `{sku_id, qty, wave_id}` | Auditoria |
-| `shipment.checked` | R4 atendida | `{checklist_id, actor, evidence_url}` | BI |
-| `shipment.divergence.registered` | R5 disparada | `{expected_qty, actual_qty, sku_id}` | PCP, Comercial |
-| `shipment.dispatch.requested` | R6 aceita no ERP | `{erp_dispatch_id}` | ERP, Comercial |
-| `shipment.dispatched` | R7 atendida | `{carrier_ref, dispatched_at, evidence_url}` | BI, Cliente |
-| `shipment.delay.alert` | R9 disparada | `{shipment_id, promised_at, current_state}` | Comercial |
-| `shipment.cancelled` | cancelamento com motivo | `{reason_code, actor}` | BI |
+| `event_type`                     | Quando                  | Payload mínimo                               | Consumido por   |
+| -------------------------------- | ----------------------- | -------------------------------------------- | --------------- |
+| `pa.receipt.written`             | R2 sucesso no ERP       | `{sku_id, qty, batch_id, erp_id}`            | BI, PCP         |
+| `shipment.created`               | pedido virou expedição  | `{order_id, promised_at, carrier}`           | Comercial       |
+| `wave.opened`                    | onda criada             | `{wave_id, itens_count}`                     | Torre expedição |
+| `pick.registered`                | item bipado no picking  | `{sku_id, qty, wave_id}`                     | Auditoria       |
+| `shipment.checked`               | R4 atendida             | `{checklist_id, actor, evidence_url}`        | BI              |
+| `shipment.divergence.registered` | R5 disparada            | `{expected_qty, actual_qty, sku_id}`         | PCP, Comercial  |
+| `shipment.dispatch.requested`    | R6 aceita no ERP        | `{erp_dispatch_id}`                          | ERP, Comercial  |
+| `shipment.dispatched`            | R7 atendida             | `{carrier_ref, dispatched_at, evidence_url}` | BI, Cliente     |
+| `shipment.delay.alert`           | R9 disparada            | `{shipment_id, promised_at, current_state}`  | Comercial       |
+| `shipment.cancelled`             | cancelamento com motivo | `{reason_code, actor}`                       | BI              |
 
 ## 8. Integrações (H6)
 
@@ -241,18 +245,19 @@ aberta → em_execução → concluída
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| On-time shipping | `shipments.despachado_no_prazo / shipments.despachado` | % | ≥ 97 | Expedição |
-| Picking accuracy | `1 - (divergences / total_picks)` | % | ≥ 99.5 | Expedição |
-| Stock divergence | `abs(pa_receipt - erp_saldo_esperado) / erp_saldo` | % | ≤ 0.5 | Almox + PCP |
-| Ciclo pedido→embarque | mediana(`dispatched_at - shipment.created`) | horas | ≤ 24 | Expedição |
-| SLA carrier callback | callbacks recebidos ≤ 2h / total | % | ≥ 95 | Log/TI |
-| Cancelamento pós-alocação | `shipments.cancelled_pos_alocada / total` | % | ≤ 1 | Comercial |
+| KPI                       | Fórmula                                                | Unidade | Meta   | Responsável |
+| ------------------------- | ------------------------------------------------------ | ------- | ------ | ----------- |
+| On-time shipping          | `shipments.despachado_no_prazo / shipments.despachado` | %       | ≥ 97   | Expedição   |
+| Picking accuracy          | `1 - (divergences / total_picks)`                      | %       | ≥ 99.5 | Expedição   |
+| Stock divergence          | `abs(pa_receipt - erp_saldo_esperado) / erp_saldo`     | %       | ≤ 0.5  | Almox + PCP |
+| Ciclo pedido→embarque     | mediana(`dispatched_at - shipment.created`)            | horas   | ≤ 24   | Expedição   |
+| SLA carrier callback      | callbacks recebidos ≤ 2h / total                       | %       | ≥ 95   | Log/TI      |
+| Cancelamento pós-alocação | `shipments.cancelled_pos_alocada / total`              | %       | ≤ 1    | Comercial   |
 
 Fonte: derivado de `entity_events` (`shipment.*`, `wave.*`, `pa.receipt.*`)
-+ leitura sob demanda do ERP via adapter. **Nunca contagem manual, nunca
-cópia local de saldo.**
+
+- leitura sob demanda do ERP via adapter. **Nunca contagem manual, nunca
+  cópia local de saldo.**
 
 ## 12. Segurança e permissões (H3-03 / H8-04)
 
@@ -260,7 +265,7 @@ cópia local de saldo.**
   `shipment_item` com policies `is_member(auth.uid())` + `has_role`.
   SIM.
 - **GRANT:** toda tabela pública com `GRANT SELECT, INSERT, UPDATE,
-  DELETE ... TO authenticated` + `GRANT ALL ... TO service_role`. `anon`
+DELETE ... TO authenticated` + `GRANT ALL ... TO service_role`. `anon`
   sem acesso. SIM.
 - **Papéis autorizados (`has_role`):** `expedicao`, `almoxarife_pa`,
   `pcp`, `comercial` (leitura), `financeiro` (leitura).
@@ -299,14 +304,14 @@ cópia local de saldo.**
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve este elo | Limitação | Como superamos |
-|-----|-----------------------|-----------|----------------|
+| PLM             | Como resolve este elo                  | Limitação                                    | Como superamos                               |
+| --------------- | -------------------------------------- | -------------------------------------------- | -------------------------------------------- |
 | Centric         | Não cobre expedição, delega ao WMS/ERP | Fronteira nítida, mas sem timeline unificada | PLM orquestra + timeline única sem virar WMS |
-| PTC FlexPLM     | Idem, delega | Falta rastreabilidade cruzada até o embarque | `entity_events` liga qualidade→embarque |
-| Lectra Kubix    | Não cobre | — | H9-08 orquestra sem duplicar ERP |
-| Gerber Yunique  | Módulo de "ship tracking" leve | Duplica campos de ERP | Só `erp_id + erp_synced_at`, resto no ERP |
-| Collection Moda | Cobre expedição no próprio ERP | ERP + PLM misturados | Separação estrita via `ErpAdapter` |
-| Audaces Idea    | Não cobre | — | Playbook nativo |
+| PTC FlexPLM     | Idem, delega                           | Falta rastreabilidade cruzada até o embarque | `entity_events` liga qualidade→embarque      |
+| Lectra Kubix    | Não cobre                              | —                                            | H9-08 orquestra sem duplicar ERP             |
+| Gerber Yunique  | Módulo de "ship tracking" leve         | Duplica campos de ERP                        | Só `erp_id + erp_synced_at`, resto no ERP    |
+| Collection Moda | Cobre expedição no próprio ERP         | ERP + PLM misturados                         | Separação estrita via `ErpAdapter`           |
+| Audaces Idea    | Não cobre                              | —                                            | Playbook nativo                              |
 
 Padrão mental comum: expedição ou é ignorada pelo PLM (perde-se
 rastreabilidade), ou é duplicada dentro dele (vira ERP paralelo).
@@ -315,17 +320,17 @@ no PLM; saldo, NF e financeiro no ERP.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Probabilidade | Mitigação |
-|-------|---------|---------------|-----------|
-| PLM começar a manter saldo local | Muito alto | Média | R8 lista campos proibidos; PR bloqueado |
-| Dupla emissão de NF por replay | Alto | Baixa | R6 idempotência por `shipment_id` |
-| Divergência silenciosa picking×conferência | Alto | Média | R5 trigger + ocorrência automática |
-| Callback transportadora sem HMAC | Alto | Baixa | HMAC obrigatório na rota `/api/public/carrier-callback` |
-| Atraso não comunicado ao comercial | Médio | Alta | R9 cron watchdog + evento |
-| Endereço de cliente vazando em log | Alto | Baixa | Nunca copia para `public.*`, acesso auditado |
+| Risco                                      | Impacto    | Probabilidade | Mitigação                                               |
+| ------------------------------------------ | ---------- | ------------- | ------------------------------------------------------- |
+| PLM começar a manter saldo local           | Muito alto | Média         | R8 lista campos proibidos; PR bloqueado                 |
+| Dupla emissão de NF por replay             | Alto       | Baixa         | R6 idempotência por `shipment_id`                       |
+| Divergência silenciosa picking×conferência | Alto       | Média         | R5 trigger + ocorrência automática                      |
+| Callback transportadora sem HMAC           | Alto       | Baixa         | HMAC obrigatório na rota `/api/public/carrier-callback` |
+| Atraso não comunicado ao comercial         | Médio      | Alta          | R9 cron watchdog + evento                               |
+| Endereço de cliente vazando em log         | Alto       | Baixa         | Nunca copia para `public.*`, acesso auditado            |
 
 ## 17. Changelog do playbook
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Handbook Team | criação (🟡 parcial) |
+| Data       | Versão | Autor         | Mudança              |
+| ---------- | ------ | ------------- | -------------------- |
+| 2026-07-07 | 0.1    | Handbook Team | criação (🟡 parcial) |

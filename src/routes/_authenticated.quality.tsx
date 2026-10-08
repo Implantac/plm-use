@@ -5,20 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
-import {
-  ShieldAlert,
-  AlertTriangle,
-  ClipboardList,
-  Plus,
-  Search,
-} from "lucide-react";
+import { ShieldAlert, AlertTriangle, ClipboardList, Plus, Search } from "lucide-react";
 import { statusToast } from "@/components/ui/status-presets";
 import { FieldMessage } from "@/components/ui/field-message";
 import { usePCPStore } from "@/lib/pcp/store";
-import {
-  defeitosDosLotes,
-  rankingPorChave,
-} from "@/lib/quality/store";
+import { defeitosDosLotes, rankingPorChave } from "@/lib/quality/store";
 import { DefectHeatmap } from "@/components/quality/DefectHeatmap";
 import { CapaDrawer } from "@/components/quality/CapaDrawer";
 import {
@@ -38,18 +29,18 @@ export const Route = createFileRoute("/_authenticated/quality")({
 
 const STATUS_STYLES: Record<CapaStatus, string> = {
   Aberta: "bg-sky-500/15 text-sky-300 border-sky-400/30",
-  "Investigação": "bg-violet-500/15 text-violet-300 border-violet-400/30",
-  "Ação": "bg-amber-500/15 text-amber-300 border-amber-400/30",
-  "Verificação": "bg-cyan-500/15 text-cyan-300 border-cyan-400/30",
-  "Concluída": "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
+  Investigação: "bg-violet-500/15 text-violet-300 border-violet-400/30",
+  Ação: "bg-amber-500/15 text-amber-300 border-amber-400/30",
+  Verificação: "bg-cyan-500/15 text-cyan-300 border-cyan-400/30",
+  Concluída: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
   Reprovada: "bg-rose-500/15 text-rose-300 border-rose-400/30",
 };
 
 const SEV_STYLES: Record<CapaSeveridade, string> = {
   Baixa: "bg-white/5 text-white/70 border-white/10",
-  "Média": "bg-sky-500/10 text-sky-300 border-sky-400/25",
+  Média: "bg-sky-500/10 text-sky-300 border-sky-400/25",
   Alta: "bg-amber-500/10 text-amber-300 border-amber-400/25",
-  "Crítica": "bg-rose-500/15 text-rose-300 border-rose-400/40",
+  Crítica: "bg-rose-500/15 text-rose-300 border-rose-400/40",
 };
 
 function QualityPage() {
@@ -59,18 +50,11 @@ function QualityPage() {
   const defeitos = useMemo(() => defeitosDosLotes(lotes), [lotes]);
   const totalDefeitos = defeitos.reduce((a, d) => a + d.qtd, 0);
   const rankSetor = useMemo(() => rankingPorChave(defeitos, "setor"), [defeitos]);
-  const rankMotivo = useMemo(
-    () => rankingPorChave(defeitos, "motivo"),
-    [defeitos],
-  );
+  const rankMotivo = useMemo(() => rankingPorChave(defeitos, "motivo"), [defeitos]);
 
-  const abertas = capa.filter(
-    (c) => c.status !== "Concluída" && c.status !== "Reprovada",
-  );
+  const abertas = capa.filter((c) => c.status !== "Concluída" && c.status !== "Reprovada");
   const atrasadas = capa.filter(isOverdue);
-  const criticas = capa.filter(
-    (c) => c.severidade === "Crítica" && c.status !== "Concluída",
-  );
+  const criticas = capa.filter((c) => c.severidade === "Crítica" && c.status !== "Concluída");
 
   const [form, setForm] = useState<{
     defeito: string;
@@ -87,12 +71,14 @@ function QualityPage() {
     responsavel: "",
     prazo: "",
   });
-  const [capaErrors, setCapaErrors] = useState<{ defeito?: string; responsavel?: string; form?: string }>({});
+  const [capaErrors, setCapaErrors] = useState<{
+    defeito?: string;
+    responsavel?: string;
+    form?: string;
+  }>({});
 
   const [filter, setFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<CapaStatus | "Todas">(
-    "Todas",
-  );
+  const [statusFilter, setStatusFilter] = useState<CapaStatus | "Todas">("Todas");
   const [selected, setSelected] = useState<Capa | null>(null);
 
   const filtered = capa.filter((c) => {
@@ -109,9 +95,7 @@ function QualityPage() {
   });
 
   // Keep drawer synced with realtime updates
-  const currentSelected = selected
-    ? capa.find((c) => c.id === selected.id) ?? null
-    : null;
+  const currentSelected = selected ? (capa.find((c) => c.id === selected.id) ?? null) : null;
 
   async function submit() {
     const errs: typeof capaErrors = {};
@@ -185,9 +169,7 @@ function QualityPage() {
             </div>
             <select
               value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value as CapaStatus | "Todas")
-              }
+              onChange={(e) => setStatusFilter(e.target.value as CapaStatus | "Todas")}
               className="h-8 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
             >
               <option value="Todas">Todos os status</option>
@@ -231,9 +213,7 @@ function QualityPage() {
             </select>
             <select
               value={form.tipo}
-              onChange={(e) =>
-                setForm({ ...form, tipo: e.target.value as CapaTipo })
-              }
+              onChange={(e) => setForm({ ...form, tipo: e.target.value as CapaTipo })}
               className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
             >
               <option>Corretiva</option>
@@ -297,10 +277,7 @@ function QualityPage() {
             <tbody className="divide-y divide-white/5 text-[11px] text-white">
               {filtered.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-4 py-8 text-center text-muted-foreground"
-                  >
+                  <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
                     Nenhuma CAPA encontrada com esses filtros.
                   </td>
                 </tr>
@@ -314,46 +291,32 @@ function QualityPage() {
                     onClick={() => setSelected(c)}
                   >
                     <td className="px-3 py-3">
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] ${STATUS_STYLES[c.status]}`}
-                      >
+                      <Badge variant="outline" className={`text-[9px] ${STATUS_STYLES[c.status]}`}>
                         {c.status}
                       </Badge>
                     </td>
                     <td className="px-3 py-3">
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] ${SEV_STYLES[c.severidade]}`}
-                      >
+                      <Badge variant="outline" className={`text-[9px] ${SEV_STYLES[c.severidade]}`}>
                         {c.severidade}
                       </Badge>
                     </td>
                     <td className="px-3 py-3 text-primary/70 font-bold uppercase text-[10px]">
                       {c.tipo}
                     </td>
-                    <td className="px-3 py-3 max-w-[280px] truncate">
-                      {c.defeito}
-                    </td>
+                    <td className="px-3 py-3 max-w-[280px] truncate">{c.defeito}</td>
                     <td className="px-3 py-3 text-primary/80 text-[10px]">
                       {c.ref ?? "—"}
-                      {c.lote && (
-                        <span className="text-muted-foreground"> · {c.lote}</span>
-                      )}
+                      {c.lote && <span className="text-muted-foreground"> · {c.lote}</span>}
                     </td>
                     <td className="px-3 py-3">{c.setor}</td>
-                    <td className="px-3 py-3 text-muted-foreground">
-                      {c.responsavel}
-                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">{c.responsavel}</td>
                     <td
                       className={`px-3 py-3 ${
                         overdue ? "text-rose-400 font-bold" : "text-muted-foreground"
                       }`}
                     >
                       {c.prazo ?? "—"}
-                      {overdue && (
-                        <AlertTriangle className="w-3 h-3 inline ml-1" />
-                      )}
+                      {overdue && <AlertTriangle className="w-3 h-3 inline ml-1" />}
                     </td>
                   </tr>
                 );
@@ -367,8 +330,7 @@ function QualityPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <Card className="lg:col-span-2 glass-card rounded-lg p-6 space-y-4">
           <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
-            <AlertTriangle className="w-4 h-4 text-amber-400" /> Defeitos
-            registrados (PCP)
+            <AlertTriangle className="w-4 h-4 text-amber-400" /> Defeitos registrados (PCP)
           </h3>
           <div className="rounded-lg border border-white/5 overflow-hidden max-h-[420px] overflow-y-auto">
             <table className="w-full text-left">
@@ -385,10 +347,7 @@ function QualityPage() {
               <tbody className="divide-y divide-white/5 text-[11px] text-white">
                 {defeitos.length === 0 && (
                   <tr>
-                    <td
-                      colSpan={6}
-                      className="px-4 py-8 text-center text-muted-foreground"
-                    >
+                    <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                       Sem defeitos registrados.
                     </td>
                   </tr>
@@ -402,9 +361,7 @@ function QualityPage() {
                     <td className="px-4 py-3 text-primary">{d.ref}</td>
                     <td className="px-4 py-3">{d.setor}</td>
                     <td className="px-4 py-3">{d.motivo}</td>
-                    <td className="px-4 py-3 text-right font-bold text-rose-400">
-                      {d.qtd}
-                    </td>
+                    <td className="px-4 py-3 text-right font-bold text-rose-400">{d.qtd}</td>
                   </tr>
                 ))}
               </tbody>
@@ -415,8 +372,7 @@ function QualityPage() {
         <div className="space-y-4">
           <Card className="glass-card rounded-lg p-5">
             <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-4">
-              <ShieldAlert className="w-3.5 h-3.5 text-primary" /> Ranking por
-              setor
+              <ShieldAlert className="w-3.5 h-3.5 text-primary" /> Ranking por setor
             </h4>
             <BarList rows={rankSetor} />
           </Card>
@@ -433,19 +389,14 @@ function QualityPage() {
         <DefectHeatmap defeitos={defeitos} />
       </div>
 
-      <CapaDrawer
-        capa={currentSelected}
-        open={!!selected}
-        onClose={() => setSelected(null)}
-      />
+      <CapaDrawer capa={currentSelected} open={!!selected} onClose={() => setSelected(null)} />
     </ModuleLayout>
   );
 }
 
 function BarList({ rows }: { rows: [string, number][] }) {
   const max = Math.max(...rows.map((r) => r[1]), 1);
-  if (rows.length === 0)
-    return <p className="text-[10px] text-muted-foreground">Sem dados.</p>;
+  if (rows.length === 0) return <p className="text-[10px] text-muted-foreground">Sem dados.</p>;
   return (
     <div className="space-y-2">
       {rows.slice(0, 6).map(([label, val]) => (
@@ -455,10 +406,7 @@ function BarList({ rows }: { rows: [string, number][] }) {
             <span className="text-primary font-bold">{val}</span>
           </div>
           <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-            <div
-              className="h-full bg-primary/70"
-              style={{ width: `${(val / max) * 100}%` }}
-            />
+            <div className="h-full bg-primary/70" style={{ width: `${(val / max) * 100}%` }} />
           </div>
         </div>
       ))}

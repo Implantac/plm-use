@@ -13,11 +13,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { usePCPStore } from "@/lib/pcp/store";
-import {
-  saldoReferencia,
-  type ReferenciaLote,
-  type TipoOcorrencia,
-} from "@/types/pcp";
+import { saldoReferencia, type ReferenciaLote, type TipoOcorrencia } from "@/types/pcp";
 
 interface Props {
   loteNumero: string;
@@ -77,10 +73,9 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
     <div className="space-y-4">
       <div className={`rounded-md border p-3 text-[11px] ${corTipo}`}>
         <p className="text-muted-foreground">
-          <strong className="text-white">Positiva</strong>: aumenta produção
-          final • <strong className="text-white">Negativa</strong>: reduz
-          saldo final • <strong className="text-white">Neutra</strong>:
-          registra evento sem afetar saldo.
+          <strong className="text-white">Positiva</strong>: aumenta produção final •{" "}
+          <strong className="text-white">Negativa</strong>: reduz saldo final •{" "}
+          <strong className="text-white">Neutra</strong>: registra evento sem afetar saldo.
         </p>
         <p className="mt-2 text-muted-foreground">
           Saldo atual previsto:{" "}
@@ -90,9 +85,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
-            Tipo
-          </Label>
+          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Tipo</Label>
           <Select value={tipo} onValueChange={(v) => setTipo(v as TipoOcorrencia)}>
             <SelectTrigger className="">
               <SelectValue />
@@ -134,25 +127,16 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
           onChange={(e) => setResp(e.target.value)}
           aria-invalid={!!errors.responsavel}
         />
-        {errors.responsavel && (
-          <FieldMessage variant="error">{errors.responsavel}</FieldMessage>
-        )}
+        {errors.responsavel && <FieldMessage variant="error">{errors.responsavel}</FieldMessage>}
       </div>
       <div>
         <Label>Observação</Label>
-        <Textarea
-          value={obs}
-          onChange={(e) => setObs(e.target.value)}
-          rows={2}
-        />
+        <Textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={2} />
       </div>
 
       {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
-      <Button
- onClick={handleSubmit}
- className="w-full text-[10px]"
- >
+      <Button onClick={handleSubmit} className="w-full text-[10px]">
         Registrar Ocorrência
       </Button>
     </div>

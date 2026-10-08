@@ -13,12 +13,14 @@ function escapeCell(v: unknown): string {
 
 export function rowsToCsv(rows: Row[], columns?: string[]): string {
   if (rows.length === 0) return "";
-  const cols = columns ?? Array.from(
-    rows.reduce<Set<string>>((s, r) => {
-      Object.keys(r).forEach((k) => s.add(k));
-      return s;
-    }, new Set()),
-  );
+  const cols =
+    columns ??
+    Array.from(
+      rows.reduce<Set<string>>((s, r) => {
+        Object.keys(r).forEach((k) => s.add(k));
+        return s;
+      }, new Set()),
+    );
   const header = cols.map(escapeCell).join(",");
   const body = rows.map((r) => cols.map((c) => escapeCell(r[c])).join(",")).join("\n");
   return `${header}\n${body}`;
@@ -44,13 +46,13 @@ export function printTable(title: string, rows: Row[], columns?: string[]) {
   const w = window.open("", "_blank", "width=1024,height=768");
   if (!w) return;
   const safe = (s: string) =>
-    s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+    s.replace(
+      /[&<>"']/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+    );
   const headHtml = cols.map((c) => `<th>${safe(c)}</th>`).join("");
   const bodyHtml = rows
-    .map(
-      (r) =>
-        `<tr>${cols.map((c) => `<td>${safe(String(r[c] ?? ""))}</td>`).join("")}</tr>`,
-    )
+    .map((r) => `<tr>${cols.map((c) => `<td>${safe(String(r[c] ?? ""))}</td>`).join("")}</tr>`)
     .join("");
   const date = new Date().toLocaleString("pt-BR");
   w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${safe(title)}</title>

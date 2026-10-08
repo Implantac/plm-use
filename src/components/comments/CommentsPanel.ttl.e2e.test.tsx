@@ -76,15 +76,12 @@ async function flush() {
   });
 }
 
-
 describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
   it("dentro do TTL reutiliza; após TTL - margem, o clique em prévia gera novo createSignedUrl", async () => {
     const onRemove = vi.fn();
 
     // 1º render: preview auto-load dispara createSignedUrl uma vez.
-    const { unmount } = render(
-      <AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />,
-    );
+    const { unmount } = render(<AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />);
     await flush();
     const img1 = screen.getByAltText("pic.png");
     const url1 = img1.getAttribute("src");
@@ -135,7 +132,5 @@ describe("CommentsPanel E2E — expiração do signed-url-cache", () => {
     const img4 = screen.getByAltText("pic.png");
     expect(img4.getAttribute("src")).toMatch(/\?v=3$/);
     expect(img4.getAttribute("src")).not.toBe(url3);
-
-
   });
 });

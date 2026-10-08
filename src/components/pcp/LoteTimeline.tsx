@@ -66,11 +66,7 @@ export function LoteTimeline({ lote }: { lote: Lote }) {
           setor: o.setor,
           actor: o.responsavel,
           kind:
-            o.tipo === "positiva"
-              ? "ocor-pos"
-              : o.tipo === "negativa"
-                ? "ocor-neg"
-                : "ocor-neutra",
+            o.tipo === "positiva" ? "ocor-pos" : o.tipo === "negativa" ? "ocor-neg" : "ocor-neutra",
           title: `Ocorrência ${o.tipo} · ${o.qtd} pç`,
           detail: `${o.motivo}${o.observacao ? ` · ${o.observacao}` : ""}`,
         });
@@ -93,7 +89,7 @@ export function LoteTimeline({ lote }: { lote: Lote }) {
           detail: [
             e.from_status && e.to_status
               ? `${e.from_status} → ${e.to_status}`
-              : e.to_status ?? undefined,
+              : (e.to_status ?? undefined),
             c.defeito,
             e.note ?? undefined,
           ]
@@ -140,9 +136,7 @@ function TimelineRow({ item }: { item: TimelineItem }) {
           <div className="min-w-0">
             <p className="text-[11px] font-bold text-white">{item.title}</p>
             {item.detail && (
-              <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">
-                {item.detail}
-              </p>
+              <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{item.detail}</p>
             )}
           </div>
           <span className="shrink-0 text-[9px] uppercase tracking-wider text-muted-foreground">

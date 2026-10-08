@@ -131,9 +131,7 @@ export function EntityTimeline({
                       {it.from_status ?? "—"} → {it.to_status ?? "—"}
                     </p>
                   )}
-                  {it.note && (
-                    <p className="text-[11px] text-white/80 mt-1">{it.note}</p>
-                  )}
+                  {it.note && <p className="text-[11px] text-white/80 mt-1">{it.note}</p>}
                 </div>
                 <span className="shrink-0 text-[9px] uppercase tracking-wider text-muted-foreground">
                   {ts.toLocaleDateString("pt-BR")}{" "}

@@ -9,7 +9,10 @@ export function AppBreadcrumb() {
   const label = meta?.label ?? "Cockpit";
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-3 uppercase-label text-muted-foreground min-w-0">
+    <nav
+      aria-label="Breadcrumb"
+      className="flex items-center gap-3 uppercase-label text-muted-foreground min-w-0"
+    >
       <Link to="/dashboard" className="hover:text-foreground transition-colors shrink-0">
         USE MODA
       </Link>

@@ -7,7 +7,9 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 const ScopeInput = z.object({
   since_hours: z.number().int().min(1).max(720).default(72),
   entity_types: z
-    .array(z.enum(["reference", "lote", "tech_sheet", "piloto", "capa", "engenharia", "facao_order"]))
+    .array(
+      z.enum(["reference", "lote", "tech_sheet", "piloto", "capa", "engenharia", "facao_order"]),
+    )
     .optional(),
   limit_events: z.number().int().min(1).max(200).default(40),
 });
@@ -66,9 +68,11 @@ export const fetchLiveContext = createServerFn({ method: "POST" })
     }
 
     const bullets = rows.slice(0, 20).map((e) => {
-      const when = new Date(e.created_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
-      const status =
-        e.from_status && e.to_status ? ` [${e.from_status} → ${e.to_status}]` : "";
+      const when = new Date(e.created_at).toLocaleString("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short",
+      });
+      const status = e.from_status && e.to_status ? ` [${e.from_status} → ${e.to_status}]` : "";
       const who = e.actor_name ? ` por ${e.actor_name}` : "";
       return `- ${when} · ${e.entity_type} ${e.event_type}${status}${who}`;
     });

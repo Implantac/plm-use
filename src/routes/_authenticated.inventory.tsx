@@ -1,7 +1,16 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { AlertTriangle, Boxes, GitBranch, History, PackageSearch, ArrowRightLeft, ShieldCheck, RefreshCw } from "lucide-react";
+import {
+  AlertTriangle,
+  Boxes,
+  GitBranch,
+  History,
+  PackageSearch,
+  ArrowRightLeft,
+  ShieldCheck,
+  RefreshCw,
+} from "lucide-react";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 
 import { Button } from "@/components/ui/button";
@@ -92,7 +101,9 @@ function InventoryPage() {
         annual_revenue: String(item.annual_revenue),
         unit_price: String(item.unit_price),
         order_cost: String((item as unknown as { order_cost?: number }).order_cost ?? 0),
-        holding_cost_unit: String((item as unknown as { holding_cost_unit?: number }).holding_cost_unit ?? 0),
+        holding_cost_unit: String(
+          (item as unknown as { holding_cost_unit?: number }).holding_cost_unit ?? 0,
+        ),
       });
     } else {
       setEditingItem(null);
@@ -113,7 +124,8 @@ function InventoryPage() {
         ...(editingItem ? { id: editingItem.id } : {}),
         code: formData.code.trim(),
         name: formData.name.trim(),
-        category: formData.category as "tecido" | "aviamento" | "embalagem" | "acabado" | "insumo" | "etiqueta",
+        category: formData.category as
+          "tecido" | "aviamento" | "embalagem" | "acabado" | "insumo" | "etiqueta",
         unit: formData.unit || "un",
         lead_time_days: Math.max(0, Math.round(Number(formData.lead_time_days) || 0)),
         demand_avg_daily: Number(formData.demand_avg_daily) || 0,
@@ -133,7 +145,6 @@ function InventoryPage() {
     setIsDialogOpen(false);
     void refetch();
   };
-
 
   const handleToggleActive = async (item: StockItem) => {
     const { error } = await supabase
@@ -162,31 +173,39 @@ function InventoryPage() {
       searchPlaceholder="Buscar insumo, código ou fornecedor"
       onAdd={() => handleOpenDialog()}
       metrics={[
-        { label: "Insumos ativos", value: String(items.filter((i) => i.is_active).length), detail: `de ${items.length} cadastrados` },
-        { label: "Abaixo do PP", value: String(criticalItems.length), detail: "reposição sugerida" },
+        {
+          label: "Insumos ativos",
+          value: String(items.filter((i) => i.is_active).length),
+          detail: `de ${items.length} cadastrados`,
+        },
+        {
+          label: "Abaixo do PP",
+          value: String(criticalItems.length),
+          detail: "reposição sugerida",
+        },
         { label: "Reservado", value: totalReserved.toFixed(0), detail: "em OPs abertas" },
         { label: "Rastreabilidade", value: "100%", detail: "por lote" },
       ]}
     >
       <div className="flex flex-wrap justify-end gap-3 mb-5">
         <Button
- variant="outline"
- onClick={handleClassifyAbc}
- disabled={busy}
- className="text-[10px] tracking-[0.16em] gap-2"
- >
+          variant="outline"
+          onClick={handleClassifyAbc}
+          disabled={busy}
+          className="text-[10px] tracking-[0.16em] gap-2"
+        >
           <RefreshCw className="w-4 h-4" /> Classificar ABC
         </Button>
         <Button
- variant="outline"
- onClick={() => handleOpenMove()}
+          variant="outline"
+          onClick={() => handleOpenMove()}
           className="text-[10px] tracking-[0.16em] gap-2"
         >
           <ArrowRightLeft className="w-4 h-4" /> Movimentação
         </Button>
         <Button
- variant="outline"
- onClick={() => setIsResOpen(true)}
+          variant="outline"
+          onClick={() => setIsResOpen(true)}
           className="text-[10px] tracking-[0.16em] gap-2"
         >
           <History className="w-4 h-4" /> Reservar
@@ -198,7 +217,8 @@ function InventoryPage() {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-rose-200">
               <AlertTriangle className="h-4 w-4" />
-              {criticalItems.length} insumo{criticalItems.length > 1 ? "s" : ""} abaixo do ponto do pedido
+              {criticalItems.length} insumo{criticalItems.length > 1 ? "s" : ""} abaixo do ponto do
+              pedido
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
@@ -217,7 +237,9 @@ function InventoryPage() {
                     </p>
                     <p className="mt-1 text-sm font-bold text-white truncate">{it.name}</p>
                     <p className="mt-1 text-[11px] text-white/80">
-                      Saldo {onHand.toFixed(0)}{it.unit} · PP {Number(it.reorder_point).toFixed(0)}{it.unit}
+                      Saldo {onHand.toFixed(0)}
+                      {it.unit} · PP {Number(it.reorder_point).toFixed(0)}
+                      {it.unit}
                     </p>
                   </button>
                 );
@@ -261,14 +283,20 @@ function InventoryPage() {
               <tbody className="divide-y divide-white/5">
                 {loading && (
                   <tr>
-                    <td colSpan={9} className="px-5 py-10 text-center text-xs text-muted-foreground">
+                    <td
+                      colSpan={9}
+                      className="px-5 py-10 text-center text-xs text-muted-foreground"
+                    >
                       Carregando estoque...
                     </td>
                   </tr>
                 )}
                 {!loading && items.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="px-5 py-10 text-center text-xs text-muted-foreground">
+                    <td
+                      colSpan={9}
+                      className="px-5 py-10 text-center text-xs text-muted-foreground"
+                    >
                       Nenhum insumo cadastrado.
                     </td>
                   </tr>
@@ -280,10 +308,7 @@ function InventoryPage() {
                   const critical = item.reorder_point > 0 && onHand <= item.reorder_point;
                   const coverage =
                     item.demand_avg_daily > 0 ? Math.floor(onHand / item.demand_avg_daily) : null;
-                  const usage = Math.min(
-                    Math.round((reserved / Math.max(onHand, 1)) * 100),
-                    100,
-                  );
+                  const usage = Math.min(Math.round((reserved / Math.max(onHand, 1)) * 100), 100);
                   return (
                     <tr key={item.id} className="group hover:bg-white/[0.025] transition-colors">
                       <td className="px-4 py-4">
@@ -327,7 +352,9 @@ function InventoryPage() {
                       </td>
                       <td className="px-4 py-4">
                         {coverage !== null ? (
-                          <p className={`text-xs font-bold ${coverage < item.coverage_days_min ? "text-rose-300" : "text-white"}`}>
+                          <p
+                            className={`text-xs font-bold ${coverage < item.coverage_days_min ? "text-rose-300" : "text-white"}`}
+                          >
                             {coverage} dias
                           </p>
                         ) : (
@@ -361,11 +388,11 @@ function InventoryPage() {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-1">
                           <Button
- variant="ghost"
- size="icon"
- className="w-8 text-muted-foreground hover:text-primary"
- title="Abrir na trilha"
- onClick={() =>
+                            variant="ghost"
+                            size="icon"
+                            className="w-8 text-muted-foreground hover:text-primary"
+                            title="Abrir na trilha"
+                            onClick={() =>
                               openEntity({
                                 type: "stock_item",
                                 id: item.id,
@@ -383,7 +410,6 @@ function InventoryPage() {
                           />
                         </div>
                       </td>
-
                     </tr>
                   );
                 })}
@@ -395,8 +421,6 @@ function InventoryPage() {
         <div className="space-y-6">
           <AbcCoveragePanel items={items} balances={balances} />
           <ReservationsPanel items={items} />
-
-
 
           <Card className="glass-card rounded-lg">
             <CardContent className="p-5 space-y-4">
@@ -422,10 +446,7 @@ function InventoryPage() {
               {(["tecido", "aviamento", "etiqueta", "embalagem"] as const).map((cat) => {
                 const count = items.filter((i) => i.category === cat).length;
                 return (
-                  <div
-                    key={cat}
-                    className="rounded-md border border-white/10 bg-white/[0.035] p-4"
-                  >
+                  <div key={cat} className="rounded-md border border-white/10 bg-white/[0.035] p-4">
                     <Boxes className="h-4 w-4 text-primary" />
                     <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white">
                       {cat}
@@ -468,9 +489,7 @@ function InventoryPage() {
                 </Label>
                 <Input
                   value={formData[key as keyof typeof formData]}
-                  onChange={(event) =>
-                    setFormData({ ...formData, [key]: event.target.value })
-                  }
+                  onChange={(event) => setFormData({ ...formData, [key]: event.target.value })}
                   className="focus:border-primary/40 focus:ring-0"
                   placeholder={placeholder}
                 />
@@ -481,18 +500,10 @@ function InventoryPage() {
             Estoque de segurança, ponto do pedido e LEC são recalculados automaticamente.
           </p>
           <DialogFooter className="gap-3">
-            <Button
- variant="ghost"
- onClick={() => setIsDialogOpen(false)}
-              className="text-[10px]"
-            >
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
               Cancelar
             </Button>
-            <Button
- onClick={handleSave}
- disabled={busy}
- className="text-[10px]"
- >
+            <Button onClick={handleSave} disabled={busy} className="text-[10px]">
               {editingItem ? "Salvar" : "Cadastrar"}
             </Button>
           </DialogFooter>
@@ -515,4 +526,3 @@ function InventoryPage() {
     </ModuleLayout>
   );
 }
-

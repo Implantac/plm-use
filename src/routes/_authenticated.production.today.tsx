@@ -94,7 +94,7 @@ function ProductionTodayPage() {
       <div className="space-y-4">
         <OpSummary sector={setor} />
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Button asChild variant="outline" size="sm" >
+          <Button asChild variant="outline" size="sm">
             <Link to="/production">
               <ArrowLeft className="h-3.5 w-3.5 mr-1" />
               Voltar ao Kanban
@@ -121,9 +121,7 @@ function ProductionTodayPage() {
           <Card className="glass-card rounded-lg">
             <CardContent className="p-10 text-center">
               <Zap className="h-8 w-8 text-emerald-300 mx-auto mb-2" />
-              <p className="text-sm text-white">
-                Nenhuma peça pendente em {setor}.
-              </p>
+              <p className="text-sm text-white">Nenhuma peça pendente em {setor}.</p>
               <p className="text-[11px] text-muted-foreground">
                 Fila vazia — setor disponível para novos lotes.
               </p>
@@ -175,15 +173,13 @@ function ProductionTodayPage() {
                               : `${i.diasPrazo}d`}
                           </Badge>
                           <p className="text-lg font-bold text-white">
-                            {i.pendente} <span className="text-[10px] text-muted-foreground">pç</span>
+                            {i.pendente}{" "}
+                            <span className="text-[10px] text-muted-foreground">pç</span>
                           </p>
                         </div>
                       </div>
                       <div className="mt-2 flex items-center gap-2">
-                        <Progress
-                          value={i.progresso}
-                          className="h-1 bg-white/5 flex-1"
-                        />
+                        <Progress value={i.progresso} className="h-1 bg-white/5 flex-1" />
                         <span className="text-[10px] text-muted-foreground w-10 text-right">
                           {i.progresso}%
                         </span>

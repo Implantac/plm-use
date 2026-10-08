@@ -10,7 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PackagePlus, Send, CheckCircle2, XCircle, Clock } from "lucide-react";
@@ -21,19 +26,38 @@ export const Route = createFileRoute("/_authenticated/supplier-portal")({
 });
 
 type Supplier = {
-  id: string; code: string; name: string; tipo: string; status: string;
-  cidade: string | null; uf: string | null; contato_nome: string | null;
+  id: string;
+  code: string;
+  name: string;
+  tipo: string;
+  status: string;
+  cidade: string | null;
+  uf: string | null;
+  contato_nome: string | null;
   contato_email: string | null;
 };
 type Order = {
-  id: string; codigo: string; supplier_id: string; descricao: string | null;
-  quantidade: number; unidade: string; prazo: string | null; status: string;
-  observacoes: string | null; supplier_response: string | null;
-  supplier_responded_at: string | null; created_at: string;
+  id: string;
+  codigo: string;
+  supplier_id: string;
+  descricao: string | null;
+  quantidade: number;
+  unidade: string;
+  prazo: string | null;
+  status: string;
+  observacoes: string | null;
+  supplier_response: string | null;
+  supplier_responded_at: string | null;
+  created_at: string;
 };
 type Sample = {
-  id: string; supplier_order_id: string; supplier_id: string; observacoes: string | null;
-  decision: string; decision_note: string | null; created_at: string;
+  id: string;
+  supplier_order_id: string;
+  supplier_id: string;
+  observacoes: string | null;
+  decision: string;
+  decision_note: string | null;
+  created_at: string;
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -51,8 +75,7 @@ function useSuppliers() {
   return useQuery({
     queryKey: ["suppliers"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("suppliers").select("*").order("name");
+      const { data, error } = await supabase.from("suppliers").select("*").order("name");
       if (error) throw error;
       return data as Supplier[];
     },
@@ -63,7 +86,9 @@ function useOrders() {
     queryKey: ["supplier_orders"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("supplier_orders").select("*").order("created_at", { ascending: false });
+        .from("supplier_orders")
+        .select("*")
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data as Order[];
     },
@@ -74,7 +99,9 @@ function useSamples() {
     queryKey: ["supplier_samples"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("supplier_sample_submissions").select("*").order("created_at", { ascending: false });
+        .from("supplier_sample_submissions")
+        .select("*")
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data as Sample[];
     },
@@ -94,9 +121,15 @@ function SupplierPortalPage() {
           <TabsTrigger value="orders">Ordens de Produção</TabsTrigger>
           <TabsTrigger value="samples">Amostras</TabsTrigger>
         </TabsList>
-        <TabsContent value="suppliers" className="mt-4"><SuppliersTab /></TabsContent>
-        <TabsContent value="orders" className="mt-4"><OrdersTab /></TabsContent>
-        <TabsContent value="samples" className="mt-4"><SamplesTab /></TabsContent>
+        <TabsContent value="suppliers" className="mt-4">
+          <SuppliersTab />
+        </TabsContent>
+        <TabsContent value="orders" className="mt-4">
+          <OrdersTab />
+        </TabsContent>
+        <TabsContent value="samples" className="mt-4">
+          <SamplesTab />
+        </TabsContent>
       </Tabs>
     </ModuleLayout>
   );
@@ -108,22 +141,36 @@ function SuppliersTab() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    code: "", name: "", tipo: "confeccao", cidade: "", uf: "",
-    contato_nome: "", contato_email: "",
+    code: "",
+    name: "",
+    tipo: "confeccao",
+    cidade: "",
+    uf: "",
+    contato_nome: "",
+    contato_email: "",
   });
 
   const create = useMutation({
     mutationFn: async () => {
       const { data: user } = await supabase.auth.getUser();
       const { error } = await supabase.from("suppliers").insert({
-        ...form, created_by: user.user?.id,
+        ...form,
+        created_by: user.user?.id,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Fornecedor criado");
       setOpen(false);
-      setForm({ code: "", name: "", tipo: "confeccao", cidade: "", uf: "", contato_nome: "", contato_email: "" });
+      setForm({
+        code: "",
+        name: "",
+        tipo: "confeccao",
+        cidade: "",
+        uf: "",
+        contato_nome: "",
+        contato_email: "",
+      });
       qc.invalidateQueries({ queryKey: ["suppliers"] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Falha"),
@@ -139,29 +186,71 @@ function SuppliersTab() {
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Cadastrar fornecedor</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Cadastrar fornecedor</DialogTitle>
+            </DialogHeader>
             <div className="grid gap-3">
               <div className="grid grid-cols-2 gap-2">
-                <div><Label className="text-[10px] uppercase">Código</Label>
-                  <Input value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} /></div>
-                <div><Label className="text-[10px] uppercase">Tipo</Label>
-                  <Input value={form.tipo} onChange={(e) => setForm({ ...form, tipo: e.target.value })} placeholder="confeccao, tecelagem…" /></div>
+                <div>
+                  <Label className="text-[10px] uppercase">Código</Label>
+                  <Input
+                    value={form.code}
+                    onChange={(e) => setForm({ ...form, code: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label className="text-[10px] uppercase">Tipo</Label>
+                  <Input
+                    value={form.tipo}
+                    onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+                    placeholder="confeccao, tecelagem…"
+                  />
+                </div>
               </div>
-              <div><Label className="text-[10px] uppercase">Nome</Label>
-                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+              <div>
+                <Label className="text-[10px] uppercase">Nome</Label>
+                <Input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label className="text-[10px] uppercase">Cidade</Label>
-                  <Input value={form.cidade} onChange={(e) => setForm({ ...form, cidade: e.target.value })} /></div>
-                <div><Label className="text-[10px] uppercase">UF</Label>
-                  <Input value={form.uf} onChange={(e) => setForm({ ...form, uf: e.target.value })} /></div>
+                <div>
+                  <Label className="text-[10px] uppercase">Cidade</Label>
+                  <Input
+                    value={form.cidade}
+                    onChange={(e) => setForm({ ...form, cidade: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label className="text-[10px] uppercase">UF</Label>
+                  <Input
+                    value={form.uf}
+                    onChange={(e) => setForm({ ...form, uf: e.target.value })}
+                  />
+                </div>
               </div>
-              <div><Label className="text-[10px] uppercase">Contato · nome</Label>
-                <Input value={form.contato_nome} onChange={(e) => setForm({ ...form, contato_nome: e.target.value })} /></div>
-              <div><Label className="text-[10px] uppercase">Contato · e-mail</Label>
-                <Input type="email" value={form.contato_email} onChange={(e) => setForm({ ...form, contato_email: e.target.value })} /></div>
+              <div>
+                <Label className="text-[10px] uppercase">Contato · nome</Label>
+                <Input
+                  value={form.contato_nome}
+                  onChange={(e) => setForm({ ...form, contato_nome: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-[10px] uppercase">Contato · e-mail</Label>
+                <Input
+                  type="email"
+                  value={form.contato_email}
+                  onChange={(e) => setForm({ ...form, contato_email: e.target.value })}
+                />
+              </div>
             </div>
             <DialogFooter>
-              <Button onClick={() => create.mutate()} disabled={!form.code || !form.name || create.isPending}>
+              <Button
+                onClick={() => create.mutate()}
+                disabled={!form.code || !form.name || create.isPending}
+              >
                 Cadastrar
               </Button>
             </DialogFooter>
@@ -184,11 +273,14 @@ function SuppliersTab() {
                   {s.code} · {s.name}
                 </p>
                 <p className="text-[11px] text-muted-foreground">
-                  {s.tipo}{s.cidade ? ` · ${s.cidade}/${s.uf}` : ""}
+                  {s.tipo}
+                  {s.cidade ? ` · ${s.cidade}/${s.uf}` : ""}
                   {s.contato_nome ? ` · ${s.contato_nome}` : ""}
                 </p>
               </div>
-              <Badge variant="outline" className="text-[10px] uppercase">{s.status}</Badge>
+              <Badge variant="outline" className="text-[10px] uppercase">
+                {s.status}
+              </Badge>
             </Card>
           ))}
         </div>
@@ -204,8 +296,13 @@ function OrdersTab() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
-    supplier_id: "", codigo: "", descricao: "",
-    quantidade: 0, unidade: "pc", prazo: "", observacoes: "",
+    supplier_id: "",
+    codigo: "",
+    descricao: "",
+    quantidade: 0,
+    unidade: "pc",
+    prazo: "",
+    observacoes: "",
   });
 
   const create = useMutation({
@@ -226,7 +323,15 @@ function OrdersTab() {
     onSuccess: () => {
       toast.success("OP enviada ao fornecedor");
       setOpen(false);
-      setForm({ supplier_id: "", codigo: "", descricao: "", quantidade: 0, unidade: "pc", prazo: "", observacoes: "" });
+      setForm({
+        supplier_id: "",
+        codigo: "",
+        descricao: "",
+        quantidade: 0,
+        unidade: "pc",
+        prazo: "",
+        observacoes: "",
+      });
       qc.invalidateQueries({ queryKey: ["supplier_orders"] });
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Falha"),
@@ -235,8 +340,10 @@ function OrdersTab() {
   const transition = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const { data: user } = await supabase.auth.getUser();
-      const { error } = await supabase.from("supplier_orders")
-        .update({ status, updated_by: user.user?.id }).eq("id", id);
+      const { error } = await supabase
+        .from("supplier_orders")
+        .update({ status, updated_by: user.user?.id })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["supplier_orders"] }),
@@ -258,7 +365,9 @@ function OrdersTab() {
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Nova ordem de produção</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Nova ordem de produção</DialogTitle>
+            </DialogHeader>
             <div className="grid gap-3">
               <div>
                 <Label className="text-[10px] uppercase">Fornecedor</Label>
@@ -269,31 +378,67 @@ function OrdersTab() {
                 >
                   <option value="">Selecione…</option>
                   {(suppliers ?? []).map((s) => (
-                    <option key={s.id} value={s.id}>{s.code} · {s.name}</option>
+                    <option key={s.id} value={s.id}>
+                      {s.code} · {s.name}
+                    </option>
                   ))}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label className="text-[10px] uppercase">Código OP</Label>
-                  <Input value={form.codigo} onChange={(e) => setForm({ ...form, codigo: e.target.value })} /></div>
-                <div><Label className="text-[10px] uppercase">Prazo</Label>
-                  <Input type="date" value={form.prazo} onChange={(e) => setForm({ ...form, prazo: e.target.value })} /></div>
+                <div>
+                  <Label className="text-[10px] uppercase">Código OP</Label>
+                  <Input
+                    value={form.codigo}
+                    onChange={(e) => setForm({ ...form, codigo: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label className="text-[10px] uppercase">Prazo</Label>
+                  <Input
+                    type="date"
+                    value={form.prazo}
+                    onChange={(e) => setForm({ ...form, prazo: e.target.value })}
+                  />
+                </div>
               </div>
-              <div><Label className="text-[10px] uppercase">Descrição</Label>
-                <Input value={form.descricao} onChange={(e) => setForm({ ...form, descricao: e.target.value })} /></div>
+              <div>
+                <Label className="text-[10px] uppercase">Descrição</Label>
+                <Input
+                  value={form.descricao}
+                  onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-2">
-                <div><Label className="text-[10px] uppercase">Quantidade</Label>
-                  <Input type="number" value={form.quantidade}
-                    onChange={(e) => setForm({ ...form, quantidade: Number(e.target.value) })} /></div>
-                <div><Label className="text-[10px] uppercase">Unidade</Label>
-                  <Input value={form.unidade} onChange={(e) => setForm({ ...form, unidade: e.target.value })} /></div>
+                <div>
+                  <Label className="text-[10px] uppercase">Quantidade</Label>
+                  <Input
+                    type="number"
+                    value={form.quantidade}
+                    onChange={(e) => setForm({ ...form, quantidade: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <Label className="text-[10px] uppercase">Unidade</Label>
+                  <Input
+                    value={form.unidade}
+                    onChange={(e) => setForm({ ...form, unidade: e.target.value })}
+                  />
+                </div>
               </div>
-              <div><Label className="text-[10px] uppercase">Observações</Label>
-                <Textarea value={form.observacoes} onChange={(e) => setForm({ ...form, observacoes: e.target.value })} rows={2} /></div>
+              <div>
+                <Label className="text-[10px] uppercase">Observações</Label>
+                <Textarea
+                  value={form.observacoes}
+                  onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
+                  rows={2}
+                />
+              </div>
             </div>
             <DialogFooter>
-              <Button onClick={() => create.mutate()}
-                disabled={!form.supplier_id || !form.codigo || create.isPending}>
+              <Button
+                onClick={() => create.mutate()}
+                disabled={!form.supplier_id || !form.codigo || create.isPending}
+              >
                 Enviar OP
               </Button>
             </DialogFooter>
@@ -321,35 +466,56 @@ function OrdersTab() {
                     {o.prazo ? ` · prazo ${new Date(o.prazo).toLocaleDateString("pt-BR")}` : ""}
                   </p>
                   {o.supplier_response && (
-                    <p className="text-[10px] text-cyan-300 mt-1">Fornecedor: {o.supplier_response}</p>
+                    <p className="text-[10px] text-cyan-300 mt-1">
+                      Fornecedor: {o.supplier_response}
+                    </p>
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <Badge variant="outline" className={`text-[10px] uppercase ${STATUS_COLORS[o.status] ?? ""}`}>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] uppercase ${STATUS_COLORS[o.status] ?? ""}`}
+                  >
                     {o.status}
                   </Badge>
                   <div className="flex gap-1 mt-1">
                     {o.status === "enviada" && (
                       <>
-                        <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
- onClick={() => transition.mutate({ id: o.id, status: "aceita" })}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-[10px] gap-1"
+                          onClick={() => transition.mutate({ id: o.id, status: "aceita" })}
+                        >
                           <CheckCircle2 className="w-3 h-3" /> Aceitar
                         </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
- onClick={() => transition.mutate({ id: o.id, status: "cancelada" })}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-[10px] gap-1"
+                          onClick={() => transition.mutate({ id: o.id, status: "cancelada" })}
+                        >
                           <XCircle className="w-3 h-3" /> Cancelar
                         </Button>
                       </>
                     )}
                     {o.status === "aceita" && (
-                      <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
- onClick={() => transition.mutate({ id: o.id, status: "em_producao" })}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-[10px] gap-1"
+                        onClick={() => transition.mutate({ id: o.id, status: "em_producao" })}
+                      >
                         <Clock className="w-3 h-3" /> Iniciar produção
                       </Button>
                     )}
                     {o.status === "em_producao" && (
-                      <Button size="sm" variant="outline" className="h-7 text-[10px]"
- onClick={() => transition.mutate({ id: o.id, status: "concluida" })}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-[10px]"
+                        onClick={() => transition.mutate({ id: o.id, status: "concluida" })}
+                      >
                         Concluir
                       </Button>
                     )}
@@ -373,10 +539,15 @@ function SamplesTab() {
   const decide = useMutation({
     mutationFn: async ({ id, decision, note }: { id: string; decision: string; note?: string }) => {
       const { data: user } = await supabase.auth.getUser();
-      const { error } = await supabase.from("supplier_sample_submissions").update({
-        decision, decision_note: note ?? null,
-        decided_by: user.user?.id, decided_at: new Date().toISOString(),
-      }).eq("id", id);
+      const { error } = await supabase
+        .from("supplier_sample_submissions")
+        .update({
+          decision,
+          decision_note: note ?? null,
+          decided_by: user.user?.id,
+          decided_at: new Date().toISOString(),
+        })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["supplier_samples"] }),
@@ -404,21 +575,39 @@ function SamplesTab() {
           <div>
             <p className="text-sm font-bold text-white">OP {orderCode(s.supplier_order_id)}</p>
             <p className="text-[11px] text-muted-foreground">{s.observacoes ?? "—"}</p>
-            {s.decision_note && <p className="text-[10px] text-cyan-300 mt-1">Nota: {s.decision_note}</p>}
+            {s.decision_note && (
+              <p className="text-[10px] text-cyan-300 mt-1">Nota: {s.decision_note}</p>
+            )}
           </div>
           <div className="flex flex-col items-end gap-1">
-            <Badge variant="outline" className={`text-[10px] uppercase ${
-              s.decision === "aprovada" ? STATUS_COLORS.aprovada :
-              s.decision === "reprovada" ? STATUS_COLORS.rejeitada : STATUS_COLORS.enviada
-            }`}>{s.decision}</Badge>
+            <Badge
+              variant="outline"
+              className={`text-[10px] uppercase ${
+                s.decision === "aprovada"
+                  ? STATUS_COLORS.aprovada
+                  : s.decision === "reprovada"
+                    ? STATUS_COLORS.rejeitada
+                    : STATUS_COLORS.enviada
+              }`}
+            >
+              {s.decision}
+            </Badge>
             {s.decision === "pendente" && (
               <div className="flex gap-1 mt-1">
-                <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
- onClick={() => decide.mutate({ id: s.id, decision: "aprovada" })}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-[10px] gap-1"
+                  onClick={() => decide.mutate({ id: s.id, decision: "aprovada" })}
+                >
                   <CheckCircle2 className="w-3 h-3" /> Aprovar
                 </Button>
-                <Button size="sm" variant="outline" className="h-7 text-[10px] gap-1"
- onClick={() => decide.mutate({ id: s.id, decision: "reprovada" })}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-[10px] gap-1"
+                  onClick={() => decide.mutate({ id: s.id, decision: "reprovada" })}
+                >
                   <XCircle className="w-3 h-3" /> Reprovar
                 </Button>
               </div>

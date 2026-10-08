@@ -18,8 +18,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
   const templates: Record<typeof preset, string> = {
     croqui:
       "Fashion technical sketch (croqui de moda) in black ink on white background, front view, clean lines, professional flat illustration: ",
-    foto:
-      "Photorealistic editorial fashion photograph on model, soft studio light, high fashion magazine style: ",
+    foto: "Photorealistic editorial fashion photograph on model, soft studio light, high fashion magazine style: ",
     variacao:
       "Same garment as described, alternative colorway and styling, keep silhouette identical: ",
   };
@@ -86,7 +85,11 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
             aria-invalid={!!promptError}
           />
           <Button size="sm" className="gap-1" onClick={generate} disabled={busy}>
-            {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wand2 className="w-3.5 h-3.5" />}
+            {busy ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Wand2 className="w-3.5 h-3.5" />
+            )}
             Gerar
           </Button>
         </div>

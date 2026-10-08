@@ -1,9 +1,4 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -41,14 +36,7 @@ interface Props {
   onClose(): void;
 }
 
-export function ReferenciaDrawer({
-  loteNumero,
-  grupo,
-  colecao,
-  referencia,
-  open,
-  onClose,
-}: Props) {
+export function ReferenciaDrawer({ loteNumero, grupo, colecao, referencia, open, onClose }: Props) {
   if (!referencia) return null;
 
   return (
@@ -63,9 +51,7 @@ export function ReferenciaDrawer({
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                 {loteNumero} • {referencia.ref}
               </p>
-              <SheetTitle className="mt-1 text-white text-xl">
-                {referencia.nome}
-              </SheetTitle>
+              <SheetTitle className="mt-1 text-white text-xl">{referencia.nome}</SheetTitle>
               <div className="mt-2 flex items-center gap-2">
                 <Badge variant="outline" className="text-[10px] border-white/20">
                   {referencia.setor_atual}
@@ -90,21 +76,14 @@ export function ReferenciaDrawer({
             <Metric label="Prog." value={referencia.qtd_programada} />
             <Metric label="Adic." value={referencia.qtd_adicional} tone="pos" />
             <Metric label="Perda" value={referencia.qtd_perdida} tone="neg" />
-            <Metric
-              label="Saldo"
-              value={saldoReferencia(referencia)}
-              tone="strong"
-            />
+            <Metric label="Saldo" value={saldoReferencia(referencia)} tone="strong" />
           </div>
           <div>
             <div className="flex justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
               <span>Produzido {referencia.qtd_produzida}</span>
               <span>Pendente {pendenteReferencia(referencia)}</span>
             </div>
-            <Progress
-              value={percentualReferencia(referencia)}
-              className="mt-1 h-1.5 bg-white/10"
-            />
+            <Progress value={percentualReferencia(referencia)} className="mt-1 h-1.5 bg-white/10" />
           </div>
         </SheetHeader>
 
@@ -168,12 +147,8 @@ function ReferenciaTabs({
       </TabsList>
 
       <TabsContent value="pilotos" className="mt-4">
-        <PilotosPanel
-          referenciaRef={referencia.ref}
-          referenciaNome={referencia.nome}
-        />
+        <PilotosPanel referenciaRef={referencia.ref} referenciaNome={referencia.nome} />
       </TabsContent>
-
 
       <TabsContent value="chat" className="mt-4">
         <CommentsPanel
@@ -241,9 +216,7 @@ function ReferenciaTabs({
 
       <TabsContent value="hist" className="mt-4 space-y-2">
         {referencia.passagens.length === 0 ? (
-          <p className="text-[11px] text-muted-foreground">
-            Nenhuma passagem registrada ainda.
-          </p>
+          <p className="text-[11px] text-muted-foreground">Nenhuma passagem registrada ainda.</p>
         ) : (
           referencia.passagens.map((p) => (
             <div
@@ -258,12 +231,9 @@ function ReferenciaTabs({
               </div>
               <p className="mt-1 text-muted-foreground">
                 {p.setor_origem}
-                {p.setor_destino ? ` → ${p.setor_destino}` : ""} ·{" "}
-                {p.responsavel}
+                {p.setor_destino ? ` → ${p.setor_destino}` : ""} · {p.responsavel}
               </p>
-              {p.defeito && (
-                <p className="mt-1 text-rose-300">Defeito: {p.defeito}</p>
-              )}
+              {p.defeito && <p className="mt-1 text-rose-300">Defeito: {p.defeito}</p>}
               {p.observacao && <p className="mt-1 text-white">{p.observacao}</p>}
               <p className="mt-1 text-[10px] text-muted-foreground">
                 {new Date(p.timestamp).toLocaleString()}
@@ -295,11 +265,8 @@ function Metric({
           : "text-white";
   return (
     <div className="rounded bg-white/5 py-2">
-      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
-        {label}
-      </p>
+      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className={`text-sm font-bold ${color}`}>{value}</p>
     </div>
   );
 }
-

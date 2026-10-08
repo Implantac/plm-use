@@ -4,7 +4,15 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { statusToast } from "@/components/ui/status-presets";
-import { CheckCircle2, MessageSquarePlus, PackageOpen, Sparkles, ThumbsDown, ThumbsUp, Undo2 } from "lucide-react";
+import {
+  CheckCircle2,
+  MessageSquarePlus,
+  PackageOpen,
+  Sparkles,
+  ThumbsDown,
+  ThumbsUp,
+  Undo2,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,11 +21,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldMessage } from "@/components/ui/field-message";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs, TabsContent, TabsList, TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { useReferences } from "@/hooks/use-references";
@@ -76,9 +86,14 @@ function ShowroomPage() {
 
   const metrics = useMemo(() => {
     const total = samples.length;
-    const aprovadas = samples.filter((s) => s.status === "aprovada" || s.status === "em_kit" || s.status === "em_showroom").length;
+    const aprovadas = samples.filter(
+      (s) => s.status === "aprovada" || s.status === "em_kit" || s.status === "em_showroom",
+    ).length;
     const cobertura = total ? Math.round((aprovadas / total) * 100) : 0;
-    const feedbackCount = Array.from(feedbackByReference.values()).reduce((n, arr) => n + arr.length, 0);
+    const feedbackCount = Array.from(feedbackByReference.values()).reduce(
+      (n, arr) => n + arr.length,
+      0,
+    );
     const go = decisions.filter((d) => d.decision === "go").length;
     return [
       { label: "Peças-mãe", value: String(total), detail: `${aprovadas} aprovadas` },
@@ -136,7 +151,9 @@ function ShowroomPage() {
                             {s.grade ?? "grade —"} · {s.cor ?? "cor —"} · qtd {s.quantidade}
                           </p>
                         </div>
-                        <Badge variant="outline">{SAMPLE_STATUS_LABEL[s.status as ShowroomSampleStatus]}</Badge>
+                        <Badge variant="outline">
+                          {SAMPLE_STATUS_LABEL[s.status as ShowroomSampleStatus]}
+                        </Badge>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -146,10 +163,10 @@ function ShowroomPage() {
                       <div className="flex flex-wrap gap-2">
                         {next.map((to) => (
                           <Button
- key={to}
- size="sm"
- variant="secondary"
- onClick={async () => {
+                            key={to}
+                            size="sm"
+                            variant="secondary"
+                            onClick={async () => {
                               const ok = await transitionSample(s.id, to);
                               if (ok) statusToast.success(`→ ${SAMPLE_STATUS_LABEL[to]}`);
                               else statusToast.error("Transição bloqueada");
@@ -163,9 +180,9 @@ function ShowroomPage() {
                         ))}
                         {ref ? (
                           <Button
- size="sm"
- variant="ghost"
- onClick={() => openEntity({ type: "reference", id: ref.id })}
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEntity({ type: "reference", id: ref.id })}
                           >
                             Abrir referência
                           </Button>
@@ -206,7 +223,8 @@ function ShowroomPage() {
         <TabsContent value="publications">
           {publications.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Nenhuma publicação criada. Publicações da ficha digital serão administradas por Coordenação de Produto.
+              Nenhuma publicação criada. Publicações da ficha digital serão administradas por
+              Coordenação de Produto.
             </p>
           ) : (
             <div className="grid gap-3 md:grid-cols-2">
@@ -217,7 +235,9 @@ function ShowroomPage() {
                       <CardTitle className="text-base">{p.titulo}</CardTitle>
                       <Badge variant="outline">{p.status}</Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground">v{p.versao} · {p.reference_ids.length} referências</p>
+                    <p className="text-xs text-muted-foreground">
+                      v{p.versao} · {p.reference_ids.length} referências
+                    </p>
                   </CardHeader>
                   <CardContent>
                     <p className="text-xs text-muted-foreground line-clamp-3">
@@ -266,7 +286,9 @@ function RequestSampleCard({
           <div className="md:col-span-2">
             <Label>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger><SelectValue placeholder="Escolha uma referência aprovada…" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Escolha uma referência aprovada…" />
+              </SelectTrigger>
               <SelectContent>
                 {eligible.map((r) => (
                   <SelectItem key={r.id} value={r.id}>
@@ -296,16 +318,19 @@ function RequestSampleCard({
         </div>
         <div className="mt-3 flex justify-end">
           <Button
- size="sm"
- disabled={!refId}
- onClick={async () => {
+            size="sm"
+            disabled={!refId}
+            onClick={async () => {
               await onSubmit({
                 reference_id: refId,
                 grade: grade || undefined,
                 cor: cor || undefined,
                 quantidade: qtd,
               });
-              setRefId(""); setGrade(""); setCor(""); setQtd(1);
+              setRefId("");
+              setGrade("");
+              setCor("");
+              setQtd(1);
             }}
           >
             <Sparkles className="h-3.5 w-3.5 mr-1" /> Solicitar
@@ -335,7 +360,9 @@ function FeedbackCard({
   const [nota, setNota] = useState(4);
   const [comentario, setComentario] = useState("");
   const [rota, setRota] = useState("");
-  const [autorTipo, setAutorTipo] = useState<"interno" | "representante" | "buyer" | "showroom">("interno");
+  const [autorTipo, setAutorTipo] = useState<"interno" | "representante" | "buyer" | "showroom">(
+    "interno",
+  );
 
   return (
     <Card className="border-white/10 bg-white/[0.02]">
@@ -349,7 +376,9 @@ function FeedbackCard({
           <div className="md:col-span-2 space-y-1.5">
             <Label required>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger aria-invalid={!refId}><SelectValue placeholder="Escolha…" /></SelectTrigger>
+              <SelectTrigger aria-invalid={!refId}>
+                <SelectValue placeholder="Escolha…" />
+              </SelectTrigger>
               <SelectContent>
                 {references.map((r) => (
                   <SelectItem key={r.id} value={r.id}>
@@ -365,10 +394,14 @@ function FeedbackCard({
           <div>
             <Label>Dimensão</Label>
             <Select value={dim} onValueChange={(v) => setDim(v as ShowroomFeedbackDimension)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {FEEDBACK_DIMENSIONS.map((d) => (
-                  <SelectItem key={d} value={d}>{d}</SelectItem>
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -386,7 +419,9 @@ function FeedbackCard({
           <div>
             <Label>Autor</Label>
             <Select value={autorTipo} onValueChange={(v) => setAutorTipo(v as typeof autorTipo)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="interno">Interno</SelectItem>
                 <SelectItem value="representante">Representante</SelectItem>
@@ -411,9 +446,9 @@ function FeedbackCard({
         </div>
         <div className="mt-3 flex justify-end">
           <Button
- size="sm"
- disabled={!refId}
- onClick={async () => {
+            size="sm"
+            disabled={!refId}
+            onClick={async () => {
               await onSubmit({
                 reference_id: refId,
                 dimensao: dim,
@@ -456,14 +491,18 @@ function FeedbackList({
                 <CardTitle className="text-base">
                   {ref?.code ?? "—"} · {ref?.name ?? "Referência removida"}
                 </CardTitle>
-                <Badge variant="outline">média {avg.toFixed(1)} · {arr.length}</Badge>
+                <Badge variant="outline">
+                  média {avg.toFixed(1)} · {arr.length}
+                </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
               {arr.slice(0, 5).map((f) => (
                 <div key={f.id} className="text-xs">
                   <span className="font-medium">{f.dimensao}</span>{" "}
-                  <span className="text-muted-foreground">· nota {f.nota} · {f.autor_tipo}</span>
+                  <span className="text-muted-foreground">
+                    · nota {f.nota} · {f.autor_tipo}
+                  </span>
                   {f.comentario ? <p className="text-muted-foreground">{f.comentario}</p> : null}
                 </div>
               ))}
@@ -488,9 +527,7 @@ function DecisionCard({
     justificativa: string,
   ) => Promise<void>;
 }) {
-  const eligible = references.filter((r) =>
-    ["APROVACAO", "ENGENHARIA"].includes(r.status),
-  );
+  const eligible = references.filter((r) => ["APROVACAO", "ENGENHARIA"].includes(r.status));
   const [refId, setRefId] = useState("");
   const [justificativa, setJustificativa] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -520,7 +557,9 @@ function DecisionCard({
           <div className="space-y-1.5">
             <Label required>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger aria-invalid={missingRef}><SelectValue placeholder="Escolha…" /></SelectTrigger>
+              <SelectTrigger aria-invalid={missingRef}>
+                <SelectValue placeholder="Escolha…" />
+              </SelectTrigger>
               <SelectContent>
                 {eligible.map((r) => {
                   const d = decisionByRef.get(r.id);
@@ -552,26 +591,22 @@ function DecisionCard({
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button
- size="sm"
- disabled={!canSubmit}
- onClick={() => submit("go")}
-          >
+          <Button size="sm" disabled={!canSubmit} onClick={() => submit("go")}>
             <ThumbsUp className="h-3.5 w-3.5 mr-1" /> Go
           </Button>
           <Button
- size="sm"
- variant="secondary"
- disabled={!canSubmit}
- onClick={() => submit("revisar")}
+            size="sm"
+            variant="secondary"
+            disabled={!canSubmit}
+            onClick={() => submit("revisar")}
           >
             Revisar
           </Button>
           <Button
- size="sm"
- variant="destructive"
- disabled={!canSubmit}
- onClick={() => submit("no_go")}
+            size="sm"
+            variant="destructive"
+            disabled={!canSubmit}
+            onClick={() => submit("no_go")}
           >
             <ThumbsDown className="h-3.5 w-3.5 mr-1" /> No-Go
           </Button>

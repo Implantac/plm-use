@@ -54,7 +54,7 @@ export function useStockItems() {
       supabase.from("stock_balance" as never).select("*"),
     ]);
 
-    setItems(((itemsRes.data ?? []) as unknown as StockItem[]));
+    setItems((itemsRes.data ?? []) as unknown as StockItem[]);
 
     const map: Record<string, StockBalance> = {};
     ((balRes.data ?? []) as unknown as StockBalance[]).forEach((b) => {

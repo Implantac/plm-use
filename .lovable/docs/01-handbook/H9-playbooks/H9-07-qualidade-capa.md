@@ -52,33 +52,35 @@ verificação de eficácia — fechando o ciclo Detectar → Conter → Investig
 
 ## 3. Entradas (inputs)
 
-| # | Entrada | Origem (elo/sistema) | Formato | Obrigatória? |
-|---|---------|----------------------|---------|--------------|
-| 1 | Lote embalado por SKU (`finishing_batch` reconciliado) | H9-06 | `pcp_lots` + `entity_relations` | Sim |
-| 2 | Ficha técnica vigente (tolerâncias, medidas críticas, aviamentos) | H9-02 / `tech_sheets` | jsonb versionado | Sim |
-| 3 | Plano de amostragem AQL (nível/critério) por família | Config Qualidade | `quality_aql_plan` | Sim |
-| 4 | Catálogo de defeitos (`defect_catalog`) com severidade | Handbook Qualidade | tabela `public.defect_catalog` | Sim |
-| 5 | Histórico de CAPAs abertas na mesma referência/facção | `quality_capa` | tabela | Sim |
-| 6 | SLA/scorecard do fornecedor externo (se defeito é da facção) | H9-05 / H9-06 | `supplier_scorecard` | Não |
-| 7 | Snapshot ERP de estoque de PA destino | H6-02 `ErpAdapter.getStock` | contrato | Sim |
+| #   | Entrada                                                           | Origem (elo/sistema)        | Formato                         | Obrigatória? |
+| --- | ----------------------------------------------------------------- | --------------------------- | ------------------------------- | ------------ |
+| 1   | Lote embalado por SKU (`finishing_batch` reconciliado)            | H9-06                       | `pcp_lots` + `entity_relations` | Sim          |
+| 2   | Ficha técnica vigente (tolerâncias, medidas críticas, aviamentos) | H9-02 / `tech_sheets`       | jsonb versionado                | Sim          |
+| 3   | Plano de amostragem AQL (nível/critério) por família              | Config Qualidade            | `quality_aql_plan`              | Sim          |
+| 4   | Catálogo de defeitos (`defect_catalog`) com severidade            | Handbook Qualidade          | tabela `public.defect_catalog`  | Sim          |
+| 5   | Histórico de CAPAs abertas na mesma referência/facção             | `quality_capa`              | tabela                          | Sim          |
+| 6   | SLA/scorecard do fornecedor externo (se defeito é da facção)      | H9-05 / H9-06               | `supplier_scorecard`            | Não          |
+| 7   | Snapshot ERP de estoque de PA destino                             | H6-02 `ErpAdapter.getStock` | contrato                        | Sim          |
 
 Regras:
+
 - Toda entrada rastreável a entidade do catálogo H2-02.
 - ERP **sempre** via `ErpAdapter` (H6-02) — nunca query direta.
 
 ## 4. Saídas (outputs)
 
-| # | Saída | Destino (elo/sistema) | Entidade / Evento | Obrigatória? |
-|---|-------|-----------------------|-------------------|--------------|
-| 1 | Inspeção AQL registrada (aprovada/reprovada) | Qualidade | `quality_inspection` + `inspection.closed` | Sim |
-| 2 | Defeitos por SKU/posição/severidade | Qualidade + BI | `quality_defect` + `defect.registered` | Sim |
-| 3 | CAPA aberta (quando causa sistêmica) | Qualidade | `quality_capa` + `capa.opened` | Condicional |
-| 4 | Verificação de eficácia da CAPA | Qualidade | `capa.verified` / `capa.reopened` | Sim (para CAPA) |
-| 5 | SKU liberado para estoque de PA | H9-13 + ERP | `sku.released` + `writeErp('pa_receipt')` | Sim (se aprovado) |
-| 6 | Solicitação de retrabalho / segunda linha / refugo | H9-06 ou almox | `sku.rework_requested` / `sku.refuse` | Condicional |
-| 7 | Alerta ao fornecedor externo com evidência | H9-05 (facção) | `faccao.quality.alert` | Condicional |
+| #   | Saída                                              | Destino (elo/sistema) | Entidade / Evento                          | Obrigatória?      |
+| --- | -------------------------------------------------- | --------------------- | ------------------------------------------ | ----------------- |
+| 1   | Inspeção AQL registrada (aprovada/reprovada)       | Qualidade             | `quality_inspection` + `inspection.closed` | Sim               |
+| 2   | Defeitos por SKU/posição/severidade                | Qualidade + BI        | `quality_defect` + `defect.registered`     | Sim               |
+| 3   | CAPA aberta (quando causa sistêmica)               | Qualidade             | `quality_capa` + `capa.opened`             | Condicional       |
+| 4   | Verificação de eficácia da CAPA                    | Qualidade             | `capa.verified` / `capa.reopened`          | Sim (para CAPA)   |
+| 5   | SKU liberado para estoque de PA                    | H9-13 + ERP           | `sku.released` + `writeErp('pa_receipt')`  | Sim (se aprovado) |
+| 6   | Solicitação de retrabalho / segunda linha / refugo | H9-06 ou almox        | `sku.rework_requested` / `sku.refuse`      | Condicional       |
+| 7   | Alerta ao fornecedor externo com evidência         | H9-05 (facção)        | `faccao.quality.alert`                     | Condicional       |
 
 Regras:
+
 - Toda saída relevante emite `entity_events` (V7 / H2-04).
 - Mudanças de estado passam por `workflow_definitions` (V8 / H2-05).
 
@@ -122,23 +124,24 @@ Regras:
 
 Onde cada regra é aplicada:
 
-| Regra | Camada | Referência de código |
-|-------|--------|----------------------|
-| R1    | DB (CHECK + trigger) | migration `quality_inspection_open_check` |
-| R2    | server fn | `openInspection.functions.ts` |
-| R3    | DB (constraint + FK) | `quality_defect` schema |
-| R4    | server fn | `applyAqlDecision.functions.ts` |
-| R5    | trigger DB | `trg_capa_recurrence` |
-| R6    | DB + `can_transition` | `workflow_definitions` (`capa`) |
-| R7    | server fn | `releaseSkuToPA.functions.ts` (usa `ErpAdapter`) |
-| R8    | DB | `workflow_definitions` (`sku`) |
-| R9    | server route | `src/routes/api/public/quality-notify.ts` |
+| Regra | Camada                | Referência de código                             |
+| ----- | --------------------- | ------------------------------------------------ |
+| R1    | DB (CHECK + trigger)  | migration `quality_inspection_open_check`        |
+| R2    | server fn             | `openInspection.functions.ts`                    |
+| R3    | DB (constraint + FK)  | `quality_defect` schema                          |
+| R4    | server fn             | `applyAqlDecision.functions.ts`                  |
+| R5    | trigger DB            | `trg_capa_recurrence`                            |
+| R6    | DB + `can_transition` | `workflow_definitions` (`capa`)                  |
+| R7    | server fn             | `releaseSkuToPA.functions.ts` (usa `ErpAdapter`) |
+| R8    | DB                    | `workflow_definitions` (`sku`)                   |
+| R9    | server route          | `src/routes/api/public/quality-notify.ts`        |
 
 ## 6. Workflow (V8)
 
 Duas máquinas, ambas em `workflow_definitions` polimórfico.
 
 **`quality_inspection`:**
+
 ```text
 aberta → em_execução → em_decisão → aprovada
                                   ↘ reprovada → retrabalho_solicitado
@@ -146,6 +149,7 @@ aberta → em_execução → em_decisão → aprovada
 ```
 
 **`capa`:**
+
 ```text
 aberta → investigação → plano_de_ação → em_execução → verificada
                                                     ↘ reaberta → investigação
@@ -164,20 +168,20 @@ aberta → investigação → plano_de_ação → em_execução → verificada
 
 ## 7. Eventos emitidos (V7)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `inspection.opened` | AQL criada | `{sample_size, aql_level, batch_id}` | BI, IA Qualidade |
-| `inspection.defect.registered` | INSERT em `quality_defect` | `{defect_code, severity, position, sku_id}` | Heatmap, IA |
-| `inspection.decided` | função determinística rodou | `{decision, criticals, majors, minors, limits}` | PCP, Comercial |
-| `inspection.closed` | transição para aprovada/reprovada | `{decision, actor}` | H9-13, BI |
-| `capa.opened` | manual ou por R5 | `{trigger, defect_code, reference_id, owner}` | Qualidade, IA |
-| `capa.action.added` | plano de ação incrementado | `{action, due_at, owner}` | Timeline |
-| `capa.verified` | R6 atendida | `{verified_by, evidence_url, effect_metric}` | BI, Fornecedor |
-| `capa.reopened` | reincidência pós-verificação | `{previous_capa_id, reason}` | Alerta gerência |
-| `sku.released` | aprovado + `pa_receipt` idempotente | `{sku_id, qty, erp_id}` | H9-13, ERP |
-| `sku.rework_requested` | reprovado com destino retrabalho | `{sku_id, qty, target_link_type}` | H9-06 / H9-05 |
-| `sku.refuse` | refugo | `{sku_id, qty, reason_code}` | BI custo |
-| `faccao.quality.alert` | R9 disparada | `{supplier_id, evidence_url, defect_code}` | Portal facção |
+| `event_type`                   | Quando                              | Payload mínimo                                  | Consumido por    |
+| ------------------------------ | ----------------------------------- | ----------------------------------------------- | ---------------- |
+| `inspection.opened`            | AQL criada                          | `{sample_size, aql_level, batch_id}`            | BI, IA Qualidade |
+| `inspection.defect.registered` | INSERT em `quality_defect`          | `{defect_code, severity, position, sku_id}`     | Heatmap, IA      |
+| `inspection.decided`           | função determinística rodou         | `{decision, criticals, majors, minors, limits}` | PCP, Comercial   |
+| `inspection.closed`            | transição para aprovada/reprovada   | `{decision, actor}`                             | H9-13, BI        |
+| `capa.opened`                  | manual ou por R5                    | `{trigger, defect_code, reference_id, owner}`   | Qualidade, IA    |
+| `capa.action.added`            | plano de ação incrementado          | `{action, due_at, owner}`                       | Timeline         |
+| `capa.verified`                | R6 atendida                         | `{verified_by, evidence_url, effect_metric}`    | BI, Fornecedor   |
+| `capa.reopened`                | reincidência pós-verificação        | `{previous_capa_id, reason}`                    | Alerta gerência  |
+| `sku.released`                 | aprovado + `pa_receipt` idempotente | `{sku_id, qty, erp_id}`                         | H9-13, ERP       |
+| `sku.rework_requested`         | reprovado com destino retrabalho    | `{sku_id, qty, target_link_type}`               | H9-06 / H9-05    |
+| `sku.refuse`                   | refugo                              | `{sku_id, qty, reason_code}`                    | BI custo         |
+| `faccao.quality.alert`         | R9 disparada                        | `{supplier_id, evidence_url, defect_code}`      | Portal facção    |
 
 ## 8. Integrações (H6)
 
@@ -231,8 +235,8 @@ aberta → investigação → plano_de_ação → em_execução → verificada
 
 - **Contexto vivo (H5-02):** tabelas `quality_inspection`,
   `quality_defect`, `quality_capa`, `defect_catalog`, `supplier_scorecard`
-  + eventos `inspection.*` e `capa.*` das últimas 90 dias (via
-  `fetchLiveContext`).
+  - eventos `inspection.*` e `capa.*` das últimas 90 dias (via
+    `fetchLiveContext`).
 
 - **Guardrails:**
   - IA **não** aprova/reprova inspeção — só sugere.
@@ -242,14 +246,14 @@ aberta → investigação → plano_de_ação → em_execução → verificada
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| First Pass Yield (final) | `inspections.aprovada / inspections.total` | % | ≥ 97 | Coord. Qualidade |
-| DPU (defects per unit) | `Σ defeitos / Σ peças inspecionadas` | # | ≤ 0.05 | Coord. Qualidade |
-| CAPA efficacy rate | `capas.verificada_sem_reincidência / capas.verificada` | % | ≥ 85 | Gerente Industrial |
-| CAPA median close days | `mediana(verified_at - opened_at)` | dias | ≤ 15 | Gerente Industrial |
-| Refugo (%) | `qty(sku.refuse) / qty(sku.released + sku.refuse)` | % | ≤ 1 | Custo |
-| SLA notificação facção | `alerts.enviados_em_24h / alerts.total` | % | ≥ 95 | Qualidade |
+| KPI                      | Fórmula                                                | Unidade | Meta   | Responsável        |
+| ------------------------ | ------------------------------------------------------ | ------- | ------ | ------------------ |
+| First Pass Yield (final) | `inspections.aprovada / inspections.total`             | %       | ≥ 97   | Coord. Qualidade   |
+| DPU (defects per unit)   | `Σ defeitos / Σ peças inspecionadas`                   | #       | ≤ 0.05 | Coord. Qualidade   |
+| CAPA efficacy rate       | `capas.verificada_sem_reincidência / capas.verificada` | %       | ≥ 85   | Gerente Industrial |
+| CAPA median close days   | `mediana(verified_at - opened_at)`                     | dias    | ≤ 15   | Gerente Industrial |
+| Refugo (%)               | `qty(sku.refuse) / qty(sku.released + sku.refuse)`     | %       | ≤ 1    | Custo              |
+| SLA notificação facção   | `alerts.enviados_em_24h / alerts.total`                | %       | ≥ 95   | Qualidade          |
 
 Fonte: derivado de `entity_events` (`inspection.*`, `capa.*`, `sku.*`) —
 nunca contagem manual.
@@ -260,7 +264,7 @@ nunca contagem manual.
   policy por ação (SELECT/INSERT/UPDATE/DELETE) restritas a
   `is_member(auth.uid())` e ao papel do usuário. SIM.
 - **GRANT:** toda tabela pública deste elo tem `GRANT SELECT, INSERT,
-  UPDATE, DELETE ... TO authenticated` + `GRANT ALL ... TO service_role`.
+UPDATE, DELETE ... TO authenticated` + `GRANT ALL ... TO service_role`.
   `anon` sem acesso. SIM.
 - **Papéis autorizados (`has_role`):** `inspetor_qualidade`,
   `coordenador_qualidade`, `gerente_industrial`, `pcp`,
@@ -299,32 +303,33 @@ nunca contagem manual.
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve este elo | Limitação | Como superamos |
-|-----|-----------------------|-----------|----------------|
+| PLM             | Como resolve este elo                     | Limitação                        | Como superamos                               |
+| --------------- | ----------------------------------------- | -------------------------------- | -------------------------------------------- |
 | Centric         | Módulo Quality separado, AQL configurável | CAPA fraca, sem loop de eficácia | CAPA nativa com verificação obrigatória (R6) |
-| PTC FlexPLM     | Integração com sistemas externos de QMS | Não integra defeito em processo | Defeito único desde H9-05 até H9-07 |
-| Lectra Kubix    | Foco em modelagem, qualidade externa | Terceiriza qualidade final | Portal facção com HMAC + evidência (R9) |
-| Gerber Yunique  | Checklist manual por lote | Sem AQL determinística | R4 remove decisão discricionária |
-| Collection Moda | Registro em planilha externa | Sem timeline nem BI | Tudo em `entity_events`, KPI derivado |
-| Audaces Idea    | Não cobre qualidade | — | Playbook nativo integrado à cadeia |
+| PTC FlexPLM     | Integração com sistemas externos de QMS   | Não integra defeito em processo  | Defeito único desde H9-05 até H9-07          |
+| Lectra Kubix    | Foco em modelagem, qualidade externa      | Terceiriza qualidade final       | Portal facção com HMAC + evidência (R9)      |
+| Gerber Yunique  | Checklist manual por lote                 | Sem AQL determinística           | R4 remove decisão discricionária             |
+| Collection Moda | Registro em planilha externa              | Sem timeline nem BI              | Tudo em `entity_events`, KPI derivado        |
+| Audaces Idea    | Não cobre qualidade                       | —                                | Playbook nativo integrado à cadeia           |
 
 Padrão mental comum extraído: qualidade tratada como **checklist de
 saída**, não como ciclo Detectar→Prevenir com dono e prazo.
 Nossa aposta de superação: **CAPA de 1ª classe** com eficácia obrigatória
-+ **decisão AQL determinística no servidor** (sem "aprovação política").
+
+- **decisão AQL determinística no servidor** (sem "aprovação política").
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Probabilidade | Mitigação |
-|-------|---------|---------------|-----------|
-| Inspetor "salva" defeito para não reprovar | Alto | Média | R3 exige catálogo + evidência; R4 tira decisão do inspetor |
-| CAPA fica aberta eternamente | Médio | Alta | Cron `capa_sla_check` + evento `capa.sla.breached` |
-| Reincidência silenciosa | Alto | Média | R5 dispara CAPA automática por trigger, não depende de humano |
-| Evidência com PII vaza para facção | Alto | Baixa | Bucket privado + payload externo só código + URL assinada |
-| Estoque duplicado em PA por replay | Alto | Baixa | R7 idempotência `batch_id:sku_id` |
+| Risco                                      | Impacto | Probabilidade | Mitigação                                                     |
+| ------------------------------------------ | ------- | ------------- | ------------------------------------------------------------- |
+| Inspetor "salva" defeito para não reprovar | Alto    | Média         | R3 exige catálogo + evidência; R4 tira decisão do inspetor    |
+| CAPA fica aberta eternamente               | Médio   | Alta          | Cron `capa_sla_check` + evento `capa.sla.breached`            |
+| Reincidência silenciosa                    | Alto    | Média         | R5 dispara CAPA automática por trigger, não depende de humano |
+| Evidência com PII vaza para facção         | Alto    | Baixa         | Bucket privado + payload externo só código + URL assinada     |
+| Estoque duplicado em PA por replay         | Alto    | Baixa         | R7 idempotência `batch_id:sku_id`                             |
 
 ## 17. Changelog do playbook
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Handbook Team | criação (🟡 parcial) |
+| Data       | Versão | Autor         | Mudança              |
+| ---------- | ------ | ------------- | -------------------- |
+| 2026-07-07 | 0.1    | Handbook Team | criação (🟡 parcial) |

@@ -167,7 +167,6 @@ function CollectionsPage() {
 
   useEffect(() => onQuickAction("quick:new-collection", () => handleOpenDialog()), []);
 
-
   const handleSave = () => {
     if (editingCollection) {
       setCollections(
@@ -217,13 +216,11 @@ function CollectionsPage() {
         { label: "Meta combinada", value: "R$ 3,36 mi", detail: "receita alvo" },
       ]}
     >
-      <div className="mb-4"><ModuleTabs group="collections" /></div>
+      <div className="mb-4">
+        <ModuleTabs group="collections" />
+      </div>
       <div className="mb-4 flex justify-end">
-        <Button
- asChild
- variant="ghost"
- className="border text-[10px] tracking-[0.14em]"
- >
+        <Button asChild variant="ghost" className="border text-[10px] tracking-[0.14em]">
           <Link to="/collections/compare">
             <ArrowLeftRight className="mr-2 h-3.5 w-3.5" /> Comparar coleções
           </Link>
@@ -372,10 +369,7 @@ function CollectionsPage() {
                 A coleção Verão 25 tem melhor potencial em camisaria premium. A IA recomenda
                 realocar 12 refs da curva C para tops de linho.
               </p>
-              <Button
- asChild
- className="w-full text-[10px] tracking-[0.14em]"
- >
+              <Button asChild className="w-full text-[10px] tracking-[0.14em]">
                 <Link to="/ai-center">Simular novo mix</Link>
               </Button>
             </CardContent>
@@ -414,17 +408,10 @@ function CollectionsPage() {
             ))}
           </div>
           <DialogFooter className="gap-3">
-            <Button
- variant="ghost"
- onClick={() => setIsDialogOpen(false)}
-              className="text-[10px]"
-            >
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
               Cancelar
             </Button>
-            <Button
- onClick={handleSave}
- className="text-[10px]"
- >
+            <Button onClick={handleSave} className="text-[10px]">
               Salvar coleção
             </Button>
           </DialogFooter>

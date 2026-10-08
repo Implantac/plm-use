@@ -26,8 +26,7 @@ export function usePilotos(referenceId?: string) {
   const sortItems = (arr: Piloto[]) =>
     [...arr].sort(
       (a, b) =>
-        b.rodada - a.rodada ||
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        b.rodada - a.rodada || new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
 
   const fetch = useCallback(async () => {
@@ -116,7 +115,6 @@ export function useCreatePiloto() {
     },
     [user],
   );
-
 
   return { create };
 }

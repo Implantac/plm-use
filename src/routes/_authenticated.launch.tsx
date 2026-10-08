@@ -14,21 +14,29 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldMessage } from "@/components/ui/field-message";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import {
-  Tabs, TabsContent, TabsList, TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import {
   useLaunch,
-  WAVE_STATUS_LABEL, ITEM_STATUS_LABEL,
-  WAVE_NEXT, ITEM_NEXT,
-  type LaunchWaveStatus, type LaunchItemStatus,
+  WAVE_STATUS_LABEL,
+  ITEM_STATUS_LABEL,
+  WAVE_NEXT,
+  ITEM_NEXT,
+  type LaunchWaveStatus,
+  type LaunchItemStatus,
 } from "@/hooks/use-launch";
 import {
-  createLaunchWave, promoteShowroomDecisions, sendLaunchHandoff, transitionLaunch,
+  createLaunchWave,
+  promoteShowroomDecisions,
+  sendLaunchHandoff,
+  transitionLaunch,
 } from "@/lib/launch/launch.functions";
 import { useShowroom } from "@/hooks/use-showroom";
 
@@ -47,10 +55,17 @@ function LaunchPage() {
   const handoff = useServerFn(sendLaunchHandoff);
 
   const [form, setForm] = useState({
-    codigo: "", colecao: "", janela_inicio: "", janela_fim: "", notas: "",
+    codigo: "",
+    colecao: "",
+    janela_inicio: "",
+    janela_fim: "",
+    notas: "",
   });
   const [waveErrors, setWaveErrors] = useState<{
-    codigo?: string; colecao?: string; janela_inicio?: string; janela_fim?: string;
+    codigo?: string;
+    colecao?: string;
+    janela_inicio?: string;
+    janela_fim?: string;
   }>({});
   const [promoteError, setPromoteError] = useState<string | null>(null);
   const [selectedWave, setSelectedWave] = useState<string | null>(null);
@@ -61,12 +76,21 @@ function LaunchPage() {
     [decisions],
   );
 
-  const metrics = useMemo(() => [
-    { label: "Waves", value: waves.length.toString() },
-    { label: "Publicadas", value: waves.filter((w) => w.status === "publicada").length.toString() },
-    { label: "Itens", value: items.length.toString() },
-    { label: "Handoffs confirmados", value: handoffs.filter((h) => h.synced_at).length.toString() },
-  ], [waves, items, handoffs]);
+  const metrics = useMemo(
+    () => [
+      { label: "Waves", value: waves.length.toString() },
+      {
+        label: "Publicadas",
+        value: waves.filter((w) => w.status === "publicada").length.toString(),
+      },
+      { label: "Itens", value: items.length.toString() },
+      {
+        label: "Handoffs confirmados",
+        value: handoffs.filter((h) => h.synced_at).length.toString(),
+      },
+    ],
+    [waves, items, handoffs],
+  );
 
   async function handleCreateWave() {
     const errs: typeof waveErrors = {};
@@ -138,27 +162,57 @@ function LaunchPage() {
         {/* --- WAVES ------------------------------------------------------ */}
         <TabsContent value="waves" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-sm">Nova wave</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-sm">Nova wave</CardTitle>
+            </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-5">
               <div>
                 <Label required>Código</Label>
-                <Input value={form.codigo} onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))} placeholder="W-2026-01" aria-invalid={!!waveErrors.codigo} />
-                {waveErrors.codigo && <FieldMessage variant="error">{waveErrors.codigo}</FieldMessage>}
+                <Input
+                  value={form.codigo}
+                  onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))}
+                  placeholder="W-2026-01"
+                  aria-invalid={!!waveErrors.codigo}
+                />
+                {waveErrors.codigo && (
+                  <FieldMessage variant="error">{waveErrors.codigo}</FieldMessage>
+                )}
               </div>
               <div>
                 <Label required>Coleção</Label>
-                <Input value={form.colecao} onChange={(e) => setForm((f) => ({ ...f, colecao: e.target.value }))} placeholder="Verão 26" aria-invalid={!!waveErrors.colecao} />
-                {waveErrors.colecao && <FieldMessage variant="error">{waveErrors.colecao}</FieldMessage>}
+                <Input
+                  value={form.colecao}
+                  onChange={(e) => setForm((f) => ({ ...f, colecao: e.target.value }))}
+                  placeholder="Verão 26"
+                  aria-invalid={!!waveErrors.colecao}
+                />
+                {waveErrors.colecao && (
+                  <FieldMessage variant="error">{waveErrors.colecao}</FieldMessage>
+                )}
               </div>
               <div>
                 <Label required>Início janela</Label>
-                <Input type="date" value={form.janela_inicio} onChange={(e) => setForm((f) => ({ ...f, janela_inicio: e.target.value }))} aria-invalid={!!waveErrors.janela_inicio} />
-                {waveErrors.janela_inicio && <FieldMessage variant="error">{waveErrors.janela_inicio}</FieldMessage>}
+                <Input
+                  type="date"
+                  value={form.janela_inicio}
+                  onChange={(e) => setForm((f) => ({ ...f, janela_inicio: e.target.value }))}
+                  aria-invalid={!!waveErrors.janela_inicio}
+                />
+                {waveErrors.janela_inicio && (
+                  <FieldMessage variant="error">{waveErrors.janela_inicio}</FieldMessage>
+                )}
               </div>
               <div>
                 <Label required>Fim janela</Label>
-                <Input type="date" value={form.janela_fim} onChange={(e) => setForm((f) => ({ ...f, janela_fim: e.target.value }))} aria-invalid={!!waveErrors.janela_fim} />
-                {waveErrors.janela_fim && <FieldMessage variant="error">{waveErrors.janela_fim}</FieldMessage>}
+                <Input
+                  type="date"
+                  value={form.janela_fim}
+                  onChange={(e) => setForm((f) => ({ ...f, janela_fim: e.target.value }))}
+                  aria-invalid={!!waveErrors.janela_fim}
+                />
+                {waveErrors.janela_fim && (
+                  <FieldMessage variant="error">{waveErrors.janela_fim}</FieldMessage>
+                )}
               </div>
               <div className="flex items-end">
                 <Button onClick={handleCreateWave} className="w-full">
@@ -167,14 +221,20 @@ function LaunchPage() {
               </div>
               <div className="md:col-span-5">
                 <Label>Notas</Label>
-                <Textarea rows={2} value={form.notas} onChange={(e) => setForm((f) => ({ ...f, notas: e.target.value }))} />
+                <Textarea
+                  rows={2}
+                  value={form.notas}
+                  onChange={(e) => setForm((f) => ({ ...f, notas: e.target.value }))}
+                />
               </div>
             </CardContent>
           </Card>
 
           {loading && <p className="text-sm text-muted-foreground">Carregando…</p>}
           {!loading && waves.length === 0 && (
-            <p className="text-sm text-muted-foreground">Nenhuma wave ainda. Crie a primeira acima.</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma wave ainda. Crie a primeira acima.
+            </p>
           )}
 
           <div className="grid gap-3 md:grid-cols-2">
@@ -186,7 +246,9 @@ function LaunchPage() {
                 <Card key={w.id}>
                   <CardHeader className="flex flex-row items-start justify-between gap-2">
                     <div>
-                      <CardTitle className="text-base">{w.codigo} · {w.colecao}</CardTitle>
+                      <CardTitle className="text-base">
+                        {w.codigo} · {w.colecao}
+                      </CardTitle>
                       <p className="text-xs text-muted-foreground">
                         {w.janela_inicio} → {w.janela_fim}
                       </p>
@@ -200,11 +262,22 @@ function LaunchPage() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {WAVE_NEXT[status].map((to) => (
-                        <Button key={to} size="sm" variant="outline" onClick={() => handleTransitionWave(w.id, status, to)}>
+                        <Button
+                          key={to}
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleTransitionWave(w.id, status, to)}
+                        >
                           <ArrowRight className="h-3 w-3 mr-1" /> {WAVE_STATUS_LABEL[to]}
                         </Button>
                       ))}
-                      <Button size="sm" variant="ghost" onClick={() => openEntity({ type: "launch_wave", id: w.id, title: w.codigo })}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() =>
+                          openEntity({ type: "launch_wave", id: w.id, title: w.codigo })
+                        }
+                      >
                         Timeline
                       </Button>
                     </div>
@@ -215,12 +288,21 @@ function LaunchPage() {
                           const is = it.status as LaunchItemStatus;
                           return (
                             <div key={it.id} className="flex items-center justify-between text-xs">
-                              <span className="truncate max-w-[50%]">{it.reference_id.slice(0, 8)} · meta {it.meta_unidades}</span>
+                              <span className="truncate max-w-[50%]">
+                                {it.reference_id.slice(0, 8)} · meta {it.meta_unidades}
+                              </span>
                               <div className="flex items-center gap-1">
-                                <Badge variant="outline" className="text-[10px]">{ITEM_STATUS_LABEL[is]}</Badge>
+                                <Badge variant="outline" className="text-[10px]">
+                                  {ITEM_STATUS_LABEL[is]}
+                                </Badge>
                                 {ITEM_NEXT[is].slice(0, 1).map((to) => (
-                                  <Button key={to} size="sm" variant="ghost" className="h-6 text-[11px]"
- onClick={() => handleTransitionItem(it.id, is, to)}>
+                                  <Button
+                                    key={to}
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 text-[11px]"
+                                    onClick={() => handleTransitionItem(it.id, is, to)}
+                                  >
                                     → {ITEM_STATUS_LABEL[to]}
                                   </Button>
                                 ))}
@@ -240,16 +322,26 @@ function LaunchPage() {
         {/* --- PROMOTE ---------------------------------------------------- */}
         <TabsContent value="promote" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-sm">Promover decisões aprovadas do mostruário → wave</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-sm">
+                Promover decisões aprovadas do mostruário → wave
+              </CardTitle>
+            </CardHeader>
             <CardContent className="space-y-3">
               <div>
                 <Label>Wave destino</Label>
                 <Select value={selectedWave ?? ""} onValueChange={setSelectedWave}>
-                  <SelectTrigger><SelectValue placeholder="Escolha uma wave" /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Escolha uma wave" />
+                  </SelectTrigger>
                   <SelectContent>
-                    {waves.filter((w) => ["rascunho", "em_revisao"].includes(w.status)).map((w) => (
-                      <SelectItem key={w.id} value={w.id}>{w.codigo} · {w.colecao}</SelectItem>
-                    ))}
+                    {waves
+                      .filter((w) => ["rascunho", "em_revisao"].includes(w.status))
+                      .map((w) => (
+                        <SelectItem key={w.id} value={w.id}>
+                          {w.codigo} · {w.colecao}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -281,7 +373,10 @@ function LaunchPage() {
                 </div>
               )}
 
-              <Button onClick={handlePromote} disabled={!selectedWave || pickedDecisions.length === 0}>
+              <Button
+                onClick={handlePromote}
+                disabled={!selectedWave || pickedDecisions.length === 0}
+              >
                 <CheckCircle2 className="h-4 w-4 mr-1" />
                 Promover {pickedDecisions.length} item(ns)
               </Button>
@@ -293,56 +388,71 @@ function LaunchPage() {
         {/* --- HANDOFFS --------------------------------------------------- */}
         <TabsContent value="handoffs" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-sm">Enviar handoff ao ERP</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-sm">Enviar handoff ao ERP</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <p className="text-muted-foreground">
-                Wave precisa estar em <code>aprovada</code>, <code>publicada</code> ou <code>em_producao</code>.
-                Chave idempotente: <code>wave:&lt;id&gt;:destino:&lt;pcp|comercial&gt;:v1</code>.
+                Wave precisa estar em <code>aprovada</code>, <code>publicada</code> ou{" "}
+                <code>em_producao</code>. Chave idempotente:{" "}
+                <code>wave:&lt;id&gt;:destino:&lt;pcp|comercial&gt;:v1</code>.
               </p>
               <div className="grid gap-2 md:grid-cols-2">
-                {waves.filter((w) => ["aprovada", "publicada", "em_producao"].includes(w.status)).map((w) => (
-                  <Card key={w.id}>
-                    <CardContent className="pt-4 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">{w.codigo}</span>
-                        <Badge variant="secondary">{WAVE_STATUS_LABEL[w.status as LaunchWaveStatus]}</Badge>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" onClick={() => handleHandoff(w.id, "pcp")}>
-                          <Send className="h-3 w-3 mr-1" /> PCP
-                        </Button>
-                        <Button size="sm" onClick={() => handleHandoff(w.id, "comercial")}>
-                          <Send className="h-3 w-3 mr-1" /> Comercial
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {waves
+                  .filter((w) => ["aprovada", "publicada", "em_producao"].includes(w.status))
+                  .map((w) => (
+                    <Card key={w.id}>
+                      <CardContent className="pt-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{w.codigo}</span>
+                          <Badge variant="secondary">
+                            {WAVE_STATUS_LABEL[w.status as LaunchWaveStatus]}
+                          </Badge>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => handleHandoff(w.id, "pcp")}>
+                            <Send className="h-3 w-3 mr-1" /> PCP
+                          </Button>
+                          <Button size="sm" onClick={() => handleHandoff(w.id, "comercial")}>
+                            <Send className="h-3 w-3 mr-1" /> Comercial
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-sm">Histórico de handoffs</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-sm">Histórico de handoffs</CardTitle>
+            </CardHeader>
             <CardContent>
               {handoffs.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Nenhum handoff enviado ainda.</p>
               ) : (
                 <div className="space-y-2">
                   {handoffs.map((h) => (
-                    <div key={h.id} className="flex items-center justify-between text-xs border rounded p-2">
+                    <div
+                      key={h.id}
+                      className="flex items-center justify-between text-xs border rounded p-2"
+                    >
                       <div className="space-y-0.5">
                         <div>
                           <Badge variant="outline">{h.destino}</Badge>{" "}
                           <span className="font-mono">{h.idempotency_key}</span>
                         </div>
                         <div className="text-muted-foreground">
-                          {h.erp_id ?? "aguardando ERP"} · {h.synced_at ? new Date(h.synced_at).toLocaleString() : "pendente"}
+                          {h.erp_id ?? "aguardando ERP"} ·{" "}
+                          {h.synced_at ? new Date(h.synced_at).toLocaleString() : "pendente"}
                         </div>
                       </div>
-                      {h.synced_at
-                        ? <Badge className="bg-emerald-600">confirmado</Badge>
-                        : <Badge variant="secondary">pendente</Badge>}
+                      {h.synced_at ? (
+                        <Badge className="bg-emerald-600">confirmado</Badge>
+                      ) : (
+                        <Badge variant="secondary">pendente</Badge>
+                      )}
                     </div>
                   ))}
                 </div>

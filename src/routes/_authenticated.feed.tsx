@@ -84,23 +84,21 @@ function FeedPage() {
               <div className="flex justify-between items-center pt-4 border-t border-white/5">
                 <div className="flex gap-2">
                   <Button
- variant="ghost"
- size="icon"
- className="text-muted-foreground hover:text-white"
- >
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-white"
+                  >
                     <Paperclip className="w-4 h-4" />
                   </Button>
                   <Button
- variant="ghost"
- size="icon"
- className="text-muted-foreground hover:text-white"
- >
+                    variant="ghost"
+                    size="icon"
+                    className="text-muted-foreground hover:text-white"
+                  >
                     <AlertCircle className="w-4 h-4" />
                   </Button>
                 </div>
-                <Button className="text-[9px] tracking-[0.2em]">
-                  Publicar
-                </Button>
+                <Button className="text-[9px] tracking-[0.2em]">Publicar</Button>
               </div>
             </div>
           </div>
@@ -145,15 +143,22 @@ function FeedPage() {
 
                 <div className="flex justify-between items-center pt-6 border-t border-white/5">
                   <div className="flex gap-6">
-                    <Button variant="ghost" size="xs" className="text-muted-foreground hover:text-rose-400 group/btn px-2">
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      className="text-muted-foreground hover:text-rose-400 group/btn px-2"
+                    >
                       <Heart className="w-4 h-4 group-hover/btn:fill-current" />
                       <span>{post.likes}</span>
                     </Button>
-                    <Button variant="ghost" size="xs" className="text-muted-foreground hover:text-primary px-2">
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      className="text-muted-foreground hover:text-primary px-2"
+                    >
                       <MessageSquare className="w-4 h-4" />
                       <span>{post.comments}</span>
                     </Button>
-
                   </div>
                   <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-primary/60">
                     <span className="text-muted-foreground mr-2">{post.ref}</span>

@@ -15,10 +15,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const PATH_A = "shared/a.png";
 const PATH_B = "shared/b.png";
@@ -139,4 +136,3 @@ describe("CommentsPanel E2E — retries concorrentes em paths distintos", () => 
     expect(screen.getByAltText("b2.png").getAttribute("src")).toBe(urlB);
   });
 });
-

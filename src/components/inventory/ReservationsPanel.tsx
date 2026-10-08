@@ -30,7 +30,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
       .eq("status", "ativa")
       .order("created_at", { ascending: false })
       .limit(20);
-    setRows(((data ?? []) as unknown as Reservation[]));
+    setRows((data ?? []) as unknown as Reservation[]);
   }, []);
 
   useEffect(() => {
@@ -56,9 +56,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
-        {rows.length === 0 && (
-          <p className="text-xs text-muted-foreground">Sem reservas ativas.</p>
-        )}
+        {rows.length === 0 && <p className="text-xs text-muted-foreground">Sem reservas ativas.</p>}
         {rows.map((r) => (
           <div
             key={r.id}
@@ -72,19 +70,19 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
             </div>
             <div className="flex gap-2">
               <Button
- size="sm"
- variant="ghost"
- disabled={busyId === r.id}
- onClick={() => act(r.id, "consumida")}
+                size="sm"
+                variant="ghost"
+                disabled={busyId === r.id}
+                onClick={() => act(r.id, "consumida")}
                 className="text-emerald-300 hover:text-emerald-200"
               >
                 <CheckCircle2 className="h-4 w-4" />
               </Button>
               <Button
- size="sm"
- variant="ghost"
- disabled={busyId === r.id}
- onClick={() => act(r.id, "cancelada")}
+                size="sm"
+                variant="ghost"
+                disabled={busyId === r.id}
+                onClick={() => act(r.id, "cancelada")}
                 className="text-rose-300 hover:text-rose-200"
               >
                 <XCircle className="h-4 w-4" />

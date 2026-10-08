@@ -5,13 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type WorkflowEntityType =
-  | "reference"
-  | "lote"
-  | "tech_sheet"
-  | "piloto"
-  | "capa"
-  | "engenharia"
-  | "facao_order";
+  "reference" | "lote" | "tech_sheet" | "piloto" | "capa" | "engenharia" | "facao_order";
 
 export interface WorkflowDefinition {
   id: string;
@@ -47,8 +41,7 @@ export function useWorkflow(entityType: WorkflowEntityType) {
   }, [entityType]);
 
   const nextStatuses = useCallback(
-    (from: string): string[] =>
-      defs.filter((d) => d.from_status === from).map((d) => d.to_status),
+    (from: string): string[] => defs.filter((d) => d.from_status === from).map((d) => d.to_status),
     [defs],
   );
 
@@ -60,11 +53,14 @@ export function useWorkflow(entityType: WorkflowEntityType) {
 
   const validateRemote = useCallback(
     async (from: string, to: string): Promise<boolean> => {
-      const { data, error } = await supabase.rpc("can_transition" as never, {
-        _entity_type: entityType,
-        _from: from,
-        _to: to,
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "can_transition" as never,
+        {
+          _entity_type: entityType,
+          _from: from,
+          _to: to,
+        } as never,
+      );
       if (error) return false;
       return Boolean(data);
     },

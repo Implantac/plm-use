@@ -79,7 +79,11 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     }
     for (const p of PATHS) {
       render(
-        <AttachmentItem attachment={img(p, p.replace("/", "-"))} canRemove={false} onRemove={() => {}} />,
+        <AttachmentItem
+          attachment={img(p, p.replace("/", "-"))}
+          canRemove={false}
+          onRemove={() => {}}
+        />,
       );
     }
     await flush();
@@ -101,14 +105,11 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
       data: { signedUrl: `https://signed.test/${probePath}?probe=${++counter}` },
       error: null,
     });
-    const callsBeforeProbe = createSignedUrl.mock.calls.filter(
-      ([x]) => x === probePath,
-    ).length;
+    const callsBeforeProbe = createSignedUrl.mock.calls.filter(([x]) => x === probePath).length;
     const probeUrl = await getPreviewUrl(probePath);
     expect(probeUrl).toMatch(/\?probe=1$/);
     expect(
-      createSignedUrl.mock.calls.filter(([x]) => x === probePath).length -
-        callsBeforeProbe,
+      createSignedUrl.mock.calls.filter(([x]) => x === probePath).length - callsBeforeProbe,
     ).toBe(1);
 
     // Reset para o cenário de retry via UI — limpa o cache que a prova acima
@@ -153,7 +154,11 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     const callsAfterRetry = createSignedUrl.mock.calls.length;
     for (const p of PATHS) {
       render(
-        <AttachmentItem attachment={img(p, `${p.replace("/", "-")}-b`)} canRemove={false} onRemove={() => {}} />,
+        <AttachmentItem
+          attachment={img(p, `${p.replace("/", "-")}-b`)}
+          canRemove={false}
+          onRemove={() => {}}
+        />,
       );
     }
     await flush();

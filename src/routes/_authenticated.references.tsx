@@ -43,7 +43,8 @@ function ReferencesPage() {
     return items.filter((r) => {
       if (statusFilter !== "TODOS" && r.status !== statusFilter) return false;
       if (!q) return true;
-      const t = `${r.code} ${r.name} ${r.collection_id ?? ""} ${r.line ?? ""} ${r.theme ?? ""}`.toLowerCase();
+      const t =
+        `${r.code} ${r.name} ${r.collection_id ?? ""} ${r.line ?? ""} ${r.theme ?? ""}`.toLowerCase();
       return t.includes(q.toLowerCase());
     });
   }, [items, q, statusFilter]);
@@ -54,9 +55,10 @@ function ReferencesPage() {
     return m;
   }, [items]);
 
-  const emDev = REFERENCE_STATUSES.filter(
-    (s) => s !== "FINALIZADA" && s !== "ARQUIVADA",
-  ).reduce((a, s) => a + (byStatus[s] ?? 0), 0);
+  const emDev = REFERENCE_STATUSES.filter((s) => s !== "FINALIZADA" && s !== "ARQUIVADA").reduce(
+    (a, s) => a + (byStatus[s] ?? 0),
+    0,
+  );
 
   return (
     <ModuleLayout
@@ -67,7 +69,11 @@ function ReferencesPage() {
       metrics={[
         { label: "Total", value: String(items.length), detail: "no núcleo" },
         { label: "Em desenvolvimento", value: String(emDev), detail: "ativas" },
-        { label: "Aprovadas", value: String(byStatus.APROVACAO ?? 0), detail: "aguardando engenharia" },
+        {
+          label: "Aprovadas",
+          value: String(byStatus.APROVACAO ?? 0),
+          detail: "aguardando engenharia",
+        },
         { label: "Finalizadas", value: String(byStatus.FINALIZADA ?? 0), detail: "prontas" },
       ]}
     >
@@ -83,7 +89,10 @@ function ReferencesPage() {
                 className="pl-9 bg-white/[0.03] text-[12px]"
               />
             </div>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ReferenceStatus | "TODOS")}>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => setStatusFilter(v as ReferenceStatus | "TODOS")}
+            >
               <SelectTrigger className="w-[180px] bg-white/[0.03] text-[12px]">
                 <SelectValue />
               </SelectTrigger>
@@ -128,7 +137,8 @@ function ReferencesPage() {
         ) : filtered.length === 0 ? (
           <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-10 text-center text-[11px] text-muted-foreground flex flex-col items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            Nenhuma referência ainda. Crie a primeira — ela virá a se conectar com ficha, piloto, lote e CAPA.
+            Nenhuma referência ainda. Crie a primeira — ela virá a se conectar com ficha, piloto,
+            lote e CAPA.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -153,7 +163,8 @@ function ReferencesPage() {
                       </p>
                       <p className="text-sm font-bold text-white truncate">{r.name}</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
-                        {[r.collection_id, r.line, r.theme].filter(Boolean).join(" · ") || "sem coleção"}
+                        {[r.collection_id, r.line, r.theme].filter(Boolean).join(" · ") ||
+                          "sem coleção"}
                       </p>
                     </div>
                     <Badge className="bg-primary/15 text-primary border-primary/30 shrink-0">
@@ -201,7 +212,6 @@ function ReferencesPage() {
                     </Button>
                   </div>
                 </CardContent>
-
               </Card>
             ))}
           </div>

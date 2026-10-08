@@ -64,7 +64,9 @@ export function useProductionRoutes() {
     queryFn: async (): Promise<ProdRoute[]> => {
       const { data, error } = await supabase
         .from("production_routes")
-        .select("id, code, name, description, active, production_route_steps(id, route_id, sequence, sector, operation, mandatory, outsourced)")
+        .select(
+          "id, code, name, description, active, production_route_steps(id, route_id, sequence, sector, operation, mandatory, outsourced)",
+        )
         .order("code");
       if (error) throw error;
       return (data ?? []).map((r) => ({
@@ -104,7 +106,9 @@ export function usePassages(orderId: string | null) {
     queryFn: async (): Promise<Passage[]> => {
       const { data, error } = await supabase
         .from("production_passages")
-        .select("id, batch_id, production_order_item_id, origin_step_id, destination_step_id, quantity, type, responsible_name, observation, created_at")
+        .select(
+          "id, batch_id, production_order_item_id, origin_step_id, destination_step_id, quantity, type, responsible_name, observation, created_at",
+        )
         .eq("production_order_id", orderId!)
         .order("created_at", { ascending: false })
         .limit(200);
@@ -141,7 +145,11 @@ export function useChangeItemRoute() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (a: { itemId: string; routeId: string; reason: string }) => {
-      const { error } = await supabase.rpc("change_item_route", { _item_id: a.itemId, _route_id: a.routeId, _reason: a.reason });
+      const { error } = await supabase.rpc("change_item_route", {
+        _item_id: a.itemId,
+        _route_id: a.routeId,
+        _reason: a.reason,
+      });
       if (error) throw error;
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ["pcp-op"] }),

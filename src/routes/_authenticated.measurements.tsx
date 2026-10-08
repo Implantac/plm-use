@@ -36,9 +36,7 @@ function useCharts() {
 function MeasurementsPage() {
   const charts = useCharts();
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"todos" | MeasurementChart["status"]>(
-    "todos",
-  );
+  const [statusFilter, setStatusFilter] = useState<"todos" | MeasurementChart["status"]>("todos");
   const [selectedId, setSelectedId] = useState<string | null>(charts[0]?.id ?? null);
   const [creating, setCreating] = useState(false);
   const [newChart, setNewChart] = useState({
@@ -134,8 +132,7 @@ function MeasurementsPage() {
       <div className="flex flex-wrap gap-2 mb-6">
         {(["todos", "aprovada", "rascunho", "arquivada"] as const).map((s) => {
           const active = statusFilter === s;
-          const count =
-            s === "todos" ? charts.length : charts.filter((c) => c.status === s).length;
+          const count = s === "todos" ? charts.length : charts.filter((c) => c.status === s).length;
           return (
             <button
               key={s}
@@ -179,9 +176,7 @@ function MeasurementsPage() {
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div>
-                      <p className="text-[9px] uppercase tracking-[0.2em] text-primary">
-                        {c.code}
-                      </p>
+                      <p className="text-[9px] uppercase tracking-[0.2em] text-primary">{c.code}</p>
                       <p className="text-sm font-bold text-white mt-0.5">{c.name}</p>
                       <p className="text-[10px] text-muted-foreground mt-1">
                         {c.category} · {c.segment} · {c.fit ?? "—"}
@@ -236,10 +231,10 @@ function MeasurementsPage() {
                     className="gap-1.5"
                   />
                   <Button
- variant="ghost"
- size="sm"
- className="text-rose-300 hover:text-rose-200"
- onClick={() => {
+                    variant="ghost"
+                    size="sm"
+                    className="text-rose-300 hover:text-rose-200"
+                    onClick={() => {
                       deleteChart(selected.id);
                       toast.error("Tabela removida");
                       setSelectedId(null);
@@ -279,7 +274,10 @@ function MeasurementsPage() {
                       <tr key={row.size} className="border-t border-white/5">
                         <td className="p-3 font-bold text-white">{row.size}</td>
                         {selected.points.map((p) => (
-                          <td key={p.id} className="p-3 text-right tabular-nums text-muted-foreground">
+                          <td
+                            key={p.id}
+                            className="p-3 text-right tabular-nums text-muted-foreground"
+                          >
                             {row.values[p.code] ?? "—"}{" "}
                             <span className="text-[9px] opacity-60">{selected.unit}</span>
                           </td>
@@ -292,10 +290,10 @@ function MeasurementsPage() {
 
               <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
                 <Button
- size="sm"
- variant="outline"
- className="text-[10px]"
- onClick={() => {
+                  size="sm"
+                  variant="outline"
+                  className="text-[10px]"
+                  onClick={() => {
                     upsertChart({
                       ...selected,
                       status: "aprovada",
@@ -307,10 +305,10 @@ function MeasurementsPage() {
                   <CheckCircle2 className="w-3 h-3 mr-1" /> Aprovar
                 </Button>
                 <Button
- size="sm"
- variant="outline"
- className="text-[10px]"
- onClick={() => {
+                  size="sm"
+                  variant="outline"
+                  className="text-[10px]"
+                  onClick={() => {
                     upsertChart({
                       ...selected,
                       status: "arquivada",
@@ -322,10 +320,10 @@ function MeasurementsPage() {
                   <Archive className="w-3 h-3 mr-1" /> Arquivar
                 </Button>
                 <Button
- size="sm"
- variant="outline"
- className="text-[10px]"
- onClick={() => {
+                  size="sm"
+                  variant="outline"
+                  className="text-[10px]"
+                  onClick={() => {
                     const dup: MeasurementChart = {
                       ...selected,
                       id: `tm-${Date.now()}`,
@@ -364,7 +362,10 @@ function MeasurementsPage() {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground" required>
+                <Label
+                  className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground"
+                  required
+                >
                   Código
                 </Label>
                 <Input
@@ -379,7 +380,10 @@ function MeasurementsPage() {
                 )}
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground" required>
+                <Label
+                  className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground"
+                  required
+                >
                   Nome
                 </Label>
                 <Input
@@ -443,9 +447,7 @@ function MeasurementsPage() {
             <Button variant="ghost" onClick={() => setCreating(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleCreate} >
-              Criar rascunho
-            </Button>
+            <Button onClick={handleCreate}>Criar rascunho</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

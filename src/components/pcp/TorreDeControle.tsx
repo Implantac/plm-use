@@ -32,12 +32,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
 
   const noPrazoRisco = useMemo(
     () =>
-      lotes.filter(
-        (l) =>
-          diasParaPrazo(l) >= 0 &&
-          diasParaPrazo(l) <= 7 &&
-          percentualLote(l) < 80,
-      ),
+      lotes.filter((l) => diasParaPrazo(l) >= 0 && diasParaPrazo(l) <= 7 && percentualLote(l) < 80),
     [lotes],
   );
 
@@ -66,19 +61,15 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
   }, [cargaPorSetor]);
 
   const totais = useMemo(() => {
-    const peProd = lotes.flatMap((l) => l.referencias).reduce(
-      (a, r) => a + pendenteReferencia(r),
-      0,
-    );
-    const perdas = lotes.flatMap((l) => l.referencias).reduce(
-      (a, r) => a + r.qtd_perdida,
-      0,
-    );
-    const programado = lotes.flatMap((l) => l.referencias).reduce(
-      (a, r) => a + saldoReferencia(r),
-      0,
-    );
-    const eficiencia = programado > 0 ? Math.round(((programado - perdas) / programado) * 100) : 100;
+    const peProd = lotes
+      .flatMap((l) => l.referencias)
+      .reduce((a, r) => a + pendenteReferencia(r), 0);
+    const perdas = lotes.flatMap((l) => l.referencias).reduce((a, r) => a + r.qtd_perdida, 0);
+    const programado = lotes
+      .flatMap((l) => l.referencias)
+      .reduce((a, r) => a + saldoReferencia(r), 0);
+    const eficiencia =
+      programado > 0 ? Math.round(((programado - perdas) / programado) * 100) : 100;
     const ocorrTotal = lotes.reduce((a, l) => a + ocorrenciasAbertasLote(l), 0);
     return { peProd, perdas, eficiencia, ocorrTotal };
   }, [lotes]);
@@ -179,10 +170,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
                         </p>
                       </div>
                     </div>
-                    <Progress
-                      value={percentualLote(l)}
-                      className="h-1 bg-white/5 mt-2"
-                    />
+                    <Progress value={percentualLote(l)} className="h-1 bg-white/5 mt-2" />
                   </button>
                 ))}
               </div>
@@ -202,10 +190,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
             <div className="space-y-2">
               {SETORES_PCP.map((s) => {
                 const c = cargaPorSetor[s];
-                const max = Math.max(
-                  ...SETORES_PCP.map((x) => cargaPorSetor[x].pecasPendentes),
-                  1,
-                );
+                const max = Math.max(...SETORES_PCP.map((x) => cargaPorSetor[x].pecasPendentes), 1);
                 const pct = Math.round((c.pecasPendentes / max) * 100);
                 return (
                   <div key={s} className="flex items-center gap-3 text-[11px]">
@@ -219,9 +204,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
                     <span className="w-20 text-right font-bold text-white">
                       {c.pecasPendentes} pç
                     </span>
-                    <span className="w-12 text-right text-muted-foreground">
-                      {c.lotes} lt
-                    </span>
+                    <span className="w-12 text-right text-muted-foreground">{c.lotes} lt</span>
                   </div>
                 );
               })}

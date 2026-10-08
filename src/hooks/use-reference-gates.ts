@@ -81,10 +81,7 @@ export function useReferenceGates(referenceId?: string | null) {
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    let q = supabase
-      .from("reference_gate")
-      .select("*")
-      .order("created_at", { ascending: true });
+    let q = supabase.from("reference_gate").select("*").order("created_at", { ascending: true });
     if (referenceId) q = q.eq("reference_id", referenceId);
     const { data } = await q;
     setItems((data ?? []) as ReferenceGateRow[]);
@@ -113,19 +110,17 @@ export function useReferenceGates(referenceId?: string | null) {
   const openGate = useCallback(
     async (referenceIdArg: string, gate: string, dueDate?: string | null) => {
       if (!user) return false;
-      const { error } = await supabase
-        .from("reference_gate")
-        .upsert(
-          {
-            reference_id: referenceIdArg,
-            gate,
-            status: "pendente",
-            due_date: dueDate ?? null,
-            created_by: user.id,
-            updated_by: user.id,
-          },
-          { onConflict: "reference_id,gate", ignoreDuplicates: true },
-        );
+      const { error } = await supabase.from("reference_gate").upsert(
+        {
+          reference_id: referenceIdArg,
+          gate,
+          status: "pendente",
+          due_date: dueDate ?? null,
+          created_by: user.id,
+          updated_by: user.id,
+        },
+        { onConflict: "reference_id,gate", ignoreDuplicates: true },
+      );
       if (!error) await load();
       return !error;
     },

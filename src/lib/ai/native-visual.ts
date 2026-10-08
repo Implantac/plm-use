@@ -3,9 +3,21 @@
 type Input = { family?: string; category?: string; name?: string; color?: string; view?: string };
 
 const COLORS: Record<string, string> = {
-  preto: "#1f1b18", branco: "#f7f5f0", "off-white": "#efe9dc", areia: "#d8c6a5", bege: "#d9c4a3",
-  azul: "#3e5f8a", marinho: "#1f2e4a", verde: "#4f7a55", oliva: "#6b6b3a", vermelho: "#a83232",
-  rosa: "#d99aa5", cinza: "#8a8a8a", caramelo: "#b07a45", laranja: "#d9823b", terracota: "#b5603e",
+  preto: "#1f1b18",
+  branco: "#f7f5f0",
+  "off-white": "#efe9dc",
+  areia: "#d8c6a5",
+  bege: "#d9c4a3",
+  azul: "#3e5f8a",
+  marinho: "#1f2e4a",
+  verde: "#4f7a55",
+  oliva: "#6b6b3a",
+  vermelho: "#a83232",
+  rosa: "#d99aa5",
+  cinza: "#8a8a8a",
+  caramelo: "#b07a45",
+  laranja: "#d9823b",
+  terracota: "#b5603e",
 };
 
 function hex(color = "") {
@@ -43,8 +55,10 @@ function shape(kind: string, back: boolean, fill: string, dark: string, printed:
       const sleeve = long ? "L110 560 L180 580 L260 300" : "L170 360 L250 390 L260 300";
       const sleeveR = long ? "L540 300 L620 580 L690 560" : "L540 300 L550 390 L630 360";
       let d = `<path ${s} d="M310 130 L200 170 ${sleeve} L260 660 L540 660 ${sleeveR} L600 170 L490 130 Q400 ${back ? 150 : 200} 310 130 Z"/>`;
-      if (long && !back) d += `<path fill="${shade(fill, 0.9)}" stroke="${dark}" stroke-width="3" d="M310 130 L360 200 L400 180 L440 200 L490 130 Q400 150 310 130 Z"/><path ${seam} d="M400 185 L400 660"/>${[250, 340, 430, 520, 610].map((y) => `<circle cx="412" cy="${y}" r="7" fill="${shade(fill, 0.6)}"/>`).join("")}`;
-      if (!long) d += `<path fill="none" stroke="${dark}" stroke-width="3" d="M320 140 Q400 ${back ? 160 : 210} 480 140"/>`;
+      if (long && !back)
+        d += `<path fill="${shade(fill, 0.9)}" stroke="${dark}" stroke-width="3" d="M310 130 L360 200 L400 180 L440 200 L490 130 Q400 150 310 130 Z"/><path ${seam} d="M400 185 L400 660"/>${[250, 340, 430, 520, 610].map((y) => `<circle cx="412" cy="${y}" r="7" fill="${shade(fill, 0.6)}"/>`).join("")}`;
+      if (!long)
+        d += `<path fill="none" stroke="${dark}" stroke-width="3" d="M320 140 Q400 ${back ? 160 : 210} 480 140"/>`;
       return d + `<path ${seam} d="M265 630 L535 630"/>`;
     }
   }

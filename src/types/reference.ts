@@ -14,12 +14,7 @@ export type StageId =
   | "marketing"
   | "sell_out";
 
-export type StageStatus =
-  | "pendente"
-  | "em_andamento"
-  | "aprovado"
-  | "reprovado"
-  | "concluido";
+export type StageStatus = "pendente" | "em_andamento" | "aprovado" | "reprovado" | "concluido";
 
 export interface Stage {
   id: StageId;
@@ -72,9 +67,7 @@ export function stageAtual(lc: ReferenceLifecycle): Stage | undefined {
 }
 
 export function percentualLifecycle(lc: ReferenceLifecycle): number {
-  const done = lc.stages.filter(
-    (s) => s.status === "concluido" || s.status === "aprovado",
-  ).length;
+  const done = lc.stages.filter((s) => s.status === "concluido" || s.status === "aprovado").length;
   return Math.round((done / lc.stages.length) * 100);
 }
 

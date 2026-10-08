@@ -4,6 +4,7 @@ IA no PLM não é chatbot decorativo. Precisa reduzir tempo de decisão em
 processo real de moda.
 
 ## 5 princípios
+
 1. **Grounded ou nada.** Toda resposta cita entidade real (`reference`,
    `piloto`, `capa`) com id. Sem dado do banco, IA não fala.
 2. **Ação sugerida, humano decide.** IA propõe transição, comentário,
@@ -15,10 +16,12 @@ processo real de moda.
 5. **Sem PII, sem financeiro sensível no prompt.** Redigir antes de enviar.
 
 ## Modelos
+
 Default: **Lovable AI Gateway** — sem chave própria. Escolher modelo pelo
 custo/latência da tarefa, nunca o mais caro por padrão.
 
 ## O que IA NÃO faz
+
 - Aprovar workflow.
 - Escrever no banco sem intermediário humano.
 - Emitir evento diretamente (só via server fn auditada).

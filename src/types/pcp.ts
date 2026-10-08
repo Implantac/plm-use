@@ -2,14 +2,7 @@
 // Mantido independente do backend para permitir migração futura sem refactor.
 
 export type SetorPCP =
-  | "Compras"
-  | "CAD"
-  | "Corte"
-  | "Silk"
-  | "Costura"
-  | "Acabamento"
-  | "Expedição"
-  | "Terceirizados";
+  "Compras" | "CAD" | "Corte" | "Silk" | "Costura" | "Acabamento" | "Expedição" | "Terceirizados";
 
 export const SETORES_PCP: SetorPCP[] = [
   "Compras",
@@ -25,11 +18,7 @@ export const SETORES_PCP: SetorPCP[] = [
 export type Prioridade = "Baixa" | "Média" | "Alta" | "Urgente";
 
 export type StatusReferencia =
-  | "Aguardando"
-  | "Em produção"
-  | "Pausado"
-  | "Concluído"
-  | "Ocorrência";
+  "Aguardando" | "Em produção" | "Pausado" | "Concluído" | "Ocorrência";
 
 export type TipoPassagem = "integral" | "parcial";
 export type LinhaPassagem = "1a" | "2a";
@@ -106,15 +95,13 @@ export function percentualReferencia(r: ReferenciaLote): number {
 export function percentualLote(l: Lote): number {
   if (!l.referencias.length) return 0;
   const avg =
-    l.referencias.reduce((acc, r) => acc + percentualReferencia(r), 0) /
-    l.referencias.length;
+    l.referencias.reduce((acc, r) => acc + percentualReferencia(r), 0) / l.referencias.length;
   return Math.round(avg);
 }
 
 export function ocorrenciasAbertasLote(l: Lote): number {
   return l.referencias.reduce(
-    (acc, r) =>
-      acc + r.ocorrencias.filter((o) => o.tipo !== "neutra").length,
+    (acc, r) => acc + r.ocorrencias.filter((o) => o.tipo !== "neutra").length,
     0,
   );
 }

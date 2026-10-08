@@ -58,7 +58,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
       tipo,
       linha,
       qtd: Number(qtd),
-      setor_destino: linha === "1a" ? (destino || null) : null,
+      setor_destino: linha === "1a" ? destino || null : null,
       responsavel: resp,
       observacao: obs || undefined,
       defeito: linha === "2a" ? defeito || undefined : undefined,
@@ -117,21 +117,16 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
               <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 Setor destino
               </Label>
-              <Select
-                value={destino}
-                onValueChange={(v) => setDestino(v as SetorPCP)}
-              >
+              <Select value={destino} onValueChange={(v) => setDestino(v as SetorPCP)}>
                 <SelectTrigger className="">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SETORES_PCP.filter((s) => s !== referencia.setor_atual).map(
-                    (s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ),
-                  )}
+                  {SETORES_PCP.filter((s) => s !== referencia.setor_atual).map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -170,27 +165,18 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
             placeholder="Nome do operador"
             aria-invalid={!!errors.responsavel}
           />
-          {errors.responsavel && (
-            <FieldMessage variant="error">{errors.responsavel}</FieldMessage>
-          )}
+          {errors.responsavel && <FieldMessage variant="error">{errors.responsavel}</FieldMessage>}
         </div>
       </div>
 
       <div>
         <Label>Observação</Label>
-        <Textarea
-          value={obs}
-          onChange={(e) => setObs(e.target.value)}
-          rows={2}
-        />
+        <Textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={2} />
       </div>
 
       {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
-      <Button
- onClick={handleSubmit}
- className="w-full text-[10px]"
- >
+      <Button onClick={handleSubmit} className="w-full text-[10px]">
         Registrar {linha === "1a" ? "Passagem" : "Retrabalho"}
       </Button>
     </div>

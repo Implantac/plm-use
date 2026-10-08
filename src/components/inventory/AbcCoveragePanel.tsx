@@ -66,7 +66,8 @@ export function AbcCoveragePanel({ items, balances }: Props) {
           {summary.unclassified.count > 0 && (
             <div className="pt-2 border-t border-white/5">
               <p className="text-[10px] text-muted-foreground">
-                {summary.unclassified.count} itens sem classificação — rode &quot;Classificar ABC&quot;
+                {summary.unclassified.count} itens sem classificação — rode &quot;Classificar
+                ABC&quot;
               </p>
             </div>
           )}
@@ -103,7 +104,8 @@ export function AbcCoveragePanel({ items, balances }: Props) {
                     )}
                   </div>
                   <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-amber-300">
-                    saldo {onHand.toFixed(0)}{it.unit} · PP {Number(it.reorder_point).toFixed(0)}
+                    saldo {onHand.toFixed(0)}
+                    {it.unit} · PP {Number(it.reorder_point).toFixed(0)}
                     {it.unit} · LEC {Number(it.eoq).toFixed(0)}
                     {it.unit}
                   </p>

@@ -7,13 +7,26 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { Route as RouteIcon, Search } from "lucide-react";
-import { useProductionOrders, useProductionRoutes, type ProductionOrder } from "@/hooks/use-production-orders";
+import {
+  useProductionOrders,
+  useProductionRoutes,
+  type ProductionOrder,
+} from "@/hooks/use-production-orders";
 import { OpWorkspace } from "./OpWorkspace";
 import { NovaOpDialog } from "./NovaOpDialog";
 import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import { opPermissions } from "@/lib/pcp/op-permissions";
 
-const SECTOR_ORDER = ["Compras", "CAD", "Corte", "Silk", "Costura", "Terceirizados", "Acabamento", "Expedição"];
+const SECTOR_ORDER = [
+  "Compras",
+  "CAD",
+  "Corte",
+  "Silk",
+  "Costura",
+  "Terceirizados",
+  "Acabamento",
+  "Expedição",
+];
 
 export function opProgress(o: ProductionOrder) {
   const planned = o.items.reduce((a, i) => a + i.quantity_planned, 0);
@@ -47,17 +60,21 @@ export function OpKanban() {
     if (routeF !== "all" && !o.items.some((i) => i.route_id === routeF)) return false;
     if (onlyLate && !isLate(o)) return false;
     if (!t) return true;
-    return o.number.toLowerCase().includes(t) || o.items.some((i) => i.reference_code.toLowerCase().includes(t));
+    return (
+      o.number.toLowerCase().includes(t) ||
+      o.items.some((i) => i.reference_code.toLowerCase().includes(t))
+    );
   });
 
   const columns = useMemo(() => {
     const cols = new Map<string, { order: ProductionOrder; qty: number }[]>();
     for (const o of filtered) {
       const per = new Map<string, number>();
-      for (const i of o.items) for (const b of i.balances) {
-        const s = stepSector.get(b.step_id) ?? "?";
-        per.set(s, (per.get(s) ?? 0) + b.quantity);
-      }
+      for (const i of o.items)
+        for (const b of i.balances) {
+          const s = stepSector.get(b.step_id) ?? "?";
+          per.set(s, (per.get(s) ?? 0) + b.quantity);
+        }
       if (!per.size) per.set("Concluídas", 0);
       per.forEach((qty, s) => {
         if (!cols.has(s)) cols.set(s, []);
@@ -76,20 +93,53 @@ export function OpKanban() {
       <div className="flex items-center gap-2 flex-wrap">
         <div className="relative w-full sm:w-72">
           <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input aria-label="Buscar OP ou referência" placeholder="Buscar OP ou referência" value={q} onChange={(e) => setQ(e.target.value)} className="pl-8 h-9" />
+          <Input
+            aria-label="Buscar OP ou referência"
+            placeholder="Buscar OP ou referência"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            className="pl-8 h-9"
+          />
         </div>
-        <select aria-label="Filtrar por status" value={statusF} onChange={(e) => setStatusF(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+        <select
+          aria-label="Filtrar por status"
+          value={statusF}
+          onChange={(e) => setStatusF(e.target.value)}
+          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+        >
           <option value="all">Todos os status</option>
-          {[...new Set(orders.map((o) => o.status))].map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
+          {[...new Set(orders.map((o) => o.status))].map((s) => (
+            <option key={s} value={s}>
+              {s.replace(/_/g, " ")}
+            </option>
+          ))}
         </select>
-        <select aria-label="Filtrar por rota" value={routeF} onChange={(e) => setRouteF(e.target.value)} className="h-9 rounded-md border border-input bg-background px-2 text-sm">
+        <select
+          aria-label="Filtrar por rota"
+          value={routeF}
+          onChange={(e) => setRouteF(e.target.value)}
+          className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+        >
           <option value="all">Todas as rotas</option>
-          {routes.map((r) => <option key={r.id} value={r.id}>{r.code} · {r.name}</option>)}
+          {routes.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.code} · {r.name}
+            </option>
+          ))}
         </select>
-        <Button size="sm" variant={onlyLate ? "default" : "outline"} onClick={() => setOnlyLate((v) => !v)}>Só atrasadas</Button>
+        <Button
+          size="sm"
+          variant={onlyLate ? "default" : "outline"}
+          onClick={() => setOnlyLate((v) => !v)}
+        >
+          Só atrasadas
+        </Button>
         {canPlan && <NovaOpDialog orders={orders} routes={routes} />}
         <Button asChild size="sm" variant="outline">
-          <Link to="/route-engineering"><RouteIcon className="h-3.5 w-3.5 mr-1" />Engenharia de Rotas</Link>
+          <Link to="/route-engineering">
+            <RouteIcon className="h-3.5 w-3.5 mr-1" />
+            Engenharia de Rotas
+          </Link>
         </Button>
       </div>
       {error && <p className="text-sm text-destructive">Não foi possível carregar as OPs.</p>}
@@ -99,23 +149,43 @@ export function OpKanban() {
         <Card className="glass-card rounded-lg">
           <CardContent className="p-4 overflow-x-auto">
             <div className="flex gap-4 min-w-max pb-2">
-              {columns.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma OP encontrada.</p>}
+              {columns.length === 0 && (
+                <p className="text-sm text-muted-foreground">Nenhuma OP encontrada.</p>
+              )}
               {columns.map(([sector, cards]) => (
                 <div key={sector} className="w-64 space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold uppercase tracking-wider">{sector}</h3>
-                    <Badge variant="outline" className="text-[10px]">{cards.reduce((a, c) => a + c.qty, 0)} pç</Badge>
+                    <Badge variant="outline" className="text-[10px]">
+                      {cards.reduce((a, c) => a + c.qty, 0)} pç
+                    </Badge>
                   </div>
                   {cards.map(({ order, qty }) => {
                     const late = isLate(order);
                     return (
-                      <button key={order.id} onClick={() => setOpenId(order.id)} className="w-full text-left rounded-md border border-border bg-card/50 p-3 hover:border-primary/50 transition">
+                      <button
+                        key={order.id}
+                        onClick={() => setOpenId(order.id)}
+                        className="w-full text-left rounded-md border border-border bg-card/50 p-3 hover:border-primary/50 transition"
+                      >
                         <div className="flex justify-between items-start">
                           <p className="text-sm font-bold">{order.number}</p>
-                          <Badge variant={late ? "destructive" : "secondary"} className="text-[10px]">{late ? "Atrasada" : order.priority}</Badge>
+                          <Badge
+                            variant={late ? "destructive" : "secondary"}
+                            className="text-[10px]"
+                          >
+                            {late ? "Atrasada" : order.priority}
+                          </Badge>
                         </div>
-                        <p className="text-[11px] text-muted-foreground">{order.items.length} itens · {qty} pç nesta etapa</p>
-                        {order.planned_end && <p className="text-[10px] text-muted-foreground">Prazo {new Date(order.planned_end + "T00:00").toLocaleDateString("pt-BR")}</p>}
+                        <p className="text-[11px] text-muted-foreground">
+                          {order.items.length} itens · {qty} pç nesta etapa
+                        </p>
+                        {order.planned_end && (
+                          <p className="text-[10px] text-muted-foreground">
+                            Prazo{" "}
+                            {new Date(order.planned_end + "T00:00").toLocaleDateString("pt-BR")}
+                          </p>
+                        )}
                         <Progress value={opProgress(order)} className="h-1 mt-2" />
                       </button>
                     );

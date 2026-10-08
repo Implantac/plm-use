@@ -4,9 +4,7 @@ import { ExternalLink, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useErpProduct, useErpSupplier } from "@/hooks/use-erp";
 
-type Props =
-  | { kind: "product"; id: string }
-  | { kind: "supplier"; id: string };
+type Props = { kind: "product"; id: string } | { kind: "supplier"; id: string };
 
 export function ErpBadge(props: Props) {
   return (
@@ -15,7 +13,11 @@ export function ErpBadge(props: Props) {
         <TooltipTrigger asChild>
           <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground hover:border-primary/40 hover:text-white transition cursor-help">
             <ExternalLink className="h-2.5 w-2.5" />
-            {props.kind === "product" ? <ProductLabel id={props.id} /> : <SupplierLabel id={props.id} />}
+            {props.kind === "product" ? (
+              <ProductLabel id={props.id} />
+            ) : (
+              <SupplierLabel id={props.id} />
+            )}
           </span>
         </TooltipTrigger>
         <TooltipContent side="top" className="text-[11px]">
@@ -41,8 +43,12 @@ function ProductTip({ id }: { id: string }) {
   return (
     <div className="space-y-0.5">
       <p className="font-bold">{data.name}</p>
-      <p className="text-muted-foreground">SKU {data.sku} · {data.category ?? "—"}</p>
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Fonte: ERP (leitura)</p>
+      <p className="text-muted-foreground">
+        SKU {data.sku} · {data.category ?? "—"}
+      </p>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        Fonte: ERP (leitura)
+      </p>
     </div>
   );
 }
@@ -65,7 +71,9 @@ function SupplierTip({ id }: { id: string }) {
       <p className="text-muted-foreground">
         {data.category ?? "—"} · lead {data.lead_time_days ?? "?"}d · {data.rating ?? "?"}/5
       </p>
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Fonte: ERP (leitura)</p>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        Fonte: ERP (leitura)
+      </p>
     </div>
   );
 }

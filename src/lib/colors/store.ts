@@ -38,10 +38,39 @@ export const palettesSeed: ColorPalette[] = [
     updatedAt: "2026-06-28",
     linkedRefs: 42,
     colors: [
-      { id: "c1", name: "Terracota Amalfi", hex: "#C86B4A", pantone: "17-1547 TCX", supplier: "Cataguases", season: "Verão 25", usageCount: 18 },
-      { id: "c2", name: "Âmbar Toscano", hex: "#D9A05B", pantone: "15-1132 TCX", supplier: "Cataguases", usageCount: 11 },
-      { id: "c3", name: "Azul Tirreno", hex: "#2E5A7A", pantone: "18-4041 TCX", supplier: "Santista", usageCount: 9 },
-      { id: "c4", name: "Marfim Limoncello", hex: "#F3E9C8", pantone: "11-0619 TCX", supplier: "Cedro", usageCount: 22 },
+      {
+        id: "c1",
+        name: "Terracota Amalfi",
+        hex: "#C86B4A",
+        pantone: "17-1547 TCX",
+        supplier: "Cataguases",
+        season: "Verão 25",
+        usageCount: 18,
+      },
+      {
+        id: "c2",
+        name: "Âmbar Toscano",
+        hex: "#D9A05B",
+        pantone: "15-1132 TCX",
+        supplier: "Cataguases",
+        usageCount: 11,
+      },
+      {
+        id: "c3",
+        name: "Azul Tirreno",
+        hex: "#2E5A7A",
+        pantone: "18-4041 TCX",
+        supplier: "Santista",
+        usageCount: 9,
+      },
+      {
+        id: "c4",
+        name: "Marfim Limoncello",
+        hex: "#F3E9C8",
+        pantone: "11-0619 TCX",
+        supplier: "Cedro",
+        usageCount: 22,
+      },
       { id: "c5", name: "Verde Oliva", hex: "#7A8B4F", pantone: "17-0535 TCX", usageCount: 6 },
     ],
   },
@@ -75,9 +104,30 @@ export const palettesSeed: ColorPalette[] = [
     updatedAt: "2026-05-14",
     linkedRefs: 71,
     colors: [
-      { id: "c10", name: "Índigo Puro", hex: "#1F3A5F", pantone: "19-4028 TCX", supplier: "Santista", usageCount: 24 },
-      { id: "c11", name: "Denim Médio", hex: "#4A6E92", pantone: "17-4041 TCX", supplier: "Santista", usageCount: 31 },
-      { id: "c12", name: "Lavado Sol", hex: "#8FAAC4", pantone: "15-4020 TCX", supplier: "Vicunha", usageCount: 12 },
+      {
+        id: "c10",
+        name: "Índigo Puro",
+        hex: "#1F3A5F",
+        pantone: "19-4028 TCX",
+        supplier: "Santista",
+        usageCount: 24,
+      },
+      {
+        id: "c11",
+        name: "Denim Médio",
+        hex: "#4A6E92",
+        pantone: "17-4041 TCX",
+        supplier: "Santista",
+        usageCount: 31,
+      },
+      {
+        id: "c12",
+        name: "Lavado Sol",
+        hex: "#8FAAC4",
+        pantone: "15-4020 TCX",
+        supplier: "Vicunha",
+        usageCount: 12,
+      },
       { id: "c13", name: "Cru", hex: "#EDE7DA", pantone: "11-0507 TCX", usageCount: 14 },
     ],
   },
@@ -134,7 +184,9 @@ export function addColorToPalette(paletteId: string, color: ColorRef) {
   const p = getPalette(paletteId);
   if (!p) return;
   palettes = palettes.map((x) =>
-    x.id === paletteId ? { ...x, colors: [...x.colors, color], updatedAt: new Date().toISOString().slice(0, 10) } : x,
+    x.id === paletteId
+      ? { ...x, colors: [...x.colors, color], updatedAt: new Date().toISOString().slice(0, 10) }
+      : x,
   );
   listeners.forEach((l) => l());
   emitLocalEvent({
@@ -151,7 +203,11 @@ export function removeColor(paletteId: string, colorId: string) {
   const removed = p.colors.find((c) => c.id === colorId);
   palettes = palettes.map((x) =>
     x.id === paletteId
-      ? { ...x, colors: x.colors.filter((c) => c.id !== colorId), updatedAt: new Date().toISOString().slice(0, 10) }
+      ? {
+          ...x,
+          colors: x.colors.filter((c) => c.id !== colorId),
+          updatedAt: new Date().toISOString().slice(0, 10),
+        }
       : x,
   );
   listeners.forEach((l) => l());

@@ -15,25 +15,29 @@ Copie o template abaixo em `.lovable/specs/<data>-<slug>.md`.
 - Prioridade: alta | média | baixa
 
 ## 1. Dor
+
 <uma frase, com fonte da entrevista H1-02>
 
 ## 2. Contexto
+
 <como a confecção convive com essa dor hoje — planilha? WhatsApp? nada?>
 
 ## 3. Competitive Notes (H1-03 / FPEF V14)
-| PLM | Como resolve | Limitação |
-|---|---|---|
-| Centric | | |
-| FlexPLM | | |
-| Kubix Link | | |
-| Yunique | | |
-| Collection Moda | | |
-| Audaces Idea | | |
+
+| PLM             | Como resolve | Limitação |
+| --------------- | ------------ | --------- |
+| Centric         |              |           |
+| FlexPLM         |              |           |
+| Kubix Link      |              |           |
+| Yunique         |              |           |
+| Collection Moda |              |           |
+| Audaces Idea    |              |           |
 
 Padrão mental comum:
 Superação proposta (menos cliques, drawer, IA):
 
 ## 4. Mapeamento (H1-04)
+
 - Entidades:
 - Relações (V3):
 - Eventos (V7):
@@ -44,19 +48,23 @@ Superação proposta (menos cliques, drawer, IA):
 - IA (V11):
 
 ## 5. Regras de negócio (V6)
+
 - R1: <sempre X>
 - R2: <nunca Y>
 - R3: <exceção Z>
 
 ## 6. Critérios de aceitação (H1-06)
+
 - [ ] AC1
 - [ ] AC2
 - [ ] AC3
 
 ## 7. Fora de escopo
+
 - <o que essa spec NÃO faz>
 
 ## 8. Design Review (FPEF V13 — 10 perguntas)
+
 1. Resolve dor real? SIM — <justificativa>
 2. Regra no servidor? SIM — <triggers/serverfn>
 3. Integração ERP? SIM/N/A — <justificativa>

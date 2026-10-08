@@ -80,13 +80,7 @@ describe("EntityTimeline dedupe", () => {
 
     // Replay/reconexão: mesmo "b" duplicado no array + "a" duplicado.
     await act(async () => {
-      currentItems = [
-        mkEvent("b"),
-        mkEvent("b"),
-        mkEvent("a"),
-        mkEvent("a"),
-        mkEvent("b"),
-      ];
+      currentItems = [mkEvent("b"), mkEvent("b"), mkEvent("a"), mkEvent("a"), mkEvent("b")];
       rerender(<Harness onCount={onCount} />);
     });
     // Ainda apenas 1 id novo relativo ao baseline {a}.
@@ -94,13 +88,7 @@ describe("EntityTimeline dedupe", () => {
 
     // Novo evento genuíno "c" chega junto de mais replays.
     await act(async () => {
-      currentItems = [
-        mkEvent("c"),
-        mkEvent("b"),
-        mkEvent("b"),
-        mkEvent("a"),
-        mkEvent("c"),
-      ];
+      currentItems = [mkEvent("c"), mkEvent("b"), mkEvent("b"), mkEvent("a"), mkEvent("c")];
       rerender(<Harness onCount={onCount} />);
     });
     // Ids novos vs baseline {a}: {b, c} → 2

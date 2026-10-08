@@ -207,8 +207,8 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
             Fluxo do PCP · continuação da OP
           </h3>
           <p className="text-[10px] text-muted-foreground mt-1 max-w-2xl">
-            Rotina disparada logo após o piloto aprovado no PLM. Clique em uma
-            etapa para abrir seu checklist sem sair desta tela.
+            Rotina disparada logo após o piloto aprovado no PLM. Clique em uma etapa para abrir seu
+            checklist sem sair desta tela.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -231,9 +231,7 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
 
       <ol
         className={`grid gap-2 ${
-          compact
-            ? "grid-cols-1 md:grid-cols-2"
-            : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+          compact ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
         }`}
       >
         {NODES.map((n, i) => {
@@ -272,13 +270,9 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
                     <Icon className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em]">
-                      {n.label}
-                    </p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em]">{n.label}</p>
                     {n.detail && (
-                      <p className="mt-1 text-[10px] leading-snug text-white/70">
-                        {n.detail}
-                      </p>
+                      <p className="mt-1 text-[10px] leading-snug text-white/70">{n.detail}</p>
                     )}
                   </div>
                 </div>
@@ -300,12 +294,8 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                 Etapa ativa {refCode ? `· ${refCode}` : ""}
               </p>
-              <p className="mt-0.5 text-sm font-bold text-white">
-                {active.label}
-              </p>
-              {active.detail && (
-                <p className="mt-1 text-[11px] text-white/70">{active.detail}</p>
-              )}
+              <p className="mt-0.5 text-sm font-bold text-white">{active.label}</p>
+              {active.detail && <p className="mt-1 text-[11px] text-white/70">{active.detail}</p>}
             </div>
             <Button
               size="sm"
@@ -318,10 +308,7 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
           </div>
           <ul className="space-y-1.5">
             {active.checklist.map((c) => (
-              <li
-                key={c}
-                className="flex items-start gap-2 text-[11px] text-white/85"
-              >
+              <li key={c} className="flex items-start gap-2 text-[11px] text-white/85">
                 <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-primary shrink-0" />
                 <span>{c}</span>
               </li>

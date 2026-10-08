@@ -15,10 +15,8 @@ export const STATUS_TOAST_CLASS: Record<StatusTone, string> = {
     "!border !border-status-rejected/50 !bg-status-rejected/10 !text-status-rejected [&_[data-icon]]:!text-status-rejected [&_[data-description]]:!text-status-rejected/80",
   warning:
     "!border !border-amber-400/50 !bg-amber-400/10 !text-amber-300 [&_[data-icon]]:!text-amber-300 [&_[data-description]]:!text-amber-200/80",
-  info:
-    "!border !border-sky-400/50 !bg-sky-400/10 !text-sky-300 [&_[data-icon]]:!text-sky-300 [&_[data-description]]:!text-sky-200/80",
-  neutral:
-    "!border !border-white/20 !bg-white/5 !text-white [&_[data-description]]:!text-white/70",
+  info: "!border !border-sky-400/50 !bg-sky-400/10 !text-sky-300 [&_[data-icon]]:!text-sky-300 [&_[data-description]]:!text-sky-200/80",
+  neutral: "!border !border-white/20 !bg-white/5 !text-white [&_[data-description]]:!text-white/70",
 };
 
 export const STATUS_BADGE_CLASS: Record<StatusTone, string> = {

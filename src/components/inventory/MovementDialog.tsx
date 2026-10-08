@@ -49,7 +49,12 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
   const [lotCode, setLotCode] = useState("");
   const [justification, setJustification] = useState("");
   const [busy, setBusy] = useState(false);
-  const [errors, setErrors] = useState<{ itemId?: string; warehouseId?: string; qty?: string; justification?: string }>({});
+  const [errors, setErrors] = useState<{
+    itemId?: string;
+    warehouseId?: string;
+    qty?: string;
+    justification?: string;
+  }>({});
 
   useEffect(() => {
     if (!open) return;
@@ -93,8 +98,6 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
 
     setErrors({});
 
-
-
     setBusy(true);
     const res = await registerMovement({
       data: {
@@ -126,7 +129,9 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 py-4">
           <div className="space-y-2">
-            <Label required htmlFor="movement-item">Insumo</Label>
+            <Label required htmlFor="movement-item">
+              Insumo
+            </Label>
             <Select value={itemId} onValueChange={setItemId}>
               <SelectTrigger
                 id="movement-item"
@@ -144,13 +149,17 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
               </SelectContent>
             </Select>
             {errors.itemId && (
-              <FieldMessage id="movement-item-error" variant="error">{errors.itemId}</FieldMessage>
+              <FieldMessage id="movement-item-error" variant="error">
+                {errors.itemId}
+              </FieldMessage>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label required htmlFor="movement-warehouse">Armazém</Label>
+              <Label required htmlFor="movement-warehouse">
+                Armazém
+              </Label>
               <Select value={warehouseId} onValueChange={setWarehouseId}>
                 <SelectTrigger
                   id="movement-warehouse"
@@ -168,7 +177,9 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 </SelectContent>
               </Select>
               {errors.warehouseId && (
-                <FieldMessage id="movement-warehouse-error" variant="error">{errors.warehouseId}</FieldMessage>
+                <FieldMessage id="movement-warehouse-error" variant="error">
+                  {errors.warehouseId}
+                </FieldMessage>
               )}
             </div>
             <div className="space-y-2">
@@ -191,7 +202,9 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label required htmlFor="movement-qty">Quantidade</Label>
+              <Label required htmlFor="movement-qty">
+                Quantidade
+              </Label>
               <Input
                 id="movement-qty"
                 value={qty}
@@ -203,7 +216,9 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 aria-describedby={errors.qty ? "movement-qty-error" : undefined}
               />
               {errors.qty && (
-                <FieldMessage id="movement-qty-error" variant="error">{errors.qty}</FieldMessage>
+                <FieldMessage id="movement-qty-error" variant="error">
+                  {errors.qty}
+                </FieldMessage>
               )}
             </div>
 
@@ -226,9 +241,11 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 rows={3}
                 aria-invalid={!!errors.justification || !justification.trim()}
               />
-              <FieldMessage variant={errors.justification || !justification.trim() ? "error" : "helper"}>
-                {errors.justification
-                  ?? (justification.trim()
+              <FieldMessage
+                variant={errors.justification || !justification.trim() ? "error" : "helper"}
+              >
+                {errors.justification ??
+                  (justification.trim()
                     ? "Explique brevemente o motivo do ajuste de estoque."
                     : "Justificativa obrigatória para ajustes de estoque.")}
               </FieldMessage>
@@ -236,18 +253,10 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
           )}
         </div>
         <DialogFooter className="gap-3">
-          <Button
- variant="ghost"
- onClick={() => onOpenChange(false)}
-            className="text-[10px]"
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-[10px]">
             Cancelar
           </Button>
-          <Button
- onClick={handleSubmit}
- disabled={busy}
- className="text-[10px]"
- >
+          <Button onClick={handleSubmit} disabled={busy} className="text-[10px]">
             Registrar
           </Button>
         </DialogFooter>

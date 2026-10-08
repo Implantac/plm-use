@@ -46,8 +46,7 @@ export function LotesGantt({
   const chartW = W - LABEL_W;
   const H = rows.length * ROW_H + 40;
 
-  const xOf = (ts: number) =>
-    LABEL_W + ((ts - start) / (end - start || 1)) * chartW;
+  const xOf = (ts: number) => LABEL_W + ((ts - start) / (end - start || 1)) * chartW;
 
   // marcas mensais
   const months: { x: number; label: string }[] = [];
@@ -71,14 +70,21 @@ export function LotesGantt({
   return (
     <Card className="glass-card rounded-lg p-5 overflow-x-auto">
       <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-4">
-        <Calendar className="w-3.5 h-3.5 text-primary" /> Gantt · {totalDays} dias · {rows.length} lotes
+        <Calendar className="w-3.5 h-3.5 text-primary" /> Gantt · {totalDays} dias · {rows.length}{" "}
+        lotes
       </h4>
       <svg width={W} height={H} className="min-w-[800px]">
         {/* grid mensal */}
         {months.map((m, i) => (
           <g key={i}>
             <line x1={m.x} x2={m.x} y1={20} y2={H} stroke="rgba(255,255,255,0.05)" />
-            <text x={m.x + 4} y={14} fill="rgba(255,255,255,0.4)" fontSize="9" style={{ textTransform: "uppercase" }}>
+            <text
+              x={m.x + 4}
+              y={14}
+              fill="rgba(255,255,255,0.4)"
+              fontSize="9"
+              style={{ textTransform: "uppercase" }}
+            >
               {m.label}
             </text>
           </g>
@@ -116,9 +122,25 @@ export function LotesGantt({
                 {r.lote.grupo.slice(0, 28)}
               </text>
               {/* trilho */}
-              <rect x={x} y={y + 6} width={w} height={18} rx={4} fill="rgba(255,255,255,0.05)" stroke={atrasado ? "#f43f5e" : "transparent"} />
+              <rect
+                x={x}
+                y={y + 6}
+                width={w}
+                height={18}
+                rx={4}
+                fill="rgba(255,255,255,0.05)"
+                stroke={atrasado ? "#f43f5e" : "transparent"}
+              />
               {/* progresso */}
-              <rect x={x} y={y + 6} width={(w * pct) / 100} height={18} rx={4} fill={color} opacity={0.85} />
+              <rect
+                x={x}
+                y={y + 6}
+                width={(w * pct) / 100}
+                height={18}
+                rx={4}
+                fill={color}
+                opacity={0.85}
+              />
               <text x={x + 6} y={y + 19} fill="white" fontSize="9" fontWeight={700}>
                 {pct}%
               </text>

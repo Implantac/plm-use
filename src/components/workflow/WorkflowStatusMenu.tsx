@@ -52,9 +52,7 @@ export function WorkflowStatusMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size={size} variant={variant} disabled={disabled}>
-          {pending ? (
-            <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-          ) : null}
+          {pending ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}
           {label ?? currentStatus}
           <ChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" />
         </Button>
@@ -65,9 +63,7 @@ export function WorkflowStatusMenu({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {options.length === 0 ? (
-          <DropdownMenuItem disabled>
-            Nenhuma transição disponível
-          </DropdownMenuItem>
+          <DropdownMenuItem disabled>Nenhuma transição disponível</DropdownMenuItem>
         ) : (
           options.map((to) => (
             <DropdownMenuItem

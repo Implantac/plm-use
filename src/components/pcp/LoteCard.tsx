@@ -1,13 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  AlertOctagon,
-  Clock,
-  Package,
-  TrendingDown,
-  TrendingUp,
-} from "lucide-react";
+import { AlertOctagon, Clock, Package, TrendingDown, TrendingUp } from "lucide-react";
 import {
   diasParaPrazo,
   ocorrenciasAbertasLote,
@@ -33,14 +27,8 @@ interface Props {
 
 export function LoteCard({ lote, setor, onClick }: Props) {
   const refsNoSetor = lote.referencias.filter((r) => r.setor_atual === setor);
-  const totalProgramado = refsNoSetor.reduce(
-    (acc, r) => acc + saldoReferencia(r),
-    0,
-  );
-  const totalProduzido = refsNoSetor.reduce(
-    (acc, r) => acc + r.qtd_produzida,
-    0,
-  );
+  const totalProgramado = refsNoSetor.reduce((acc, r) => acc + saldoReferencia(r), 0);
+  const totalProduzido = refsNoSetor.reduce((acc, r) => acc + r.qtd_produzida, 0);
   const saldoPendente = Math.max(0, totalProgramado - totalProduzido);
   const pct = percentualLote(lote);
   const dias = diasParaPrazo(lote);
@@ -65,12 +53,8 @@ export function LoteCard({ lote, setor, onClick }: Props) {
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
             {lote.numero}
           </p>
-          <p className="mt-0.5 text-sm font-bold text-white leading-tight">
-            {lote.grupo}
-          </p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">
-            {lote.colecao}
-          </p>
+          <p className="mt-0.5 text-sm font-bold text-white leading-tight">{lote.grupo}</p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">{lote.colecao}</p>
         </div>
         <Badge
           variant="outline"
@@ -82,21 +66,15 @@ export function LoteCard({ lote, setor, onClick }: Props) {
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">
-            Prog.
-          </p>
+          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">Prog.</p>
           <p className="text-xs font-bold text-white">{totalProgramado}</p>
         </div>
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">
-            Feito
-          </p>
+          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">Feito</p>
           <p className="text-xs font-bold text-emerald-300">{totalProduzido}</p>
         </div>
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">
-            Saldo
-          </p>
+          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">Saldo</p>
           <p className="text-xs font-bold text-amber-300">{saldoPendente}</p>
         </div>
       </div>

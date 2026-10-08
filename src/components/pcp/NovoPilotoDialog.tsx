@@ -28,8 +28,7 @@ import { z } from "zod";
 import { useCreatePiloto } from "@/hooks/use-pilotos";
 import { useSuppliers } from "@/hooks/use-suppliers";
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const schema = z.object({
   tipo: z.enum(["prova", "ajuste", "final"]),
@@ -72,9 +71,7 @@ export function NovoPilotoDialog({
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [tipo, setTipo] = useState<"prova" | "ajuste" | "final">(defaultTipo);
-  const [status, setStatus] = useState<"RASCUNHO" | "EM_DESENVOLVIMENTO">(
-    defaultStatus,
-  );
+  const [status, setStatus] = useState<"RASCUNHO" | "EM_DESENVOLVIMENTO">(defaultStatus);
   const [supplierId, setSupplierId] = useState("none");
   const [observacoes, setObservacoes] = useState(defaultObservacoes);
   const [errors, setErrors] = useState<{ supplier_id?: string; observacoes?: string }>({});
@@ -168,9 +165,7 @@ export function NovoPilotoDialog({
               <Label htmlFor="tipo">Tipo</Label>
               <Select
                 value={tipo}
-                onValueChange={(v) =>
-                  setTipo(v as "prova" | "ajuste" | "final")
-                }
+                onValueChange={(v) => setTipo(v as "prova" | "ajuste" | "final")}
               >
                 <SelectTrigger id="tipo">
                   <SelectValue />
@@ -187,18 +182,14 @@ export function NovoPilotoDialog({
               <Label htmlFor="status">Status inicial</Label>
               <Select
                 value={status}
-                onValueChange={(v) =>
-                  setStatus(v as "RASCUNHO" | "EM_DESENVOLVIMENTO")
-                }
+                onValueChange={(v) => setStatus(v as "RASCUNHO" | "EM_DESENVOLVIMENTO")}
               >
                 <SelectTrigger id="status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="RASCUNHO">Rascunho</SelectItem>
-                  <SelectItem value="EM_DESENVOLVIMENTO">
-                    Em desenvolvimento
-                  </SelectItem>
+                  <SelectItem value="EM_DESENVOLVIMENTO">Em desenvolvimento</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -241,12 +232,7 @@ export function NovoPilotoDialog({
           </div>
 
           <DialogFooter>
-            <Button
- type="button"
- variant="ghost"
- onClick={() => setOpen(false)}
-              disabled={pending}
-            >
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={pending}>
               Cancelar
             </Button>
             <Button type="submit" disabled={pending}>

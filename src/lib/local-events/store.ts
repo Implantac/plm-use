@@ -65,7 +65,9 @@ function persist() {
   }
 }
 
-export function emitLocalEvent(input: Omit<LocalEvent, "id" | "created_at"> & { created_at?: string }) {
+export function emitLocalEvent(
+  input: Omit<LocalEvent, "id" | "created_at"> & { created_at?: string },
+) {
   const evt: LocalEvent = {
     id: crypto.randomUUID(),
     created_at: input.created_at ?? new Date().toISOString(),
@@ -81,7 +83,10 @@ export function listLocalEvents(entityType: LocalEntityType, entityId: string): 
   return events.filter((e) => e.entity_type === entityType && e.entity_id === entityId);
 }
 
-export function useLocalEntityTimeline(entityType: LocalEntityType | null, entityId: string | null) {
+export function useLocalEntityTimeline(
+  entityType: LocalEntityType | null,
+  entityId: string | null,
+) {
   const [items, setItems] = useState<LocalEvent[]>(() =>
     entityType && entityId ? listLocalEvents(entityType, entityId) : [],
   );

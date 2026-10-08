@@ -28,7 +28,9 @@ function makeSelectBuilder(table: string) {
   builder.single = async () =>
     table === "stock_balance" ? state.balanceResult : state.itemsResult;
   builder.then = (resolve: (v: QueryResult) => void) =>
-    Promise.resolve(table === "stock_balance" ? state.balanceResult : state.itemsResult).then(resolve);
+    Promise.resolve(table === "stock_balance" ? state.balanceResult : state.itemsResult).then(
+      resolve,
+    );
   return builder;
 }
 

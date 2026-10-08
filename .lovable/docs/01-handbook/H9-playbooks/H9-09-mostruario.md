@@ -65,18 +65,19 @@ estruturado que retorna para o PLM (não para planilha solta).
 
 ## 3. Entradas (inputs)
 
-| # | Entrada | Origem (elo/sistema) | Formato | Obrigatória? |
-|---|---------|----------------------|---------|--------------|
-| 1 | Referência aprovada (`references.status='APROVACAO'` ou `ENGENHARIA`) | H9-02 / H9-07 | `references` | Sim |
-| 2 | Piloto final aprovado da peça-mãe | H9-02 | `pilotos` (status=`aprovado`) | Sim |
-| 3 | Grade e cor de mostruário planejadas | Coleção (H9-01) | `showroom_plan_item` | Sim |
-| 4 | SKU cadastral (`erp_id`) para leitura preço/EAN | ERP via `ErpAdapter.getProduct` | contrato H6-02 | Sim |
-| 5 | Peça-mãe física recebida | Produção interna ou facção (H9-05) | evento físico + `showroom_sample.received` | Sim |
-| 6 | Rotas de representante / calendário de showroom | Comercial | `showroom_route` | Sim |
-| 7 | Fotos de produto (still + ambientada) | Marketing / Estúdio | `asset_attachments` | Sim |
-| 8 | CAPA aberta bloqueando a referência (se houver) | H9-07 | `quality_capa.status` | Sim |
+| #   | Entrada                                                               | Origem (elo/sistema)               | Formato                                    | Obrigatória? |
+| --- | --------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------ | ------------ |
+| 1   | Referência aprovada (`references.status='APROVACAO'` ou `ENGENHARIA`) | H9-02 / H9-07                      | `references`                               | Sim          |
+| 2   | Piloto final aprovado da peça-mãe                                     | H9-02                              | `pilotos` (status=`aprovado`)              | Sim          |
+| 3   | Grade e cor de mostruário planejadas                                  | Coleção (H9-01)                    | `showroom_plan_item`                       | Sim          |
+| 4   | SKU cadastral (`erp_id`) para leitura preço/EAN                       | ERP via `ErpAdapter.getProduct`    | contrato H6-02                             | Sim          |
+| 5   | Peça-mãe física recebida                                              | Produção interna ou facção (H9-05) | evento físico + `showroom_sample.received` | Sim          |
+| 6   | Rotas de representante / calendário de showroom                       | Comercial                          | `showroom_route`                           | Sim          |
+| 7   | Fotos de produto (still + ambientada)                                 | Marketing / Estúdio                | `asset_attachments`                        | Sim          |
+| 8   | CAPA aberta bloqueando a referência (se houver)                       | H9-07                              | `quality_capa.status`                      | Sim          |
 
 Regras:
+
 - Toda entrada rastreável a entidade do catálogo (H2-02).
 - **Nunca** ler preço/EAN/saldo do ERP direto — só via `ErpAdapter`
   (H6-02), cache ≤ 60s.
@@ -84,18 +85,19 @@ Regras:
 
 ## 4. Saídas (outputs)
 
-| # | Saída | Destino (elo/sistema) | Entidade / Evento | Obrigatória? |
-|---|-------|-----------------------|-------------------|--------------|
-| 1 | Peça-mãe aprovada para mostruário | PLM | `showroom_sample` + `sample.approved` | Sim |
-| 2 | Kit de mostruário montado por rota | PLM | `showroom_kit` + `kit.assembled` | Sim |
-| 3 | Solicitação de remessa de amostra ao ERP | ERP | `writeErp('sample_transfer')` + `sample.transfer.requested` | Sim |
-| 4 | Ficha digital de mostruário publicada | PLM (público interno) | `showroom_publication` + `showroom.published` | Sim |
-| 5 | Feedback estruturado por representante/buyer | PLM | `showroom_feedback` + `feedback.captured` | Sim |
-| 6 | Decisão Go / No-Go / Revisar por referência | PLM → H9-10 | `showroom_decision` + `reference.launch_decision` | Sim |
-| 7 | Atualização de status da referência (`APROVACAO → ENGENHARIA` ou `ARQUIVADA`) | PLM | trigger `log_reference_status_change` | Sim |
-| 8 | Encaminhamento de defeito recorrente ao Qualidade | H9-07 | `quality_capa` (auto-open) | Condicional |
+| #   | Saída                                                                         | Destino (elo/sistema) | Entidade / Evento                                           | Obrigatória? |
+| --- | ----------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------- | ------------ |
+| 1   | Peça-mãe aprovada para mostruário                                             | PLM                   | `showroom_sample` + `sample.approved`                       | Sim          |
+| 2   | Kit de mostruário montado por rota                                            | PLM                   | `showroom_kit` + `kit.assembled`                            | Sim          |
+| 3   | Solicitação de remessa de amostra ao ERP                                      | ERP                   | `writeErp('sample_transfer')` + `sample.transfer.requested` | Sim          |
+| 4   | Ficha digital de mostruário publicada                                         | PLM (público interno) | `showroom_publication` + `showroom.published`               | Sim          |
+| 5   | Feedback estruturado por representante/buyer                                  | PLM                   | `showroom_feedback` + `feedback.captured`                   | Sim          |
+| 6   | Decisão Go / No-Go / Revisar por referência                                   | PLM → H9-10           | `showroom_decision` + `reference.launch_decision`           | Sim          |
+| 7   | Atualização de status da referência (`APROVACAO → ENGENHARIA` ou `ARQUIVADA`) | PLM                   | trigger `log_reference_status_change`                       | Sim          |
+| 8   | Encaminhamento de defeito recorrente ao Qualidade                             | H9-07                 | `quality_capa` (auto-open)                                  | Condicional  |
 
 Regras:
+
 - Toda saída relevante emite `entity_events` (V7 / H2-04).
 - Mudanças de estado passam por `workflow_definitions` (V8 / H2-05).
 - Toda escrita no ERP é idempotente (`idempotency_key` determinístico
@@ -131,18 +133,18 @@ Regras:
 
 Onde cada regra é aplicada:
 
-| Regra | Camada (DB / server fn / client) | Referência de código |
-|-------|----------------------------------|----------------------|
-| R1    | DB (sem tabela `products`) + server fn `getShowroomSku` | `src/lib/erp/*`, `src/hooks/use-erp.ts` |
-| R2    | DB (sem coluna `stock_qty` em `showroom_sample`)         | migration `showroom_*` |
-| R3    | Client via `<ErpBadge/>` na ficha digital                 | `src/components/erp/ErpBadge.tsx` |
-| R4    | Server fn `publishShowroom` (valida `quality_capa.status`) | `src/lib/showroom/*.functions.ts` |
-| R5    | DB (`showroom_feedback` com enum `dimensao` + `nota` CHECK 1..5) | migration |
-| R6    | Server fn `recordLaunchDecision` + trigger status | `src/lib/showroom/*.functions.ts` |
-| R7    | Client (reuso de `asset_attachments`)                    | `src/components/showroom/*` |
-| R8    | Server fn `requestSampleTransfer` via `ErpAdapter` | `src/lib/erp/*` |
-| R9    | DB (`entity_relations` inserts obrigatórios em trigger) | migration |
-| R10   | DB (`entity_events` + triggers)                         | reuso do padrão H2-04 |
+| Regra | Camada (DB / server fn / client)                                 | Referência de código                    |
+| ----- | ---------------------------------------------------------------- | --------------------------------------- |
+| R1    | DB (sem tabela `products`) + server fn `getShowroomSku`          | `src/lib/erp/*`, `src/hooks/use-erp.ts` |
+| R2    | DB (sem coluna `stock_qty` em `showroom_sample`)                 | migration `showroom_*`                  |
+| R3    | Client via `<ErpBadge/>` na ficha digital                        | `src/components/erp/ErpBadge.tsx`       |
+| R4    | Server fn `publishShowroom` (valida `quality_capa.status`)       | `src/lib/showroom/*.functions.ts`       |
+| R5    | DB (`showroom_feedback` com enum `dimensao` + `nota` CHECK 1..5) | migration                               |
+| R6    | Server fn `recordLaunchDecision` + trigger status                | `src/lib/showroom/*.functions.ts`       |
+| R7    | Client (reuso de `asset_attachments`)                            | `src/components/showroom/*`             |
+| R8    | Server fn `requestSampleTransfer` via `ErpAdapter`               | `src/lib/erp/*`                         |
+| R9    | DB (`entity_relations` inserts obrigatórios em trigger)          | migration                               |
+| R10   | DB (`entity_events` + triggers)                                  | reuso do padrão H2-04                   |
 
 ## 6. Workflow (V8)
 
@@ -179,18 +181,18 @@ pendente → go | no_go | revisar
 
 ## 7. Eventos emitidos (V7)
 
-| `event_type`                       | Quando | Payload mínimo | Consumido por |
-|------------------------------------|--------|----------------|---------------|
-| `sample.requested`                 | Kit físico é solicitado à produção | `{reference_id, grade, cor, quantidade}` | PCP (H9-05), Timeline |
-| `sample.received`                  | Peça-mãe entra no showroom | `{sample_id, recebido_por}` | Timeline, KPI lead time |
-| `sample.approved` / `sample.rejected` | Curadoria decide | `{sample_id, motivo?}` | Ficha, KPI qualidade |
-| `sample.transfer.requested`        | Remessa ao ERP idempotente | `{sample_id, route_id, erp_idempotency_key}` | Auditoria + ERP |
-| `kit.assembled`                    | Kit por rota fechado | `{kit_id, route_id, sample_ids[]}` | Comercial, Timeline |
-| `showroom.published`               | Ficha digital publicada | `{publication_id, reference_ids[]}` | Comercial, Marketing, H9-10 |
-| `feedback.captured`                | Feedback estruturado gravado | `{feedback_id, reference_id, dimensao, nota}` | BI, IA (V11), H9-14 |
-| `reference.launch_decision`        | Go / No-Go / Revisar | `{reference_id, decision, motivo, decidido_por}` | H9-10, H9-02 (revisão) |
-| `showroom.capa.autoopen`           | Defeito recorrente vira CAPA | `{capa_id, reference_id, ocorrencias}` | H9-07 |
-| `showroom.frozen`                  | Publicação congelada após lançamento | `{publication_id}` | Auditoria |
+| `event_type`                          | Quando                               | Payload mínimo                                   | Consumido por               |
+| ------------------------------------- | ------------------------------------ | ------------------------------------------------ | --------------------------- |
+| `sample.requested`                    | Kit físico é solicitado à produção   | `{reference_id, grade, cor, quantidade}`         | PCP (H9-05), Timeline       |
+| `sample.received`                     | Peça-mãe entra no showroom           | `{sample_id, recebido_por}`                      | Timeline, KPI lead time     |
+| `sample.approved` / `sample.rejected` | Curadoria decide                     | `{sample_id, motivo?}`                           | Ficha, KPI qualidade        |
+| `sample.transfer.requested`           | Remessa ao ERP idempotente           | `{sample_id, route_id, erp_idempotency_key}`     | Auditoria + ERP             |
+| `kit.assembled`                       | Kit por rota fechado                 | `{kit_id, route_id, sample_ids[]}`               | Comercial, Timeline         |
+| `showroom.published`                  | Ficha digital publicada              | `{publication_id, reference_ids[]}`              | Comercial, Marketing, H9-10 |
+| `feedback.captured`                   | Feedback estruturado gravado         | `{feedback_id, reference_id, dimensao, nota}`    | BI, IA (V11), H9-14         |
+| `reference.launch_decision`           | Go / No-Go / Revisar                 | `{reference_id, decision, motivo, decidido_por}` | H9-10, H9-02 (revisão)      |
+| `showroom.capa.autoopen`              | Defeito recorrente vira CAPA         | `{capa_id, reference_id, ocorrencias}`           | H9-07                       |
+| `showroom.frozen`                     | Publicação congelada após lançamento | `{publication_id}`                               | Auditoria                   |
 
 ## 8. Integrações (H6)
 
@@ -244,14 +246,14 @@ pendente → go | no_go | revisar
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| `showroom_coverage` | `refs com sample.approved / refs planejadas` | % | ≥ 98% | Coordenação de Produto |
-| `showroom_lead_time` | `avg(sample.approved − reference.aprovada)` | dias | ≤ 15 | PCP + Produto |
-| `feedback_capture_rate` | `refs com ≥1 feedback / refs publicadas` | % | ≥ 80% | Comercial |
-| `avg_feedback_score` | `avg(nota) por dimensão` | 1–5 | ≥ 3.8 | Produto |
-| `go_ratio` | `decisions.go / decisions.total` | % | monitor | Diretoria |
-| `capa_from_showroom` | `capas abertas com origem=showroom / mês` | inteiro | monitor | Qualidade |
+| KPI                     | Fórmula                                      | Unidade | Meta    | Responsável            |
+| ----------------------- | -------------------------------------------- | ------- | ------- | ---------------------- |
+| `showroom_coverage`     | `refs com sample.approved / refs planejadas` | %       | ≥ 98%   | Coordenação de Produto |
+| `showroom_lead_time`    | `avg(sample.approved − reference.aprovada)`  | dias    | ≤ 15    | PCP + Produto          |
+| `feedback_capture_rate` | `refs com ≥1 feedback / refs publicadas`     | %       | ≥ 80%   | Comercial              |
+| `avg_feedback_score`    | `avg(nota) por dimensão`                     | 1–5     | ≥ 3.8   | Produto                |
+| `go_ratio`              | `decisions.go / decisions.total`             | %       | monitor | Diretoria              |
+| `capa_from_showroom`    | `capas abertas com origem=showroom / mês`    | inteiro | monitor | Qualidade              |
 
 Fonte: 100% derivado de `entity_events` e `showroom_feedback` — nunca
 contagem manual.
@@ -304,14 +306,14 @@ contagem manual.
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve este elo | Limitação | Como superamos |
-|-----|-----------------------|-----------|----------------|
-| Centric         | Módulo "Line Planning + Sample Tracking" robusto, com line sheet e workflow de amostra | Rigidez de UI, curva alta, pouca IA nativa em feedback | Drawer contextual + agente que consolida feedback como sinal fraco |
-| PTC FlexPLM     | Sample lifecycle e sample calendar fortes | UI datada, integração com showroom externa via terceiros | Ficha digital publicável nativa + reuso de `EntityDrawer` |
-| Lectra Kubix    | Line plan + digital showroom integrados | Foco em marca grande, custoso para confecção BR média | Nativo BR (facção, representante por rota) sem inflar escopo |
-| Gerber Yunique  | Sample tracker OK, colaboração via comentário | Feedback pouco estruturado, difícil de virar BI | `showroom_feedback` como entidade estruturada, vira KPI direto |
-| Collection Moda | Coleção + mostruário nativos, forte em BR | Fraco em workflow e evento, decisão fica em planilha | Máquina de estado real + `reference.launch_decision` auditável |
-| Audaces Idea    | Ficha e piloto muito fortes | Mostruário pouco desenvolvido, sem sell-in | Playbook dedicado, integrado a H9-10 e H9-14 |
+| PLM             | Como resolve este elo                                                                  | Limitação                                                | Como superamos                                                     |
+| --------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| Centric         | Módulo "Line Planning + Sample Tracking" robusto, com line sheet e workflow de amostra | Rigidez de UI, curva alta, pouca IA nativa em feedback   | Drawer contextual + agente que consolida feedback como sinal fraco |
+| PTC FlexPLM     | Sample lifecycle e sample calendar fortes                                              | UI datada, integração com showroom externa via terceiros | Ficha digital publicável nativa + reuso de `EntityDrawer`          |
+| Lectra Kubix    | Line plan + digital showroom integrados                                                | Foco em marca grande, custoso para confecção BR média    | Nativo BR (facção, representante por rota) sem inflar escopo       |
+| Gerber Yunique  | Sample tracker OK, colaboração via comentário                                          | Feedback pouco estruturado, difícil de virar BI          | `showroom_feedback` como entidade estruturada, vira KPI direto     |
+| Collection Moda | Coleção + mostruário nativos, forte em BR                                              | Fraco em workflow e evento, decisão fica em planilha     | Máquina de estado real + `reference.launch_decision` auditável     |
+| Audaces Idea    | Ficha e piloto muito fortes                                                            | Mostruário pouco desenvolvido, sem sell-in               | Playbook dedicado, integrado a H9-10 e H9-14                       |
 
 **Padrão mental comum extraído:** todos tratam mostruário como
 "etapa de checklist"; poucos tratam como **fonte estruturada de sinal
@@ -322,17 +324,17 @@ alimenta IA e retro para desenvolvimento em H9-14.
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Probabilidade | Mitigação |
-|-------|---------|---------------|-----------|
-| Duplicar SKU no PLM ao rastrear peça-mãe | Vira ERP (bug de escopo) | Média | R1/R2/R8 + code review + linter que reprova `stock_qty`/`price` em `public.showroom_*` |
-| Feedback vira campo texto livre | Perde valor para BI/IA | Alta | R5 (enum + nota) + validação Zod na server fn |
-| CAPA aberta escapar para publicação | Perde credibilidade da coleção | Média | R4 no `publishShowroom` + trigger DB |
-| Realtime vazando decisão de Go/No-Go | Risco comercial/vazamento | Média | Escopo `is_member` + role no tópico `showroom-live` |
-| Peça-mãe fica "perdida" em rota | Retrabalho, atraso de sell-in | Alta | Máquina de estado `em_showroom → retornada` + cron `showroom_coverage_watchdog` |
-| Decisão de Go sem evidência | Lançamento ruim, encalhe | Média | UI exige justificativa; IA sinaliza divergência entre feedback e decisão |
+| Risco                                    | Impacto                        | Probabilidade | Mitigação                                                                              |
+| ---------------------------------------- | ------------------------------ | ------------- | -------------------------------------------------------------------------------------- |
+| Duplicar SKU no PLM ao rastrear peça-mãe | Vira ERP (bug de escopo)       | Média         | R1/R2/R8 + code review + linter que reprova `stock_qty`/`price` em `public.showroom_*` |
+| Feedback vira campo texto livre          | Perde valor para BI/IA         | Alta          | R5 (enum + nota) + validação Zod na server fn                                          |
+| CAPA aberta escapar para publicação      | Perde credibilidade da coleção | Média         | R4 no `publishShowroom` + trigger DB                                                   |
+| Realtime vazando decisão de Go/No-Go     | Risco comercial/vazamento      | Média         | Escopo `is_member` + role no tópico `showroom-live`                                    |
+| Peça-mãe fica "perdida" em rota          | Retrabalho, atraso de sell-in  | Alta          | Máquina de estado `em_showroom → retornada` + cron `showroom_coverage_watchdog`        |
+| Decisão de Go sem evidência              | Lançamento ruim, encalhe       | Média         | UI exige justificativa; IA sinaliza divergência entre feedback e decisão               |
 
 ## 17. Changelog do playbook
 
-| Data       | Versão | Autor          | Mudança  |
-|------------|--------|----------------|----------|
-| 2026-07-08 | 0.1    | Handbook Team  | criação  |
+| Data       | Versão | Autor         | Mudança |
+| ---------- | ------ | ------------- | ------- |
+| 2026-07-08 | 0.1    | Handbook Team | criação |

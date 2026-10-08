@@ -3,16 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Palette,
-  Plus,
-  Trash2,
-  Copy,
-  Sparkles,
-  Link2,
-  CheckCircle2,
-  Clock,
-} from "lucide-react";
+import { Palette, Plus, Trash2, Copy, Sparkles, Link2, CheckCircle2, Clock } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,8 +46,7 @@ export const Route = createFileRoute("/_authenticated/colors")({
       { property: "og:title", content: "Cartela de Cores · USE MODA PLM" },
       {
         property: "og:description",
-        content:
-          "Cadastre paletas Pantone, vincule fornecedor e reutilize em várias coleções.",
+        content: "Cadastre paletas Pantone, vincule fornecedor e reutilize em várias coleções.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -99,15 +89,18 @@ function ColorPaletteRoute() {
   const metrics = useMemo(() => {
     const total = palettes.length;
     const approved = palettes.filter((p) => p.status === "aprovada").length;
-    const uniqueColors = new Set(
-      palettes.flatMap((p) => p.colors.map((c) => c.hex.toLowerCase())),
-    ).size;
+    const uniqueColors = new Set(palettes.flatMap((p) => p.colors.map((c) => c.hex.toLowerCase())))
+      .size;
     const linked = palettes.reduce((sum, p) => sum + p.linkedRefs, 0);
     return [
       { label: "Paletas ativas", value: String(total), detail: `${approved} aprovadas` },
       { label: "Cores únicas", value: String(uniqueColors), detail: "Pantone TCX" },
       { label: "Referências vinculadas", value: String(linked), detail: "cruzadas" },
-      { label: "Cobertura", value: total ? `${Math.round((approved / total) * 100)}%` : "0%", detail: "prontas p/ mix" },
+      {
+        label: "Cobertura",
+        value: total ? `${Math.round((approved / total) * 100)}%` : "0%",
+        detail: "prontas p/ mix",
+      },
     ];
   }, [palettes]);
 
@@ -166,9 +159,7 @@ function ColorPaletteRoute() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                   <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between gap-2">
                     <div>
-                      <p className="text-sm font-semibold text-white leading-tight">
-                        {p.name}
-                      </p>
+                      <p className="text-sm font-semibold text-white leading-tight">{p.name}</p>
                       <p className="text-[10px] uppercase tracking-widest text-white/70">
                         {p.season} · {p.brand}
                       </p>
@@ -229,9 +220,7 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
                   Paleta · {palette.season}
                 </span>
               </div>
-              <h2 className="text-2xl font-bold text-white leading-tight">
-                {palette.name}
-              </h2>
+              <h2 className="text-2xl font-bold text-white leading-tight">{palette.name}</h2>
               <p className="text-sm text-muted-foreground mt-1">{palette.mood}</p>
             </div>
             <div className="flex gap-2">
@@ -245,10 +234,10 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
               />
 
               <Button
- variant="outline"
- size="sm"
- className="gap-2"
- onClick={() => {
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
                   const clone: ColorPalette = {
                     ...palette,
                     id: `pal-${Date.now()}`,
@@ -265,9 +254,9 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
               </Button>
               {palette.status !== "aprovada" && (
                 <Button
- size="sm"
- className="gap-2"
- onClick={() => {
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => {
                     upsertPalette({ ...palette, status: "aprovada" });
                     toast.success("Paleta aprovada");
                   }}
@@ -311,13 +300,7 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
   );
 }
 
-function ColorSwatch({
-  color,
-  onDelete,
-}: {
-  color: ColorRef;
-  onDelete: () => void;
-}) {
+function ColorSwatch({ color, onDelete }: { color: ColorRef; onDelete: () => void }) {
   const fg = readableOn(color.hex);
   return (
     <div className="rounded-lg overflow-hidden border border-white/10 group">
@@ -393,7 +376,9 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             />
             <div className="flex-1 space-y-2">
               <div>
-                <Label className="text-[10px] uppercase tracking-widest" required>Nome</Label>
+                <Label className="text-[10px] uppercase tracking-widest" required>
+                  Nome
+                </Label>
                 <Input
                   value={name}
                   onChange={(e) => {
@@ -407,11 +392,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
               </div>
               <div>
                 <Label className="text-[10px] uppercase tracking-widest">HEX</Label>
-                <Input
-                  value={hex}
-                  onChange={(e) => setHex(e.target.value)}
-                  className="font-mono"
-                />
+                <Input value={hex} onChange={(e) => setHex(e.target.value)} className="font-mono" />
               </div>
             </div>
           </div>
@@ -439,7 +420,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             Cancelar
           </Button>
           <Button
-  onClick={() => {
+            onClick={() => {
               if (!name.trim()) {
                 setNameError("Dê um nome à cor.");
                 return;

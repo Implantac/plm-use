@@ -3,14 +3,27 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { ArrowRight, Bot, ImageOff, ImagePlus, LoaderCircle, Save, Sparkles, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Bot,
+  ImageOff,
+  ImagePlus,
+  LoaderCircle,
+  Save,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { nativeProposal } from "@/lib/ai/native-agent";
 import { nativeVisualPng } from "@/lib/ai/native-visual";
 import { streamImage } from "@/lib/streamImage";
 import { useQuery } from "@tanstack/react-query";
-import { activeForCollection, listOfficialModels, officialMeasuresBlock } from "@/lib/official-models";
+import {
+  activeForCollection,
+  listOfficialModels,
+  officialMeasuresBlock,
+} from "@/lib/official-models";
 import { uploadGeneratedImage, storageAssetSource } from "@/lib/storage/assets";
 import { supabase } from "@/integrations/supabase/client";
 import { useReferences } from "@/hooks/use-references";
@@ -117,7 +130,10 @@ const ACCEPTED_ARTWORK_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Arquivo inválido."));
+    reader.onload = () =>
+      typeof reader.result === "string"
+        ? resolve(reader.result)
+        : reject(new Error("Arquivo inválido."));
     reader.onerror = () => reject(new Error("Não foi possível ler a imagem."));
     reader.readAsDataURL(file);
   });
@@ -154,10 +170,24 @@ function nextReferenceCode(existingCodes: string[]) {
 function parseProposal(reply: string): Proposal | null {
   const match = reply.match(/\{[\s\S]*\}/);
   if (!match) return null;
-  const LIST_KEYS = ["name", "title", "angle", "view", "part", "element", "material", "color", "concept", "description", "note"];
+  const LIST_KEYS = [
+    "name",
+    "title",
+    "angle",
+    "view",
+    "part",
+    "element",
+    "material",
+    "color",
+    "concept",
+    "description",
+    "note",
+  ];
   const list = (v: unknown) => {
     const arr = normalizeTextList(Array.isArray(v) ? v : v == null ? [] : [v], LIST_KEYS);
-    return (arr as unknown[]).filter((x): x is string => typeof x === "string" && Boolean(x.trim()));
+    return (arr as unknown[]).filter(
+      (x): x is string => typeof x === "string" && Boolean(x.trim()),
+    );
   };
   const str = (v: unknown) => (typeof v === "string" ? v : v == null ? "" : String(v));
   try {
@@ -218,7 +248,10 @@ export function ProductStudio() {
   const [artworkError, setArtworkError] = useState("");
   const [artworkPlacement, setArtworkPlacement] = useState("centro-frente");
   const [artworkTechnique, setArtworkTechnique] = useState("silk");
-  const { data: officialModels = [] } = useQuery({ queryKey: ["official-models"], queryFn: listOfficialModels });
+  const { data: officialModels = [] } = useQuery({
+    queryKey: ["official-models"],
+    queryFn: listOfficialModels,
+  });
   const [officialId, setOfficialId] = useState("");
   const official = officialModels.find((m) => m.id === officialId);
   // Troca automaticamente para a tabela oficial da coleção informada no briefing.
@@ -257,7 +290,9 @@ export function ProductStudio() {
       const result = await ask({
         data: {
           agent: "fashion",
-          message: buildConceptPrompt(briefing) + (official ? `\n\n${officialMeasuresBlock(official)}` : ""),
+          message:
+            buildConceptPrompt(briefing) +
+            (official ? `\n\n${officialMeasuresBlock(official)}` : ""),
         },
       });
       if (!result.ok) {
@@ -290,7 +325,9 @@ export function ProductStudio() {
     }
 
     const anchor = keepIdentity
-      ? [...generatedImages].reverse().find((img) => img.conceptName === proposal.name && !img.view.startsWith("variação"))
+      ? [...generatedImages]
+          .reverse()
+          .find((img) => img.conceptName === proposal.name && !img.view.startsWith("variação"))
       : undefined;
     const viewLabel = variationColor ? `variação ${variationColor}` : visualView;
 
@@ -384,8 +421,10 @@ export function ProductStudio() {
 
   async function applyArtwork() {
     if (!proposal || !imageSource || !artwork || imageBusy) return;
-    const placement = ARTWORK_PLACEMENTS.find((item) => item.value === artworkPlacement)?.label ?? artworkPlacement;
-    const technique = ARTWORK_TECHNIQUES.find((item) => item.value === artworkTechnique)?.label ?? artworkTechnique;
+    const placement =
+      ARTWORK_PLACEMENTS.find((item) => item.value === artworkPlacement)?.label ?? artworkPlacement;
+    const technique =
+      ARTWORK_TECHNIQUES.find((item) => item.value === artworkTechnique)?.label ?? artworkTechnique;
     const sourceGarment = imageSource;
     const viewLabel = `${visualView} · ${technique} · ${placement}`;
     const prompt = [
@@ -461,9 +500,13 @@ export function ProductStudio() {
 
     const conceptPayload = normalizeProductProposal({
       ...proposal,
-      variations: variationIdeas.length ? variationIdeas : proposal?.variations ?? [],
-      imageIdeas: proposal?.imageIdeas?.length ? proposal.imageIdeas : ["frente", "costas", "lateral", "modelo", "campanha"],
-      visualIdentity: proposal?.visualIdentity?.length ? proposal.visualIdentity : [briefing.mood || "minimalista"],
+      variations: variationIdeas.length ? variationIdeas : (proposal?.variations ?? []),
+      imageIdeas: proposal?.imageIdeas?.length
+        ? proposal.imageIdeas
+        : ["frente", "costas", "lateral", "modelo", "campanha"],
+      visualIdentity: proposal?.visualIdentity?.length
+        ? proposal.visualIdentity
+        : [briefing.mood || "minimalista"],
     });
 
     const savedImages = generatedImages.filter(
@@ -562,9 +605,17 @@ export function ProductStudio() {
                 className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground"
               >
                 <option value="">Nenhum — IA estima pela ABNT</option>
-                {officialModels.map((m) => <option key={m.id} value={m.id}>{m.colecao ? `${m.colecao} — ` : ""}{m.nome} · tam. {m.tamanho_base}{m.ativa ? " (oficial)" : ""}</option>)}
+                {officialModels.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.colecao ? `${m.colecao} — ` : ""}
+                    {m.nome} · tam. {m.tamanho_base}
+                    {m.ativa ? " (oficial)" : ""}
+                  </option>
+                ))}
               </select>
-              <Link to="/official-models" className="text-xs text-primary hover:underline">Gerenciar tabelas por coleção</Link>
+              <Link to="/official-models" className="text-xs text-primary hover:underline">
+                Gerenciar tabelas por coleção
+              </Link>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="studio-description">Ideia do produto *</Label>
@@ -779,8 +830,12 @@ export function ProductStudio() {
                     const nextProposal = normalizeProductProposal({
                       ...proposal,
                       variations: nextIdeas,
-                      imageIdeas: proposal.imageIdeas?.length ? proposal.imageIdeas : ["frente", "costas", "lateral", "modelo", "campanha"],
-                      visualIdentity: proposal.visualIdentity?.length ? proposal.visualIdentity : [briefing.mood || "minimalista"],
+                      imageIdeas: proposal.imageIdeas?.length
+                        ? proposal.imageIdeas
+                        : ["frente", "costas", "lateral", "modelo", "campanha"],
+                      visualIdentity: proposal.visualIdentity?.length
+                        ? proposal.visualIdentity
+                        : [briefing.mood || "minimalista"],
                     });
                     applyProposal(nextProposal);
                   }}
@@ -801,9 +856,18 @@ export function ProductStudio() {
                 />
                 <ConceptList label="Cores sugeridas · validar" values={proposal.colors} />
                 <ConceptList label="Detalhes de construção" values={proposal.details} />
-                <ConceptList label="Identidade visual" values={proposal.visualIdentity ?? [briefing.mood || "minimalista"]} />
-                <ConceptList label="Direções de imagem" values={proposal.imageIdeas ?? ["frente", "costas", "modelo", "campanha"]} />
-                <ConceptList label="Variações conceituais" values={variationIdeas.length ? variationIdeas : proposal.variations} />
+                <ConceptList
+                  label="Identidade visual"
+                  values={proposal.visualIdentity ?? [briefing.mood || "minimalista"]}
+                />
+                <ConceptList
+                  label="Direções de imagem"
+                  values={proposal.imageIdeas ?? ["frente", "costas", "modelo", "campanha"]}
+                />
+                <ConceptList
+                  label="Variações conceituais"
+                  values={variationIdeas.length ? variationIdeas : proposal.variations}
+                />
                 <ConceptList label="Pontos para revisão humana" values={proposal.validationNotes} />
               </div>
 
@@ -829,36 +893,79 @@ export function ProductStudio() {
                 </div>
 
                 <label className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
-                  <input type="checkbox" checked={keepIdentity} onChange={(e) => setKeepIdentity(e.target.checked)} className="accent-primary" />
+                  <input
+                    type="checkbox"
+                    checked={keepIdentity}
+                    onChange={(e) => setKeepIdentity(e.target.checked)}
+                    className="accent-primary"
+                  />
                   Manter identidade do produto (usa o primeiro visual como referência)
                 </label>
                 <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <input type="checkbox" checked={nativeVisual} onChange={(e) => setNativeVisual(e.target.checked)} className="accent-primary" />
+                  <input
+                    type="checkbox"
+                    checked={nativeVisual}
+                    onChange={(e) => setNativeVisual(e.target.checked)}
+                    className="accent-primary"
+                  />
                   Agente nativo (desenho local, sem consumir créditos)
                 </label>
                 <div className="flex items-center gap-2">
-                  <Button type="button" variant="outline" onClick={() => void generateVisual()} disabled={imageBusy} className="w-full">
-                    {imageBusy ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => void generateVisual()}
+                    disabled={imageBusy}
+                    className="w-full"
+                  >
+                    {imageBusy ? (
+                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-2 h-4 w-4" />
+                    )}
                     Gerar visual {visualView}
                   </Button>
                 </div>
 
                 <div className="mt-3 space-y-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Variações de cor</p>
-                  <Input value={variationColors} onChange={(e) => setVariationColors(e.target.value)} placeholder="areia, azul, preto" className="text-xs" />
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                    Variações de cor
+                  </p>
+                  <Input
+                    value={variationColors}
+                    onChange={(e) => setVariationColors(e.target.value)}
+                    placeholder="areia, azul, preto"
+                    className="text-xs"
+                  />
                   <div className="flex flex-wrap gap-2">
-                    {variationColors.split(",").map((c) => c.trim()).filter(Boolean).slice(0, 8).map((color) => (
-                      <Button key={color} type="button" size="sm" variant="outline" disabled={imageBusy} onClick={() => void generateVisual(color)}>
-                        {color}
-                      </Button>
-                    ))}
+                    {variationColors
+                      .split(",")
+                      .map((c) => c.trim())
+                      .filter(Boolean)
+                      .slice(0, 8)
+                      .map((color) => (
+                        <Button
+                          key={color}
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={imageBusy}
+                          onClick={() => void generateVisual(color)}
+                        >
+                          {color}
+                        </Button>
+                      ))}
                   </div>
                 </div>
 
                 <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">Aplicar logo ou estampa</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Use o visual exibido como peça base.</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">
+                      Aplicar logo ou estampa
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Use o visual exibido como peça base.
+                    </p>
                   </div>
 
                   <Field invalid={Boolean(artworkError)}>
@@ -877,8 +984,14 @@ export function ProductStudio() {
 
                   {artwork && (
                     <div className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.025] p-2">
-                      <img src={artwork.dataUrl} alt="Prévia da arte enviada" className="h-16 w-16 shrink-0 rounded-sm object-contain" />
-                      <span className="min-w-0 flex-1 truncate text-xs text-foreground">{artwork.name}</span>
+                      <img
+                        src={artwork.dataUrl}
+                        alt="Prévia da arte enviada"
+                        className="h-16 w-16 shrink-0 rounded-sm object-contain"
+                      />
+                      <span className="min-w-0 flex-1 truncate text-xs text-foreground">
+                        {artwork.name}
+                      </span>
                       <Button
                         type="button"
                         variant="ghost"
@@ -899,18 +1012,30 @@ export function ProductStudio() {
                     <Field>
                       <Label>Posição na peça</Label>
                       <Select value={artworkPlacement} onValueChange={setArtworkPlacement}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
-                          {ARTWORK_PLACEMENTS.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}
+                          {ARTWORK_PLACEMENTS.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </Field>
                     <Field>
                       <Label>Técnica</Label>
                       <Select value={artworkTechnique} onValueChange={setArtworkTechnique}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
-                          {ARTWORK_TECHNIQUES.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}
+                          {ARTWORK_TECHNIQUES.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </Field>
@@ -925,31 +1050,62 @@ export function ProductStudio() {
                     {imageBusy ? <LoaderCircle className="animate-spin" /> : <ImagePlus />}
                     Aplicar arte no visual
                   </Button>
-                  {!imageSource && <FieldMessage>Gere ou escolha um visual da peça antes de aplicar a arte.</FieldMessage>}
+                  {!imageSource && (
+                    <FieldMessage>
+                      Gere ou escolha um visual da peça antes de aplicar a arte.
+                    </FieldMessage>
+                  )}
                 </div>
                 {imageBusy && !imageSource && (
-                  <div className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-white/15 bg-black/10 text-sm text-muted-foreground" role="status">
+                  <div
+                    className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-white/15 bg-black/10 text-sm text-muted-foreground"
+                    role="status"
+                  >
                     <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
                     Criando visual conceitual de {visualView}…
                   </div>
                 )}
                 {imageSource && (
                   <div className="mt-3 overflow-hidden rounded-md border border-white/10 bg-black/20">
-                    <img src={imageSource} alt={`Conceito visual de ${proposal.name}, ${visualView}`} className="h-64 w-full object-contain" />
+                    <img
+                      src={imageSource}
+                      alt={`Conceito visual de ${proposal.name}, ${visualView}`}
+                      className="h-64 w-full object-contain"
+                    />
                     <div className="flex items-center justify-between gap-3 p-2 text-xs text-muted-foreground">
                       <span>Conceito visual · requer validação humana</span>
-                      <ImageExportMenu src={imageSource} baseName={`${proposal.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${visualView}`} />
+                      <ImageExportMenu
+                        src={imageSource}
+                        baseName={`${proposal.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${visualView}`}
+                      />
                     </div>
                   </div>
                 )}
                 {generatedImages.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4" aria-label="Histórico desta sessão">
+                  <div
+                    className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4"
+                    aria-label="Histórico desta sessão"
+                  >
                     {generatedImages.map((image) => (
-                      <Button key={`${image.view}-${image.createdAt}`} type="button" variant="ghost" onClick={() => { setImageSource(image.src); if (!image.application) setVisualView(image.view); }} className="h-auto min-w-0 flex-col items-stretch overflow-hidden rounded border border-white/10 p-0 text-left" aria-label={`Visual ${image.view} para ${image.conceptName}`}>
+                      <Button
+                        key={`${image.view}-${image.createdAt}`}
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setImageSource(image.src);
+                          if (!image.application) setVisualView(image.view);
+                        }}
+                        className="h-auto min-w-0 flex-col items-stretch overflow-hidden rounded border border-white/10 p-0 text-left"
+                        aria-label={`Visual ${image.view} para ${image.conceptName}`}
+                      >
                         <img src={image.src} alt="" className="aspect-square w-full object-cover" />
-                        <span className="block truncate px-1 pt-1 text-[10px] text-muted-foreground">{image.view}</span>
+                        <span className="block truncate px-1 pt-1 text-[10px] text-muted-foreground">
+                          {image.view}
+                        </span>
                         {image.conceptName !== proposal?.name && (
-                          <span className="block truncate px-1 pb-1 text-[9px] text-muted-foreground">{image.conceptName}</span>
+                          <span className="block truncate px-1 pb-1 text-[9px] text-muted-foreground">
+                            {image.conceptName}
+                          </span>
                         )}
                       </Button>
                     ))}
@@ -959,7 +1115,15 @@ export function ProductStudio() {
 
               <TechSketchPanel
                 productName={proposal.name}
-                summary={[proposal.name, proposal.category, proposal.silhouette, proposal.suggestedMaterials.join(", "), proposal.details.join(", ")].filter(Boolean).join("; ")}
+                summary={[
+                  proposal.name,
+                  proposal.category,
+                  proposal.silhouette,
+                  proposal.suggestedMaterials.join(", "),
+                  proposal.details.join(", "),
+                ]
+                  .filter(Boolean)
+                  .join("; ")}
                 modelId={officialId}
                 onModelChange={setOfficialId}
               />
@@ -973,11 +1137,10 @@ export function ProductStudio() {
             </div>
           )}
           <div className="mt-5 flex items-start gap-2 border-t border-white/10 pt-4 text-xs text-muted-foreground">
-            <ImageOff className="mt-0.5 h-4 w-4 shrink-0" />
-            A geração usa o provedor de imagens configurado no servidor. Cada ângulo é gerado como
-            uma imagem independente: a ferramenta tenta seguir a identidade descrita, mas não
-            garante consistência entre vistas. Use os resultados como conceito visual, nunca como
-            ficha técnica ou validação de construção.
+            <ImageOff className="mt-0.5 h-4 w-4 shrink-0" />A geração usa o provedor de imagens
+            configurado no servidor. Cada ângulo é gerado como uma imagem independente: a ferramenta
+            tenta seguir a identidade descrita, mas não garante consistência entre vistas. Use os
+            resultados como conceito visual, nunca como ficha técnica ou validação de construção.
           </div>
         </section>
 

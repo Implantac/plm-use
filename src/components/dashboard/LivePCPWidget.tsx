@@ -17,9 +17,7 @@ export function LivePCPWidget() {
   const lotes = usePCPStore((s) => s.lotes);
 
   const stats = useMemo(() => {
-    const atrasados = lotes.filter(
-      (l) => diasParaPrazo(l) < 0 && percentualLote(l) < 100,
-    ).length;
+    const atrasados = lotes.filter((l) => diasParaPrazo(l) < 0 && percentualLote(l) < 100).length;
     const pendentes = lotes
       .flatMap((l) => l.referencias)
       .reduce((a, r) => a + pendenteReferencia(r), 0);
@@ -27,9 +25,7 @@ export function LivePCPWidget() {
     const conclMedia = lotes.length
       ? Math.round(lotes.reduce((a, l) => a + percentualLote(l), 0) / lotes.length)
       : 0;
-    const urgentes = [...lotes]
-      .sort((a, b) => diasParaPrazo(a) - diasParaPrazo(b))
-      .slice(0, 3);
+    const urgentes = [...lotes].sort((a, b) => diasParaPrazo(a) - diasParaPrazo(b)).slice(0, 3);
     return { atrasados, pendentes, ocorr, conclMedia, urgentes };
   }, [lotes]);
 

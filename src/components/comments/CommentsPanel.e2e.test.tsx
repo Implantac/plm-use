@@ -17,10 +17,7 @@ vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
 // Import after mocks so caches wire to the mocked client.
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const IMG = {
   id: "att-img-1",
@@ -72,9 +69,7 @@ describe("CommentsPanel E2E (prévia + download reutilizam signed-url-cache)", (
   it("clicar em prévia (auto-load) e depois em download reusa a URL sem novo fetch de prévia; remover invalida cache", async () => {
     const onRemove = vi.fn();
 
-    const { unmount } = render(
-      <AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />,
-    );
+    const { unmount } = render(<AttachmentItem attachment={IMG} canRemove onRemove={onRemove} />);
 
     // Prévia carrega automaticamente para imagens (useEffect).
     const img = await screen.findByAltText("pic.png");

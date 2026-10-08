@@ -65,8 +65,7 @@ export function CollectionPerformance({
         <div className="space-y-3">
           {collections.map((c) => {
             const st = c.plannedMix > 0 ? (c.realizedMix / c.plannedMix) * 100 : 0;
-            const tone =
-              st >= 85 ? "bg-emerald-400" : st >= 60 ? "bg-primary" : "bg-amber-400";
+            const tone = st >= 85 ? "bg-emerald-400" : st >= 60 ? "bg-primary" : "bg-amber-400";
             return (
               <div key={c.id} className="space-y-1.5">
                 <div className="flex items-center justify-between text-[10px]">
@@ -93,9 +92,21 @@ export function CollectionPerformance({
             </span>
           </div>
           <div className="flex h-2 w-full overflow-hidden rounded-full bg-white/10">
-            <div className="bg-emerald-400" style={{ width: `${totals.a}%` }} title={`A ${totals.a.toFixed(0)}%`} />
-            <div className="bg-primary" style={{ width: `${totals.b}%` }} title={`B ${totals.b.toFixed(0)}%`} />
-            <div className="bg-amber-400" style={{ width: `${totals.c}%` }} title={`C ${totals.c.toFixed(0)}%`} />
+            <div
+              className="bg-emerald-400"
+              style={{ width: `${totals.a}%` }}
+              title={`A ${totals.a.toFixed(0)}%`}
+            />
+            <div
+              className="bg-primary"
+              style={{ width: `${totals.b}%` }}
+              title={`B ${totals.b.toFixed(0)}%`}
+            />
+            <div
+              className="bg-amber-400"
+              style={{ width: `${totals.c}%` }}
+              title={`C ${totals.c.toFixed(0)}%`}
+            />
           </div>
           <div className="flex items-center justify-between text-[9px] text-muted-foreground">
             <span>A · top giro</span>

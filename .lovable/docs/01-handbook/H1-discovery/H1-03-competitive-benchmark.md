@@ -6,14 +6,14 @@ Operacionaliza o FPEF V14 dentro do fluxo de discovery.
 
 Preencha o quadro abaixo para a feature em questão. Uma linha por PLM.
 
-| PLM | Como resolve | Ponto forte | Limitação | Aderência à confecção BR |
-|---|---|---|---|---|
-| Centric PLM | | | | |
-| PTC FlexPLM | | | | |
-| Lectra Kubix Link | | | | |
-| Gerber Yunique | | | | |
-| Collection Moda | | | | |
-| Audaces Idea | | | | |
+| PLM               | Como resolve | Ponto forte | Limitação | Aderência à confecção BR |
+| ----------------- | ------------ | ----------- | --------- | ------------------------ |
+| Centric PLM       |              |             |           |                          |
+| PTC FlexPLM       |              |             |           |                          |
+| Lectra Kubix Link |              |             |           |                          |
+| Gerber Yunique    |              |             |           |                          |
+| Collection Moda   |              |             |           |                          |
+| Audaces Idea      |              |             |           |                          |
 
 ## Perguntas de fechamento
 

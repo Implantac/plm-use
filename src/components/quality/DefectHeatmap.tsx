@@ -43,7 +43,10 @@ export function DefectHeatmap({ defeitos }: { defeitos: DefectRow[] }) {
           <tr>
             <th />
             {motivos.map((m) => (
-              <th key={m} className="text-left text-muted-foreground font-medium px-1 whitespace-nowrap">
+              <th
+                key={m}
+                className="text-left text-muted-foreground font-medium px-1 whitespace-nowrap"
+              >
                 <div className="-rotate-12 origin-bottom-left max-w-[80px] truncate">{m}</div>
               </th>
             ))}
@@ -56,9 +59,8 @@ export function DefectHeatmap({ defeitos }: { defeitos: DefectRow[] }) {
               {motivos.map((m) => {
                 const v = matrix.get(`${s}::${m}`) ?? 0;
                 const ratio = v / max;
-                const bg = v === 0
-                  ? "rgba(255,255,255,0.03)"
-                  : `rgba(244, 63, 94, ${0.15 + ratio * 0.75})`;
+                const bg =
+                  v === 0 ? "rgba(255,255,255,0.03)" : `rgba(244, 63, 94, ${0.15 + ratio * 0.75})`;
                 return (
                   <td key={m} className="p-0">
                     <div

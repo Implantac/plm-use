@@ -31,12 +31,60 @@ type Sugestao = {
 
 // Mock baseado em padrões reais de coleção (substituível por dados de inventory/analytics).
 const BASE: Omit<Sugestao, "score" | "motivo" | "coberturaSemanas">[] = [
-  { ref: "CM704", nome: "Camisa Linho Amalfi", grupo: "Camisaria Masculina", colecao: "Alto Verão 2026", estoque: 42, giroSemanal: 120, grade: { P: 50, M: 100, G: 100, GG: 50 } },
-  { ref: "VT302", nome: "Vestido Midi Toscana", grupo: "Vestidos", colecao: "Alto Verão 2026", estoque: 18, giroSemanal: 95, grade: { PP: 20, P: 60, M: 80, G: 60, GG: 30 } },
-  { ref: "BL220", nome: "Blusa Bordado Manual", grupo: "Blusaria Feminina", colecao: "Pré-Verão 2026", estoque: 8, giroSemanal: 45, grade: { P: 30, M: 50, G: 40, GG: 20 } },
-  { ref: "CL110", nome: "Calça Alfaiataria", grupo: "Calças", colecao: "Alto Verão 2026", estoque: 210, giroSemanal: 60, grade: { 38: 40, 40: 80, 42: 80, 44: 50, 46: 30 } },
-  { ref: "SA180", nome: "Saia Plissada Capri", grupo: "Saias", colecao: "Alto Verão 2026", estoque: 4, giroSemanal: 38, grade: { P: 30, M: 50, G: 40 } },
-  { ref: "CM709", nome: "Camisa Oxford", grupo: "Camisaria Masculina", colecao: "Alto Verão 2026", estoque: 130, giroSemanal: 70, grade: { P: 40, M: 60, G: 60, GG: 40 } },
+  {
+    ref: "CM704",
+    nome: "Camisa Linho Amalfi",
+    grupo: "Camisaria Masculina",
+    colecao: "Alto Verão 2026",
+    estoque: 42,
+    giroSemanal: 120,
+    grade: { P: 50, M: 100, G: 100, GG: 50 },
+  },
+  {
+    ref: "VT302",
+    nome: "Vestido Midi Toscana",
+    grupo: "Vestidos",
+    colecao: "Alto Verão 2026",
+    estoque: 18,
+    giroSemanal: 95,
+    grade: { PP: 20, P: 60, M: 80, G: 60, GG: 30 },
+  },
+  {
+    ref: "BL220",
+    nome: "Blusa Bordado Manual",
+    grupo: "Blusaria Feminina",
+    colecao: "Pré-Verão 2026",
+    estoque: 8,
+    giroSemanal: 45,
+    grade: { P: 30, M: 50, G: 40, GG: 20 },
+  },
+  {
+    ref: "CL110",
+    nome: "Calça Alfaiataria",
+    grupo: "Calças",
+    colecao: "Alto Verão 2026",
+    estoque: 210,
+    giroSemanal: 60,
+    grade: { 38: 40, 40: 80, 42: 80, 44: 50, 46: 30 },
+  },
+  {
+    ref: "SA180",
+    nome: "Saia Plissada Capri",
+    grupo: "Saias",
+    colecao: "Alto Verão 2026",
+    estoque: 4,
+    giroSemanal: 38,
+    grade: { P: 30, M: 50, G: 40 },
+  },
+  {
+    ref: "CM709",
+    nome: "Camisa Oxford",
+    grupo: "Camisaria Masculina",
+    colecao: "Alto Verão 2026",
+    estoque: 130,
+    giroSemanal: 70,
+    grade: { P: 40, M: 60, G: 60, GG: 40 },
+  },
 ];
 
 function calcular(): Sugestao[] {
@@ -108,7 +156,11 @@ function PlannerPage() {
         { label: "Sugestões", value: String(sugestoes.length), detail: "ativas" },
         { label: "Urgentes", value: String(urgentes), detail: "score ≥ 75" },
         { label: "Peças totais", value: String(totalPecasSug), detail: "se aceitar tudo" },
-        { label: "Já em PCP", value: String(sugestoes.filter((s) => refsEmLote.has(s.ref)).length), detail: "lotes ativos" },
+        {
+          label: "Já em PCP",
+          value: String(sugestoes.filter((s) => refsEmLote.has(s.ref)).length),
+          detail: "lotes ativos",
+        },
       ]}
     >
       <div className="space-y-3">
@@ -125,12 +177,27 @@ function PlannerPage() {
               "Giro/sem": s.giroSemanal,
               "Cobertura (sem)": s.coberturaSemanas,
               "Peças sugeridas": Object.values(s.grade).reduce((a, b) => a + b, 0),
-              Grade: Object.entries(s.grade).map(([t, q]) => `${t}:${q}`).join(" · "),
+              Grade: Object.entries(s.grade)
+                .map(([t, q]) => `${t}:${q}`)
+                .join(" · "),
               Score: s.score,
               Motivo: s.motivo,
               "Em PCP": refsEmLote.has(s.ref) ? "Sim" : "Não",
             }))}
-            columns={["Ref","Nome","Grupo","Colecao","Estoque","Giro/sem","Cobertura (sem)","Peças sugeridas","Grade","Score","Motivo","Em PCP"]}
+            columns={[
+              "Ref",
+              "Nome",
+              "Grupo",
+              "Colecao",
+              "Estoque",
+              "Giro/sem",
+              "Cobertura (sem)",
+              "Peças sugeridas",
+              "Grade",
+              "Score",
+              "Motivo",
+              "Em PCP",
+            ]}
           />
         </div>
         {sugestoes.map((s) => {
@@ -231,8 +298,8 @@ function PlannerPage() {
                       </Badge>
                     )}
                     <Button
- size="sm"
- onClick={() => gerarLote(s)}
+                      size="sm"
+                      onClick={() => gerarLote(s)}
                       disabled={jaCriado}
                       className={
                         jaCriado

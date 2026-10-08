@@ -1,14 +1,7 @@
 // Módulo de Aprovações — gates do Fluxo do Produto, com status, data e eventos.
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Clock,
-  ShieldCheck,
-  Workflow,
-  XCircle,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, ShieldCheck, Workflow, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +49,13 @@ const STATUS_TONE: Record<GateStatus, string> = {
 };
 
 const fmt = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }) : "—";
+  iso
+    ? new Date(iso).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : "—";
 
 function ApprovalsPage() {
   const { items: refs, loading: loadingRefs } = useReferences();
@@ -119,14 +118,24 @@ function ApprovalsPage() {
           Aprovações
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Cada portão do Fluxo do Produto com status, parecer e data da decisão.
-          Toda aprovação vira evento na linha do tempo da referência.
+          Cada portão do Fluxo do Produto com status, parecer e data da decisão. Toda aprovação vira
+          evento na linha do tempo da referência.
         </p>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
           <Metric label="Pendentes" value={pendentes.length} icon={Clock} tone="text-amber-300" />
-          <Metric label="Aprovados" value={aprovados.length} icon={CheckCircle2} tone="text-emerald-300" />
-          <Metric label="Reprovados" value={reprovados.length} icon={XCircle} tone="text-destructive" />
+          <Metric
+            label="Aprovados"
+            value={aprovados.length}
+            icon={CheckCircle2}
+            tone="text-emerald-300"
+          />
+          <Metric
+            label="Reprovados"
+            value={reprovados.length}
+            icon={XCircle}
+            tone="text-destructive"
+          />
         </div>
 
         <Button asChild variant="outline" size="sm" className="mt-5">
@@ -199,10 +208,7 @@ function ApprovalsPage() {
             const def = gateById(g.gate);
             const status = g.status as GateStatus;
             return (
-              <div
-                key={g.id}
-                className="rounded-md border border-white/10 bg-white/[0.02] p-3"
-              >
+              <div key={g.id} className="rounded-md border border-white/10 bg-white/[0.02] p-3">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <button
                     type="button"
@@ -232,7 +238,10 @@ function ApprovalsPage() {
 
                 {status === "pendente" ? (
                   <div className="mt-3 space-y-2">
-                    <Label htmlFor={`parecer-${g.id}`} className="text-2xs uppercase tracking-[0.16em]">
+                    <Label
+                      htmlFor={`parecer-${g.id}`}
+                      className="text-2xs uppercase tracking-[0.16em]"
+                    >
                       Parecer da decisão
                     </Label>
                     <Textarea
@@ -240,9 +249,7 @@ function ApprovalsPage() {
                       rows={2}
                       placeholder="Registre o motivo da aprovação ou reprovação"
                       value={parecer[g.id] ?? ""}
-                      onChange={(e) =>
-                        setParecer((p) => ({ ...p, [g.id]: e.target.value }))
-                      }
+                      onChange={(e) => setParecer((p) => ({ ...p, [g.id]: e.target.value }))}
                     />
                     <div className="flex flex-wrap gap-2">
                       <Button

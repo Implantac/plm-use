@@ -108,9 +108,7 @@ function rowToCapa(row: Record<string, unknown>): Capa {
     status: row.status as CapaStatus,
     severidade: (row.severidade as CapaSeveridade) ?? "Média",
     causa_raiz: (row.causa_raiz as string) ?? null,
-    cinco_porques: Array.isArray(row.cinco_porques)
-      ? (row.cinco_porques as string[])
-      : [],
+    cinco_porques: Array.isArray(row.cinco_porques) ? (row.cinco_porques as string[]) : [],
     evidencias: Array.isArray(row.evidencias)
       ? (row.evidencias as { url: string; label: string }[])
       : [],
@@ -193,9 +191,7 @@ export function useCapa() {
         { event: "INSERT", schema: "public", table: "capa_events" },
         (payload) => {
           const e = payload.new as CapaEvent;
-          setEvents((prev) =>
-            prev.some((p) => p.id === e.id) ? prev : [e, ...prev],
-          );
+          setEvents((prev) => (prev.some((p) => p.id === e.id) ? prev : [e, ...prev]));
         },
       )
       .subscribe();
@@ -286,10 +282,7 @@ export function useCapa() {
         patch.verificado_por = user?.id ?? null;
         if (!capa.eficacia) patch.eficacia = "Eficaz";
       }
-      const { error } = await supabase
-        .from("quality_capa")
-        .update(patch)
-        .eq("id", capa.id);
+      const { error } = await supabase.from("quality_capa").update(patch).eq("id", capa.id);
       if (error) return false;
       await logEvent(capa.id, `Transição → ${to}`, capa.status, to, note);
       return true;
@@ -317,13 +310,9 @@ export function useCapa() {
         "defeito",
       ] as const;
       for (const k of keys)
-        if (k in patch)
-          (remap as Record<string, unknown>)[k] = patch[k as keyof Capa];
+        if (k in patch) (remap as Record<string, unknown>)[k] = patch[k as keyof Capa];
       if (Object.keys(remap).length === 0) return true;
-      const { error } = await supabase
-        .from("quality_capa")
-        .update(remap)
-        .eq("id", id);
+      const { error } = await supabase.from("quality_capa").update(remap).eq("id", id);
       if (error) return false;
       await logEvent(id, "Edição", null, null, note ?? Object.keys(remap).join(", "));
       return true;

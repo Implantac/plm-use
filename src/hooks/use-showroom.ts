@@ -16,16 +16,24 @@ export type ShowroomFeedbackInsert = Database["public"]["Tables"]["showroom_feed
 export type ShowroomDecisionRow = Database["public"]["Tables"]["showroom_decision"]["Row"];
 
 export type ShowroomSampleStatus =
-  | "solicitada" | "recebida" | "em_curadoria" | "aprovada" | "reprovada"
-  | "em_kit" | "em_showroom" | "retornada" | "devolvida" | "arquivada";
+  | "solicitada"
+  | "recebida"
+  | "em_curadoria"
+  | "aprovada"
+  | "reprovada"
+  | "em_kit"
+  | "em_showroom"
+  | "retornada"
+  | "devolvida"
+  | "arquivada";
 
 export type ShowroomPublicationStatus =
-  | "rascunho" | "em_revisao" | "publicada" | "rejeitada" | "congelada";
+  "rascunho" | "em_revisao" | "publicada" | "rejeitada" | "congelada";
 
 export type ShowroomDecision = "pendente" | "go" | "no_go" | "revisar";
 
 export type ShowroomFeedbackDimension =
-  | "caimento" | "cor" | "tato" | "medida" | "preco_percebido" | "storytelling";
+  "caimento" | "cor" | "tato" | "medida" | "preco_percebido" | "storytelling";
 
 export const SAMPLE_STATUS_LABEL: Record<ShowroomSampleStatus, string> = {
   solicitada: "Solicitada",
@@ -56,7 +64,12 @@ export const DECISION_LABEL: Record<ShowroomDecision, string> = {
 };
 
 export const FEEDBACK_DIMENSIONS: ShowroomFeedbackDimension[] = [
-  "caimento", "cor", "tato", "medida", "preco_percebido", "storytelling",
+  "caimento",
+  "cor",
+  "tato",
+  "medida",
+  "preco_percebido",
+  "storytelling",
 ];
 
 export function useShowroom() {
@@ -75,7 +88,11 @@ export function useShowroom() {
       supabase.from("showroom_sample").select("*").order("created_at", { ascending: false }),
       supabase.from("showroom_kit").select("*").order("created_at", { ascending: false }),
       supabase.from("showroom_publication").select("*").order("created_at", { ascending: false }),
-      supabase.from("showroom_feedback").select("*").order("created_at", { ascending: false }).limit(500),
+      supabase
+        .from("showroom_feedback")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(500),
       supabase.from("showroom_decision").select("*").order("created_at", { ascending: false }),
     ]).then(([s, k, p, f, d]) => {
       if (cancelled) return;
@@ -89,18 +106,34 @@ export function useShowroom() {
 
     const ch = supabase
       .channel(`showroom-live-${Math.random().toString(36).slice(2, 10)}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "showroom_sample" }, (payload) => {
-        setSamples((prev) => mergeRow(prev, payload));
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "showroom_publication" }, (payload) => {
-        setPublications((prev) => mergeRow(prev, payload));
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "showroom_feedback" }, (payload) => {
-        setFeedback((prev) => mergeRow(prev, payload));
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "showroom_decision" }, (payload) => {
-        setDecisions((prev) => mergeRow(prev, payload));
-      })
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "showroom_sample" },
+        (payload) => {
+          setSamples((prev) => mergeRow(prev, payload));
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "showroom_publication" },
+        (payload) => {
+          setPublications((prev) => mergeRow(prev, payload));
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "showroom_feedback" },
+        (payload) => {
+          setFeedback((prev) => mergeRow(prev, payload));
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "showroom_decision" },
+        (payload) => {
+          setDecisions((prev) => mergeRow(prev, payload));
+        },
+      )
       .subscribe();
 
     return () => {
@@ -152,10 +185,7 @@ export function useShowroom() {
         .insert({
           ...input,
           autor_id: user.id,
-          autor_nome:
-            (user.user_metadata?.full_name as string | undefined) ??
-            user.email ??
-            null,
+          autor_nome: (user.user_metadata?.full_name as string | undefined) ?? user.email ?? null,
         })
         .select()
         .single();
@@ -173,20 +203,18 @@ export function useShowroom() {
       publication_id?: string | null,
     ) => {
       if (!user) return false;
-      const { error } = await supabase
-        .from("showroom_decision")
-        .upsert(
-          {
-            reference_id,
-            publication_id: publication_id ?? null,
-            decision,
-            justificativa,
-            decidido_por: user.id,
-            created_by: user.id,
-            updated_by: user.id,
-          },
-          { onConflict: "reference_id,publication_id" },
-        );
+      const { error } = await supabase.from("showroom_decision").upsert(
+        {
+          reference_id,
+          publication_id: publication_id ?? null,
+          decision,
+          justificativa,
+          decidido_por: user.id,
+          created_by: user.id,
+          updated_by: user.id,
+        },
+        { onConflict: "reference_id,publication_id" },
+      );
       return !error;
     },
     [user],

@@ -54,28 +54,160 @@ type Entry = {
 };
 
 const MODULES: Entry[] = [
-  { id: "m-dash", title: "Dashboard", module: "Navegação", icon: <LayoutDashboard className="w-4 h-4" />, path: "/dashboard" },
-  { id: "m-research", title: "Pesquisa & Mood", module: "Navegação", icon: <Palette className="w-4 h-4" />, path: "/research" },
-  { id: "m-coll", title: "Coleções", module: "Navegação", icon: <Layers className="w-4 h-4" />, path: "/collections" },
-  { id: "m-dev", title: "Desenvolvimento", module: "Navegação", icon: <Scissors className="w-4 h-4" />, path: "/development" },
-  { id: "m-proto", title: "Protótipos", module: "Navegação", icon: <Zap className="w-4 h-4" />, path: "/prototypes" },
-  { id: "m-ft", title: "Ficha Técnica", module: "Navegação", icon: <FileText className="w-4 h-4" />, path: "/tech-sheet" },
-  { id: "m-cad", title: "CAD & Modelagem", module: "Navegação", icon: <PenTool className="w-4 h-4" />, path: "/cad" },
-  { id: "m-prod", title: "Produção / PCP", module: "Navegação", icon: <Package className="w-4 h-4" />, path: "/production" },
-  { id: "m-qa", title: "Qualidade & CAPA", module: "Navegação", icon: <ShieldCheck className="w-4 h-4" />, path: "/quality" },
-  { id: "m-plan", title: "Planner", module: "Navegação", icon: <Zap className="w-4 h-4" />, path: "/planner" },
-  { id: "m-inv", title: "Almoxarifado", module: "Navegação", icon: <Box className="w-4 h-4" />, path: "/inventory" },
-  { id: "m-sup", title: "Fornecedores", module: "Navegação", icon: <Users className="w-4 h-4" />, path: "/suppliers" },
-  { id: "m-mkt", title: "Marketing", module: "Navegação", icon: <Megaphone className="w-4 h-4" />, path: "/marketing" },
-  { id: "m-com", title: "Comercial", module: "Navegação", icon: <ShoppingBag className="w-4 h-4" />, path: "/commercial" },
-  { id: "m-fin", title: "Financeiro", module: "Navegação", icon: <DollarSign className="w-4 h-4" />, path: "/financial" },
-  { id: "m-bi", title: "BI Executivo", module: "Navegação", icon: <BarChart3 className="w-4 h-4" />, path: "/analytics" },
-  { id: "m-inf", title: "Influencers", module: "Navegação", icon: <Heart className="w-4 h-4" />, path: "/influencers" },
-  { id: "m-ai", title: "AI Product Studio", module: "Navegação", icon: <Sparkles className="w-4 h-4" />, path: "/ai-center" },
-  { id: "m-agents", title: "AI Agents", module: "Navegação", icon: <Bot className="w-4 h-4" />, path: "/ai-agents" },
-  { id: "m-twin", title: "Digital Twin", module: "Navegação", icon: <Globe className="w-4 h-4" />, path: "/digital-twin" },
-  { id: "m-feed", title: "Colaboração", module: "Navegação", icon: <MessageSquare className="w-4 h-4" />, path: "/feed" },
-  { id: "m-sec", title: "Segurança", module: "Navegação", icon: <LockKeyhole className="w-4 h-4" />, path: "/security" },
+  {
+    id: "m-dash",
+    title: "Dashboard",
+    module: "Navegação",
+    icon: <LayoutDashboard className="w-4 h-4" />,
+    path: "/dashboard",
+  },
+  {
+    id: "m-research",
+    title: "Pesquisa & Mood",
+    module: "Navegação",
+    icon: <Palette className="w-4 h-4" />,
+    path: "/research",
+  },
+  {
+    id: "m-coll",
+    title: "Coleções",
+    module: "Navegação",
+    icon: <Layers className="w-4 h-4" />,
+    path: "/collections",
+  },
+  {
+    id: "m-dev",
+    title: "Desenvolvimento",
+    module: "Navegação",
+    icon: <Scissors className="w-4 h-4" />,
+    path: "/development",
+  },
+  {
+    id: "m-proto",
+    title: "Protótipos",
+    module: "Navegação",
+    icon: <Zap className="w-4 h-4" />,
+    path: "/prototypes",
+  },
+  {
+    id: "m-ft",
+    title: "Ficha Técnica",
+    module: "Navegação",
+    icon: <FileText className="w-4 h-4" />,
+    path: "/tech-sheet",
+  },
+  {
+    id: "m-cad",
+    title: "CAD & Modelagem",
+    module: "Navegação",
+    icon: <PenTool className="w-4 h-4" />,
+    path: "/cad",
+  },
+  {
+    id: "m-prod",
+    title: "Produção / PCP",
+    module: "Navegação",
+    icon: <Package className="w-4 h-4" />,
+    path: "/production",
+  },
+  {
+    id: "m-qa",
+    title: "Qualidade & CAPA",
+    module: "Navegação",
+    icon: <ShieldCheck className="w-4 h-4" />,
+    path: "/quality",
+  },
+  {
+    id: "m-plan",
+    title: "Planner",
+    module: "Navegação",
+    icon: <Zap className="w-4 h-4" />,
+    path: "/planner",
+  },
+  {
+    id: "m-inv",
+    title: "Almoxarifado",
+    module: "Navegação",
+    icon: <Box className="w-4 h-4" />,
+    path: "/inventory",
+  },
+  {
+    id: "m-sup",
+    title: "Fornecedores",
+    module: "Navegação",
+    icon: <Users className="w-4 h-4" />,
+    path: "/suppliers",
+  },
+  {
+    id: "m-mkt",
+    title: "Marketing",
+    module: "Navegação",
+    icon: <Megaphone className="w-4 h-4" />,
+    path: "/marketing",
+  },
+  {
+    id: "m-com",
+    title: "Comercial",
+    module: "Navegação",
+    icon: <ShoppingBag className="w-4 h-4" />,
+    path: "/commercial",
+  },
+  {
+    id: "m-fin",
+    title: "Financeiro",
+    module: "Navegação",
+    icon: <DollarSign className="w-4 h-4" />,
+    path: "/financial",
+  },
+  {
+    id: "m-bi",
+    title: "BI Executivo",
+    module: "Navegação",
+    icon: <BarChart3 className="w-4 h-4" />,
+    path: "/analytics",
+  },
+  {
+    id: "m-inf",
+    title: "Influencers",
+    module: "Navegação",
+    icon: <Heart className="w-4 h-4" />,
+    path: "/influencers",
+  },
+  {
+    id: "m-ai",
+    title: "AI Product Studio",
+    module: "Navegação",
+    icon: <Sparkles className="w-4 h-4" />,
+    path: "/ai-center",
+  },
+  {
+    id: "m-agents",
+    title: "AI Agents",
+    module: "Navegação",
+    icon: <Bot className="w-4 h-4" />,
+    path: "/ai-agents",
+  },
+  {
+    id: "m-twin",
+    title: "Digital Twin",
+    module: "Navegação",
+    icon: <Globe className="w-4 h-4" />,
+    path: "/digital-twin",
+  },
+  {
+    id: "m-feed",
+    title: "Colaboração",
+    module: "Navegação",
+    icon: <MessageSquare className="w-4 h-4" />,
+    path: "/feed",
+  },
+  {
+    id: "m-sec",
+    title: "Segurança",
+    module: "Navegação",
+    icon: <LockKeyhole className="w-4 h-4" />,
+    path: "/security",
+  },
 ];
 
 export function GlobalSearch() {
@@ -142,7 +274,6 @@ export function GlobalSearch() {
         })),
     [favorites, metaByPath],
   );
-
 
   const pcpEntries: Entry[] = React.useMemo(() => {
     const out: Entry[] = [];
@@ -237,7 +368,9 @@ export function GlobalSearch() {
                         <ZapAction className="w-4 h-4" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-white">{qa.label}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                          {qa.label}
+                        </p>
                         <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
                           Aqui no {currentMeta.label}
                         </p>
@@ -259,7 +392,9 @@ export function GlobalSearch() {
                   <CommandIcon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">AI Product Studio</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                    AI Product Studio
+                  </p>
                   <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
                     Consultar inteligência aplicada
                   </p>
@@ -272,11 +407,15 @@ export function GlobalSearch() {
                   className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <Star className={`w-4 h-4 ${isFavorite(currentMeta.path) ? "fill-primary" : ""}`} />
+                    <Star
+                      className={`w-4 h-4 ${isFavorite(currentMeta.path) ? "fill-primary" : ""}`}
+                    />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white">
-                      {isFavorite(currentMeta.path) ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                      {isFavorite(currentMeta.path)
+                        ? "Remover dos favoritos"
+                        : "Adicionar aos favoritos"}
                     </p>
                     <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
                       {currentMeta.label}
@@ -291,7 +430,11 @@ export function GlobalSearch() {
                 <CommandSeparator className="bg-white/5 my-2" />
                 <CommandGroup heading="Favoritos">
                   {favoriteEntries.map((e) => (
-                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                    <EntryRow
+                      key={e.id}
+                      entry={e}
+                      onSelect={() => runCommand(() => navigate({ to: e.path }))}
+                    />
                   ))}
                 </CommandGroup>
               </>
@@ -302,7 +445,11 @@ export function GlobalSearch() {
                 <CommandSeparator className="bg-white/5 my-2" />
                 <CommandGroup heading="Recentes">
                   {recentEntries.map((e) => (
-                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                    <EntryRow
+                      key={e.id}
+                      entry={e}
+                      onSelect={() => runCommand(() => navigate({ to: e.path }))}
+                    />
                   ))}
                 </CommandGroup>
               </>
@@ -312,17 +459,24 @@ export function GlobalSearch() {
 
             <CommandGroup heading="Módulos">
               {MODULES.map((m) => (
-                <EntryRow key={m.id} entry={m} onSelect={() => runCommand(() => navigate({ to: m.path }))} />
+                <EntryRow
+                  key={m.id}
+                  entry={m}
+                  onSelect={() => runCommand(() => navigate({ to: m.path }))}
+                />
               ))}
             </CommandGroup>
-
 
             {pcpEntries.length > 0 && (
               <>
                 <CommandSeparator className="bg-white/5 my-2" />
                 <CommandGroup heading="PCP · Lotes & Referências">
                   {pcpEntries.map((e) => (
-                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                    <EntryRow
+                      key={e.id}
+                      entry={e}
+                      onSelect={() => runCommand(() => navigate({ to: e.path }))}
+                    />
                   ))}
                 </CommandGroup>
               </>
@@ -333,7 +487,11 @@ export function GlobalSearch() {
                 <CommandSeparator className="bg-white/5 my-2" />
                 <CommandGroup heading="Qualidade · CAPAs">
                   {capaEntries.map((e) => (
-                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                    <EntryRow
+                      key={e.id}
+                      entry={e}
+                      onSelect={() => runCommand(() => navigate({ to: e.path }))}
+                    />
                   ))}
                 </CommandGroup>
               </>
@@ -344,7 +502,11 @@ export function GlobalSearch() {
                 <CommandSeparator className="bg-white/5 my-2" />
                 <CommandGroup heading="Influencers">
                   {infEntries.map((e) => (
-                    <EntryRow key={e.id} entry={e} onSelect={() => runCommand(() => navigate({ to: e.path }))} />
+                    <EntryRow
+                      key={e.id}
+                      entry={e}
+                      onSelect={() => runCommand(() => navigate({ to: e.path }))}
+                    />
                   ))}
                 </CommandGroup>
               </>
@@ -354,15 +516,25 @@ export function GlobalSearch() {
           <div className="p-4 border-t border-white/5 flex justify-between items-center bg-black/40">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Navegar</span>
+                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Navegar
+                </span>
                 <div className="flex gap-1">
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">↑</span>
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">↓</span>
+                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
+                    ↑
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
+                    ↓
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Abrir</span>
-                <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">ENTER</span>
+                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
+                  Abrir
+                </span>
+                <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
+                  ENTER
+                </span>
               </div>
             </div>
             <p className="text-[8px] font-bold text-primary/40 uppercase tracking-[0.3em]">

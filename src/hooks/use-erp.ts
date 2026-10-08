@@ -77,5 +77,7 @@ export function useErpPurchaseOrders(filter: ErpListFilter) {
 
 export function useErpProductionOrders(filter: ErpListFilter) {
   const key = `erp:op:${JSON.stringify(filter)}`;
-  return useErpResource<ErpProductionOrder[]>(key, () => getErpAdapter().listProductionOrders(filter));
+  return useErpResource<ErpProductionOrder[]>(key, () =>
+    getErpAdapter().listProductionOrders(filter),
+  );
 }

@@ -5,11 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DollarSign, Target, TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
-import {
-  useTechSheetStore,
-  custoTotalBOM,
-  custoTotalBOP,
-} from "@/lib/techsheet/store";
+import { useTechSheetStore, custoTotalBOM, custoTotalBOP } from "@/lib/techsheet/store";
 
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
@@ -26,12 +22,23 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
     const overhead = industrial * (data.preCost.overheadPct / 100);
     const custoFinal = industrial + overhead;
     const precoSugerido = custoFinal * (1 + data.preCost.markupPct / 100);
-    const desvioMetaPct = data.preCost.targetCusto > 0
-      ? ((industrial - data.preCost.targetCusto) / data.preCost.targetCusto) * 100
-      : 0;
+    const desvioMetaPct =
+      data.preCost.targetCusto > 0
+        ? ((industrial - data.preCost.targetCusto) / data.preCost.targetCusto) * 100
+        : 0;
     const acimaTarget = industrial > data.preCost.targetCusto;
     const precoAcimaAlvo = !!data.preCost.targetPreco && precoSugerido > data.preCost.targetPreco;
-    return { bom, bop, industrial, overhead, custoFinal, precoSugerido, desvioMetaPct, acimaTarget, precoAcimaAlvo };
+    return {
+      bom,
+      bop,
+      industrial,
+      overhead,
+      custoFinal,
+      precoSugerido,
+      desvioMetaPct,
+      acimaTarget,
+      precoAcimaAlvo,
+    };
   }, [data]);
 
   return (
@@ -47,7 +54,12 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
         <Metric label="BOM (materiais)" value={brl(totals.bom)} />
         <Metric label="BOP (mão de obra)" value={brl(totals.bop)} />
         <Metric label="Overhead" value={brl(totals.overhead)} muted />
-        <Metric label="Custo industrial" value={brl(totals.industrial)} accent={!totals.acimaTarget} danger={totals.acimaTarget} />
+        <Metric
+          label="Custo industrial"
+          value={brl(totals.industrial)}
+          accent={!totals.acimaTarget}
+          danger={totals.acimaTarget}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2 border-t border-white/10">
@@ -74,7 +86,11 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-white/10">
-        <Metric label="Custo final (com overhead)" value={brl(totals.custoFinal)} icon={<Target className="w-3.5 h-3.5" />} />
+        <Metric
+          label="Custo final (com overhead)"
+          value={brl(totals.custoFinal)}
+          icon={<Target className="w-3.5 h-3.5" />}
+        />
         <Metric
           label="Preço sugerido"
           value={brl(totals.precoSugerido)}
@@ -91,14 +107,14 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
             {totals.acimaTarget && (
               <div>
                 Custo industrial <strong>{brl(totals.industrial)}</strong> está{" "}
-                <strong>{totals.desvioMetaPct.toFixed(1)}%</strong> acima da meta ({brl(data.preCost.targetCusto)}).
-                Reveja BOM/BOP antes de liberar o piloto.
+                <strong>{totals.desvioMetaPct.toFixed(1)}%</strong> acima da meta (
+                {brl(data.preCost.targetCusto)}). Reveja BOM/BOP antes de liberar o piloto.
               </div>
             )}
             {totals.precoAcimaAlvo && data.preCost.targetPreco && (
               <div>
-                Preço sugerido <strong>{brl(totals.precoSugerido)}</strong> ultrapassa o preço-alvo ({brl(data.preCost.targetPreco)}).
-                Ajuste markup, overhead ou negocie fornecedores.
+                Preço sugerido <strong>{brl(totals.precoSugerido)}</strong> ultrapassa o preço-alvo
+                ({brl(data.preCost.targetPreco)}). Ajuste markup, overhead ou negocie fornecedores.
               </div>
             )}
           </div>
@@ -141,10 +157,10 @@ function Metric({
   const tone = danger
     ? "border-destructive/40 bg-destructive/10 text-destructive"
     : accent
-    ? "border-primary/30 bg-primary/10 text-primary"
-    : muted
-    ? "border-white/10 bg-white/5 text-muted-foreground"
-    : "border-white/10 bg-white/5 text-white";
+      ? "border-primary/30 bg-primary/10 text-primary"
+      : muted
+        ? "border-white/10 bg-white/5 text-muted-foreground"
+        : "border-white/10 bg-white/5 text-white";
   return (
     <div className={`px-3 py-2 rounded-md border ${tone}`}>
       <div className="flex items-center gap-2 text-[9px] uppercase tracking-[0.2em] text-muted-foreground">

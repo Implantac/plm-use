@@ -291,8 +291,7 @@ export const usePCPStore = create<PCPState>((set, get) => ({
 
     // 1ª linha: regras de saldo
     if (linha === "1a") {
-      if (!setor_destino)
-        return { ok: false, erro: "Informe o setor de destino" };
+      if (!setor_destino) return { ok: false, erro: "Informe o setor de destino" };
       const pendente = pendenteReferencia(r);
       if (qtd > pendente)
         return {
@@ -325,16 +324,12 @@ export const usePCPStore = create<PCPState>((set, get) => ({
       f.r.passagens.push(novaPassagem);
 
       if (linha === "1a" && setor_destino) {
-        const totalEnviadoAcumulado =
-          f.r.passagens
-            .filter((p) => p.linha === "1a")
-            .reduce((acc, p) => acc + p.qtd, 0);
+        const totalEnviadoAcumulado = f.r.passagens
+          .filter((p) => p.linha === "1a")
+          .reduce((acc, p) => acc + p.qtd, 0);
         // Se o setor destino é Expedição, contabiliza como produzida.
         if (setor_destino === "Expedição") {
-          f.r.qtd_produzida = Math.min(
-            saldoReferencia(f.r),
-            f.r.qtd_produzida + qtd,
-          );
+          f.r.qtd_produzida = Math.min(saldoReferencia(f.r), f.r.qtd_produzida + qtd);
         }
         // Avança o setor quando todo o saldo pendente foi enviado.
         if (tipo === "integral") {
@@ -355,15 +350,7 @@ export const usePCPStore = create<PCPState>((set, get) => ({
     return { ok: true };
   },
 
-  registrarOcorrencia({
-    lote,
-    ref,
-    tipo,
-    qtd,
-    motivo,
-    responsavel,
-    observacao,
-  }) {
+  registrarOcorrencia({ lote, ref, tipo, qtd, motivo, responsavel, observacao }) {
     const found = findRef(get().lotes, lote, ref);
     if (!found) return { ok: false, erro: "Referência não encontrada" };
     const { r } = found;
@@ -394,8 +381,7 @@ export const usePCPStore = create<PCPState>((set, get) => ({
       f.r.ocorrencias.push(oc);
       if (tipo === "positiva") f.r.qtd_adicional += qtd;
       if (tipo === "negativa") f.r.qtd_perdida += qtd;
-      if (tipo === "negativa" && f.r.status !== "Concluído")
-        f.r.status = "Ocorrência";
+      if (tipo === "negativa" && f.r.status !== "Concluído") f.r.status = "Ocorrência";
       return { lotes };
     });
 
@@ -461,9 +447,10 @@ export const usePCPStore = create<PCPState>((set, get) => ({
 
 // Selector utilitário: lotes agrupados por setor (um lote pode aparecer em vários).
 export function lotesPorSetor(lotes: Lote[]): Record<SetorPCP, Lote[]> {
-  const map = Object.fromEntries(
-    SETORES_PCP.map((s) => [s, [] as Lote[]]),
-  ) as Record<SetorPCP, Lote[]>;
+  const map = Object.fromEntries(SETORES_PCP.map((s) => [s, [] as Lote[]])) as Record<
+    SetorPCP,
+    Lote[]
+  >;
   for (const l of lotes) {
     const setores = new Set(l.referencias.map((r) => r.setor_atual));
     for (const s of setores) map[s].push(l);

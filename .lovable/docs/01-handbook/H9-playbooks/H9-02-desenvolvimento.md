@@ -45,29 +45,29 @@ ficha inicial, molde, piloto físico validado — de modo que a Engenharia
 
 ## 3. Entradas
 
-| # | Entrada | Origem | Formato | Obrigatória? |
-|---|---------|--------|---------|--------------|
-| 1 | Coleção aprovada | H9-01 | `collections.status='aprovada'` | SIM |
-| 2 | Mix planejado | H9-01 | `collection_targets` (categoria, qtde) | SIM |
-| 3 | Cartela de cores/tecidos | H9-01 | lista com fornecedor sugerido | SIM |
-| 4 | Grade de tamanhos | Comercial | tabela de medidas por segmento | SIM |
-| 5 | Histórico de piloto anterior | ERP via `ErpAdapter` (V9) | `queryErp('pilot_history')` | recomendado |
-| 6 | Capacidade de piloto | PCP | vagas na sala-piloto por semana | SIM |
+| #   | Entrada                      | Origem                    | Formato                                | Obrigatória? |
+| --- | ---------------------------- | ------------------------- | -------------------------------------- | ------------ |
+| 1   | Coleção aprovada             | H9-01                     | `collections.status='aprovada'`        | SIM          |
+| 2   | Mix planejado                | H9-01                     | `collection_targets` (categoria, qtde) | SIM          |
+| 3   | Cartela de cores/tecidos     | H9-01                     | lista com fornecedor sugerido          | SIM          |
+| 4   | Grade de tamanhos            | Comercial                 | tabela de medidas por segmento         | SIM          |
+| 5   | Histórico de piloto anterior | ERP via `ErpAdapter` (V9) | `queryErp('pilot_history')`            | recomendado  |
+| 6   | Capacidade de piloto         | PCP                       | vagas na sala-piloto por semana        | SIM          |
 
 Rastreabilidade: entradas vinculadas via `entity_relations` (H2-06) com
 `from_type='collection'` → `to_type='reference'`.
 
 ## 4. Saídas
 
-| # | Saída | Destino | Entidade / Evento | Obrigatória? |
-|---|-------|---------|-------------------|--------------|
-| 1 | Referência criada | H9-05 | `references` + `reference.created` | SIM |
-| 2 | Ficha inicial | H9-05 | `reference_specs` (composição, medidas) | SIM |
-| 3 | Piloto solicitado | Sala-piloto | `pilots` + `pilot.requested` | SIM |
-| 4 | Ocorrências de prova | Modelagem/Estilo | `pilot_occurrences` + `pilot.occurrence.opened` | condicional |
-| 5 | Piloto aprovado | H9-05 | `pilots.status='aprovado'` + `pilot.approved` | SIM |
-| 6 | Referência aprovada | Todos os elos seguintes | `references.status='aprovada'` + `reference.approved` | SIM |
-| 7 | Timeline pública | UI (EntityTimeline) | leitura de `entity_events` | SIM |
+| #   | Saída                | Destino                 | Entidade / Evento                                     | Obrigatória? |
+| --- | -------------------- | ----------------------- | ----------------------------------------------------- | ------------ |
+| 1   | Referência criada    | H9-05                   | `references` + `reference.created`                    | SIM          |
+| 2   | Ficha inicial        | H9-05                   | `reference_specs` (composição, medidas)               | SIM          |
+| 3   | Piloto solicitado    | Sala-piloto             | `pilots` + `pilot.requested`                          | SIM          |
+| 4   | Ocorrências de prova | Modelagem/Estilo        | `pilot_occurrences` + `pilot.occurrence.opened`       | condicional  |
+| 5   | Piloto aprovado      | H9-05                   | `pilots.status='aprovado'` + `pilot.approved`         | SIM          |
+| 6   | Referência aprovada  | Todos os elos seguintes | `references.status='aprovada'` + `reference.approved` | SIM          |
+| 7   | Timeline pública     | UI (EntityTimeline)     | leitura de `entity_events`                            | SIM          |
 
 ## 5. Regras de negócio (V6)
 
@@ -80,18 +80,18 @@ Rastreabilidade: entradas vinculadas via `entity_relations` (H2-06) com
 - **R4:** Cada nova rodada de piloto incrementa `pilots.round` — a rodada
   anterior fica arquivada, nunca sobrescrita.
 - **R5:** Aprovação final da referência exige `has_role(auth.uid(),
-  'coordenador_desenvolvimento')` **ou** `has_role(auth.uid(),'diretor_estilo')`.
+'coordenador_desenvolvimento')` **ou** `has_role(auth.uid(),'diretor_estilo')`.
 - **R6:** Referência aprovada é **imutável** — mudança vira nova versão
   (`references.version` incrementa e mantém link em `entity_relations`).
 
-| Regra | Camada | Referência |
-|-------|--------|------------|
-| R1 | DB — trigger `check_reference_ready_for_pilot` | migration H9-02 |
-| R2 | DB — trigger `check_reference_ready_for_approval` | migration H9-02 |
-| R3 | DB — trigger `require_occurrence_on_reject` | migration H9-02 |
-| R4 | DB — trigger `bump_pilot_round` (BEFORE INSERT) | migration H9-02 |
-| R5 | DB — policy + `has_role` (H3-03) | migration H9-02 |
-| R6 | DB — trigger `prevent_edit_when_approved` | migration H9-02 |
+| Regra | Camada                                            | Referência      |
+| ----- | ------------------------------------------------- | --------------- |
+| R1    | DB — trigger `check_reference_ready_for_pilot`    | migration H9-02 |
+| R2    | DB — trigger `check_reference_ready_for_approval` | migration H9-02 |
+| R3    | DB — trigger `require_occurrence_on_reject`       | migration H9-02 |
+| R4    | DB — trigger `bump_pilot_round` (BEFORE INSERT)   | migration H9-02 |
+| R5    | DB — policy + `has_role` (H3-03)                  | migration H9-02 |
+| R6    | DB — trigger `prevent_edit_when_approved`         | migration H9-02 |
 
 ## 6. Workflow (V8 / H2-05)
 
@@ -120,23 +120,23 @@ solicitado → em_modelagem → em_costura → em_prova → aprovado
 
 ## 7. Eventos emitidos (V7 / H2-04)
 
-| `event_type` | Quando | Payload mínimo | Consumido por |
-|--------------|--------|----------------|---------------|
-| `reference.created`            | INSERT `references` | id, collection_id, autor | Timeline, BI |
-| `reference.spec.updated`       | UPSERT `reference_specs` | reference_id, campo, valor | Timeline |
-| `reference.attachment.added`   | anexo (croqui, foto) | reference_id, url, tipo | Timeline |
-| `pilot.requested`              | INSERT `pilots` | reference_id, round, prazo | Sala-piloto, PCP |
-| `pilot.modeling.started`       | status → `em_modelagem` | pilot_id, modelista | Timeline |
-| `pilot.sewing.started`         | status → `em_costura` | pilot_id, pilotista | Timeline |
-| `pilot.trial.scheduled`        | prova marcada | pilot_id, data | Estilo |
-| `pilot.occurrence.opened`      | INSERT `pilot_occurrences` | pilot_id, tipo, responsável | Estilo, Modelagem |
-| `pilot.occurrence.resolved`    | ocorrência fechada | occurrence_id | Timeline |
-| `pilot.approved`               | status → `aprovado` | pilot_id, round, aprovador | Referência |
-| `pilot.rejected`               | status → `reprovado` | pilot_id, motivo | Modelagem |
-| `reference.submitted_for_review` | status → `em_revisao` | reference_id | Coord. Desenvolvimento |
-| `reference.approved`           | status → `aprovada` | reference_id, aprovador | H9-05, BI |
-| `reference.rejected`           | status → `reprovada` | reference_id, motivo | Estilo |
-| `reference.archived`           | status → `arquivada` | reference_id | Arquivo |
+| `event_type`                     | Quando                     | Payload mínimo              | Consumido por          |
+| -------------------------------- | -------------------------- | --------------------------- | ---------------------- |
+| `reference.created`              | INSERT `references`        | id, collection_id, autor    | Timeline, BI           |
+| `reference.spec.updated`         | UPSERT `reference_specs`   | reference_id, campo, valor  | Timeline               |
+| `reference.attachment.added`     | anexo (croqui, foto)       | reference_id, url, tipo     | Timeline               |
+| `pilot.requested`                | INSERT `pilots`            | reference_id, round, prazo  | Sala-piloto, PCP       |
+| `pilot.modeling.started`         | status → `em_modelagem`    | pilot_id, modelista         | Timeline               |
+| `pilot.sewing.started`           | status → `em_costura`      | pilot_id, pilotista         | Timeline               |
+| `pilot.trial.scheduled`          | prova marcada              | pilot_id, data              | Estilo                 |
+| `pilot.occurrence.opened`        | INSERT `pilot_occurrences` | pilot_id, tipo, responsável | Estilo, Modelagem      |
+| `pilot.occurrence.resolved`      | ocorrência fechada         | occurrence_id               | Timeline               |
+| `pilot.approved`                 | status → `aprovado`        | pilot_id, round, aprovador  | Referência             |
+| `pilot.rejected`                 | status → `reprovado`       | pilot_id, motivo            | Modelagem              |
+| `reference.submitted_for_review` | status → `em_revisao`      | reference_id                | Coord. Desenvolvimento |
+| `reference.approved`             | status → `aprovada`        | reference_id, aprovador     | H9-05, BI              |
+| `reference.rejected`             | status → `reprovada`       | reference_id, motivo        | Estilo                 |
+| `reference.archived`             | status → `arquivada`       | reference_id                | Arquivo                |
 
 Consumidores usam `use-entity-events` + `EntityTimeline`, `ReferenceTimeline`,
 `LoteTimeline` já existentes.
@@ -156,7 +156,7 @@ Consumidores usam `use-entity-events` + `EntityTimeline`, `ReferenceTimeline`,
 - **Rota principal:** `/references` (`_authenticated.references.tsx`) +
   `/prototypes` (`_authenticated.prototypes.tsx`).
 - **Drawer contextual:** `ReferenciaDrawer` com tabs
-  *Croqui · Ficha · Pilotos · Ocorrências · Timeline · Relações · IA*.
+  _Croqui · Ficha · Pilotos · Ocorrências · Timeline · Relações · IA_.
 - **Componentes reutilizados:** `ReferenceTimeline`, `EntityTimeline`,
   `EntityRelations`, `WorkflowStatusMenu`, `PilotosPanel`,
   `NovoPilotoDialog`, `OcorrenciaForm`, `PassagemForm`, `BomBopPanel`
@@ -165,16 +165,16 @@ Consumidores usam `use-entity-events` + `EntityTimeline`, `ReferenceTimeline`,
   preencher ficha inicial → solicitar piloto → registrar prova →
   aprovar. **Máx. 10 cliques** para o caso feliz.
 - **Estados:** vazio, carregando (skeleton), erro (retry), sucesso (toast
-  + navegação drawer). Todos cobertos.
+  - navegação drawer). Todos cobertos.
 
 ## 10. IA (V11 / H5)
 
 - **Agentes (V13):**
-  - *Especialista Modelagem* — sugere ajuste de molde com base em
+  - _Especialista Modelagem_ — sugere ajuste de molde com base em
     ocorrências recorrentes da mesma modelagem-mãe.
-  - *Especialista Pilotagem* — critica tempo de costura vs. tempo padrão.
-  - *Especialista Qualidade* — antecipa defeito provável por tecido.
-  - *Coordenador Estilo* — valida se a referência está aderente à cartela
+  - _Especialista Pilotagem_ — critica tempo de costura vs. tempo padrão.
+  - _Especialista Qualidade_ — antecipa defeito provável por tecido.
+  - _Coordenador Estilo_ — valida se a referência está aderente à cartela
     e ao mix da coleção (H9-01).
 - **Perguntas que os agentes devem responder:**
   - "Quais ocorrências se repetem nessa modelagem-mãe?"
@@ -187,13 +187,13 @@ Consumidores usam `use-entity-events` + `EntityTimeline`, `ReferenceTimeline`,
 
 ## 11. BI (V10)
 
-| KPI | Fórmula | Unidade | Meta | Responsável |
-|-----|---------|---------|------|-------------|
-| Aprovação no 1º piloto | pilotos aprovados na round 1 ÷ total round 1 | % | ≥ 60% | Modelagem |
-| Rodadas médias por referência | Σ `pilots.round` ÷ referências aprovadas | nº | ≤ 1,8 | Desenvolvimento |
-| Lead time croqui → aprovação | data `reference.approved` − data `reference.created` | dias | ≤ 21 | Coord. Desenvolvimento |
-| Taxa de reprova por tecido | pilotos reprovados por tecido ÷ total por tecido | % | ≤ 20% | Qualidade |
-| Ocorrências abertas > 7 dias | count(`pilot_occurrences` open, `now - opened_at > 7d`) | nº | 0 | Coord. Desenvolvimento |
+| KPI                           | Fórmula                                                 | Unidade | Meta  | Responsável            |
+| ----------------------------- | ------------------------------------------------------- | ------- | ----- | ---------------------- |
+| Aprovação no 1º piloto        | pilotos aprovados na round 1 ÷ total round 1            | %       | ≥ 60% | Modelagem              |
+| Rodadas médias por referência | Σ `pilots.round` ÷ referências aprovadas                | nº      | ≤ 1,8 | Desenvolvimento        |
+| Lead time croqui → aprovação  | data `reference.approved` − data `reference.created`    | dias    | ≤ 21  | Coord. Desenvolvimento |
+| Taxa de reprova por tecido    | pilotos reprovados por tecido ÷ total por tecido        | %       | ≤ 20% | Qualidade              |
+| Ocorrências abertas > 7 dias  | count(`pilot_occurrences` open, `now - opened_at > 7d`) | nº      | 0     | Coord. Desenvolvimento |
 
 Fonte: derivados de `entity_events` + `references` + `pilots` — sem contagem manual.
 
@@ -249,14 +249,14 @@ Fonte: derivados de `entity_events` + `references` + `pilots` — sem contagem m
 
 ## 15. Competitive Notes (V14)
 
-| PLM | Como resolve | Limitação | Como superamos |
-|-----|--------------|-----------|----------------|
-| Centric | Sample Management module, comentários por prova | UI densa, sem IA embarcada | Drawer + IA sugerindo ajustes recorrentes |
-| PTC FlexPLM | Sample tracking + fit history | Complexidade de setup | Workflow curto (5 estados) + ocorrência simples |
-| Lectra Kubix Link | Integração forte com molde CAD | Fraco em comentário/ocorrência de prova | `pilot_occurrences` como cidadão de 1ª classe |
-| Gerber Yunique | Fit calendar colaborativo | UI legada, sem tempo real | Timeline evento-a-evento + realtime broadcast |
-| Collection Moda (BR) | Ficha piloto + rodadas | Sem versionamento imutável | R6 imutabilidade + versionamento |
-| Audaces Idea | CAD/moulage forte | Não cobre workflow de aprovação | Este playbook cobre o gap |
+| PLM                  | Como resolve                                    | Limitação                               | Como superamos                                  |
+| -------------------- | ----------------------------------------------- | --------------------------------------- | ----------------------------------------------- |
+| Centric              | Sample Management module, comentários por prova | UI densa, sem IA embarcada              | Drawer + IA sugerindo ajustes recorrentes       |
+| PTC FlexPLM          | Sample tracking + fit history                   | Complexidade de setup                   | Workflow curto (5 estados) + ocorrência simples |
+| Lectra Kubix Link    | Integração forte com molde CAD                  | Fraco em comentário/ocorrência de prova | `pilot_occurrences` como cidadão de 1ª classe   |
+| Gerber Yunique       | Fit calendar colaborativo                       | UI legada, sem tempo real               | Timeline evento-a-evento + realtime broadcast   |
+| Collection Moda (BR) | Ficha piloto + rodadas                          | Sem versionamento imutável              | R6 imutabilidade + versionamento                |
+| Audaces Idea         | CAD/moulage forte                               | Não cobre workflow de aprovação         | Este playbook cobre o gap                       |
 
 Padrão mental comum: **referência = ficha + croqui + rodadas de piloto
 com ocorrências rastreadas**, aprovada por coordenação antes de engenharia.
@@ -264,16 +264,16 @@ Nossa superação: **timeline em tempo real + IA multi-especialista + imutabilid
 
 ## 16. Riscos e mitigação
 
-| Risco | Impacto | Prob. | Mitigação |
-|-------|---------|-------|-----------|
-| Piloto aprovado com ocorrência aberta | Defeito em produção | média | R3 obriga ocorrência ao reprovar + KPI §11 |
-| Molde-mãe sobrescrito sem versão | Perda de histórico | baixa | R4 `round++` + R6 imutabilidade |
-| Múltiplas rodadas escondem incompetência de tecido | Custo alto | média | KPI "Taxa de reprova por tecido" (§11) + agente Qualidade |
-| Aprovação sem coordenador | Referência inconsistente | baixa | R5 policy `has_role` |
-| IA sugerir ajuste de molde por conta própria | Retrabalho | média | Guardrail §10 — sugestão auditável, nunca autônoma |
+| Risco                                              | Impacto                  | Prob. | Mitigação                                                 |
+| -------------------------------------------------- | ------------------------ | ----- | --------------------------------------------------------- |
+| Piloto aprovado com ocorrência aberta              | Defeito em produção      | média | R3 obriga ocorrência ao reprovar + KPI §11                |
+| Molde-mãe sobrescrito sem versão                   | Perda de histórico       | baixa | R4 `round++` + R6 imutabilidade                           |
+| Múltiplas rodadas escondem incompetência de tecido | Custo alto               | média | KPI "Taxa de reprova por tecido" (§11) + agente Qualidade |
+| Aprovação sem coordenador                          | Referência inconsistente | baixa | R5 policy `has_role`                                      |
+| IA sugerir ajuste de molde por conta própria       | Retrabalho               | média | Guardrail §10 — sugestão auditável, nunca autônoma        |
 
 ## 17. Changelog
 
-| Data | Versão | Autor | Mudança |
-|------|--------|-------|---------|
-| 2026-07-07 | 0.1 | Software House IA | criação inicial do playbook |
+| Data       | Versão | Autor             | Mudança                     |
+| ---------- | ------ | ----------------- | --------------------------- |
+| 2026-07-07 | 0.1    | Software House IA | criação inicial do playbook |

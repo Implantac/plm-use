@@ -50,10 +50,7 @@ function CadPage() {
                 Visualizador técnico interno
               </CardTitle>
               <div className="flex gap-2">
-                <Button
- variant="outline"
- className="text-[10px] tracking-[0.14em]"
- >
+                <Button variant="outline" className="text-[10px] tracking-[0.14em]">
                   <Upload className="mr-2 h-4 w-4" /> Importar
                 </Button>
                 <Button className="text-[10px] tracking-[0.14em]">
@@ -123,17 +120,17 @@ function CadPage() {
                       <td className="px-5 py-4">
                         <div className="flex gap-2">
                           <Button
- size="icon"
- variant="ghost"
- className="w-8 text-muted-foreground hover:text-primary"
- >
+                            size="icon"
+                            variant="ghost"
+                            className="w-8 text-muted-foreground hover:text-primary"
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
- size="icon"
- variant="ghost"
- className="w-8 text-muted-foreground hover:text-primary"
- >
+                            size="icon"
+                            variant="ghost"
+                            className="w-8 text-muted-foreground hover:text-primary"
+                          >
                             <Download className="h-4 w-4" />
                           </Button>
                         </div>

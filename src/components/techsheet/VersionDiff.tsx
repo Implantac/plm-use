@@ -7,13 +7,7 @@ import type { TechSheetVersion } from "@/lib/techsheet/store";
  * - Itens só em A = removidos (vermelho), só em B = adicionados (verde),
  *   presentes em ambos = inalterados.
  */
-export function VersionDiff({
-  a,
-  b,
-}: {
-  a?: TechSheetVersion;
-  b?: TechSheetVersion;
-}) {
+export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersion }) {
   if (!a || !b) {
     return (
       <div className="rounded-md border border-dashed border-white/10 p-4 text-[10px] text-muted-foreground">
@@ -68,10 +62,21 @@ export function VersionDiff({
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: number; tone: "pos" | "neg" | "mut" }) {
-  const color = tone === "pos" ? "text-emerald-300 border-emerald-500/30 bg-emerald-500/5"
-    : tone === "neg" ? "text-rose-300 border-rose-500/30 bg-rose-500/5"
-    : "text-muted-foreground border-white/10 bg-white/[0.02]";
+function Stat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: "pos" | "neg" | "mut";
+}) {
+  const color =
+    tone === "pos"
+      ? "text-emerald-300 border-emerald-500/30 bg-emerald-500/5"
+      : tone === "neg"
+        ? "text-rose-300 border-rose-500/30 bg-rose-500/5"
+        : "text-muted-foreground border-white/10 bg-white/[0.02]";
   return (
     <div className={`rounded-md border p-2 ${color}`}>
       <p className="text-lg font-bold">{value}</p>
@@ -83,10 +88,22 @@ function Stat({ label, value, tone }: { label: string; value: number; tone: "pos
 function DiffLine({ text, kind }: { text: string; kind: "add" | "rem" | "eq" }) {
   const cfg =
     kind === "add"
-      ? { bg: "bg-emerald-500/10 border-emerald-500/30", icon: <Plus className="w-3 h-3 text-emerald-400" />, color: "text-emerald-200" }
+      ? {
+          bg: "bg-emerald-500/10 border-emerald-500/30",
+          icon: <Plus className="w-3 h-3 text-emerald-400" />,
+          color: "text-emerald-200",
+        }
       : kind === "rem"
-      ? { bg: "bg-rose-500/10 border-rose-500/30", icon: <Minus className="w-3 h-3 text-rose-400" />, color: "text-rose-200 line-through opacity-80" }
-      : { bg: "bg-white/[0.02] border-white/5", icon: <Equal className="w-3 h-3 text-muted-foreground" />, color: "text-muted-foreground" };
+        ? {
+            bg: "bg-rose-500/10 border-rose-500/30",
+            icon: <Minus className="w-3 h-3 text-rose-400" />,
+            color: "text-rose-200 line-through opacity-80",
+          }
+        : {
+            bg: "bg-white/[0.02] border-white/5",
+            icon: <Equal className="w-3 h-3 text-muted-foreground" />,
+            color: "text-muted-foreground",
+          };
 
   // Detecta "X → Y" ou "X -> Y"
   const m = text.match(/^(.*?)\s*(?:→|->)\s*(.*)$/);
@@ -95,9 +112,17 @@ function DiffLine({ text, kind }: { text: string; kind: "add" | "rem" | "eq" }) 
       <span className="mt-0.5">{cfg.icon}</span>
       {m ? (
         <div className="flex-1 flex items-center gap-2 flex-wrap">
-          <span className={`px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-200 font-mono ${kind === "add" ? "opacity-60" : ""}`}>{m[1]}</span>
+          <span
+            className={`px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-200 font-mono ${kind === "add" ? "opacity-60" : ""}`}
+          >
+            {m[1]}
+          </span>
           <ArrowRight className="w-3 h-3 text-muted-foreground" />
-          <span className={`px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-200 font-mono ${kind === "rem" ? "opacity-60" : ""}`}>{m[2]}</span>
+          <span
+            className={`px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-200 font-mono ${kind === "rem" ? "opacity-60" : ""}`}
+          >
+            {m[2]}
+          </span>
         </div>
       ) : (
         <span className={`flex-1 ${cfg.color}`}>{text}</span>

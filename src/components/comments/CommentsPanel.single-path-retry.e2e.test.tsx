@@ -15,10 +15,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const PATH_A = "solo/a.png";
 const PATH_B = "solo/b.png";
@@ -68,8 +65,20 @@ describe("CommentsPanel E2E — retry isolado por path", () => {
     push(PATH_A, { data: null, error: { message: "falha só em A" } });
     push(PATH_B, { data: { signedUrl: URL_B_FIRST }, error: null });
 
-    render(<AttachmentItem attachment={att(PATH_A, "a", "a.png")} canRemove={false} onRemove={() => {}} />);
-    render(<AttachmentItem attachment={att(PATH_B, "b", "b.png")} canRemove={false} onRemove={() => {}} />);
+    render(
+      <AttachmentItem
+        attachment={att(PATH_A, "a", "a.png")}
+        canRemove={false}
+        onRemove={() => {}}
+      />,
+    );
+    render(
+      <AttachmentItem
+        attachment={att(PATH_B, "b", "b.png")}
+        canRemove={false}
+        onRemove={() => {}}
+      />,
+    );
     await flush();
 
     // Estado inicial: 1 chamada por path.

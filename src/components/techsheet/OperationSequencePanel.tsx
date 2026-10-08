@@ -5,8 +5,8 @@ import { useTechSheetStore } from "@/lib/techsheet/store";
 
 // SAM (Standard Allowed Minutes) por peça = soma dos tempos de todas as operações.
 // Cronoanálise deriva capacidade diária e custo/min a partir do SAM.
-const JORNADA_MIN = 480;    // 8h úteis
-const EFICIENCIA = 0.75;    // 75% de eficiência real de fábrica
+const JORNADA_MIN = 480; // 8h úteis
+const EFICIENCIA = 0.75; // 75% de eficiência real de fábrica
 const COSTUREIRAS_DEFAULT = 8;
 
 export function OperationSequencePanel({ refAtual }: { refAtual: string }) {
@@ -20,10 +20,18 @@ export function OperationSequencePanel({ refAtual }: { refAtual: string }) {
     const capacidadeLinha = capacidadeDiariaPorCosturera * COSTUREIRAS_DEFAULT;
     const custoMin = sam > 0 ? custoOperacional / sam : 0;
     const gargalo = sheet.bop.reduce<{ etapa: string; tempoMin: number } | null>(
-      (max, s) => (!max || s.tempoMin > max.tempoMin ? { etapa: s.etapa, tempoMin: s.tempoMin } : max),
+      (max, s) =>
+        !max || s.tempoMin > max.tempoMin ? { etapa: s.etapa, tempoMin: s.tempoMin } : max,
       null,
     );
-    return { sam, custoOperacional, capacidadeDiariaPorCosturera, capacidadeLinha, custoMin, gargalo };
+    return {
+      sam,
+      custoOperacional,
+      capacidadeDiariaPorCosturera,
+      capacidadeLinha,
+      custoMin,
+      gargalo,
+    };
   }, [sheet.bop]);
 
   const cards = [

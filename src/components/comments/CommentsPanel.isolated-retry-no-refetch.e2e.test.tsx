@@ -16,10 +16,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => ({ user: null }) }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 
-import {
-  AttachmentItem,
-  clearAttachmentUrlCache,
-} from "@/components/comments/CommentsPanel";
+import { AttachmentItem, clearAttachmentUrlCache } from "@/components/comments/CommentsPanel";
 
 const FAIL_PATH = "iso/fail.png";
 const OK_PATHS = ["iso/ok-1.png", "iso/ok-2.png", "iso/ok-3.png"];
@@ -72,7 +69,13 @@ describe("CommentsPanel E2E — retry isolado não afeta outros items OK", () =>
     for (const p of OK_PATHS) push(p, { data: { signedUrl: OK_URLS[p] }, error: null });
 
     // Renderiza 1 item com falha + 3 itens OK.
-    render(<AttachmentItem attachment={att(FAIL_PATH, "fail", "fail.png")} canRemove={false} onRemove={() => {}} />);
+    render(
+      <AttachmentItem
+        attachment={att(FAIL_PATH, "fail", "fail.png")}
+        canRemove={false}
+        onRemove={() => {}}
+      />,
+    );
     OK_PATHS.forEach((p, i) =>
       render(
         <AttachmentItem
@@ -91,9 +94,7 @@ describe("CommentsPanel E2E — retry isolado não afeta outros items OK", () =>
     }
     expect(screen.getByText("falha isolada")).toBeDefined();
     for (let i = 0; i < OK_PATHS.length; i++) {
-      expect(screen.getByAltText(`ok-${i + 1}.png`).getAttribute("src")).toBe(
-        OK_URLS[OK_PATHS[i]],
-      );
+      expect(screen.getByAltText(`ok-${i + 1}.png`).getAttribute("src")).toBe(OK_URLS[OK_PATHS[i]]);
     }
 
     // Só o item com falha exibe retry.
@@ -119,9 +120,7 @@ describe("CommentsPanel E2E — retry isolado não afeta outros items OK", () =>
     expect(screen.queryByRole("button", { name: /tentar novamente/i })).toBeNull();
     expect(screen.getByAltText("fail.png").getAttribute("src")).toBe(FAIL_RETRY_URL);
     for (let i = 0; i < OK_PATHS.length; i++) {
-      expect(screen.getByAltText(`ok-${i + 1}.png`).getAttribute("src")).toBe(
-        OK_URLS[OK_PATHS[i]],
-      );
+      expect(screen.getByAltText(`ok-${i + 1}.png`).getAttribute("src")).toBe(OK_URLS[OK_PATHS[i]]);
     }
   });
 });

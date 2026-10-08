@@ -160,16 +160,10 @@ function ResearchHub() {
       ]}
     >
       <div className="flex justify-end gap-4 mb-8">
-        <Button
- variant="outline"
- className="text-[10px] tracking-[0.16em] gap-2"
- >
+        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
           <ImagePlus className="w-4 h-4" /> Importar Inspiração
         </Button>
-        <Button
- variant="outline"
- className="text-[10px] tracking-[0.16em] gap-2"
- >
+        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
           <Sparkles className="w-4 h-4" /> Gerar Moodboard AI
         </Button>
       </div>
@@ -210,18 +204,15 @@ function ResearchHub() {
       </div>
 
       <div className="flex items-center gap-4 border-b border-white/5 pb-6 mb-8 overflow-x-auto no-scrollbar">
-        <Button
- variant="ghost"
- className="text-primary text-[10px] tracking-[0.2em] bg-primary/10"
- >
+        <Button variant="ghost" className="text-primary text-[10px] tracking-[0.2em] bg-primary/10">
           Todos
         </Button>
         {categories.map((cat) => (
           <Button
- key={cat}
- variant="ghost"
- className="text-muted-foreground hover:text-white text-[10px] tracking-[0.2em] transition-colors"
- >
+            key={cat}
+            variant="ghost"
+            className="text-muted-foreground hover:text-white text-[10px] tracking-[0.2em] transition-colors"
+          >
             {cat}
           </Button>
         ))}
@@ -253,17 +244,17 @@ function ResearchHub() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
                   <div className="flex gap-2 mb-4">
                     <Button
- size="icon"
- variant="ghost"
- className="bg-white/10 backdrop-blur-md text-white"
- >
+                      size="icon"
+                      variant="ghost"
+                      className="bg-white/10 backdrop-blur-md text-white"
+                    >
                       <Palette className="w-4 h-4" />
                     </Button>
                     <Button
- size="icon"
- variant="ghost"
- className="bg-white/10 backdrop-blur-md text-white"
- >
+                      size="icon"
+                      variant="ghost"
+                      className="bg-white/10 backdrop-blur-md text-white"
+                    >
                       <Sparkles className="w-4 h-4" />
                     </Button>
                   </div>
@@ -339,17 +330,10 @@ function ResearchHub() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button
- variant="ghost"
- onClick={() => setIsDialogOpen(false)}
-              className="text-[10px]"
-            >
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
               Cancelar
             </Button>
-            <Button
- onClick={handleSave}
- className="text-[10px]"
- >
+            <Button onClick={handleSave} className="text-[10px]">
               Fixar no Board
             </Button>
           </DialogFooter>

@@ -24,9 +24,21 @@ interface StartStep {
 }
 
 const START_STEPS: StartStep[] = [
-  { id: "handoff", label: "Handoff PLM → PCP", detail: "Registrar o repasse formal do piloto aprovado." },
-  { id: "analisar", label: "1 · Analisar produção", detail: "Pular handoff e ir direto para demanda/quantidades." },
-  { id: "almoxarifado", label: "2 · Verificar almoxarifado", detail: "Referência já analisada; conferir cores/tecidos." },
+  {
+    id: "handoff",
+    label: "Handoff PLM → PCP",
+    detail: "Registrar o repasse formal do piloto aprovado.",
+  },
+  {
+    id: "analisar",
+    label: "1 · Analisar produção",
+    detail: "Pular handoff e ir direto para demanda/quantidades.",
+  },
+  {
+    id: "almoxarifado",
+    label: "2 · Verificar almoxarifado",
+    detail: "Referência já analisada; conferir cores/tecidos.",
+  },
 ];
 
 interface Props {
@@ -58,9 +70,8 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
           </DialogTitle>
           <DialogDescription className="text-[11px] leading-relaxed">
             Confirme o handoff do piloto aprovado{" "}
-            <span className="font-bold text-white">{referenciaNome}</span> para
-            o PCP e escolha por onde começar. O restante do fluxo permanecerá
-            carregado no mesmo contexto em Produção.
+            <span className="font-bold text-white">{referenciaNome}</span> para o PCP e escolha por
+            onde começar. O restante do fluxo permanecerá carregado no mesmo contexto em Produção.
           </DialogDescription>
         </DialogHeader>
 
@@ -87,11 +98,7 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
                     : "border-white/10 bg-white/[0.02] hover:border-primary/30"
                 }`}
               >
-                <RadioGroupItem
-                  id={`pcp-start-${s.id}`}
-                  value={s.id}
-                  className="mt-0.5"
-                />
+                <RadioGroupItem id={`pcp-start-${s.id}`} value={s.id} className="mt-0.5" />
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                     {s.label}

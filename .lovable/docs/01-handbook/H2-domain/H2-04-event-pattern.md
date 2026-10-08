@@ -58,16 +58,19 @@ CREATE TRIGGER <entity>_log_change
 ```
 
 ## Payload
+
 - Mantenha pequeno. IDs relacionados, código humano-legível, delta relevante.
 - **Nunca** copie a linha inteira para `payload`. Isso duplica dado e engorda BI.
 - Nada de PII ou secret em `payload`.
 
 ## Consumo
+
 - **UI:** `EntityTimeline` (`src/components/entity/EntityTimeline.tsx`).
 - **IA:** `src/lib/ai/live-context.functions.ts` já lê 72h de eventos.
 - **BI:** views materializadas em cima de `entity_events` (H7 dirá).
 
 ## Anti-padrões
+
 - Emitir evento pelo cliente (`supabase.from('entity_events').insert(...)`). Cliente pode mentir.
 - Emitir evento **antes** da mutação (o evento vira promessa não cumprida se a mutação falhar).
 - Um evento por campo alterado (spam).
