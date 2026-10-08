@@ -14,11 +14,12 @@ Cada asserção é acompanhada de screenshot para evidência visual.
 """
 
 import asyncio
+import os
 import sys
 from pathlib import Path
 from playwright.async_api import async_playwright, expect
 
-BASE = "http://localhost:8080"
+BASE = os.environ.get("PLM_E2E_BASE", "http://localhost:8080")
 SHOTS = Path(__file__).parent / "screenshots" / "field-message"
 SHOTS.mkdir(parents=True, exist_ok=True)
 AXE_SRC = (Path(__file__).parent / "vendor" / "axe.min.js").read_text()

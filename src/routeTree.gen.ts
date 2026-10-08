@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticated.ai-agents'
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
@@ -52,6 +53,7 @@ import { Route as AuthenticatedSupplierPortalRouteImport } from './routes/_authe
 import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated.suppliers'
 import { Route as AuthenticatedTechSheetRouteImport } from './routes/_authenticated.tech-sheet'
 import { Route as ApiGenerateImageRouteImport } from './routes/api/generate-image'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
 import { Route as AuthenticatedCollectionsCompareRouteImport } from './routes/_authenticated.collections.compare'
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
@@ -75,6 +77,11 @@ const AuditRoute = AuditRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -282,6 +289,11 @@ const ApiGenerateImageRoute = ApiGenerateImageRouteImport.update({
   path: '/api/generate-image',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -316,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/ai-center': typeof AuthenticatedAiCenterRoute
@@ -355,6 +368,7 @@ export interface FileRoutesByFullPath {
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/health': typeof ApiHealthRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
@@ -365,6 +379,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/ai-center': typeof AuthenticatedAiCenterRoute
@@ -404,6 +419,7 @@ export interface FileRoutesByTo {
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/health': typeof ApiHealthRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
@@ -416,6 +432,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/ai-agents': typeof AuthenticatedAiAgentsRoute
   '/_authenticated/ai-center': typeof AuthenticatedAiCenterRoute
@@ -455,6 +472,7 @@ export interface FileRoutesById {
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/tech-sheet': typeof AuthenticatedTechSheetRoute
   '/api/generate-image': typeof ApiGenerateImageRoute
+  '/api/health': typeof ApiHealthRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
@@ -467,6 +485,7 @@ export interface FileRouteTypes {
     | '/'
     | '/audit'
     | '/login'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/ai-agents'
     | '/ai-center'
@@ -506,6 +525,7 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/tech-sheet'
     | '/api/generate-image'
+    | '/api/health'
     | '/admin/users'
     | '/collections/compare'
     | '/production/today'
@@ -516,6 +536,7 @@ export interface FileRouteTypes {
     | '/'
     | '/audit'
     | '/login'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/ai-agents'
     | '/ai-center'
@@ -555,6 +576,7 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/tech-sheet'
     | '/api/generate-image'
+    | '/api/health'
     | '/admin/users'
     | '/collections/compare'
     | '/production/today'
@@ -566,6 +588,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/audit'
     | '/login'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/_authenticated/ai-agents'
     | '/_authenticated/ai-center'
@@ -605,6 +628,7 @@ export interface FileRouteTypes {
     | '/_authenticated/suppliers'
     | '/_authenticated/tech-sheet'
     | '/api/generate-image'
+    | '/api/health'
     | '/_authenticated/admin/users'
     | '/_authenticated/collections/compare'
     | '/_authenticated/production/today'
@@ -617,8 +641,10 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuditRoute: typeof AuditRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiGenerateImageRoute: typeof ApiGenerateImageRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
 }
@@ -651,6 +677,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -926,6 +959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGenerateImageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -1083,8 +1123,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuditRoute: AuditRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiGenerateImageRoute: ApiGenerateImageRoute,
+  ApiHealthRoute: ApiHealthRoute,
   ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
 }

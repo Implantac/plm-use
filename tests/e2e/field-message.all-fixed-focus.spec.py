@@ -18,13 +18,14 @@ Fluxo:
 """
 
 import asyncio
+import os
 import json
 import re
 import sys
 from pathlib import Path
 from playwright.async_api import async_playwright, expect
 
-BASE = "http://localhost:8080"
+BASE = os.environ.get("PLM_E2E_BASE", "http://localhost:8080")
 SHOTS = Path(__file__).parent / "screenshots" / "field-message-all-fixed"
 SHOTS.mkdir(parents=True, exist_ok=True)
 
@@ -82,7 +83,16 @@ async def main() -> int:
 
         print("\n▶ 1. Abrir /login em modo 'Criar conta'")
         await page.goto(f"{BASE}/login", wait_until="domcontentloaded")
+        # /login é ssr:false: os controles só existem após a hidratação React.
+        await page.wait_for_selector("input#email", timeout=8000)
+        await page.wait_for_timeout(600)
         tab = page.get_by_role("button", name=re.compile(r"^Criar conta$", re.I)).first
+        # O self-cadastro é desligado por padrão (VITE_ALLOW_SELF_SIGNUP). Sem a
+        # aba, não há o que validar — sair 0 com SKIP (não é falha do produto).
+        if await tab.count() == 0:
+            print("SKIP · self-cadastro desabilitado neste ambiente (sem aba 'Criar conta').")
+            await browser.close()
+            return 0
         await expect(tab).to_be_visible(timeout=8000)
         await page.wait_for_timeout(800)
         await tab.click()

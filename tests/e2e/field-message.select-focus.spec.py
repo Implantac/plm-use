@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 from playwright.async_api import async_playwright, expect
 
-BASE = "http://localhost:8080"
+BASE = os.environ.get("PLM_E2E_BASE", "http://localhost:8080")
 SHOTS = Path(__file__).parent / "screenshots" / "field-message-select-focus"
 SHOTS.mkdir(parents=True, exist_ok=True)
 

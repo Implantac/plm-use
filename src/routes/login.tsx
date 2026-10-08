@@ -15,6 +15,13 @@ export const Route = createFileRoute("/login")({
   component: Login,
 });
 
+// Self-cadastro é desligado por padrão ("Acesso exclusivo para empresas
+// parceiras" — cadastro aberto só polui a base com usuários sem papel).
+// Para habilitar (ex.: ambiente local), defina VITE_ALLOW_SELF_SIGNUP="true".
+// A porta real de produção continua sendo o toggle "Allow new sign ups" do
+// painel de Auth do Supabase — a flag aqui só esconde a UI (README, Deploy).
+const SELF_SIGNUP_ENABLED = import.meta.env.VITE_ALLOW_SELF_SIGNUP === "true";
+
 function Login() {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -55,9 +62,7 @@ function Login() {
       // acionável seguinte (submit) antes que o handler troque o
       // estado para "loading" e desabilite o botão. Foco síncrono
       // garante que o leitor de tela anuncie o próximo passo.
-      const el = document.querySelector<HTMLElement>(
-        'form button[type="submit"]',
-      );
+      const el = document.querySelector<HTMLElement>('form button[type="submit"]');
       el?.focus();
     }
     return Object.keys(next).length === 0;
@@ -103,8 +108,6 @@ function Login() {
     });
     if (result?.error) toast.error(result.error.message ?? "Falha no login Google.");
   };
-
-
 
   return (
     <div className="min-h-dvh grid grid-cols-1 lg:grid-cols-[1fr_480px] bg-background p-6 relative overflow-hidden">
@@ -159,20 +162,26 @@ function Login() {
           <p className="text-muted-foreground text-xs font-medium mt-4">Acesso ao USE MODA PLM</p>
         </div>
 
-        <div className="flex gap-1 p-1 rounded-md bg-white/5 border border-white/5">
-          {(["signin", "signup"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMode(m)}
-              className={`flex-1 py-2 rounded text-sm font-semibold transition-colors ${
-                mode === m ? "bg-primary text-white" : "text-muted-foreground hover:text-white"
-              }`}
-            >
-              {m === "signin" ? "Entrar" : "Criar conta"}
-            </button>
-          ))}
-        </div>
+        {SELF_SIGNUP_ENABLED ? (
+          <div className="flex gap-1 p-1 rounded-md bg-white/5 border border-white/5">
+            {(["signin", "signup"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className={`flex-1 py-2 rounded text-sm font-semibold transition-colors ${
+                  mode === m ? "bg-primary text-white" : "text-muted-foreground hover:text-white"
+                }`}
+              >
+                {m === "signin" ? "Entrar" : "Criar conta"}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-xs text-muted-foreground">
+            Precisa de acesso? Solicite ao administrador da sua empresa.
+          </p>
+        )}
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           {mode === "signup" && (
@@ -191,7 +200,9 @@ function Login() {
                 required
               />
               {errors.fullName && (
-                <FieldMessage id="fullName-error" variant="error" className="ml-4">{errors.fullName}</FieldMessage>
+                <FieldMessage id="fullName-error" variant="error" className="ml-4">
+                  {errors.fullName}
+                </FieldMessage>
               )}
             </div>
           )}
@@ -211,7 +222,9 @@ function Login() {
               required
             />
             {errors.email && (
-              <FieldMessage id="email-error" variant="error" className="ml-4">{errors.email}</FieldMessage>
+              <FieldMessage id="email-error" variant="error" className="ml-4">
+                {errors.email}
+              </FieldMessage>
             )}
           </div>
           <div className="space-y-3">
@@ -230,36 +243,44 @@ function Login() {
               required
             />
             {errors.password && (
-              <FieldMessage id="password-error" variant="error" className="ml-4">{errors.password}</FieldMessage>
+              <FieldMessage id="password-error" variant="error" className="ml-4">
+                {errors.password}
+              </FieldMessage>
+            )}
+            {mode === "signin" && (
+              <div className="flex justify-end">
+                <Link
+                  to="/reset-password"
+                  className="text-xs text-primary hover:text-white transition-colors"
+                >
+                  Esqueci minha senha?
+                </Link>
+              </div>
             )}
           </div>
 
-
           {errors.form && (
-            <FieldMessage variant="error" className="ml-4">{errors.form}</FieldMessage>
+            <FieldMessage variant="error" className="ml-4">
+              {errors.form}
+            </FieldMessage>
           )}
 
           <Button
- type="submit"
- aria-busy={loading}
- className="w-full h-11 text-sm font-semibold tracking-normal bg-primary hover:bg-primary/90 text-primary-foreground mt-4 border-none shadow-sm hover:shadow-md"
- >
-            {loading
-              ? "Processando..."
-              : mode === "signin"
-                ? "Entrar no Sistema"
-                : "Criar Conta"}
+            type="submit"
+            aria-busy={loading}
+            className="w-full h-11 text-sm font-semibold tracking-normal bg-primary hover:bg-primary/90 text-primary-foreground mt-4 border-none shadow-sm hover:shadow-md"
+          >
+            {loading ? "Processando..." : mode === "signin" ? "Entrar no Sistema" : "Criar Conta"}
           </Button>
           <Button
- type="button"
- variant="outline"
- onClick={handleGoogle}
- className="w-full text-sm tracking-normal bg-white/5"
- >
+            type="button"
+            variant="outline"
+            onClick={handleGoogle}
+            className="w-full text-sm tracking-normal bg-white/5"
+          >
             Continuar com Google
           </Button>
         </form>
-
 
         <div className="text-center pt-6 border-t border-white/5">
           <p className="text-xs text-muted-foreground">

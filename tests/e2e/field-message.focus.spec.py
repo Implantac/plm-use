@@ -17,12 +17,13 @@ Cada campo inválido precisa expor a mensagem para o SR:
 """
 
 import asyncio
+import os
 import re
 import sys
 from pathlib import Path
 from playwright.async_api import async_playwright, expect
 
-BASE = "http://localhost:8080"
+BASE = os.environ.get("PLM_E2E_BASE", "http://localhost:8080")
 SHOTS = Path(__file__).parent / "screenshots" / "field-message-focus"
 SHOTS.mkdir(parents=True, exist_ok=True)
 
@@ -117,34 +118,39 @@ async def main() -> int:
 
         # -----------------------------------------------------------
         # 3. Signup vazio → foco em #fullName
+        #    (só se o self-cadastro estiver habilitado no ambiente)
         # -----------------------------------------------------------
-        print("\n▶ 3. Signup vazio move foco para #fullName")
-        await page.get_by_role("button", name=re.compile("Criar conta", re.I)).click()
-        await page.wait_for_selector("input#fullName")
-        await disable_native_validation(page)
-        await page.locator("#email").fill("")
-        await page.locator("#password").fill("")
+        signup_tab = page.get_by_role("button", name=re.compile("Criar conta", re.I))
+        if await signup_tab.count() == 0:
+            print("\n▶ 3. Signup vazio — SKIP (self-cadastro desabilitado neste ambiente)")
+        else:
+            print("\n▶ 3. Signup vazio move foco para #fullName")
+            await signup_tab.click()
+            await page.wait_for_selector("input#fullName")
+            await disable_native_validation(page)
+            await page.locator("#email").fill("")
+            await page.locator("#password").fill("")
 
-        submit_signup = page.get_by_role("button", name=re.compile(r"^Criar Conta$"))
-        await submit_signup.click()
-        await page.wait_for_timeout(150)
+            submit_signup = page.get_by_role("button", name=re.compile(r"^Criar Conta$"))
+            await submit_signup.click()
+            await page.wait_for_timeout(150)
 
-        check((await active_id(page)) == "fullName", "activeElement=#fullName após submit vazio (signup)")
-        await assert_field_announces(page, "fullName", check)
-        await page.screenshot(path=str(SHOTS / "3_signup_empty.png"))
+            check((await active_id(page)) == "fullName", "activeElement=#fullName após submit vazio (signup)")
+            await assert_field_announces(page, "fullName", check)
+            await page.screenshot(path=str(SHOTS / "3_signup_empty.png"))
 
-        # -----------------------------------------------------------
-        # 4. Corrigir primeiro campo → foco vai para o próximo inválido
-        # -----------------------------------------------------------
-        print("\n▶ 4. Após corrigir #fullName, foco vai para #email")
-        await page.locator("#fullName").fill("Fulano de Tal")
-        await submit_signup.focus()
-        await submit_signup.click()
-        await page.wait_for_timeout(150)
+            # -----------------------------------------------------------
+            # 4. Corrigir primeiro campo → foco vai para o próximo inválido
+            # -----------------------------------------------------------
+            print("\n▶ 4. Após corrigir #fullName, foco vai para #email")
+            await page.locator("#fullName").fill("Fulano de Tal")
+            await submit_signup.focus()
+            await submit_signup.click()
+            await page.wait_for_timeout(150)
 
-        check((await active_id(page)) == "email", "activeElement=#email após corrigir #fullName")
-        await assert_field_announces(page, "email", check)
-        await page.screenshot(path=str(SHOTS / "4_after_fix_first.png"))
+            check((await active_id(page)) == "email", "activeElement=#email após corrigir #fullName")
+            await assert_field_announces(page, "email", check)
+            await page.screenshot(path=str(SHOTS / "4_after_fix_first.png"))
 
         await browser.close()
 
