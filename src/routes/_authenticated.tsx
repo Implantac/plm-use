@@ -1,4 +1,12 @@
-import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  redirect,
+  useNavigate,
+  useRouterState,
+} from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { AppBreadcrumb } from "@/components/nav/AppBreadcrumb";
 import { useRecentRoutes } from "@/hooks/use-recent-routes";
@@ -13,7 +21,6 @@ import { ActivityFeedButton } from "@/components/activity/ActivityFeedButton";
 import { useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
-  
   ChevronDown,
   Zap,
   BarChart3,
@@ -54,6 +61,28 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Route = createFileRoute("/_authenticated")({
+  // Guard de rota: barra a navegação ANTES do render, em vez de redirecionar
+  // depois de montar (o que fazia o layout piscar antes de cair no /login).
+  //
+  // IMPORTANTE — por que o check é browser-only: a sessão do Supabase é
+  // persistida em localStorage (ver brokeredPreviewStorage em
+  // integrations/supabase/client.ts), que não existe durante o SSR. Se este
+  // beforeLoad consultasse a sessão no servidor, ele sempre a veria vazia e
+  // redirecionaria usuários legítimos para /login em toda renderização SSR.
+  //
+  // Para enforcement também no servidor, o caminho é mover a sessão para
+  // cookie httpOnly e validá-la aqui (ou em um loader) via server function.
+  // Enquanto isso, o SSR segue seguro por dois motivos: o componente abaixo
+  // só renderiza o shell quando `isAuthenticated` é verdadeiro (devolvendo
+  // "Autenticando..." no servidor) e nenhum dado de negócio é alcançável sem
+  // RLS — que é aplicada no banco, não na interface.
+  beforeLoad: async () => {
+    if (typeof window === "undefined") return;
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: AuthenticatedLayout,
 });
 
@@ -64,6 +93,10 @@ function AuthenticatedLayout() {
   usePCPCloudSync(isAuthenticated);
   useModulesCloudSync(isAuthenticated);
 
+  // Fallback do guard: em carga direta (deep link / F5) o beforeLoad acima não
+  // reexecuta após a hidratação, então este efeito cobre o caso em que a sessão
+  // se revela ausente só no cliente. Navegação client-side já é barrada antes
+  // do render pelo beforeLoad.
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       navigate({ to: "/login" });
@@ -99,8 +132,16 @@ function AuthenticatedLayout() {
         id: "criar",
         label: "Criar",
         items: [
-          { icon: <Sparkles className="w-4 h-4" />, label: "AI Product Studio", href: "/ai-center" },
-          { icon: <Palette className="w-4 h-4" />, label: "Pesquisa & Tendências", href: "/research" },
+          {
+            icon: <Sparkles className="w-4 h-4" />,
+            label: "AI Product Studio",
+            href: "/ai-center",
+          },
+          {
+            icon: <Palette className="w-4 h-4" />,
+            label: "Pesquisa & Tendências",
+            href: "/research",
+          },
           { icon: <Palette className="w-4 h-4" />, label: "Cores", href: "/colors" },
           { icon: <FileImage className="w-4 h-4" />, label: "Estampas", href: "/prints" },
           { icon: <LayoutTemplate className="w-4 h-4" />, label: "Looks", href: "/looks" },
@@ -111,10 +152,18 @@ function AuthenticatedLayout() {
         label: "Produto",
         items: [
           { icon: <Fingerprint className="w-4 h-4" />, label: "Referências", href: "/references" },
-          { icon: <Scissors className="w-4 h-4" />, label: "Desenvolvimento", href: "/development" },
+          {
+            icon: <Scissors className="w-4 h-4" />,
+            label: "Desenvolvimento",
+            href: "/development",
+          },
           { icon: <PenTool className="w-4 h-4" />, label: "Modelagem", href: "/cad" },
           { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
-          { icon: <PenTool className="w-4 h-4" />, label: "Tabelas de Medidas", href: "/official-models" },
+          {
+            icon: <PenTool className="w-4 h-4" />,
+            label: "Tabelas de Medidas",
+            href: "/official-models",
+          },
         ],
       },
       {
@@ -123,7 +172,11 @@ function AuthenticatedLayout() {
         items: [
           { icon: <ShieldCheck className="w-4 h-4" />, label: "Qualidade", href: "/quality" },
           { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
-          { icon: <Package className="w-4 h-4" />, label: "Engenharia de Rotas", href: "/route-engineering" },
+          {
+            icon: <Package className="w-4 h-4" />,
+            label: "Engenharia de Rotas",
+            href: "/route-engineering",
+          },
           { icon: <Box className="w-4 h-4" />, label: "Inventário", href: "/inventory" },
           { icon: <Truck className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
         ],
@@ -164,9 +217,7 @@ function AuthenticatedLayout() {
 
   const bestMatchHref = useMemo(() => {
     const allHrefs = navSections.flatMap((s) => s.items.map((it) => it.href));
-    const matches = allHrefs.filter(
-      (href) => pathname === href || pathname.startsWith(href + "/"),
-    );
+    const matches = allHrefs.filter((href) => pathname === href || pathname.startsWith(href + "/"));
     return matches.sort((a, b) => b.length - a.length)[0];
   }, [pathname, navSections]);
 
@@ -245,7 +296,6 @@ function AuthenticatedLayout() {
     document.documentElement.classList.toggle("dark", nextTheme === "dark");
   };
 
-
   return (
     <div className="flex h-dvh bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
       <aside className="w-[276px] glass-sidebar flex flex-col z-30 relative">
@@ -261,8 +311,15 @@ function AuthenticatedLayout() {
         <div className="relative px-6 py-5 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
             <div className="relative shrink-0">
-              <div className="absolute -inset-1.5 rounded-full bg-ember opacity-30 blur-md" aria-hidden />
-              <img src="/assets/logo.png" alt="USE MODA" className="relative h-10 w-10 object-contain" />
+              <div
+                className="absolute -inset-1.5 rounded-full bg-ember opacity-30 blur-md"
+                aria-hidden
+              />
+              <img
+                src="/assets/logo.png"
+                alt="USE MODA"
+                className="relative h-10 w-10 object-contain"
+              />
             </div>
             <div className="min-w-0">
               <p className="font-heading text-lg leading-none text-foreground truncate">USE MODA</p>
@@ -280,7 +337,6 @@ function AuthenticatedLayout() {
         <div className="relative px-4 py-4">
           <GlobalSearch />
         </div>
-
 
         <ScrollArea className="flex-1 px-3">
           <nav className="space-y-1 py-1">
@@ -361,7 +417,6 @@ function AuthenticatedLayout() {
           </nav>
         </ScrollArea>
 
-
         <div className="p-4 mt-auto border-t border-sidebar-border">
           <div className="flex items-center gap-3 p-3 rounded-md bg-accent border border-border hover:bg-muted transition-colors group">
             <Avatar className="w-9 h-9 border border-border">
@@ -374,9 +429,7 @@ function AuthenticatedLayout() {
               <p className="text-xs font-semibold text-foreground truncate">
                 {user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "Usuário"}
               </p>
-              <p className="text-2xs text-muted-foreground truncate">
-                {user?.email}
-              </p>
+              <p className="text-2xs text-muted-foreground truncate">{user?.email}</p>
             </div>
             <button
               onClick={handleLogout}
@@ -392,10 +445,7 @@ function AuthenticatedLayout() {
 
       <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
         {/* Ambient forge glow — halo ember discreto que amarra o tema */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-90 bg-forge"
-        />
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-90 bg-forge" />
         <header className="relative h-14 border-b border-border flex items-center justify-between px-6 bg-background/70 backdrop-blur-xl z-20">
           <AppBreadcrumb />
 
@@ -404,17 +454,13 @@ function AuthenticatedLayout() {
             <ActivityFeedButton />
             <AlertsBell />
             <Button
- variant="ghost"
- size="icon"
- onClick={toggleTheme}
- aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
- className="w-9"
- >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
+              className="w-9"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
             <Button
               asChild
@@ -435,8 +481,6 @@ function AuthenticatedLayout() {
           </div>
         </ScrollArea>
       </main>
-
     </div>
   );
 }
-

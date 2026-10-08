@@ -1,3 +1,14 @@
+# USE MODA PLM é uma aplicação de acesso restrito: todas as telas de negócio
+# vivem sob /_authenticated e respondem apenas um placeholder ("Autenticando...")
+# a quem não tem sessão. Indexar isso só polui os resultados de busca.
+#
+# Regras mais específicas têm precedência (padrão do Google), então /login
+# continua acessível enquanto o resto do app fica fora dos índices.
+#
+# Se no futuro existir landing/marketing pública, libere os caminhos dela aqui
+# e adicione-os também em src/routes/sitemap[.]xml.ts.
 User-agent: *
-Allow: /
+Disallow: /
+Allow: /login
+
 Sitemap: https://usemoda.ai/sitemap.xml

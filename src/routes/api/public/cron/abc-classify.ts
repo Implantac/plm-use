@@ -1,16 +1,29 @@
 // Doc 06.2 · Almoxarifado — cron público de reclassificação ABC (mensal).
-// Autenticação: apikey header contendo o Supabase publishable key (padrão Lovable /api/public/*).
+// Chamado por pg_cron via net.http_post. Autenticação via HMAC-SHA256 no header
+// x-abc-signature, secret ABC_CRON_SECRET. Nenhuma escrita sem verificação.
+//
+// SECURITY: nunca autentique um endpoint público com a publishable key do Supabase.
+// Ela é pública por definição — o supabase-js a embute no bundle do navegador
+// (VITE_SUPABASE_PUBLISHABLE_KEY) e qualquer visitante pode lê-la no DevTools.
+// Um endpoint que a aceita como segredo é, na prática, um endpoint aberto que
+// escreve com service_role. Este endpoint usava exatamente esse padrão até
+// 2026-10-08; o caminho autenticado por usuário (inventory.functions.ts ·
+// runAbcClassification) sempre esteve correto e continua sendo o preferido para uso
+// interativo. Este cron é apenas o gatilho agendado e exige assinatura HMAC,
+// seguindo o mesmo padrão de /api/public/cron/launch-performance.
 import { createFileRoute } from "@tanstack/react-router";
+import { verifyCronSignature } from "@/lib/api/cron-auth.server";
 
 export const Route = createFileRoute("/api/public/cron/abc-classify")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const expected = process.env.SUPABASE_PUBLISHABLE_KEY;
-        const provided = request.headers.get("apikey") ?? "";
-        if (!expected || provided !== expected) {
-          return new Response("Unauthorized", { status: 401 });
-        }
+        const auth = await verifyCronSignature(
+          request,
+          process.env.ABC_CRON_SECRET,
+          "x-abc-signature",
+        );
+        if (!auth.ok) return new Response(auth.message, { status: auth.status });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin.rpc("classify_abc", {

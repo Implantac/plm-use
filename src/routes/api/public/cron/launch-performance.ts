@@ -2,25 +2,18 @@
 // Chamado por pg_cron via net.http_post. Autenticação via HMAC-SHA256 no header
 // x-launch-signature, secret LAUNCH_CRON_SECRET. Nenhuma escrita sem verificação.
 import { createFileRoute } from "@tanstack/react-router";
-import { createHmac, timingSafeEqual } from "crypto";
+import { verifyCronSignature } from "@/lib/api/cron-auth.server";
 
 export const Route = createFileRoute("/api/public/cron/launch-performance")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = process.env.LAUNCH_CRON_SECRET;
-        if (!secret) {
-          return new Response("Cron secret not configured", { status: 503 });
-        }
-
-        const signature = request.headers.get("x-launch-signature") ?? "";
-        const body = await request.text();
-        const expected = createHmac("sha256", secret).update(body).digest("hex");
-        const sigBuf = Buffer.from(signature);
-        const expBuf = Buffer.from(expected);
-        if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
-          return new Response("Invalid signature", { status: 401 });
-        }
+        const auth = await verifyCronSignature(
+          request,
+          process.env.LAUNCH_CRON_SECRET,
+          "x-launch-signature",
+        );
+        if (!auth.ok) return new Response(auth.message, { status: auth.status });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

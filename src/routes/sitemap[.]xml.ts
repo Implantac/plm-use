@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
+// Só rotas públicas entram aqui. As telas em src/routes/_authenticated.* exigem
+// sessão (o layout devolve "Autenticando..." e redireciona para /login), então
+// anunciá-las só entrega ruído de indexação e URLs que respondem placeholder a
+// crawlers. Ao criar uma rota pública nova (landing, termos, planos), adicione-a
+// em `entries` abaixo.
 const BASE_URL = "https://usemoda.ai"; // Placeholder URL
 
 interface SitemapEntry {
@@ -14,12 +19,11 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        // `/` redireciona para /dashboard (rota autenticada), então não é conteúdo
+        // público indexável — listá-lo só cria soft-404. Sobra /login como a única
+        // superfície pública real até existir uma landing.
         const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/login", changefreq: "monthly", priority: "0.5" },
-          { path: "/dashboard", changefreq: "daily", priority: "0.8" },
-          { path: "/collections", changefreq: "daily", priority: "0.8" },
-          { path: "/development", changefreq: "daily", priority: "0.8" },
         ];
 
         const urls = entries.map((e) =>
