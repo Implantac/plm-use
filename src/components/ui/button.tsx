@@ -9,7 +9,11 @@ const buttonVariants = cva(
     "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium cursor-pointer select-none",
     "transition-[background,color,box-shadow,filter,transform] duration-150 ease-out",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-    "disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:filter-none",
+    "disabled:pointer-events-none disabled:cursor-not-allowed disabled:shadow-none disabled:filter-none",
+    // Estado desabilitado NÃO usa opacity:50 — meio-transparente derruba o
+    // contraste do texto (axe/wcag2aa flagra em botão de submit sob loading).
+    // Superfície neutra + foreground opaco mantém a affordance de "inativo".
+    "disabled:bg-muted disabled:text-muted-foreground",
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
     "active:translate-y-px",
   ].join(" "),

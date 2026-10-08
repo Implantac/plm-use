@@ -16,7 +16,11 @@ const fieldMessageVariants = cva(
     variants: {
       variant: {
         helper: "text-muted-foreground/80",
-        error: "text-destructive",
+        // text-danger-text (não text-destructive): --destructive é a cor de
+        // *background* dos botões; como texto pequeno sobre superfície escura
+        // fica em ~3.3–4.2:1 e reprova WCAG AA. --danger-text é a variante
+        // legível (≥5.4:1) definida em styles.css.
+        error: "text-danger-text",
         success: "text-emerald-400",
         warning: "text-amber-400",
         info: "text-primary",
@@ -37,8 +41,7 @@ const ICONS = {
 } as const;
 
 export interface FieldMessageProps
-  extends React.HTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof fieldMessageVariants> {
+  extends React.HTMLAttributes<HTMLParagraphElement>, VariantProps<typeof fieldMessageVariants> {
   hideIcon?: boolean;
 }
 
