@@ -9,3 +9,4 @@ routeTree.gen.ts
 vendor/
 *.min.js
 *.min.css
+src/integrations/supabase/types.ts
