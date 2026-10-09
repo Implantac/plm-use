@@ -126,7 +126,7 @@ function CollectionsPage() {
   return (
     <ModuleLayout
       title="Coleções"
-      subtitle="Planeje metas financeiras, mix, margem, ciclo, ROI e curva ABC de cada coleção."
+      subtitle="Planeje metas financeiras, mix, margem, ciclo, ROI e curva ABC de cada coleção. Coleções de exemplo trazem KPIs de demonstração (★ no comparativo); coleções criadas por você mostram “—” até a integração ERP/BI."
       version="Strategy v2.0"
       searchPlaceholder="Buscar coleção, marca ou temporada"
       onAdd={() => handleOpenDialog()}
