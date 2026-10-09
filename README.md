@@ -49,7 +49,11 @@ npm run dev              # http://localhost:8080
 
 ### Variáveis de ambiente
 
-Todas documentadas em `.env.example`. Dois pontos que causam erro em produção:
+Todas documentadas em `.env.example`. Atenção ao dono do `.env`: o arquivo no
+repo é mantido pelo **Lovable Cloud** (versionado de propósito, apenas chaves
+públicas — o build publicado as lê). Para segredos locais de servidor
+(`*_CRON_SECRET` etc.) use `.env.local`, que está fora do Git; nunca edite o
+`.env` versionado para "testar". Dois pontos que causam erro em produção:
 
 - **`VITE_*` precisa espelhar `SUPABASE_*`.** O cliente lê `VITE_SUPABASE_URL` e
   `VITE_SUPABASE_PUBLISHABLE_KEY`; o servidor lê `SUPABASE_URL` e

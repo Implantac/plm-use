@@ -31,9 +31,12 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment — nunca versionar. Ver .env.example para o template.
-# Se um segredo já foi commitado, ignorá-lo NÃO remove o histórico:
-# é preciso rotacionar a chave.
+# Environment. Contrato com o Lovable Cloud (ver AGENTS.md): o .env do repo é
+# DELES — versionado, só chaves públicas (URL/publishable), lido pelo build
+# publicado. Nunca adicionar segredo de servidor a ele; .env.local guarda os
+# segredos locais (fora do Git). Segredo que entrou no histórico não sai com
+# ignore — rotacionar é a única correção.
+.env.local
 .env.*
 !.env.example
 

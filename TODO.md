@@ -6,7 +6,9 @@
 - [x] P0 de segurança: `/api/public/cron/abc-classify` trocou a publishable key
       por HMAC-SHA256 (`x-abc-signature` / `ABC_CRON_SECRET`); helper compartilhado
       em `src/lib/api/cron-auth.server.ts` com 8 testes de regressão.
-- [x] `.env` fora do Git + `.env.example` documentado.
+- [x] `.env` fora do Git + `.env.example` documentado. _(09/10: o Lovable passou a
+      versionar o `.env` público dele — contrato em `AGENTS.md`; segredos locais
+      de servidor vivem em `.env.local`, que continua ignorado.)_
 - [x] Guard `beforeLoad` (browser-only) no layout `_authenticated`.
 - [x] `robots.txt`/`sitemap.xml` restritos ao que é público.
 - [x] `scripts/security-report.js` consertado; `security-report.md` fora do Git.
