@@ -125,6 +125,22 @@ export function useLooks(): Look[] {
   );
 }
 
+// API de snapshot para o creative-sync (mesma forma que os stores vizinhos).
+export function listLooks(): Look[] {
+  return looks;
+}
+
+export function subscribeLooks(l: () => void) {
+  listeners.add(l);
+  return () => listeners.delete(l);
+}
+
+// Repositor de hidratação (creative-sync) — ver colors/store.ts.
+export function replaceAllLooks(next: Look[]) {
+  looks = next;
+  emit();
+}
+
 import { emitLocalEvent } from "@/lib/local-events/store";
 
 export function upsertLook(look: Look) {

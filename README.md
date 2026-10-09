@@ -203,6 +203,29 @@ alvo de uptime externo. Alertas de negócio do cron = consultar `app_cron_runs`.
   "Allow new sign ups" do painel Auth — mantenha-o desligado; usuários entram por
   convite do admin (Admin → Usuários).
 
+### Módulos criativos: persistência (P0-1, fase 1)
+
+`colors`, `prints`, `looks`, `display`, `measurements` e os filtros salvos do
+`collection-map` **deixaram de ser voláteis**: `src/lib/creative-sync.ts` espelha
+cada store numa tabela (`color_palettes`, `print_assets`, `looks`,
+`display_boards`, `measurement_charts`, `collection_map_filters`) no mesmo padrão
+de `cloud-sync.ts` — hidrata ao logar, empurra snapshot debounced (800 ms) a cada
+mudança, poda linhas excluídas e usa realtime para manter abas/dispositivos em
+sincronia. Chave de upsert: `external_key` (o id do store), então os seeds
+("pal-01"…) viram linhas na primeira edição sem duplicar.
+
+Requisito: aplicar a migration — `supabase db push` cria as tabelas + RLS +
+realtime. Enquanto ela não estiver aplicada, o sync falha silencioso no console
+(`[creative-sync] hidratação … indisponível`) e a UI funciona como antes.
+Depois do push, regenere os tipos:
+`supabase gen types typescript --local > src/integrations/supabase/types.ts`
+(hoje `creative-sync.ts` usa um cliente tipado à mão para as tabelas novas).
+
+O que ainda **não** é persistido (decisão pendente, fase 2): a matriz de
+coleção em si (o store não tem mutators — é catálogo estático) e o catálogo de
+referências do display. A normalização dos jsonb (`colors`, `items`, `points`,
+`grade`…) para BI/ERP é item próprio no `TODO.md`.
+
 ---
 
 ## Licença

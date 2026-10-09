@@ -13,6 +13,7 @@ import { useRecentRoutes } from "@/hooks/use-recent-routes";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { usePCPCloudSync } from "@/lib/pcp/sync";
 import { useModulesCloudSync } from "@/lib/cloud-sync";
+import { useCreativeCloudSync } from "@/lib/creative-sync";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
@@ -92,6 +93,7 @@ function AuthenticatedLayout() {
   const navigate = useNavigate();
   usePCPCloudSync(isAuthenticated);
   useModulesCloudSync(isAuthenticated);
+  useCreativeCloudSync(isAuthenticated);
 
   // Fallback do guard: em carga direta (deep link / F5) o beforeLoad acima não
   // reexecuta após a hidratação, então este efeito cobre o caso em que a sessão

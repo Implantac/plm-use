@@ -224,6 +224,13 @@ export function subscribe(l: Listener) {
   return () => listeners.delete(l);
 }
 
+// Repositor de hidratação (creative-sync): substitui o snapshot inteiro sem
+// emitir eventos de auditoria locais — quem chama é o sync, não o usuário.
+export function replaceAllPalettes(next: ColorPalette[]) {
+  palettes = next;
+  listeners.forEach((l) => l());
+}
+
 // Contrast helper — returns black or white for readable label on a swatch.
 export function readableOn(hex: string): string {
   const h = hex.replace("#", "");

@@ -229,6 +229,16 @@ export function subscribeFilters(l: () => void) {
   return () => listeners.delete(l);
 }
 
+// Repositor de hidratação (creative-sync): filtros saem do banco; o
+// localStorage vira cache de sessão (fonte da verdade passa a ser a tabela).
+export function replaceAllFilters(next: SavedFilter[]) {
+  filters = next;
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(LS_KEY, JSON.stringify(filters));
+  }
+  listeners.forEach((l) => l());
+}
+
 // Helpers
 export function cellTotal(cell: MatrixCell): number {
   return Object.values(cell.grade).reduce((s, n) => s + (n ?? 0), 0);

@@ -256,3 +256,9 @@ export function subscribe(l: Listener) {
   listeners.add(l);
   return () => listeners.delete(l);
 }
+
+// Repositor de hidratação (creative-sync) — ver colors/store.ts.
+export function replaceAllPrints(next: PrintAsset[]) {
+  prints = next;
+  listeners.forEach((l) => l());
+}
