@@ -12,3 +12,5 @@
 - Arquivos gerados não se editam: `src/routeTree.gen.ts`, `src/integrations/supabase/client.ts|types.ts`. Rota nova = registrar em `src/lib/nav/routes.ts` (com `icon`; ver `src/lib/nav/routes.test.ts` — ele quebra o build na divergência).
 - Migrations novas só em `supabase/migrations/` com timestamp (padrão das 52 existentes; trilha Drizzle abandonada); nunca embutir segredo em migration/seed — segredos vivem em Cloud Secrets/`app_cron_config`.
 - Dependências: editar `package.json` exige regenerar `package-lock.json` no mesmo commit (a CI tolera drift com fallback, mas o registro é o par).
+
+- O `.env` gerado pelo Lovable Cloud é versionado (só chaves públicas), porque o build publicado lê as variáveis VITE_ dele; ignorá-lo deixa o site publicado sem conexão com o backend.
