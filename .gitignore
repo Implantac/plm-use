@@ -44,3 +44,7 @@ security-report.md
 # Screenshots de E2E são artefatos de execução — o run regrava os 26 PNGs
 tests/e2e/screenshots/
 __pycache__/
+
+# venv do runner e2e (scripts/run-e2e.sh)
+.venv-e2e/
+test-results/

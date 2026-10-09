@@ -16,6 +16,7 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "test:e2e": "scripts/run-e2e.sh",
     "security-scan": "node scripts/security-report.js"
   },
   "dependencies": {

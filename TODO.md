@@ -70,11 +70,21 @@
 - [ ] Abandonar a trilha Drizzle (schema.ts vazio; 51 migrations SQL no padrão).
 - [ ] Primeiro adapter ERP real (o atual devolve `Math.random()`).
 
-## Próximo — industrializar (Sprint 3)
+## Industrializar (Sprint 3) — feito 09/10
 
-- [ ] Portar os 6 specs Playwright/Python para o runner do projeto (ou manter
-      como job de staging no CI) e remover o duplo runner.
-- [ ] Unificar package manager: `packageManager` no package.json quando o CI
-      estiver verde (bun é o que o Lovable usa; hoje npm está consistente).
-- [ ] Plano de desacoplamento do Lovable (gateway de IA, OAuth `cloud-auth-js`).
-- [ ] Avaliar preset `node-server`/`docker` para oferta on-premise.
+- [x] Runner E2E único: `scripts/run-e2e.sh` (+ `npm run test:e2e`) assume
+      venv/chromium/health-check e roda os 6 specs; na CI é job opt-in
+      `e2e-staging` via `workflow_dispatch` com `PLM_E2E_BASE` (PR não depende
+      de ambiente Supabase). Verificado rodando o script inteiro (6/6, exit 0).
+- [x] Package manager: **sem `packageManager` pin** — decisão do dono
+      (09/10): o build da plataforma é bun/Lovable e o campo podia contrariá-lo.
+      `package-lock.json` segue sendo o registro da CI (com fallback
+      `npm install` no step de install para tolerar drift dos commits do bot).
+- [x] ~~Plano de desacoplamento do Lovable~~ **retirado por decisão do dono**:
+      o sistema permanece no Lovable; push na `main` do GitHub é o elo oficial
+      (sync bidirecional já ativo — 1100+ commits do bot). No lugar do plano:
+      `docs/github-lovable-sync.md` (regras de convivência + loop de trabalho)
+      e as convenções gravadas no `AGENTS.md` para o agente do editor.
+- [x] ~~Preset on-premise (`node-server`/`docker`)~~ **não seguir**: a trilha
+      auto-hospedada contraria a decisão acima; análise técnica arquivada na
+      conversa da sessão de 09/10.

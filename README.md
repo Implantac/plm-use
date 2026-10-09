@@ -33,6 +33,12 @@ Pesquisa → Coleção → Criação → Produto → Desenvolvimento → Engenha
 Requisitos: **Node ≥ 22.12** (o código usa APIs que exigem essa versão — com
 Node 20 o `npm install` emite `EBADENGINE`) e npm ou bun.
 
+> **Onde isto roda:** o deploy é o **Lovable**, conectado a este repo com sync
+> bidirecional na `main` — cada push na `main` entra no projeto e é redeployado;
+> cada edição no editor volta como commit do bot. Antes de forçar qualquer
+> história no Git, leia `docs/github-lovable-sync.md` (renomear repo,
+> force-push e branch ≠ `main` quebram o elo).
+
 ```bash
 git clone https://github.com/Implantac/plm-use.git
 cd plm-use
@@ -76,6 +82,7 @@ supabase db push
 | `npm run test`          | Testes unitários (Vitest)                            |
 | `npm run lint`          | ESLint                                               |
 | `npm run format`        | Prettier (escrita)                                   |
+| `npm run test:e2e`      | Os 6 specs Playwright/Python (`scripts/run-e2e.sh`)  |
 | `npm run security-scan` | Gera `security-report.md` (auditoria + lint + tipos) |
 
 > **Memória no build:** o empacotamento final do Nitro passa de 1,3 GB de heap.
@@ -84,15 +91,20 @@ supabase db push
 
 ### Testes E2E
 
-Os specs em `tests/e2e/*.spec.py` são Playwright em Python e exigem configuração
-própria (diferente do Vitest). Eles cobrem contratos de acessibilidade
-(`role="alert"`, `aria-live`, foco após validação) e esperam o app em
-`http://localhost:8080`:
+Os specs em `tests/e2e/*.spec.py` são Playwright em Python (cobrem contratos de
+acessibilidade: `role="alert"`, `aria-live`, foco pós-validação). O runner
+único é `scripts/run-e2e.sh` — cria o venv (`.venv-e2e/`), instala
+playwright+chromium, espera o `/api/health` do alvo e roda os 6 specs:
 
 ```bash
-pip install playwright && playwright install chromium
-python tests/e2e/field-message.aria-live.spec.py
+npm run dev &                              # ou aponte p/ outro ambiente
+PLM_E2E_BASE=http://localhost:8080 npm run test:e2e
 ```
+
+Na CI eles **não** rodam em PR (exigem ambiente com Supabase real): o job
+`e2e-staging` dispara via _Actions → Run workflow_ com a URL do staging como
+input. Specs ligados a sessão gerenciada (2 dos 6) se auto-SKIPam sem sessão —
+SKIP não falha o build, por projeto.
 
 ---
 

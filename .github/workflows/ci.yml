@@ -4,9 +4,13 @@
 # O `prettier --check` vem primeiro porque erros de estilo dominavam o eslint
 # (todos com --fix disponível); separá-los dá sinais melhores no PR.
 #
-# E2E (tests/e2e/*.spec.py, Playwright/Python) não roda aqui: precisa de um
-# servidor com env Supabase e chromium. Ficou planejado para o runner de
-# staging quando o ambiente existir (ver TODO "staging").
+# E2E (tests/e2e/*.spec.py, Playwright/Python) não roda em PR: precisa de um
+# ambiente com Supabase real. É job próprio, disparado à mão (workflow_dispatch)
+# contra a URL de staging — ver job e2e-staging e scripts/run-e2e.sh.
+#
+# Contexto (docs/github-lovable-sync.md): o repo tem sync bidirecional com o
+# Lovable na main. Esta CI corre também nos commits do bot (funil de qualidade
+# para o editor) e NUNCA faz deploy — deploy é só o Lovable, via push na main.
 
 name: CI
 
@@ -14,6 +18,12 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "URL do ambiente a testar (staging)"
+        required: true
+        default: "https://staging.usemoda.ai"
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -33,8 +43,12 @@ jobs:
           node-version: "22.16" # >=22.12 exigido pelo wrapper Lovable (package.json engines)
           cache: npm
 
-      - name: Install (npm ci — lock é o de registro do package-lock.json)
-        run: npm ci
+      - name: Install (lock do npm é registro, não dogma)
+        # npm ci primeiro (determinístico); cai para `npm install` se o lock
+        # divergiu — o sync do Lovable edita package.json via bun e o
+        # package-lock nem sempre acompanha. Vermelho por lock velho polui o
+        # histórico do main; regenerar o lock é tarefa do próximo lote nosso.
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 
       - name: Prettier (estilo)
         run: npx prettier --check .
@@ -50,3 +64,23 @@ jobs:
 
       - name: Build (vite + nitro, preset cloudflare-module)
         run: npm run build
+
+  # Runner único dos 6 specs Playwright (Sprint 3): o script assume venv,
+  # chromium e health-check; o job só fornece a URL do ambiente. `environment`
+  # dá proteção de aprovação quando o env "staging" existir no repo.
+  e2e-staging:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: staging
+      url: ${{ inputs.base_url }}
+    env:
+      PLM_E2E_BASE: ${{ inputs.base_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: E2E (scripts/run-e2e.sh)
+        run: bash scripts/run-e2e.sh
