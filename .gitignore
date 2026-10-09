@@ -34,7 +34,6 @@ dist-ssr
 # Environment — nunca versionar. Ver .env.example para o template.
 # Se um segredo já foi commitado, ignorá-lo NÃO remove o histórico:
 # é preciso rotacionar a chave.
-.env
 .env.*
 !.env.example
 
