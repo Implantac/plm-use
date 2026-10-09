@@ -134,17 +134,20 @@ burlada:
 
 - **Leia `AGENTS.md`** antes de alterar fluxos de PCP ou IA: são decisões
   arquiteturais registradas com o motivo.
-- **Rotas novas** devem ser registradas em `src/lib/nav/routes.ts`. A navegação
-  precisa sair de uma fonte única — hoje ainda há um array declarado dentro de
-  `_authenticated.tsx` que precisa convergir para lá.
+- **Rotas novas** devem ser registradas em `src/lib/nav/routes.ts` — a sidebar,
+  o breadcrumb, a busca global e os ícones são todos gerados da registry
+  (`src/lib/nav/icons.ts`). `src/lib/nav/routes.test.ts` quebra o build se uma
+  rota autenticada existir no disco sem entrada na registry (exceções
+  deliberadas têm de ser declaradas lá). O ícone é string-key na registry; o
+  componente mora só em `icons.ts`.
 - **Crons novos** em `/api/public/*` precisam de assinatura HMAC com segredo
   próprio, no padrão de `launch-performance.ts`. Endpoint público sem HMAC e
   com escrita privilegiada é vulnerabilidade, não atalho.
 - **`routeTree.gen.ts` é gerado** pelo TanStack Router — não edite à mão.
-- **Módulos ainda em memória.** Vários stores (`collections`, `colors`,
-  `prints`, `looks`, `measurements`, `display`) ainda usam dados de seed
-  embutidos, sem persistência coletiva. Os comentários no código marcam esses
-  pontos.
+- **Módulos criativos persistem via `creative-sync`** (ver
+  "Módulos criativos: persistência" em Deploy). A coleção em si
+  (`collections`) segue catálogo de seed estático — decisão de produto, não
+  bug.
 
 ---
 

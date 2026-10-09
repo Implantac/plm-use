@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as AuditRouteImport } from './routes/audit'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -19,6 +18,7 @@ import { Route as AuthenticatedAiAgentsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAiCenterRouteImport } from './routes/_authenticated.ai-center'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated.analytics'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
+import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated.audit'
 import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
 import { Route as AuthenticatedCollectionMapRouteImport } from './routes/_authenticated.collection-map'
 import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenticated.collections'
@@ -69,11 +69,6 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuditRoute = AuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -107,6 +102,11 @@ const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
 const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedCadRoute = AuthenticatedCadRouteImport.update({
@@ -326,7 +326,6 @@ const ApiPublicCronLaunchPerformanceRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -334,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit': typeof AuthenticatedAuditRoute
   '/cad': typeof AuthenticatedCadRoute
   '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
@@ -377,7 +377,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -385,6 +384,7 @@ export interface FileRoutesByTo {
   '/ai-center': typeof AuthenticatedAiCenterRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit': typeof AuthenticatedAuditRoute
   '/cad': typeof AuthenticatedCadRoute
   '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
@@ -430,7 +430,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/audit': typeof AuditRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -438,6 +437,7 @@ export interface FileRoutesById {
   '/_authenticated/ai-center': typeof AuthenticatedAiCenterRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
+  '/_authenticated/audit': typeof AuthenticatedAuditRoute
   '/_authenticated/cad': typeof AuthenticatedCadRoute
   '/_authenticated/collection-map': typeof AuthenticatedCollectionMapRoute
   '/_authenticated/collections': typeof AuthenticatedCollectionsRouteWithChildren
@@ -483,7 +483,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/audit'
     | '/login'
     | '/reset-password'
     | '/sitemap.xml'
@@ -491,6 +490,7 @@ export interface FileRouteTypes {
     | '/ai-center'
     | '/analytics'
     | '/approvals'
+    | '/audit'
     | '/cad'
     | '/collection-map'
     | '/collections'
@@ -534,7 +534,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/audit'
     | '/login'
     | '/reset-password'
     | '/sitemap.xml'
@@ -542,6 +541,7 @@ export interface FileRouteTypes {
     | '/ai-center'
     | '/analytics'
     | '/approvals'
+    | '/audit'
     | '/cad'
     | '/collection-map'
     | '/collections'
@@ -586,7 +586,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/audit'
     | '/login'
     | '/reset-password'
     | '/sitemap.xml'
@@ -594,6 +593,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ai-center'
     | '/_authenticated/analytics'
     | '/_authenticated/approvals'
+    | '/_authenticated/audit'
     | '/_authenticated/cad'
     | '/_authenticated/collection-map'
     | '/_authenticated/collections'
@@ -639,7 +639,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  AuditRoute: typeof AuditRoute
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -663,13 +662,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/audit': {
-      id: '/audit'
-      path: '/audit'
-      fullPath: '/audit'
-      preLoaderRoute: typeof AuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -719,6 +711,13 @@ declare module '@tanstack/react-router' {
       path: '/approvals'
       fullPath: '/approvals'
       preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/audit': {
+      id: '/_authenticated/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuthenticatedAuditRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/cad': {
@@ -1037,6 +1036,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAiCenterRoute: typeof AuthenticatedAiCenterRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
+  AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
   AuthenticatedCadRoute: typeof AuthenticatedCadRoute
   AuthenticatedCollectionMapRoute: typeof AuthenticatedCollectionMapRoute
   AuthenticatedCollectionsRoute: typeof AuthenticatedCollectionsRouteWithChildren
@@ -1078,6 +1078,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAiCenterRoute: AuthenticatedAiCenterRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
+  AuthenticatedAuditRoute: AuthenticatedAuditRoute,
   AuthenticatedCadRoute: AuthenticatedCadRoute,
   AuthenticatedCollectionMapRoute: AuthenticatedCollectionMapRoute,
   AuthenticatedCollectionsRoute: AuthenticatedCollectionsRouteWithChildren,
@@ -1121,7 +1122,6 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  AuditRoute: AuditRoute,
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

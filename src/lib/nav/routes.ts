@@ -11,9 +11,44 @@ export type QuickAction = {
   event: string;
 };
 
+export type NavIcon =
+  | "layout-dashboard"
+  | "workflow"
+  | "shield-check"
+  | "sparkles"
+  | "palette"
+  | "file-image"
+  | "layout-template"
+  | "table"
+  | "layers"
+  | "fingerprint"
+  | "scissors"
+  | "flask-conical"
+  | "file-text"
+  | "ruler"
+  | "pen"
+  | "package"
+  | "network"
+  | "calendar"
+  | "box"
+  | "truck"
+  | "store"
+  | "megaphone"
+  | "shopping"
+  | "rocket"
+  | "bot"
+  | "chart"
+  | "globe"
+  | "lock"
+  | "users"
+  | "clipboard"
+  | "messages-square"
+  | "dollar";
+
 export type RouteMeta = {
   path: string;
   label: string;
+  icon: NavIcon;
   group:
     | "geral"
     | "plm-criacao"
@@ -45,13 +80,28 @@ export const NAV_GROUPS: Record<
 
 export const ROUTE_REGISTRY: RouteMeta[] = [
   // Geral
-  { path: "/dashboard", label: "Dashboard", group: "geral" },
-  { path: "/feed", label: "Colaboração", group: "geral" },
+  { path: "/dashboard", icon: "layout-dashboard", label: "Dashboard", group: "geral" },
+  { path: "/feed", icon: "messages-square", label: "Colaboração", group: "geral" },
+  { path: "/flow", label: "Fluxo do Produto", group: "geral", icon: "workflow" },
+  {
+    path: "/approvals",
+    label: "Aprovações",
+    group: "geral",
+    icon: "shield-check",
+    crumbs: ["Geral"],
+  },
 
   // PLM · Pesquisa & Criação
-  { path: "/research", label: "Pesquisa", group: "plm-criacao", crumbs: ["PLM", "Criação"] },
+  {
+    path: "/research",
+    icon: "palette",
+    label: "Pesquisa",
+    group: "plm-criacao",
+    crumbs: ["PLM", "Criação"],
+  },
   {
     path: "/colors",
+    icon: "palette",
     label: "Cartela de Cores",
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
@@ -59,6 +109,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   },
   {
     path: "/prints",
+    icon: "file-image",
     label: "Cartela de Estampas",
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
@@ -66,12 +117,14 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   },
   {
     path: "/display",
+    icon: "clipboard",
     label: "Painel de Displayagem",
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
   },
   {
     path: "/looks",
+    icon: "layout-template",
     label: "Coordenados · Looks",
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
@@ -81,6 +134,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   // PLM · Coleção
   {
     path: "/collections",
+    icon: "layers",
     label: "Coleções",
     group: "plm-colecao",
     crumbs: ["PLM", "Coleção"],
@@ -88,12 +142,14 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   },
   {
     path: "/collection-map",
+    icon: "table",
     label: "Mapa de Coleção",
     group: "plm-colecao",
     crumbs: ["PLM", "Coleção"],
   },
   {
     path: "/references",
+    icon: "fingerprint",
     label: "Núcleo · Referências",
     group: "plm-colecao",
     crumbs: ["PLM", "Coleção"],
@@ -103,12 +159,14 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   // PLM · Engenharia
   {
     path: "/development",
+    icon: "scissors",
     label: "Desenvolvimento",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
   },
   {
     path: "/prototypes",
+    icon: "flask-conical",
     label: "Protótipos",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
@@ -116,60 +174,125 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   },
   {
     path: "/tech-sheet",
+    icon: "file-text",
     label: "Ficha Técnica",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
   },
   {
     path: "/measurements",
+    icon: "ruler",
     label: "Tabela de Medidas",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
   },
   {
     path: "/pieces-report",
+    icon: "file-text",
     label: "Relatório de Peças",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
   },
   {
+    path: "/official-models",
+    label: "Modelos Oficiais",
+    group: "plm-engenharia",
+    icon: "ruler",
+    crumbs: ["PLM", "Engenharia"],
+  },
+
+  {
     path: "/cad",
+    icon: "pen",
     label: "CAD & Modelagem",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
   },
 
   // PCP
-  { path: "/production", label: "Produção", group: "pcp", crumbs: ["PCP"] },
-  { path: "/route-engineering", label: "Engenharia de Rotas", group: "pcp", crumbs: ["PCP"] },
-  { path: "/planner", label: "Planner", group: "pcp", crumbs: ["PCP"] },
-  { path: "/quality", label: "Qualidade", group: "pcp", crumbs: ["PCP"] },
+  { path: "/production", icon: "package", label: "Produção", group: "pcp", crumbs: ["PCP"] },
+  {
+    path: "/route-engineering",
+    icon: "network",
+    label: "Engenharia de Rotas",
+    group: "pcp",
+    crumbs: ["PCP"],
+  },
+  { path: "/planner", icon: "calendar", label: "Planner", group: "pcp", crumbs: ["PCP"] },
+  { path: "/quality", icon: "shield-check", label: "Qualidade", group: "pcp", crumbs: ["PCP"] },
 
   // Supply
-  { path: "/inventory", label: "Almoxarifado", group: "supply", crumbs: ["Supply"] },
-  { path: "/suppliers", label: "Fornecedores", group: "supply", crumbs: ["Supply"] },
-  { path: "/supplier-portal", label: "Portal do Fornecedor", group: "supply", crumbs: ["Supply"] },
+  { path: "/inventory", icon: "box", label: "Almoxarifado", group: "supply", crumbs: ["Supply"] },
+  { path: "/suppliers", icon: "truck", label: "Fornecedores", group: "supply", crumbs: ["Supply"] },
+  {
+    path: "/supplier-portal",
+    icon: "store",
+    label: "Portal do Fornecedor",
+    group: "supply",
+    crumbs: ["Supply"],
+  },
 
   // GTM
-  { path: "/marketing", label: "Marketing", group: "gtm", crumbs: ["GTM"] },
-  { path: "/commercial", label: "Comercial", group: "gtm", crumbs: ["GTM"] },
-  { path: "/influencers", label: "Influencers", group: "gtm", crumbs: ["GTM"] },
+  { path: "/launch", label: "Lançamento", group: "gtm", icon: "rocket", crumbs: ["GTM"] },
+  { path: "/showroom", label: "Showroom", group: "gtm", icon: "store", crumbs: ["GTM"] },
+  { path: "/marketing", icon: "megaphone", label: "Marketing", group: "gtm", crumbs: ["GTM"] },
+  { path: "/commercial", icon: "shopping", label: "Comercial", group: "gtm", crumbs: ["GTM"] },
+  { path: "/influencers", icon: "users", label: "Influencers", group: "gtm", crumbs: ["GTM"] },
 
   // Insights & IA
-  { path: "/analytics", label: "BI Executivo", group: "insights", crumbs: ["Insights"] },
-  { path: "/financial", label: "Financeiro", group: "insights", crumbs: ["Insights"] },
+  {
+    path: "/analytics",
+    icon: "chart",
+    label: "BI Executivo",
+    group: "insights",
+    crumbs: ["Insights"],
+  },
+  {
+    path: "/financial",
+    icon: "dollar",
+    label: "Financeiro",
+    group: "insights",
+    crumbs: ["Insights"],
+  },
   {
     path: "/ai-center",
+    icon: "sparkles",
     label: "AI Product Studio",
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
   },
-  { path: "/ai-agents", label: "AI Agents", group: "insights", crumbs: ["Insights"] },
-  { path: "/digital-twin", label: "Digital Twin", group: "insights", crumbs: ["Insights"] },
+  { path: "/ai-agents", icon: "bot", label: "AI Agents", group: "insights", crumbs: ["Insights"] },
+  {
+    path: "/digital-twin",
+    icon: "globe",
+    label: "Digital Twin",
+    group: "insights",
+    crumbs: ["Insights"],
+  },
 
   // Admin
-  { path: "/security", label: "Segurança", group: "admin", crumbs: ["Administração"] },
-  { path: "/admin/users", label: "Admin · Usuários", group: "admin", crumbs: ["Administração"] },
+  {
+    path: "/security",
+    icon: "lock",
+    label: "Segurança",
+    group: "admin",
+    crumbs: ["Administração"],
+  },
+
+  {
+    path: "/audit",
+    label: "Auditoria interna",
+    group: "admin",
+    icon: "clipboard",
+    crumbs: ["Administração"],
+  },
+  {
+    path: "/admin/users",
+    icon: "users",
+    label: "Admin · Usuários",
+    group: "admin",
+    crumbs: ["Administração"],
+  },
 ];
 
 export function findRouteMeta(pathname: string): RouteMeta | undefined {

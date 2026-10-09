@@ -11,7 +11,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/audit")({
+export const Route = createFileRoute("/_authenticated/audit")({
   head: () => ({
     meta: [
       { title: "Audit | USE MODA PLM AI" },

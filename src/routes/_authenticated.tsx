@@ -14,48 +14,15 @@ import { useAuth, signOut } from "@/hooks/use-auth";
 import { usePCPCloudSync } from "@/lib/pcp/sync";
 import { useModulesCloudSync } from "@/lib/cloud-sync";
 import { useCreativeCloudSync } from "@/lib/creative-sync";
+import { NAV_GROUPS, ROUTE_REGISTRY } from "@/lib/nav/routes";
+import { NAV_ICON_COMPONENTS } from "@/lib/nav/icons";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { PresenceBar } from "@/components/presence/PresenceBar";
 import { ActivityFeedButton } from "@/components/activity/ActivityFeedButton";
 import { useEffect, useMemo, useState } from "react";
-import {
-  LayoutDashboard,
-  ChevronDown,
-  Zap,
-  BarChart3,
-  Layers,
-  Palette,
-  Scissors,
-  FileText,
-  PenTool,
-  Package,
-  Truck,
-  Users,
-  Megaphone,
-  DollarSign,
-  Box,
-  MessageSquare,
-  Sparkles,
-  ShoppingBag,
-  Globe,
-  ShieldCheck,
-  LockKeyhole,
-  Moon,
-  Sun,
-  Heart,
-  Bot,
-  Fingerprint,
-  FileImage,
-  LayoutTemplate,
-  Grid3x3,
-  Shirt,
-  Ruler,
-  ClipboardList,
-  Star,
-  Workflow,
-} from "lucide-react";
+import { ChevronDown, Moon, ShieldCheck, Sparkles, Star, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -119,101 +86,24 @@ function AuthenticatedLayout() {
     navigate({ to: "/login" });
   };
 
-  const navSections = useMemo(
-    () => [
-      {
-        id: "inicio",
-        label: "Início",
-        items: [
-          { icon: <LayoutDashboard className="w-4 h-4" />, label: "Dashboard", href: "/dashboard" },
-          { icon: <Workflow className="w-4 h-4" />, label: "Fluxo do Produto", href: "/flow" },
-          { icon: <ShieldCheck className="w-4 h-4" />, label: "Aprovações", href: "/approvals" },
-        ],
-      },
-      {
-        id: "criar",
-        label: "Criar",
-        items: [
-          {
-            icon: <Sparkles className="w-4 h-4" />,
-            label: "AI Product Studio",
-            href: "/ai-center",
-          },
-          {
-            icon: <Palette className="w-4 h-4" />,
-            label: "Pesquisa & Tendências",
-            href: "/research",
-          },
-          { icon: <Palette className="w-4 h-4" />, label: "Cores", href: "/colors" },
-          { icon: <FileImage className="w-4 h-4" />, label: "Estampas", href: "/prints" },
-          { icon: <LayoutTemplate className="w-4 h-4" />, label: "Looks", href: "/looks" },
-        ],
-      },
-      {
-        id: "produtos",
-        label: "Produto",
-        items: [
-          { icon: <Fingerprint className="w-4 h-4" />, label: "Referências", href: "/references" },
-          {
-            icon: <Scissors className="w-4 h-4" />,
-            label: "Desenvolvimento",
-            href: "/development",
-          },
-          { icon: <PenTool className="w-4 h-4" />, label: "Modelagem", href: "/cad" },
-          { icon: <FileText className="w-4 h-4" />, label: "Ficha Técnica", href: "/tech-sheet" },
-          {
-            icon: <PenTool className="w-4 h-4" />,
-            label: "Tabelas de Medidas",
-            href: "/official-models",
-          },
-        ],
-      },
-      {
-        id: "industrial",
-        label: "Industrial",
-        items: [
-          { icon: <ShieldCheck className="w-4 h-4" />, label: "Qualidade", href: "/quality" },
-          { icon: <Package className="w-4 h-4" />, label: "Produção", href: "/production" },
-          {
-            icon: <Package className="w-4 h-4" />,
-            label: "Engenharia de Rotas",
-            href: "/route-engineering",
-          },
-          { icon: <Box className="w-4 h-4" />, label: "Inventário", href: "/inventory" },
-          { icon: <Truck className="w-4 h-4" />, label: "Fornecedores", href: "/suppliers" },
-        ],
-      },
-      {
-        id: "mercado",
-        label: "Mercado",
-        items: [
-          { icon: <Sparkles className="w-4 h-4" />, label: "Lançamento", href: "/launch" },
-          { icon: <LayoutTemplate className="w-4 h-4" />, label: "Showroom", href: "/showroom" },
-          { icon: <ShoppingBag className="w-4 h-4" />, label: "Comercial", href: "/commercial" },
-          { icon: <Megaphone className="w-4 h-4" />, label: "Marketing", href: "/marketing" },
-        ],
-      },
-      {
-        id: "inteligencia",
-        label: "Inteligência",
-        items: [
-          { icon: <Bot className="w-4 h-4" />, label: "AI Agents", href: "/ai-agents" },
-          { icon: <BarChart3 className="w-4 h-4" />, label: "BI Executivo", href: "/analytics" },
-          { icon: <Globe className="w-4 h-4" />, label: "Digital Twin", href: "/digital-twin" },
-        ],
-      },
-      {
-        id: "admin",
-        label: "Administração",
-        items: [
-          { icon: <LockKeyhole className="w-4 h-4" />, label: "Segurança", href: "/security" },
-          { icon: <Users className="w-4 h-4" />, label: "Usuários", href: "/admin/users" },
-          { icon: <ClipboardList className="w-4 h-4" />, label: "Auditoria", href: "/audit" },
-        ],
-      },
-    ],
-    [],
-  );
+  // Fonte única: a sidebar É a registry (src/lib/nav/routes.ts). Antes
+  // existia uma navSections hardcoded aqui com 28 dos 34+ caminhos — a
+  // divergência sidebar×rotas que o review apontou. Ordem dos itens = ordem
+  // na registry; rotas-vista (compare, today) ficam de fora por decisão,
+  // documentada em src/lib/nav/routes.test.ts.
+  const navSections = useMemo(() => {
+    const groups = Object.keys(NAV_GROUPS) as Array<keyof typeof NAV_GROUPS>;
+    return groups
+      .map((g) => ({
+        id: g as string,
+        label: NAV_GROUPS[g].label,
+        items: ROUTE_REGISTRY.filter((r) => r.group === g).map((r) => {
+          const Icon = NAV_ICON_COMPONENTS[r.icon];
+          return { href: r.path, label: r.label, icon: <Icon className="w-4 h-4" /> };
+        }),
+      }))
+      .filter((s) => s.items.length > 0);
+  }, []);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -233,7 +123,7 @@ function AuthenticatedLayout() {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const stored =
       typeof window !== "undefined"
-        ? window.localStorage.getItem("use-moda-sidebar-sections-v3")
+        ? window.localStorage.getItem("use-moda-sidebar-sections-v4")
         : null;
     return stored
       ? (JSON.parse(stored) as Record<string, boolean>)
@@ -256,7 +146,7 @@ function AuthenticatedLayout() {
       if (prev[activeSectionId]) return prev;
       const next = { ...prev, [activeSectionId]: true };
       if (typeof window !== "undefined") {
-        window.localStorage.setItem("use-moda-sidebar-sections-v3", JSON.stringify(next));
+        window.localStorage.setItem("use-moda-sidebar-sections-v4", JSON.stringify(next));
       }
       return next;
     });
@@ -266,7 +156,7 @@ function AuthenticatedLayout() {
     setOpenSections((prev) => {
       const next = { ...prev, [id]: !prev[id] };
       if (typeof window !== "undefined") {
-        window.localStorage.setItem("use-moda-sidebar-sections-v3", JSON.stringify(next));
+        window.localStorage.setItem("use-moda-sidebar-sections-v4", JSON.stringify(next));
       }
       return next;
     });

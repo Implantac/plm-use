@@ -43,15 +43,20 @@
       `PLM_E2E_BASE=https://staging...`.
 - [ ] `npm audit fix --force` (majors em tooling dev) — só com CI rodando uns dias.
 
-## Próximo — alinhar navegação ao produto (Sprint 1)
+## Alinhar navegação ao produto (Sprint 1) — feito 09/10
 
-- [ ] Sidebar gerada de `src/lib/nav/routes.ts` (fonte única) em vez do
-      `navSections` hardcoded (28 vs 34 caminhos).
-- [ ] Decidir exposição das 13 rotas órfãs (collections, compare, collection-map,
-      display, feed, financial, influencers, measurements, pieces-report,
-      planner, production/today, prototypes, supplier-portal).
-- [ ] Mover `/audit` (página estática interna) para fora da superfície pública.
-- [ ] Renomear seções para o ciclo do produto.
+- [x] Sidebar gerada de `src/lib/nav/routes.ts` (fonte única) — o
+      `navSections` hardcoded (28 dos 34+ caminhos) saiu; a registry ganhou as
+      6 rotas que só existiam na sidebar (flow, approvals, official-models,
+      launch, showroom, audit) e ícones mapeados (`nav/icons.ts`).
+- [x] Órfãs resolvidas com política + teste de deriva (`nav/routes.test.ts`):
+      toda rota autenticada precisa estar na registry; exceções deliberadas
+      documentadas — `compare` e `production/today` são subviews dos pais.
+- [x] `/audit` movida para baixo do layout `_authenticated` (antes era
+      pública em `src/routes/audit.tsx`; URL preservada, login obrigatório).
+- [x] Seções = ciclo do produto (`NAV_GROUPS`: Criação → Coleção → Engenharia
+      → PCP → Supply → GTM → Insights → Admin); chave do estado expandido na
+      sidebar bumpada para `v4`.
 
 ## Próximo — fechar o ciclo de persistência (Sprint 2)
 
