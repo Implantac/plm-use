@@ -68,3 +68,41 @@ export async function verifyCronSignature(
 export function signCronBody(body: string, secret: string): string {
   return createHmac("sha256", secret).update(body).digest("hex");
 }
+
+// ---------------------------------------------------------------------------
+// Rate limit dos caminhos privilegiados (service_role, fetchs ao ERP).
+// Token bucket em memória por escopo+IP. Honestidade sobre o alcance: com
+// preset cloudflare-module isto é por ISOLATE — não é proteção anti-DDoS
+// (a borda já faz isso); é proteção contra laço de agendamento mal configurado
+// e contra martelar o endpoint com assinaturas válidas vazadas (o custo por
+// requisição aceita é ordens de grandeza maior que o de rejeitar um HMAC).
+// ---------------------------------------------------------------------------
+const buckets = new Map<string, { hits: number; resetAt: number }>();
+
+export type CronRateResult = { ok: true } | { ok: false; retryAfterSec: number };
+
+export function checkCronRateLimit(
+  request: Request,
+  scope: string,
+  limit = 6,
+  windowMs = 60_000,
+  now = Date.now(),
+): CronRateResult {
+  const ip = (request.headers.get("x-forwarded-for") ?? "local").split(",")[0].trim();
+  const key = scope + ":" + ip;
+  const b = buckets.get(key);
+  if (!b || b.resetAt <= now) {
+    buckets.set(key, { hits: 1, resetAt: now + windowMs });
+    return { ok: true };
+  }
+  if (b.hits >= limit) {
+    return { ok: false, retryAfterSec: Math.max(1, Math.ceil((b.resetAt - now) / 1000)) };
+  }
+  b.hits += 1;
+  return { ok: true };
+}
+
+/** Somente para testes. */
+export function __resetCronRateLimits() {
+  buckets.clear();
+}

@@ -2,7 +2,7 @@
 // Chamado por pg_cron via net.http_post. Autenticação via HMAC-SHA256 no header
 // x-launch-signature, secret LAUNCH_CRON_SECRET. Nenhuma escrita sem verificação.
 import { createFileRoute } from "@tanstack/react-router";
-import { verifyCronSignature } from "@/lib/api/cron-auth.server";
+import { checkCronRateLimit, verifyCronSignature } from "@/lib/api/cron-auth.server";
 
 export const Route = createFileRoute("/api/public/cron/launch-performance")({
   server: {
@@ -14,6 +14,13 @@ export const Route = createFileRoute("/api/public/cron/launch-performance")({
           "x-launch-signature",
         );
         if (!auth.ok) return new Response(auth.message, { status: auth.status });
+
+        const rl = checkCronRateLimit(request, "launch-performance");
+        if (!rl.ok)
+          return new Response("Too many requests", {
+            status: 429,
+            headers: { "retry-after": String(rl.retryAfterSec) },
+          });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

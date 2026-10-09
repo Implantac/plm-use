@@ -157,9 +157,10 @@ burlada:
   com escrita privilegiada é vulnerabilidade, não atalho.
 - **`routeTree.gen.ts` é gerado** pelo TanStack Router — não edite à mão.
 - **Módulos criativos persistem via `creative-sync`** (ver
-  "Módulos criativos: persistência" em Deploy). A coleção em si
-  (`collections`) segue catálogo de seed estático — decisão de produto, não
-  bug.
+  "Módulos criativos: persistência" em Deploy): `colors`, `prints`, `looks`,
+  `display`, `measurements`, filtros do `collection-map` e a matriz de
+  coleções. Adicionar um módulo novo é uma migration + uma spec em
+  `MODULES` — não escreva persistência ad-hoc na tela.
 
 ---
 
@@ -220,10 +221,11 @@ alvo de uptime externo. Alertas de negócio do cron = consultar `app_cron_runs`.
 
 ### Módulos criativos: persistência (P0-1, fase 1)
 
-`colors`, `prints`, `looks`, `display`, `measurements` e os filtros salvos do
-`collection-map` **deixaram de ser voláteis**: `src/lib/creative-sync.ts` espelha
-cada store numa tabela (`color_palettes`, `print_assets`, `looks`,
-`display_boards`, `measurement_charts`, `collection_map_filters`) no mesmo padrão
+`colors`, `prints`, `looks`, `display`, `measurements`, os filtros salvos do
+`collection-map` e a matriz de coleções **deixaram de ser voláteis**:
+`src/lib/creative-sync.ts` espelha cada store numa tabela (`color_palettes`,
+`print_assets`, `looks`, `display_boards`, `measurement_charts`,
+`collection_map_filters`, `collections`) no mesmo padrão
 de `cloud-sync.ts` — hidrata ao logar, empurra snapshot debounced (800 ms) a cada
 mudança, poda linhas excluídas e usa realtime para manter abas/dispositivos em
 sincronia. Chave de upsert: `external_key` (o id do store), então os seeds
@@ -236,10 +238,12 @@ Depois do push, regenere os tipos:
 `supabase gen types typescript --local > src/integrations/supabase/types.ts`
 (hoje `creative-sync.ts` usa um cliente tipado à mão para as tabelas novas).
 
-O que ainda **não** é persistido (decisão pendente, fase 2): a matriz de
-coleção em si (o store não tem mutators — é catálogo estático) e o catálogo de
-referências do display. A normalização dos jsonb (`colors`, `items`, `points`,
-`grade`…) para BI/ERP é item próprio no `TODO.md`.
+As KPIs das coleções (`showroomApproval`, `avgCost`, `sellThrough`…) são
+opcionais no store: as do seed são demo, e uma coleção criada pelo usuário
+nasce sem elas — a tela exibe "—" em vez de um número inventado. Persistência
+desses valores por integração real (ERP/BI) é fase 2, item no `TODO.md`.
+A normalização dos jsonb aninhados (`colors`, `items`, `points`, `grade`…)
+para BI/ERP também é fase 2 e está listada no `TODO.md`.
 
 ---
 

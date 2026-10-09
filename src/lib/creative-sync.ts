@@ -54,6 +54,13 @@ import {
   type MeasurementPoint,
 } from "@/lib/measurements/store";
 import {
+  listCollections,
+  replaceAllCollections,
+  subscribeCollections,
+  upsertCollection,
+  type Collection,
+} from "@/lib/collections/store";
+import {
   listFilters,
   replaceAllFilters,
   subscribeFilters,
@@ -291,6 +298,68 @@ export function filterFromRow(r: QueryRow): SavedFilter {
   };
 }
 
+export function collectionToRow(c: Collection, uid: string): QueryRow {
+  return {
+    external_key: String(c.id),
+    name: c.name,
+    season: c.season ?? "",
+    year: c.year ?? 2026,
+    brand: c.brand ?? "",
+    target_revenue: c.targetRevenue ?? "",
+    target_sales: c.targetSales ?? "",
+    target_margin: c.targetMargin ?? "",
+    planned_qty: c.plannedQty ?? "",
+    planned_mix: c.plannedMix ?? 0,
+    realized_mix: c.realizedMix ?? 0,
+    progress: Math.max(0, Math.min(100, c.progress ?? 0)),
+    roi: c.roi ?? "",
+    abc: c.abc ?? "",
+    status: c.status ?? "Planejamento",
+    image: c.image ?? "",
+    showroom_approval: c.showroomApproval ?? null,
+    avg_cost: c.avgCost ?? null,
+    avg_price: c.avgPrice ?? null,
+    sell_through: c.sellThrough ?? null,
+    lead_time_dias: c.leadTimeDias ?? null,
+    created_by: uid,
+  };
+}
+export function collectionFromRow(r: QueryRow): Collection {
+  return {
+    id: numericKey(str(r.external_key)),
+    name: str(r.name),
+    season: str(r.season),
+    year: num(r.year),
+    brand: str(r.brand),
+    targetRevenue: str(r.target_revenue),
+    targetSales: str(r.target_sales),
+    targetMargin: str(r.target_margin),
+    plannedQty: str(r.planned_qty),
+    plannedMix: num(r.planned_mix),
+    realizedMix: num(r.realized_mix),
+    progress: num(r.progress),
+    roi: str(r.roi),
+    abc: str(r.abc),
+    status: str(r.status),
+    image: str(r.image),
+    showroomApproval: r.showroom_approval == null ? undefined : Number(r.showroom_approval),
+    avgCost: r.avg_cost == null ? undefined : Number(r.avg_cost),
+    avgPrice: r.avg_price == null ? undefined : Number(r.avg_price),
+    sellThrough: r.sell_through == null ? undefined : Number(r.sell_through),
+    leadTimeDias: r.lead_time_dias == null ? undefined : num(r.lead_time_dias),
+  };
+}
+
+// ids numéricos viram texto no banco; texto não-numérico (import externo) vira
+// número estável p/ o store, que usa id number como chave de React/edit.
+export function numericKey(k: string): number {
+  const n = Number(k);
+  if (k !== "" && Number.isFinite(n)) return n;
+  let h = 5381;
+  for (let i = 0; i < k.length; i++) h = (h * 33 + k.charCodeAt(i)) | 0;
+  return Math.abs(h) % 2 ** 31;
+}
+
 // ids duplicados no mesmo debounce (dois `Date.now()` na mesma ms) não podem
 // estourar o `ON CONFLICT DO UPDATE`; mantemos o último por chave.
 export function dedupeRows(rows: QueryRow[]): QueryRow[] {
@@ -355,6 +424,15 @@ const MODULES: ModuleSpec[] = [
     toRow: (e, uid) => chartToRow(e as MeasurementChart, uid),
     apply: (rows) => replaceAllCharts(rows.map(chartFromRow)),
     subscribe: subscribeCharts,
+  },
+  {
+    key: "collections",
+    table: "collections",
+    label: "as coleções",
+    list: listCollections,
+    toRow: (e, uid) => collectionToRow(e as Collection, uid),
+    apply: (rows) => replaceAllCollections(rows.map(collectionFromRow)),
+    subscribe: subscribeCollections,
   },
   {
     key: "cfilters",
@@ -431,6 +509,26 @@ async function pushModule(spec: ModuleSpec, uid: string) {
 }
 
 // ---------- Hook mestre (mesma assinatura do useModulesCloudSync) ----------
+export const __internals = {
+  pushByKey(key: string, uid: string) {
+    const m = MODULES.find((x) => x.key === key);
+    if (!m) throw new Error("spec desconhecido: " + key);
+    return pushModule(m, uid);
+  },
+  refreshByKey(key: string, force = false) {
+    const m = MODULES.find((x) => x.key === key);
+    if (!m) throw new Error("spec desconhecido: " + key);
+    return refreshModule(m, force);
+  },
+  resetSyncState() {
+    for (const k of Object.keys(hydrated)) delete hydrated[k];
+    for (const k of Object.keys(fromDb)) delete fromDb[k];
+    pendingRehydrate.clear();
+    for (const t of debouncers.values()) clearTimeout(t);
+    debouncers.clear();
+  },
+};
+
 export function useCreativeCloudSync(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;

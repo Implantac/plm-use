@@ -1,4 +1,49 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+
+type FakeTable = {
+  rows: Record<string, unknown>[];
+  calls: { kind: string; rows?: number; onConflict?: string; vals?: string[] }[];
+};
+const tables = new Map<string, FakeTable>();
+function ft(name: string): FakeTable {
+  if (!tables.has(name)) tables.set(name, { rows: [], calls: [] });
+  return tables.get(name)!;
+}
+
+vi.mock("@/integrations/supabase/client", () => ({
+  supabase: {
+    from: (t: string) => ({
+      select: () => ({
+        order: () => Promise.resolve({ data: ft(t).rows.map((r) => ({ ...r })), error: null }),
+      }),
+      upsert: (rows: Record<string, unknown>[], opts?: { onConflict?: string }) => {
+        const tab = ft(t);
+        tab.calls.push({ kind: "upsert", rows: rows.length, onConflict: opts?.onConflict });
+        for (const r of rows) {
+          const i = tab.rows.findIndex((x) => String(x.external_key) === String(r.external_key));
+          if (i === -1) tab.rows.push({ ...r, created_at: new Date().toISOString() });
+          else tab.rows[i] = { ...tab.rows[i], ...r };
+        }
+        return Promise.resolve({ error: null });
+      },
+      delete: () => ({
+        not: (_c: string, _op: string, vals: string[]) => {
+          const tab = ft(t);
+          tab.calls.push({ kind: "prune-not", vals });
+          tab.rows = tab.rows.filter((r) => vals.includes(String(r.external_key)));
+          return Promise.resolve({ error: null });
+        },
+        neq: () => {
+          const tab = ft(t);
+          tab.calls.push({ kind: "prune-all" });
+          tab.rows = [];
+          return Promise.resolve({ error: null });
+        },
+      }),
+    }),
+  },
+}));
+
 import {
   paletteToRow,
   paletteFromRow,
@@ -167,5 +212,115 @@ describe("dedupeRows (defesa do ON CONFLICT)", () => {
     ]);
     expect(out).toHaveLength(2);
     expect(out.find((r) => r.external_key === "pal-1")?.name).toBe("b");
+  });
+});
+
+// ---------- engine de sync: hidratar, empurrar, podar (client fake) ----------
+import { __internals, collectionToRow, collectionFromRow, numericKey } from "./creative-sync";
+import {
+  collectionsSeed,
+  listCollections,
+  replaceAllCollections,
+  removeCollection,
+  upsertCollection,
+} from "./collections/store";
+
+describe("creative-sync engine", () => {
+  const UID = "u-test";
+  beforeEach(() => {
+    tables.clear();
+    __internals.resetSyncState();
+    replaceAllCollections([...collectionsSeed]);
+  });
+
+  it("não escreve antes de hidratar (guarda contra apagar o estado do servidor)", async () => {
+    upsertCollection({ ...collectionsSeed[0], id: 999999, name: "fantasma" });
+    await __internals.pushByKey("collections", UID);
+    expect(ft("collections").calls).toEqual([]);
+  });
+
+  it("banco vazio mantém os seeds locais; a primeira edição cria as linhas", async () => {
+    await __internals.refreshByKey("collections");
+    expect(listCollections().length).toBe(collectionsSeed.length); // seeds preservados
+
+    const novo = { ...collectionsSeed[0], id: 1234567890, name: "Inverno 27" };
+    upsertCollection(novo);
+    await __internals.pushByKey("collections", UID);
+
+    const tab = ft("collections");
+    expect(tab.calls[0]).toEqual({
+      kind: "upsert",
+      rows: collectionsSeed.length + 1,
+      onConflict: "external_key",
+    });
+    expect(tab.rows.some((r) => r.external_key === "1234567890")).toBe(true);
+  });
+
+  it("exclusões são podadas no próximo push (linha some do banco)", async () => {
+    await __internals.refreshByKey("collections");
+    await __internals.pushByKey("collections", UID);
+    const before = ft("collections").rows.length;
+    expect(before).toBe(collectionsSeed.length);
+
+    removeCollection(collectionsSeed[0].id);
+    await __internals.pushByKey("collections", UID);
+    const tab = ft("collections");
+    expect(tab.rows).toHaveLength(before - 1);
+    expect(tab.rows.some((r) => r.external_key === String(collectionsSeed[0].id))).toBe(false);
+  });
+
+  it("snapshot do servidor substitui o local quando há linhas (último write vence)", async () => {
+    await __internals.refreshByKey("collections");
+    upsertCollection({ ...collectionsSeed[0], id: 777, name: "Remota" });
+    await __internals.pushByKey("collections", UID);
+    ft("collections").rows.push({
+      external_key: "888",
+      name: "Criada em outra aba",
+      status: "Planejamento",
+      created_at: new Date().toISOString(),
+    });
+    await __internals.refreshByKey("collections", true);
+    expect(listCollections().some((c) => c.name === "Criada em outra aba")).toBe(true);
+  });
+
+  it("upsert é idempotente: dois pushes seguidos não duplicam linhas", async () => {
+    await __internals.refreshByKey("collections");
+    await __internals.pushByKey("collections", UID);
+    await __internals.pushByKey("collections", UID);
+    expect(ft("collections").rows).toHaveLength(collectionsSeed.length);
+  });
+});
+
+describe("collections mappers", () => {
+  it("round-trip do seed completo (id numérico ↔ external_key texto)", () => {
+    for (const c of collectionsSeed) {
+      const rt = collectionFromRow(collectionToRow(c, UID2));
+      expect(rt.id).toBe(c.id);
+      expect(rt.name).toBe(c.name);
+      expect(rt.targetRevenue).toBe(c.targetRevenue);
+      expect(rt.progress).toBe(c.progress);
+      expect(rt.sellThrough).toBe(c.sellThrough);
+    }
+  });
+  const UID2 = "u2";
+
+  it("KPI ausente vira NULL no banco e undefined no store (não 0 disfarçado)", () => {
+    const row = collectionToRow({ ...collectionsSeed[0], avgCost: undefined }, "u");
+    expect(row.avg_cost).toBeNull();
+    const back = collectionFromRow(row);
+    expect(back.avgCost).toBeUndefined();
+  });
+
+  it("progress fora de 0..100 é clampado no write (CHECK do banco)", () => {
+    expect(collectionToRow({ ...collectionsSeed[0], progress: 180 }, "u").progress).toBe(100);
+    expect(collectionToRow({ ...collectionsSeed[0], progress: -3 }, "u").progress).toBe(0);
+  });
+
+  it("numericKey: numérico preserva; texto arbitrário é estável e finito", () => {
+    expect(numericKey("1728000000000")).toBe(1728000000000);
+    expect(numericKey("42")).toBe(42);
+    expect(numericKey("")).toBeGreaterThan(0);
+    expect(numericKey("abc")).toBe(numericKey("abc"));
+    expect(Number.isFinite(numericKey("col-ext-xyz"))).toBe(true);
   });
 });

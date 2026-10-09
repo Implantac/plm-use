@@ -28,7 +28,7 @@ import {
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
-import { collectionsSeed, type Collection } from "@/lib/collections/store";
+import { useCollections, type Collection } from "@/lib/collections/store";
 
 export const Route = createFileRoute("/_authenticated/collections/compare")({
   head: () => ({
@@ -99,40 +99,40 @@ const METRIC_ROWS: MetricRow[] = [
     key: "avgCost",
     label: "Custo médio (R$)",
     icon: CircleDollarSign,
-    fmt: (c) => `R$ ${c.avgCost.toFixed(2)}`,
-    num: (c) => c.avgCost,
+    fmt: (c) => (c.avgCost == null ? "—" : `R$ ${c.avgCost.toFixed(2)}`),
+    num: (c) => c.avgCost ?? 0,
     higherIsBetter: false,
   },
   {
     key: "avgPrice",
     label: "Preço médio (R$)",
     icon: Target,
-    fmt: (c) => `R$ ${c.avgPrice.toFixed(2)}`,
-    num: (c) => c.avgPrice,
+    fmt: (c) => (c.avgPrice == null ? "—" : `R$ ${c.avgPrice.toFixed(2)}`),
+    num: (c) => c.avgPrice ?? 0,
     higherIsBetter: true,
   },
   {
     key: "showroomApproval",
     label: "Aprovação showroom",
     icon: ThumbsUp,
-    fmt: (c) => `${c.showroomApproval}%`,
-    num: (c) => c.showroomApproval,
+    fmt: (c) => (c.showroomApproval == null ? "—" : `${c.showroomApproval}%`),
+    num: (c) => c.showroomApproval ?? 0,
     higherIsBetter: true,
   },
   {
     key: "sellThrough",
     label: "Sell-through",
     icon: TrendingUp,
-    fmt: (c) => `${c.sellThrough}%`,
-    num: (c) => c.sellThrough,
+    fmt: (c) => (c.sellThrough == null ? "—" : `${c.sellThrough}%`),
+    num: (c) => c.sellThrough ?? 0,
     higherIsBetter: true,
   },
   {
     key: "leadTimeDias",
     label: "Lead time (dias)",
     icon: Clock,
-    fmt: (c) => `${c.leadTimeDias} d`,
-    num: (c) => c.leadTimeDias,
+    fmt: (c) => (c.leadTimeDias == null ? "—" : `${c.leadTimeDias} d`),
+    num: (c) => c.leadTimeDias ?? 0,
     higherIsBetter: false,
   },
   {
@@ -146,7 +146,7 @@ const METRIC_ROWS: MetricRow[] = [
 ];
 
 function CompareCollectionsPage() {
-  const collections = collectionsSeed;
+  const collections = useCollections();
   const [leftId, setLeftId] = useState<number>(collections[0]?.id ?? 0);
   const [rightId, setRightId] = useState<number>(collections[1]?.id ?? collections[0]?.id ?? 0);
 
@@ -340,7 +340,7 @@ function readingSummary(a: Collection, b: Collection): string {
   const margemA = parseInt(a.targetMargin, 10) || 0;
   const margemB = parseInt(b.targetMargin, 10) || 0;
   const melhorMargem = margemA >= margemB ? a : b;
-  const melhorSell = a.sellThrough >= b.sellThrough ? a : b;
-  const menorLead = a.leadTimeDias <= b.leadTimeDias ? a : b;
-  return `${melhorMargem.name} lidera em margem alvo (${melhorMargem.targetMargin}). ${melhorSell.name} tem melhor sell-through (${melhorSell.sellThrough}%). ${menorLead.name} entrega mais rápido (${menorLead.leadTimeDias} dias). Use estes cortes para calibrar mix da próxima coleção.`;
+  const melhorSell = (a.sellThrough ?? 0) >= (b.sellThrough ?? 0) ? a : b;
+  const menorLead = (a.leadTimeDias ?? Infinity) <= (b.leadTimeDias ?? Infinity) ? a : b;
+  return `${melhorMargem.name} lidera em margem alvo (${melhorMargem.targetMargin}). ${melhorSell.name} tem melhor sell-through (${melhorSell.sellThrough ?? 0}%). ${menorLead.name} entrega mais rápido (${menorLead.leadTimeDias ?? 0} dias). Use estes cortes para calibrar mix da próxima coleção.`;
 }

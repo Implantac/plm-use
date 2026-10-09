@@ -17,12 +17,14 @@ export type Collection = {
   abc: string;
   status: string;
   image: string;
-  // KPIs for benchmarking (derived / demo values)
-  showroomApproval: number; // % of refs approved in showroom
-  avgCost: number; // R$
-  avgPrice: number; // R$
-  sellThrough: number; // %
-  leadTimeDias: number; // dias médios desenvolvimento → produção
+  // KPIs for benchmarking — DEMO values when absent from the server (cards
+  // render them with a 0/"—" fallback). Opcionais: coleção criada pelo usuário
+  // nasce sem KPIs até a fase BI popular por query real.
+  showroomApproval?: number; // % of refs approved in showroom
+  avgCost?: number; // R$
+  avgPrice?: number; // R$
+  sellThrough?: number; // %
+  leadTimeDias?: number; // dias médios desenvolvimento → produção
 };
 
 export const collectionsSeed: Collection[] = [
@@ -99,3 +101,48 @@ export const collectionsSeed: Collection[] = [
     leadTimeDias: 62,
   },
 ];
+
+// ---------- store mutável + assinatura p/ sync (padrão P0-1) ----------
+import { useSyncExternalStore } from "react";
+
+let collections: Collection[] = [...collectionsSeed];
+const listeners = new Set<() => void>();
+const emit = () => listeners.forEach((l) => l());
+
+export function useCollections(): Collection[] {
+  return useSyncExternalStore(
+    (cb) => {
+      listeners.add(cb);
+      return () => listeners.delete(cb);
+    },
+    () => collections,
+    () => collections,
+  );
+}
+
+export function listCollections(): Collection[] {
+  return collections;
+}
+
+export function subscribeCollections(l: () => void) {
+  listeners.add(l);
+  return () => listeners.delete(l);
+}
+
+export function upsertCollection(next: Collection) {
+  const idx = collections.findIndex((c) => c.id === next.id);
+  if (idx === -1) collections = [next, ...collections];
+  else collections = collections.map((c, i) => (i === idx ? next : c));
+  emit();
+}
+
+export function removeCollection(id: number) {
+  collections = collections.filter((c) => c.id !== id);
+  emit();
+}
+
+// Repositor de hidratação (creative-sync) — ver colors/store.ts.
+export function replaceAllCollections(next: Collection[]) {
+  collections = next;
+  emit();
+}

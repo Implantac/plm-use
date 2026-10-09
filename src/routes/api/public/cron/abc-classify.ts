@@ -12,7 +12,7 @@
 // interativo. Este cron é apenas o gatilho agendado e exige assinatura HMAC,
 // seguindo o mesmo padrão de /api/public/cron/launch-performance.
 import { createFileRoute } from "@tanstack/react-router";
-import { verifyCronSignature } from "@/lib/api/cron-auth.server";
+import { checkCronRateLimit, verifyCronSignature } from "@/lib/api/cron-auth.server";
 
 export const Route = createFileRoute("/api/public/cron/abc-classify")({
   server: {
@@ -24,6 +24,13 @@ export const Route = createFileRoute("/api/public/cron/abc-classify")({
           "x-abc-signature",
         );
         if (!auth.ok) return new Response(auth.message, { status: auth.status });
+
+        const rl = checkCronRateLimit(request, "abc-classify");
+        if (!rl.ok)
+          return new Response("Too many requests", {
+            status: 429,
+            headers: { "retry-after": String(rl.retryAfterSec) },
+          });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin.rpc("classify_abc", {

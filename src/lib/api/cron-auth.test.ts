@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { verifyCronSignature, signCronBody } from "./cron-auth.server";
+import {
+  __resetCronRateLimits,
+  checkCronRateLimit,
+  signCronBody,
+  verifyCronSignature,
+} from "./cron-auth.server";
 
 const SECRET = "segredo-de-teste-1234567890";
 const HEADER = "x-abc-signature";
@@ -75,5 +80,50 @@ describe("verifyCronSignature", () => {
       HEADER,
     );
     expect(result).toMatchObject({ ok: false, status: 401 });
+  });
+});
+
+describe("checkCronRateLimit (bucket por escopo+IP)", () => {
+  it("permite o burst configurado e bloqueia o excedente com retry-after", () => {
+    __resetCronRateLimits();
+    const now = 1_000_000;
+    const r = req(BODY, {});
+    for (let i = 0; i < 6; i++)
+      expect(checkCronRateLimit(r, "abc", 6, 60_000, now)).toEqual({ ok: true });
+    const blocked = checkCronRateLimit(r, "abc", 6, 60_000, now);
+    expect(blocked.ok).toBe(false);
+    if (!blocked.ok) expect(blocked.retryAfterSec).toBeGreaterThan(0);
+  });
+
+  it("janelas distintas por IP e por escopo", () => {
+    __resetCronRateLimits();
+    const now = 2_000_000;
+    const mk = (ip: string) =>
+      new Request("https://exemplo.test/cron", { headers: { "x-forwarded-for": ip } });
+    for (let i = 0; i < 6; i++)
+      expect(checkCronRateLimit(mk("1.1.1.1"), "abc", 6, 60_000, now).ok).toBe(true);
+    expect(checkCronRateLimit(mk("1.1.1.1"), "abc", 6, 60_000, now).ok).toBe(false);
+    // outro IP passa; mesmo IP em outro escopo passa
+    expect(checkCronRateLimit(mk("2.2.2.2"), "abc", 6, 60_000, now).ok).toBe(true);
+    expect(checkCronRateLimit(mk("1.1.1.1"), "launch", 6, 60_000, now).ok).toBe(true);
+  });
+
+  it("a janela expira e o bucket reinicia", () => {
+    __resetCronRateLimits();
+    const now = 3_000_000;
+    const r = req(BODY, {});
+    for (let i = 0; i < 6; i++) checkCronRateLimit(r, "abc", 6, 1000, now);
+    expect(checkCronRateLimit(r, "abc", 6, 1000, now).ok).toBe(false);
+    expect(checkCronRateLimit(r, "abc", 6, 1000, now + 1500).ok).toBe(true);
+  });
+
+  it("x-forwarded-for com proxy chain usa o primeiro IP", () => {
+    __resetCronRateLimits();
+    const now = 4_000_000;
+    const a = new Request("https://x/c", { headers: { "x-forwarded-for": "9.9.9.9, 10.0.0.1" } });
+    const b = new Request("https://x/c", { headers: { "x-forwarded-for": "9.9.9.9" } });
+    for (let i = 0; i < 6; i++) checkCronRateLimit(a, "abc", 6, 60_000, now);
+    // mesmo IP de origem → bloqueado, independentemente do proxy extra na chain
+    expect(checkCronRateLimit(b, "abc", 6, 60_000, now).ok).toBe(false);
   });
 });

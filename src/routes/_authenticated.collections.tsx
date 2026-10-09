@@ -27,6 +27,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
+import {
+  useCollections,
+  upsertCollection,
+  removeCollection,
+  type Collection,
+} from "@/lib/collections/store";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { CollectionROI } from "@/components/collections/CollectionROI";
@@ -36,87 +42,8 @@ export const Route = createFileRoute("/_authenticated/collections")({
   component: CollectionsPage,
 });
 
-type Collection = {
-  id: number;
-  name: string;
-  season: string;
-  year: number;
-  brand: string;
-  targetRevenue: string;
-  targetSales: string;
-  targetMargin: string;
-  plannedQty: string;
-  plannedMix: number;
-  realizedMix: number;
-  progress: number;
-  roi: string;
-  abc: string;
-  status: string;
-  image: string;
-};
-
-const initialCollections: Collection[] = [
-  {
-    id: 1,
-    name: "Verão 25 - Amalfi",
-    season: "Primavera / Verão",
-    year: 2025,
-    brand: "Premium Luxe",
-    targetRevenue: "R$ 1,8 mi",
-    targetSales: "24.000 peças",
-    targetMargin: "68%",
-    plannedQty: "186 refs",
-    plannedMix: 186,
-    realizedMix: 142,
-    progress: 76,
-    roi: "3.4x",
-    abc: "A: 28% / B: 44% / C: 28%",
-    status: "Produção",
-    image:
-      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=80&w=900",
-  },
-  {
-    id: 2,
-    name: "Urban Resort",
-    season: "Alto Verão",
-    year: 2025,
-    brand: "Basic Chic",
-    targetRevenue: "R$ 920 mil",
-    targetSales: "16.500 peças",
-    targetMargin: "61%",
-    plannedQty: "92 refs",
-    plannedMix: 92,
-    realizedMix: 51,
-    progress: 55,
-    roi: "2.7x",
-    abc: "A: 21% / B: 46% / C: 33%",
-    status: "Desenvolvimento",
-    image:
-      "https://images.unsplash.com/photo-1539109136881-3be061694b9b?auto=format&fit=crop&q=80&w=900",
-  },
-  {
-    id: 3,
-    name: "Essentials Atemporal",
-    season: "Continuativo",
-    year: 2026,
-    brand: "Core",
-    targetRevenue: "R$ 640 mil",
-    targetSales: "11.200 peças",
-    targetMargin: "72%",
-    plannedQty: "48 refs",
-    plannedMix: 48,
-    realizedMix: 18,
-    progress: 38,
-    roi: "4.1x",
-    abc: "A: 35% / B: 40% / C: 25%",
-    status: "Aprovação",
-    image:
-      "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=900",
-  },
-];
-
 function CollectionsPage() {
-  const [collections, setCollections] = useState(initialCollections);
+  const collections = useCollections();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [formData, setFormData] = useState({
@@ -169,36 +96,30 @@ function CollectionsPage() {
 
   const handleSave = () => {
     if (editingCollection) {
-      setCollections(
-        collections.map((collection) =>
-          collection.id === editingCollection.id ? { ...collection, ...formData } : collection,
-        ),
-      );
+      const prev = collections.find((c) => c.id === editingCollection.id);
+      if (prev) upsertCollection({ ...prev, ...formData });
       toast.success("Coleção atualizada");
     } else {
-      setCollections([
-        {
-          id: Date.now(),
-          ...formData,
-          year: 2026,
-          plannedMix: Number.parseInt(formData.plannedQty, 10) || 0,
-          realizedMix: 0,
-          progress: 0,
-          roi: "0.0x",
-          abc: "A: 0% / B: 0% / C: 0%",
-          status: "Planejamento",
-          image:
-            "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=900",
-        },
-        ...collections,
-      ]);
+      upsertCollection({
+        id: Date.now(),
+        ...formData,
+        year: 2026,
+        plannedMix: Number.parseInt(formData.plannedQty, 10) || 0,
+        realizedMix: 0,
+        progress: 0,
+        roi: "0.0x",
+        abc: "A: 0% / B: 0% / C: 0%",
+        status: "Planejamento",
+        image:
+          "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=900",
+      });
       toast.success("Nova coleção criada");
     }
     setIsDialogOpen(false);
   };
 
   const handleDelete = (id: number) => {
-    setCollections(collections.filter((collection) => collection.id !== id));
+    removeCollection(id);
     toast.error("Coleção removida");
   };
 

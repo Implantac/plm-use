@@ -30,11 +30,22 @@
 - [x] cloud-sync: pushes verificam `error` e avisam (fim do salvamento fantasma).
 - [x] `/api/health` para monitoramento externo.
 - [x] Screenshots de E2E fora do Git; `example.functions.ts` (getGreeting) removido.
+- [x] `/collections** deixaram de ser voláteis (09/10, "mundo real" v2): a tela
+tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
+(`collections/store.ts`), migration `20261009120000_persist_collections.sql`    e virou o 7º módulo do`creative-sync` (`__internals` exported para teste;
+      engine coberta por 5 testes com client fake; KPIs demo viraram opcionais —
+      coleção do usuário mostra "—", não número inventado).
+- [x] Upload de assets validado (`storage/assets.ts`): tamanho ≤ 15 MB, allowlist
+      de MIME com extensão coerente, e `folder` do caminho de storage passou por
+      whitelist (era string livre do cliente). 7 testes.
+- [x] Rate-limit nos crons públicos (`checkCronRateLimit`): token bucket por
+      escopo+IP após HMAC, 429 + `Retry-After`. Escopo documentado: por isolate,
+      proteção contra laço de agendamento — não é WAF. 4 testes.
 
 ## Pendências que exigem ação fora do repositório
 
 - [ ] Aplicar as migrations pendentes no projeto real (`supabase db push`):
-      agendamento dos crons + 6 tabelas dos módulos criativos — e no cron, o seed
+      agendamento dos crons + 7 tabelas dos módulos criativos — e no cron, o seed
       do `app_cron_config` (segredos gerados com `openssl rand -hex 32`, iguais
       aos do deploy). Depois, `supabase gen types` e `scripts/smoke-cron.sh`.
 - [ ] Painel Supabase: "Allow new sign ups" OFF; Redirect URLs com
@@ -60,11 +71,12 @@
 
 ## Próximo — fechar o ciclo de persistência (Sprint 2)
 
-- [x] Modelar e migrar os 6 stores voláteis (colors, prints, looks, display,
-      measurements, collection-map) — fase 1: `creative-sync.ts` espelhando cada
-      store em tabela com RLS + realtime (`external_key` como chave de upsert).
+- [x] Modelar e migrar os stores voláteis (colors, prints, looks, display,
+      measurements, collection-map + collections em 09/10) — fase 1:
+      `creative-sync.ts` espelhando cada store em tabela com RLS + realtime
+      (`external_key` como chave de upsert).
       **Falta aplicar `supabase db push` e validar no staging.** Fase 2 (aberta):
-      normalizar os jsonb aninhados e persistir a matriz do collection-map.
+      normalizar os jsonb aninhados; KPIs de coleção vindos de fonte real (ERP/BI).
 - [ ] Substituir `pcp_lots.metadata` (Lote inteiro em jsonb) por tabelas
       normalizadas — BI e ERP dependem disso.
 - [ ] Abandonar a trilha Drizzle (schema.ts vazio; 51 migrations SQL no padrão).
