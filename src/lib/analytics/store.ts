@@ -89,6 +89,13 @@ export function replaceAllAnalyticsKpis(next: AnalyticsKpi[]) {
   emit();
 }
 
+/** Validação do dialog de KPI — exportada pura p/ teste e reuso no dialog de edição. */
+export function validateKpiDraft(d: { label: string; value: string }): string | null {
+  if (d.label.trim().length < 2) return "Dê um nome ao indicador (2+ caracteres).";
+  if (!d.value.trim()) return 'O valor é obrigatório — use "—" quando ainda não houver número.';
+  return null;
+}
+
 /** Busca textual do módulo (label/sub) — pura para ser testável. */
 export function filterAnalyticsKpis(list: AnalyticsKpi[], q: string): AnalyticsKpi[] {
   const needle = q.trim().toLowerCase();

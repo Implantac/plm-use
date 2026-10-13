@@ -29,6 +29,7 @@ import {
   useAnalyticsKpis,
   upsertAnalyticsKpi,
   removeAnalyticsKpi,
+  validateKpiDraft,
   filterAnalyticsKpis,
   type AnalyticsKpi,
 } from "@/lib/analytics/store";
@@ -81,6 +82,11 @@ function AnalyticsPage() {
   };
 
   const handleSave = () => {
+    const invalid = validateKpiDraft(formData);
+    if (invalid) {
+      toast.error(invalid);
+      return;
+    }
     if (editingKpi) {
       upsertAnalyticsKpi({ ...editingKpi, ...formData });
       toast.success("Indicador estratégico atualizado");

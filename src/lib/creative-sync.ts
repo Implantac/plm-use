@@ -60,6 +60,8 @@ import {
   upsertCollection,
   type Collection,
 } from "@/lib/collections/store";
+import { useQualityStore, type CapaAction } from "@/lib/quality/store";
+import { useInfluencersStore, type Envio, type Influencer } from "@/lib/influencers/store";
 import {
   listAnalyticsKpis,
   replaceAllAnalyticsKpis,
@@ -393,6 +395,77 @@ export function analyticsKpiFromRow(r: QueryRow): AnalyticsKpi {
   };
 }
 
+export function capaToRow(c: CapaAction, uid: string): QueryRow {
+  return {
+    external_key: c.id,
+    defeito: c.defeito,
+    setor: c.setor ?? "",
+    tipo: c.tipo,
+    status: c.status,
+    responsavel: c.responsavel ?? "",
+    prazo: c.prazo ?? "",
+    ref: c.ref ?? null,
+    lote: c.lote ?? null,
+    fornecedor: c.fornecedor ?? null,
+    criada: c.criada,
+    created_by: uid,
+  };
+}
+const CAPA_TIPOS = ["Corretiva", "Preventiva"];
+const CAPA_STATUS = ["Aberta", "Em andamento", "Concluída"];
+export function capaFromRow(r: QueryRow): CapaAction {
+  const tipo = str(r.tipo);
+  const status = str(r.status);
+  const out: CapaAction = {
+    id: str(r.external_key),
+    defeito: str(r.defeito),
+    setor: str(r.setor),
+    tipo: (CAPA_TIPOS.includes(tipo) ? tipo : "Corretiva") as CapaAction["tipo"],
+    status: (CAPA_STATUS.includes(status) ? status : "Aberta") as CapaAction["status"],
+    responsavel: str(r.responsavel),
+    prazo: str(r.prazo),
+    criada: str(r.criada) || new Date().toISOString().slice(0, 10),
+  };
+  if (r.ref != null) out.ref = str(r.ref);
+  if (r.lote != null) out.lote = str(r.lote);
+  if (r.fornecedor != null) out.fornecedor = str(r.fornecedor);
+  return out;
+}
+
+export function influencerToRow(i: Influencer, uid: string): QueryRow {
+  return {
+    external_key: i.id,
+    nome: i.nome,
+    handle: i.handle ?? "",
+    regiao: i.regiao ?? "",
+    uf: i.uf ?? "",
+    seguidores: i.seguidores ?? 0,
+    segmento: i.segmento ?? "",
+    perfil: i.perfil ?? "Micro",
+    custo_medio: i.custoMedio ?? 0,
+    vendas_geradas: i.vendasGeradas ?? 0,
+    envios: i.envios ?? [],
+    created_by: uid,
+  };
+}
+export function influencerFromRow(r: QueryRow): Influencer {
+  return {
+    id: str(r.external_key),
+    nome: str(r.nome),
+    handle: str(r.handle),
+    regiao: str(r.regiao),
+    uf: str(r.uf),
+    seguidores: num(r.seguidores),
+    segmento: str(r.segmento),
+    perfil: (["Macro", "Médio", "Micro"].includes(str(r.perfil))
+      ? str(r.perfil)
+      : "Micro") as Influencer["perfil"],
+    custoMedio: Number(r.custo_medio) || 0,
+    vendasGeradas: Number(r.vendas_geradas) || 0,
+    envios: Array.isArray(r.envios) ? (r.envios as Envio[]) : [],
+  };
+}
+
 // ids duplicados no mesmo debounce (dois `Date.now()` na mesma ms) não podem
 // estourar o `ON CONFLICT DO UPDATE`; mantemos o último por chave.
 export function dedupeRows(rows: QueryRow[]): QueryRow[] {
@@ -475,6 +548,24 @@ const MODULES: ModuleSpec[] = [
     toRow: (e, uid) => analyticsKpiToRow(e as AnalyticsKpi, uid),
     apply: (rows) => replaceAllAnalyticsKpis(rows.map(analyticsKpiFromRow)),
     subscribe: subscribeAnalyticsKpis,
+  },
+  {
+    key: "capa",
+    table: "quality_capa_actions",
+    label: "as ações de CAPA",
+    list: () => useQualityStore.getState().capa,
+    toRow: (e, uid) => capaToRow(e as CapaAction, uid),
+    apply: (rows) => useQualityStore.setState({ capa: rows.map(capaFromRow) }),
+    subscribe: (l) => useQualityStore.subscribe(l),
+  },
+  {
+    key: "influencers",
+    table: "marketing_influencers",
+    label: "os influenciadores",
+    list: () => useInfluencersStore.getState().influencers,
+    toRow: (e, uid) => influencerToRow(e as Influencer, uid),
+    apply: (rows) => useInfluencersStore.setState({ influencers: rows.map(influencerFromRow) }),
+    subscribe: (l) => useInfluencersStore.subscribe(l),
   },
   {
     key: "cfilters",
@@ -561,6 +652,9 @@ export const __internals = {
     const m = MODULES.find((x) => x.key === key);
     if (!m) throw new Error("spec desconhecido: " + key);
     return refreshModule(m, force);
+  },
+  moduleKeys(): string[] {
+    return MODULES.map((m) => m.key);
   },
   resetSyncState() {
     for (const k of Object.keys(hydrated)) delete hydrated[k];

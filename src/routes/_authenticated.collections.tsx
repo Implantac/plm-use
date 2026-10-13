@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeftRight,
   ArrowUpRight,
@@ -34,6 +34,7 @@ import {
   type Collection,
 } from "@/lib/collections/store";
 import { filterCollections } from "@/lib/collections/filter";
+import { collectionsValidateSearch, type CollectionsSearch } from "@/lib/collections/search";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
@@ -42,12 +43,20 @@ import { CollectionPerformance } from "@/components/collections/CollectionPerfor
 
 export const Route = createFileRoute("/_authenticated/collections")({
   component: CollectionsPage,
+  validateSearch: collectionsValidateSearch,
 });
 
 function CollectionsPage() {
   const collections = useCollections();
-  const [q, setQ] = useState("");
-  const visible = useMemo(() => filterCollections(collections, q), [collections, q]);
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { q } = Route.useSearch();
+  const qv = q ?? "";
+  const setQ = (v: string) =>
+    navigate({
+      search: (prev: CollectionsSearch) => ({ ...prev, q: v.trim() ? v : undefined }),
+      replace: true,
+    });
+  const visible = useMemo(() => filterCollections(collections, qv), [collections, qv]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [formData, setFormData] = useState({

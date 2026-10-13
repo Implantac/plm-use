@@ -32,6 +32,12 @@
 - [x] cloud-sync: pushes verificam `error` e avisam (fim do salvamento fantasma).
 - [x] `/api/health` para monitoramento externo.
 - [x] Screenshots de E2E fora do Git; `example.functions.ts` (getGreeting) removido.
+- [x] Segunda tacada funcional (09/10): módulos 9/10 do `creative-sync` — CAPA da
+      Qualidade (`quality_capa_actions`) e influenciadores (`marketing_influencers`)
+      adaptados direto dos stores zustand (list/apply/subscribe no `getState`/
+      `setState` — UI intocada); validação do dialog de KPI (`validateKpiDraft`);
+      busca de Coleções na URL (`?q=`, `collectionsValidateSearch` testado) — S1/S7
+      da revisão fechados.
 - [x] Revisão funcional (09/10): busca real no `ModuleLayout` (era decorativa em 22
       telas; só renderiza com `onSearch`) + filtros ligados em Coleções e BI; KPIs
       do BI persistidos (módulo 8, `analytics_kpis`); `ExportMenu` ligado em BI e
@@ -53,7 +59,7 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
 ## Pendências que exigem ação fora do repositório
 
 - [ ] Aplicar as migrations pendentes no projeto real (`supabase db push`):
-      agendamento dos crons + 8 tabelas dos módulos criativos (inclui
+      agendamento dos crons + 10 tabelas dos módulos criativos (inclui
       `20261009120000_persist_collections` e `20261009170000_persist_analytics_kpis`)
       — e no cron, o seed
       do `app_cron_config` (segredos gerados com `openssl rand -hex 32`, iguais

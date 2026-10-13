@@ -166,7 +166,9 @@ burlada:
 - **Módulos criativos persistem via `creative-sync`** (ver
   "Módulos criativos: persistência" em Deploy): `colors`, `prints`, `looks`,
   `display`, `measurements`, filtros do `collection-map`, a matriz de
-  coleções e os KPIs do BI. Adicionar um módulo novo é uma migration + uma spec em
+  coleções, os KPIs do BI, o CAPA da Qualidade (zustand espelhado, não
+  substituído — o `persist` local continua como cache offline) e os
+  influenciadores de GTM. Adicionar um módulo novo é uma migration + uma spec em
   `MODULES` — não escreva persistência ad-hoc na tela.
 
 ---
@@ -233,7 +235,7 @@ alvo de uptime externo. Alertas de negócio do cron = consultar `app_cron_runs`.
 `src/lib/creative-sync.ts` espelha cada store numa tabela (`color_palettes`,
 `print_assets`, `looks`, `display_boards`, `measurement_charts`,
 `collection_map_filters`, `collections`,
-`analytics_kpis`) no mesmo padrão
+`analytics_kpis`, `quality_capa_actions`, `marketing_influencers`) no mesmo padrão
 de `cloud-sync.ts` — hidrata ao logar, empurra snapshot debounced (800 ms) a cada
 mudança, poda linhas excluídas e usa realtime para manter abas/dispositivos em
 sincronia. Chave de upsert: `external_key` (o id do store), então os seeds

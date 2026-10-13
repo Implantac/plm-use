@@ -223,7 +223,13 @@ import {
   numericKey,
   analyticsKpiToRow,
   analyticsKpiFromRow,
+  capaToRow,
+  capaFromRow,
+  influencerToRow,
+  influencerFromRow,
 } from "./creative-sync";
+import type { CapaAction } from "./quality/store";
+import type { Influencer } from "./influencers/store";
 import {
   collectionsSeed,
   listCollections,
@@ -386,5 +392,84 @@ describe("analytics_kpis mappers (módulo 8)", () => {
       icon_name: "rocket",
     });
     expect(back.iconName).toBe("bar-chart");
+  });
+});
+
+describe("capa + influencers mappers (módulos 9/10 — stores zustand)", () => {
+  it("CAPA round-trip com campos opcionais presentes e ausentes", () => {
+    const full: CapaAction = {
+      id: "abc123",
+      defeito: "Malha furada",
+      setor: "Corte",
+      tipo: "Corretiva",
+      status: "Em andamento",
+      responsavel: "Ana",
+      prazo: "2026-11-01",
+      criada: "2026-10-01",
+      ref: "CM9",
+      lote: "L1",
+      fornecedor: "Têxtil X",
+    };
+    expect(capaFromRow(capaToRow(full, "u"))).toEqual(full);
+    const sparse = { ...full, ref: undefined, lote: undefined, fornecedor: undefined };
+    const back = capaFromRow(capaToRow(sparse, "u"));
+    expect(back.ref).toBeUndefined();
+    expect(back.lote).toBeUndefined();
+    expect(back.fornecedor).toBeUndefined();
+  });
+
+  it("valores fora dos CHECKs do banco caem no default (linha manual via SQL não quebra a UI)", () => {
+    const back = capaFromRow({
+      external_key: "z1",
+      defeito: "x",
+      tipo: "Alienigena",
+      status: "Zumbi",
+      criada: "",
+    });
+    expect(back.tipo).toBe("Corretiva");
+    expect(back.status).toBe("Aberta");
+    expect(back.criada).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it("influencer round-trip com envios jsonb", () => {
+    const i: Influencer = {
+      id: "i1",
+      nome: "Marina",
+      handle: "@marina",
+      regiao: "Sudeste",
+      uf: "SP",
+      seguidores: 120000,
+      segmento: "moda",
+      perfil: "Macro",
+      custoMedio: 4500,
+      vendasGeradas: 31000,
+      envios: [
+        {
+          id: "e1",
+          ref: "CM7",
+          nome: "Blusa",
+          data: "2026-10-01",
+          status: "Postou",
+          engajamento: 8.2,
+        },
+      ],
+    };
+    expect(influencerFromRow(influencerToRow(i, "u"))).toEqual(i);
+  });
+
+  it("envios corrompido (não-array) vira lista vazia; perfil inválido vira Micro", () => {
+    const back = influencerFromRow({
+      external_key: "x",
+      nome: "n",
+      envios: "lixo",
+      perfil: "Nano",
+    });
+    expect(back.envios).toEqual([]);
+    expect(back.perfil).toBe("Micro");
+  });
+
+  it("espejos 9/10 vivem no MODULES com as tabelas das migrations", () => {
+    const keys = __internals.moduleKeys();
+    expect(keys).toEqual(expect.arrayContaining(["capa", "influencers"]));
   });
 });
