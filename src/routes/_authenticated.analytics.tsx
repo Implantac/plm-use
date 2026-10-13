@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import {
   Target,
   Zap,
   Globe,
-  Download,
   CircleDollarSign,
   PieChart,
   Workflow,
@@ -25,6 +24,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { ExportMenu } from "@/components/export/ExportMenu";
+import {
+  useAnalyticsKpis,
+  upsertAnalyticsKpi,
+  removeAnalyticsKpi,
+  filterAnalyticsKpis,
+  type AnalyticsKpi,
+} from "@/lib/analytics/store";
+
+// O store persiste o NOME do ícone (é o que cabe no banco); o ReactNode nasce aqui.
+const ICONS = {
+  target: Target,
+  "trending-up": TrendingUp,
+  zap: Zap,
+  "bar-chart": BarChart3,
+} as const;
+function iconFor(name: AnalyticsKpi["iconName"]) {
+  const Icon = ICONS[name] ?? BarChart3;
+  return <Icon className="w-6 h-6" />;
+}
 
 type MarketingMetric = {
   collection: string;
@@ -38,54 +57,19 @@ type MarketingMetric = {
   roi: number;
 };
 
-interface KPIItem {
-  id: number;
-  label: string;
-  value: string;
-  sub: string;
-  progress?: number;
-  icon: ReactNode;
-  tone: string;
-}
-
 export const Route = createFileRoute("/_authenticated/analytics")({
   component: AnalyticsPage,
 });
 
 function AnalyticsPage() {
-  const [kpis, setKpis] = useState<KPIItem[]>([
-    {
-      id: 1,
-      label: "Meta de Coleção",
-      value: "2.4M",
-      sub: "4M",
-      progress: 60,
-      icon: <Target className="w-6 h-6" />,
-      tone: "primary",
-    },
-    {
-      id: 2,
-      label: "Crescimento YoY",
-      value: "+24.8%",
-      sub: "vs mercado: +12%",
-      icon: <TrendingUp className="w-6 h-6" />,
-      tone: "emerald",
-    },
-    {
-      id: 3,
-      label: "Eficiência PCP",
-      value: "94.2%",
-      sub: "ciclo: 32 dias",
-      icon: <Zap className="w-6 h-6" />,
-      tone: "amber",
-    },
-  ]);
-
+  const allKpis = useAnalyticsKpis();
+  const [q, setQ] = useState("");
+  const kpis = useMemo(() => filterAnalyticsKpis(allKpis, q), [allKpis, q]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingKpi, setEditingKpi] = useState<KPIItem | null>(null);
+  const [editingKpi, setEditingKpi] = useState<AnalyticsKpi | null>(null);
   const [formData, setFormData] = useState({ label: "", value: "", sub: "" });
 
-  const handleOpenDialog = (kpi?: KPIItem) => {
+  const handleOpenDialog = (kpi?: AnalyticsKpi) => {
     if (kpi) {
       setEditingKpi(kpi);
       setFormData({ label: kpi.label, value: kpi.value, sub: kpi.sub });
@@ -98,25 +82,26 @@ function AnalyticsPage() {
 
   const handleSave = () => {
     if (editingKpi) {
-      setKpis(kpis.map((k) => (k.id === editingKpi.id ? { ...k, ...formData } : k)));
+      upsertAnalyticsKpi({ ...editingKpi, ...formData });
       toast.success("Indicador estratégico atualizado");
     } else {
-      const newKpi: KPIItem = {
+      upsertAnalyticsKpi({
         id: Date.now(),
         label: formData.label,
         value: formData.value,
         sub: formData.sub,
-        icon: <BarChart3 className="w-6 h-6" />,
+        iconName: "bar-chart",
         tone: "primary",
-      };
-      setKpis([...kpis, newKpi]);
+      });
       toast.success("Novo KPI adicionado ao dashboard");
     }
     setIsDialogOpen(false);
   };
 
   const handleDelete = (id: number) => {
-    setKpis(kpis.filter((k) => k.id !== id));
+    const alvo = allKpis.find((k) => k.id === id);
+    if (!window.confirm('Remover o KPI "' + (alvo?.label ?? id) + '" do dashboard?')) return;
+    removeAnalyticsKpi(id);
     toast.error("Indicador removido do BI");
   };
 
@@ -191,6 +176,7 @@ function AnalyticsPage() {
       version="Intelligence v4.0"
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar KPI, relatório ou coleção"
+      onSearch={setQ}
       metrics={[
         { label: "Investimento (real)", value: "R$ 84k", detail: "pago vs previsto" },
         { label: "ROI médio", value: "3.4x", detail: "coleções ativas" },
@@ -200,9 +186,17 @@ function AnalyticsPage() {
       ]}
     >
       <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-[10px] tracking-[0.2em] gap-2">
-          <Download className="w-4 h-4" /> Exportar Relatórios
-        </Button>
+        <ExportMenu
+          title="KPIs estratégicos — BI Executivo"
+          filename={"kpis-analytics-" + new Date().toISOString().slice(0, 10)}
+          rows={kpis.map((k) => ({
+            label: k.label,
+            valor: k.value,
+            detalhe: k.sub,
+            progresso: k.progress ?? "",
+          }))}
+          label="Exportar Relatórios"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -222,7 +216,7 @@ function AnalyticsPage() {
               <div
                 className={`p-3 rounded-2xl border w-fit group-hover:rotate-6 transition-transform ${toneClass(kpi.tone)}`}
               >
-                {kpi.icon}
+                {iconFor(kpi.iconName)}
               </div>
               <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
                 {kpi.label}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -33,6 +33,8 @@ import {
   removeCollection,
   type Collection,
 } from "@/lib/collections/store";
+import { filterCollections } from "@/lib/collections/filter";
+import { ExportMenu } from "@/components/export/ExportMenu";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { CollectionROI } from "@/components/collections/CollectionROI";
@@ -44,6 +46,8 @@ export const Route = createFileRoute("/_authenticated/collections")({
 
 function CollectionsPage() {
   const collections = useCollections();
+  const [q, setQ] = useState("");
+  const visible = useMemo(() => filterCollections(collections, q), [collections, q]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [formData, setFormData] = useState({
@@ -119,6 +123,9 @@ function CollectionsPage() {
   };
 
   const handleDelete = (id: number) => {
+    const alvo = collections.find((x) => x.id === id);
+    if (!window.confirm('Excluir a coleção "' + (alvo?.name ?? id) + '"? Ela some para todos.'))
+      return;
     removeCollection(id);
     toast.error("Coleção removida");
   };
@@ -129,6 +136,7 @@ function CollectionsPage() {
       subtitle="Planeje metas financeiras, mix, margem, ciclo, ROI e curva ABC de cada coleção. Coleções de exemplo trazem KPIs de demonstração (★ no comparativo); coleções criadas por você mostram “—” até a integração ERP/BI."
       version="Strategy v2.0"
       searchPlaceholder="Buscar coleção, marca ou temporada"
+      onSearch={setQ}
       onAdd={() => handleOpenDialog()}
       metrics={[
         { label: "Coleções ativas", value: String(collections.length), detail: "multi marca" },
@@ -140,7 +148,39 @@ function CollectionsPage() {
       <div className="mb-4">
         <ModuleTabs group="collections" />
       </div>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-end gap-2">
+        <ExportMenu
+          title="Coleções"
+          filename={"colecoes-" + new Date().toISOString().slice(0, 10)}
+          columns={[
+            "nome",
+            "temporada",
+            "ano",
+            "marca",
+            "status",
+            "meta_receita",
+            "meta_vendas",
+            "margem",
+            "progresso",
+            "mix_planejado",
+            "mix_realizado",
+            "roi",
+          ]}
+          rows={collections.map((col) => ({
+            nome: col.name,
+            temporada: col.season,
+            ano: col.year,
+            marca: col.brand,
+            status: col.status,
+            meta_receita: col.targetRevenue,
+            meta_vendas: col.targetSales,
+            margem: col.targetMargin,
+            progresso: col.progress,
+            mix_planejado: col.plannedMix,
+            mix_realizado: col.realizedMix,
+            roi: col.roi,
+          }))}
+        />
         <Button asChild variant="ghost" className="border text-[10px] tracking-[0.14em]">
           <Link to="/collections/compare">
             <ArrowLeftRight className="mr-2 h-3.5 w-3.5" /> Comparar coleções
@@ -149,7 +189,7 @@ function CollectionsPage() {
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
         <div className="space-y-4">
-          {collections.map((collection) => (
+          {visible.map((collection) => (
             <Card
               key={collection.id}
               className="glass-card rounded-lg overflow-hidden hover:border-primary/30 transition-colors"

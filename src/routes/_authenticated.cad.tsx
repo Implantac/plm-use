@@ -50,10 +50,19 @@ function CadPage() {
                 Visualizador técnico interno
               </CardTitle>
               <div className="flex gap-2">
-                <Button variant="outline" className="text-[10px] tracking-[0.14em]">
+                <Button
+                  variant="outline"
+                  className="text-[10px] tracking-[0.14em]"
+                  disabled
+                  title="A API de importação do seu CAD ainda não está conectada — roadmap do módulo (ver integrações acima)"
+                >
                   <Upload className="mr-2 h-4 w-4" /> Importar
                 </Button>
-                <Button className="text-[10px] tracking-[0.14em]">
+                <Button
+                  className="text-[10px] tracking-[0.14em]"
+                  disabled
+                  title="A API de exportação do seu CAD ainda não está conectada — roadmap do módulo (ver integrações acima)"
+                >
                   <Download className="mr-2 h-4 w-4" /> Exportar
                 </Button>
               </div>

@@ -61,6 +61,12 @@ import {
   type Collection,
 } from "@/lib/collections/store";
 import {
+  listAnalyticsKpis,
+  replaceAllAnalyticsKpis,
+  subscribeAnalyticsKpis,
+  type AnalyticsKpi,
+} from "@/lib/analytics/store";
+import {
   listFilters,
   replaceAllFilters,
   subscribeFilters,
@@ -360,6 +366,33 @@ export function numericKey(k: string): number {
   return Math.abs(h) % 2 ** 31;
 }
 
+export function analyticsKpiToRow(k: AnalyticsKpi, uid: string): QueryRow {
+  return {
+    external_key: String(k.id),
+    label: k.label,
+    value: k.value,
+    sub: k.sub ?? "",
+    progress: k.progress == null ? null : Math.max(0, Math.min(100, Math.round(k.progress))),
+    icon_name: k.iconName,
+    tone: k.tone ?? "primary",
+    created_by: uid,
+  };
+}
+export function analyticsKpiFromRow(r: QueryRow): AnalyticsKpi {
+  const icon = str(r.icon_name);
+  return {
+    id: numericKey(str(r.external_key)),
+    label: str(r.label),
+    value: str(r.value),
+    sub: str(r.sub),
+    progress: r.progress == null ? undefined : num(r.progress),
+    iconName: (["target", "trending-up", "zap", "bar-chart"].includes(icon)
+      ? icon
+      : "bar-chart") as AnalyticsKpi["iconName"],
+    tone: str(r.tone) || "primary",
+  };
+}
+
 // ids duplicados no mesmo debounce (dois `Date.now()` na mesma ms) não podem
 // estourar o `ON CONFLICT DO UPDATE`; mantemos o último por chave.
 export function dedupeRows(rows: QueryRow[]): QueryRow[] {
@@ -433,6 +466,15 @@ const MODULES: ModuleSpec[] = [
     toRow: (e, uid) => collectionToRow(e as Collection, uid),
     apply: (rows) => replaceAllCollections(rows.map(collectionFromRow)),
     subscribe: subscribeCollections,
+  },
+  {
+    key: "analytics_kpis",
+    table: "analytics_kpis",
+    label: "os KPIs do BI",
+    list: listAnalyticsKpis,
+    toRow: (e, uid) => analyticsKpiToRow(e as AnalyticsKpi, uid),
+    apply: (rows) => replaceAllAnalyticsKpis(rows.map(analyticsKpiFromRow)),
+    subscribe: subscribeAnalyticsKpis,
   },
   {
     key: "cfilters",

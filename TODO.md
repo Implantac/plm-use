@@ -32,6 +32,12 @@
 - [x] cloud-sync: pushes verificam `error` e avisam (fim do salvamento fantasma).
 - [x] `/api/health` para monitoramento externo.
 - [x] Screenshots de E2E fora do Git; `example.functions.ts` (getGreeting) removido.
+- [x] Revisão funcional (09/10): busca real no `ModuleLayout` (era decorativa em 22
+      telas; só renderiza com `onSearch`) + filtros ligados em Coleções e BI; KPIs
+      do BI persistidos (módulo 8, `analytics_kpis`); `ExportMenu` ligado em BI e
+      Coleções (a lib `csv.ts` estava órfã — ganhou 5 testes RFC 4180); confirmação
+      antes de excluir coleção/KPI; botões decorativos do CAD viraram `disabled` com
+      motivo no `title`.
 - [x] `/collections** deixaram de ser voláteis (09/10, "mundo real" v2): a tela
 tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
 (`collections/store.ts`), migration `20261009120000_persist_collections.sql`    e virou o 7º módulo do`creative-sync` (`__internals` exported para teste;
@@ -47,7 +53,9 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
 ## Pendências que exigem ação fora do repositório
 
 - [ ] Aplicar as migrations pendentes no projeto real (`supabase db push`):
-      agendamento dos crons + 7 tabelas dos módulos criativos — e no cron, o seed
+      agendamento dos crons + 8 tabelas dos módulos criativos (inclui
+      `20261009120000_persist_collections` e `20261009170000_persist_analytics_kpis`)
+      — e no cron, o seed
       do `app_cron_config` (segredos gerados com `openssl rand -hex 32`, iguais
       aos do deploy). Depois, `supabase gen types` e `scripts/smoke-cron.sh`.
 - [ ] Painel Supabase: "Allow new sign ups" OFF; Redirect URLs com

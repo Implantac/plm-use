@@ -16,6 +16,12 @@ interface ModuleLayoutProps {
   onAdd?: () => void;
   children: React.ReactNode;
   searchPlaceholder?: string;
+  /**
+   * Busca do módulo. O Input só renderiza quando a tela implementa onSearch —
+   * antes havia 22 caixas decorativas (o Input não tinha onChange em nenhuma).
+   * Tela nova: ou filtra de verdade, ou não mostra a caixa.
+   */
+  onSearch?: (q: string) => void;
   metrics?: Array<{
     label: string;
     value: string;
@@ -30,6 +36,7 @@ export function ModuleLayout({
   onAdd,
   children,
   searchPlaceholder = "Buscar...",
+  onSearch,
   metrics = [],
 }: ModuleLayoutProps) {
   return (
@@ -48,13 +55,16 @@ export function ModuleLayout({
             <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">{subtitle}</p>
           </motion.div>
           <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative group w-full sm:w-72">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-              <Input
-                className="pl-10 focus:border-primary/40 focus:ring-0 text-[10px] font-bold uppercase tracking-widest/40"
-                placeholder={searchPlaceholder}
-              />
-            </div>
+            {onSearch && (
+              <div className="relative group w-full sm:w-72">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <Input
+                  className="pl-10 focus:border-primary/40 focus:ring-0 text-[10px] font-bold uppercase tracking-widest/40"
+                  placeholder={searchPlaceholder}
+                  onChange={(e) => onSearch(e.target.value)}
+                />
+              </div>
+            )}
             {onAdd && (
               <Button onClick={onAdd} className="text-[10px] tracking-[0.16em] gap-2">
                 <Plus className="w-4 h-4" /> Adicionar

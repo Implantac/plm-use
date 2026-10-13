@@ -160,10 +160,13 @@ burlada:
   próprio, no padrão de `launch-performance.ts`. Endpoint público sem HMAC e
   com escrita privilegiada é vulnerabilidade, não atalho.
 - **`routeTree.gen.ts` é gerado** pelo TanStack Router — não edite à mão.
+- **Busca de tela é opt-in**: o `ModuleLayout` só renderiza a caixa "Buscar" para
+  quem passa `onSearch`. As 22 instâncias decorativas (Input sem onChange) foram
+  removidas em 09/10 — tela nova não ganha campo de busca que não filtra.
 - **Módulos criativos persistem via `creative-sync`** (ver
   "Módulos criativos: persistência" em Deploy): `colors`, `prints`, `looks`,
-  `display`, `measurements`, filtros do `collection-map` e a matriz de
-  coleções. Adicionar um módulo novo é uma migration + uma spec em
+  `display`, `measurements`, filtros do `collection-map`, a matriz de
+  coleções e os KPIs do BI. Adicionar um módulo novo é uma migration + uma spec em
   `MODULES` — não escreva persistência ad-hoc na tela.
 
 ---
@@ -229,7 +232,8 @@ alvo de uptime externo. Alertas de negócio do cron = consultar `app_cron_runs`.
 `collection-map` e a matriz de coleções **deixaram de ser voláteis**:
 `src/lib/creative-sync.ts` espelha cada store numa tabela (`color_palettes`,
 `print_assets`, `looks`, `display_boards`, `measurement_charts`,
-`collection_map_filters`, `collections`) no mesmo padrão
+`collection_map_filters`, `collections`,
+`analytics_kpis`) no mesmo padrão
 de `cloud-sync.ts` — hidrata ao logar, empurra snapshot debounced (800 ms) a cada
 mudança, poda linhas excluídas e usa realtime para manter abas/dispositivos em
 sincronia. Chave de upsert: `external_key` (o id do store), então os seeds

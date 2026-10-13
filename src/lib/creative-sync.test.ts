@@ -216,7 +216,14 @@ describe("dedupeRows (defesa do ON CONFLICT)", () => {
 });
 
 // ---------- engine de sync: hidratar, empurrar, podar (client fake) ----------
-import { __internals, collectionToRow, collectionFromRow, numericKey } from "./creative-sync";
+import {
+  __internals,
+  collectionToRow,
+  collectionFromRow,
+  numericKey,
+  analyticsKpiToRow,
+  analyticsKpiFromRow,
+} from "./creative-sync";
 import {
   collectionsSeed,
   listCollections,
@@ -322,5 +329,62 @@ describe("collections mappers", () => {
     expect(numericKey("")).toBeGreaterThan(0);
     expect(numericKey("abc")).toBe(numericKey("abc"));
     expect(Number.isFinite(numericKey("col-ext-xyz"))).toBe(true);
+  });
+});
+
+describe("analytics_kpis mappers (módulo 8)", () => {
+  it("round-trip com progress e sem progress (NULL ≠ 0)", () => {
+    const withBar = {
+      id: 11,
+      label: "Meta",
+      value: "2.4M",
+      sub: "4M",
+      progress: 60,
+      iconName: "target",
+      tone: "primary",
+    } as const;
+    expect(analyticsKpiFromRow(analyticsKpiToRow(withBar, "u"))).toEqual({
+      id: 11,
+      label: "Meta",
+      value: "2.4M",
+      sub: "4M",
+      progress: 60,
+      iconName: "target",
+      tone: "primary",
+    });
+    const noBar = {
+      id: 12,
+      label: "YoY",
+      value: "+24%",
+      sub: "",
+      iconName: "zap" as const,
+      tone: "emerald",
+    };
+    const row = analyticsKpiToRow(noBar, "u");
+    expect(row.progress).toBeNull();
+    expect(analyticsKpiFromRow(row).progress).toBeUndefined();
+  });
+
+  it("progress fora de 0..100 é clampado e arredondado (CHECK do banco)", () => {
+    const base = {
+      id: 1,
+      label: "x",
+      value: "1",
+      sub: "",
+      iconName: "bar-chart" as const,
+      tone: "primary",
+    };
+    expect(analyticsKpiToRow({ ...base, progress: 150.4 }, "u").progress).toBe(100);
+    expect(analyticsKpiToRow({ ...base, progress: -8 }, "u").progress).toBe(0);
+  });
+
+  it("icon desconhecido cai no fallback bar-chart (linha de outra versão não quebra)", () => {
+    const back = analyticsKpiFromRow({
+      external_key: "9",
+      label: "l",
+      value: "v",
+      icon_name: "rocket",
+    });
+    expect(back.iconName).toBe("bar-chart");
   });
 });
