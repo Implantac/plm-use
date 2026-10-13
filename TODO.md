@@ -32,6 +32,11 @@
 - [x] cloud-sync: pushes verificam `error` e avisam (fim do salvamento fantasma).
 - [x] `/api/health` para monitoramento externo.
 - [x] Screenshots de E2E fora do Git; `example.functions.ts` (getGreeting) removido.
+- [x] Timeline criativa cross-device (09/10): mirror `emitLocalEvent` →
+      `entity_events` (best-effort, degrada sozinho se o banco não tiver o
+      enum — migration `20261009210000`) + `?q=` na URL em `/collections` e
+      `/analytics` (`parseQSearch` testado) + paginação "Mostrar mais" na grade
+      de coleções + export round-trip da tabela de medidas em official-models.
 - [x] Segunda tacada funcional (09/10): módulos 9/10 do `creative-sync` — CAPA da
       Qualidade (`quality_capa_actions`) e influenciadores (`marketing_influencers`)
       adaptados direto dos stores zustand (list/apply/subscribe no `getState`/
@@ -59,7 +64,8 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
 ## Pendências que exigem ação fora do repositório
 
 - [ ] Aplicar as migrations pendentes no projeto real (`supabase db push`):
-      agendamento dos crons + 10 tabelas dos módulos criativos (inclui
+      agendamento dos crons + 10 tabelas dos módulos criativos + enum de
+      `entity_events` para a timeline cross-device (inclui
       `20261009120000_persist_collections` e `20261009170000_persist_analytics_kpis`)
       — e no cron, o seed
       do `app_cron_config` (segredos gerados com `openssl rand -hex 32`, iguais

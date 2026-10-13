@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileUp, ImageUp, LoaderCircle, Plus, Ruler, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { ExportMenu } from "@/components/export/ExportMenu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -317,9 +318,22 @@ function OfficialModelsPage() {
                     />
                   </label>
                 </Button>
+                <ExportMenu
+                  title="Tabela de medidas — modelo oficial"
+                  filename={"medidas-oficiais-" + new Date().toISOString().slice(0, 10)}
+                  columns={["ponto", "valor", "tolerancia", "como_medir"]}
+                  rows={form.medidas.map((m) => ({
+                    ponto: m.point,
+                    valor: m.value,
+                    tolerancia: m.tolerance ?? "",
+                    como_medir: m.how ?? "",
+                  }))}
+                  label="Exportar CSV"
+                />
               </div>
               <p className="text-xs text-muted-foreground">
-                Colunas: ponto de medida; valor; tolerância; como medir. Exporte do Excel como CSV.
+                Colunas: ponto de medida; valor; tolerância; como medir. Exporte do Excel como CSV —
+                ou use o botão para baixar a tabela atual no mesmo formato e reimportá-la editada.
               </p>
               <div className="max-h-80 space-y-1 overflow-auto">
                 {form.medidas.map((m, i) => (

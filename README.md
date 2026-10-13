@@ -163,6 +163,11 @@ burlada:
 - **Busca de tela é opt-in**: o `ModuleLayout` só renderiza a caixa "Buscar" para
   quem passa `onSearch`. As 22 instâncias decorativas (Input sem onChange) foram
   removidas em 09/10 — tela nova não ganha campo de busca que não filtra.
+- **Busca vive na URL** onde faz sentido: `?q=` com `parseQSearch`
+  (`src/lib/url-search.ts`) + `navigate({ search, replace })` — `/collections` e
+  `/analytics` são o padrão. Timeline das telas criativas: o `emitLocalEvent`
+  espelha em melhor-esforço para `entity_events` (cross-device quando o enum
+  estiver aplicado); o localStorage continua sendo a fonte imediata da UI.
 - **Módulos criativos persistem via `creative-sync`** (ver
   "Módulos criativos: persistência" em Deploy): `colors`, `prints`, `looks`,
   `display`, `measurements`, filtros do `collection-map`, a matriz de

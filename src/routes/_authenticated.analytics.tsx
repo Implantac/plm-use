@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -24,6 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { parseQSearch, type QSearch } from "@/lib/url-search";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import {
   useAnalyticsKpis,
@@ -60,12 +61,19 @@ type MarketingMetric = {
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   component: AnalyticsPage,
+  validateSearch: parseQSearch,
 });
 
 function AnalyticsPage() {
   const allKpis = useAnalyticsKpis();
-  const [q, setQ] = useState("");
-  const kpis = useMemo(() => filterAnalyticsKpis(allKpis, q), [allKpis, q]);
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { q } = Route.useSearch();
+  const setQ = (v: string) =>
+    navigate({
+      search: (prev: QSearch) => ({ ...prev, q: v.trim() ? v : undefined }),
+      replace: true,
+    });
+  const kpis = useMemo(() => filterAnalyticsKpis(allKpis, q ?? ""), [allKpis, q]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingKpi, setEditingKpi] = useState<AnalyticsKpi | null>(null);
   const [formData, setFormData] = useState({ label: "", value: "", sub: "" });

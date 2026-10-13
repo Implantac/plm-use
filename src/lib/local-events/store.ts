@@ -6,6 +6,7 @@
 // useEventEmitter().emit — o consumidor de UI (LocalEntityTimeline) continua igual.
 
 import { useEffect, useState } from "react";
+import { mirrorEvent } from "./mirror";
 
 export type LocalEntityType =
   | "color_palette"
@@ -76,6 +77,7 @@ export function emitLocalEvent(
   events = [evt, ...events].slice(0, MAX_EVENTS);
   persist();
   listeners.forEach((l) => l());
+  void mirrorEvent(evt); // melhor-esforço: timeline vira cross-device quando o banco permitir
   return evt;
 }
 

@@ -34,7 +34,12 @@ import {
   type Collection,
 } from "@/lib/collections/store";
 import { filterCollections } from "@/lib/collections/filter";
-import { collectionsValidateSearch, type CollectionsSearch } from "@/lib/collections/search";
+import {
+  COLLECTIONS_PAGE,
+  collectionsValidateSearch,
+  paginateVisible,
+  type CollectionsSearch,
+} from "@/lib/collections/search";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
@@ -57,6 +62,8 @@ function CollectionsPage() {
       replace: true,
     });
   const visible = useMemo(() => filterCollections(collections, qv), [collections, qv]);
+  const [max, setMax] = useState(COLLECTIONS_PAGE);
+  const page = useMemo(() => paginateVisible(visible, max), [visible, max]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [formData, setFormData] = useState({
@@ -198,7 +205,7 @@ function CollectionsPage() {
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
         <div className="space-y-4">
-          {visible.map((collection) => (
+          {page.shown.map((collection) => (
             <Card
               key={collection.id}
               className="glass-card rounded-lg overflow-hidden hover:border-primary/30 transition-colors"
@@ -291,6 +298,18 @@ function CollectionsPage() {
             </Card>
           ))}
         </div>
+        {page.remaining > 0 && (
+          <div className="mt-4 flex justify-center">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-[10px] tracking-[0.14em]"
+              onClick={() => setMax((m) => m + COLLECTIONS_PAGE)}
+            >
+              Mostrar mais {page.remaining} coleção{page.remaining > 1 ? "ões" : ""}
+            </Button>
+          </div>
+        )}
 
         <div className="space-y-6">
           <CollectionPerformance collections={collections} />
