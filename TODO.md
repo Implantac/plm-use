@@ -32,6 +32,11 @@
 - [x] cloud-sync: pushes verificam `error` e avisam (fim do salvamento fantasma).
 - [x] `/api/health` para monitoramento externo.
 - [x] Screenshots de E2E fora do Git; `example.functions.ts` (getGreeting) removido.
+- [x] Timeline unificada também na LEITURA (09/10): `useCreativeTimeline`
+      (lib/local-events/unified.ts) mescla entity_events (realtime) + cache
+      local com dedupe por `payload.local_id`; `LocalEntityTimeline` passou a
+      usá-la —_sheet_ de Histórico das 6 telas criativas ganha cross-device no
+      instante em que o enum for aplicado, sem nova release. 5 testes.
 - [x] Timeline criativa cross-device (09/10): mirror `emitLocalEvent` →
       `entity_events` (best-effort, degrada sozinho se o banco não tiver o
       enum — migration `20261009210000`) + `?q=` na URL em `/collections` e

@@ -163,6 +163,12 @@ burlada:
 - **Busca de tela é opt-in**: o `ModuleLayout` só renderiza a caixa "Buscar" para
   quem passa `onSearch`. As 22 instâncias decorativas (Input sem onChange) foram
   removidas em 09/10 — tela nova não ganha campo de busca que não filtra.
+- **Timeline criativa é unificada na leitura**: `LocalEntityTimeline` mostra o
+  espelho de `entity_events` (realtime, ator real) + o cache local sem
+  duplicata — o `payload.local_id` gravado pelo mirror é a chave do dedupe.
+  Pré-`db push` o servidor devolve vazio e a tela mostra só o local; nenhum
+  feature-flag, nenhuma quebra. Merge puro testado em
+  `src/lib/local-events/unified.test.ts`.
 - **Busca vive na URL** onde faz sentido: `?q=` com `parseQSearch`
   (`src/lib/url-search.ts`) + `navigate({ search, replace })` — `/collections` e
   `/analytics` são o padrão. Timeline das telas criativas: o `emitLocalEvent`

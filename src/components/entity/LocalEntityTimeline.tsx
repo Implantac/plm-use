@@ -13,7 +13,8 @@ import {
   XCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useLocalEntityTimeline, type LocalEntityType } from "@/lib/local-events/store";
+import type { LocalEntityType } from "@/lib/local-events/store";
+import { useCreativeTimeline } from "@/lib/local-events/unified";
 
 const EVENT_ICON: Record<string, LucideIcon> = {
   created: Sparkles,
@@ -54,12 +55,13 @@ export function LocalEntityTimeline({
   entityType: LocalEntityType;
   entityId: string;
 }) {
-  const { items } = useLocalEntityTimeline(entityType, entityId);
+  const { items } = useCreativeTimeline(entityType, entityId);
 
   if (items.length === 0) {
     return (
       <div className="rounded-md border border-dashed border-border bg-muted/20 p-6 text-center text-[11px] text-muted-foreground">
-        Sem eventos registrados ainda para esta entidade.
+        Sem eventos registrados ainda para esta entidade (o histórico começa a ser gravado na
+        primeira edição).
       </div>
     );
   }
