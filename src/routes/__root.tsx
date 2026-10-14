@@ -83,19 +83,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "A plataforma PLM mais moderna da América Latina. Inteligência Artificial aplicada ao ciclo de vida do produto de moda.",
+          "PLM com IA para desenvolvimento de produto de moda: fichas técnicas, PCP, portal de fornecedores e cockpit executivo — do briefing à aprovação da amostra.",
       },
       { name: "author", content: "USE AI" },
       { property: "og:title", content: "USE MODA PLM AI" },
       {
         property: "og:description",
-        content: "Transforme sua confecção com Inteligência Artificial e gestão 360º.",
+        content:
+          "Acelere o desenvolvimento da sua coleção: do briefing à aprovação de amostras, com fornecedores no mesmo fluxo e IA por cima.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@usemodaai" },
       { name: "twitter:title", content: "USE MODA PLM AI" },
-      { name: "twitter:description", content: "O futuro da gestão de moda chegou." },
+      {
+        name: "twitter:description",
+        content: "Desenvolvimento de produto de moda com IA — PLM para confecção.",
+      },
       {
         property: "og:image",
         content:

@@ -234,6 +234,14 @@ function PrintsRoute() {
                         style={{ background: c }}
                       />
                     ))}
+                    {p.colors.length > 5 && (
+                      <span
+                        className="text-[9px] text-white/80 ml-0.5 self-center"
+                        title={`${p.colors.length} variações de cor da estampa`}
+                      >
+                        +{p.colors.length - 5}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="p-2.5 bg-white/[0.02]">

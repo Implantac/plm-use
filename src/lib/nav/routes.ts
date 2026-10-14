@@ -43,6 +43,7 @@ export type NavIcon =
   | "users"
   | "clipboard"
   | "messages-square"
+  | "activity"
   | "dollar";
 
 export type RouteMeta = {
@@ -81,7 +82,7 @@ export const NAV_GROUPS: Record<
 export const ROUTE_REGISTRY: RouteMeta[] = [
   // Geral
   { path: "/dashboard", icon: "layout-dashboard", label: "Dashboard", group: "geral" },
-  { path: "/feed", icon: "messages-square", label: "Colaboração", group: "geral" },
+  { path: "/feed", icon: "activity", label: "Atividade", group: "geral" },
   { path: "/flow", label: "Fluxo do Produto", group: "geral", icon: "workflow" },
   {
     path: "/approvals",

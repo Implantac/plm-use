@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Plataforma PLM com IA para pesquisa, colecoes, desenvolvimento, producao, marketing, vendas e rentabilidade.",
+          "Plataforma PLM com IA para desenvolvimento de produto de moda: pesquisa, colecoes, fichas tecnicas, amostras, fornecedores e PCP.",
       },
     ],
   }),

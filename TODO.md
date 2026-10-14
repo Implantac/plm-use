@@ -79,6 +79,7 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
 
 ## Pendências que exigem ação fora do repositório
 
+- [x] `feed` de atividade reescrito: consome `entity_events` ao vivo (query + realtime INSERT, dedupe por id), chips de filtro derivados dos dados, links de navegação por tipo de entidade e degradação silenciosa quando o banco não responde. Posts ilustrativos removidos.
 - [ ] Aplicar as migrations pendentes no projeto real (`supabase db push`):
       agendamento dos crons + 10 tabelas dos módulos criativos + enum de
       `entity_events` para a timeline cross-device (inclui

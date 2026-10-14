@@ -2,6 +2,7 @@
 // (src/lib/nav/routes.ts). A registry fica dados puros (serializável, testável
 // em node sem DOM); só este módulo conhece lucide.
 import {
+  Activity,
   BarChart3,
   Bot,
   Box,
@@ -70,5 +71,6 @@ export const NAV_ICON_COMPONENTS: Record<NavIcon, LucideIcon> = {
   users: Users,
   clipboard: ClipboardList,
   "messages-square": MessagesSquare,
+  activity: Activity,
   dollar: DollarSign,
 };
