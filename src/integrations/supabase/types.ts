@@ -987,6 +987,60 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_influencers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          custo_medio: number
+          envios: Json
+          external_key: string
+          handle: string
+          id: string
+          nome: string
+          perfil: string
+          regiao: string
+          segmento: string
+          seguidores: number
+          uf: string
+          updated_at: string
+          vendas_geradas: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          custo_medio?: number
+          envios?: Json
+          external_key: string
+          handle?: string
+          id?: string
+          nome: string
+          perfil?: string
+          regiao?: string
+          segmento?: string
+          seguidores?: number
+          uf?: string
+          updated_at?: string
+          vendas_geradas?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          custo_medio?: number
+          envios?: Json
+          external_key?: string
+          handle?: string
+          id?: string
+          nome?: string
+          perfil?: string
+          regiao?: string
+          segmento?: string
+          seguidores?: number
+          uf?: string
+          updated_at?: string
+          vendas_geradas?: number
+        }
+        Relationships: []
+      }
       measurement_charts: {
         Row: {
           brand: string | null
@@ -1851,6 +1905,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      quality_capa_actions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          criada: string
+          defeito: string
+          external_key: string
+          fornecedor: string | null
+          id: string
+          lote: string | null
+          prazo: string
+          ref: string | null
+          responsavel: string
+          setor: string
+          status: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          criada?: string
+          defeito: string
+          external_key: string
+          fornecedor?: string | null
+          id?: string
+          lote?: string | null
+          prazo?: string
+          ref?: string | null
+          responsavel?: string
+          setor?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          criada?: string
+          defeito?: string
+          external_key?: string
+          fornecedor?: string | null
+          id?: string
+          lote?: string | null
+          prazo?: string
+          ref?: string | null
+          responsavel?: string
+          setor?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       reference_gate: {
         Row: {
@@ -3098,6 +3206,16 @@ export type Database = {
         | "production_order"
         | "production_order_item"
         | "production_route"
+        | "color_palette"
+        | "print_design"
+        | "look"
+        | "display_board"
+        | "collection_map"
+        | "measurement_chart"
+        | "collection"
+        | "analytics_kpi"
+        | "quality_capa"
+        | "influencer"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -3302,6 +3420,16 @@ export const Constants = {
         "production_order",
         "production_order_item",
         "production_route",
+        "color_palette",
+        "print_design",
+        "look",
+        "display_board",
+        "collection_map",
+        "measurement_chart",
+        "collection",
+        "analytics_kpi",
+        "quality_capa",
+        "influencer",
       ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [
