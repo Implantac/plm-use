@@ -53,6 +53,63 @@ export type Database = {
         }
         Relationships: []
       }
+      app_cron_config: {
+        Row: {
+          base_url: string
+          enabled: boolean
+          header: string
+          job: string
+          path: string
+          secret: string
+          updated_at: string
+        }
+        Insert: {
+          base_url: string
+          enabled?: boolean
+          header: string
+          job: string
+          path: string
+          secret: string
+          updated_at?: string
+        }
+        Update: {
+          base_url?: string
+          enabled?: boolean
+          header?: string
+          job?: string
+          path?: string
+          secret?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      app_cron_runs: {
+        Row: {
+          detail: string | null
+          id: number
+          job: string
+          ok: boolean
+          started_at: string
+          status: number
+        }
+        Insert: {
+          detail?: string | null
+          id?: never
+          job: string
+          ok: boolean
+          started_at?: string
+          status: number
+        }
+        Update: {
+          detail?: string | null
+          id?: never
+          job?: string
+          ok?: boolean
+          started_at?: string
+          status?: number
+        }
+        Relationships: []
+      }
       capa_events: {
         Row: {
           actor: string | null
@@ -2571,6 +2628,7 @@ export type Database = {
         Args: { _moves: Json; _observation?: string }
         Returns: string
       }
+      run_cloud_cron: { Args: { p_job: string }; Returns: undefined }
       user_belongs_to_supplier: {
         Args: { _supplier_id: string; _uid: string }
         Returns: boolean
