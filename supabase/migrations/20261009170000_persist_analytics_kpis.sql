@@ -1,7 +1,7 @@
 -- Persistência dos KPIs estratégicos do BI Executivo (módulo 8 do creative-sync).
 -- A tela /analytics editava cards num useState local — a revisão de 09/10 achou
 -- o segundo "caso collections". `icon_name` guarda o NOME do ícone (o ReactNode
-// nasce na renderização); KPI sem barra = progress NULL.
+-- nasce na renderização); KPI sem barra = progress NULL.
 
 CREATE TABLE public.analytics_kpis (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
