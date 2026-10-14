@@ -7,8 +7,7 @@
 // (registry de rotas + módulos do creative-sync) e da tabela entity_events;
 // status por área é classificativo, não comercial:
 //   real   → persiste no Supabase hoje
-//   sync   → espelhado via creative-sync (migrations aplicadas via SQL editor do Cloud;
-//            falta apenas o bloco 8 — analytics_kpis)
+//   sync   → espelhado via creative-sync (migrations 100% aplicadas via SQL editor do Cloud)
 //   parcial→ mistura fonte real com camada demo/local
 //   vitrine→ tela de portfólio; edição não persiste (a própria tela avisa)
 
@@ -301,8 +300,9 @@ function AuditScreen() {
             <p className="px-5 py-3 text-[10px] leading-relaxed text-muted-foreground">
               * Sync = espelho no Supabase via `creative-sync`. As migrations foram aplicadas via
               SQL editor do Lovable Cloud (14/10/2026) — os módulos criativos e a timeline
-              cross-device já gravam no banco (enum atual ao vivo, verificado por sonda). Falta só o
-              bloco 8 (`analytics_kpis`). O cache local segue como fallback de rede.
+              cross-device já gravam no banco (enum atual ao vivo, verificado por sonda). As 12
+              tabelas e o enum respondem 200 às sondas de 14/10 (19h50). O cache local segue como
+              fallback de rede.
             </p>
           </div>
 

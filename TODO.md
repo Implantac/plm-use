@@ -18,7 +18,7 @@
 - [x] Agendamento real dos crons: migration `20261008203000_schedule_cloud_crons.sql`
       (pg_cron + HMAC via pgcrypto + auditoria `app_cron_runs`) +
       `supabase/seed_cron_config.example.sql` + `scripts/smoke-cron.sh`.
-      **Falta aplicar no projeto** (db push + seed com segredos reais).
+      Tabelas `app_cron_config/runs` vivas no banco (14/10) — ver seed/segredos no item pendente.
 - [x] CI mínima: `.github/workflows/ci.yml` (prettier → eslint → tsc → vitest →
       build). Repo todo formatado (`npm run format`) + `.prettierignore` para
       vendor/minificados.
@@ -80,13 +80,15 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
 ## Pendências que exigem ação fora do repositório
 
 - [x] `feed` de atividade reescrito: consome `entity_events` ao vivo (query + realtime INSERT, dedupe por id), chips de filtro derivados dos dados, links de navegação por tipo de entidade e degradação silenciosa quando o banco não responde. Posts ilustrativos removidos.
-- [ ] Aplicar as migrations pendentes no projeto real (`supabase db push`):
-      agendamento dos crons + 10 tabelas dos módulos criativos + enum de
-      `entity_events` para a timeline cross-device (inclui
-      `20261009120000_persist_collections` e `20261009170000_persist_analytics_kpis`)
-      — e no cron, o seed
-      do `app_cron_config` (segredos gerados com `openssl rand -hex 32`, iguais
-      aos do deploy). Depois, `supabase gen types` e `scripts/smoke-cron.sh`.
+- [x] Aplicar as migrations pendentes no banco real — **14/10/2026, via SQL editor do
+      Lovable Cloud** (blocos 1–3 e 5–7 pelo agente do Lovable; bloco 8 pelo operador após
+      acharmos o comentário `//` inválido — corrigido + guarda `sql-migrations.test.ts`).
+      Sondas pós: 12/12 tabelas 200 + enum `entity_type` com os tipos criativos. Divergência
+      zero: FK `analytics_kpis.created_by→users` removido na aplicação (regra do ambiente);
+      migration do repo e `drizzle/0012` do bot espelhados.
+- [ ] Cron de verdade rodando: conferir que as linhas de `app_cron_config` (seed da
+      migration 1) têm segredo igual às env vars do deploy (Lovable → Secrets) e que
+      `app_cron_runs` recebe execuções; `scripts/smoke-cron.sh` para o teste de ponta a ponta.
 - [ ] Painel Supabase: "Allow new sign ups" OFF; Redirect URLs com
       `https://SEU-DOMINIO/reset-password`; testar o e-mail de recuperação.
 - [ ] Projeto staging Supabase espelhado; E2E de staging com

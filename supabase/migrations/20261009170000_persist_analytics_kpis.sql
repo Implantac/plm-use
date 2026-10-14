@@ -12,7 +12,10 @@ CREATE TABLE public.analytics_kpis (
   progress integer CHECK (progress IS NULL OR progress BETWEEN 0 AND 100),
   icon_name text NOT NULL DEFAULT 'bar-chart',
   tone text NOT NULL DEFAULT 'primary',
-  created_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  -- created_by: sem FK para auth.users (regra do ambiente Lovable: tabelas de app
+  -- nao referenciam a lista de usuarios); a politica de insert abaixo ja exige
+  -- auth.uid() = created_by. Versao aplicada no banco em 14/10 espelha isto.
+  created_by uuid,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
