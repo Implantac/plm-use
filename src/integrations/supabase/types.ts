@@ -1852,6 +1852,60 @@ export type Database = {
           },
         ]
       }
+      quality_capa_actions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          criada: string
+          defeito: string
+          external_key: string
+          fornecedor: string | null
+          id: string
+          lote: string | null
+          prazo: string
+          ref: string | null
+          responsavel: string
+          setor: string
+          status: string
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          criada?: string
+          defeito: string
+          external_key: string
+          fornecedor?: string | null
+          id?: string
+          lote?: string | null
+          prazo?: string
+          ref?: string | null
+          responsavel?: string
+          setor?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          criada?: string
+          defeito?: string
+          external_key?: string
+          fornecedor?: string | null
+          id?: string
+          lote?: string | null
+          prazo?: string
+          ref?: string | null
+          responsavel?: string
+          setor?: string
+          status?: string
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reference_gate: {
         Row: {
           created_at: string
