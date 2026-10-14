@@ -172,7 +172,7 @@ function PrototypesPage() {
   return (
     <ModuleLayout
       title="Protótipos"
-      subtitle="Controle de modelagem, corte, costura, silk, bordado, lavanderia, acabamento e aprovação."
+      subtitle="Controle de modelagem, corte, costura, silk, bordado, lavanderia, acabamento e aprovação. Dados de demonstração — a edição não persiste."
       version="Craft v3.0"
       searchPlaceholder="Buscar protótipo, etapa, ajuste ou responsável"
       onAdd={() => handleOpenDialog()}

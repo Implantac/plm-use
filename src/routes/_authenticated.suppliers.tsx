@@ -175,7 +175,7 @@ function SuppliersPage() {
   return (
     <ModuleLayout
       title="Fornecedores"
-      subtitle="Portal de fornecedores com pedidos, materiais, aprovações, entregas e score de compliance."
+      subtitle="Portal de fornecedores com pedidos, materiais, aprovações, entregas e score de compliance. Cadastro de exemplo; o log de eventos por fornecedor persiste."
       version="Procurement v2.0"
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar fornecedor, pedido, material ou aprovação"

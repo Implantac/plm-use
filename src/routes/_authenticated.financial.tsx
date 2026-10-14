@@ -112,7 +112,7 @@ function FinancialPage() {
   return (
     <ModuleLayout
       title="Financeiro"
-      subtitle="Apuração automática de custos, receitas, margens e rentabilidade por produto e coleção."
+      subtitle="Apuração de custos, receitas, margens e rentabilidade por produto e coleção — o cálculo automático depende do ERP. Dados de demonstração — a edição não persiste."
       version="CFO Dashboard v3.0"
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar lançamento, coleção ou centro de custo"

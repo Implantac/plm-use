@@ -119,7 +119,7 @@ function MarketingPage() {
   return (
     <ModuleLayout
       title="Marketing de Moda"
-      subtitle="Gestão por produto e coleção: fotos, vídeos, catálogos, influenciadores, mídia paga, custos e ROAS."
+      subtitle="Gestão por produto e coleção: fotos, vídeos, catálogos, influenciadores, mídia paga, custos e ROAS. Dados de demonstração — a edição não persiste."
       version="Growth v3.0"
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar campanha, produto, coleção ou canal"

@@ -32,7 +32,7 @@ function CadPage() {
   return (
     <ModuleLayout
       title="CAD e Modelagem"
-      subtitle="Integrações nativas com ferramentas CAD, formatos técnicos e preview instantâneo de modelagem."
+      subtitle="Catálogo de integrações CAD e formatos técnicos — nenhuma API conectada ainda; import/export estão desabilitados por honestidade."
       version="CAD Hub v1.0"
       searchPlaceholder="Buscar arquivo, formato, integração ou versão"
       metrics={[

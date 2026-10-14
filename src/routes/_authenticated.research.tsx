@@ -148,7 +148,7 @@ function ResearchHub() {
   return (
     <ModuleLayout
       title="Research Hub"
-      subtitle="inspiração orientada por dados. capture o zeitgeist antes dele acontecer."
+      subtitle="inspiração orientada por dados. capture o zeitgeist antes dele acontecer. Dados de demonstração — a edição não persiste."
       version="Research v2.1"
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar tendência, tecido, cor ou concorrente"

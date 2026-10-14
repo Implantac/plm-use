@@ -88,7 +88,7 @@ function CommercialPage() {
   return (
     <ModuleLayout
       title="Comercial"
-      subtitle="Integração com ERP, e-commerce e marketplaces para pedidos, vendas, trocas e devoluções."
+      subtitle="Cenário de integração com ERP, e-commerce e marketplaces para pedidos, vendas, trocas e devoluções. Dados de demonstração — a edição não persiste."
       version="Sales Hub v2.0"
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar cliente, pedido, canal ou SKU"

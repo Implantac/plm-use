@@ -1,138 +1,217 @@
+// Painel de estado REAL do produto — reescrito em 09/10.
+//
+// A versão anterior era um checklist de promises do prompt-mestre ("SaaS Ready",
+// "multiempresa, MFA, SSO", stack Next/NestJS/Redis que não existe). Isso é
+// munição para expectativa errada — e num repo público, histórico que vende o
+// que o produto não tem. Este painel agora deriva dos números do próprio código
+// (registry de rotas + módulos do creative-sync) e da tabela entity_events;
+// status por área é classificativo, não comercial:
+//   real   → persiste no Supabase hoje
+//   sync   → espelhado via creative-sync (ativado pelo db push das migrations)
+//   parcial→ mistura fonte real com camada demo/local
+//   vitrine→ tela de portfólio; edição não persiste (a própria tela avisa)
+
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  Activity,
   ArrowLeft,
   CheckCircle2,
-  FileText,
+  Database,
   Layers3,
-  LockKeyhole,
   ShieldCheck,
   Sparkles,
+  Store,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
+import { ROUTE_REGISTRY } from "@/lib/nav/routes";
+import { __internals } from "@/lib/creative-sync";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/audit")({
   head: () => ({
     meta: [
-      { title: "Audit | USE MODA PLM AI" },
+      { title: "Estado do produto | USE MODA PLM AI" },
       {
         name: "description",
-        content: "Auditoria de cobertura funcional, arquitetura SaaS e aderência ao prompt mestre.",
+        content: "Painel de estado real: cobertura por área, persistência e atividade recente.",
       },
     ],
   }),
   component: AuditScreen,
 });
 
-const coverage = [
+type CovStatus = "real" | "sync" | "parcial" | "vitrine";
+
+const STATUS_META: Record<CovStatus, { label: string; cls: string }> = {
+  real: { label: "Real", cls: "bg-emerald-300/10 text-emerald-300" },
+  sync: { label: "Sync*", cls: "bg-sky-300/10 text-sky-300" },
+  parcial: { label: "Parcial", cls: "bg-amber-300/10 text-amber-300" },
+  vitrine: { label: "Vitrine", cls: "bg-zinc-300/10 text-zinc-300" },
+};
+
+const coverage: Array<{ area: string; route: string; evidence: string; status: CovStatus }> = [
   {
-    area: "Pesquisa e Tendências",
-    route: "/research",
-    evidence:
-      "Mood board, análise visual por IA, paletas, tecidos, modelagens, benchmark e histórico.",
-  },
-  {
-    area: "Coleções",
-    route: "/collections",
-    evidence: "Temporada, marca, metas, mix planejado/realizado, ciclo, ROI e curva ABC.",
-  },
-  {
-    area: "Desenvolvimento",
+    area: "Desenvolvimento / Kanban",
     route: "/development",
-    evidence:
-      "Kanban de Ideia, Croqui, Modelagem, Piloto, Ajuste, Aprovação, Produção e Lançamento.",
-  },
-  {
-    area: "Protótipos",
-    route: "/prototypes",
-    evidence: "Etapas completas, ajustes, solicitante, responsável, fotos, vídeos e aprovação.",
+    evidence: "Fichas e etapas com cloud-sync no Supabase; drag-and-drop persistido.",
+    status: "real",
   },
   {
     area: "Ficha Técnica",
     route: "/tech-sheet",
-    evidence: "Materiais, processos, custos, arquivos, versões, comparação e IA de viabilidade.",
-  },
-  {
-    area: "CAD e Modelagem",
-    route: "/cad",
-    evidence:
-      "AI, CDR, DXF, PLT, PDF, SVG e integrações Illustrator, Corel, Audaces, Lectra, Gerber, Optitex, Browzwear, CLO3D.",
+    evidence: "Materiais, custos, versões e arquivos persistidos; IA usa modelos oficiais reais.",
+    status: "real",
   },
   {
     area: "PCP e Produção",
     route: "/production",
-    evidence: "OPs, lotes, Gantt, capacidade, produção interna, facção, terceiros e gargalos.",
+    evidence: "pcp_lots + realtime; passagens/GC geram entity_events.",
+    status: "real",
   },
   {
     area: "Almoxarifado",
     route: "/inventory",
-    evidence: "Fotos, lotes, cores internas/fornecedor, reserva por OP, mínimo e rastreabilidade.",
+    evidence: "Server functions dedicadas (inventário, reserva por OP).",
+    status: "real",
   },
   {
-    area: "Fornecedores",
-    route: "/suppliers",
-    evidence: "Portal, pedidos, materiais, aprovações, entregas, compliance e OTIF.",
+    area: "Showroom",
+    route: "/showroom",
+    evidence: "Peça-mãe, kits, feedback e Go/No-Go em tabelas próprias + realtime.",
+    status: "real",
   },
   {
-    area: "Marketing",
-    route: "/marketing",
+    area: "Lançamentos",
+    route: "/launch",
+    evidence: "Ondas persistidas; sell-through do cron aguarda ErpAdapter (mock declarado).",
+    status: "real",
+  },
+  {
+    area: "Coleções",
+    route: "/collections",
     evidence:
-      "Produto/coleção, fotos, vídeos, catálogos, influenciadores, custos, Meta, Google, TikTok e ROAS.",
+      "CRUD completo espelhado (módulo 7); busca na URL, CSV e comparativo. KPIs de benchmark são demo até ERP/BI.",
+    status: "sync",
   },
   {
-    area: "Comercial",
-    route: "/commercial",
-    evidence: "ERP, e-commerce, marketplaces, pedidos, vendas, trocas, devoluções e IA comercial.",
+    area: "Cores / Estampas / Looks / Display / Medidas / Mapas",
+    route: "/colors",
+    evidence: "Módulos 1–6 do creative-sync; timeline unificada com entity_events.",
+    status: "sync",
   },
   {
-    area: "Financeiro",
-    route: "/financial",
-    evidence: "Custos, receitas, margem, marketing, DRE, transações e rentabilidade.",
+    area: "Qualidade / CAPA",
+    route: "/quality",
+    evidence: "Defeitos derivados dos lotes são reais; CAPA espelhada (módulo 9).",
+    status: "sync",
   },
   {
     area: "BI Executivo",
     route: "/analytics",
-    evidence: "ROI, ROAS, margem, ticket, curva ABC, giro, ruptura e relatórios.",
+    evidence:
+      "KPIs editáveis persistidos (módulo 8) + export CSV; valores ainda manuais por definição.",
+    status: "sync",
+  },
+  {
+    area: "Influenciadores / GTM",
+    route: "/influencers",
+    evidence: "Cadastro + envios espelhados (módulo 10); métricas de engajamento são manuais.",
+    status: "sync",
+  },
+  {
+    area: "Fluxo da Coleção",
+    route: "/flow",
+    evidence: "Gate view derivada das referências reais (read-only).",
+    status: "real",
+  },
+  {
+    area: "Aprovações / Feed",
+    route: "/approvals",
+    evidence: "Notificações em tempo real via tabela notifications; comentários por entidade.",
+    status: "real",
+  },
+  {
+    area: "Pesquisa / Protótipos / Marketing / Comercial / Financeiro / CAD",
+    route: "/marketing",
+    evidence:
+      "Telas de portfólio com dados de exemplo — a edição não persiste e cada uma diz isso na própria tela.",
+    status: "vitrine",
+  },
+  {
+    area: "Fornecedores",
+    route: "/suppliers",
+    evidence: "Log de eventos por fornecedor é real; o cadastro da lista é de exemplo.",
+    status: "parcial",
+  },
+  {
+    area: "Portal do Fornecedor",
+    route: "/supplier-portal",
+    evidence: "Leitura da base real (pedidos por fornecedor); sem escrita self-service.",
+    status: "parcial",
   },
   {
     area: "USE AI",
     route: "/ai-center",
-    evidence:
-      "Copiloto, gerador de coleções, ficha técnica, previsão de vendas e planejamento inteligente.",
+    evidence: "Agents com contexto live e geração de imagem server-side (auth própria).",
+    status: "parcial",
   },
   {
-    area: "Digital Twin",
-    route: "/digital-twin",
+    area: "Admin / Usuários / Segurança",
+    route: "/admin/users",
     evidence:
-      "Produtos, produção, vendas, estoque, rentabilidade, simulação e itens críticos em tempo real.",
-  },
-  {
-    area: "Colaboração",
-    route: "/feed",
-    evidence: "Feed, comentários, menções implícitas, aprovações, notificações e histórico.",
-  },
-  {
-    area: "Segurança SaaS",
-    route: "/security",
-    evidence:
-      "LGPD, MFA, SSO, OAuth, RBAC, logs, backup, multiempresa, multi-idioma e multi-moeda.",
-  },
-  {
-    area: "Cockpit Executivo",
-    route: "/dashboard",
-    evidence:
-      "Resumo operacional 360, decisões USE AI, arquitetura, módulos, alertas e rentabilidade.",
+      "Convites, roles e guards verificados (16/16 APIs). Ainda não: SSO, MFA, multiempresa.",
+    status: "parcial",
   },
 ];
 
-const architecture = [
-  "Frontend: Next.js, TypeScript, Tailwind, Shadcn, Framer Motion",
-  "Backend: NestJS, PostgreSQL, Redis, Elasticsearch",
-  "IA: OpenAI, Anthropic, Gemini, Ollama",
-  "Ops: S3 compatible storage, RabbitMQ, Grafana, Prometheus",
+const stack = [
+  "React 19 + TypeScript, TanStack Router/Start (preset cloudflare-module)",
+  "UI Tailwind + shadcn/radix; deploy e sync bidirecional via Lovable Cloud",
+  "Supabase: Postgres + RLS + realtime + storage; migrations SQL timestampadas",
+  "Qualidade: Vitest (unit/componente), CI GitHub Actions, E2E em staging agendado",
 ];
+
+type RecentEvent = {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  event_type: string;
+  note: string | null;
+  actor_name: string | null;
+  created_at: string;
+};
+
+function useRecentEvents(limit = 30) {
+  const [items, setItems] = useState<RecentEvent[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("entity_events")
+      .select("id,entity_type,entity_id,event_type,note,actor_name,created_at")
+      .order("created_at", { ascending: false })
+      .limit(limit)
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) setFailed(true);
+        else setItems((data ?? []) as RecentEvent[]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [limit]);
+  return { items, failed };
+}
 
 function AuditScreen() {
+  const { items: events, failed } = useRecentEvents();
+  const counts = coverage.reduce<Record<string, number>>((acc, c) => {
+    acc[c.status] = (acc[c.status] ?? 0) + 1;
+    return acc;
+  }, {});
+  const modules = __internals.moduleKeys();
+
   return (
     <div className="min-h-dvh bg-background text-white p-6 md:p-10">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -152,19 +231,27 @@ function AuditScreen() {
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                 USE MODA PLM AI
               </p>
-              <h1 className="mt-3 text-4xl md:text-6xl font-bold tracking-tight">
-                Auditoria de cobertura
+              <h1 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
+                Estado real do produto
               </h1>
               <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-                Checklist de aderência ao prompt mestre: módulos PLM, IA nativa, arquitetura SaaS,
-                segurança e substituição de processos paralelos.
+                Este painel é gerado do próprio código (registry de rotas, módulos de sincronização
+                e trilha de eventos). Vitrine é vitrine — e está escrita como vitrine.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: "Cobertura", value: "18/18", icon: CheckCircle2 },
-                { label: "SaaS", value: "Ready", icon: ShieldCheck },
-                { label: "IA", value: "Native", icon: Sparkles },
+                {
+                  label: "Rotas no registry",
+                  value: String(ROUTE_REGISTRY.length),
+                  icon: Layers3,
+                },
+                { label: "Módulos sync", value: String(modules.length), icon: Database },
+                {
+                  label: "Persistência real",
+                  value: `${(counts.real ?? 0) + (counts.sync ?? 0)}/${coverage.length} áreas`,
+                  icon: CheckCircle2,
+                },
               ].map((item) => (
                 <div key={item.label} className="rounded-md border border-white/10 bg-black/20 p-4">
                   <item.icon className="h-4 w-4 text-primary" />
@@ -182,7 +269,7 @@ function AuditScreen() {
           <div className="rounded-lg border border-white/10 bg-white/[0.025] overflow-hidden">
             <div className="grid grid-cols-[1fr_120px] md:grid-cols-[220px_1fr_120px] border-b border-white/5 bg-white/[0.035] px-5 py-4 text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
               <span className="hidden md:block">Área</span>
-              <span>Evidência</span>
+              <span>Estado da arte</span>
               <span>Status</span>
             </div>
             {coverage.map((item) => (
@@ -198,22 +285,78 @@ function AuditScreen() {
                   </p>
                 </div>
                 <p className="text-sm leading-relaxed text-muted-foreground">{item.evidence}</p>
-                <span className="self-start inline-flex items-center gap-2 rounded-md bg-emerald-300/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-emerald-300">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  OK
+                <span
+                  className={`self-start inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${STATUS_META[item.status].cls}`}
+                >
+                  {item.status === "vitrine" ? (
+                    <Store className="h-3.5 w-3.5" />
+                  ) : (
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  )}
+                  {STATUS_META[item.status].label}
                 </span>
               </Link>
             ))}
+            <p className="px-5 py-3 text-[10px] leading-relaxed text-muted-foreground">
+              * Sync = espelho no Supabase via `creative-sync`; ativo a partir da aplicação das
+              migrations (`supabase db push`). Enquanto não aplicadas, os módulos funcionam com o
+              cache local do dispositivo.
+            </p>
           </div>
 
           <div className="space-y-6">
             <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2">
+                <Activity className="h-4 w-4 text-primary" />
+                Atividade recente
+              </h2>
+              <div className="mt-4 space-y-2">
+                {failed && (
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    A trilha `entity_events` ainda não respondeu — o histórico grava assim que o
+                    banco estiver no schema atual.
+                  </p>
+                )}
+                {!failed && events === null && (
+                  <p className="text-xs text-muted-foreground">Consultando a trilha…</p>
+                )}
+                {events?.length === 0 && (
+                  <p className="text-xs text-muted-foreground">Nenhum evento registrado ainda.</p>
+                )}
+                {(events ?? []).slice(0, 12).map((e) => (
+                  <div key={e.id} className="rounded-md border border-white/10 bg-black/20 p-3">
+                    <p className="text-[11px] font-bold text-white">
+                      {e.event_type}{" "}
+                      <span className="text-muted-foreground font-normal">
+                        · {e.entity_type} {e.entity_id.slice(0, 8)}
+                      </span>
+                    </p>
+                    {e.note && (
+                      <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                        {e.note}
+                      </p>
+                    )}
+                    <p className="mt-1 text-[9px] uppercase tracking-wider text-muted-foreground">
+                      {new Date(e.created_at).toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                      {e.actor_name ? ` · ${e.actor_name}` : ""}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2">
                 <Layers3 className="h-4 w-4 text-primary" />
-                Arquitetura
+                Stack real
               </h2>
               <div className="mt-5 space-y-3">
-                {architecture.map((item) => (
+                {stack.map((item) => (
                   <div key={item} className="rounded-md border border-white/10 bg-black/20 p-3">
                     <p className="text-sm leading-relaxed text-white/85">{item}</p>
                   </div>
@@ -223,24 +366,26 @@ function AuditScreen() {
 
             <div className="rounded-lg border border-primary/20 bg-primary/[0.025] p-5">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                <LockKeyhole className="h-4 w-4" />
-                Governança
+                <ShieldCheck className="h-4 w-4" />
+                Segurança, hoje
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-white/85">
-                O produto agora demonstra multiempresa, RBAC, MFA, SSO/OAuth, auditoria, logs,
-                backup e LGPD em telas próprias e no login.
+                HMAC nos crons públicos + rate-limit, guards 16/16 nas APIs, RLS em todas as
+                tabelas, upload validado, auto-cadastro fechado, recuperação de senha. O que ainda
+                NÃO existe: SSO/OAuth, MFA, multiempresa, export LGPD automatizado — promessa só de
+                roadmap.
               </p>
             </div>
 
             <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" />
-                Observação
+                <Sparkles className="h-4 w-4 text-primary" />
+                Por dentro do espelho
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                Esta auditoria é uma tela de produto para demonstrar cobertura funcional.
-                Integrações reais, autenticação SSO e pipelines de dados ainda dependem de backend e
-                credenciais.
+                {modules.length} módulos sincronizados:{" "}
+                <span className="text-white/85">{modules.join(", ")}</span>. Cada um tem migration
+                própria, RLS, realtime e testes da engine (client fake).
               </p>
             </div>
           </div>

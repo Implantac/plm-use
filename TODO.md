@@ -32,6 +32,17 @@
 - [x] cloud-sync: pushes verificam `error` e avisam (fim do salvamento fantasma).
 - [x] `/api/health` para monitoramento externo.
 - [x] Screenshots de E2E fora do Git; `example.functions.ts` (getGreeting) removido.
+- [x] `/audit` reescrita como painel de ESTADO REAL (09/10): a tela prometia
+      "SaaS Ready/Next/NestJS/Redis/SSO/MFA/multiempresa" — nada disso é stack ou
+      produto. Agora: cobertura classificada (real/sync/parcial/vitrine) derivada
+      do `ROUTE_REGISTRY` + `__internals.moduleKeys()`, bloco "Atividade recente"
+      lendo `entity_events` (a tabela JÁ existe no banco — funciona hoje), stack
+      honesta e cartão de segurança listando o que NÃO há. Vitrines (marketing,
+      research, prototypes, financial, commercial, cad, suppliers) ganharam o aviso
+      "dados de demonstração — a edição não persiste" na própria subtitle;
+      financeiro/comercial perderam "automática"/"Integração" como fato.
+      ExportMenu coberto por teste jsdom (disabled em grade vazia). Error boundary:
+      confirmado que `__root` TEM errorComponent próprio (audit v2 §15 fechada).
 - [x] Timeline unificada também na LEITURA (09/10): `useCreativeTimeline`
       (lib/local-events/unified.ts) mescla entity_events (realtime) + cache
       local com dedupe por `payload.local_id`; `LocalEntityTimeline` passou a
