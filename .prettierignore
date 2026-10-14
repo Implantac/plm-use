@@ -10,3 +10,5 @@ vendor/
 *.min.js
 *.min.css
 src/integrations/supabase/types.ts
+# gerido pelo bot do Lovable (regenerado no fluxo Cloud) — mesmo trato do types.ts
+src/integrations/supabase/previewAuthStorage.ts
