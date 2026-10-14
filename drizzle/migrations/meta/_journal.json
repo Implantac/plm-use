@@ -71,6 +71,13 @@
       "when": 1792006657364,
       "tag": "0009_persist_quality_capa",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792006675904,
+      "tag": "0010_persist_influencers",
+      "breakpoints": true
     }
   ]
 }

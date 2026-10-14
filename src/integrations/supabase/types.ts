@@ -987,6 +987,60 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_influencers: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          custo_medio: number
+          envios: Json
+          external_key: string
+          handle: string
+          id: string
+          nome: string
+          perfil: string
+          regiao: string
+          segmento: string
+          seguidores: number
+          uf: string
+          updated_at: string
+          vendas_geradas: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          custo_medio?: number
+          envios?: Json
+          external_key: string
+          handle?: string
+          id?: string
+          nome: string
+          perfil?: string
+          regiao?: string
+          segmento?: string
+          seguidores?: number
+          uf?: string
+          updated_at?: string
+          vendas_geradas?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          custo_medio?: number
+          envios?: Json
+          external_key?: string
+          handle?: string
+          id?: string
+          nome?: string
+          perfil?: string
+          regiao?: string
+          segmento?: string
+          seguidores?: number
+          uf?: string
+          updated_at?: string
+          vendas_geradas?: number
+        }
+        Relationships: []
+      }
       measurement_charts: {
         Row: {
           brand: string | null
