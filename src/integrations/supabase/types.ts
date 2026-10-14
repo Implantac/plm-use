@@ -154,6 +154,183 @@ export type Database = {
           },
         ]
       }
+      collection_map_filters: {
+        Row: {
+          categories: Json
+          colors: Json
+          created_at: string
+          created_by: string | null
+          created_on: string | null
+          external_key: string
+          id: string
+          name: string
+          owner: string
+          statuses: Json
+          updated_at: string
+        }
+        Insert: {
+          categories?: Json
+          colors?: Json
+          created_at?: string
+          created_by?: string | null
+          created_on?: string | null
+          external_key: string
+          id?: string
+          name: string
+          owner?: string
+          statuses?: Json
+          updated_at?: string
+        }
+        Update: {
+          categories?: Json
+          colors?: Json
+          created_at?: string
+          created_by?: string | null
+          created_on?: string | null
+          external_key?: string
+          id?: string
+          name?: string
+          owner?: string
+          statuses?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      collections: {
+        Row: {
+          abc: string
+          avg_cost: number | null
+          avg_price: number | null
+          brand: string
+          created_at: string
+          created_by: string | null
+          external_key: string
+          id: string
+          image: string
+          lead_time_dias: number | null
+          name: string
+          planned_mix: number
+          planned_qty: string
+          progress: number
+          realized_mix: number
+          roi: string
+          season: string
+          sell_through: number | null
+          showroom_approval: number | null
+          status: string
+          target_margin: string
+          target_revenue: string
+          target_sales: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          abc?: string
+          avg_cost?: number | null
+          avg_price?: number | null
+          brand?: string
+          created_at?: string
+          created_by?: string | null
+          external_key: string
+          id?: string
+          image?: string
+          lead_time_dias?: number | null
+          name: string
+          planned_mix?: number
+          planned_qty?: string
+          progress?: number
+          realized_mix?: number
+          roi?: string
+          season?: string
+          sell_through?: number | null
+          showroom_approval?: number | null
+          status?: string
+          target_margin?: string
+          target_revenue?: string
+          target_sales?: string
+          updated_at?: string
+          year?: number
+        }
+        Update: {
+          abc?: string
+          avg_cost?: number | null
+          avg_price?: number | null
+          brand?: string
+          created_at?: string
+          created_by?: string | null
+          external_key?: string
+          id?: string
+          image?: string
+          lead_time_dias?: number | null
+          name?: string
+          planned_mix?: number
+          planned_qty?: string
+          progress?: number
+          realized_mix?: number
+          roi?: string
+          season?: string
+          sell_through?: number | null
+          showroom_approval?: number | null
+          status?: string
+          target_margin?: string
+          target_revenue?: string
+          target_sales?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      color_palettes: {
+        Row: {
+          brand: string
+          colors: Json
+          cover: string
+          created_at: string
+          created_by: string | null
+          external_key: string
+          id: string
+          linked_refs: number
+          mood: string
+          name: string
+          season: string
+          status: string
+          updated_at: string
+          updated_on: string | null
+        }
+        Insert: {
+          brand?: string
+          colors?: Json
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          external_key: string
+          id?: string
+          linked_refs?: number
+          mood?: string
+          name: string
+          season?: string
+          status?: string
+          updated_at?: string
+          updated_on?: string | null
+        }
+        Update: {
+          brand?: string
+          colors?: Json
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          external_key?: string
+          id?: string
+          linked_refs?: number
+          mood?: string
+          name?: string
+          season?: string
+          status?: string
+          updated_at?: string
+          updated_on?: string | null
+        }
+        Relationships: []
+      }
       comment_attachments: {
         Row: {
           comment_id: string
@@ -313,6 +490,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      display_boards: {
+        Row: {
+          bg_color: string
+          cover: string
+          created_at: string
+          created_by: string | null
+          external_key: string
+          id: string
+          items: Json
+          name: string
+          season: string
+          status: string
+          target: string
+          updated_at: string
+          updated_on: string | null
+        }
+        Insert: {
+          bg_color?: string
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          external_key: string
+          id?: string
+          items?: Json
+          name: string
+          season?: string
+          status?: string
+          target?: string
+          updated_at?: string
+          updated_on?: string | null
+        }
+        Update: {
+          bg_color?: string
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          external_key?: string
+          id?: string
+          items?: Json
+          name?: string
+          season?: string
+          status?: string
+          target?: string
+          updated_at?: string
+          updated_on?: string | null
+        }
+        Relationships: []
       }
       entity_events: {
         Row: {
@@ -708,6 +933,126 @@ export type Database = {
         }
         Relationships: []
       }
+      looks: {
+        Row: {
+          cover_color: string
+          created_at: string
+          created_by: string | null
+          created_on: string | null
+          external_key: string
+          id: string
+          items: Json
+          name: string
+          occasion: string
+          season: string
+          status: string
+          styling_notes: string
+          tags: Json
+          updated_at: string
+          updated_on: string | null
+        }
+        Insert: {
+          cover_color?: string
+          created_at?: string
+          created_by?: string | null
+          created_on?: string | null
+          external_key: string
+          id?: string
+          items?: Json
+          name: string
+          occasion?: string
+          season?: string
+          status?: string
+          styling_notes?: string
+          tags?: Json
+          updated_at?: string
+          updated_on?: string | null
+        }
+        Update: {
+          cover_color?: string
+          created_at?: string
+          created_by?: string | null
+          created_on?: string | null
+          external_key?: string
+          id?: string
+          items?: Json
+          name?: string
+          occasion?: string
+          season?: string
+          status?: string
+          styling_notes?: string
+          tags?: Json
+          updated_at?: string
+          updated_on?: string | null
+        }
+        Relationships: []
+      }
+      measurement_charts: {
+        Row: {
+          brand: string | null
+          category: string
+          code: string
+          created_at: string
+          created_by: string | null
+          external_key: string
+          fit: string | null
+          grade: Json
+          id: string
+          linked_refs: number
+          name: string
+          notes: string | null
+          points: Json
+          segment: string
+          status: string
+          unit: string
+          updated_at: string
+          updated_by: string
+          updated_on: string | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          external_key: string
+          fit?: string | null
+          grade?: Json
+          id?: string
+          linked_refs?: number
+          name: string
+          notes?: string | null
+          points?: Json
+          segment?: string
+          status?: string
+          unit?: string
+          updated_at?: string
+          updated_by?: string
+          updated_on?: string | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          external_key?: string
+          fit?: string | null
+          grade?: Json
+          id?: string
+          linked_refs?: number
+          name?: string
+          notes?: string | null
+          points?: Json
+          segment?: string
+          status?: string
+          unit?: string
+          updated_at?: string
+          updated_by?: string
+          updated_on?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -958,6 +1303,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      print_assets: {
+        Row: {
+          brand: string | null
+          code: string
+          color_count: number
+          colors: Json
+          cover: string
+          created_at: string
+          created_by: string | null
+          external_key: string
+          file_format: string
+          file_size_mb: number | null
+          id: string
+          linked_refs: number
+          name: string
+          repeat_cm: Json
+          season: string | null
+          status: string
+          supplier: string | null
+          tags: Json
+          tecnica: string
+          updated_at: string
+          updated_on: string | null
+          versions: Json
+        }
+        Insert: {
+          brand?: string | null
+          code?: string
+          color_count?: number
+          colors?: Json
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          external_key: string
+          file_format?: string
+          file_size_mb?: number | null
+          id?: string
+          linked_refs?: number
+          name: string
+          repeat_cm?: Json
+          season?: string | null
+          status?: string
+          supplier?: string | null
+          tags?: Json
+          tecnica?: string
+          updated_at?: string
+          updated_on?: string | null
+          versions?: Json
+        }
+        Update: {
+          brand?: string | null
+          code?: string
+          color_count?: number
+          colors?: Json
+          cover?: string
+          created_at?: string
+          created_by?: string | null
+          external_key?: string
+          file_format?: string
+          file_size_mb?: number | null
+          id?: string
+          linked_refs?: number
+          name?: string
+          repeat_cm?: Json
+          season?: string | null
+          status?: string
+          supplier?: string | null
+          tags?: Json
+          tecnica?: string
+          updated_at?: string
+          updated_on?: string | null
+          versions?: Json
+        }
+        Relationships: []
       }
       product_configurations: {
         Row: {
