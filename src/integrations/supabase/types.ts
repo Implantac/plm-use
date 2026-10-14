@@ -53,6 +53,48 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_kpis: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          external_key: string
+          icon_name: string
+          id: string
+          label: string
+          progress: number | null
+          sub: string
+          tone: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          external_key: string
+          icon_name?: string
+          id?: string
+          label: string
+          progress?: number | null
+          sub?: string
+          tone?: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          external_key?: string
+          icon_name?: string
+          id?: string
+          label?: string
+          progress?: number | null
+          sub?: string
+          tone?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       app_cron_config: {
         Row: {
           base_url: string
