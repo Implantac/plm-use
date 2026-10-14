@@ -3206,6 +3206,16 @@ export type Database = {
         | "production_order"
         | "production_order_item"
         | "production_route"
+        | "color_palette"
+        | "print_design"
+        | "look"
+        | "display_board"
+        | "collection_map"
+        | "measurement_chart"
+        | "collection"
+        | "analytics_kpi"
+        | "quality_capa"
+        | "influencer"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -3410,6 +3420,16 @@ export const Constants = {
         "production_order",
         "production_order_item",
         "production_route",
+        "color_palette",
+        "print_design",
+        "look",
+        "display_board",
+        "collection_map",
+        "measurement_chart",
+        "collection",
+        "analytics_kpi",
+        "quality_capa",
+        "influencer",
       ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [

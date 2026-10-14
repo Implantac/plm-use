@@ -78,6 +78,13 @@
       "when": 1792006675904,
       "tag": "0010_persist_influencers",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792006692324,
+      "tag": "0011_entity_events_creative_types",
+      "breakpoints": true
     }
   ]
 }
