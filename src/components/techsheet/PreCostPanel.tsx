@@ -6,13 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DollarSign, Target, TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useTechSheetStore, custoTotalBOM, custoTotalBOP } from "@/lib/techsheet/store";
+import { normalizeTechSheetDoc } from "@/lib/techsheet/server";
 
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
 export function PreCostPanel({ refAtual }: { refAtual: string }) {
   const ensure = useTechSheetStore((s) => s.ensure);
-  const data = useTechSheetStore((s) => s.data[refAtual] ?? ensure(refAtual));
+  const raw = useTechSheetStore((s) => s.data[refAtual] ?? ensure(refAtual));
+  // normalize: caches do persist pré-envelope não têm preCost — sem isto a tela
+  // quebrava em `data.preCost.overheadPct` após uma hidratação antiga.
+  const data = normalizeTechSheetDoc(raw);
   const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
 
   const totals = useMemo(() => {

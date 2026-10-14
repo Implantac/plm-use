@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useInfluencersStore, type Influencer, type Envio } from "@/lib/influencers/store";
 import { useQualityStore, type CapaAction } from "@/lib/quality/store";
-import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore, type TechSheetData } from "@/lib/techsheet/store";
+import { deserializeTechSheetRow, serializeTechSheetDoc } from "@/lib/techsheet/server";
 
 // Upsert com rosto: falhas de sync eram silenciosas — o usuário via "salvo"
 // na UI local enquanto o banco não recebia nada. Toast marca o conflito
@@ -16,12 +17,14 @@ async function pushOrWarn(
   rows: unknown[],
   onConflict: string,
   label: string,
-) {
+): Promise<boolean> {
   const { error } = await supabase.from(table).upsert(rows as never, { onConflict });
   if (error) {
     console.error(`[cloud-sync] falha ao salvar ${label}:`, error.message);
     toast.error(`Não foi possível salvar ${label} na nuvem. Tente novamente.`);
+    return false;
   }
+  return true;
 }
 
 const debouncers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -129,16 +132,19 @@ async function hydrateCapa() {
 
 // ---------- TECH SHEETS ----------
 async function pushTechSheetsAll(uid: string) {
-  const data = useTechSheetStore.getState().data;
-  const rows = Object.entries(data).map(([ref, doc]) => ({
-    ref,
-    bom: doc.bom as unknown as never,
-    bop: doc.bop as unknown as never,
-    versoes: doc.versoes as unknown as never,
-    created_by: uid,
-  }));
-  if (rows.length === 0) return;
-  await pushOrWarn("tech_sheets", rows, "ref", "as fichas técnicas");
+  const { data, dirty, clearDirty } = useTechSheetStore.getState();
+  // push seletivo: só refs tocadas pelo usuário — o seed de visualização nunca
+  // contamina a tabela (antes, abrir a tela empurrava os dados de exemplo).
+  const touched = Object.entries(data).filter(([ref]) => dirty[ref]);
+  if (touched.length === 0) return;
+  const rows = touched.map(([ref, doc]) => serializeTechSheetDoc(ref, doc, uid));
+  const ok = await pushOrWarn(
+    "tech_sheets",
+    rows as unknown as never[],
+    "ref",
+    "as fichas técnicas",
+  );
+  if (ok) clearDirty(touched.map(([ref]) => ref));
 }
 
 async function hydrateTechSheets() {
@@ -146,15 +152,15 @@ async function hydrateTechSheets() {
   hydrated.ts = true;
   const { data, error } = await supabase.from("tech_sheets").select("*");
   if (error || !data || data.length === 0) return;
-  const next: Record<string, { bom: never[]; bop: never[]; versoes: never[] }> = {};
+  // merge, não substituição: refs com edição local pendente (dirty) mantêm o
+  // autor da tela; os demais recebem o estado do servidor com preCost garantido.
+  const { data: cur, dirty } = useTechSheetStore.getState();
+  const next: Record<string, TechSheetData> = { ...cur };
   for (const r of data) {
-    next[r.ref] = {
-      bom: (r.bom as unknown as never[]) ?? [],
-      bop: (r.bop as unknown as never[]) ?? [],
-      versoes: (r.versoes as unknown as never[]) ?? [],
-    };
+    if (dirty[r.ref]) continue;
+    next[r.ref] = deserializeTechSheetRow(r as { ref: string });
   }
-  useTechSheetStore.setState({ data: next as never });
+  useTechSheetStore.setState({ data: next });
 }
 
 // ---------- HOOK MASTER ----------

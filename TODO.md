@@ -86,6 +86,10 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
       Sondas pós: 12/12 tabelas 200 + enum `entity_type` com os tipos criativos. Divergência
       zero: FK `analytics_kpis.created_by→users` removido na aplicação (regra do ambiente);
       migration do repo e `drizzle/0012` do bot espelhados.
+- [x] BOM/BOP/pré-custo fechados na costura store↔banco (14/10): `preCost` entrou no envelope
+      versionado do jsonb `bom` (sem DDL novo), hidratação virou merge tolerante a linha legada,
+      push ficou seletivo por `dirty` (seed de visualização não contamina mais `tech_sheets`) e
+      `PreCostPanel` normaliza cache antigo — 6 testes em `server.test.ts`.
 - [ ] Cron de verdade rodando: conferir que as linhas de `app_cron_config` (seed da
       migration 1) têm segredo igual às env vars do deploy (Lovable → Secrets) e que
       `app_cron_runs` recebe execuções; `scripts/smoke-cron.sh` para o teste de ponta a ponta.

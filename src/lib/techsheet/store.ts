@@ -152,6 +152,9 @@ const seedFor = (ref: string): TechSheetData => ({
 
 interface State {
   data: Record<string, TechSheetData>;
+  /** refs com edição local ainda não confirmada pelo servidor (push seletivo). */
+  dirty: Record<string, true>;
+  clearDirty(refs: string[]): void;
   ensure(ref: string): TechSheetData;
   addBomItem(ref: string, item: Omit<BomItem, "id">): void;
   removeBomItem(ref: string, id: string): void;
@@ -172,6 +175,14 @@ export const useTechSheetStore = create<State>()(
   persist(
     (set, get) => ({
       data: {},
+      dirty: {},
+      clearDirty(refs) {
+        set((s) => {
+          const next = { ...s.dirty };
+          for (const r of refs) delete next[r];
+          return { dirty: next };
+        });
+      },
       ensure(ref) {
         const cur = get().data[ref];
         if (cur) return cur;
@@ -184,6 +195,7 @@ export const useTechSheetStore = create<State>()(
           const cur = s.data[ref] ?? seedFor(ref);
           return {
             data: { ...s.data, [ref]: { ...cur, bom: [...cur.bom, { ...item, id: uid() }] } },
+            dirty: { ...s.dirty, [ref]: true },
           };
         });
       },
@@ -192,6 +204,7 @@ export const useTechSheetStore = create<State>()(
           const cur = s.data[ref] ?? seedFor(ref);
           return {
             data: { ...s.data, [ref]: { ...cur, bom: cur.bom.filter((b) => b.id !== id) } },
+            dirty: { ...s.dirty, [ref]: true },
           };
         });
       },
@@ -200,6 +213,7 @@ export const useTechSheetStore = create<State>()(
           const cur = s.data[ref] ?? seedFor(ref);
           return {
             data: { ...s.data, [ref]: { ...cur, bop: [...cur.bop, { ...step, id: uid() }] } },
+            dirty: { ...s.dirty, [ref]: true },
           };
         });
       },
@@ -208,13 +222,17 @@ export const useTechSheetStore = create<State>()(
           const cur = s.data[ref] ?? seedFor(ref);
           return {
             data: { ...s.data, [ref]: { ...cur, bop: cur.bop.filter((b) => b.id !== id) } },
+            dirty: { ...s.dirty, [ref]: true },
           };
         });
       },
       updatePreCost(ref, patch) {
         set((s) => {
           const cur = s.data[ref] ?? seedFor(ref);
-          return { data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } } };
+          return {
+            data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } },
+            dirty: { ...s.dirty, [ref]: true },
+          };
         });
       },
 
@@ -243,6 +261,7 @@ export const useTechSheetStore = create<State>()(
               ],
             },
           },
+          dirty: { ...s.dirty, [ref]: true },
         }));
         return nova;
       },
