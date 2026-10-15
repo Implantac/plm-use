@@ -25,6 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import { buildTechSheetPrintHtml, openPrintWindow } from "@/lib/techsheet/print";
 import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
 import { useReferenceStore } from "@/lib/reference/store";
 import { emptyLifecycle } from "@/types/reference";
@@ -58,6 +60,33 @@ function TechSheetPage() {
     { id: 3, type: "Linha", name: "Linha Poliéster 120", qty: "200m", cost: "R$ 2,50" },
     { id: 4, type: "Embalagem", name: "Tag Luxury + Polybag", qty: "1 un", cost: "R$ 4,50" },
   ]);
+
+  // "Exportar PDF" deixou de ser botão decorativo: monta o doc A4 (função pura
+  // testada) e abre a impressão do navegador — Imprimir → Salvar como PDF.
+  const exportPdf = () => {
+    const st = useTechSheetStore.getState();
+    const doc = st.data[productInfo.ref] ?? st.ensure(productInfo.ref);
+    const html = buildTechSheetPrintHtml(
+      {
+        ref: productInfo.ref,
+        name: productInfo.name,
+        category: productInfo.category,
+        season: productInfo.status,
+      },
+      doc,
+    );
+    if (!openPrintWindow(html)) {
+      toast.warning(
+        "O navegador bloqueou a janela de impressão — libere pop-ups para gerar o PDF.",
+      );
+    }
+  };
+
+  const scrollToVersions = () => {
+    const el = document.getElementById("ts-versoes");
+    if (!el) return toast.info("O painel de versões ainda não terminou de montar.");
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   type Material = (typeof materials)[number];
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -124,13 +153,26 @@ function TechSheetPage() {
       )}
 
       <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
+        <Button
+          variant="outline"
+          className="text-[10px] tracking-[0.16em] gap-2"
+          onClick={scrollToVersions}
+        >
           <History className="w-4 h-4" /> Histórico
         </Button>
-        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
+        <Button
+          variant="outline"
+          className="text-[10px] tracking-[0.16em] gap-2"
+          disabled
+          title="Comparativo lado-a-lado de versões ainda não existe — roadmap."
+        >
           <GitCompare className="w-4 h-4" /> Comparar Versões
         </Button>
-        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
+        <Button
+          variant="outline"
+          className="text-[10px] tracking-[0.16em] gap-2"
+          onClick={exportPdf}
+        >
           <FileDown className="w-4 h-4" /> Exportar PDF
         </Button>
       </div>
@@ -313,14 +355,26 @@ function TechSheetPage() {
               <FileDown className="w-4 h-4 text-primary" /> Arquivos técnicos
             </h3>
             <div className="grid grid-cols-3 gap-2">
-              {["PDF", "AI", "CDR", "DXF", "PLT", "SVG"].map((format) => (
-                <div
-                  key={format}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-3 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-white"
-                >
-                  {format}
-                </div>
-              ))}
+              {["PDF", "AI", "CDR", "DXF", "PLT", "SVG"].map((format) =>
+                format === "PDF" ? (
+                  <button
+                    key={format}
+                    onClick={exportPdf}
+                    title="Gera a ficha A4 e abre a impressão do navegador (Salvar como PDF)."
+                    className="rounded-md border border-primary/40 bg-primary/10 p-3 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-white hover:bg-primary/20"
+                  >
+                    {format}
+                  </button>
+                ) : (
+                  <div
+                    key={format}
+                    title={`${format} ainda não é exportável daqui — a geração nativa deste formato está no roadmap (nenhuma conexão CAD foi assinada).`}
+                    className="rounded-md border border-white/10 bg-white/[0.02] p-3 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-white/30"
+                  >
+                    {format}
+                  </div>
+                ),
+              )}
             </div>
             <div className="mt-4 rounded-md border border-primary/20 bg-primary/10 p-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary flex items-center gap-2">
@@ -338,7 +392,9 @@ function TechSheetPage() {
         <BomBopPanel refAtual={productInfo.ref} />
         <PreCostPanel refAtual={productInfo.ref} />
         <OperationSequencePanel refAtual={productInfo.ref} />
-        <TechSheetVersions refAtual={productInfo.ref} />
+        <div id="ts-versoes">
+          <TechSheetVersions refAtual={productInfo.ref} />
+        </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

@@ -54,7 +54,7 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
   {
     area: "Desenvolvimento / Kanban",
     route: "/development",
-    evidence: "Fichas e etapas com cloud-sync no Supabase; drag-and-drop persistido.",
+    evidence: "Fichas e etapas com cloud-sync no Supabase; drag-and-drop persistido; PDF A4 via impressão (15/10).",
     status: "real",
   },
   {
