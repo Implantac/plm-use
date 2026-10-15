@@ -31,6 +31,17 @@ export type TechSheetVersion = {
   status: "Rascunho" | "Em revisão" | "Aprovada" | "Obsoleta";
   resumo: string;
   alteracoes: string[];
+  /**
+   * Estado completo (BOM/BOP/pré-custo) capturado no nascimento da versão.
+   * Versões sem este campo (anteriores a 15/10) só suportam diff textual.
+   */
+  snapshot?: TechSheetSnapshot;
+};
+
+export type TechSheetSnapshot = {
+  bom: BomItem[];
+  bop: BopStep[];
+  preCost: PreCost;
 };
 
 export type PreCost = {
@@ -247,6 +258,12 @@ export const useTechSheetStore = create<State>()(
           status: "Em revisão",
           resumo,
           alteracoes,
+          // clone explícito: a versão congela o estado, não aponta para ele.
+          snapshot: {
+            bom: structuredClone(cur.bom),
+            bop: structuredClone(cur.bop),
+            preCost: { ...cur.preCost },
+          },
         };
         set((s) => ({
           data: {

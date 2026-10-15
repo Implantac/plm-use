@@ -1,5 +1,6 @@
-import { ArrowRight, Minus, Plus, Equal } from "lucide-react";
+import { ArrowRight, Minus, Plus, Equal, Layers } from "lucide-react";
 import type { TechSheetVersion } from "@/lib/techsheet/store";
+import { diffSnapshots, type DiffRow, type FieldChange } from "@/lib/techsheet/diff";
 
 /**
  * Diff visual entre duas versões da ficha técnica.
@@ -58,6 +59,120 @@ export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersi
           <p className="text-[10px] text-muted-foreground">Sem alterações registradas.</p>
         )}
       </div>
+
+      <SnapshotSection a={a} b={b} />
+    </div>
+  );
+}
+
+const money = (n: number) =>
+  `${n >= 0 ? "+" : "−"}R$ ${Math.abs(n).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+
+function ChangeList({ changes }: { changes: FieldChange[] }) {
+  return (
+    <span className="text-muted-foreground">
+      {changes.map((c) => (
+        <span key={c.field} className="mr-3 whitespace-nowrap">
+          {c.field}: <span className="line-through opacity-70">{c.from}</span>
+          <ArrowRight className="inline w-2.5 h-2.5 mx-1" />
+          <span className="text-white">{c.to}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function StructRows({ title, rows }: { title: string; rows: DiffRow[] }) {
+  if (!rows.length) return null;
+  return (
+    <div className="space-y-1">
+      <p className="text-[8px] uppercase tracking-widest text-muted-foreground font-bold">
+        {title}
+      </p>
+      {rows.map((r, i) => (
+        <p
+          key={`${r.kind}-${i}`}
+          className={`text-[10px] flex flex-wrap items-center gap-x-2 gap-y-0.5 ${
+            r.kind === "add"
+              ? "text-emerald-200"
+              : r.kind === "rem"
+                ? "text-rose-200"
+                : "text-amber-100"
+          }`}
+        >
+          <span className="font-bold">
+            {r.kind === "add" ? "＋" : r.kind === "rem" ? "－" : "≠"}
+          </span>
+          {r.label}
+          {r.changes.length > 0 && <ChangeList changes={r.changes} />}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+/** Diff estrutural BOM/BOP/pré-custo quando as duas versões têm instantâneo. */
+function SnapshotSection({ a, b }: { a: TechSheetVersion; b: TechSheetVersion }) {
+  const d = diffSnapshots(a.snapshot, b.snapshot);
+  if (!d) {
+    const faltantes = [!a.snapshot && a.versao, !b.snapshot && b.versao]
+      .filter(Boolean)
+      .join(" e ");
+    return (
+      <div className="rounded-md border border-dashed border-white/10 p-3 text-[9px] leading-relaxed text-muted-foreground">
+        Sem instantâneo estrutural em <strong>{faltantes}</strong> — versões criadas antes de 15/10
+        registram apenas o texto das alterações. Toda versão nova captura BOM/BOP/pré-custo ao
+        nascer e ganha o comparativo numérico completo abaixo do texto.
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-3 border-t border-white/5 pt-4">
+      <div className="flex items-center justify-between">
+        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-2">
+          <Layers className="w-3 h-3 text-primary" /> Diff estrutural (instantâneo)
+        </p>
+        <span className="text-[9px] text-muted-foreground">
+          Δ custo industrial{" "}
+          <strong className={d.custoIndustrialDelta > 0 ? "text-rose-300" : "text-emerald-300"}>
+            {money(d.custoIndustrialDelta)}
+          </strong>{" "}
+          · Δ tempo{" "}
+          <strong className="text-white">
+            {d.tempoBopDelta >= 0 ? "+" : "−"}
+            {Math.abs(d.tempoBopDelta)} min
+          </strong>
+        </span>
+      </div>
+      <StructRows
+        title={`BOM · +${d.bom.added.length} −${d.bom.removed.length} ≠${d.bom.changed.length} · ${d.bom.kept} iguais`}
+        rows={[...d.bom.added, ...d.bom.removed, ...d.bom.changed]}
+      />
+      <StructRows
+        title={`BOP · +${d.bop.added.length} −${d.bop.removed.length} ≠${d.bop.changed.length} · ${d.bop.kept} iguais`}
+        rows={[...d.bop.added, ...d.bop.removed, ...d.bop.changed]}
+      />
+      {d.preCost.length > 0 && (
+        <StructRows
+          title="Pré-custo"
+          rows={[{ label: "parâmetros", kind: "chg", changes: d.preCost }]}
+        />
+      )}
+      {d.bom.added.length +
+        d.bom.removed.length +
+        d.bom.changed.length +
+        d.bop.added.length +
+        d.bop.removed.length +
+        d.bop.changed.length +
+        d.preCost.length ===
+        0 && (
+        <p className="text-[10px] text-muted-foreground">
+          Instantâneos idênticos — nada mudou na estrutura.
+        </p>
+      )}
     </div>
   );
 }

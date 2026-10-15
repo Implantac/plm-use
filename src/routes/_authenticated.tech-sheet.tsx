@@ -82,6 +82,12 @@ function TechSheetPage() {
     }
   };
 
+  const scrollToDiff = () => {
+    const el = document.getElementById("ts-diff");
+    if (!el) return toast.info("O comparador ainda está montando — role até o painel de versões.");
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   const scrollToVersions = () => {
     const el = document.getElementById("ts-versoes");
     if (!el) return toast.info("O painel de versões ainda não terminou de montar.");
@@ -163,8 +169,8 @@ function TechSheetPage() {
         <Button
           variant="outline"
           className="text-[10px] tracking-[0.16em] gap-2"
-          disabled
-          title="Comparativo lado-a-lado de versões ainda não existe — roadmap."
+          onClick={scrollToDiff}
+          title="Leva ao comparador A → B do painel de versões (diff textual + estrutural por instantâneo)."
         >
           <GitCompare className="w-4 h-4" /> Comparar Versões
         </Button>

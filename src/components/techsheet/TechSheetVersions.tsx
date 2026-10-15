@@ -70,7 +70,18 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
                       · {v.data} · {v.autor}
                     </span>
                   </p>
-                  <p className="text-[10px] text-muted-foreground truncate">{v.resumo}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    {v.resumo}
+                    {v.snapshot ? (
+                      <span className="ml-2 text-[8px] uppercase tracking-widest text-emerald-400/80">
+                        com instantâneo
+                      </span>
+                    ) : (
+                      <span className="ml-2 text-[8px] uppercase tracking-widest text-muted-foreground/70">
+                        pré-instantâneo
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                   {v.status}
@@ -80,7 +91,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
           </div>
         </div>
 
-        <div className="space-y-3">
+        <div id="ts-diff" className="space-y-3">
           <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
             Diff visual A → B
           </p>
