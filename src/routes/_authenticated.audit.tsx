@@ -15,18 +15,25 @@ import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Activity,
+  AlertTriangle,
   ArrowLeft,
   CheckCircle2,
+  ClipboardCopy,
   Database,
   Layers3,
+  RotateCw,
   ShieldCheck,
   Sparkles,
   Store,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ROUTE_REGISTRY } from "@/lib/nav/routes";
 import { __internals } from "@/lib/creative-sync";
 import { supabase } from "@/integrations/supabase/client";
+// O SQL migra com a UI: botão "Copiar SQL" entrega exatamente o arquivo versionado,
+// não uma cópia à mão que apodrece (regra da casa — artefatos do operador nascem do repo).
+import materialsSql from "../../supabase/migrations/20261014220000_persist_materials.sql?raw";
 
 export const Route = createFileRoute("/_authenticated/audit")({
   head: () => ({
@@ -212,6 +219,194 @@ function useRecentEvents(limit = 30) {
   return { items, failed };
 }
 
+type Probe = "checking" | "ok" | "warn" | "dead";
+
+/**
+ * Estado VIVO das três pendências que dependem de mãos humanas. Nasceu de
+ * prosear menos e provar mais: cada linha vem de uma sonda de leitura feita
+ * neste navegador, não de nota de commit. Todas as sondas são de efeito zero —
+ * o POST de cron sem assinatura é rejeitado na verificação HMAC antes de
+ * qualquer fila de escrita (ordem conferida no handler em 15/10).
+ */
+function useOperatorProbes() {
+  const [state, setState] = useState<{ materials: Probe; publish: Probe; abc: Probe }>({
+    materials: "checking",
+    publish: "checking",
+    abc: "checking",
+  });
+  const [run, setRun] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    const loose = supabase as unknown as {
+      from: (t: string) => {
+        select: (c: string, o: Record<string, unknown>) => Promise<{ error: unknown }>;
+      };
+    };
+
+    // 1) tabela materials no Cloud (PGRST205/"does not exist" = migração não aplicada)
+    loose
+      .from("materials")
+      .select("id", { count: "exact", head: true })
+      .then(({ error }) => {
+        if (!alive) return;
+        const msg = typeof error === "object" && error ? JSON.stringify(error) : "";
+        setState((v) => ({
+          ...v,
+          materials: !error
+            ? "ok"
+            : /could not find|does not exist|PGRST205/i.test(msg)
+              ? "warn"
+              : "dead",
+        }));
+      })
+      .catch(() => alive && setState((v) => ({ ...v, materials: "dead" })));
+
+    // 2) publish: o bundle publicado serve /materials com 200; rota inexistente = 404
+    //    (controle medido por sonda externa em 15/10)
+    fetch(`${window.location.origin}/materials`, { cache: "no-store" })
+      .then(
+        (r) =>
+          alive &&
+          setState((v) => ({
+            ...v,
+            publish: r.ok ? "ok" : r.status === 404 ? "warn" : "dead",
+          })),
+      )
+      .catch(() => alive && setState((v) => ({ ...v, publish: "dead" })));
+
+    // 3) segredo do cron ABC: 503 = env ausente (fail-closed projetado); 401/429 = ativo
+    fetch(`${window.location.origin}/api/public/cron/abc-classify`, {
+      method: "POST",
+      cache: "no-store",
+    })
+      .then(
+        (r) =>
+          alive &&
+          setState((v) => ({
+            ...v,
+            abc: r.status === 503 ? "warn" : r.status === 401 || r.status === 429 ? "ok" : "dead",
+          })),
+      )
+      .catch(() => alive && setState((v) => ({ ...v, abc: "dead" })));
+
+    return () => {
+      alive = false;
+    };
+  }, [run]);
+
+  return { ...state, refresh: () => setRun((n) => n + 1) };
+}
+
+const PROBE_META: Record<Probe, { icon: typeof CheckCircle2; tone: string }> = {
+  checking: { icon: RotateCw, tone: "text-muted-foreground" },
+  ok: { icon: CheckCircle2, tone: "text-emerald-400" },
+  warn: { icon: AlertTriangle, tone: "text-amber-400" },
+  dead: { icon: AlertTriangle, tone: "text-muted-foreground/60" },
+};
+
+function TaskRow({
+  probe,
+  title,
+  okText,
+  warnText,
+  deadText,
+  action,
+}: {
+  probe: Probe;
+  title: string;
+  okText: string;
+  warnText: string;
+  deadText: string;
+  action?: React.ReactNode;
+}) {
+  const meta = PROBE_META[probe];
+  const Icon = meta.icon;
+  const text =
+    probe === "ok"
+      ? okText
+      : probe === "warn"
+        ? warnText
+        : probe === "dead"
+          ? deadText
+          : "Sondando…";
+  return (
+    <div className="rounded-md border border-white/10 bg-black/20 p-3">
+      <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white">
+        <Icon
+          className={`h-3.5 w-3.5 shrink-0 ${meta.tone} ${probe === "checking" ? "animate-spin" : ""}`}
+        />
+        {title}
+      </p>
+      <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">{text}</p>
+      {probe === "warn" && action ? <div className="mt-2">{action}</div> : null}
+    </div>
+  );
+}
+
+function OperatorTasks() {
+  const p = useOperatorProbes();
+  const copySql = async () => {
+    try {
+      await navigator.clipboard.writeText(materialsSql);
+      toast.success("SQL no clipboard — cole em More → Cloud → SQL editor e Run.");
+    } catch {
+      toast.error(
+        "Clipboard bloqueado; o arquivo está em supabase/migrations/20261014220000_persist_materials.sql",
+      );
+    }
+  };
+  return (
+    <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
+      <h2 className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+        <span className="flex items-center gap-2">
+          <Database className="h-4 w-4 text-primary" />
+          Mãos do operador
+        </span>
+        <button
+          onClick={p.refresh}
+          title="Re-sondar (leitura pura, sem efeitos)"
+          className="rounded-md border border-white/10 p-1.5 text-muted-foreground hover:bg-white/5 hover:text-white"
+        >
+          <RotateCw className="h-3 w-3" />
+        </button>
+      </h2>
+      <div className="mt-4 space-y-2">
+        <TaskRow
+          probe={p.materials}
+          title="Catálogo no banco"
+          okText="Tabela materials viva no Cloud — catálogo compartilhado entre dispositivos, com realtime."
+          warnText="Migração 20261014220000 ainda não aplicada; o módulo 11 funciona por dispositivo até o paste no SQL editor."
+          deadText="Sem resposta legível do banco nesta sessão — a sonda não pôde concluir."
+          action={
+            <Button variant="outline" size="sm" className="h-7 gap-2 text-[9px]" onClick={copySql}>
+              <ClipboardCopy className="h-3 w-3" /> Copiar SQL do catálogo
+            </Button>
+          }
+        />
+        <TaskRow
+          probe={p.publish}
+          title="Publicação Lovable"
+          okText="O bundle publicado nesta origem já serve /materials — módulo visível para todas as sessões."
+          warnText="A main tem commits que este deploy ainda não serve: clique Publish no editor Lovable para republicar."
+          deadText="A sonda de rota não pôde ser concluída (offline?)"
+        />
+        <TaskRow
+          probe={p.abc}
+          title="Cron da curva ABC"
+          okText="Segredo HMAC presente: pedidos sem assinatura são rejeitados na porta (401) — o agendamento vale quando o pg_cron disparar."
+          warnText="ABC_CRON_SECRET ausente no environment do Lovable (endpoint responde 503 fail-closed). Gere com openssl rand -hex 32, plugue em Settings → Environment Variables e alinhe a linha app_cron_config."
+          deadText="O endpoint de cron não respondeu a esta sonda."
+        />
+      </div>
+      <p className="mt-3 text-[9px] leading-relaxed text-muted-foreground/80">
+        Cada linha vem de uma sonda feita agora contra o deploy real — não de nota de commit. Sondas
+        só leem; nada muda no mundo ao abrir este painel.
+      </p>
+    </div>
+  );
+}
+
 function AuditScreen() {
   const { items: events, failed } = useRecentEvents();
   const counts = coverage.reduce<Record<string, number>>((acc, c) => {
@@ -309,13 +504,15 @@ function AuditScreen() {
               * Sync = espelho no Supabase via `creative-sync`. As migrations foram aplicadas via
               SQL editor do Lovable Cloud (14/10/2026) — os módulos criativos e a timeline
               cross-device já gravam no banco (enum atual ao vivo, verificado por sonda). As 12
-              tabelas e o enum respondem 200 às sondas de 14/10 (19h50). O módulo 11 (`materials`)
-              aguarda o SQL 20261014220000 — funciona por dispositivo até lá; o cache local segue
-              como fallback de rede.
+              tabelas e o enum respondem 200 às sondas de 14/10 (19h50). O estado ATUAL das
+              pendências humanas (SQL do `materials`, publish, segredo do cron) é o card "Mãos do
+              operador" ao lado, re-sondado a cada visita — esta nota ficou como histórico; o cache
+              local segue como fallback de rede em qualquer cenário.
             </p>
           </div>
 
           <div className="space-y-6">
+            <OperatorTasks />
             <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2">
                 <Activity className="h-4 w-4 text-primary" />
