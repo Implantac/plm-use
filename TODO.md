@@ -96,13 +96,13 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
       Rota nova exigiu regenerar `routeTree.gen.ts` via @tanstack/router-cli (com o bloco
       `@tanstack/react-start` religado à mão — o CLI não conhece Start).
 - [~] Cron de verdade rodando — **verificado por sonda anônima em 15/10** contra a produção:
-      `GET /api/health → 200`; `POST /api/public/cron/launch-performance` sem assinatura →
-      **401** (segredo LAUNCH_CRON_SECRET configurado e fail-closed OK); `abc-classify` →
-      **503** = `ABC_CRON_SECRET` AUSENTE no environment do Lovable (o endpoint se recusa a
-      existir sem segredo — comportamento projetado). Para fechar: definir ABC_CRON_SECRET em
-      Lovable → Settings → Environment Variables (valor = segredo da linha `app_cron_config`
-      correspondente; gerar com `openssl rand -hex 32` e atualizar o seed) e re-rodar o smoke
-      com assinatura válida para o 200.
+  `GET /api/health → 200`; `POST /api/public/cron/launch-performance` sem assinatura →
+  **401** (segredo LAUNCH_CRON_SECRET configurado e fail-closed OK); `abc-classify` →
+  **503** = `ABC_CRON_SECRET` AUSENTE no environment do Lovable (o endpoint se recusa a
+  existir sem segredo — comportamento projetado). Para fechar: definir ABC_CRON_SECRET em
+  Lovable → Settings → Environment Variables (valor = segredo da linha `app_cron_config`
+  correspondente; gerar com `openssl rand -hex 32` e atualizar o seed) e re-rodar o smoke
+  com assinatura válida para o 200.
 - [x] Ficha técnica "PDF factory-ready" v1 (P0 da régua): botão Exportar PDF e tile PDF dos
       Arquivos técnicos agora geram um documento A4 autocontido (`lib/techsheet/print.ts`, puro,
       5 testes — escapa HTML injetável, ordena BOP sem mutar o store, fecha custo industrial com
