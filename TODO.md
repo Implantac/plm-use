@@ -90,6 +90,11 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
       versionado do jsonb `bom` (sem DDL novo), hidratação virou merge tolerante a linha legada,
       push ficou seletivo por `dirty` (seed de visualização não contamina mais `tech_sheets`) e
       `PreCostPanel` normaliza cache antigo — 6 testes em `server.test.ts`.
+- [x] Biblioteca de materiais (módulo 11 do creative-sync): store serializável + mappers + rota
+      `/materials` (CRUD, busca, CSV) + botão "Do catálogo" no BOM da ficha técnica; migration
+      `20261014220000_persist_materials.sql` versionada (colar via Cloud SQL editor — `DB-PUSH-materials.sql`).
+      Rota nova exigiu regenerar `routeTree.gen.ts` via @tanstack/router-cli (com o bloco
+      `@tanstack/react-start` religado à mão — o CLI não conhece Start).
 - [ ] Cron de verdade rodando: conferir que as linhas de `app_cron_config` (seed da
       migration 1) têm segredo igual às env vars do deploy (Lovable → Secrets) e que
       `app_cron_runs` recebe execuções; `scripts/smoke-cron.sh` para o teste de ponta a ponta.

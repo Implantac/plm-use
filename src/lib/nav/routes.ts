@@ -181,6 +181,13 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     crumbs: ["PLM", "Engenharia"],
   },
   {
+    path: "/materials",
+    icon: "box",
+    label: "Materiais",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+  },
+  {
     path: "/measurements",
     icon: "ruler",
     label: "Tabela de Medidas",

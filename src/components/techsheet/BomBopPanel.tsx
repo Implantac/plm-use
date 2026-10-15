@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, Workflow, Boxes, Clock, DollarSign } from "lucide-react";
+import { Library, Plus, Trash2, Workflow, Boxes, Clock, DollarSign } from "lucide-react";
 import {
   useTechSheetStore,
   custoTotalBOM,
@@ -11,6 +11,9 @@ import {
   type BomItem,
   type BopStep,
 } from "@/lib/techsheet/store";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { filterMaterials, materialForBom, useMaterials } from "@/lib/materials/store";
 
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
@@ -22,6 +25,9 @@ export function BomBopPanel({ refAtual }: { refAtual: string }) {
   const rmBom = useTechSheetStore((s) => s.removeBomItem);
   const addBop = useTechSheetStore((s) => s.addBopStep);
   const rmBop = useTechSheetStore((s) => s.removeBopStep);
+  const materials = useMaterials();
+  const [catalog, setCatalog] = useState(false);
+  const [catalogQ, setCatalogQ] = useState("");
 
   const totals = useMemo(
     () => ({
@@ -53,8 +59,53 @@ export function BomBopPanel({ refAtual }: { refAtual: string }) {
             value={brl(custoIndustrial)}
             accent
           />
+          <button
+            onClick={() => setCatalog(true)}
+            className="flex items-center gap-1.5 self-center rounded-full border border-white/15 px-2.5 py-1 hover:bg-white/10"
+            title="Inserir linha a partir da Biblioteca de Materiais"
+          >
+            <Library className="w-3.5 h-3.5 text-primary" />
+            <span className="text-white/80">Do catálogo</span>
+          </button>
         </div>
       </div>
+
+      <Dialog open={catalog} onOpenChange={setCatalog}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Biblioteca de materiais — {refAtual}</DialogTitle>
+          </DialogHeader>
+          <Input
+            placeholder="Buscar por nome, SKU ou fornecedor…"
+            value={catalogQ}
+            onChange={(e) => setCatalogQ(e.target.value)}
+          />
+          <div className="mt-2 max-h-[50vh] space-y-2 overflow-y-auto">
+            {filterMaterials(materials, catalogQ).length === 0 && (
+              <p className="text-xs text-muted-foreground">
+                Nada encontrado — cadastre em PLM · Engenharia · Materiais.
+              </p>
+            )}
+            {filterMaterials(materials, catalogQ).map((m) => (
+              <button
+                key={m.id}
+                className="block w-full rounded-md border border-white/10 px-3 py-2 text-left hover:bg-white/5"
+                onClick={() => {
+                  addBom(refAtual, materialForBom(m));
+                  toast.success(`${m.name} adicionado ao BOM (consumo 1 ${m.unit}).`);
+                  setCatalog(false);
+                  setCatalogQ("");
+                }}
+              >
+                <span className="text-xs font-semibold text-white">{m.name}</span>
+                <span className="ml-2 text-[10px] uppercase tracking-wide text-muted-foreground">
+                  {m.tipo} · {m.supplier || "—"} · {brl(m.unitCost)}/{m.unit}
+                </span>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <BomTable
         items={data.bom}

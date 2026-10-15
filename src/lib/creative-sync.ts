@@ -18,6 +18,14 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  MATERIAL_TIPOS,
+  listMaterials,
+  replaceAllMaterials,
+  subscribeMaterials,
+  type MaterialItem,
+  type MaterialTipo,
+} from "@/lib/materials/store";
+import {
   listPalettes,
   replaceAllPalettes,
   subscribe as subscribePalettes,
@@ -474,6 +482,33 @@ export function dedupeRows(rows: QueryRow[]): QueryRow[] {
   return [...byKey.values()];
 }
 
+export function materialToRow(m: MaterialItem, uid: string): QueryRow {
+  return {
+    external_key: m.id,
+    name: m.name,
+    material_type: m.tipo,
+    supplier: m.supplier || "",
+    unit: m.unit || "un",
+    unit_cost: Math.max(0, Number.isFinite(m.unitCost) ? m.unitCost : 0),
+    sku: m.sku || "",
+    notes: m.notes || "",
+    created_by: uid,
+  };
+}
+export function materialFromRow(r: QueryRow): MaterialItem {
+  const tipo = str(r.material_type);
+  return {
+    id: str(r.external_key),
+    name: str(r.name),
+    tipo: (MATERIAL_TIPOS.includes(tipo as MaterialTipo) ? tipo : "Tecido") as MaterialTipo,
+    supplier: str(r.supplier),
+    unit: str(r.unit) || "un",
+    unitCost: num(r.unit_cost),
+    sku: str(r.sku),
+    notes: str(r.notes),
+  };
+}
+
 // ---------- Specs por módulo ----------
 type ModuleSpec = {
   key: string;
@@ -575,6 +610,15 @@ const MODULES: ModuleSpec[] = [
     toRow: (e, uid) => filterToRow(e as SavedFilter, uid),
     apply: (rows) => replaceAllFilters(rows.map(filterFromRow)),
     subscribe: subscribeFilters,
+  },
+  {
+    key: "materials",
+    table: "materials",
+    label: "a biblioteca de materiais",
+    list: listMaterials,
+    toRow: (e, uid) => materialToRow(e as MaterialItem, uid),
+    apply: (rows) => replaceAllMaterials(rows.map(materialFromRow)),
+    subscribe: subscribeMaterials,
   },
 ];
 

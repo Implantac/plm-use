@@ -101,6 +101,13 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "sync",
   },
   {
+    area: "Biblioteca de materiais",
+    route: "/materials",
+    evidence:
+      "Módulo 11 do creative-sync; migration 20261014220000 pendente — catálogo funciona por dispositivo até o db push, e o BOM consome via 'Do catálogo'.",
+    status: "sync",
+  },
+  {
     area: "Qualidade / CAPA",
     route: "/quality",
     evidence: "Defeitos derivados dos lotes são reais; CAPA espelhada (módulo 9).",
@@ -301,8 +308,9 @@ function AuditScreen() {
               * Sync = espelho no Supabase via `creative-sync`. As migrations foram aplicadas via
               SQL editor do Lovable Cloud (14/10/2026) — os módulos criativos e a timeline
               cross-device já gravam no banco (enum atual ao vivo, verificado por sonda). As 12
-              tabelas e o enum respondem 200 às sondas de 14/10 (19h50). O cache local segue como
-              fallback de rede.
+              tabelas e o enum respondem 200 às sondas de 14/10 (19h50). O módulo 11 (`materials`)
+              aguarda o SQL 20261014220000 — funciona por dispositivo até lá; o cache local segue
+              como fallback de rede.
             </p>
           </div>
 

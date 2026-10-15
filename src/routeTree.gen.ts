@@ -36,6 +36,7 @@ import { Route as AuthenticatedInventoryRouteImport } from './routes/_authentica
 import { Route as AuthenticatedLaunchRouteImport } from './routes/_authenticated.launch'
 import { Route as AuthenticatedLooksRouteImport } from './routes/_authenticated.looks'
 import { Route as AuthenticatedMarketingRouteImport } from './routes/_authenticated.marketing'
+import { Route as AuthenticatedMaterialsRouteImport } from './routes/_authenticated.materials'
 import { Route as AuthenticatedMeasurementsRouteImport } from './routes/_authenticated.measurements'
 import { Route as AuthenticatedOfficialModelsRouteImport } from './routes/_authenticated.official-models'
 import { Route as AuthenticatedPiecesReportRouteImport } from './routes/_authenticated.pieces-report'
@@ -199,6 +200,11 @@ const AuthenticatedMarketingRoute = AuthenticatedMarketingRouteImport.update({
   path: '/marketing',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedMaterialsRoute = AuthenticatedMaterialsRouteImport.update({
+  id: '/materials',
+  path: '/materials',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedMeasurementsRoute =
   AuthenticatedMeasurementsRouteImport.update({
     id: '/measurements',
@@ -351,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/launch': typeof AuthenticatedLaunchRoute
   '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
+  '/materials': typeof AuthenticatedMaterialsRoute
   '/measurements': typeof AuthenticatedMeasurementsRoute
   '/official-models': typeof AuthenticatedOfficialModelsRoute
   '/pieces-report': typeof AuthenticatedPiecesReportRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/launch': typeof AuthenticatedLaunchRoute
   '/looks': typeof AuthenticatedLooksRoute
   '/marketing': typeof AuthenticatedMarketingRoute
+  '/materials': typeof AuthenticatedMaterialsRoute
   '/measurements': typeof AuthenticatedMeasurementsRoute
   '/official-models': typeof AuthenticatedOfficialModelsRoute
   '/pieces-report': typeof AuthenticatedPiecesReportRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/_authenticated/launch': typeof AuthenticatedLaunchRoute
   '/_authenticated/looks': typeof AuthenticatedLooksRoute
   '/_authenticated/marketing': typeof AuthenticatedMarketingRoute
+  '/_authenticated/materials': typeof AuthenticatedMaterialsRoute
   '/_authenticated/measurements': typeof AuthenticatedMeasurementsRoute
   '/_authenticated/official-models': typeof AuthenticatedOfficialModelsRoute
   '/_authenticated/pieces-report': typeof AuthenticatedPiecesReportRoute
@@ -508,6 +517,7 @@ export interface FileRouteTypes {
     | '/launch'
     | '/looks'
     | '/marketing'
+    | '/materials'
     | '/measurements'
     | '/official-models'
     | '/pieces-report'
@@ -559,6 +569,7 @@ export interface FileRouteTypes {
     | '/launch'
     | '/looks'
     | '/marketing'
+    | '/materials'
     | '/measurements'
     | '/official-models'
     | '/pieces-report'
@@ -611,6 +622,7 @@ export interface FileRouteTypes {
     | '/_authenticated/launch'
     | '/_authenticated/looks'
     | '/_authenticated/marketing'
+    | '/_authenticated/materials'
     | '/_authenticated/measurements'
     | '/_authenticated/official-models'
     | '/_authenticated/pieces-report'
@@ -839,6 +851,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMarketingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/materials': {
+      id: '/_authenticated/materials'
+      path: '/materials'
+      fullPath: '/materials'
+      preLoaderRoute: typeof AuthenticatedMaterialsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/measurements': {
       id: '/_authenticated/measurements'
       path: '/measurements'
@@ -1054,6 +1073,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedLaunchRoute: typeof AuthenticatedLaunchRoute
   AuthenticatedLooksRoute: typeof AuthenticatedLooksRoute
   AuthenticatedMarketingRoute: typeof AuthenticatedMarketingRoute
+  AuthenticatedMaterialsRoute: typeof AuthenticatedMaterialsRoute
   AuthenticatedMeasurementsRoute: typeof AuthenticatedMeasurementsRoute
   AuthenticatedOfficialModelsRoute: typeof AuthenticatedOfficialModelsRoute
   AuthenticatedPiecesReportRoute: typeof AuthenticatedPiecesReportRoute
@@ -1096,6 +1116,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedLaunchRoute: AuthenticatedLaunchRoute,
   AuthenticatedLooksRoute: AuthenticatedLooksRoute,
   AuthenticatedMarketingRoute: AuthenticatedMarketingRoute,
+  AuthenticatedMaterialsRoute: AuthenticatedMaterialsRoute,
   AuthenticatedMeasurementsRoute: AuthenticatedMeasurementsRoute,
   AuthenticatedOfficialModelsRoute: AuthenticatedOfficialModelsRoute,
   AuthenticatedPiecesReportRoute: AuthenticatedPiecesReportRoute,
