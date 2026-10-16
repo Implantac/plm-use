@@ -146,6 +146,13 @@ burlada:
 
 ---
 
+## Operação (o que não é automático)
+
+Publicar no Lovable, aplicar SQL no Cloud e configurar segredo de cron são
+cliques do dono do produto — o passo a passo versionado está em
+[`OPERACAO.md`](OPERACAO.md), e o app tem um painel que confere o estado dessas
+ações ao vivo (`/audit` → "Mãos do operador").
+
 ## Notas para quem for mexer
 
 - **Leia `AGENTS.md`** antes de alterar fluxos de PCP ou IA: são decisões
