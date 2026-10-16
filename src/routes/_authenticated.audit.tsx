@@ -74,7 +74,8 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
   {
     area: "PCP e Produção",
     route: "/production",
-    evidence: "pcp_lots + realtime; passagens/GC geram entity_events.",
+    evidence:
+      "pcp_lots + realtime; passagens/GC geram entity_events; aba Ficha do drawer lê a ficha real (mocks removidos 15/10).",
     status: "real",
   },
   {
