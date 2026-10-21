@@ -1,8 +1,20 @@
 // Modelo de dados central de PCP — Lotes, Referências, Passagens e Ocorrências.
 // Mantido independente do backend para permitir migração futura sem refactor.
 
+// Bordado e Sublimação entraram em 21/10/2026: são setores reais das rotas de
+// produção (a rota R01 da camisa passa por Corte → Costura → Bordado →
+// Sublimação → Acabamento) e antes não tinham coluna no Kanban.
 export type SetorPCP =
-  "Compras" | "CAD" | "Corte" | "Silk" | "Costura" | "Acabamento" | "Expedição" | "Terceirizados";
+  | "Compras"
+  | "CAD"
+  | "Corte"
+  | "Silk"
+  | "Costura"
+  | "Bordado"
+  | "Sublimação"
+  | "Acabamento"
+  | "Expedição"
+  | "Terceirizados";
 
 export const SETORES_PCP: SetorPCP[] = [
   "Compras",
@@ -10,6 +22,8 @@ export const SETORES_PCP: SetorPCP[] = [
   "Corte",
   "Silk",
   "Costura",
+  "Bordado",
+  "Sublimação",
   "Acabamento",
   "Expedição",
   "Terceirizados",

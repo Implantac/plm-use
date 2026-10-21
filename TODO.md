@@ -21,6 +21,11 @@
       Tabelas `app_cron_config/runs` vivas no banco (14/10) — ver seed/segredos no item pendente.
 - [x] Fluxo de pedido fase 1 (catálogo → pedido → ficha → custo → PCP): migrations
       `20261021090000..090300`, telas `/catalog` e `/orders`, motor de custo com 20 testes.
+- [x] Fase 2 do PCP: Kanban, Torre, Gantt e capacidade lendo as OPs reais do banco
+      (`src/lib/pcp/from-orders.ts` + `usePcpLotes`), `/planner` reescrito como
+      "Programação de OPs" (grava `production_orders`). Bordado e Sublimação ganharam
+      coluna no Kanban. O seed de demonstração só aparece — com aviso — quando não há
+      nenhuma OP no banco.
 - [x] Certificação do banco em CI: `scripts/certify-db.sh` aplica as 64 migrations num
       Postgres limpo e roda 66 asserções E2E (`supabase/tests/`) como usuário final.
       Achou e corrigiu 3 defeitos reais em 21/10: migration que só quebrava em banco

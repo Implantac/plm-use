@@ -19,7 +19,8 @@ import { LoteTimeline } from "@/components/pcp/LoteTimeline";
 import { PCPFlowDiagram, PCP_STEP_IDS, type PCPStepId } from "@/components/pcp/PCPFlowDiagram";
 import { ExportMenu } from "@/components/export/ExportMenu";
 import { OpKanban } from "@/components/pcp/op/OpKanban";
-import { lotesPorSetor, usePCPStore } from "@/lib/pcp/store";
+import { lotesPorSetor } from "@/lib/pcp/store";
+import { usePcpLotes } from "@/hooks/use-pcp-lotes";
 import {
   SETORES_PCP,
   ocorrenciasAbertasLote,
@@ -51,7 +52,7 @@ export const Route = createFileRoute("/_authenticated/production")({
 });
 
 function ProductionPage() {
-  const lotes = usePCPStore((s) => s.lotes);
+  const { lotes, isDemo } = usePcpLotes();
   const { openEntity } = useEntityDrawer();
   const search = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
@@ -119,6 +120,13 @@ function ProductionPage() {
       ]}
     >
       <div className="space-y-4">
+        {isDemo && (
+          <div className="rounded-md border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-[11px] text-amber-200">
+            <strong>Demonstração:</strong> não há OP no banco — as colunas abaixo usam o seed de
+            exemplo. Libere um pedido aprovado para o PCP (em <em>Pedidos → Liberar para PCP</em>) e
+            esta tela passa a mostrar a produção real.
+          </div>
+        )}
         <div ref={flowRef}>
           <PCPFlowDiagram
             activeId={search.pcpStep ?? null}
@@ -420,7 +428,7 @@ function ProductionPage() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
       />
-      <CapacityPanel />
+      <CapacityPanel lotes={lotes} />
     </ModuleLayout>
   );
 }

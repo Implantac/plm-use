@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Gauge, BarChart3, CalendarRange } from "lucide-react";
 import { usePCPStore } from "@/lib/pcp/store";
-import { SETORES_PCP, pendenteReferencia, type SetorPCP } from "@/types/pcp";
+import { SETORES_PCP, pendenteReferencia, type Lote, type SetorPCP } from "@/types/pcp";
 
 // Capacidade diária mock (pç/dia) por setor.
 const CAPACIDADE: Record<SetorPCP, number> = {
@@ -11,13 +11,20 @@ const CAPACIDADE: Record<SetorPCP, number> = {
   Corte: 800,
   Silk: 350,
   Costura: 600,
+  Bordado: 250,
+  Sublimação: 320,
   Acabamento: 700,
   Expedição: 1200,
   Terceirizados: 250,
 };
 
-export function CapacityPanel() {
-  const lotes = usePCPStore((s) => s.lotes);
+/**
+ * `lotes` é injetado pela página quando existem OPs reais no banco. Sem ele, cai
+ * no store de demonstração — a capacidade (pç/dia) continua mock e declarada.
+ */
+export function CapacityPanel({ lotes: injected }: { lotes?: Lote[] } = {}) {
+  const storeLotes = usePCPStore((s) => s.lotes);
+  const lotes = injected ?? storeLotes;
 
   const data = useMemo(() => {
     const fila = Object.fromEntries(SETORES_PCP.map((s) => [s, 0])) as Record<SetorPCP, number>;

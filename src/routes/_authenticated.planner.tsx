@@ -1,325 +1,273 @@
-// Smart Production Planner — sugere lotes a abrir baseando-se em estoque/giro.
-// PLM-only: leitura de mocks + criação de lote no usePCPStore (sem ERP).
+// Programação de OPs — a tela que o PCP usa para fechar a janela de produção.
+//
+// Substituiu (21/10/2026) o "Smart Production Planner", que era 100% mock: as
+// sugestões vinham de um array fixo (`BASE`, "Camisa Linho Amalfi") e "gerar lote"
+// gravava só no store do navegador. Nada chegava ao banco. Agora a tela lê as OPs
+// reais, mostra o que está sem janela / atrasado e grava a programação em
+// `production_orders` (policy `pcp update` decide quem pode).
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Sparkles, TrendingUp, Package, CheckCircle2 } from "lucide-react";
-import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { CalendarRange, AlertTriangle, Save, Loader2 } from "lucide-react";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { ExportMenu } from "@/components/export/ExportMenu";
-import { usePCPStore } from "@/lib/pcp/store";
+import { useProductionOrders, useUpdateOrderSchedule } from "@/hooks/use-production-orders";
+import { useAuth, useUserRoles } from "@/hooks/use-auth";
+import { opPermissions } from "@/lib/pcp/op-permissions";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   component: PlannerPage,
 });
 
-type Sugestao = {
-  ref: string;
-  nome: string;
-  grupo: string;
-  colecao: string;
-  estoque: number;
-  giroSemanal: number;
-  coberturaSemanas: number;
-  grade: Record<string, number>;
-  score: number;
-  motivo: string;
+const PRIORITY_LABEL: Record<string, string> = { baixa: "Baixa", media: "Média", alta: "Alta" };
+const STATUS_LABEL: Record<string, string> = {
+  planejada: "Planejada",
+  aguardando: "Aguardando",
+  em_producao: "Em produção",
+  pausada: "Pausada",
+  concluida: "Concluída",
 };
 
-// Mock baseado em padrões reais de coleção (substituível por dados de inventory/analytics).
-const BASE: Omit<Sugestao, "score" | "motivo" | "coberturaSemanas">[] = [
-  {
-    ref: "CM704",
-    nome: "Camisa Linho Amalfi",
-    grupo: "Camisaria Masculina",
-    colecao: "Alto Verão 2026",
-    estoque: 42,
-    giroSemanal: 120,
-    grade: { P: 50, M: 100, G: 100, GG: 50 },
-  },
-  {
-    ref: "VT302",
-    nome: "Vestido Midi Toscana",
-    grupo: "Vestidos",
-    colecao: "Alto Verão 2026",
-    estoque: 18,
-    giroSemanal: 95,
-    grade: { PP: 20, P: 60, M: 80, G: 60, GG: 30 },
-  },
-  {
-    ref: "BL220",
-    nome: "Blusa Bordado Manual",
-    grupo: "Blusaria Feminina",
-    colecao: "Pré-Verão 2026",
-    estoque: 8,
-    giroSemanal: 45,
-    grade: { P: 30, M: 50, G: 40, GG: 20 },
-  },
-  {
-    ref: "CL110",
-    nome: "Calça Alfaiataria",
-    grupo: "Calças",
-    colecao: "Alto Verão 2026",
-    estoque: 210,
-    giroSemanal: 60,
-    grade: { 38: 40, 40: 80, 42: 80, 44: 50, 46: 30 },
-  },
-  {
-    ref: "SA180",
-    nome: "Saia Plissada Capri",
-    grupo: "Saias",
-    colecao: "Alto Verão 2026",
-    estoque: 4,
-    giroSemanal: 38,
-    grade: { P: 30, M: 50, G: 40 },
-  },
-  {
-    ref: "CM709",
-    nome: "Camisa Oxford",
-    grupo: "Camisaria Masculina",
-    colecao: "Alto Verão 2026",
-    estoque: 130,
-    giroSemanal: 70,
-    grade: { P: 40, M: 60, G: 60, GG: 40 },
-  },
-];
+const fmtDate = (v?: string | null) => (v ? v.slice(0, 10).split("-").reverse().join("/") : "—");
 
-function calcular(): Sugestao[] {
-  return BASE.map((b) => {
-    const cobertura = b.giroSemanal > 0 ? b.estoque / b.giroSemanal : 99;
-    // score: cobertura baixa + giro alto = alta prioridade
-    const baseScore = Math.max(0, 100 - cobertura * 15);
-    const giroBoost = Math.min(30, b.giroSemanal / 4);
-    const score = Math.min(100, Math.round(baseScore + giroBoost));
-    const motivo =
-      cobertura < 1
-        ? "Ruptura iminente — repor agora"
-        : cobertura < 3
-          ? "Estoque baixo para o giro"
-          : cobertura < 6
-            ? "Atenção: cobertura curta"
-            : "Cobertura saudável";
-    return { ...b, coberturaSemanas: Math.round(cobertura * 10) / 10, score, motivo };
-  }).sort((a, b) => b.score - a.score);
-}
+const today = () => new Date().toISOString().slice(0, 10);
+
+type Row = {
+  id: string;
+  number: string;
+  status: string;
+  priority: string;
+  plannedStart: string;
+  plannedEnd: string;
+  pieces: number;
+  items: number;
+};
 
 function PlannerPage() {
-  const lotes = usePCPStore((s) => s.lotes);
-  const [sugestoes] = useState<Sugestao[]>(() => calcular());
-  const [criados, setCriados] = useState<Set<string>>(new Set());
+  const { data: orders = [], isLoading } = useProductionOrders();
+  const save = useUpdateOrderSchedule();
+  const { user } = useAuth();
+  const { roles } = useUserRoles(user?.id);
+  const { canPlan } = opPermissions(roles);
 
-  const refsEmLote = useMemo(() => {
-    const set = new Set<string>();
-    for (const l of lotes) for (const r of l.referencias) set.add(r.ref);
-    return set;
-  }, [lotes]);
+  const [draft, setDraft] = useState<
+    Record<string, { start: string; end: string; priority: string }>
+  >({});
+  const [saved, setSaved] = useState<Record<string, string>>({});
 
-  const urgentes = sugestoes.filter((s) => s.score >= 75).length;
-  const totalPecasSug = sugestoes.reduce(
-    (a, s) => a + Object.values(s.grade).reduce((x, y) => x + y, 0),
-    0,
+  const rows: Row[] = useMemo(
+    () =>
+      orders.map((o) => ({
+        id: o.id,
+        number: o.number,
+        status: o.status,
+        priority: o.priority ?? "media",
+        plannedStart: o.planned_start?.slice(0, 10) ?? "",
+        plannedEnd: o.planned_end?.slice(0, 10) ?? "",
+        pieces: (o.items ?? []).reduce((acc, i) => acc + (i.quantity_planned ?? 0), 0),
+        items: (o.items ?? []).length,
+      })),
+    [orders],
   );
 
-  function gerarLote(s: Sugestao) {
-    const totalPecas = Object.values(s.grade).reduce((a, b) => a + b, 0);
-    const res = usePCPStore.getState().criarLote({
-      grupo: s.grupo,
-      colecao: s.colecao,
-      prioridade: s.score >= 75 ? "Urgente" : s.score >= 50 ? "Alta" : "Média",
-      responsavel: "Planner AI",
-      referencia: {
-        ref: s.ref,
-        nome: s.nome,
-        qtd_programada: totalPecas,
-        grade: s.grade,
-      },
-    });
-    if (!res.ok) {
-      toast.error(res.erro ?? "Falha ao gerar lote");
-      return;
+  const totalPecas = rows.reduce((a, r) => a + r.pieces, 0);
+  const semJanela = rows.filter((r) => !r.plannedStart || !r.plannedEnd).length;
+  const atrasadas = rows.filter(
+    (r) => r.plannedEnd && r.plannedEnd < today() && r.status !== "concluida",
+  ).length;
+
+  const value = (r: Row) =>
+    draft[r.id] ?? { start: r.plannedStart, end: r.plannedEnd, priority: r.priority };
+
+  const setField = (r: Row, field: "start" | "end" | "priority", v: string) =>
+    setDraft((prev) => ({ ...prev, [r.id]: { ...value(r), [field]: v } }));
+
+  async function saveRow(r: Row) {
+    const v = value(r);
+    try {
+      await save.mutateAsync({
+        orderId: r.id,
+        plannedStart: v.start || null,
+        plannedEnd: v.end || null,
+        priority: v.priority,
+      });
+      setSaved((prev) => ({ ...prev, [r.id]: "Programação salva." }));
+    } catch (e) {
+      setSaved((prev) => ({
+        ...prev,
+        [r.id]: e instanceof Error ? e.message : "Falha ao salvar.",
+      }));
     }
-    setCriados((prev) => new Set(prev).add(s.ref));
-    toast.success(`${res.numero} criado para ${s.ref}`, {
-      description: `${totalPecas} peças enviadas ao Kanban do PCP em Compras.`,
-    });
   }
 
   return (
     <ModuleLayout
-      title="Smart Production Planner"
-      subtitle="O que produzir em seguida — sugestões baseadas em estoque, giro e cobertura."
-      version="Planner v1.0"
+      title="Programação de OPs"
+      subtitle="Janela de produção e prioridade das ordens que já entraram no PCP. O prazo do pedido entra como fim planejado; o início é decisão do PCP."
+      version="Planner v2.0"
       metrics={[
-        { label: "Sugestões", value: String(sugestoes.length), detail: "ativas" },
-        { label: "Urgentes", value: String(urgentes), detail: "score ≥ 75" },
-        { label: "Peças totais", value: String(totalPecasSug), detail: "se aceitar tudo" },
-        {
-          label: "Já em PCP",
-          value: String(sugestoes.filter((s) => refsEmLote.has(s.ref)).length),
-          detail: "lotes ativos",
-        },
+        { label: "OPs", value: String(rows.length), detail: "no PCP" },
+        { label: "Peças", value: String(totalPecas), detail: "programadas" },
+        { label: "Sem janela", value: String(semJanela), detail: "sem início ou fim" },
+        { label: "Atrasadas", value: String(atrasadas), detail: "fim já passou" },
       ]}
     >
-      <div className="space-y-3">
-        <div className="flex justify-end">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <p className="text-[11px] text-muted-foreground flex items-center gap-2">
+            <CalendarRange className="w-3.5 h-3.5" />
+            Programação grava em <code className="text-[10px]">production_orders</code> — a mesma OP
+            que o Kanban e as passagens usam.
+          </p>
           <ExportMenu
-            title="Smart Production Planner — Sugestões"
-            filename={`planner-${new Date().toISOString().slice(0, 10)}`}
-            rows={sugestoes.map((s) => ({
-              Ref: s.ref,
-              Nome: s.nome,
-              Grupo: s.grupo,
-              Colecao: s.colecao,
-              Estoque: s.estoque,
-              "Giro/sem": s.giroSemanal,
-              "Cobertura (sem)": s.coberturaSemanas,
-              "Peças sugeridas": Object.values(s.grade).reduce((a, b) => a + b, 0),
-              Grade: Object.entries(s.grade)
-                .map(([t, q]) => `${t}:${q}`)
-                .join(" · "),
-              Score: s.score,
-              Motivo: s.motivo,
-              "Em PCP": refsEmLote.has(s.ref) ? "Sim" : "Não",
+            title="Programação de OPs"
+            filename={`programacao-ops-${today()}`}
+            rows={rows.map((r) => ({
+              OP: r.number,
+              Status: STATUS_LABEL[r.status] ?? r.status,
+              Prioridade: PRIORITY_LABEL[r.priority] ?? r.priority,
+              "Início planejado": fmtDate(r.plannedStart),
+              "Fim planejado": fmtDate(r.plannedEnd),
+              Peças: r.pieces,
+              Itens: r.items,
             }))}
             columns={[
-              "Ref",
-              "Nome",
-              "Grupo",
-              "Colecao",
-              "Estoque",
-              "Giro/sem",
-              "Cobertura (sem)",
-              "Peças sugeridas",
-              "Grade",
-              "Score",
-              "Motivo",
-              "Em PCP",
+              "OP",
+              "Status",
+              "Prioridade",
+              "Início planejado",
+              "Fim planejado",
+              "Peças",
+              "Itens",
             ]}
           />
         </div>
-        {sugestoes.map((s) => {
-          const totalPecas = Object.values(s.grade).reduce((a, b) => a + b, 0);
-          const jaCriado = criados.has(s.ref);
-          const jaEmPCP = refsEmLote.has(s.ref);
-          const cor =
-            s.score >= 75
-              ? "border-rose-400/30"
-              : s.score >= 50
-                ? "border-amber-400/30"
-                : "border-white/10";
+
+        {!canPlan && (
+          <div className="rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-[11px] text-muted-foreground">
+            Você está em modo leitura: só PCP, gestor e admin alteram a programação.
+          </div>
+        )}
+
+        {isLoading && (
+          <p className="text-xs text-muted-foreground flex items-center gap-2">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Carregando OPs…
+          </p>
+        )}
+
+        {!isLoading && rows.length === 0 && (
+          <Card className="glass-card rounded-lg border-dashed">
+            <CardContent className="p-6 space-y-2">
+              <p className="text-sm font-semibold text-white">Nenhuma OP no PCP</p>
+              <p className="text-xs text-muted-foreground">
+                A programação começa quando um pedido aprovado é liberado: em{" "}
+                <strong>Pedidos → Liberar para PCP</strong> o sistema cria a OP, herda a rota da
+                configuração e coloca o prazo do pedido como fim planejado.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {rows.map((r) => {
+          const v = value(r);
+          const invalid = !!v.start && !!v.end && v.start > v.end;
+          const late = !!r.plannedEnd && r.plannedEnd < today() && r.status !== "concluida";
           return (
-            <Card key={s.ref} className={`glass-card rounded-lg ${cor}`}>
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4 flex-wrap">
-                  <div className="flex-1 min-w-[240px]">
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] ${
-                          s.score >= 75
-                            ? "border-rose-400/40 text-rose-300"
-                            : s.score >= 50
-                              ? "border-amber-400/40 text-amber-200"
-                              : "border-emerald-400/40 text-emerald-300"
-                        }`}
-                      >
-                        Score {s.score}
-                      </Badge>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                        {s.ref}
-                      </p>
-                    </div>
-                    <p className="text-sm font-bold text-white mt-1">{s.nome}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {s.grupo} • {s.colecao}
-                    </p>
-                    <p className="text-[11px] mt-2 flex items-center gap-1.5 text-white/80">
-                      <Sparkles className="h-3 w-3 text-primary" />
-                      {s.motivo}
-                    </p>
-                  </div>
-
-                  <div className="flex gap-4 text-center">
-                    <div>
-                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                        <Package className="h-3 w-3" /> Estoque
-                      </p>
-                      <p className="text-lg font-bold text-white">{s.estoque}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" /> Giro/sem
-                      </p>
-                      <p className="text-lg font-bold text-white">{s.giroSemanal}</p>
-                    </div>
-                    <div>
-                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
-                        Cobertura
-                      </p>
-                      <p
-                        className={`text-lg font-bold ${
-                          s.coberturaSemanas < 2
-                            ? "text-rose-300"
-                            : s.coberturaSemanas < 4
-                              ? "text-amber-300"
-                              : "text-emerald-300"
-                        }`}
-                      >
-                        {s.coberturaSemanas}s
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-3 items-center">
-                  <div className="md:col-span-2">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground mb-1">
-                      Grade sugerida ({totalPecas} pç)
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {Object.entries(s.grade).map(([tam, qtd]) => (
-                        <span
-                          key={tam}
-                          className="px-2 py-1 rounded bg-white/[0.04] border border-white/10 text-[10px] text-white"
-                        >
-                          <span className="text-muted-foreground">{tam}</span>{" "}
-                          <span className="font-bold">{qtd}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    {jaEmPCP && (
-                      <Badge variant="outline" className="border-white/15 text-[10px]">
-                        Já em PCP
-                      </Badge>
-                    )}
-                    <Button
-                      size="sm"
-                      onClick={() => gerarLote(s)}
-                      disabled={jaCriado}
-                      className={
-                        jaCriado
-                          ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/20"
-                          : "bg-primary text-primary-foreground hover:bg-primary/90"
-                      }
+            <Card
+              key={r.id}
+              className={`glass-card rounded-lg ${late ? "border-rose-400/30" : ""}`}
+            >
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-bold text-white">{r.number}</p>
+                  <Badge variant="outline" className="text-[9px]">
+                    {STATUS_LABEL[r.status] ?? r.status}
+                  </Badge>
+                  <span className="text-[10px] text-muted-foreground">
+                    {r.items} item(ns) · {r.pieces} pç
+                  </span>
+                  {late && (
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] border-rose-400/40 text-rose-300 gap-1"
                     >
-                      {jaCriado ? (
-                        <>
-                          <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
-                          Enviado
-                        </>
-                      ) : (
-                        <>Gerar Lote</>
-                      )}
-                    </Button>
-                  </div>
+                      <AlertTriangle className="w-3 h-3" /> atrasada
+                    </Badge>
+                  )}
+                  {(!r.plannedStart || !r.plannedEnd) && !late && (
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] border-amber-400/40 text-amber-200"
+                    >
+                      sem janela
+                    </Badge>
+                  )}
                 </div>
 
-                <Progress value={s.score} className="h-1 bg-white/5 mt-3" />
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                  <label className="space-y-1 block">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      Início
+                    </span>
+                    <Input
+                      type="date"
+                      value={v.start}
+                      disabled={!canPlan}
+                      onChange={(e) => setField(r, "start", e.target.value)}
+                      className="h-8"
+                    />
+                  </label>
+                  <label className="space-y-1 block">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      Fim
+                    </span>
+                    <Input
+                      type="date"
+                      value={v.end}
+                      disabled={!canPlan}
+                      onChange={(e) => setField(r, "end", e.target.value)}
+                      className="h-8"
+                    />
+                  </label>
+                  <label className="space-y-1 block">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      Prioridade
+                    </span>
+                    <select
+                      value={v.priority}
+                      disabled={!canPlan}
+                      onChange={(e) => setField(r, "priority", e.target.value)}
+                      className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm"
+                    >
+                      <option value="baixa">Baixa</option>
+                      <option value="media">Média</option>
+                      <option value="alta">Alta</option>
+                    </select>
+                  </label>
+                  <Button
+                    className="h-8 text-[10px] tracking-[0.16em] gap-2"
+                    disabled={!canPlan || save.isPending || invalid}
+                    onClick={() => void saveRow(r)}
+                  >
+                    <Save className="w-3.5 h-3.5" /> Salvar
+                  </Button>
+                </div>
+
+                {invalid && (
+                  <p className="text-[11px] text-amber-300">O início não pode ser depois do fim.</p>
+                )}
+                {saved[r.id] && (
+                  <p
+                    className={`text-[11px] ${
+                      saved[r.id] === "Programação salva." ? "text-emerald-300" : "text-red-400"
+                    }`}
+                  >
+                    {saved[r.id]}
+                  </p>
+                )}
               </CardContent>
             </Card>
           );
