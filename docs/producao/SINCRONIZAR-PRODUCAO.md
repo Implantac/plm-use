@@ -1,11 +1,31 @@
 # Sincronizar o banco de produção com o repositório
 
-**Situação em 21/10/2026:** o sistema está publicado (`https://usemoda.ai`), mas o
-banco de produção **não recebeu as migrations do fluxo de pedido**. O PLM (PCP,
+**Situação em 21/10/2026:** o sistema está publicado, mas o banco de produção
+**não recebeu as migrations do fluxo de pedido**. O PLM (PCP,
 perfis, fornecedores, coleções) está íntegro; o que falta é exatamente o caminho
 comercial: cliente → pedido → ficha → custo → liberação para o PCP.
 
 Este documento fecha essa lacuna sem apagar nada e sem depender do Supabase CLI.
+
+### Onde o sistema está publicado
+
+| Endereço                     | Estado (21/10)           | Observação                    |
+| ---------------------------- | ------------------------ | ----------------------------- |
+| `https://plmuse.lovable.app` | **200 — é o PLM**        | URL real do app publicado     |
+| `https://usemoda.ai`         | 307 → `www.usemoda.ai`   | redireciona, não serve o app  |
+| `https://www.usemoda.ai`     | 308 → `https://moda.dev` | **aponta para outro produto** |
+
+O bundle servido em `plmuse.lovable.app` referencia `njmniwsqwohmigroswnl.supabase.co`
+— ou seja, é o mesmo banco auditado aqui, e o front-end já contém as telas de
+pedido (`sales_orders`, `order_item_technical_sheet`,
+`release_sales_order_to_pcp`). Só o banco está atrás.
+
+> **Pendência de infraestrutura (fora do escopo do SQL):** o domínio próprio
+> `usemoda.ai` hoje cai em `moda.dev` (_"Moda — Production monitoring and evals
+> for AI agents"_), um produto que não é o PLM. Isso precisa ser corrigido em
+> **Lovable → Publicar → Domínios** (reapontar o domínio para
+> `plmuse.lovable.app`), ou no DNS. Enquanto isso, divulgue o endereço
+> `plmuse.lovable.app`.
 
 ---
 
