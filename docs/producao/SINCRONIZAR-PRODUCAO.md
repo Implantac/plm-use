@@ -85,6 +85,25 @@ Ele é a concatenação, na ordem correta, das 8 migrations:
 7. `materials` (Drizzle, necessária como FK)
 8. `20261021090500_sales_technical_sheet_full.sql` (RPC da ficha técnica do pedido)
 
+### Se o SQL editor recusar ou cortar o arquivo
+
+O arquivo tem ~88 KB. Se o editor reclamar de tamanho, truncar ou demorar, use as
+três partes em [`partes/`](./partes/):
+
+| Parte                                 | Tamanho | Conteúdo                                                              |
+| ------------------------------------- | ------- | --------------------------------------------------------------------- |
+| `APLICAR-EM-PRODUCAO-parte1-de-3.sql` | ~27 KB  | guarda + `materials` + baseline do PCP + enums                        |
+| `APLICAR-EM-PRODUCAO-parte2-de-3.sql` | ~45 KB  | núcleo: 12 tabelas, RLS, 7 funções, triggers, seeds                   |
+| `APLICAR-EM-PRODUCAO-parte3-de-3.sql` | ~18 KB  | arredondamento, timeline, preço sugerido, ficha técnica + verificação |
+
+Rode **1 → 2 → 3**, nessa ordem. Cada parte termina no fim de uma migration, então
+parar entre elas não deixa o banco pela metade. O conjunto é reexecutável.
+
+> Aplicar **só** `20261021090000_sales_orders_enums.sql` e
+> `20261021090100_sales_orders.sql` — o que o aviso antigo dentro do app dizia —
+> **falha no meio**: `sales_order_items` tem FK para `materials`, que vem em outra
+> migration. O aviso no app já foi corrigido.
+
 ### Garantias
 
 - **Não apaga nada.** Nenhum `DROP TABLE`, `TRUNCATE` ou `DELETE`.

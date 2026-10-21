@@ -64,6 +64,7 @@ sua tela logado como comercial, é bug — me avise.
 
 ```text
 1. APLICAR-EM-PRODUCAO.sql     -> cria as 13 tabelas e 8 funções
+   (se o editor cortar: partes/parte1 -> parte2 -> parte3)
 2. DIAGNOSTICO-PEDIDO.sql      -> confirma 13/13, 8/8 e mostra os papéis
 3. SEED-CATALOGO-DEMO.sql      -> opcional: 1 produto validado para testar
 4. Recarregar o app (F5)

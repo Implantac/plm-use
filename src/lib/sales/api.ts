@@ -65,9 +65,20 @@ export function isMissingTable(error: Err | null): boolean {
   );
 }
 
+/**
+ * Aviso mostrado quando as tabelas do fluxo não existem neste banco.
+ *
+ * O texto anterior mandava aplicar duas migrations específicas — caminho que
+ * NÃO funciona: `sales_order_items` tem FK para `materials`, que vive em outra
+ * migration, e a ficha técnica depende da RPC de 20261021090500. Aplicar só as
+ * duas listadas falha no meio. O caminho certo é o pacote único, que já traz as
+ * 8 na ordem.
+ */
 export const MIGRATION_HINT =
-  "Migration pendente: aplique 20261021090000_sales_orders_enums.sql e 20261021090100_sales_orders.sql " +
-  "(Lovable → Cloud → SQL editor) para ativar o fluxo de pedidos.";
+  "Este banco ainda não tem as tabelas do fluxo de pedido. Aplique o arquivo " +
+  "docs/producao/APLICAR-EM-PRODUCAO.sql (as 8 migrations pendentes num só arquivo, já na ordem) " +
+  "em Lovable → Cloud → SQL editor ou Supabase → SQL Editor. " +
+  "Não aplique só as migrations de pedido: elas dependem de materials, que também está no arquivo.";
 
 function toError(error: unknown): Err | null {
   if (!error) return null;
