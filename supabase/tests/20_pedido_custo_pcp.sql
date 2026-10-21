@@ -174,6 +174,9 @@ SELECT public.t_ok(
   (SELECT margin_pct FROM public.sales_order_item_costs LIMIT 1) = 30.00,
   'margem = 30,00%');
 SELECT public.t_ok(
+  (SELECT suggested_price FROM public.sales_order_item_costs LIMIT 1) = 91.25,
+  'preço sugerido = R$ 91,25 (piso de 25% sem markup; antes vinha igual ao custo)');
+SELECT public.t_ok(
   (SELECT cost_status FROM public.sales_order_items ORDER BY created_at LIMIT 1) = 'custo_concluido',
   'item marcado como custo concluído');
 SELECT public.t_ok(
