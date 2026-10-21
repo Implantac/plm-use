@@ -20,6 +20,7 @@ import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated.approvals'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated.audit'
 import { Route as AuthenticatedCadRouteImport } from './routes/_authenticated.cad'
+import { Route as AuthenticatedCatalogRouteImport } from './routes/_authenticated.catalog'
 import { Route as AuthenticatedCollectionMapRouteImport } from './routes/_authenticated.collection-map'
 import { Route as AuthenticatedCollectionsRouteImport } from './routes/_authenticated.collections'
 import { Route as AuthenticatedColorsRouteImport } from './routes/_authenticated.colors'
@@ -39,6 +40,7 @@ import { Route as AuthenticatedMarketingRouteImport } from './routes/_authentica
 import { Route as AuthenticatedMaterialsRouteImport } from './routes/_authenticated.materials'
 import { Route as AuthenticatedMeasurementsRouteImport } from './routes/_authenticated.measurements'
 import { Route as AuthenticatedOfficialModelsRouteImport } from './routes/_authenticated.official-models'
+import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated.orders'
 import { Route as AuthenticatedPiecesReportRouteImport } from './routes/_authenticated.pieces-report'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated.planner'
 import { Route as AuthenticatedPrintsRouteImport } from './routes/_authenticated.prints'
@@ -113,6 +115,11 @@ const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
 const AuthenticatedCadRoute = AuthenticatedCadRouteImport.update({
   id: '/cad',
   path: '/cad',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCatalogRoute = AuthenticatedCatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedCollectionMapRoute =
@@ -217,6 +224,11 @@ const AuthenticatedOfficialModelsRoute =
     path: '/official-models',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedPiecesReportRoute =
   AuthenticatedPiecesReportRouteImport.update({
     id: '/pieces-report',
@@ -341,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/audit': typeof AuthenticatedAuditRoute
   '/cad': typeof AuthenticatedCadRoute
+  '/catalog': typeof AuthenticatedCatalogRoute
   '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/colors': typeof AuthenticatedColorsRoute
@@ -360,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/materials': typeof AuthenticatedMaterialsRoute
   '/measurements': typeof AuthenticatedMeasurementsRoute
   '/official-models': typeof AuthenticatedOfficialModelsRoute
+  '/orders': typeof AuthenticatedOrdersRoute
   '/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
@@ -393,6 +407,7 @@ export interface FileRoutesByTo {
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/audit': typeof AuthenticatedAuditRoute
   '/cad': typeof AuthenticatedCadRoute
+  '/catalog': typeof AuthenticatedCatalogRoute
   '/collection-map': typeof AuthenticatedCollectionMapRoute
   '/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/colors': typeof AuthenticatedColorsRoute
@@ -412,6 +427,7 @@ export interface FileRoutesByTo {
   '/materials': typeof AuthenticatedMaterialsRoute
   '/measurements': typeof AuthenticatedMeasurementsRoute
   '/official-models': typeof AuthenticatedOfficialModelsRoute
+  '/orders': typeof AuthenticatedOrdersRoute
   '/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/prints': typeof AuthenticatedPrintsRoute
@@ -447,6 +463,7 @@ export interface FileRoutesById {
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/audit': typeof AuthenticatedAuditRoute
   '/_authenticated/cad': typeof AuthenticatedCadRoute
+  '/_authenticated/catalog': typeof AuthenticatedCatalogRoute
   '/_authenticated/collection-map': typeof AuthenticatedCollectionMapRoute
   '/_authenticated/collections': typeof AuthenticatedCollectionsRouteWithChildren
   '/_authenticated/colors': typeof AuthenticatedColorsRoute
@@ -466,6 +483,7 @@ export interface FileRoutesById {
   '/_authenticated/materials': typeof AuthenticatedMaterialsRoute
   '/_authenticated/measurements': typeof AuthenticatedMeasurementsRoute
   '/_authenticated/official-models': typeof AuthenticatedOfficialModelsRoute
+  '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/pieces-report': typeof AuthenticatedPiecesReportRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/prints': typeof AuthenticatedPrintsRoute
@@ -501,6 +519,7 @@ export interface FileRouteTypes {
     | '/approvals'
     | '/audit'
     | '/cad'
+    | '/catalog'
     | '/collection-map'
     | '/collections'
     | '/colors'
@@ -520,6 +539,7 @@ export interface FileRouteTypes {
     | '/materials'
     | '/measurements'
     | '/official-models'
+    | '/orders'
     | '/pieces-report'
     | '/planner'
     | '/prints'
@@ -553,6 +573,7 @@ export interface FileRouteTypes {
     | '/approvals'
     | '/audit'
     | '/cad'
+    | '/catalog'
     | '/collection-map'
     | '/collections'
     | '/colors'
@@ -572,6 +593,7 @@ export interface FileRouteTypes {
     | '/materials'
     | '/measurements'
     | '/official-models'
+    | '/orders'
     | '/pieces-report'
     | '/planner'
     | '/prints'
@@ -606,6 +628,7 @@ export interface FileRouteTypes {
     | '/_authenticated/approvals'
     | '/_authenticated/audit'
     | '/_authenticated/cad'
+    | '/_authenticated/catalog'
     | '/_authenticated/collection-map'
     | '/_authenticated/collections'
     | '/_authenticated/colors'
@@ -625,6 +648,7 @@ export interface FileRouteTypes {
     | '/_authenticated/materials'
     | '/_authenticated/measurements'
     | '/_authenticated/official-models'
+    | '/_authenticated/orders'
     | '/_authenticated/pieces-report'
     | '/_authenticated/planner'
     | '/_authenticated/prints'
@@ -737,6 +761,13 @@ declare module '@tanstack/react-router' {
       path: '/cad'
       fullPath: '/cad'
       preLoaderRoute: typeof AuthenticatedCadRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/catalog': {
+      id: '/_authenticated/catalog'
+      path: '/catalog'
+      fullPath: '/catalog'
+      preLoaderRoute: typeof AuthenticatedCatalogRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/collection-map': {
@@ -870,6 +901,13 @@ declare module '@tanstack/react-router' {
       path: '/official-models'
       fullPath: '/official-models'
       preLoaderRoute: typeof AuthenticatedOfficialModelsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/orders': {
+      id: '/_authenticated/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AuthenticatedOrdersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/pieces-report': {
@@ -1057,6 +1095,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
   AuthenticatedCadRoute: typeof AuthenticatedCadRoute
+  AuthenticatedCatalogRoute: typeof AuthenticatedCatalogRoute
   AuthenticatedCollectionMapRoute: typeof AuthenticatedCollectionMapRoute
   AuthenticatedCollectionsRoute: typeof AuthenticatedCollectionsRouteWithChildren
   AuthenticatedColorsRoute: typeof AuthenticatedColorsRoute
@@ -1076,6 +1115,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedMaterialsRoute: typeof AuthenticatedMaterialsRoute
   AuthenticatedMeasurementsRoute: typeof AuthenticatedMeasurementsRoute
   AuthenticatedOfficialModelsRoute: typeof AuthenticatedOfficialModelsRoute
+  AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedPiecesReportRoute: typeof AuthenticatedPiecesReportRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedPrintsRoute: typeof AuthenticatedPrintsRoute
@@ -1100,6 +1140,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
   AuthenticatedAuditRoute: AuthenticatedAuditRoute,
   AuthenticatedCadRoute: AuthenticatedCadRoute,
+  AuthenticatedCatalogRoute: AuthenticatedCatalogRoute,
   AuthenticatedCollectionMapRoute: AuthenticatedCollectionMapRoute,
   AuthenticatedCollectionsRoute: AuthenticatedCollectionsRouteWithChildren,
   AuthenticatedColorsRoute: AuthenticatedColorsRoute,
@@ -1119,6 +1160,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedMaterialsRoute: AuthenticatedMaterialsRoute,
   AuthenticatedMeasurementsRoute: AuthenticatedMeasurementsRoute,
   AuthenticatedOfficialModelsRoute: AuthenticatedOfficialModelsRoute,
+  AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedPiecesReportRoute: AuthenticatedPiecesReportRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedPrintsRoute: AuthenticatedPrintsRoute,

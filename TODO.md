@@ -77,6 +77,29 @@ tinha CRUD inteiro em `useState` local — ganhou store mutável + hook
       escopo+IP após HMAC, 429 + `Retry-After`. Escopo documentado: por isolate,
       proteção contra laço de agendamento — não é WAF. 4 testes.
 
+## Fluxo de Pedido (produto personalizado)
+
+- [x] **Fase 1 (21/10)**: pedido comercial de produto validado. Migrations
+      `20261021090000_sales_orders_enums.sql` + `20261021090100_sales_orders.sql`
+      (12 tabelas, RLS com isolamento de custo, `submit_sales_order`,
+      `recalc_sales_order_item`, `approve_sales_order_item`,
+      `release_sales_order_to_pcp`, `order_item_technical_sheet`, seeds em
+      `workflow_definitions`). Telas `/catalog` e `/orders` (+ detalhe por
+      `?pedido=`), papel `engenharia_custo`, motor de custo puro em
+      `src/lib/sales/cost.ts` com 17 testes e `OrderDetail.test.tsx` (4).
+      Manual em `docs/fluxo-pedido.md`.
+- [ ] **Fase 2**: fila de custo dedicada (`/cost-queue`), edição inline de
+      driver/custo por operação, teste automatizado de RLS com JWT `comercial`
+      (o vendedor precisa receber 0 linhas de `sales_order_item_costs`).
+- [ ] **Fase 3**: grade no PCP (`production_order_item_sizes` + leitura em
+      Produção de Hoje), PDF da ficha do pedido sem custo (reusar `print.ts`).
+- [ ] **Fase 4**: clonar pedido anterior, lista nominal (nome/número por peça),
+      OS de terceirizado, substituir `/commercial` (vitrine) por pedidos reais e
+      reclassificar no `/audit`.
+- [ ] Aplicar as duas migrations no Lovable Cloud (`More → Cloud → SQL editor`),
+      nesta ordem, e rodar o smoke: `next_sales_order_number()`, submit de um
+      pedido de teste e conferência da explosão em `sales_order_item_operations`.
+
 ## Pendências que exigem ação fora do repositório
 
 - [x] `feed` de atividade reescrito: consome `entity_events` ao vivo (query + realtime INSERT, dedupe por id), chips de filtro derivados dos dados, links de navegação por tipo de entidade e degradação silenciosa quando o banco não responde. Posts ilustrativos removidos.

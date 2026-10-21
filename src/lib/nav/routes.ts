@@ -217,6 +217,17 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     crumbs: ["PLM", "Engenharia"],
   },
 
+  {
+    path: "/catalog",
+    icon: "layers",
+    label: "Catálogo técnico",
+    group: "plm-engenharia",
+    crumbs: ["PLM", "Engenharia"],
+    quickActions: [
+      { id: "new-catalog-product", label: "Novo produto", event: "quick:new-catalog-product" },
+    ],
+  },
+
   // PCP
   { path: "/production", icon: "package", label: "Produção", group: "pcp", crumbs: ["PCP"] },
   {
@@ -244,7 +255,15 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   { path: "/launch", label: "Lançamento", group: "gtm", icon: "rocket", crumbs: ["GTM"] },
   { path: "/showroom", label: "Showroom", group: "gtm", icon: "store", crumbs: ["GTM"] },
   { path: "/marketing", icon: "megaphone", label: "Marketing", group: "gtm", crumbs: ["GTM"] },
-  { path: "/commercial", icon: "shopping", label: "Comercial", group: "gtm", crumbs: ["GTM"] },
+  {
+    path: "/orders",
+    icon: "shopping",
+    label: "Pedidos",
+    group: "gtm",
+    crumbs: ["GTM"],
+    quickActions: [{ id: "new-order", label: "Novo pedido", event: "quick:new-order" }],
+  },
+  { path: "/commercial", icon: "store", label: "Comercial", group: "gtm", crumbs: ["GTM"] },
   { path: "/influencers", icon: "users", label: "Influencers", group: "gtm", crumbs: ["GTM"] },
 
   // Insights & IA

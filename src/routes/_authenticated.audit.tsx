@@ -97,6 +97,13 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "real",
   },
   {
+    area: "Pedidos / Catálogo técnico",
+    route: "/orders",
+    evidence:
+      "Fase 1 (21/10): pedido com grade e opções, explosão do catálogo em materiais/operações e custo por item via RPC no banco. A fila de custo dedicada e a liberação para PCP chegam nas fases 2–3; /commercial segue vitrine.",
+    status: "parcial",
+  },
+  {
     area: "Coleções",
     route: "/collections",
     evidence:
