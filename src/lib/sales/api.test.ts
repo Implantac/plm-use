@@ -1,7 +1,9 @@
-// Regressão de 21/10/2026: `listItems` pede dois embeds to-many irmãos numa só
-// consulta (grades e opções). O PostgREST devolve o produto cartesiano — 2
-// tamanhos x 7 opções = 14 linhas — então a grade aparecia repetida 7 vezes e a
-// soma de peças ia de 10 para 70. O mapItem precisa deduplicar por chave.
+// `listItems` pede dois embeds to-many irmãos numa só consulta (grades e opções).
+// Testado contra o PostgREST 16.5: ele agrega cada relacionamento em separado —
+// não há produto cartesiano. A deduplicação do mapItem é defensiva (join manual
+// ou versão futura pode repetir linha) e é o que este teste trava: seja qual for
+// o formato de entrada, a grade não pode dobrar e a soma de peças tem de fechar
+// com a quantidade do item.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/integrations/supabase/client", () => ({
@@ -23,8 +25,7 @@ const base = {
   cost_status: "aguardando_custo",
 };
 
-// O PostgREST devolve UM item com dois arrays irmãos, cada um repetido pelo
-// cartesiano (2 tamanhos x 7 opções): 14 entradas de grade e 14 de opção.
+// Pior caso que o mapItem precisa tolerar: arrays com entradas repetidas.
 function cartesianItem(
   sizes: Array<[string, number]>,
   options: Array<[string, number, number?]>,
@@ -45,10 +46,10 @@ function cartesianItem(
   return { ...base, sales_order_item_sizes: sizeEntries, sales_order_item_options: optionEntries };
 }
 
-describe("mapItem com embeds em produto cartesiano", () => {
+describe("mapItem deduplica grades e opções", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("deduplica grade e opções vindas de 14 linhas (2 x 7)", () => {
+  it("deduplica grade e opções mesmo com 14 entradas (2 x 7)", () => {
     const row = cartesianItem(
       [
         ["M", 6],

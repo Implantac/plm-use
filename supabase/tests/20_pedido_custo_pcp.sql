@@ -336,6 +336,22 @@ SELECT public.t_ok(
 SELECT public.t_ok(
   (public.order_item_technical_sheet((SELECT id FROM public.sales_orders ORDER BY created_at LIMIT 1)) -> 'items' -> 0 ->> 'quantity') = '10',
   'ficha do pedido traz a quantidade para a produção');
+-- A ficha precisa dizer QUANTO fazer, não só o quê (achado no teste de UI 21/10)
+SELECT public.t_ok(
+  (SELECT (o ->> 'driver_qty')::numeric FROM jsonb_array_elements(
+      public.order_item_technical_sheet((SELECT id FROM public.sales_orders ORDER BY created_at LIMIT 1)) -> 'items' -> 0 -> 'operations') o
+    WHERE o ->> 'operation' = 'Bordado escudo') = 65,
+  'ficha traz o total de trabalho por operação (bordado: 65 mil pontos)');
+SELECT public.t_ok(
+  (SELECT (o ->> 'per_piece')::numeric FROM jsonb_array_elements(
+      public.order_item_technical_sheet((SELECT id FROM public.sales_orders ORDER BY created_at LIMIT 1)) -> 'items' -> 0 -> 'operations') o
+    WHERE o ->> 'operation' = 'Costura reta') = 22,
+  'ficha traz o driver por peça (costura: 22 min/peça)');
+SELECT public.t_ok(
+  (SELECT (m ->> 'consumption_total')::numeric FROM jsonb_array_elements(
+      public.order_item_technical_sheet((SELECT id FROM public.sales_orders ORDER BY created_at LIMIT 1)) -> 'items' -> 0 -> 'materials') m
+    WHERE m ->> 'material' = 'Dry 100% poliéster') = 14.175,
+  'ficha traz o consumo total com perda (tecido: 14,175 m para 10 peças)');
 
 RESET ROLE;
 

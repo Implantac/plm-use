@@ -1,5 +1,5 @@
 // Workspace da OP: itens, rota de cada item, saldo por etapa, passagem em bloco e histórico.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,7 @@ import {
   usePassages,
   useRegisterPassages,
   useChangeItemRoute,
+  useUpdateOrderSchedule,
   type PassageMove,
   type ProdRoute,
   type ProductionOrder,
@@ -59,6 +60,7 @@ export function OpWorkspace({
   const [obs, setObs] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const register = useRegisterPassages();
+  const saveSchedule = useUpdateOrderSchedule();
   const { data: passages = [] } = usePassages(order?.id ?? null);
 
   const routeById = useMemo(() => new Map(routes.map((r) => [r.id, r])), [routes]);
@@ -141,6 +143,7 @@ export function OpWorkspace({
             <Tabs defaultValue="itens">
               <TabsList>
                 <TabsTrigger value="itens">Itens e passagem</TabsTrigger>
+                <TabsTrigger value="programacao">Programação</TabsTrigger>
                 <TabsTrigger value="rotas">Rotas</TabsTrigger>
                 <TabsTrigger value="historico">Histórico</TabsTrigger>
                 <TabsTrigger value="timeline">Linha do tempo</TabsTrigger>
@@ -276,6 +279,15 @@ export function OpWorkspace({
                     Seu perfil só pode visualizar. Passagens são feitas por PCP, líder ou operador.
                   </FieldMessage>
                 )}
+              </TabsContent>
+
+              <TabsContent value="programacao" className="space-y-4">
+                <ScheduleTab
+                  order={order}
+                  canPlan={canPlan}
+                  saving={saveSchedule.isPending}
+                  onSave={(v) => saveSchedule.mutateAsync(v)}
+                />
               </TabsContent>
 
               <TabsContent value="rotas" className="space-y-3">
@@ -429,6 +441,126 @@ function AltRouteForm({
           Cancelar
         </Button>
       </div>
+    </div>
+  );
+}
+
+// Programação da OP: janela de produção + prioridade. O pedido entra no PCP com
+// fim = prazo do pedido e início em branco; é aqui que o PCP fecha o plano.
+function ScheduleTab({
+  order,
+  canPlan,
+  saving,
+  onSave,
+}: {
+  order: ProductionOrder;
+  canPlan: boolean;
+  saving: boolean;
+  onSave: (v: {
+    orderId: string;
+    plannedStart: string | null;
+    plannedEnd: string | null;
+    priority: string;
+  }) => Promise<unknown>;
+}) {
+  const [start, setStart] = useState(order.planned_start?.slice(0, 10) ?? "");
+  const [end, setEnd] = useState(order.planned_end?.slice(0, 10) ?? "");
+  const [priority, setPriority] = useState(order.priority ?? "media");
+  const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+
+  useEffect(() => {
+    setStart(order.planned_start?.slice(0, 10) ?? "");
+    setEnd(order.planned_end?.slice(0, 10) ?? "");
+    setPriority(order.priority ?? "media");
+  }, [order.id, order.planned_start, order.planned_end, order.priority]);
+
+  const invalidWindow = !!start && !!end && start > end;
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-muted-foreground">
+        Janela de produção da OP e prioridade na fila do PCP. O prazo do pedido (
+        {order.planned_end
+          ? new Date(order.planned_end + "T00:00:00").toLocaleDateString("pt-BR")
+          : "—"}
+        ) entra como fim planejado quando o pedido é liberado.
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <label className="space-y-1 block">
+          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            Início planejado
+          </span>
+          <Input
+            type="date"
+            value={start}
+            disabled={!canPlan}
+            onChange={(e) => setStart(e.target.value)}
+            className="h-8"
+          />
+        </label>
+        <label className="space-y-1 block">
+          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            Fim planejado
+          </span>
+          <Input
+            type="date"
+            value={end}
+            disabled={!canPlan}
+            onChange={(e) => setEnd(e.target.value)}
+            className="h-8"
+          />
+        </label>
+        <label className="space-y-1 block">
+          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            Prioridade
+          </span>
+          <select
+            value={priority}
+            disabled={!canPlan}
+            onChange={(e) => setPriority(e.target.value)}
+            className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm"
+          >
+            <option value="baixa">Baixa</option>
+            <option value="media">Média</option>
+            <option value="alta">Alta</option>
+          </select>
+        </label>
+      </div>
+
+      {invalidWindow && (
+        <p className="text-xs text-amber-300">O início não pode ser depois do fim.</p>
+      )}
+      {msg && (
+        <p className={`text-xs ${msg.kind === "ok" ? "text-emerald-300" : "text-red-400"}`}>
+          {msg.text}
+        </p>
+      )}
+      {!canPlan && (
+        <p className="text-xs text-muted-foreground">
+          Só o PCP (ou admin/gestor) altera a programação.
+        </p>
+      )}
+
+      <Button
+        className="text-[10px] tracking-[0.16em]"
+        disabled={!canPlan || saving || invalidWindow}
+        onClick={async () => {
+          setMsg(null);
+          try {
+            await onSave({
+              orderId: order.id,
+              plannedStart: start || null,
+              plannedEnd: end || null,
+              priority,
+            });
+            setMsg({ kind: "ok", text: "Programação salva." });
+          } catch (e) {
+            setMsg({ kind: "err", text: e instanceof Error ? e.message : "Falha ao salvar." });
+          }
+        }}
+      >
+        {saving ? "Salvando…" : "Salvar programação"}
+      </Button>
     </div>
   );
 }

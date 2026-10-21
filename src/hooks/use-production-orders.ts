@@ -162,3 +162,30 @@ export function nextStep(route: ProdRoute | undefined, stepId: string): RouteSte
   if (!cur) return null;
   return route.steps.find((s) => s.sequence > cur.sequence) ?? null;
 }
+
+// Programação da OP: o pedido liberado nasce com planned_end = prazo do pedido e
+// planned_start nulo. Sem isso o PCP não tinha onde ajustar a janela de produção
+// (a rota /planner só mexe no mock). A regra de quem pode é do banco: policy
+// "pcp update" em production_orders exige can_plan_pcp.
+export function useUpdateOrderSchedule() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (a: {
+      orderId: string;
+      plannedStart: string | null;
+      plannedEnd: string | null;
+      priority: string;
+    }) => {
+      const { error } = await supabase
+        .from("production_orders")
+        .update({
+          planned_start: a.plannedStart || null,
+          planned_end: a.plannedEnd || null,
+          priority: a.priority,
+        })
+        .eq("id", a.orderId);
+      if (error) throw error;
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ["pcp-op"] }),
+  });
+}

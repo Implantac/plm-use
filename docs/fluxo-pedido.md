@@ -124,6 +124,24 @@ padrão do repo. O teste `src/lib/nav/routes.test.ts` cobre a divergência.
 O detalhe do pedido já expõe “Recalcular” e “Aprovar” para quem tem papel de
 custo: é o mínimo para o fluxo rodar ponta a ponta antes da fila dedicada.
 
+## 8b. O que o teste de UI (21/10) mudou
+
+Teste feito num browser real (Playwright) contra PostgREST + Postgres local, com JWT por papel.
+
+| Achado                                                                                                                                                                                                        | Estado                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| A ficha técnica do pedido não tinha tela: só engenharia de custo via algo ficha (o painel de custo). PCP e produção não tinham como ver o que fabricar                                                        | **corrigido** — `TechnicalSheetDialog` (botão "Ficha técnica" no pedido), sem custo                                   |
+| A RPC `order_item_technical_sheet` devolvia setor + operação, mas não **quanto** fazer: "Bordado escudo" sem os 65 mil pontos, "Costura reta" sem os 220 min                                                  | **corrigido** — migration `20261021090500` (driver, driver_qty, per_piece, consumption_total)                         |
+| Programação da OP existia só como dado (`planned_start/end`, `priority`) — nenhuma tela para o PCP ajustar                                                                                                    | **corrigido** — aba "Programação" no workspace da OP (migration não foi necessária: a policy `pcp update` já existia) |
+| `/planner` (programação de lotes) é 100% mock (`src/lib/pcp/store.ts`) — criar lote ali não toca o banco                                                                                                      | **aberto** — fase 2                                                                                                   |
+| `/production` mistura duas camadas: Kanban/Gantt/lotes/Torre de Controle leem o mock; a aba "Por OP / Rota" lê o banco. Na mesma tela, o pedido real aparece no Kanban de OP e não aparece no Kanban de lotes | **aberto** — unificar na fase 2                                                                                       |
+| `/tech-sheet` (ficha técnica de produto) é tela estática de demonstração ("Blusa Linho Amalfi", R$ 84,20 fixos), não usa banco                                                                                | **aberto** — é outra ficha (de produto, não de pedido)                                                                |
+
+> Nota de correção: em 21/10 eu havia registrado que a consulta de itens (`listItems`)
+> sofria produto cartesiano no PostgREST. Testado contra o PostgREST 16.5, ele agrega
+> cada relacionamento separadamente (2 grades + 7 opções). A deduplicação no `mapItem`
+> ficou como defesa, mas o "defeito" não existia.
+
 ## 9. Como testar
 
 **Sem banco** (rápido, roda em PR):

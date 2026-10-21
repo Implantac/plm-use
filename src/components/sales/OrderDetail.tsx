@@ -15,12 +15,14 @@ import {
   Layers,
   Plus,
   Ruler,
+  FileText,
   Send,
   Sparkles,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { TechnicalSheetDialog } from "./TechnicalSheetDialog";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,6 +88,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
   const [loading, setLoading] = useState(true);
   const [fatal, setFatal] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
 
   const load = useCallback(async () => {
@@ -203,6 +206,13 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            className="text-[10px] tracking-[0.16em] gap-2"
+            onClick={() => setSheetOpen(true)}
+          >
+            <FileText className="w-4 h-4" /> Ficha técnica
+          </Button>
           {(order.status === "rascunho" || order.status === "enviado") && canSell && (
             <Button
               onClick={() =>
@@ -338,6 +348,12 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
           <p className="text-sm text-white whitespace-pre-wrap">{order.notes}</p>
         </Card>
       )}
+
+      <TechnicalSheetDialog
+        orderId={order.id}
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+      />
 
       <AddItemDialog
         open={addOpen}

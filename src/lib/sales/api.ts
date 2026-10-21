@@ -410,10 +410,11 @@ export async function deleteOrder(id: string): Promise<Res<null>> {
 // ---------------------------------------------------------------------------
 // Itens do pedido
 // ---------------------------------------------------------------------------
-// Exportada para teste: o PostgREST devolve DOIS embeds to-many irmãos
-// (grades e opções) como produto cartesiano — 2 tamanhos x 7 opções = 14 linhas,
-// cada grade e cada opção repetidas. Sem deduplicar, a tela mostraria a grade
-// multiplicada e a soma de peças passaria de 10 para 70.
+// Exportada para teste. Deduplicação defensiva: a consulta pede dois embeds
+// to-many irmãos (grades e opções) e, verificado contra o PostgREST 16.5, ele
+// agrega cada relacionamento separadamente (2 grades + 7 opções, sem produto
+// cartesiano). O dedupe fica porque um LEFT JOIN manual ou uma versão futura
+// pode repetir linha, e grade repetida somaria peças erradas na tela.
 export function mapItem(r: Row): SalesOrderItem {
   const sizeRows = Array.isArray(r.sales_order_item_sizes)
     ? (r.sales_order_item_sizes as Row[])

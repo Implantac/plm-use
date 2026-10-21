@@ -14,10 +14,24 @@ CREATE SCHEMA IF NOT EXISTS auth;
 CREATE TABLE IF NOT EXISTS auth.users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), email text UNIQUE,
   raw_user_meta_data jsonb DEFAULT '{}'::jsonb, created_at timestamptz DEFAULT now());
+-- Le como o Supabase real: o PostgREST moderno expoe request.jwt.claims (JSON).
+-- Mantemos o fallback para a GUC antiga (request.jwt.claim.sub) porque os testes
+-- SQL setam aquele valor diretamente.
 CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE
-  AS $$ SELECT nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+  AS $$
+  SELECT coalesce(
+    nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub',
+    nullif(current_setting('request.jwt.claim.sub', true), '')
+  )::uuid
+$$;
 CREATE OR REPLACE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE
-  AS $$ SELECT coalesce(nullif(current_setting('request.jwt.claim.role', true), ''), 'authenticated') $$;
+  AS $$
+  SELECT coalesce(
+    nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'role',
+    nullif(current_setting('request.jwt.claim.role', true), ''),
+    'authenticated'
+  )
+$$;
 CREATE SCHEMA IF NOT EXISTS storage;
 CREATE TABLE IF NOT EXISTS storage.objects (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), bucket_id text, name text, owner uuid, metadata jsonb,
