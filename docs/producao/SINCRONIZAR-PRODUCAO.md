@@ -223,3 +223,39 @@ Se os 6 passos funcionarem, o fluxo está vivo em produção.
   `order_item_technical_sheet`.
 - Capacidade pç/dia do PCP e `/production.today` continuam com dados derivados;
   `/quality` é estático.
+
+---
+
+## 7. Acessos e papéis
+
+Não existe papel `superadmin` no schema: o topo é **`admin`**, e ele cobre todas
+as telas e recursos — as quatro funções de permissão (`can_sell`, `can_cost`,
+`can_plan_pcp`, `can_write_pcp`) e todas as políticas RLS que citam papel incluem
+`admin`. Não há gate que exclua admin.
+
+Para revisar um usuário e conceder acesso total:
+
+1. **`CONCEDER-ADMIN.sql`** — mostra o usuário, o perfil e os papéis atuais,
+   concede `admin` (idempotente), avalia cada gate e lista 14 telas com a
+   exigência de cada uma.
+2. **`DIAGNOSTICO-PEDIDO.sql`**, seção 3, lista todos os usuários e seus papéis.
+
+### Defeito corrigido: nem admin conseguia conceder papel pela tela
+
+`public.user_roles` tinha apenas `GRANT SELECT` para `authenticated`. A política
+RLS "Only admin manages roles" já limitava a escrita a admin, mas o `INSERT`
+falhava **antes** de a política ser avaliada, com
+`permission denied for table user_roles`. Na prática, a tela `/admin/users` não
+conseguia conceder nem revogar papel nenhum.
+
+Correções (ambas já no repositório):
+
+- `supabase/migrations/20261021120000_user_roles_grants.sql` — concede
+  `SELECT, INSERT, UPDATE, DELETE` a `authenticated`; a RLS continua exigindo
+  admin, então não há escalada de privilégio.
+- `/admin/users` passou a oferecer os **16 papéis** do enum (antes só 4:
+  admin, manager, operator, viewer). Os papéis do fluxo de pedido — `comercial`,
+  `engenharia_custo`, `pcp` — eram impossíveis de atribuir pela interface.
+
+O bloco 3.0 do `CONCEDER-ADMIN.sql` já contém o `GRANT`, para resolver os dois
+problemas com uma única colagem.

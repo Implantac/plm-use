@@ -67,6 +67,10 @@ sua tela logado como comercial, é bug — me avise.
 2. DIAGNOSTICO-PEDIDO.sql      -> confirma 13/13, 8/8 e mostra os papéis
 3. SEED-CATALOGO-DEMO.sql      -> opcional: 1 produto validado para testar
 4. Recarregar o app (F5)
+
+> Se o botão `+ Novo pedido` não aparecer depois disso, o bloqueio é papel. Rode
+> `CONCEDER-ADMIN.sql` (acesso total) ou a seção 4 do `DIAGNOSTICO-PEDIDO.sql`
+> (papel `comercial`). Ver `SINCRONIZAR-PRODUCAO.md`, seção 7.
 ```
 
 O passo 3 é opcional e cria o produto **`DEMO-CAM-FUT-2026`** — "Camisa futebol
