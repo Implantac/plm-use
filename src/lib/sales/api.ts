@@ -410,25 +410,44 @@ export async function deleteOrder(id: string): Promise<Res<null>> {
 // ---------------------------------------------------------------------------
 // Itens do pedido
 // ---------------------------------------------------------------------------
-function mapItem(r: Row): SalesOrderItem {
-  const sizes = Array.isArray(r.sales_order_item_sizes)
-    ? (r.sales_order_item_sizes as Row[]).map((s) => ({
-        size: str(s.size),
-        quantity: num(s.quantity),
-      }))
+// Exportada para teste: o PostgREST devolve DOIS embeds to-many irmãos
+// (grades e opções) como produto cartesiano — 2 tamanhos x 7 opções = 14 linhas,
+// cada grade e cada opção repetidas. Sem deduplicar, a tela mostraria a grade
+// multiplicada e a soma de peças passaria de 10 para 70.
+export function mapItem(r: Row): SalesOrderItem {
+  const sizeRows = Array.isArray(r.sales_order_item_sizes)
+    ? (r.sales_order_item_sizes as Row[])
     : [];
-  const options = Array.isArray(r.sales_order_item_options)
-    ? (r.sales_order_item_options as Row[]).map((o) => {
-        const opt = (o.catalog_options ?? null) as Row | null;
-        const spec = (o.spec ?? {}) as Row;
-        return {
-          optionId: str(o.option_id),
-          name: opt ? str(opt.name) : "(opção)",
-          quantity: num(o.quantity) || 1,
-          driverQty: optNum(spec.driver_qty),
-        };
-      })
+  const sizes = Array.from(
+    new Map(
+      sizeRows
+        .filter((s) => str(s.size) !== "")
+        .map((s) => [str(s.size), { size: str(s.size), quantity: num(s.quantity) }] as const),
+    ).values(),
+  );
+  const optionRows = Array.isArray(r.sales_order_item_options)
+    ? (r.sales_order_item_options as Row[])
     : [];
+  const options = Array.from(
+    new Map(
+      optionRows
+        .filter((o) => str(o.option_id) !== "")
+        .map((o) => {
+          const opt = (o.catalog_options ?? null) as Row | null;
+          const spec = (o.spec ?? {}) as Row;
+          const optionId = str(o.option_id);
+          return [
+            optionId,
+            {
+              optionId,
+              name: opt ? str(opt.name) : "(opção)",
+              quantity: num(o.quantity) || 1,
+              driverQty: optNum(spec.driver_qty),
+            },
+          ] as const;
+        }),
+    ).values(),
+  );
   return {
     id: str(r.id),
     orderId: str(r.order_id),

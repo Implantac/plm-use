@@ -65,6 +65,34 @@ jobs:
       - name: Build (vite + nitro, preset cloudflare-module)
         run: npm run build
 
+  # Aplicar as migrations num Postgres limpo e rodar o fluxo de pedido de ponta
+  # a ponta. Existe porque em 21/10/2026 a revisao achou uma migration que so
+  # quebrava em projeto novo (dependia de tabelas da trilha Drizzle). Nenhum
+  # teste de TypeScript pegaria isso: aqui o banco e de verdade, com RLS, grants
+  # e funcoes SECURITY DEFINER exercitados como usuario final.
+  db-certification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Migrations + E2E do fluxo de pedido
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        run: bash scripts/certify-db.sh
+
   # Runner único dos 6 specs Playwright (Sprint 3): o script assume venv,
   # chromium e health-check; o job só fornece a URL do ambiente. `environment`
   # dá proteção de aprovação quando o env "staging" existir no repo.

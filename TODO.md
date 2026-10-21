@@ -19,6 +19,13 @@
       (pg_cron + HMAC via pgcrypto + auditoria `app_cron_runs`) +
       `supabase/seed_cron_config.example.sql` + `scripts/smoke-cron.sh`.
       Tabelas `app_cron_config/runs` vivas no banco (14/10) — ver seed/segredos no item pendente.
+- [x] Fluxo de pedido fase 1 (catálogo → pedido → ficha → custo → PCP): migrations
+      `20261021090000..090300`, telas `/catalog` e `/orders`, motor de custo com 20 testes.
+- [x] Certificação do banco em CI: `scripts/certify-db.sh` aplica as 63 migrations num
+      Postgres limpo e roda 65 asserções E2E (`supabase/tests/`) como usuário final.
+      Achou e corrigiu 3 defeitos reais em 21/10: migration que só quebrava em banco
+      novo (`pcp_baseline`), arredondamento por linha no custo e timeline do pedido
+      invisível para engenharia/PCP.
 - [x] CI mínima: `.github/workflows/ci.yml` (prettier → eslint → tsc → vitest →
       build). Repo todo formatado (`npm run format`) + `.prettierignore` para
       vendor/minificados.

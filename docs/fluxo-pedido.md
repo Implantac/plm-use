@@ -116,20 +116,41 @@ padrão do repo. O teste `src/lib/nav/routes.test.ts` cobre a divergência.
 | Fase  | Escopo                                                                                                             | Estado                  |
 | ----- | ------------------------------------------------------------------------------------------------------------------ | ----------------------- |
 | **1** | migrations, catálogo, pedidos, itens/grade/opções, explosão, custo por item, aprovação com gate de margem          | ✅ implementada (21/10) |
-| 2     | fila de custo dedicada (`/cost-queue`), edição inline de driver/custo, teste de RLS com JWT `comercial` na CI      | pendente                |
+| 1b    | certificação do banco em CI (`scripts/certify-db.sh` + `supabase/tests/`), 65 asserções                            | ✅ implementada (21/10) |
+| 2     | fila de custo dedicada (`/cost-queue`), edição inline de driver/custo                                              | pendente                |
 | 3     | liberação para PCP com **grade** (`production_order_item_sizes`), PDF da ficha sem custo                           | pendente                |
 | 4     | clonar pedido anterior, lista nominal (nome/número por peça), OS de terceirizado, substituir `/commercial` vitrine | pendente                |
 
 O detalhe do pedido já expõe “Recalcular” e “Aprovar” para quem tem papel de
 custo: é o mínimo para o fluxo rodar ponta a ponta antes da fila dedicada.
 
-## 9. Como testar sem banco
+## 9. Como testar
+
+**Sem banco** (rápido, roda em PR):
 
 ```bash
-npm run test                 # inclui cost.test.ts (motor puro) e OrderDetail.test.tsx
+npm run test                 # cost.test.ts (motor puro), api.test.ts, OrderDetail.test.tsx
 npm run typecheck
 npm run dev                  # /catalog e /orders mostram o aviso de migration até aplicar o SQL
 ```
+
+**Com banco de verdade** (é o que prova o fluxo):
+
+```bash
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres \
+  bash scripts/certify-db.sh
+```
+
+O script zera o schema, aplica as 63 migrations num Postgres limpo e roda a
+suíte `supabase/tests/` como usuário final (`SET ROLE authenticated` + JWT
+claim, então RLS e grants são exercitados de verdade). São 65 asserções: catálogo,
+isolamento de custo, submit com os cinco bloqueios, explosão do catálogo,
+números do custo, gate de margem, liberação para PCP, passagens de etapa,
+ficha sem custo, timeline e paridade de arredondamento com o motor TS.
+
+Na CI isso é o job `db-certification` (serviço `postgres:18`), que roda a cada
+push na `main` — foi ele que passou a impedir a classe de defeito encontrada em
+21/10/2026 (migration que só quebrava em projeto novo).
 
 Com o SQL aplicado: crie um produto no `/catalog`, adicione duas opções
 (ex.: “Bordado escudo” driver `mil_pontos`, “Gola V” driver `peca`), clique em
