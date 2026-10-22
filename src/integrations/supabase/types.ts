@@ -3226,7 +3226,6 @@ export type Database = {
         | "estilista"
         | "modelagem"
         | "almoxarifado"
-        | "engenharia_custo"
       entity_type:
         | "reference"
         | "lote"
@@ -3440,7 +3439,6 @@ export const Constants = {
         "estilista",
         "modelagem",
         "almoxarifado",
-        "engenharia_custo",
       ],
       entity_type: [
         "reference",
