@@ -66,8 +66,17 @@ sua tela logado como comercial, é bug — me avise.
 1. APLICAR-EM-PRODUCAO.sql     -> cria as 13 tabelas e 8 funções
    (se o editor cortar: partes/parte1 -> parte2 -> parte3)
 2. DIAGNOSTICO-PEDIDO.sql      -> confirma 13/13, 8/8 e mostra os papéis
-3. SEED-CATALOGO-DEMO.sql      -> opcional: 1 produto validado para testar
-4. Recarregar o app (F5)
+3. KARILU-SEED.sql             -> os 5 produtos reais da vitrine + opções
+4. KARILU-BASE.sql             -> dados-base (estoque, clientes, ficha PLM)
+5. KARILU-PEDIDOS.sql          -> pedidos de demonstração para o fluxo
+6. KARILU-FIX-NOTIF.sql        -> conserta o gatilho de estoque (severity 'warn')
+7. KARILU-ROTAS.sql            -> configurações + rotas PCP dos 5 produtos.
+   SEM ISTO O FLUXO MORRE NO ÚLTIMO PASSO: o release exige configuration_id
+   com rota default e levanta 'sem rota padrao'. Prova do arquivo: 5 linhas,
+   etapas 6/5/5 por perfil (subl+bord / bord / subl).
+8. Recarregar o app (F5)
+
+(SEED-CATALOGO-DEMO.sql ficou obsoleto — o KARILU-SEED traz produtos reais.)
 
 > Se o botão `+ Novo pedido` não aparecer depois disso, o bloqueio é papel. Rode
 > `CONCEDER-ADMIN.sql` (acesso total) ou a seção 4 do `DIAGNOSTICO-PEDIDO.sql`
