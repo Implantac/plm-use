@@ -4,6 +4,13 @@
 
 - PCP por OP: planejar (OPs, rotas, troca de rota) exige can_plan_pcp e passagens exigem can_write_pcp no banco; a tela só espelha isso via opPermissions, porque a regra de papel precisa valer mesmo fora da interface.
 
+## Dois mundos de "ficha técnica" — não fundir sem decisão do dono (22/10)
+
+- `tech_sheets` (este repo, `src/lib/techsheet/`) é a **definição reutilizável do produto**: BOM, BOP, pré-custo, versões com instantâneo, PDF e `aplicacoes` (posições de bordado/silk por peça). Vive no envelope jsonb `bom = {v:2, items, preCost, aplicacoes}` — campos novos entram NO envelope, nunca por coluna nova (ambiente Lovable).
+- `sales_order_items_*` (fase 2, `src/lib/sales/` + migrations 20261021090xxx) é o **job transacional do pedido**: operations com `driver` (peca/mil_pontos/m2/cor/minuto/lote), waste %, grade por tamanho e setup amortizado pela quantidade do pedido, com paridade TS↔SQL vigiada por pgTAP.
+- A ligação é por **convenção de texto**: `catalog_products.reference_code` ↔ `tech_sheets.ref`. Sem FK entre os mundos, de propósito — não adicionar FK/trigger entre eles sem o dono decidir a direção do herdeiro (pedido herda da ficha? catálogo nasce da ficha?).
+- Convenções que os DOIS lados compartilham e o teste tranca: arredondamento round2 no dinheiro por peça, round4 em quantidades de driver, setup é custo ÚNICO diluído na tiragem e tiragem inválida NUNCA esconde o setup. Ao mudar uma em um lado, espelhar no outro (`aplicacao-order-bridge.test.ts` é o lacre) e manter `src/lib/sales/` intocável por este lado — o bot o mantém ativamente.
+
 ## GitHub ↔ Lovable (contrato da plataforma — não negociável)
 
 - Este repo é o lado GitHub do sync bidirecional do projeto na branch `main`; o app que os usuários veem é o deploy do Lovable, alimentado por push na `main`. Ver `docs/github-lovable-sync.md`.
