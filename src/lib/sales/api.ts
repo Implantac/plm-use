@@ -570,7 +570,7 @@ export async function deleteItem(itemId: string, orderId: string): Promise<Res<n
 export async function listMaterials(itemId: string): Promise<Res<MaterialLine[]>> {
   const res = await db
     .from("sales_order_item_materials")
-    .select("*")
+    .select("*, stock_item:stock_item_id(code)")
     .eq("item_id", itemId)
     .order("created_at");
   if (res.error) return { data: null, error: res.error };
@@ -585,6 +585,29 @@ export async function listMaterials(itemId: string): Promise<Res<MaterialLine[]>
       unitCost: num(r.unit_cost),
       totalCost: optNum(r.total_cost),
       source: str(r.source, "custo") === "catalogo" ? "catalogo" : "custo",
+      stockItemId: r.stock_item_id ? str(r.stock_item_id) : null,
+      stockItemCode: (r.stock_item as { code?: string } | null)?.code ?? null,
+    })),
+    error: null,
+  };
+}
+
+export type StockItemOption = { id: string; code: string; name: string; unit: string };
+
+/** Itens de estoque ativos para vincular a material (reserva na liberação). */
+export async function listStockItemOptions(): Promise<Res<StockItemOption[]>> {
+  const res = await db
+    .from("stock_item")
+    .select("id, code, name, unit")
+    .eq("is_active", true)
+    .order("code");
+  if (res.error) return { data: null, error: res.error };
+  return {
+    data: (res.data ?? []).map((r) => ({
+      id: str(r.id),
+      code: str(r.code),
+      name: str(r.name),
+      unit: str(r.unit, "un"),
     })),
     error: null,
   };
@@ -744,6 +767,7 @@ export async function addMaterial(input: {
   wastePct?: number;
   unitCost: number;
   notes?: string;
+  stockItemId?: string | null;
 }): Promise<Res<Row>> {
   const res = await db
     .from("sales_order_item_materials")
@@ -757,6 +781,7 @@ export async function addMaterial(input: {
       unit_cost: input.unitCost,
       source: "custo",
       notes: input.notes || null,
+      stock_item_id: input.stockItemId || null,
     })
     .select("*")
     .single();
@@ -775,6 +800,7 @@ export async function updateMaterial(input: {
   consumption?: number;
   wastePct?: number;
   unitCost?: number;
+  stockItemId?: string | null;
 }): Promise<Res<Row>> {
   const res = await db
     .from("sales_order_item_materials")
@@ -782,6 +808,7 @@ export async function updateMaterial(input: {
       ...(input.consumption !== undefined ? { consumption: input.consumption } : {}),
       ...(input.wastePct !== undefined ? { waste_pct: input.wastePct } : {}),
       ...(input.unitCost !== undefined ? { unit_cost: input.unitCost } : {}),
+      ...(input.stockItemId !== undefined ? { stock_item_id: input.stockItemId } : {}),
     })
     .eq("id", input.id)
     .select("*")
