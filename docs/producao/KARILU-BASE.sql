@@ -20,7 +20,7 @@
 --                                     um concluído) + 2 ocorrências (aberta e
 --                                     resolvida) para a esteira de tratativa;
 --   /quality                       — 2 CAPAs (uma Corretiva Aberta, uma
---                                     Preventiva Em andamento) apontando pros
+--                                     Preventiva na etapa 'Ação') apontando pros
 --                                     defeitos dos lotes;
 --   /inventory (Almoxarifado)      — 1 armazém, 6 itens de estoque com
 --                                     lead/safety e entradas que alimentam a
@@ -201,7 +201,7 @@ BEGIN
       ('KAR-FUT-01', 'LOT-KAR-001', 'Desvio de ponto na gola recorrente', 'Costura', NULL, 'Corretiva',
        'Time Qualidade (DEMO)', 5::int, 'Aberta'),
       ('KAR-FUT-02', 'LOT-KAR-003', 'Assentamento do silk nas costas varia por lote', 'Estamparia', 'Gráfica Lume',
-       'Preventiva', 'Time Estamparia (DEMO)', 12, 'Em andamento')
+       'Preventiva', 'Time Estamparia (DEMO)', 12, 'Ação')
     ) AS v(ref, lote, defeito, setor, forn, tipo, resp, prazo_dias, st)
    WHERE NOT EXISTS (SELECT 1 FROM public.quality_capa q WHERE q.defeito = v.defeito);
 
