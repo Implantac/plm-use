@@ -58,6 +58,7 @@ import {
   deleteMaterial,
   deleteOperation,
 } from "@/lib/sales/api";
+import { StockItemSelect } from "@/components/sales/StockItemSelect";
 import { computeItemCost, marginPct, priceForMargin, round2 } from "@/lib/sales/cost";
 import {
   brl,
