@@ -8,6 +8,7 @@ const doc = (over: Partial<TechSheetData> = {}): TechSheetData => ({
   bop: [],
   preCost: { targetCusto: 80, overheadPct: 10, markupPct: 200 },
   versoes: [],
+  aplicacoes: [],
   ...over,
 });
 const v = (versao: string, status: string, snapshot = false) => ({

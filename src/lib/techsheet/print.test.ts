@@ -38,6 +38,7 @@ const base: TechSheetData = {
     },
   ],
   preCost: { targetCusto: 80, overheadPct: 10, markupPct: 200, targetPreco: 100 },
+  aplicacoes: [],
 };
 
 describe("buildTechSheetPrintHtml", () => {

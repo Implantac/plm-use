@@ -31,6 +31,7 @@ import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
 import { useReferenceStore } from "@/lib/reference/store";
 import { emptyLifecycle } from "@/types/reference";
 import { BomBopPanel } from "@/components/techsheet/BomBopPanel";
+import { AplicacoesPanel } from "@/components/techsheet/AplicacoesPanel";
 import { TechSheetVersions } from "@/components/techsheet/TechSheetVersions";
 import { PreCostPanel } from "@/components/techsheet/PreCostPanel";
 import { OperationSequencePanel } from "@/components/techsheet/OperationSequencePanel";
@@ -396,6 +397,7 @@ function TechSheetPage() {
 
       <div className="mt-6 grid grid-cols-1 gap-6">
         <BomBopPanel refAtual={productInfo.ref} />
+        <AplicacoesPanel refAtual={productInfo.ref} />
         <PreCostPanel refAtual={productInfo.ref} />
         <OperationSequencePanel refAtual={productInfo.ref} />
         <div id="ts-versoes">

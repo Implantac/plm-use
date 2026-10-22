@@ -68,7 +68,8 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
   {
     area: "Ficha Técnica",
     route: "/tech-sheet",
-    evidence: "Materiais, custos, versões e arquivos persistidos; IA usa modelos oficiais reais.",
+    evidence:
+      "Materiais, custos, versões com instantâneo, PDF A4 e aplicações por posição (setup amortizado) persistidos; IA usa modelos oficiais reais.",
     status: "real",
   },
   {

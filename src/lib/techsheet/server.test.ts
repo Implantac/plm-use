@@ -33,6 +33,20 @@ const doc: TechSheetData = {
     },
   ],
   preCost: { targetCusto: 80, overheadPct: 12, markupPct: 220, targetPreco: 349 },
+  aplicacoes: [
+    {
+      id: "ap1",
+      tipo: "Silk",
+      posicao: "Costas central",
+      arte: "EST-0142",
+      larguraCm: 28,
+      alturaCm: 34,
+      cores: 4,
+      qtdPorPeca: 1,
+      custoUnitario: 2.4,
+      custoSetup: 240,
+    },
+  ],
 };
 // snapshot auto-referenciado: o fixture declara doc e a versão congela o próprio doc
 doc.versoes[0].snapshot = { bom: doc.bom, bop: doc.bop, preCost: doc.preCost };

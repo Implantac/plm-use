@@ -9,6 +9,7 @@ import {
   tempoTotalBOP,
 } from "@/lib/techsheet/store";
 import { formatSheetSummary, summarizeSheet } from "@/lib/reference/sheet-summary";
+import { custoAplicacoesPecasTotal, custoPeca, setupTotal } from "@/lib/techsheet/aplicacoes";
 
 // Ficha técnica resumida usada dentro do drawer de PCP.
 // Lê o MESMO store do /tech-sheet (a ficha da ref é a única fonte) — até a
@@ -152,6 +153,50 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
               </table>
             </div>
           </Section>
+
+          {doc.aplicacoes?.length ? (
+            <Section
+              icon={<Layers className="h-3 w-3" />}
+              title={`Aplicações · ${doc.aplicacoes.length} posições`}
+            >
+              <div className="space-y-1.5">
+                {doc.aplicacoes.map((a) => (
+                  <div
+                    key={a.id}
+                    className="flex items-center justify-between rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px]"
+                  >
+                    <span className="text-white">
+                      <span className="text-[9px] uppercase tracking-wider text-primary mr-2">
+                        {a.tipo}
+                      </span>
+                      {a.posicao}{" "}
+                      <span className="text-muted-foreground">
+                        · {a.larguraCm}×{a.alturaCm} cm · {a.cores} cor(a)
+                      </span>
+                    </span>
+                    <span className="text-muted-foreground whitespace-nowrap">
+                      {a.qtdPorPeca}/pç · <span className="text-white">{brl(custoPeca(a))}</span>
+                    </span>
+                  </div>
+                ))}
+                <p className="pt-1 text-right text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Aplicações/peça:{" "}
+                  <strong className="text-white normal-case tracking-normal">
+                    {brl(custoAplicacoesPecasTotal(doc.aplicacoes))}
+                  </strong>
+                  {setupTotal(doc.aplicacoes) > 0 && (
+                    <>
+                      {" "}
+                      · setup único:{" "}
+                      <strong className="text-amber-200 normal-case tracking-normal">
+                        {brl(setupTotal(doc.aplicacoes))}
+                      </strong>
+                    </>
+                  )}
+                </p>
+              </div>
+            </Section>
+          ) : null}
 
           <Section
             icon={<Scissors className="h-3 w-3" />}

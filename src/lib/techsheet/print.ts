@@ -5,6 +5,8 @@
 // "olha, apareceu".
 import type { BomItem, BopStep, PreCost, TechSheetData } from "./store";
 import { custoTotalBOM, custoTotalBOP, tempoTotalBOP } from "./store";
+import type { Aplicacao } from "./aplicacoes";
+import { custoAplicacoesPecasTotal, setupTotal } from "./aplicacoes";
 
 export interface PrintIdentity {
   ref: string;
@@ -38,6 +40,28 @@ function bomTable(bom: BomItem[]): string {
   <table><thead><tr><th>Tipo</th><th>Material</th><th>Fornecedor</th><th>Consumo</th><th>Custo</th></tr></thead>
   <tbody>${rows || '<tr><td colspan="5" class="muted">sem itens</td></tr>'}</tbody>
   <tfoot><tr><th colspan="4">Custo materiais</th><th class="num">${brl(custoTotalBOM(bom))}</th></tr></tfoot></table>`;
+}
+
+function aplicacoesTable(apps: Aplicacao[]): string {
+  if (!apps.length) return "";
+  const rows = apps
+    .map(
+      (
+        a,
+      ) => `<tr><td>${esc(a.tipo)}</td><td>${esc(a.posicao)}</td><td>${a.arte ? esc(a.arte) : "—"}</td>
+      <td class="num">${esc(a.larguraCm)}×${esc(a.alturaCm)}</td>
+      <td class="num">${a.tipo === "Bordado" && a.pontos ? esc(a.pontos) + "k pts" : esc(a.cores) + " cor(es)"}</td>
+      <td class="num">${esc(a.qtdPorPeca)}</td><td class="num">${brl(a.custoUnitario)}</td>
+      <td class="num">${brl(a.custoUnitario * a.qtdPorPeca)}</td></tr>`,
+    )
+    .join("");
+  const setup = setupTotal(apps);
+  return `<h2>Aplicações</h2>
+  <table><thead><tr><th>Técnica</th><th>Posição</th><th>Arte</th><th>L×A (cm)</th><th>Cores/Pontos</th>
+  <th>×/peça</th><th>Unit.</th><th>Custo/peça</th></tr></thead>
+  <tbody>${rows}</tbody>
+  <tfoot><tr><th colspan="7">Custo de aplicações por peça</th><th class="num">${brl(custoAplicacoesPecasTotal(apps))}</th></tr>
+  ${setup > 0 ? `<tr><th colspan="7">Setup único (telas/chapas) — NÃO amortizado acima</th><th class="num">${brl(setup)}</th></tr>` : ""}</tfoot></table>`;
 }
 
 function bopTable(bop: BopStep[]): string {
@@ -93,7 +117,10 @@ export function buildTechSheetPrintHtml(
   data: TechSheetData,
   now: Date = new Date(),
 ): string {
-  const industrial = custoTotalBOM(data.bom) + custoTotalBOP(data.bop);
+  const industrial =
+    custoTotalBOM(data.bom) +
+    custoTotalBOP(data.bop) +
+    custoAplicacoesPecasTotal(data.aplicacoes ?? []);
   const versaoAtual = data.versoes[0]?.versao ?? "—";
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"/>
 <title>Ficha técnica ${esc(id.ref)} ${esc(id.name)}</title>
@@ -119,6 +146,7 @@ export function buildTechSheetPrintHtml(
   <div class="ident"><b>${esc(id.ref)}</b>versão ${esc(versaoAtual)}</div>
 </header>
 ${bomTable(data.bom)}
+${aplicacoesTable(data.aplicacoes ?? [])}
 ${bopTable(data.bop)}
 ${preCostBlock(data.preCost, industrial)}
 ${versionsTable(data)}

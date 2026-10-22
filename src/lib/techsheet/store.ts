@@ -57,6 +57,8 @@ export type TechSheetData = {
   bop: BopStep[];
   versoes: TechSheetVersion[];
   preCost: PreCost;
+  /** Aplicações (bordado/silk/sublimação/transfer) por POSIÇÃO — ver aplicacoes.ts. */
+  aplicacoes: import("./aplicacoes").Aplicacao[];
 };
 
 const seedFor = (ref: string): TechSheetData => ({
@@ -159,6 +161,22 @@ const seedFor = (ref: string): TechSheetData => ({
     },
   ],
   preCost: { targetCusto: 80, overheadPct: 12, markupPct: 220, targetPreco: 349 },
+  aplicacoes: [
+    {
+      id: "ap1",
+      tipo: "Bordado",
+      posicao: "Peito esquerdo",
+      arte: "ESC-001",
+      larguraCm: 9,
+      alturaCm: 9,
+      pontos: 8,
+      cores: 1,
+      qtdPorPeca: 1,
+      custoUnitario: 4.2,
+      custoSetup: 0,
+      obs: "Base topper para malha",
+    },
+  ],
 });
 
 interface State {
@@ -172,6 +190,9 @@ interface State {
   addBopStep(ref: string, step: Omit<BopStep, "id">): void;
   removeBopStep(ref: string, id: string): void;
   updatePreCost(ref: string, patch: Partial<PreCost>): void;
+  addAplicacao(ref: string, item: Omit<import("./aplicacoes").Aplicacao, "id">): void;
+  updateAplicacao(ref: string, id: string, patch: Partial<import("./aplicacoes").Aplicacao>): void;
+  removeAplicacao(ref: string, id: string): void;
   createVersion(ref: string, autor: string, resumo: string, alteracoes: string[]): TechSheetVersion;
 }
 
@@ -242,6 +263,48 @@ export const useTechSheetStore = create<State>()(
           const cur = s.data[ref] ?? seedFor(ref);
           return {
             data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } },
+            dirty: { ...s.dirty, [ref]: true },
+          };
+        });
+      },
+
+      addAplicacao(ref, item) {
+        set((s) => {
+          const cur = s.data[ref] ?? seedFor(ref);
+          return {
+            data: {
+              ...s.data,
+              [ref]: { ...cur, aplicacoes: [...(cur.aplicacoes ?? []), { ...item, id: uid() }] },
+            },
+            dirty: { ...s.dirty, [ref]: true },
+          };
+        });
+      },
+      updateAplicacao(ref, id, patch) {
+        set((s) => {
+          const cur = s.data[ref] ?? seedFor(ref);
+          return {
+            data: {
+              ...s.data,
+              [ref]: {
+                ...cur,
+                aplicacoes: (cur.aplicacoes ?? []).map((a) =>
+                  a.id === id ? { ...a, ...patch, id } : a,
+                ),
+              },
+            },
+            dirty: { ...s.dirty, [ref]: true },
+          };
+        });
+      },
+      removeAplicacao(ref, id) {
+        set((s) => {
+          const cur = s.data[ref] ?? seedFor(ref);
+          return {
+            data: {
+              ...s.data,
+              [ref]: { ...cur, aplicacoes: (cur.aplicacoes ?? []).filter((a) => a.id !== id) },
+            },
             dirty: { ...s.dirty, [ref]: true },
           };
         });
