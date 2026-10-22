@@ -218,7 +218,7 @@ BEGIN
     ('STK-TEC-140',  'Poliéster sublimático 140g',  'tecido',    'm',  'A', 18.90, 12, 400,  800,  95, 'Durst Têxtil', v_uid),
     ('STK-TEC-160',  'Poliéster sublimático 160g',  'tecido',    'm',  'A', 21.50, 12, 300,  600,  70, 'Durst Têxtil', v_uid),
     ('STK-TEC-DRY',  'Dry-fit branco sublimação',   'tecido',    'm',  'A', 15.20, 10, 250,  500,  60, 'Durst Têxtil', v_uid),
-    ('STK-LIN-120',  'Linha poliéster 120 (tons)',  'linha',     'm',  'C', 0.0125, 20, 3000, 6000, 800,'Amann_THREADs Brasil', v_uid),
+    ('STK-LIN-120',  'Linha poliéster 120 (tons)',  'insumo',    'm',  'C', 0.0125, 20, 3000, 6000, 800,'Amann_THREADs Brasil', v_uid),
     ('STK-AVI-ETQ',  'Etiqueta tecida dourada',     'etiqueta',  'un', 'B', 0.95,  25, 400,  800,  100,'Boto Aviamentos', v_uid),
     ('STK-EMB-PBZ',  'Tag + polybag com zip',       'embalagem', 'un', 'B', 4.10,  8,  600,  1200, 150,'Gráfica Lume', v_uid)
   ON CONFLICT (code) DO UPDATE SET unit_price = EXCLUDED.unit_price, supplier_default = EXCLUDED.supplier_default;
