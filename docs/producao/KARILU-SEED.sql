@@ -109,7 +109,7 @@ WITH tgt AS (
 INSERT INTO public.catalog_options
   (group_id, code, name, sector, operation_name, driver, unit_cost, setup_cost,
    outsourced, price_delta, material_consumption)
-SELECT tgt.group_id, v.code, v.name, v.sector, v.operation, v.driver,
+SELECT tgt.group_id, v.code, v.operation, v.sector, v.operation, v.driver,
        v.unit_cost, v.setup_cost, v.outsourced, 0, '[]'::jsonb
   FROM tgt
   JOIN (VALUES
@@ -138,7 +138,7 @@ SELECT tgt.group_id, v.code, v.name, v.sector, v.operation, v.driver,
     ('KAR-FUT-05','personalizacao','bordado','Bordado','Bordado escudo','mil_pontos',0.66,42.00,true),
     ('KAR-FUT-05','personalizacao','silk-costas','Estamparia','Silk patrocinadores','cor',1.20,48.00,false),
     ('KAR-FUT-05','personalizacao','numero-shorts','Bordado','Número shorts','mil_pontos',0.08,22.00,true)
-  ) AS v(product_code,group_code,code,name,sector,operation,driver,unit_cost,setup_cost,outsourced)
+  ) AS v(product_code,group_code,code,sector,operation,driver,unit_cost,setup_cost,outsourced)
     ON v.product_code = tgt.product_code AND v.group_code = tgt.group_code
 ON CONFLICT (group_id, code) DO NOTHING;
 
