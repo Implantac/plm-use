@@ -3259,6 +3259,8 @@ export type Database = {
         | "analytics_kpi"
         | "quality_capa"
         | "influencer"
+        | "sales_order"
+        | "sales_order_item"
       lot_priority: "baixa" | "media" | "alta" | "critica"
       lot_status:
         | "planejado"
@@ -3474,6 +3476,8 @@ export const Constants = {
         "analytics_kpi",
         "quality_capa",
         "influencer",
+        "sales_order",
+        "sales_order_item",
       ],
       lot_priority: ["baixa", "media", "alta", "critica"],
       lot_status: [
