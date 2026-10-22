@@ -190,6 +190,9 @@ export type MaterialLine = {
   unitCost: number;
   totalCost?: number;
   source?: "catalogo" | "custo";
+  /** Item de estoque vinculado — reservado na liberação do pedido ao PCP. */
+  stockItemId?: string | null;
+  stockItemCode?: string | null;
 };
 
 export type OperationLine = {

@@ -58,6 +58,7 @@ import {
   deleteMaterial,
   deleteOperation,
 } from "@/lib/sales/api";
+import { StockItemSelect } from "@/components/sales/StockItemSelect";
 import { computeItemCost, marginPct, priceForMargin, round2 } from "@/lib/sales/cost";
 import {
   brl,
@@ -83,7 +84,13 @@ type Props = {
 
 type ItemSheet = { materials: MaterialLine[]; operations: OperationLine[] };
 type OpEditPatch = { id: string; driverQty: number; unitCost: number; setupCost: number };
-type MatEditPatch = { id: string; consumption: number; wastePct: number; unitCost: number };
+type MatEditPatch = {
+  id: string;
+  consumption: number;
+  wastePct: number;
+  unitCost: number;
+  stockItemId?: string | null;
+};
 type AddOpFields = {
   sector: string;
   operation: string;
@@ -101,6 +108,7 @@ type AddMatFields = {
   wastePct: number;
   unitCost: number;
   notes?: string;
+  stockItemId?: string | null;
 };
 
 const fmtDate = (iso?: string) =>
@@ -519,7 +527,12 @@ function ItemCard({
   const [editOpId, setEditOpId] = useState<string | null>(null);
   const [editVals, setEditVals] = useState({ driverQty: "", unitCost: "", setupCost: "" });
   const [editMatId, setEditMatId] = useState<string | null>(null);
-  const [matVals, setMatVals] = useState({ consumption: "", wastePct: "", unitCost: "" });
+  const [matVals, setMatVals] = useState({
+    consumption: "",
+    wastePct: "",
+    unitCost: "",
+    stockItemId: "",
+  });
   const [addKind, setAddKind] = useState<null | "op" | "mat">(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const setF = (key: string) => (e: { target: { value: string } }) =>
@@ -541,6 +554,7 @@ function ItemCard({
       consumption: parseNum(matVals.consumption, 0),
       wastePct: parseNum(matVals.wastePct, 0),
       unitCost: parseNum(matVals.unitCost, 0),
+      stockItemId: matVals.stockItemId || null,
     });
     if (ok) setEditMatId(null);
   }
@@ -576,6 +590,7 @@ function ItemCard({
       wastePct: parseNum(form.matWaste, 0),
       unitCost: parseNum(form.matUnitCost, 0),
       notes: (form.matNotes ?? "").trim() || undefined,
+      stockItemId: form.matStock || null,
     });
     if (ok) {
       setAddKind(null);
@@ -842,7 +857,12 @@ function ItemCard({
                   {sheet.materials.map((m) => (
                     <Fragment key={m.id ?? m.material}>
                       <tr className="border-t border-white/5 text-muted-foreground">
-                        <td className="py-1">{m.material}</td>
+                        <td className="py-1">
+                          {m.material}
+                          {m.stockItemCode && (
+                            <span className="ml-1 text-[9px] text-primary">{m.stockItemCode}</span>
+                          )}
+                        </td>
                         <td className="py-1">material</td>
                         <td className="py-1">{m.unit}</td>
                         <td className="py-1 text-right">
@@ -869,6 +889,7 @@ function ItemCard({
                                   consumption: String(m.consumption),
                                   wastePct: String(m.wastePct),
                                   unitCost: String(m.unitCost),
+                                  stockItemId: m.stockItemId ?? "",
                                 });
                               }}
                             >
@@ -907,6 +928,10 @@ function ItemCard({
                                 onChange={(e) =>
                                   setMatVals((v) => ({ ...v, unitCost: e.target.value }))
                                 }
+                              />
+                              <StockItemSelect
+                                value={matVals.stockItemId}
+                                onChange={(id) => setMatVals((v) => ({ ...v, stockItemId: id }))}
                               />
                               <Button
                                 size="sm"
@@ -1082,6 +1107,10 @@ function ItemCard({
                     className="h-7 w-32 text-[11px]"
                     placeholder="Obs."
                     onChange={setF("matNotes")}
+                  />
+                  <StockItemSelect
+                    value={form.matStock ?? ""}
+                    onChange={(id) => setForm((f) => ({ ...f, matStock: id }))}
                   />
                   <Button
                     size="sm"
