@@ -54,7 +54,7 @@ BEGIN
       VALUES (
         target_user,
         ext_id,
-        CASE WHEN cur_balance <= it.safety_stock THEN 'critical' ELSE 'warn' END,
+        CASE WHEN cur_balance <= it.safety_stock THEN 'critical' ELSE 'warning' END,
         'Estoque baixo · ' || it.code,
         it.name || ' — saldo ' || ROUND(cur_balance, 2) || ' ' || it.unit ||
           ' (PP ' || ROUND(it.reorder_point, 2) || ', SS ' || ROUND(it.safety_stock, 2) || ')',

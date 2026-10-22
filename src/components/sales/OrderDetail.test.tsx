@@ -23,6 +23,9 @@ const api = vi.hoisted(() => ({
   updateOperation: vi.fn(),
   addOperation: vi.fn(),
   addMaterial: vi.fn(),
+  updateMaterial: vi.fn(),
+  deleteOperation: vi.fn(),
+  deleteMaterial: vi.fn(),
   isMissingTable: (error: { code?: string; message?: string } | null) =>
     error?.code === "42P01" || /does not exist/i.test(error?.message ?? ""),
   MIGRATION_HINT: "Migration pendente: rode 20261021090100_sales_orders.sql.",
@@ -101,6 +104,7 @@ const materials = [
     consumption: 1,
     wastePct: 0,
     unitCost: 3.2,
+    source: "custo" as const,
   },
   {
     id: "m5",
@@ -186,6 +190,18 @@ const operations = [
     outsourced: false,
     source: "catalogo" as const,
   },
+  {
+    id: "op-7",
+    seq: 7,
+    sector: "Bordado",
+    operation: "Reforço aplicado",
+    driver: "cor" as const,
+    driverQty: 2,
+    unitCost: 4.5,
+    setupCost: 0,
+    outsourced: false,
+    source: "custo" as const,
+  },
 ];
 
 const cost = {
@@ -223,6 +239,9 @@ beforeEach(() => {
   api.updateOperation.mockResolvedValue({ data: {}, error: null });
   api.addOperation.mockResolvedValue({ data: {}, error: null });
   api.addMaterial.mockResolvedValue({ data: {}, error: null });
+  api.updateMaterial.mockResolvedValue({ data: {}, error: null });
+  api.deleteOperation.mockResolvedValue({ data: "ok", error: null });
+  api.deleteMaterial.mockResolvedValue({ data: "ok", error: null });
   api.recalcItem.mockResolvedValue({ data: 68.44, error: null });
 });
 
@@ -316,5 +335,63 @@ describe("OrderDetail", () => {
     await screen.findByText("Ficha do pedido · custo");
     expect(screen.queryByRole("button", { name: /Editar linha/i })).toBeNull();
     expect(screen.queryByRole("button", { name: /Nova operação/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Remover linha/i })).toBeNull();
+  });
+
+  it("custo remove só linhas que nasceram no custo (guard de source)", async () => {
+    render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
+    await screen.findByText("Ficha do pedido · custo");
+    fireEvent.click(screen.getByRole("button", { name: "Editar linha Reforço aplicado" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remover linha" }));
+    await waitFor(() => expect(api.deleteOperation).toHaveBeenCalledWith("op-7"));
+    expect(api.recalcItem).toHaveBeenCalledWith("i1");
+    fireEvent.click(screen.getByRole("button", { name: "Editar linha Corte" }));
+    expect(screen.queryByRole("button", { name: "Remover linha" })).toBeNull();
+  });
+
+  it("custo corrige consumo de um material (updateMaterial + recalc)", async () => {
+    render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
+    await screen.findByText("Ficha do pedido · custo");
+    fireEvent.click(screen.getByRole("button", { name: "Editar linha Papel + tinta" }));
+    fireEvent.change(screen.getByLabelText("Consumo do material"), { target: { value: "2" } });
+    fireEvent.change(screen.getByLabelText("Custo unitário do material (R$)"), {
+      target: { value: "3.5" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar material" }));
+    await waitFor(() =>
+      expect(api.updateMaterial).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "m4", consumption: 2, wastePct: 0, unitCost: 3.5 }),
+      ),
+    );
+    expect(api.recalcItem).toHaveBeenCalledWith("i1");
+    fireEvent.click(screen.getByRole("button", { name: "Editar linha Papel + tinta" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remover material" }));
+    await waitFor(() => expect(api.deleteMaterial).toHaveBeenCalledWith("m4"));
+    // material do catálogo (sem source='custo') não oferece remoção
+    fireEvent.click(screen.getByRole("button", { name: "Editar linha Dry 100% poliéster" }));
+    expect(screen.queryByRole("button", { name: "Remover material" })).toBeNull();
+  });
+
+  it("formulários expõem terceirizada e observações (campos que a API já aceitava)", async () => {
+    render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
+    await screen.findByText("Ficha do pedido · custo");
+    fireEvent.click(screen.getByRole("button", { name: /Nova operação/i }));
+    fireEvent.change(screen.getByLabelText("Operação"), { target: { value: "Bainha" } });
+    fireEvent.click(screen.getByLabelText("Terceirizada"));
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar operação" }));
+    await waitFor(() =>
+      expect(api.addOperation).toHaveBeenCalledWith(
+        expect.objectContaining({ operation: "Bainha", outsourced: true }),
+      ),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Novo material/i }));
+    fireEvent.change(screen.getByLabelText("Material"), { target: { value: "Etiqueta" } });
+    fireEvent.change(screen.getByLabelText("Observações"), { target: { value: "tecida" } });
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar material" }));
+    await waitFor(() =>
+      expect(api.addMaterial).toHaveBeenCalledWith(
+        expect.objectContaining({ material: "Etiqueta", notes: "tecida" }),
+      ),
+    );
   });
 });

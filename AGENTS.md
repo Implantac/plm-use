@@ -21,6 +21,10 @@ status do pedido em enviado/em_custo/custo_concluido + item ainda não aprovado.
 Quem mexer em `lib/sales/api.ts` deve tratar `addOperation`/`addMaterial` como
 superfície pública. Cobertura: três casos novos em `OrderDetail.test.tsx`.
 
+### Extensão do change (mesma ordem de 2026-10-22): remoção/edição de materiais
+
+O dono autorizou o mesmo escopo para: `updateMaterial` + lápis na linha de material, `deleteOperation`/`deleteMaterial` com guard `source='custo'` (linhas do catálogo só mudam trocando a opção do item, que reexplode a ficha — os números continuam editáveis em qualquer linha; nome/setor/driver são da ficha PLM por design), e o checkbox `terceirizada` / campo `observações` nos formulários de adição. A RLS já cobria DELETE (`so_ops_cost_delete`/`so_materials_cost_delete`) — a UI apenas espelha o que o banco garante. A migration `20260708131912` (gatilho de estoque baixo) foi corrigida no repo de `'warn'` para `'warning'` para alinhar recriações do banco com o fix vivo (KARILU-FIX-NOTIF); banco em produção não precisa de nada.
+
 ## GitHub ↔ Lovable (contrato da plataforma — não negociável)
 
 - Este repo é o lado GitHub do sync bidirecional do projeto na branch `main`; o app que os usuários veem é o deploy do Lovable, alimentado por push na `main`. Ver `docs/github-lovable-sync.md`.

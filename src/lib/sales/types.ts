@@ -189,6 +189,7 @@ export type MaterialLine = {
   wastePct: number;
   unitCost: number;
   totalCost?: number;
+  source?: "catalogo" | "custo";
 };
 
 export type OperationLine = {

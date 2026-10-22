@@ -54,6 +54,9 @@ import {
   releaseToPcp,
   submitOrder,
   updateOperation,
+  updateMaterial,
+  deleteMaterial,
+  deleteOperation,
 } from "@/lib/sales/api";
 import { computeItemCost, marginPct, priceForMargin, round2 } from "@/lib/sales/cost";
 import {
@@ -80,6 +83,7 @@ type Props = {
 
 type ItemSheet = { materials: MaterialLine[]; operations: OperationLine[] };
 type OpEditPatch = { id: string; driverQty: number; unitCost: number; setupCost: number };
+type MatEditPatch = { id: string; consumption: number; wastePct: number; unitCost: number };
 type AddOpFields = {
   sector: string;
   operation: string;
@@ -87,6 +91,7 @@ type AddOpFields = {
   driverQty: number;
   unitCost: number;
   setupCost: number;
+  outsourced?: boolean;
 };
 type AddMatFields = {
   kind: string;
@@ -95,6 +100,7 @@ type AddMatFields = {
   consumption: number;
   wastePct: number;
   unitCost: number;
+  notes?: string;
 };
 
 const fmtDate = (iso?: string) =>
@@ -368,6 +374,36 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
                   "Material adicionado.",
                 )
               }
+              onUpdateMat={(patch) =>
+                run(
+                  `mat-${patch.id}`,
+                  async () => {
+                    const up = await updateMaterial(patch);
+                    return up.error ? up : recalcItem(item.id);
+                  },
+                  "Material da ficha atualizado.",
+                )
+              }
+              onDeleteOp={(id) =>
+                run(
+                  `delop-${id}`,
+                  async () => {
+                    const del = await deleteOperation(id);
+                    return del.error ? del : recalcItem(item.id);
+                  },
+                  "Operação removida.",
+                )
+              }
+              onDeleteMat={(id) =>
+                run(
+                  `delmat-${id}`,
+                  async () => {
+                    const del = await deleteMaterial(id);
+                    return del.error ? del : recalcItem(item.id);
+                  },
+                  "Material removido.",
+                )
+              }
             />
           ))}
         </div>
@@ -453,6 +489,9 @@ function ItemCard({
   onUpdateOp,
   onAddOp,
   onAddMat,
+  onUpdateMat,
+  onDeleteOp,
+  onDeleteMat,
 }: {
   item: SalesOrderItem;
   cost?: ItemCost;
@@ -467,6 +506,9 @@ function ItemCard({
   onUpdateOp: (patch: OpEditPatch) => Promise<boolean>;
   onAddOp: (fields: AddOpFields) => Promise<boolean>;
   onAddMat: (fields: AddMatFields) => Promise<boolean>;
+  onUpdateMat: (patch: MatEditPatch) => Promise<boolean>;
+  onDeleteOp: (id: string) => Promise<boolean>;
+  onDeleteMat: (id: string) => Promise<boolean>;
 }) {
   const parseNum = (v: string | undefined, fallback = 0): number => {
     const raw = (v ?? "").trim();
@@ -476,6 +518,8 @@ function ItemCard({
   };
   const [editOpId, setEditOpId] = useState<string | null>(null);
   const [editVals, setEditVals] = useState({ driverQty: "", unitCost: "", setupCost: "" });
+  const [editMatId, setEditMatId] = useState<string | null>(null);
+  const [matVals, setMatVals] = useState({ consumption: "", wastePct: "", unitCost: "" });
   const [addKind, setAddKind] = useState<null | "op" | "mat">(null);
   const [form, setForm] = useState<Record<string, string>>({});
   const setF = (key: string) => (e: { target: { value: string } }) =>
@@ -490,6 +534,24 @@ function ItemCard({
     });
     if (ok) setEditOpId(null);
   }
+  async function saveEditMat() {
+    if (!editMatId) return;
+    const ok = await onUpdateMat({
+      id: editMatId,
+      consumption: parseNum(matVals.consumption, 0),
+      wastePct: parseNum(matVals.wastePct, 0),
+      unitCost: parseNum(matVals.unitCost, 0),
+    });
+    if (ok) setEditMatId(null);
+  }
+  async function removeOp(id: string) {
+    const ok = await onDeleteOp(id);
+    if (ok) setEditOpId(null);
+  }
+  async function removeMat(id: string) {
+    const ok = await onDeleteMat(id);
+    if (ok) setEditMatId(null);
+  }
   async function submitAddOp() {
     const ok = await onAddOp({
       sector: (form.opSector ?? "").trim() || "Producao",
@@ -498,6 +560,7 @@ function ItemCard({
       driverQty: parseNum(form.opQty, 1),
       unitCost: parseNum(form.opUnitCost, 0),
       setupCost: parseNum(form.opSetup, 0),
+      outsourced: form.opOutsourced === "1",
     });
     if (ok) {
       setAddKind(null);
@@ -512,6 +575,7 @@ function ItemCard({
       consumption: parseNum(form.matConsumption, 1),
       wastePct: parseNum(form.matWaste, 0),
       unitCost: parseNum(form.matUnitCost, 0),
+      notes: (form.matNotes ?? "").trim() || undefined,
     });
     if (ok) {
       setAddKind(null);
@@ -755,6 +819,17 @@ function ItemCard({
                               >
                                 Salvar linha
                               </Button>
+                              {op.source === "custo" && op.id && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-red-400 hover:text-red-300"
+                                  disabled={!!busy}
+                                  onClick={() => removeOp(op.id!)}
+                                >
+                                  <Trash2 className="w-3 h-3 mr-1" /> Remover linha
+                                </Button>
+                              )}
                               <Button size="sm" variant="ghost" onClick={() => setEditOpId(null)}>
                                 Cancelar
                               </Button>
@@ -765,22 +840,101 @@ function ItemCard({
                     </Fragment>
                   ))}
                   {sheet.materials.map((m) => (
-                    <tr
-                      key={m.id ?? m.material}
-                      className="border-t border-white/5 text-muted-foreground"
-                    >
-                      <td className="py-1">{m.material}</td>
-                      <td className="py-1">material</td>
-                      <td className="py-1">{m.unit}</td>
-                      <td className="py-1 text-right">
-                        {m.consumption}×{item.quantity}
-                      </td>
-                      <td className="py-1 text-right">{brl(m.unitCost)}</td>
-                      <td className="py-1 text-right">{m.wastePct ? `${m.wastePct}%` : "—"}</td>
-                      <td className="py-1 text-right text-white">
-                        {brl(m.consumption * (1 + m.wastePct / 100) * m.unitCost * item.quantity)}
-                      </td>
-                    </tr>
+                    <Fragment key={m.id ?? m.material}>
+                      <tr className="border-t border-white/5 text-muted-foreground">
+                        <td className="py-1">{m.material}</td>
+                        <td className="py-1">material</td>
+                        <td className="py-1">{m.unit}</td>
+                        <td className="py-1 text-right">
+                          {m.consumption}×{item.quantity}
+                        </td>
+                        <td className="py-1 text-right">{brl(m.unitCost)}</td>
+                        <td className="py-1 text-right">{m.wastePct ? `${m.wastePct}%` : "—"}</td>
+                        <td className="py-1 text-right text-white">
+                          {brl(m.consumption * (1 + m.wastePct / 100) * m.unitCost * item.quantity)}
+                        </td>
+                        {costEditable && m.id && (
+                          <td className="py-1 text-right">
+                            <button
+                              type="button"
+                              aria-label={`Editar linha ${m.material}`}
+                              className="text-muted-foreground hover:text-white"
+                              onClick={() => {
+                                if (editMatId === m.id) {
+                                  setEditMatId(null);
+                                  return;
+                                }
+                                setEditMatId(m.id ?? null);
+                                setMatVals({
+                                  consumption: String(m.consumption),
+                                  wastePct: String(m.wastePct),
+                                  unitCost: String(m.unitCost),
+                                });
+                              }}
+                            >
+                              <Pencil className="w-3 h-3 inline" />
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                      {costEditable && editMatId === m.id && (
+                        <tr className="border-t border-primary/10">
+                          <td colSpan={8} className="py-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                                {m.material}
+                              </span>
+                              <Input
+                                aria-label="Consumo do material"
+                                className="h-7 w-24 text-[11px]"
+                                value={matVals.consumption}
+                                onChange={(e) =>
+                                  setMatVals((v) => ({ ...v, consumption: e.target.value }))
+                                }
+                              />
+                              <Input
+                                aria-label="Perda do material (%)"
+                                className="h-7 w-20 text-[11px]"
+                                value={matVals.wastePct}
+                                onChange={(e) =>
+                                  setMatVals((v) => ({ ...v, wastePct: e.target.value }))
+                                }
+                              />
+                              <Input
+                                aria-label="Custo unitário do material (R$)"
+                                className="h-7 w-24 text-[11px]"
+                                value={matVals.unitCost}
+                                onChange={(e) =>
+                                  setMatVals((v) => ({ ...v, unitCost: e.target.value }))
+                                }
+                              />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={!!busy}
+                                onClick={saveEditMat}
+                              >
+                                Salvar material
+                              </Button>
+                              {m.source === "custo" && m.id && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-red-400 hover:text-red-300"
+                                  disabled={!!busy}
+                                  onClick={() => removeMat(m.id!)}
+                                >
+                                  <Trash2 className="w-3 h-3 mr-1" /> Remover material
+                                </Button>
+                              )}
+                              <Button size="sm" variant="ghost" onClick={() => setEditMatId(null)}>
+                                Cancelar
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
@@ -857,6 +1011,17 @@ function ItemCard({
                     placeholder="Setup"
                     onChange={setF("opSetup")}
                   />
+                  <label className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <input
+                      type="checkbox"
+                      aria-label="Terceirizada"
+                      checked={form.opOutsourced === "1"}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, opOutsourced: e.target.checked ? "1" : "" }))
+                      }
+                    />
+                    terceirizada
+                  </label>
                   <Button
                     size="sm"
                     disabled={!!busy || !(form.opName ?? "").trim()}
@@ -911,6 +1076,12 @@ function ItemCard({
                     className="h-7 w-20 text-[11px]"
                     placeholder="R$/un"
                     onChange={setF("matUnitCost")}
+                  />
+                  <Input
+                    aria-label="Observações"
+                    className="h-7 w-32 text-[11px]"
+                    placeholder="Obs."
+                    onChange={setF("matNotes")}
                   />
                   <Button
                     size="sm"

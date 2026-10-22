@@ -584,6 +584,7 @@ export async function listMaterials(itemId: string): Promise<Res<MaterialLine[]>
       wastePct: num(r.waste_pct),
       unitCost: num(r.unit_cost),
       totalCost: optNum(r.total_cost),
+      source: str(r.source, "custo") === "catalogo" ? "catalogo" : "custo",
     })),
     error: null,
   };
@@ -760,6 +761,66 @@ export async function addMaterial(input: {
     .select("*")
     .single();
   return { data: res.data, error: res.error };
+}
+
+// ---------------------------------------------------------------------------
+// Edição/remoção das linhas da ficha pelo custo. update vale para qualquer
+// linha — o custo é dono dos NÚMEROS da ficha do pedido; delete é restrito a
+// source='custo' (a checagem no client existe pela mensagem amigável; a RLS
+// so_*_cost_delete já garante a autorização). Linha do catálogo se corrige
+// trocando a opção do item, que reescreve a ficha inteira.
+// ---------------------------------------------------------------------------
+export async function updateMaterial(input: {
+  id: string;
+  consumption?: number;
+  wastePct?: number;
+  unitCost?: number;
+}): Promise<Res<Row>> {
+  const res = await db
+    .from("sales_order_item_materials")
+    .update({
+      ...(input.consumption !== undefined ? { consumption: input.consumption } : {}),
+      ...(input.wastePct !== undefined ? { waste_pct: input.wastePct } : {}),
+      ...(input.unitCost !== undefined ? { unit_cost: input.unitCost } : {}),
+    })
+    .eq("id", input.id)
+    .select("*")
+    .maybeSingle();
+  return { data: res.data, error: res.error };
+}
+
+export async function deleteOperation(id: string): Promise<Res<string>> {
+  const res = await db
+    .from("sales_order_item_operations")
+    .delete()
+    .eq("id", id)
+    .eq("source", "custo")
+    .select("id");
+  if (res.error) return { data: null, error: res.error };
+  if (!(res.data ?? []).length) {
+    return {
+      data: null,
+      error: { message: "Linha do catálogo não é removível aqui — troque a opção do item." },
+    };
+  }
+  return { data: "ok", error: null };
+}
+
+export async function deleteMaterial(id: string): Promise<Res<string>> {
+  const res = await db
+    .from("sales_order_item_materials")
+    .delete()
+    .eq("id", id)
+    .eq("source", "custo")
+    .select("id");
+  if (res.error) return { data: null, error: res.error };
+  if (!(res.data ?? []).length) {
+    return {
+      data: null,
+      error: { message: "Material do catálogo não é removível aqui — troque a opção do item." },
+    };
+  }
+  return { data: "ok", error: null };
 }
 
 // ---------------------------------------------------------------------------
