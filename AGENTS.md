@@ -11,6 +11,16 @@
 - A ligação é por **convenção de texto**: `catalog_products.reference_code` ↔ `tech_sheets.ref`. Sem FK entre os mundos, de propósito — não adicionar FK/trigger entre eles sem o dono decidir a direção do herdeiro (pedido herda da ficha? catálogo nasce da ficha?).
 - Convenções que os DOIS lados compartilham e o teste tranca: arredondamento round2 no dinheiro por peça, round4 em quantidades de driver, setup é custo ÚNICO diluído na tiragem e tiragem inválida NUNCA esconde o setup. Ao mudar uma em um lado, espelhar no outro (`aplicacao-order-bridge.test.ts` é o lacre) e manter `src/lib/sales/` intocável por este lado — o bot o mantém ativamente.
 
+## Painel de custo do pedido (sales) — exceção de fronteira, 2026-10-22
+
+A pedido explícito do dono, `src/components/sales/OrderDetail.tsx` ganhou
+edição pelo custo: linhas de operação corrigíveis in place via `updateOperation()`
+(função antes órfã do `lib/sales/api.ts`) e botões "Nova operação"/"Novo
+material" gravando `source='custo'`. Gatilho de visibilidade: `canCost` +
+status do pedido em enviado/em_custo/custo_concluido + item ainda não aprovado.
+Quem mexer em `lib/sales/api.ts` deve tratar `addOperation`/`addMaterial` como
+superfície pública. Cobertura: três casos novos em `OrderDetail.test.tsx`.
+
 ## GitHub ↔ Lovable (contrato da plataforma — não negociável)
 
 - Este repo é o lado GitHub do sync bidirecional do projeto na branch `main`; o app que os usuários veem é o deploy do Lovable, alimentado por push na `main`. Ver `docs/github-lovable-sync.md`.

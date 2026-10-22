@@ -692,6 +692,77 @@ export async function updateOperation(input: {
 }
 
 // ---------------------------------------------------------------------------
+// Detalhamento da ficha do item pelo custo: inserir linhas novas. Grava com
+// source='custo' — a UI de custo é a dona delas; a explosão do catálogo usa
+// 'catalogo' e continua soberana nas linhas que criou.
+// ---------------------------------------------------------------------------
+export async function addOperation(input: {
+  itemId: string;
+  sector: string;
+  operation: string;
+  driver: OperationLine["driver"];
+  driverQty: number;
+  unitCost: number;
+  setupCost: number;
+  outsourced?: boolean;
+}): Promise<Res<Row>> {
+  const lastRes = await db
+    .from("sales_order_item_operations")
+    .select("seq")
+    .eq("item_id", input.itemId)
+    .order("seq", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const lastRow = (lastRes.data ?? null) as Row | null;
+  const nextSeq = Math.max(num(lastRow?.seq), 0) + 1;
+  const res = await db
+    .from("sales_order_item_operations")
+    .insert({
+      item_id: input.itemId,
+      seq: nextSeq,
+      sector: input.sector,
+      operation: input.operation,
+      driver: input.driver,
+      driver_qty: input.driverQty,
+      unit_cost: input.unitCost,
+      setup_cost: input.setupCost,
+      source: "custo",
+      outsourced: input.outsourced === true,
+    })
+    .select("*")
+    .single();
+  return { data: res.data, error: res.error };
+}
+
+export async function addMaterial(input: {
+  itemId: string;
+  kind: string;
+  material: string;
+  unit?: string;
+  consumption: number;
+  wastePct?: number;
+  unitCost: number;
+  notes?: string;
+}): Promise<Res<Row>> {
+  const res = await db
+    .from("sales_order_item_materials")
+    .insert({
+      item_id: input.itemId,
+      kind: input.kind,
+      material: input.material,
+      unit: input.unit || "un",
+      consumption: input.consumption,
+      waste_pct: input.wastePct ?? 0,
+      unit_cost: input.unitCost,
+      source: "custo",
+      notes: input.notes || null,
+    })
+    .select("*")
+    .single();
+  return { data: res.data, error: res.error };
+}
+
+// ---------------------------------------------------------------------------
 // Timeline
 // ---------------------------------------------------------------------------
 export async function listOrderEvents(orderId: string): Promise<Res<OrderEvent[]>> {

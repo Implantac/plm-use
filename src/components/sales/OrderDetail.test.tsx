@@ -3,7 +3,7 @@
 // grade, personalização e o painel de custo com os números do motor puro — e
 // que a falta da migration vira aviso, não tela branca.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { OrderDetail } from "./OrderDetail";
 
 const api = vi.hoisted(() => ({
@@ -20,6 +20,9 @@ const api = vi.hoisted(() => ({
   releaseToPcp: vi.fn(),
   deleteItem: vi.fn(),
   addItem: vi.fn(),
+  updateOperation: vi.fn(),
+  addOperation: vi.fn(),
+  addMaterial: vi.fn(),
   isMissingTable: (error: { code?: string; message?: string } | null) =>
     error?.code === "42P01" || /does not exist/i.test(error?.message ?? ""),
   MIGRATION_HINT: "Migration pendente: rode 20261021090100_sales_orders.sql.",
@@ -217,6 +220,10 @@ beforeEach(() => {
   api.listMaterials.mockResolvedValue({ data: materials, error: null });
   api.listOperations.mockResolvedValue({ data: operations, error: null });
   api.listCatalog.mockResolvedValue({ data: [], error: null });
+  api.updateOperation.mockResolvedValue({ data: {}, error: null });
+  api.addOperation.mockResolvedValue({ data: {}, error: null });
+  api.addMaterial.mockResolvedValue({ data: {}, error: null });
+  api.recalcItem.mockResolvedValue({ data: 68.44, error: null });
 });
 
 describe("OrderDetail", () => {
@@ -262,5 +269,52 @@ describe("OrderDetail", () => {
     });
     render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
     expect(await screen.findByText(/Migration pendente/)).toBeTruthy();
+  });
+
+  it("custo corrige driver/valor de uma operação pelo painel (updateOperation + recalc)", async () => {
+    render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
+    await screen.findByText("Ficha do pedido · custo");
+    fireEvent.click(screen.getByRole("button", { name: /Editar linha Bordado escudo/i }));
+    const qty = await screen.findByLabelText("Qtd do driver");
+    fireEvent.change(qty, { target: { value: "70" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar linha" }));
+    await waitFor(() =>
+      expect(api.updateOperation).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "op-3", driverQty: 70, unitCost: 0.11, setupCost: 38 }),
+      ),
+    );
+    expect(api.recalcItem).toHaveBeenCalledWith("i1");
+  });
+
+  it("custo insere material extra na ficha do item (delta detalhado)", async () => {
+    render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
+    await screen.findByText("Ficha do pedido · custo");
+    fireEvent.click(await screen.findByRole("button", { name: /Novo material/i }));
+    fireEvent.change(await screen.findByLabelText("Material"), {
+      target: { value: "Tela de seda 60g" },
+    });
+    fireEvent.change(screen.getByLabelText("Consumo por peça"), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText("Custo unitário (R$)"), { target: { value: "3.2" } });
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar material" }));
+    await waitFor(() =>
+      expect(api.addMaterial).toHaveBeenCalledWith(
+        expect.objectContaining({
+          itemId: "i1",
+          material: "Tela de seda 60g",
+          kind: "tecido",
+          consumption: 1,
+          unitCost: 3.2,
+        }),
+      ),
+    );
+    expect(api.recalcItem).toHaveBeenCalledWith("i1");
+  });
+
+  it("linha aprovada congela a edição (sem lápis, sem botões de delta)", async () => {
+    api.listItems.mockResolvedValue({ data: [{ ...item, costStatus: "aprovado" }], error: null });
+    render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
+    await screen.findByText("Ficha do pedido · custo");
+    expect(screen.queryByRole("button", { name: /Editar linha/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Nova operação/i })).toBeNull();
   });
 });

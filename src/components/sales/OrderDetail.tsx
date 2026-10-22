@@ -4,7 +4,7 @@
 // O botão "Enviar para custo" chama submit_sales_order() — as validações
 // (produto validado, mínimo, grade = quantidade, preço) rodam no Postgres e a
 // mensagem de erro dele é o que o usuário lê.
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -16,6 +16,7 @@ import {
   Plus,
   Ruler,
   FileText,
+  Pencil,
   Send,
   Sparkles,
   Trash2,
@@ -35,6 +36,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  addMaterial,
+  addOperation,
   addItem,
   approveItem,
   deleteItem,
@@ -50,6 +53,7 @@ import {
   recalcItem,
   releaseToPcp,
   submitOrder,
+  updateOperation,
 } from "@/lib/sales/api";
 import { computeItemCost, marginPct, priceForMargin, round2 } from "@/lib/sales/cost";
 import {
@@ -75,6 +79,23 @@ type Props = {
 };
 
 type ItemSheet = { materials: MaterialLine[]; operations: OperationLine[] };
+type OpEditPatch = { id: string; driverQty: number; unitCost: number; setupCost: number };
+type AddOpFields = {
+  sector: string;
+  operation: string;
+  driver: OperationLine["driver"];
+  driverQty: number;
+  unitCost: number;
+  setupCost: number;
+};
+type AddMatFields = {
+  kind: string;
+  material: string;
+  unit: string;
+  consumption: number;
+  wastePct: number;
+  unitCost: number;
+};
 
 const fmtDate = (iso?: string) =>
   iso ? new Date(`${iso.slice(0, 10)}T12:00:00`).toLocaleDateString("pt-BR") : "—";
@@ -312,6 +333,41 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
               onApprove={() =>
                 run(`approve-${item.id}`, () => approveItem(item.id), "Custo aprovado.")
               }
+              costEditable={
+                canCost &&
+                ["enviado", "em_custo", "custo_concluido"].includes(order.status) &&
+                item.costStatus !== "aprovado"
+              }
+              onUpdateOp={(patch) =>
+                run(
+                  `op-${patch.id}`,
+                  async () => {
+                    const up = await updateOperation(patch);
+                    return up.error ? up : recalcItem(item.id);
+                  },
+                  "Linha da ficha atualizada.",
+                )
+              }
+              onAddOp={(fields) =>
+                run(
+                  `addop-${item.id}`,
+                  async () => {
+                    const ins = await addOperation({ itemId: item.id, ...fields });
+                    return ins.error ? ins : recalcItem(item.id);
+                  },
+                  "Operação adicionada.",
+                )
+              }
+              onAddMat={(fields) =>
+                run(
+                  `addmat-${item.id}`,
+                  async () => {
+                    const ins = await addMaterial({ itemId: item.id, ...fields });
+                    return ins.error ? ins : recalcItem(item.id);
+                  },
+                  "Material adicionado.",
+                )
+              }
             />
           ))}
         </div>
@@ -393,6 +449,10 @@ function ItemCard({
   onDelete,
   onRecalc,
   onApprove,
+  costEditable,
+  onUpdateOp,
+  onAddOp,
+  onAddMat,
 }: {
   item: SalesOrderItem;
   cost?: ItemCost;
@@ -403,7 +463,61 @@ function ItemCard({
   onDelete: () => void;
   onRecalc: () => void;
   onApprove: () => void;
+  costEditable: boolean;
+  onUpdateOp: (patch: OpEditPatch) => Promise<boolean>;
+  onAddOp: (fields: AddOpFields) => Promise<boolean>;
+  onAddMat: (fields: AddMatFields) => Promise<boolean>;
 }) {
+  const parseNum = (v: string | undefined, fallback = 0): number => {
+    const raw = (v ?? "").trim();
+    if (!raw) return fallback;
+    const n = Number(raw.replace(",", "."));
+    return Number.isFinite(n) ? n : fallback;
+  };
+  const [editOpId, setEditOpId] = useState<string | null>(null);
+  const [editVals, setEditVals] = useState({ driverQty: "", unitCost: "", setupCost: "" });
+  const [addKind, setAddKind] = useState<null | "op" | "mat">(null);
+  const [form, setForm] = useState<Record<string, string>>({});
+  const setF = (key: string) => (e: { target: { value: string } }) =>
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+  async function saveEditOp() {
+    if (!editOpId) return;
+    const ok = await onUpdateOp({
+      id: editOpId,
+      driverQty: parseNum(editVals.driverQty, 0),
+      unitCost: parseNum(editVals.unitCost, 0),
+      setupCost: parseNum(editVals.setupCost, 0),
+    });
+    if (ok) setEditOpId(null);
+  }
+  async function submitAddOp() {
+    const ok = await onAddOp({
+      sector: (form.opSector ?? "").trim() || "Producao",
+      operation: (form.opName ?? "").trim(),
+      driver: (form.opDriver || "peca") as OperationLine["driver"],
+      driverQty: parseNum(form.opQty, 1),
+      unitCost: parseNum(form.opUnitCost, 0),
+      setupCost: parseNum(form.opSetup, 0),
+    });
+    if (ok) {
+      setAddKind(null);
+      setForm({});
+    }
+  }
+  async function submitAddMat() {
+    const ok = await onAddMat({
+      kind: form.matKind || "tecido",
+      material: (form.matName ?? "").trim(),
+      unit: (form.matUnit ?? "").trim() || "m",
+      consumption: parseNum(form.matConsumption, 1),
+      wastePct: parseNum(form.matWaste, 0),
+      unitCost: parseNum(form.matUnitCost, 0),
+    });
+    if (ok) {
+      setAddKind(null);
+      setForm({});
+    }
+  }
   const costStatus = ITEM_COST_STATUS[item.costStatus];
   const preview = useMemo(() => {
     if (!sheet) return null;
@@ -565,17 +679,90 @@ function ItemCard({
                 </thead>
                 <tbody>
                   {sheet.operations.map((op) => (
-                    <tr key={op.id ?? op.seq} className="border-t border-white/5">
-                      <td className="py-1 text-white">{op.operation}</td>
-                      <td className="py-1 text-muted-foreground">{op.sector}</td>
-                      <td className="py-1 text-muted-foreground">{op.driver}</td>
-                      <td className="py-1 text-right">{op.driverQty}</td>
-                      <td className="py-1 text-right">{brl(op.unitCost)}</td>
-                      <td className="py-1 text-right">{op.setupCost ? brl(op.setupCost) : "—"}</td>
-                      <td className="py-1 text-right text-white">
-                        {brl(op.driverQty * op.unitCost + op.setupCost)}
-                      </td>
-                    </tr>
+                    <Fragment key={op.id ?? op.seq}>
+                      <tr className="border-t border-white/5">
+                        <td className="py-1 text-white">{op.operation}</td>
+                        <td className="py-1 text-muted-foreground">{op.sector}</td>
+                        <td className="py-1 text-muted-foreground">{op.driver}</td>
+                        <td className="py-1 text-right">{op.driverQty}</td>
+                        <td className="py-1 text-right">{brl(op.unitCost)}</td>
+                        <td className="py-1 text-right">
+                          {op.setupCost ? brl(op.setupCost) : "—"}
+                        </td>
+                        <td className="py-1 text-right text-white">
+                          {brl(op.driverQty * op.unitCost + op.setupCost)}
+                        </td>
+                        {costEditable && op.id && (
+                          <td className="py-1 text-right">
+                            <button
+                              type="button"
+                              aria-label={`Editar linha ${op.operation}`}
+                              className="text-muted-foreground hover:text-white"
+                              onClick={() => {
+                                if (editOpId === op.id) {
+                                  setEditOpId(null);
+                                  return;
+                                }
+                                setEditOpId(op.id ?? null);
+                                setEditVals({
+                                  driverQty: String(op.driverQty),
+                                  unitCost: String(op.unitCost),
+                                  setupCost: String(op.setupCost),
+                                });
+                              }}
+                            >
+                              <Pencil className="w-3 h-3 inline" />
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                      {costEditable && editOpId === op.id && (
+                        <tr className="border-t border-primary/10">
+                          <td colSpan={8} className="py-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                                {op.operation}
+                              </span>
+                              <Input
+                                aria-label="Qtd do driver"
+                                className="h-7 w-24 text-[11px]"
+                                value={editVals.driverQty}
+                                onChange={(e) =>
+                                  setEditVals((v) => ({ ...v, driverQty: e.target.value }))
+                                }
+                              />
+                              <Input
+                                aria-label="R$ por unidade"
+                                className="h-7 w-24 text-[11px]"
+                                value={editVals.unitCost}
+                                onChange={(e) =>
+                                  setEditVals((v) => ({ ...v, unitCost: e.target.value }))
+                                }
+                              />
+                              <Input
+                                aria-label="Custo de setup"
+                                className="h-7 w-24 text-[11px]"
+                                value={editVals.setupCost}
+                                onChange={(e) =>
+                                  setEditVals((v) => ({ ...v, setupCost: e.target.value }))
+                                }
+                              />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={!!busy}
+                                onClick={saveEditOp}
+                              >
+                                Salvar linha
+                              </Button>
+                              <Button size="sm" variant="ghost" onClick={() => setEditOpId(null)}>
+                                Cancelar
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   ))}
                   {sheet.materials.map((m) => (
                     <tr
@@ -597,6 +784,143 @@ function ItemCard({
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {costEditable && (
+            <div className="space-y-2 pt-1">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setAddKind(addKind === "op" ? null : "op");
+                    setForm({});
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" /> Nova operação
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setAddKind(addKind === "mat" ? null : "mat");
+                    setForm({});
+                  }}
+                >
+                  <Plus className="w-3 h-3 mr-1" /> Novo material
+                </Button>
+              </div>
+              {addKind === "op" && (
+                <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/20 bg-primary/[0.03] p-2">
+                  <Input
+                    aria-label="Setor"
+                    className="h-7 w-28 text-[11px]"
+                    placeholder="Setor"
+                    onChange={setF("opSector")}
+                  />
+                  <Input
+                    aria-label="Operação"
+                    className="h-7 w-40 text-[11px]"
+                    placeholder="Operação"
+                    onChange={setF("opName")}
+                  />
+                  <select
+                    aria-label="Driver"
+                    className="h-7 rounded border border-input bg-transparent px-2 text-[11px]"
+                    value={form.opDriver ?? "peca"}
+                    onChange={setF("opDriver")}
+                  >
+                    <option value="peca">peça</option>
+                    <option value="minuto">minuto</option>
+                    <option value="mil_pontos">mil pontos</option>
+                    <option value="m2">m²</option>
+                    <option value="cor">cor</option>
+                    <option value="lote">lote</option>
+                  </select>
+                  <Input
+                    aria-label="Qtd do driver"
+                    className="h-7 w-20 text-[11px]"
+                    placeholder="Qtd"
+                    defaultValue="1"
+                    onChange={setF("opQty")}
+                  />
+                  <Input
+                    aria-label="R$ por unidade"
+                    className="h-7 w-20 text-[11px]"
+                    placeholder="R$/un"
+                    onChange={setF("opUnitCost")}
+                  />
+                  <Input
+                    aria-label="Custo de setup"
+                    className="h-7 w-20 text-[11px]"
+                    placeholder="Setup"
+                    onChange={setF("opSetup")}
+                  />
+                  <Button
+                    size="sm"
+                    disabled={!!busy || !(form.opName ?? "").trim()}
+                    onClick={submitAddOp}
+                  >
+                    Adicionar operação
+                  </Button>
+                </div>
+              )}
+              {addKind === "mat" && (
+                <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/20 bg-primary/[0.03] p-2">
+                  <Input
+                    aria-label="Material"
+                    className="h-7 w-40 text-[11px]"
+                    placeholder="Material"
+                    onChange={setF("matName")}
+                  />
+                  <select
+                    aria-label="Tipo de material"
+                    className="h-7 rounded border border-input bg-transparent px-2 text-[11px]"
+                    value={form.matKind ?? "tecido"}
+                    onChange={setF("matKind")}
+                  >
+                    <option value="tecido">tecido</option>
+                    <option value="aviamento">aviamento</option>
+                    <option value="linha">linha</option>
+                    <option value="embalagem">embalagem</option>
+                    <option value="servico">serviço</option>
+                  </select>
+                  <Input
+                    aria-label="Unidade"
+                    className="h-7 w-16 text-[11px]"
+                    placeholder="un"
+                    defaultValue="m"
+                    onChange={setF("matUnit")}
+                  />
+                  <Input
+                    aria-label="Consumo por peça"
+                    className="h-7 w-20 text-[11px]"
+                    placeholder="Consumo"
+                    defaultValue="1"
+                    onChange={setF("matConsumption")}
+                  />
+                  <Input
+                    aria-label="Perda (%)"
+                    className="h-7 w-16 text-[11px]"
+                    placeholder="Perda"
+                    onChange={setF("matWaste")}
+                  />
+                  <Input
+                    aria-label="Custo unitário (R$)"
+                    className="h-7 w-20 text-[11px]"
+                    placeholder="R$/un"
+                    onChange={setF("matUnitCost")}
+                  />
+                  <Button
+                    size="sm"
+                    disabled={!!busy || !(form.matName ?? "").trim()}
+                    onClick={submitAddMat}
+                  >
+                    Adicionar material
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
