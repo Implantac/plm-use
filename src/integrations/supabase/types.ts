@@ -1852,6 +1852,7 @@ export type Database = {
           reference_name: string | null
           route_id: string
           route_override_reason: string | null
+          sales_order_item_id: string | null
           status: string
           updated_at: string
         }
@@ -1868,6 +1869,7 @@ export type Database = {
           reference_name?: string | null
           route_id: string
           route_override_reason?: string | null
+          sales_order_item_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -1884,6 +1886,7 @@ export type Database = {
           reference_name?: string | null
           route_id?: string
           route_override_reason?: string | null
+          sales_order_item_id?: string | null
           status?: string
           updated_at?: string
         }
@@ -1907,6 +1910,13 @@ export type Database = {
             columns: ["route_id"]
             isOneToOne: false
             referencedRelation: "production_routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "production_order_items_sales_order_item_id_fkey"
+            columns: ["sales_order_item_id"]
+            isOneToOne: false
+            referencedRelation: "sales_order_items"
             referencedColumns: ["id"]
           },
         ]
@@ -2521,6 +2531,7 @@ export type Database = {
           material_id: string | null
           notes: string | null
           source: string
+          stock_item_id: string | null
           total_cost: number | null
           unit: string
           unit_cost: number
@@ -2536,6 +2547,7 @@ export type Database = {
           material_id?: string | null
           notes?: string | null
           source?: string
+          stock_item_id?: string | null
           total_cost?: number | null
           unit?: string
           unit_cost?: number
@@ -2551,6 +2563,7 @@ export type Database = {
           material_id?: string | null
           notes?: string | null
           source?: string
+          stock_item_id?: string | null
           total_cost?: number | null
           unit?: string
           unit_cost?: number
@@ -2569,6 +2582,20 @@ export type Database = {
             columns: ["material_id"]
             isOneToOne: false
             referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_order_item_materials_stock_item_id_fkey"
+            columns: ["stock_item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_balance"
+            referencedColumns: ["item_id"]
+          },
+          {
+            foreignKeyName: "sales_order_item_materials_stock_item_id_fkey"
+            columns: ["stock_item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_item"
             referencedColumns: ["id"]
           },
         ]
