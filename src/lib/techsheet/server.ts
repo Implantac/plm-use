@@ -36,6 +36,7 @@ export function serializeTechSheetDoc(
       items: doc.bom,
       preCost: doc.preCost,
       aplicacoes: doc.aplicacoes,
+      image: doc.image,
     },
     bop: doc.bop,
     versoes: doc.versoes,
@@ -55,18 +56,21 @@ export function deserializeTechSheetRow(row: LooseRow): Omit<TechSheetData, neve
   let items = row.bom;
   let preCost: PreCost = DEFAULT_PRE_COST;
   let aplicacoes: TechSheetData["aplicacoes"] = [];
+  let image: string | undefined;
   if (row.bom && typeof row.bom === "object" && !Array.isArray(row.bom)) {
     const env = row.bom as {
       v?: number;
       items?: unknown;
       preCost?: Partial<PreCost>;
       aplicacoes?: unknown;
+      image?: unknown;
     };
     items = env.items;
     if (env.preCost && typeof env.preCost === "object") {
       preCost = { ...DEFAULT_PRE_COST, ...env.preCost };
     }
     if (Array.isArray(env.aplicacoes)) aplicacoes = env.aplicacoes as TechSheetData["aplicacoes"];
+    if (typeof env.image === "string" && env.image.startsWith("https://")) image = env.image;
   }
   return {
     ref: row.ref,
@@ -75,6 +79,7 @@ export function deserializeTechSheetRow(row: LooseRow): Omit<TechSheetData, neve
     versoes: Array.isArray(row.versoes) ? (row.versoes as TechSheetData["versoes"]) : [],
     preCost,
     aplicacoes,
+    ...(image ? { image } : {}),
   };
 }
 
@@ -87,6 +92,8 @@ export function normalizeTechSheetDoc(
     bom: Array.isArray(doc.bom) ? doc.bom : [],
     bop: Array.isArray(doc.bop) ? doc.bop : [],
     aplicacoes: Array.isArray(doc.aplicacoes) ? doc.aplicacoes : [],
+    image:
+      typeof doc.image === "string" && doc.image.startsWith("https://") ? doc.image : undefined,
     versoes: Array.isArray(doc.versoes) ? doc.versoes : [],
     preCost: doc.preCost ?? DEFAULT_PRE_COST,
   };

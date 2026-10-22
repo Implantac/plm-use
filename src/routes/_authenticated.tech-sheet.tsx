@@ -62,6 +62,14 @@ function TechSheetPage() {
     { id: 4, type: "Embalagem", name: "Tag Luxury + Polybag", qty: "1 un", cost: "R$ 4,50" },
   ]);
 
+  // Foto real vem da ficha (campo image do envelope); sem foto, o fundo
+  // histórico de estoque permanece — a moldura não quebra em produto sem mídia.
+  const fichaImagem = useTechSheetStore((s) => s.data[productInfo.ref]?.image);
+  const fichaFoto =
+    fichaImagem && /^https:\/\//.test(fichaImagem)
+      ? fichaImagem
+      : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=600";
+
   // "Exportar PDF" deixou de ser botão decorativo: monta o doc A4 (função pura
   // testada) e abre a impressão do navegador — Imprimir → Salvar como PDF.
   const exportPdf = () => {
@@ -73,6 +81,7 @@ function TechSheetPage() {
         name: productInfo.name,
         category: productInfo.category,
         season: productInfo.status,
+        foto: doc.image,
       },
       doc,
     );
@@ -190,7 +199,7 @@ function TechSheetPage() {
             <div className="flex gap-8">
               <div className="w-48 h-64 rounded-lg bg-white/5 border border-white/5 overflow-hidden relative group">
                 <img
-                  src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=600"
+                  src={fichaFoto}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                   alt={productInfo.name}
                 />

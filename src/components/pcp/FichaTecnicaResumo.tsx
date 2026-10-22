@@ -71,15 +71,20 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
       </div>
 
       <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground">
-        {referencia.imagem ? (
-          <img
-            src={referencia.imagem}
-            alt={referencia.nome}
-            className="h-full w-full object-cover rounded-lg"
-          />
-        ) : (
-          <Package className="h-10 w-10 opacity-40" />
-        )}
+        {(() => {
+          const fotoUrl =
+            referencia.imagem ??
+            (doc?.image && /^https:\/\//.test(doc.image) ? doc.image : undefined);
+          return fotoUrl ? (
+            <img
+              src={fotoUrl}
+              alt={referencia.nome}
+              className="h-full w-full object-cover rounded-lg"
+            />
+          ) : (
+            <Package className="h-10 w-10 opacity-40" />
+          );
+        })()}
       </div>
 
       <Section icon={<Ruler className="h-3 w-3" />} title="Grade programada">

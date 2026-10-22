@@ -9,6 +9,7 @@ import type { TechSheetData } from "./store";
 
 const doc: TechSheetData = {
   ref: "REF-811",
+  image: "https://example.com/foto-teste.jpg",
   bom: [
     {
       id: "b1",

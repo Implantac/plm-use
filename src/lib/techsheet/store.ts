@@ -59,6 +59,11 @@ export type TechSheetData = {
   preCost: PreCost;
   /** Aplicações (bordado/silk/sublimação/transfer) por POSIÇÃO — ver aplicacoes.ts. */
   aplicacoes: import("./aplicacoes").Aplicacao[];
+  /**
+   * URL https da foto do produto (viagem no envelope do jsonb `bom`, sem
+   * coluna nova). Ficha sem foto = fallback histórico da UI, não vazio falso.
+   */
+  image?: string;
 };
 
 const seedFor = (ref: string): TechSheetData => ({

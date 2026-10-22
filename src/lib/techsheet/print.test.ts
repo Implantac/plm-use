@@ -75,6 +75,22 @@ describe("buildTechSheetPrintHtml", () => {
     expect(html).toContain("R$ 70,95");
   });
 
+  it("foto https entra no cabeçalho; URL de outro esquema é sumariamente ignorada", () => {
+    const comFoto = buildTechSheetPrintHtml(
+      { ...identity, foto: "https://cdn.exemplo.br/kar/walpaper.jpg" },
+      base,
+      new Date("2026-10-15T12:00:00Z"),
+    );
+    expect(comFoto).toContain('img class="foto"');
+    expect(comFoto).toContain("cdn.exemplo.br/kar/walpaper.jpg");
+    const maliciosa = buildTechSheetPrintHtml(
+      { ...identity, foto: "javascript:alert(1)" },
+      base,
+      new Date("2026-10-15T12:00:00Z"),
+    );
+    expect(maliciosa).not.toContain("<img");
+  });
+
   it("BOM/BOP vazios não quebram o documento", () => {
     const empty = buildTechSheetPrintHtml(
       identity,

@@ -13,6 +13,9 @@ export interface PrintIdentity {
   name: string;
   category: string;
   season: string;
+  /** https apenas — foto entra no documento que a fábrica recebe; URL de
+   *  outro esquema (javascript:, data:) é ignorado de propósito. */
+  foto?: string;
 }
 
 const esc = (v: unknown): string =>
@@ -127,7 +130,9 @@ export function buildTechSheetPrintHtml(
 <style>
   @page { size: A4; margin: 14mm; }
   body { font: 11px/1.45 "Helvetica Neue", Arial, sans-serif; color: #111; margin: 0; }
-  header { display:flex; justify-content:space-between; border-bottom:2px solid #111; padding-bottom:8px; margin-bottom:14px; }
+  header { display:flex; justify-content:space-between; gap:12px; border-bottom:2px solid #111; padding-bottom:8px; margin-bottom:14px; }
+  .headmain { flex:1; display:flex; justify-content:space-between; }
+  .foto { width:34mm; height:44mm; object-fit:cover; border:1px solid #ccc; border-radius:4px; }
   h1 { font-size:16px; margin:0; text-transform:uppercase; letter-spacing:.5px; }
   h1 small { display:block; font-size:10px; font-weight:400; color:#555; margin-top:2px; }
   .ident { text-align:right; font-size:10px; color:#333; }
@@ -142,8 +147,11 @@ export function buildTechSheetPrintHtml(
   footer { margin-top:18px; border-top:1px solid #bbb; padding-top:6px; font-size:9px; color:#666; display:flex; justify-content:space-between; }
 </style></head><body>
 <header>
-  <h1>Ficha técnica · ${esc(id.name)}<small>${esc(id.category)}${id.season ? " · " + esc(id.season) : ""}</small></h1>
-  <div class="ident"><b>${esc(id.ref)}</b>versão ${esc(versaoAtual)}</div>
+  ${/^https:\/\//.test(id.foto ?? "") ? `<img class="foto" src="${esc(id.foto)}" alt="${esc(id.name)}"/>` : ""}
+  <div class="headmain">
+    <h1>Ficha técnica · ${esc(id.name)}<small>${esc(id.category)}${id.season ? " · " + esc(id.season) : ""}</small></h1>
+    <div class="ident"><b>${esc(id.ref)}</b>versão ${esc(versaoAtual)}</div>
+  </div>
 </header>
 ${bomTable(data.bom)}
 ${aplicacoesTable(data.aplicacoes ?? [])}
