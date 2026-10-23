@@ -6,13 +6,13 @@ Um pacote que sobe o sistema **inteiro na sua máquina** — banco Postgres com 
 schema real do projeto (as 67 migrations do histórico Lovable + as drizzle,
 reexecutadas na ordem), autenticação (GoTrue), API REST (PostgREST), storage de
 anexos e o app (build de produção SSR) atrás de um único endereço:
-`http://localhost:8080`.
+`http://localhost:18080`.
 
 ## Pré-requisitos (única instalação manual)
 
 1. **Docker Desktop** para Windows, com WSL2 habilitado (padrão da instalação),
    e **rodando** antes do clique (ícone de baleia no tray).
-2. Porta **8080 livre** (se conflitar, edite `APP_PORT` em `deploy-local/.env`
+2. Porta **18080 livre** (se conflitar, edite `APP_PORT` **e** `APP_URL` em `deploy-local/.env`
    — o app e as URLs acompanham automaticamente).
 3. ~2 GB livres (imagens + volume do banco).
 
@@ -34,7 +34,7 @@ sementes (todas idempotentes — nada é duplicado nem pisado).
 
 ## Acesso
 
-- App: `http://localhost:8080` · login `admin@plm.local` senha `PlmLocal!2026`
+- App: `http://localhost:18080` · login `admin@plm.local` senha `PlmLocal!2026`
 - O seed `KARILU-BASE` concede admin a todos os usuários locais; cadastro
   próprio na tela de login funciona (auto-confirm).
 - Banco: `docker compose -f deploy-local/docker-compose.yml exec db psql -U postgres`

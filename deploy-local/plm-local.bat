@@ -11,7 +11,7 @@ cd /d "%~dp0.."
 set "COMPOSE=deploy-local\docker-compose.yml"
 set "KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoicGxtdXNlLWxvY2FsIiwiaWF0IjoxNzYxMTc3NjAwLCJleHAiOjIwNzY2NTI4MDB9.jDHTwp5sPH5ViBPILRjzsV9H7m2HRX9GV-thrJ0PUX4"
 for /f "tokens=2 delims==" %%p in ('findstr /b APP_PORT= deploy-local\.env') do set "PORT=%%p"
-if "%PORT%"=="" set "PORT=8080"
+if "%PORT%"=="" set "PORT=18080"
 
 docker version >nul 2>&1
 if errorlevel 1 (

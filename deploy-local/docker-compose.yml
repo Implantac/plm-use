@@ -1,5 +1,5 @@
 # Espelho local do PLM USE: Postgres + GoTrue (auth) + PostgREST + Storage +
-# app SSR (nitro) atras de um gateway nginx num único localhost:8080.
+# app SSR (nitro) atras de um gateway nginx num único localhost:18080 (troca-se em .env).
 # Use via plm-local.bat (um clique). Nada aqui toca o projeto Lovable/produção.
 name: plmuse-local
 
@@ -103,7 +103,7 @@ services:
       - gotrue
       - storage
     ports:
-      - "${APP_PORT:-8080}:80"
+      - "${APP_PORT:-18080}:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
