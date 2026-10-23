@@ -55,8 +55,25 @@ echo [AVISO] Storage nao respondeu em ~80s; rodando a fase 2 mesmo assim.
 :storage_ok
 docker compose -f "%COMPOSE%" exec -T db bash /sql/initdb/02_finish.sh
 
-echo [4/6] Criando usuario admin e o bucket de anexos (ja existentes = ok)...
-curl -s -X POST http://localhost:%PORT%/auth/v1/signup -H "Content-Type: application/json" -H "apikey: %KEY%" -H "Authorization: Bearer %KEY%" -d "{\"email\":\"admin@plm.local\",\"password\":\"PlmLocal!2026\"}" >nul
+echo [4/6] Criando usuario admin (com verificacao) e o bucket de anexos...
+rem 23/out: o signup original era fogo-unico com saida em >nul — se o GoTrue ainda
+rem estivesse migrando, um 502 silencioso deixava o admin NAO criado e o login
+rem dizia "Invalid credentials". Agora: tenta ate ~60s e so segue quando a
+rem resposta confirma (usuario criado ou ja existente).
+set /a atries=0
+:signup_try
+curl -s -X POST http://localhost:%PORT%/auth/v1/signup -H "Content-Type: application/json" -H "apikey: %KEY%" -H "Authorization: Bearer %KEY%" -d "{\"email\":\"admin@plm.local\",\"password\":\"PlmLocal!2026\"}" -o "%TEMP%\plm_signup.json"
+type "%TEMP%\plm_signup.json" | findstr /i /c:"confirmed_at" /c:"already registered" >nul && goto signup_ok
+set /a atries+=1
+if %atries% lss 12 (
+  echo       gotrue ainda acordando, tentativa atual: %atries% - aguardando 5s...
+  timeout /t 5 /nobreak >nul
+  goto signup_try
+)
+echo [AVISO] Admin nao confirmado. Ultima resposta do gotrue:
+type "%TEMP%\plm_signup.json"
+echo [AVISO] Rode o plm-local.bat de novo mais tarde; o login pode falhar ate la.
+:signup_ok
 curl -s -X POST http://localhost:%PORT%/storage/v1/bucket -H "Content-Type: application/json" -H "Authorization: Bearer %KEY%" -d "{\"id\":\"use-moda-assets\",\"name\":\"use-moda-assets\",\"public\":true,\"file_size_limit\":10485760}" >nul
 
 echo [5/6] Semeados dados de demonstracao (catalogo, base, pedidos, rotas PCP)...
