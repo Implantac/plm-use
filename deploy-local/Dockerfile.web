@@ -1,0 +1,20 @@
+# Frontend (Vite + TanStack Start). O build é feito AQUI dentro do contêiner:
+# o host não precisa de Node. As variáveis VITE_* entram como env do processo,
+# que o Vite prioriza sobre o .env do repo (que aponta para a produção).
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY . .
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
+    VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+RUN npm run build
+
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=build /app/.output ./.output
+ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0
+EXPOSE 3000
+CMD ["node", ".output/server/index.mjs"]

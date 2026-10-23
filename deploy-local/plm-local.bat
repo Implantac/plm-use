@@ -1,0 +1,61 @@
+@echo off
+rem ============================================================
+rem  PLM USE - instalacao local em 1 clique (Docker + Postgres)
+rem  Clica duas vezes e espera. O navegador abre sozinho no fim.
+rem  Requisitos: Docker Desktop rodando (WSL2). ~1 GB de download
+rem  na primeira execucao; pode levar de 5 a 15 minutos.
+rem  Este pacote NAO toca no Lovable nem na producao.
+rem ============================================================
+setlocal
+cd /d "%~dp0.."
+set "COMPOSE=deploy-local\docker-compose.yml"
+set "KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoicGxtdXNlLWxvY2FsIiwiaWF0IjoxNzYxMTc3NjAwLCJleHAiOjIwNzY2NTI4MDB9.jDHTwp5sPH5ViBPILRjzsV9H7m2HRX9GV-thrJ0PUX4"
+for /f "tokens=2 delims==" %%p in ('findstr /b APP_PORT= deploy-local\.env') do set "PORT=%%p"
+if "%PORT%"=="" set "PORT=8080"
+
+docker version >nul 2>&1
+if errorlevel 1 (
+  echo [ERRO] Docker Desktop nao esta rodando. Abra o Docker Desktop e rode de novo.
+  pause
+  exit /b 1
+)
+
+echo [1/5] Subindo a stack (build do app incluso; primeira vez demora)...
+docker compose -f "%COMPOSE%" up -d --build
+if errorlevel 1 (
+  echo [ERRO] docker compose falhou. Rode "docker compose -f %COMPOSE% logs" para ver por que.
+  pause
+  exit /b 1
+)
+
+echo [2/5] Esperando o banco executar as migrations e a API responder...
+set /a tries=0
+:waitloop
+timeout /t 5 /nobreak >nul
+curl -sf http://localhost:%PORT%/auth/v1/health >nul 2>&1
+if not errorlevel 1 goto api_up
+set /a tries+=1
+if %tries% lss 60 goto waitloop
+echo [ERRO] API nao respondeu em 5 min. Diagnostico: docker compose -f %COMPOSE% logs db gotrue
+pause
+exit /b 1
+
+:api_up
+echo [3/5] Criando usuario admin e o bucket de anexos (ja existentes = ok)...
+curl -s -X POST http://localhost:%PORT%/auth/v1/signup -H "Content-Type: application/json" -H "apikey: %KEY%" -H "Authorization: Bearer %KEY%" -d "{\"email\":\"admin@plm.local\",\"password\":\"PlmLocal!2026\"}" >nul
+curl -s -X POST http://localhost:%PORT%/storage/v1/bucket -H "Content-Type: application/json" -H "Authorization: Bearer %KEY%" -d "{\"id\":\"use-moda-assets\",\"name\":\"use-moda-assets\",\"public\":true,\"file_size_limit\":10485760}" >nul
+
+echo [4/5] Semeados dados de demonstracao (catalogo, base, pedidos, rotas PCP)...
+rem  Ordem canonica dos arquivos aceitos em producao; todos reexecutaveis.
+docker compose -f "%COMPOSE%" exec -T db psql -v ON_ERROR_STOP=0 -U postgres -d postgres -f /sql/seed/KARILU-SEED.sql
+docker compose -f "%COMPOSE%" exec -T db psql -v ON_ERROR_STOP=0 -U postgres -d postgres -f /sql/seed/KARILU-BASE.sql
+docker compose -f "%COMPOSE%" exec -T db psql -v ON_ERROR_STOP=0 -U postgres -d postgres -f /sql/seed/KARILU-PEDIDOS.sql
+docker compose -f "%COMPOSE%" exec -T db psql -v ON_ERROR_STOP=0 -U postgres -d postgres -f /sql/seed/KARILU-ROTAS.sql
+
+echo       Atualizando o cache de schema da API...
+docker compose -f "%COMPOSE%" exec -T db psql -U postgres -c "NOTIFY pgrst, 'reload schema'" >nul
+echo [5/5] Tudo pronto.
+start "" http://localhost:%PORT%
+echo  Login local: admin@plm.local  /  senha: PlmLocal!2026
+echo  (a tabela acima do "5/5" traz a prova das rotas: 5 produtos, etapas 6/5/5)
+pause
