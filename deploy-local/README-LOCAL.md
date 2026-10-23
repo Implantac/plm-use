@@ -47,6 +47,13 @@ sementes (todas idempotentes — nada é duplicado nem pisado).
 | `plm-parar.bat`       | derruba a stack, **mantém** os dados                 |
 | `plm-zerar-dados.bat` | derruba e **apaga** os volumes (próximo boot = zero) |
 
+## Deu ruim? Um clique de diagnóstico
+
+Rode **`plm-status.bat`** (nesta pasta): ele mostra Docker, contêineres, porta,
+HTTP e os logs finais de `db`/`gateway`/`web` — copie a janela inteira e mande
+no chat. `ERR_CONNECTION_REFUSED` na porta = a stack está parada: rode o
+`plm-local.bat` (o `plm-zerar-dados.bat` agora a re-sobe sozinho no final).
+
 ## Se o `db` nascer "unhealthy" (corrigido em 23/10)
 
 Na primeira versão o bootstrap exigia que **todas** as migrations corressem
