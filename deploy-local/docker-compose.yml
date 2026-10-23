@@ -3,6 +3,9 @@
 # Use via plm-local.bat (um clique). Nada aqui toca o projeto Lovable/produção.
 name: plmuse-local
 
+# IMPORTANTE (23/out): supabase/gotrue e storage-api NAO publicam tag "latest"
+# no Docker Hub — imagens deste stack devem ficar PINADAS a versoes existentes
+# (conferidas via hub.docker.com/v2/repositories/.../tags em 23/10/2026).
 services:
   db:
     image: postgres:15-alpine
@@ -25,7 +28,7 @@ services:
       retries: 30
 
   gotrue:
-    image: supabase/gotrue:latest
+    image: supabase/gotrue:v2.197.0
     restart: unless-stopped
     depends_on:
       db: { condition: service_healthy }
@@ -44,7 +47,7 @@ services:
     command: start
 
   postgrest:
-    image: postgrest/postgrest:latest
+    image: postgrest/postgrest:v16.5
     restart: unless-stopped
     depends_on:
       db: { condition: service_healthy }
@@ -56,7 +59,7 @@ services:
       PGRST_SERVER_PORT: "3000"
 
   storage:
-    image: supabase/storage-api:latest
+    image: supabase/storage-api:v1.84.20
     restart: unless-stopped
     depends_on:
       db: { condition: service_healthy }
