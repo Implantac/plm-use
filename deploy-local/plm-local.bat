@@ -33,7 +33,7 @@ rem 23/out self-repair: POSTGRES_HOST_AUTH_METHOD=trust so e escrita no initdb
 rem (volume vazio). Volumes criados por versoes antigas continuam com scram no
 rem pg_hba.conf e o gotrue (DSM sem senha) morria em 'failed SASL auth'. Isto
 rem converge o pg_hba do volume herdado p/ trust no boot, em qualquer caso.
-docker compose -f "%COMPOSE%" exec -T db sh -c "sed -i 's/scram-sha-256/trust/g; s/md5/trust/g' /var/lib/postgresql/data/pg_hba.conf; psql -U postgres -h 127.0.0.1 -c 'select pg_reload_conf()'" >nul 2>&1
+docker compose -f "%COMPOSE%" exec -T db sh -c "sed -i 's/scram-sha-256/trust/g; s/md5/trust/g' /var/lib/postgresql/data/pg_hba.conf; psql -U postgres -c 'select pg_reload_conf()' >nul 2>&1 || su-exec postgres pg_ctl -D /var/lib/postgresql/data reload" >nul 2>&1
 echo [2/6] Esperando o banco executar as migrations (fase 1) e o GoTrue responder...
 set /a tries=0
 :waitloop
