@@ -29,6 +29,26 @@ if errorlevel 1 (
   exit /b 1
 )
 
+rem [0/8] Sonda decisiva: o Postgres aceita conexao sem senha AGORA? Se nao,
+rem e isto (e nao o gotrue) o responsavel pelo 502 no /auth/v1/token — e o
+rem bloco abaixo conserta o servidor EM MEMORIA, nao so o arquivo em disco.
+docker compose -f "%COMPOSE%" exec -T db psql -U postgres -t -A -c "select 'trust-ok'" >"%TEMP%\plm_trust.txt" 2>&1
+findstr /c:"trust-ok" "%TEMP%\plm_trust.txt" >nul
+if not errorlevel 1 goto trust_ok
+echo [0/8] Postgres ainda exige senha (pg_hba em memoria desatualizado). Corrigindo...
+docker compose -f "%COMPOSE%" exec -T db sh -c "sed -i 's/scram-sha-256/trust/g; s/md5/trust/g; s/password/trust/g' /var/lib/postgresql/data/pg_hba.conf; kill -HUP 1"
+timeout /t 3 /nobreak >nul
+docker compose -f "%COMPOSE%" exec -T db psql -U postgres -t -A -c "select 'trust-ok'" >"%TEMP%\plm_trust2.txt" 2>&1
+findstr /c:"trust-ok" "%TEMP%\plm_trust2.txt" >nul
+if not errorlevel 1 goto trust_ok
+echo [ERRO] O Postgres continua recusando conexao sem senha. Ultima saida:
+type "%TEMP%\plm_trust2.txt"
+echo Solucao com garantia: apague os volumes e reinstale do zero ->
+echo   deploy-local\plm-zerar-dados.bat
+pause
+exit /b 1
+:trust_ok
+echo [0/8] Postgres ja aceita conexao sem senha (trust ativo).
 echo [1/8] Subindo/recriando os contêineres (respeita o compose atual)...
 docker compose -f "%COMPOSE%" up -d --build
 if errorlevel 1 (
