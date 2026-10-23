@@ -139,8 +139,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR" className="dark" data-density="default">
+    <html lang="pt-BR" data-density="default">
       <head>
+        {/* Tema decidido ANTES da hidratação (zero flash): preferência salva,
+            senão a do sistema operacional — claro é o padrão quando o SO é claro. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('use-moda-theme');if(t!=='dark'&&t!=='light'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();",
+          }}
+        />
         <HeadContent />
       </head>
       <body className="antialiased selection:bg-primary/30 selection:text-primary">

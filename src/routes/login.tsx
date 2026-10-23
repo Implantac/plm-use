@@ -170,7 +170,9 @@ function Login() {
                 type="button"
                 onClick={() => setMode(m)}
                 className={`flex-1 py-2 rounded text-sm font-semibold transition-colors ${
-                  mode === m ? "bg-primary text-white" : "text-muted-foreground hover:text-white"
+                  mode === m
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-white"
                 }`}
               >
                 {m === "signin" ? "Entrar" : "Criar conta"}

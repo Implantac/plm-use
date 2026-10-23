@@ -43,7 +43,7 @@ export function ReferenciaDrawer({ loteNumero, grupo, colecao, referencia, open,
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-2xl bg-black/95 border-white/10 text-white overflow-y-auto"
+        className="w-full sm:max-w-2xl bg-popover border-white/10 text-white overflow-y-auto"
       >
         <SheetHeader className="pb-3 border-b border-white/10">
           <div className="flex items-start justify-between gap-3">

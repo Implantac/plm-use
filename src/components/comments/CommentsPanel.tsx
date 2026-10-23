@@ -762,7 +762,7 @@ export function AttachmentItem({
             <iframe
               src={`${signedUrl}#toolbar=0&navpanes=0`}
               title={attachment.file_name}
-              className={`w-full bg-white transition-all ${expanded ? "h-[560px]" : "h-64"}`}
+              className={`w-full bg-[#fff] transition-all ${expanded ? "h-[560px]" : "h-64"}`}
             />
           )}
           {!loading && !error && signedUrl && isPdf && (

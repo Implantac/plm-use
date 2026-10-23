@@ -367,7 +367,7 @@ function CollectionsPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-black/95 text-white rounded-lg p-6 max-w-2xl">
+        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-lg p-6 max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold uppercase tracking-tight">
               {editingCollection ? "Editar coleção" : "Nova coleção"}

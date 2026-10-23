@@ -120,7 +120,7 @@ function DigitalTwinPage() {
               <Button
                 key={i}
                 variant="ghost"
-                className={`w-28 text-[9px] border ${btn.active ? "bg-primary text-white" : "bg-white/5 text-muted-foreground"}`}
+                className={`w-28 text-[9px] border ${btn.active ? "bg-primary text-primary-foreground" : "bg-white/5 text-muted-foreground"}`}
               >
                 {btn.label}
               </Button>

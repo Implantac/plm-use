@@ -116,7 +116,7 @@ export function AlertsBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[420px] p-0 glass-card border-white/10 bg-black/95">
+      <PopoverContent align="end" className="w-[420px] p-0 glass-card border-white/10 bg-popover">
         <div className="p-4 border-b border-white/10 flex items-center justify-between">
           <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2">
             <AlertTriangle className="w-3.5 h-3.5 text-primary" /> Alertas

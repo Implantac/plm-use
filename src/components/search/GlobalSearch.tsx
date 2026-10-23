@@ -340,7 +340,7 @@ export function GlobalSearch() {
       </div>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <div className="glass-card border-none bg-black/95">
+        <div className="glass-card border-none bg-popover">
           <CommandInput
             placeholder="Buscar lotes, referências, CAPAs, influencers ou módulos…"
             className="h-16 text-white border-none focus:ring-0 placeholder:text-muted-foreground/50"

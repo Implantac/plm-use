@@ -353,7 +353,7 @@ function MeasurementsPage() {
       </div>
 
       <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent className="glass-card border-white/10 bg-black/95 text-white rounded-3xl max-w-lg">
+        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-3xl max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold uppercase tracking-tighter italic">
               Nova tabela de medidas

@@ -35,7 +35,7 @@ export function ExportMenu({ title, filename, rows, columns, label = "Exportar" 
           {label}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="glass-card border-white/10 bg-black/95 w-56">
+      <DropdownMenuContent align="end" className="glass-card border-white/10 bg-popover w-56">
         <DropdownMenuLabel className="text-[9px] uppercase tracking-[0.22em] text-muted-foreground">
           {rows.length} registros
         </DropdownMenuLabel>

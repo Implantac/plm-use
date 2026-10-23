@@ -74,7 +74,14 @@ function AuthenticatedLayout() {
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("use-moda-theme");
-    const initialTheme = savedTheme === "light" ? "light" : "dark";
+    // Sem preferência salva, segue o sistema (23/out: dark deixou de ser o
+    // default imposto — o design system já tinha tema claro completo).
+    const initialTheme =
+      savedTheme === "light" || savedTheme === "dark"
+        ? savedTheme
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
 
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");

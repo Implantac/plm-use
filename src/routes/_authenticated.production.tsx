@@ -284,7 +284,7 @@ function ProductionPage() {
 
       {/* Dialog do lote: lista referências e abre o drawer */}
       <Dialog open={!!loteSelecionadoAtual} onOpenChange={(o) => !o && setLoteSelecionado(null)}>
-        <DialogContent className="glass-card border-white/10 bg-black/95 text-white max-w-3xl">
+        <DialogContent className="glass-card border-white/10 bg-popover text-white max-w-3xl">
           {loteSelecionadoAtual && (
             <>
               <DialogHeader>

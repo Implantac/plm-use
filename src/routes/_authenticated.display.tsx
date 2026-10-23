@@ -306,7 +306,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
           <div
             key={item.id}
             onPointerDown={(e) => onPointerDown(e, item)}
-            className={`absolute group cursor-grab active:cursor-grabbing select-none rounded-lg overflow-hidden shadow-2xl bg-white ring-1 ring-black/10 ${
+            className={`absolute group cursor-grab active:cursor-grabbing select-none rounded-lg overflow-hidden shadow-2xl bg-[#fff] ring-1 ring-black/10 ${
               dragId === item.id ? "z-20 scale-105" : "z-10"
             } transition-transform`}
             style={{
@@ -357,7 +357,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
                 </button>
               </div>
             </div>
-            <div className="px-1.5 py-1 bg-white text-[9px] leading-tight">
+            <div className="px-1.5 py-1 bg-[#fff] text-[9px] leading-tight">
               <p className="font-mono text-black/60">{item.refCode}</p>
               <p className="font-semibold text-black truncate">{item.refName}</p>
             </div>

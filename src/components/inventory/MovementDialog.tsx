@@ -121,7 +121,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-card border-white/10 bg-black/95 text-white rounded-lg p-6 max-w-lg">
+      <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-lg p-6 max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold uppercase tracking-tight">
             Nova movimentação
@@ -140,7 +140,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
               >
                 <SelectValue placeholder="Selecione o insumo" />
               </SelectTrigger>
-              <SelectContent className="bg-black/95 border-white/10 text-white max-h-72">
+              <SelectContent className="bg-popover border-white/10 text-white max-h-72">
                 {items.map((it) => (
                   <SelectItem key={it.id} value={it.id}>
                     {it.code} — {it.name}
@@ -168,7 +168,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 >
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
-                <SelectContent className="bg-black/95 border-white/10 text-white">
+                <SelectContent className="bg-popover border-white/10 text-white">
                   {warehouses.map((w) => (
                     <SelectItem key={w.id} value={w.id}>
                       {w.code} — {w.name}
@@ -188,7 +188,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-black/95 border-white/10 text-white">
+                <SelectContent className="bg-popover border-white/10 text-white">
                   <SelectItem value="in">Entrada</SelectItem>
                   <SelectItem value="out">Saída</SelectItem>
                   <SelectItem value="transfer_in">Transf. entrada</SelectItem>

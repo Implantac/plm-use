@@ -193,7 +193,7 @@ function InfluencersPage() {
 
       {/* Drawer influencer */}
       <Dialog open={!!sel} onOpenChange={(o) => !o && setSel(null)}>
-        <DialogContent className="glass-card border-white/10 bg-black/95 text-white max-w-2xl">
+        <DialogContent className="glass-card border-white/10 bg-popover text-white max-w-2xl">
           {sel && (
             <>
               <DialogHeader>
@@ -292,7 +292,7 @@ function InfluencersPage() {
 
       {/* Modal envio */}
       <Dialog open={envioOpen} onOpenChange={setEnvioOpen}>
-        <DialogContent className="glass-card border-white/10 bg-black/95 text-white max-w-md">
+        <DialogContent className="glass-card border-white/10 bg-popover text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg">Registrar envio para {sel?.nome}</DialogTitle>
           </DialogHeader>

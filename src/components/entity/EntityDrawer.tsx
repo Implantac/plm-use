@@ -64,7 +64,7 @@ export function EntityDrawer({
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-2xl border-l border-white/10 bg-black/95 text-white p-0 overflow-y-auto"
+        className="w-full sm:max-w-2xl border-l border-white/10 bg-popover text-white p-0 overflow-y-auto"
       >
         {entity && <DrawerBody entity={entity} onClose={onClose} />}
       </SheetContent>

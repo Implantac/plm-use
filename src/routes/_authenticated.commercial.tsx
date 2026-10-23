@@ -276,7 +276,7 @@ function CommercialPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-black/95 text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
               {editingClient ? "Editar Cliente B2B" : "Prospecção de Novo Cliente"}

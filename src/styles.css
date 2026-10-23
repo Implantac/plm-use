@@ -2,6 +2,17 @@
 @source "../src";
 @import "tw-animate-css";
 
+/* Fontes ANUNCIADAS nos tokens (L. "DM Sans"/"Cormorant"/"JetBrains") que nunca
+   foram carregadas — até 23/out o app renderizava no fallback do sistema, a
+   "fonte robotizada" do diagnóstico. Self-hosted via @fontsource: funciona em
+   qualquer host (Lovable/Docker local) sem depender de CDN. */
+@import "@fontsource-variable/dm-sans/index.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
+@import "@fontsource/cormorant-garamond/400.css";
+@import "@fontsource/cormorant-garamond/500.css";
+@import "@fontsource/cormorant-garamond/600.css";
+@import "@fontsource/cormorant-garamond/700.css";
+
 @custom-variant dark (&:is(.dark *));
 
 /* =========================================================================
@@ -160,10 +171,12 @@
   --brand-500: 26 78% 58%;
   --brand-700: 24 74% 47%;
   --brand-900: 22 70% 30%;
-  --background: 20 12% 8%;
-  --foreground: var(--ink-50);
-  --surface: 20 10% 11%;
-  --surface-elevated: 20 10% 15%;
+  /* 23/out — "cansativo para os olhos": fundo 8%→10% (menos contraste
+     esmagador), texto 94%→87% (adeus brilho puro) e camadas mais próximas. */
+  --background: 20 11% 10%;
+  --foreground: 30 14% 87%;
+  --surface: 20 10% 12.5%;
+  --surface-elevated: 20 10% 16%;
   --surface-sunken: 18 14% 5%;
   --muted: 20 9% 17%;
   --muted-foreground: var(--ink-400);
@@ -304,6 +317,15 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
+
+  /* Compatibilidade (23/out): ~1.400 literais text-white / border-white/x /
+     bg-white/x foram escritos antes de existir light mode. Em vez de reescrever
+     100 arquivos, o branco literal passa a resolver para o PRIMEIRO-PLANO do
+     tema: no escuro é o mesmo quase-branco de hoje; no claro vira tinta quente
+     escura (legível). O preto literal congela em grafite — scrims e hovers
+     continuam escuros nos dois temas, como sombras de verdade. */
+  --color-white: hsl(var(--foreground));
+  --color-black: hsl(var(--ink-1000));
 
   /* Typography scale: comfortable reading without dashboard bloat */
   --text-2xs: 11px;
