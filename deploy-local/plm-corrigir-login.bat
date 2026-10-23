@@ -29,7 +29,7 @@ echo [2/8] Trust via TCP (o teste que o gotrue faz, nao o socket)...
 call :probetcp
 if not errorlevel 1 goto tcp_ok
 echo       host rules ainda exigem senha - corrigendo pg_hba + SIGHUP...
-docker compose -f "%COMPOSE%" exec -T db sh -c "sed -i 's/scram-sha-256/trust/g; s/md5/trust/g; s/password/trust/g' /var/lib/postgresql/data/pg_hba.conf; kill -HUP 1"
+docker compose -f "%COMPOSE%" exec -T db sh -c "psql -U postgres -q -f /sql/initdb/03_password.sql; sed -i 's/scram-sha-256/trust/g; s/md5/trust/g; s/password/trust/g' /var/lib/postgresql/data/pg_hba.conf; kill -HUP 1"
 timeout /t 4 /nobreak >nul
 call :probetcp
 if not errorlevel 1 goto tcp_ok

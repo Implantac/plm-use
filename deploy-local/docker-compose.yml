@@ -17,6 +17,12 @@ services:
       # no host — so o gateway nginx escuta algo (8080 era o default antigo,
       # hoje APP_PORT do .env).
       POSTGRES_HOST_AUTH_METHOD: trust
+      # 23/out, dupla seguranca: volume herdado (era da senha corrompida por \r do
+      # Bloco de Notas) pode ficar com scram no pg_hba se o sed do .bat nao pegar.
+      # A senha abaixo e a MESMA das DSN de gotrue/postgrest/storage, e o
+      # initdb/03_password.sql reconcilia o role em volumes antigos. Com trust
+      # ativo a senha e ignorada; com scram, bate. Ambos os caminhos funcionam.
+      POSTGRES_PASSWORD: PLMLocal2026
       POSTGRES_DB: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -40,7 +46,7 @@ services:
       db: { condition: service_healthy }
     environment:
       GOTRUE_DB_DRIVER: postgres
-      GOTRUE_DB_DATABASE_URL: postgres://postgres@db:5432/postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:PLMLocal2026@db:5432/postgres
       GOTRUE_JWT_SECRET: plmuse-l…89
       GOTRUE_JWT_EXP: "36000"
       GOTRUE_JWT_AUDIENCE: authenticated
@@ -61,7 +67,7 @@ services:
     depends_on:
       db: { condition: service_healthy }
     environment:
-      PGRST_DB_URI: postgres://postgres@db:5432/postgres
+      PGRST_DB_URI: postgres://postgres:PLMLocal2026@db:5432/postgres
       PGRST_DB_SCHEMA: public
       PGRST_DB_ANON_ROLE: anon
       PGRST_JWT_SECRET: plmuse-l…89
@@ -73,7 +79,7 @@ services:
     depends_on:
       db: { condition: service_healthy }
     environment:
-      DATABASE_URL: postgres://postgres@db:5432/postgres
+      DATABASE_URL: postgres://postgres:PLMLocal2026@db:5432/postgres
       ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InBsbXVzZS1sb2NhbCIsImlhdCI6MTc2MTE3NzYwMCwiZXhwIjoyMDc2NjUyODAwfQ.uBieCiuC8EWYOJeM5HDFAByBYKbFY2V1IBkkxL1iG4U
       SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoicGxtdXNlLWxvY2FsIiwiaWF0IjoxNzYxMTc3NjAwLCJleHAiOjIwNzY2NTI4MDB9.jDHTwp5sPH5ViBPILRjzsV9H7m2HRX9GV-thrJ0PUX4
       JWT_SECRET: plmuse-l…89
