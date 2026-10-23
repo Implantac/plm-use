@@ -47,6 +47,13 @@ sementes (todas idempotentes — nada é duplicado nem pisado).
 | `plm-parar.bat`       | derruba a stack, **mantém** os dados                 |
 | `plm-zerar-dados.bat` | derruba e **apaga** os volumes (próximo boot = zero) |
 
+## Deu ruim? O botão `plm-arrumar.bat`
+
+Rode **`plm-arrumar.bat`**: sobe a stack, conserta a autenticação do Postgres,
+aplica as migrations adiadas, garante admin/bucket, refaz os seeds e abre o
+navegador — em qualquer estado, sem apagar nada. É o atalho do reparo
+completo; `plm-local.bat` segue sendo o instalador de primeira vez.
+
 ## Deu ruim? Um clique de diagnóstico
 
 Rode **`plm-status.bat`** (nesta pasta): ele mostra Docker, contêineres, porta,
