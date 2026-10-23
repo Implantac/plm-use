@@ -10,6 +10,11 @@ ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_PUBLISHABLE_KEY
 ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
     VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+# Preset do build: fora do sandbox da Lovable o wrapper deixa o NITRO_PRESET
+# do nitro valer (default dele e cloudflare-module, que NAO gera
+# .output/server/index.mjs — por isso o container web morria em silencio).
+# Aqui pedimos o servidor Node; na Lovable o build continua cloudflare.
+ENV NITRO_PRESET=node-server
 RUN npm run build
 
 FROM node:20-alpine
@@ -17,4 +22,4 @@ WORKDIR /app
 COPY --from=build /app/.output ./.output
 ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0
 EXPOSE 3000
-CMD ["node", ".output/server/index.mjs"]
+CMD ["sh", "-c", "test -f .output/server/index.mjs || { echo '[web] FATAL: .output/server/index.mjs ausente (build sem NITRO_PRESET=node-server?)'; exit 1; }; exec node .output/server/index.mjs"]

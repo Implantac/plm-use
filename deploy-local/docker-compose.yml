@@ -11,7 +11,12 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      # 23/out: auth por trust na rede interna do Docker. Elimina o password de
+      # todas as DSN (um \r vindo do .env editado no Bloco de Notas quebrava o
+      # parser de URL do Go: "invalid userinfo"). Nada desta porta e publicada
+      # no host — so o gateway nginx escuta algo (8080 era o default antigo,
+      # hoje APP_PORT do .env).
+      POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -35,12 +40,12 @@ services:
       db: { condition: service_healthy }
     environment:
       GOTRUE_DB_DRIVER: postgres
-      GOTRUE_DB_DATABASE_URL: postgres://postgres:${DB_PASSWORD}@db:5432/postgres?sslmode=disable
-      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_DB_DATABASE_URL: postgres://postgres@db:5432/postgres
+      GOTRUE_JWT_SECRET: plmuse-l…89
       GOTRUE_JWT_EXP: "36000"
       GOTRUE_JWT_AUDIENCE: authenticated
-      GOTRUE_SITE_URL: ${APP_URL}
-      API_EXTERNAL_URL: ${APP_URL}/auth
+      GOTRUE_SITE_URL: http://localhost:${APP_PORT:-18080}
+      API_EXTERNAL_URL: http://localhost:${APP_PORT:-18080}/auth
       GOTRUE_MAILER_AUTOCONFIRM: "true"
       GOTRUE_DISABLE_SIGNUP: "false"
       GOTRUE_LOG_LEVEL: info
@@ -56,10 +61,10 @@ services:
     depends_on:
       db: { condition: service_healthy }
     environment:
-      PGRST_DB_URI: postgres://postgres:${DB_PASSWORD}@db:5432/postgres
+      PGRST_DB_URI: postgres://postgres@db:5432/postgres
       PGRST_DB_SCHEMA: public
       PGRST_DB_ANON_ROLE: anon
-      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_JWT_SECRET: plmuse-l…89
       PGRST_SERVER_PORT: "3000"
 
   storage:
@@ -68,10 +73,11 @@ services:
     depends_on:
       db: { condition: service_healthy }
     environment:
-      DATABASE_URL: postgres://postgres:${DB_PASSWORD}@db:5432/postgres
-      ANON_KEY: ${ANON_KEY}
-      SERVICE_KEY: ${SERVICE_KEY}
-      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: postgres://postgres@db:5432/postgres
+      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InBsbXVzZS1sb2NhbCIsImlhdCI6MTc2MTE3NzYwMCwiZXhwIjoyMDc2NjUyODAwfQ.uBieCiuC8EWYOJeM5HDFAByBYKbFY2V1IBkkxL1iG4U
+      SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoicGxtdXNlLWxvY2FsIiwiaWF0IjoxNzYxMTc3NjAwLCJleHAiOjIwNzY2NTI4MDB9.jDHTwp5sPH5ViBPILRjzsV9H7m2HRX9GV-thrJ0PUX4
+      JWT_SECRET: plmuse-l…89
+      PGRST_JWT_SECRET: plmuse-l…89
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       TENANT_ID: stub
@@ -87,8 +93,8 @@ services:
       context: ..
       dockerfile: deploy-local/Dockerfile.web
       args:
-        VITE_SUPABASE_URL: ${APP_URL}
-        VITE_SUPABASE_PUBLISHABLE_KEY: ${ANON_KEY}
+        VITE_SUPABASE_URL: http://localhost:${APP_PORT:-18080}
+        VITE_SUPABASE_PUBLISHABLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InBsbXVzZS1sb2NhbCIsImlhdCI6MTc2MTE3NzYwMCwiZXhwIjoyMDc2NjUyODAwfQ.uBieCiuC8EWYOJeM5HDFAByBYKbFY2V1IBkkxL1iG4U
     restart: unless-stopped
     depends_on:
       - postgrest
