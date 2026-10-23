@@ -22,6 +22,42 @@ export const Route = createFileRoute("/login")({
 // painel de Auth do Supabase — a flag aqui só esconde a UI (README, Deploy).
 const SELF_SIGNUP_ENABLED = import.meta.env.VITE_ALLOW_SELF_SIGNUP === "true";
 
+// Erro de servidor nao e erro de senha. Um 502 do gateway local chega pelo
+// supabase-js como AuthRetryableFetchError/"Failed to fetch" (corpo HTML nao
+// parseia) e o usuario lia "Acesso negado" — escondendo que o backend estava
+// fora. Classificamos para dizer a verdade com proximo passo acionavel.
+type AuthErrorish = { message?: string; status?: number } | null | undefined;
+function friendlyAuthError(err: AuthErrorish): string {
+  if (!err) return "Erro inesperado ao contatar o servidor de autenticacao.";
+  const msg = err.message ?? "";
+  const status = typeof err.status === "number" ? err.status : undefined;
+  if (status !== undefined && status >= 500) {
+    return (
+      "O servidor de autenticacao esta fora do ar (HTTP " +
+      status +
+      "). No ambiente local, rode deploy-local\\plm-corrigir-login.bat e tente de novo."
+    );
+  }
+  if (
+    status === undefined &&
+    /failed to fetch|networkerror|load failed|timed out|timeout|could not be parsed|unexpected token|unexpected end of input|auth_retryable/i.test(
+      msg,
+    )
+  ) {
+    return "O servidor de autenticacao nao respondeu. No ambiente local, suba a stack com deploy-local\\plm-corrigir-login.bat (ou plm-local.bat) e tente de novo.";
+  }
+  if (status === 401 || /invalid login credentials/i.test(msg)) {
+    return "E-mail ou senha incorretos.";
+  }
+  if (status === 429 || /rate limit|too many/i.test(msg)) {
+    return "Muitas tentativas em sequencia. Aguarde um minuto e tente de novo.";
+  }
+  if (/email not confirmed/i.test(msg)) {
+    return "Este e-mail ainda nao foi confirmado. No ambiente local o admin e autoconfirmado; para outros usuarios, pecione a confirmacao ou use o login com Google.";
+  }
+  return msg || "Acesso negado.";
+}
+
 function Login() {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -78,7 +114,7 @@ function Login() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
       if (error) {
-        setErrors({ form: error.message || "Acesso negado." });
+        setErrors({ form: friendlyAuthError(error as AuthErrorish) });
         return;
       }
       setErrors({});
@@ -93,7 +129,7 @@ function Login() {
       });
       setLoading(false);
       if (error) {
-        setErrors({ form: error.message || "Falha no cadastro." });
+        setErrors({ form: friendlyAuthError(error as AuthErrorish) });
         return;
       }
       setErrors({});
@@ -106,7 +142,7 @@ function Login() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: `${window.location.origin}/dashboard`,
     });
-    if (result?.error) toast.error(result.error.message ?? "Falha no login Google.");
+    if (result?.error) toast.error(friendlyAuthError(result.error as AuthErrorish));
   };
 
   return (
