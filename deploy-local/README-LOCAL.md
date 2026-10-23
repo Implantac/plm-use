@@ -49,10 +49,13 @@ sementes (todas idempotentes — nada é duplicado nem pisado).
 
 ## Deu ruim? O botão `plm-arrumar.bat`
 
-Rode **`plm-arrumar.bat`**: sobe a stack, conserta a autenticação do Postgres,
-aplica as migrations adiadas, garante admin/bucket, refaz os seeds e abre o
-navegador — em qualquer estado, sem apagar nada. É o atalho do reparo
-completo; `plm-local.bat` segue sendo o instalador de primeira vez.
+Rode **`plm-arrumar.bat`** (v2): sobe a stack, conserta a autenticação do
+Postgres, aplica as migrations adiadas, garante admin/bucket, refaz os seeds e
+abre o navegador. Se travar em qualquer etapa, ele NÃO pede comando manual:
+grava `deploy-local\plm-arrumar-erro.txt` (diagnóstico completo), espera 5s e
+reconstrói a instalação inteira sozinho (`down -v` + instalador — dados de
+demonstração voltam pelos seeds). Se a reconstrução também falhar, mande o
+`.txt` no chat. `plm-local.bat` segue sendo o instalador de primeira vez.
 
 ## Deu ruim? Um clique de diagnóstico
 
