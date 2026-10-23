@@ -45,7 +45,9 @@ services:
       GOTRUE_DISABLE_SIGNUP: "false"
       GOTRUE_LOG_LEVEL: info
       GOTRUE_OPERATOR_TOKEN: local-op-token
-    command: start
+    # NAO sobrescrever command/entrypoint: a imagem nao define ENTRYPOINT e o
+    # CMD default ja e `/usr/local/bin/gotrue start` (com `command: start` o
+    # docker tentava executar um binario chamado "start" -> OCI create failed).
 
   postgrest:
     image: postgrest/postgrest:v16.5
