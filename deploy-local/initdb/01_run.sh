@@ -20,7 +20,7 @@ plm_fase1() {
 
   plm_run_file() { # $1 = rotulo; $2 = arquivo
     total=$((total+1))
-    if out=$(psql -v ON_ERROR_STOP=1 --single-transaction -q -f "$2" 2>&1); then
+    if out=$(psql -U postgres -v ON_ERROR_STOP=1 --single-transaction -q -f "$2" 2>&1); then
       return 0
     fi
     echo "$2" >> "$fails"

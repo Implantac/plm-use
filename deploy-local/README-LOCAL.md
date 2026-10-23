@@ -47,7 +47,12 @@ sementes (todas idempotentes — nada é duplicado nem pisado).
 | `plm-parar.bat`       | derruba a stack, **mantém** os dados                 |
 | `plm-zerar-dados.bat` | derruba e **apaga** os volumes (próximo boot = zero) |
 
-## Deu ruim? O botão `plm-arrumar.bat`
+## Deu ruim? O botão `plm-corrigir-login.bat` (login 502) — ou `plm-arrumar.bat`
+
+Rode **`plm-corrigir-login.bat`** se o problema for o login (502/credenciais):
+ele sonda o trust **via TCP** (o caminho real do GoTrue), aplica fase 2 com o
+usuário certo, e fecha com autoteste de `grant_type=password` — não declara
+sucesso sem `access_token`. Para qualquer outro sintoma:
 
 Rode **`plm-arrumar.bat`** (v2): sobe a stack, conserta a autenticação do
 Postgres, aplica as migrations adiadas, garante admin/bucket, refaz os seeds e

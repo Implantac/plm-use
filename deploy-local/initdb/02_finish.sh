@@ -12,7 +12,7 @@ applied=0
 : > "$FAILS.new"
 while IFS= read -r f; do
   [ -f "$f" ] || continue
-  if psql -v ON_ERROR_STOP=1 --single-transaction -q -f "$f" 2>/tmp/finish_err; then
+  if psql -U postgres -v ON_ERROR_STOP=1 --single-transaction -q -f "$f" 2>/tmp/finish_err; then
     applied=$((applied+1))
   else
     remaining=$((remaining+1))
