@@ -33,7 +33,9 @@ docker compose -f "%COMPOSE%" up -d --build
 if errorlevel 1 goto report
 
 echo [2/8] Consertando o Postgres por duas bandas (senha + trust TCP)...
-docker compose -f "%COMPOSE%" exec -T db sh -c "psql -U postgres -q -c \"ALTER USER postgres PASSWORD 'PLMLocal2026';\"; sed -i 's/scram-sha-256/trust/g; s/md5/trust/g; s/password/trust/g' /var/lib/postgresql/data/pg_hba.conf; kill -HUP 1" >nul 2>&1
+rem (pipe p/ psql: nada de aspas aninhadas cmd->docker->sh; cada linha so um nivel)
+echo ALTER USER postgres PASSWORD 'PLMLocal2026'| docker compose -f "%COMPOSE%" exec -T db psql -U postgres -q >nul 2>&1
+docker compose -f "%COMPOSE%" exec -T db sh -c "sed -i 's/scram-sha-256/trust/g; s/md5/trust/g; s/password/trust/g' /var/lib/postgresql/data/pg_hba.conf; kill -HUP 1" >nul 2>&1 >nul 2>&1
 timeout /t 4 /nobreak >nul
 call :probetcp
 if not errorlevel 1 goto tcp_ok
