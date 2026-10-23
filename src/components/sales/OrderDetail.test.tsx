@@ -25,6 +25,7 @@ const api = vi.hoisted(() => ({
   addMaterial: vi.fn(),
   updateMaterial: vi.fn(),
   listStockItemOptions: vi.fn(async () => ({ data: [], error: null })),
+  findOpForOrder: vi.fn(async () => ({ data: null, error: null })),
   deleteOperation: vi.fn(),
   deleteMaterial: vi.fn(),
   isMissingTable: (error: { code?: string; message?: string } | null) =>

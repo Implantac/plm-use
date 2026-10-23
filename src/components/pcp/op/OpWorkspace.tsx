@@ -1,6 +1,8 @@
 // Workspace da OP: itens, rota de cada item, saldo por etapa, passagem em bloco e histórico.
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,6 +56,28 @@ export function OpWorkspace({
 }) {
   const { roles } = useUserRoles(useAuth().user?.id);
   const { canPlan, canMove } = opPermissions(roles);
+  // Elo reverso venda->PCP: a OP guarda o número do pedido no próprio number
+  // ('OP-' + number). Resolvemos o id do pedido para Link profundo; sem
+  // pedido de origem (OP manual) ou sem match, nada é exibido.
+  const pedidoNumber = order?.number?.startsWith("OP-") ? order.number.slice(3) : null;
+  const [originOrderId, setOriginOrderId] = useState<string | null>(null);
+  useEffect(() => {
+    setOriginOrderId(null);
+    if (!order || !pedidoNumber) return;
+    let alive = true;
+    void supabase
+      .from("sales_orders")
+      .select("id")
+      .eq("number", pedidoNumber)
+      .maybeSingle()
+      .then((r) => {
+        const id = (r.data as { id: string } | null)?.id ?? null;
+        if (alive) setOriginOrderId(id);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [order?.id, pedidoNumber]);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [mode, setMode] = useState<"total" | "parcial" | "perda">("total");
   const [qty, setQty] = useState<Record<string, string>>({});
@@ -138,6 +162,20 @@ export function OpWorkspace({
                 {order.number}
                 <Badge variant="outline">{order.status}</Badge>
                 {order.erp_op_id && <Badge variant="secondary">ERP {order.erp_op_id}</Badge>}
+                {pedidoNumber &&
+                  (originOrderId ? (
+                    <Link
+                      to="/orders"
+                      search={{ pedido: originOrderId }}
+                      className="text-[10px] font-normal uppercase tracking-[0.16em] text-primary hover:underline"
+                    >
+                      Gerada do pedido {pedidoNumber}
+                    </Link>
+                  ) : (
+                    <span className="text-[10px] font-normal uppercase tracking-[0.16em] text-muted-foreground">
+                      Pedido {pedidoNumber}
+                    </span>
+                  ))}
               </DialogTitle>
             </DialogHeader>
             <Tabs defaultValue="itens">

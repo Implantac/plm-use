@@ -5,6 +5,7 @@
 // (produto validado, mínimo, grade = quantidade, preço) rodam no Postgres e a
 // mensagem de erro dele é o que o usuário lê.
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -57,6 +58,7 @@ import {
   updateMaterial,
   deleteMaterial,
   deleteOperation,
+  findOpForOrder,
 } from "@/lib/sales/api";
 import { StockItemSelect } from "@/components/sales/StockItemSelect";
 import { computeItemCost, marginPct, priceForMargin, round2 } from "@/lib/sales/cost";
@@ -122,6 +124,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
   const [sheets, setSheets] = useState<Record<string, ItemSheet>>({});
   const [loading, setLoading] = useState(true);
   const [fatal, setFatal] = useState<string | null>(null);
+  const [opLink, setOpLink] = useState<{ id: string; number: string } | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
@@ -162,6 +165,20 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
   }, [load]);
 
   const costOf = (itemId: string) => costs.find((c) => c.itemId === itemId);
+
+  useEffect(() => {
+    if (!order || order.status !== "liberado_pcp") {
+      setOpLink(null);
+      return;
+    }
+    let alive = true;
+    void findOpForOrder(order.number).then((r) => {
+      if (alive) setOpLink(r.data);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [order?.status, order?.number]);
   const editable = !!order && ["rascunho", "enviado"].includes(order.status) && canSell;
   const total = useMemo(() => items.reduce((acc, i) => acc + i.quantity * i.unitPrice, 0), [items]);
   const pendingCost = items.filter((i) => i.costStatus !== "aprovado").length;
@@ -271,6 +288,15 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
             >
               <Factory className="w-4 h-4" /> Liberar para PCP
             </Button>
+          )}
+          {order.status === "liberado_pcp" && opLink && (
+            <Link
+              to="/production"
+              search={{ pcpOp: opLink.id }}
+              className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-[10px] uppercase tracking-[0.16em] hover:bg-accent hover:text-accent-foreground"
+            >
+              <Factory className="w-4 h-4" /> Ver OP no PCP
+            </Link>
           )}
         </div>
       </div>

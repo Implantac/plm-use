@@ -34,6 +34,8 @@ import {
 interface PCPSearch {
   pcpStep?: PCPStepId;
   pcpRef?: string;
+  /** uuid de uma OP — abre o workspace dela direto (link de vendas → PCP). */
+  pcpOp?: string;
 }
 
 export const Route = createFileRoute("/_authenticated/production")({
@@ -41,12 +43,14 @@ export const Route = createFileRoute("/_authenticated/production")({
   validateSearch: (search: Record<string, unknown>): PCPSearch => {
     const step = search.pcpStep;
     const ref = search.pcpRef;
+    const op = search.pcpOp;
     return {
       pcpStep:
         typeof step === "string" && (PCP_STEP_IDS as string[]).includes(step)
           ? (step as PCPStepId)
           : undefined,
       pcpRef: typeof ref === "string" ? ref : undefined,
+      pcpOp: typeof op === "string" ? op : undefined,
     };
   },
 });
@@ -58,7 +62,9 @@ function ProductionPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const flowRef = useRef<HTMLDivElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [view, setView] = useState<"kanban" | "torre" | "gantt" | "op">("kanban");
+  const [view, setView] = useState<"kanban" | "torre" | "gantt" | "op">(
+    search.pcpOp ? "op" : "kanban",
+  );
   const [selRef, setSelRef] = useState<{
     loteNumero: string;
     ref: ReferenciaLote;
@@ -240,7 +246,7 @@ function ProductionPage() {
         </div>
 
         {view === "op" ? (
-          <OpKanban />
+          <OpKanban initialOpenId={search.pcpOp ?? null} />
         ) : view === "kanban" ? (
           <Card className="glass-card rounded-lg">
             <CardContent className="p-4 overflow-x-auto">

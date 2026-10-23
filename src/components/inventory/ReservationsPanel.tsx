@@ -1,5 +1,6 @@
 // Doc 06.2 · Almoxarifado — painel de reservas ativas (consumir/cancelar).
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +23,7 @@ interface Reservation {
 export function ReservationsPanel({ items }: { items: StockItem[] }) {
   const [rows, setRows] = useState<Reservation[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [opMeta, setOpMeta] = useState<Record<string, { id: string; number: string }>>({});
 
   const refetch = useCallback(async () => {
     const { data } = await supabase
@@ -30,7 +32,22 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
       .eq("status", "ativa")
       .order("created_at", { ascending: false })
       .limit(20);
-    setRows((data ?? []) as unknown as Reservation[]);
+    const rows = (data ?? []) as unknown as Reservation[];
+    setRows(rows);
+    // ref_id de reserva 'op' é uuid pelado na tela; resolvemos para o número
+    // da OP com link ao kanban. Falha de leitura não quebra o painel.
+    const opIds = [...new Set(rows.filter((r) => r.ref_type === "op").map((r) => r.ref_id))];
+    if (opIds.length) {
+      const { data: pos } = await supabase
+        .from("production_orders")
+        .select("id, number")
+        .in("id", opIds);
+      const map: Record<string, { id: string; number: string }> = {};
+      for (const p of (pos ?? []) as { id: string; number: string }[]) map[p.id] = p;
+      setOpMeta(map);
+    } else {
+      setOpMeta({});
+    }
   }, []);
 
   useEffect(() => {
@@ -65,7 +82,18 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
             <div className="min-w-0">
               <p className="text-sm font-bold text-white truncate">{nameOf(r.item_id)}</p>
               <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                {r.qty} · {r.ref_type} · {r.ref_id.slice(0, 8)}
+                {r.qty} · {r.ref_type} ·{" "}
+                {r.ref_type === "op" && opMeta[r.ref_id] ? (
+                  <Link
+                    to="/production"
+                    search={{ pcpOp: r.ref_id }}
+                    className="text-primary hover:underline"
+                  >
+                    {opMeta[r.ref_id].number}
+                  </Link>
+                ) : (
+                  r.ref_id.slice(0, 8)
+                )}
               </p>
             </div>
             <div className="flex gap-2">

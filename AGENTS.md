@@ -25,6 +25,19 @@ superfície pública. Cobertura: três casos novos em `OrderDetail.test.tsx`.
 
 O dono autorizou o mesmo escopo para: `updateMaterial` + lápis na linha de material, `deleteOperation`/`deleteMaterial` com guard `source='custo'` (linhas do catálogo só mudam trocando a opção do item, que reexplode a ficha — os números continuam editáveis em qualquer linha; nome/setor/driver são da ficha PLM por design), e o checkbox `terceirizada` / campo `observações` nos formulários de adição. A RLS já cobria DELETE (`so_ops_cost_delete`/`so_materials_cost_delete`) — a UI apenas espelha o que o banco garante. A migration `20260708131912` (gatilho de estoque baixo) foi corrigida no repo de `'warn'` para `'warning'` para alinhar recriações do banco com o fix vivo (KARILU-FIX-NOTIF); banco em produção não precisa de nada.
 
+## Quem implementa (desde 2026-10-23)
+
+Por ordem do dono, o agente Arena é o implementador primário de TODO o app
+(antes a fronteira `src/lib/sales/`+`src/components/sales` pertencia ao bot
+Lovable — dissolvida; ele não conduz mais a evolução). O Lovable fica só com
+a publicação: push na `main` → deploy, e com o que é exclusividade dele por
+plataforma (aplicar migrations drizzle no banco vivo e o editor SQL para dados/
+DDL). Convenções intocadas: gates completos (prettier/tsc/vitest/eslint) antes
+de cada commit; mudanças de banco como ficheiros SQL reexecutáveis em
+`docs/producao/` com a bateria (zero `//` cru, guards, contagem VALUES×alias,
+literais vs DDL original, checagem de triggers); push só com token do dono na
+mensagem; claims de terceiros = verificar diff bruto.
+
 ## GitHub ↔ Lovable (contrato da plataforma — não negociável)
 
 - Este repo é o lado GitHub do sync bidirecional do projeto na branch `main`; o app que os usuários veem é o deploy do Lovable, alimentado por push na `main`. Ver `docs/github-lovable-sync.md`.

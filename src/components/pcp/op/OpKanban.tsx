@@ -1,5 +1,5 @@
 // Kanban por OP / Rota — coluna = setor da etapa; cartão = OP com quantidade em cada etapa.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -38,7 +38,7 @@ function isLate(o: ProductionOrder) {
   return !!o.planned_end && new Date(o.planned_end + "T23:59") < new Date() && opProgress(o) < 100;
 }
 
-export function OpKanban() {
+export function OpKanban({ initialOpenId = null }: { initialOpenId?: string | null }) {
   const { data: orders = [], isLoading, error } = useProductionOrders();
   const { canPlan } = opPermissions(useUserRoles(useAuth().user?.id).roles);
   const { data: routes = [] } = useProductionRoutes();
@@ -47,6 +47,10 @@ export function OpKanban() {
   const [routeF, setRouteF] = useState("all");
   const [onlyLate, setOnlyLate] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialOpenId) setOpenId(initialOpenId);
+  }, [initialOpenId]);
 
   const stepSector = useMemo(() => {
     const m = new Map<string, string>();

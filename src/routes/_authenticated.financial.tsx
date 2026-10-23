@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { createFileRoute } from "@tanstack/react-router";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,6 +54,21 @@ function FinancialPage() {
   ]);
   type Transaction = (typeof transactions)[number] & { source?: string };
 
+  const [receber, setReceber] = useState<{ count: number; total: number } | null>(null);
+  useEffect(() => {
+    void (async () => {
+      const { data, error } = await supabase
+        .from("sales_orders")
+        .select("total_value")
+        .in("status", ["aprovado", "liberado_pcp"]);
+      if (error || !data) return;
+      const rows = data as { total_value: string | number }[];
+      setReceber({
+        count: rows.length,
+        total: rows.reduce((a, r) => a + Number(r.total_value || 0), 0),
+      });
+    })();
+  }, []);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [formData, setFormData] = useState({
@@ -123,6 +139,19 @@ function FinancialPage() {
         { label: "Margem", value: "62,4%", detail: "contribuição" },
       ]}
     >
+      {receber && receber.count > 0 && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-md border border-primary/30 bg-primary/[0.06] p-3 text-xs">
+          <span className="font-bold uppercase tracking-[0.16em] text-primary">Dados reais</span>
+          <span className="text-muted-foreground">
+            A receber nos pedidos do PLM (aprovados + liberados): {receber.count} pedido(s), total
+            R${" "}
+            {receber.total.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+            })}
+            . Todo o restante desta tela é demonstração.
+          </span>
+        </div>
+      )}
       <div className="flex justify-end gap-4 mb-8">
         <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
           <FileText className="w-4 h-4" /> DRE Gerencial

@@ -690,6 +690,27 @@ export async function releaseToPcp(orderId: string): Promise<Res<string>> {
   return { data: res.error ? null : str(res.data), error: res.error };
 }
 
+/**
+ * Elo de navegação PCP↔vendas: a OP liberada de um pedido (number =
+ * 'OP-' + number do pedido). RLS de produção permite leitura a qualquer
+ * membro; ausência da OP não é erro — só não há link a exibir.
+ */
+export async function findOpForOrder(
+  orderNumber: string,
+): Promise<Res<{ id: string; number: string } | null>> {
+  const res = await db
+    .from("production_orders")
+    .select("id, number")
+    .eq("number", `OP-${orderNumber}`)
+    .maybeSingle();
+  if (res.error) return { data: null, error: res.error };
+  const row = res.data as Row | null;
+  return {
+    data: row ? { id: str(row.id), number: str(row.number) } : null,
+    error: null,
+  };
+}
+
 export async function getTechnicalSheet(orderId: string): Promise<Res<Row>> {
   const res = await db.rpc("order_item_technical_sheet", { _order_id: orderId });
   if (res.error) return { data: null, error: res.error };

@@ -86,7 +86,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   { path: "/flow", label: "Fluxo do Produto", group: "geral", icon: "workflow" },
   {
     path: "/approvals",
-    label: "Aprovações",
+    label: "Gates do Produto",
     group: "geral",
     icon: "shield-check",
     crumbs: ["Geral"],

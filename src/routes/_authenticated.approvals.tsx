@@ -115,7 +115,7 @@ function ApprovalsPage() {
           </span>
         </div>
         <h1 className="mt-3 text-3xl font-bold uppercase leading-none tracking-tight md:text-4xl">
-          Aprovações
+          Gates do Produto
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Cada portão do Fluxo do Produto com status, parecer e data da decisão. Toda aprovação vira
