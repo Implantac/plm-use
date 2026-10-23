@@ -27,12 +27,16 @@ echo ===== 4) HTTP direto no gateway e no host =====
 curl -s -o nul -w "GET /              -> HTTP %%{http_code}\n" http://localhost:%PORT%/ 2>&1
 curl -s -o nul -w "GET /auth/v1/health  -> HTTP %%{http_code}\n" http://localhost:%PORT%/auth/v1/health 2>&1
 curl -s -o nul -w "GET /rest/v1/        -> HTTP %%{http_code}\n" http://localhost:%PORT%/rest/v1/ 2>&1
-echo ===== 5) Ultimas linhas: db =====
-docker compose -f "%COMPOSE%" logs --tail=25 db 2>&1
-echo ===== 6) Ultimas linhas: gateway =====
-docker compose -f "%COMPOSE%" logs --tail=15 gateway 2>&1
-echo ===== 7) Ultimas linhas: web =====
-docker compose -f "%COMPOSE%" logs --tail=15 web 2>&1
-echo ===== 8) Imagens presentes (falta de pin = pacote antigo) =====
-docker images --format "{{.Repository}}:{{.Tag}}" | findstr /i "gotrue postgrest storage-api plmuse postgres nginx" 2>&1
+echo ===== 5) Estado de saida por servico (exit/oom/restart) =====
+for %%s in (db gotrue postgrest storage web gateway) do docker inspect --format "%%s: exit={{.State.ExitCode}} oom={{.State.OOMKilled}} restarts={{.RestartCount}} err={{.State.Error}}" plmuse-local-%%s-1 2>&1
+echo ===== 6) Logs gotrue (causa do exit 1) =====
+docker compose -f "%COMPOSE%" logs --tail=30 gotrue 2>&1
+echo ===== 7) Logs postgrest =====
+docker compose -f "%COMPOSE%" logs --tail=20 postgrest 2>&1
+echo ===== 8) Logs storage =====
+docker compose -f "%COMPOSE%" logs --tail=20 storage 2>&1
+echo ===== 9) Logs web =====
+docker compose -f "%COMPOSE%" logs --tail=20 web 2>&1
+echo ===== 10) Logs db =====
+docker compose -f "%COMPOSE%" logs --tail=40 db 2>&1
 echo ===== FIM DO RELATORIO =====

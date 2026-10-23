@@ -44,6 +44,7 @@ services:
       GOTRUE_MAILER_AUTOCONFIRM: "true"
       GOTRUE_DISABLE_SIGNUP: "false"
       GOTRUE_LOG_LEVEL: info
+      GOTRUE_API_HOST: "0.0.0.0"
       GOTRUE_OPERATOR_TOKEN: local-op-token
     # NAO sobrescrever command/entrypoint: a imagem nao define ENTRYPOINT e o
     # CMD default ja e `/usr/local/bin/gotrue start` (com `command: start` o
