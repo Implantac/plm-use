@@ -1,33 +1,41 @@
 #!/bin/bash
-# Driver do initdb: reproduz a história do banco Lovable em ambiente limpo.
-#  - supabase/migrations: a canônica (67 arquivos datados) — erro aborta.
-#  - drizzle/migrations: 0000-0014 do journal do bot; muitas sobrepõem as
-#    canônicas (tabelas já criadas), então erro por arquivo é TOLERADO e
-#    logado — exceto 0014 (reserva na liberação), que é exclusivo dele: se
-#    falhar, grita no log do contêiner docker logs plmuse-local-db-1.
-set -u
-psql_flags="-v ON_ERROR_STOP=1 -q"
+# FASE 1 de 2 do bootstrap: reproduz a historia do banco Lovable num Postgres
+# limpo. Migrations que referenciam auth.users / storage.objects / publicacao
+# supabase_realtime so podem rodar DEPOIS que gotrue/storage-api sobem e
+# criam os esquemas canonicos (na nuvem eles ja vao no proprio servidor).
+# Cada arquivo roda em transacao propria (tudo-ou-nada, sem estado parcial);
+# o que falhar e registrado em $PGDATA e a fase 2 (02_finish.sh) reaplica
+# quando a stack ficar sadia.
+#
+# ATENCAO (bug real de 23/out): o entrypoint do postgres FAZ SOURCE (. file)
+# de qualquer .sh do initdb.d que nao tenha bit de execucao — e em mounts do
+# Windows o bit e loteria. Um `exit` aqui mataria o entrypoint inteiro. Por
+# isso tudo mora em funcao com `return`, nunca `exit`.
+plm_fase1() {
+  set -u
+  local fails="$PGDATA/.plm_fails.txt"
+  local total=0 plmf out
 
-echo "[initdb] supabase/migrations (estrito)..."
-for f in /sql/supabase/*.sql; do
-  if ! psql $psql_flags -f "$f"; then
-    echo "[initdb] FALHA CRÍTICA em $(basename "$f") — abortando bootstrap."
-    exit 1
-  fi
-done
+  : > "$fails"
 
-echo "[initdb] drizzle/migrations (tolerante a sobreposição)..."
-for f in /sql/drizzle/0*.sql; do
-  base="$(basename "$f")"
-  if ! psql $psql_flags -f "$f" 2>/tmp/drizzle_err; then
-    if [ "${base}" = "0014_sales_release_reserves_stock.sql" ]; then
-      echo "[initdb] *** FALHA EM 0014 (reserva na liberação) — o fluxo venda->estoque ficará sem o elo. Erro:"
-      cat /tmp/drizzle_err
-    else
-      echo "[initdb] ok: ${base} pulado (sobreposição esperada): $(head -c 200 /tmp/drizzle_err)"
+  plm_run_file() { # $1 = rotulo; $2 = arquivo
+    total=$((total+1))
+    if out=$(psql -v ON_ERROR_STOP=1 --single-transaction -q -f "$2" 2>&1); then
+      return 0
     fi
-  fi
-done
+    echo "$2" >> "$fails"
+    echo "[initdb][$1] adiada: $(basename "$2") — $(echo "$out" | grep -m1 -i error | head -c 160)"
+    return 1
+  }
 
-echo "[initdb] bootstrap concluído."
-exit 0
+  echo "[initdb] fase 1: supabase/migrations (canonicas)..."
+  for plmf in /sql/supabase/*.sql; do plm_run_file supa "$plmf" || true; done
+  echo "[initdb] fase 1: drizzle/migrations (journal do bot; sobreposicoes sao esperadas)..."
+  for plmf in /sql/drizzle/0*.sql; do plm_run_file driz "$plmf" || true; done
+
+  local pend
+  pend=$(wc -l < "$fails" | tr -d " ")
+  echo "[initdb] fase 1 concluida: $total arquivos, $pend adiados para a fase 2."
+  return 0
+}
+plm_fase1

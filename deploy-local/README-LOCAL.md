@@ -47,6 +47,18 @@ sementes (todas idempotentes — nada é duplicado nem pisado).
 | `plm-parar.bat`       | derruba a stack, **mantém** os dados                 |
 | `plm-zerar-dados.bat` | derruba e **apaga** os volumes (próximo boot = zero) |
 
+## Se o `db` nascer "unhealthy" (corrigido em 23/10)
+
+Na primeira versão o bootstrap exigia que **todas** as migrations corressem
+antes do GoTrue subir — mas ~75 delas fazem FK para `auth.users`, que só
+existe depois que o GoTrue cria o schema canônico. Agora o initdb roda em
+**duas fases**: o que depende de `auth.*`/`storage.*` é adiado (tudo-ou-nada,
+zero estado parcial) e o `.bat` reaplica essa lista após a stack ficar sadia
+(passos `[2/6]` e `[3/6]`). Se viu isso na tela, basta: `plm-parar.bat`,
+extrair o zip novo por cima, e `plm-local.bat` de novo.
+**Mudou o initdb? Use o `plm-zerar-dados.bat`** (o replay só roda com o
+volume vazio; o `02_finish.sh` sozinho cuida de instalações já iniciadas).
+
 ## Limitações conhecidas (espelho local, honestas)
 
 - **Realtime**: o serviço de realtime do Supabase não está no pacote. O painel

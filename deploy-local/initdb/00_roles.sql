@@ -51,3 +51,9 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
   GRANT ALL ON SEQUENCES TO anon;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
   GRANT ALL ON FUNCTIONS TO anon;
+
+-- Local-only: o Supabase em nuvem ja traz a publicacao supabase_realtime; em
+-- Postgres puro ela nao existe e ~3 migrations fazem ALTER PUBLICATION nelas.
+-- Sem wal_level=logical ela fica inerte (realtime e limitacao documentada do
+-- pacote), mas o DDL passa e a fase 1 nao adiada por esse detalhe.
+CREATE PUBLICATION supabase_realtime;

@@ -20,15 +20,16 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo [1/5] Subindo a stack (build do app incluso; primeira vez demora)...
+echo [1/6] Subindo a stack (build do app incluso; primeira vez demora)...
 docker compose -f "%COMPOSE%" up -d --build
 if errorlevel 1 (
-  echo [ERRO] docker compose falhou. Rode "docker compose -f %COMPOSE% logs" para ver por que.
+  echo [ERRO] docker compose falhou. Log do db (costuma conter a causa):
+  docker compose -f "%COMPOSE%" logs --tail=60 db
   pause
   exit /b 1
 )
 
-echo [2/5] Esperando o banco executar as migrations e a API responder...
+echo [2/6] Esperando o banco executar as migrations (fase 1) e o GoTrue responder...
 set /a tries=0
 :waitloop
 timeout /t 5 /nobreak >nul
@@ -36,16 +37,29 @@ curl -sf http://localhost:%PORT%/auth/v1/health >nul 2>&1
 if not errorlevel 1 goto api_up
 set /a tries+=1
 if %tries% lss 60 goto waitloop
-echo [ERRO] API nao respondeu em 5 min. Diagnostico: docker compose -f %COMPOSE% logs db gotrue
+echo [ERRO] API nao respondeu em 5 min. Log de diagnostico:
+docker compose -f "%COMPOSE%" logs --tail=40 db gotrue
 pause
 exit /b 1
 
 :api_up
-echo [3/5] Criando usuario admin e o bucket de anexos (ja existentes = ok)...
+echo [3/6] Aguardando Storage e reaplicando migrations adiadas (fase 2)...
+set /a stries=0
+:storage_wait
+timeout /t 4 /nobreak >nul
+curl -sf http://localhost:%PORT%/storage/v1/status >nul 2>&1
+if not errorlevel 1 goto storage_ok
+set /a stries+=1
+if %stries% lss 20 goto storage_wait
+echo [AVISO] Storage nao respondeu em ~80s; rodando a fase 2 mesmo assim.
+:storage_ok
+docker compose -f "%COMPOSE%" exec -T db bash /sql/initdb/02_finish.sh
+
+echo [4/6] Criando usuario admin e o bucket de anexos (ja existentes = ok)...
 curl -s -X POST http://localhost:%PORT%/auth/v1/signup -H "Content-Type: application/json" -H "apikey: %KEY%" -H "Authorization: Bearer %KEY%" -d "{\"email\":\"admin@plm.local\",\"password\":\"PlmLocal!2026\"}" >nul
 curl -s -X POST http://localhost:%PORT%/storage/v1/bucket -H "Content-Type: application/json" -H "Authorization: Bearer %KEY%" -d "{\"id\":\"use-moda-assets\",\"name\":\"use-moda-assets\",\"public\":true,\"file_size_limit\":10485760}" >nul
 
-echo [4/5] Semeados dados de demonstracao (catalogo, base, pedidos, rotas PCP)...
+echo [5/6] Semeados dados de demonstracao (catalogo, base, pedidos, rotas PCP)...
 rem  Ordem canonica dos arquivos aceitos em producao; todos reexecutaveis.
 docker compose -f "%COMPOSE%" exec -T db psql -v ON_ERROR_STOP=0 -U postgres -d postgres -f /sql/seed/KARILU-SEED.sql
 docker compose -f "%COMPOSE%" exec -T db psql -v ON_ERROR_STOP=0 -U postgres -d postgres -f /sql/seed/KARILU-BASE.sql
@@ -54,7 +68,7 @@ docker compose -f "%COMPOSE%" exec -T db psql -v ON_ERROR_STOP=0 -U postgres -d 
 
 echo       Atualizando o cache de schema da API...
 docker compose -f "%COMPOSE%" exec -T db psql -U postgres -c "NOTIFY pgrst, 'reload schema'" >nul
-echo [5/5] Tudo pronto.
+echo [6/6] Tudo pronto.
 start "" http://localhost:%PORT%
 echo  Login local: admin@plm.local  /  senha: PlmLocal!2026
 echo  (a tabela acima do "5/5" traz a prova das rotas: 5 produtos, etapas 6/5/5)

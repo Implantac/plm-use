@@ -21,6 +21,7 @@ services:
       - ../supabase/migrations:/sql/supabase:ro
       - ../drizzle/migrations:/sql/drizzle:ro
       - ../docs/producao:/sql/seed:ro
+      - ./initdb:/sql/initdb:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 5s
