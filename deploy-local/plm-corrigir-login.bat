@@ -1,39 +1,43 @@
 @echo off
 rem ============================================================
-rem  PLM USE - plm-corrigir-login.bat
-rem  Fecha a cadeia do login inteira, com autoteste final:
-rem  trust TCP (o caminho real do gotrue, nao o socket),
-rem  GoTrue, fase 2 das migrations (agora com -U postgres de
-rem  verdade), admin, bucket, seeds, e POST real de login.
-rem  Se algo nao fechar, grava relatorio e RECONSTRUI do zero
-rem  sozinho (5s p/ cancelar com Ctrl+C). Colocar em
-rem  deploy-local e dar dois cliques.
+rem  PLM USE - plm-corrigir-login.bat  (AUTOSUFICIENTE)
+rem  Um duplo-clique fecha a cadeia do login inteira:
+rem  [1] sobe/rebuild a stack; [2] conserta o Postgres por duas
+rem  bandas SEM pre-sonda (ALTER da senha + sed trust + HUP no
+rem  caminho TCP real do gotrue) e a sonda TCP vira so verificacao;
+rem  [3-4] gotrue/postgrest/storage autenticados pelo gateway;
+rem  [5] fase 2 das migrations + contagem de tabelas; [6] admin
+rem  com confirmacao; [7] bucket + seeds; [8] POST REAL de login
+rem  - so abre o browser com access_token. Elo quebrado gera o
+rem  .txt de diagnostico e RECONSTRUI do zero sozinho (Ctrl+C em
+rem  5s cancela). Nao depende de nenhum outro arquivo novo: pode
+rem  ser copiado sozinho para deploy-local OU posto na raiz do
+rem  pacote (autodetecta).
 rem ============================================================
 setlocal
-cd /d "%~dp0.."
-set "COMPOSE=deploy-local\docker-compose.yml"
+set "DROOT=%~dp0"
+if not exist "%DROOT%docker-compose.yml" if exist "%DROOT%deploy-local\docker-compose.yml" set "DROOT=%DROOT%deploy-local\"
+set "COMPOSE=%DROOT%docker-compose.yml"
 set "KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoicGxtdXNlLWxvY2FsIiwiaWF0IjoxNzYxMTc3NjAwLCJleHAiOjIwNzY2NTI4MDB9.jDHTwp5sPH5ViBPILRjzsV9H7m2HRX9GV-thrJ0PUX4"
-set "ERR=%~dp0plm-corrigir-login.txt"
-for /f "tokens=2 delims==" %%p in ('findstr /b APP_PORT= deploy-local\.env') do set "PORT=%%p"
+set "ERR=%DROOT%plm-corrigir-login.txt"
+for /f "tokens=2 delims==" %%p in ('findstr /b APP_PORT= "%DROOT%.env"') do set "PORT=%%p"
 if "%PORT%"=="" set "PORT=18080"
 
 if not exist "%COMPOSE%" goto fail_nopacote
 docker version >nul 2>&1
 if errorlevel 1 goto fail_docker
+cd /d "%DROOT%."
 
 echo [1/8] Subindo a stack (build inclusive)...
 docker compose -f "%COMPOSE%" up -d --build
 if errorlevel 1 goto report
 
-echo [2/8] Trust via TCP (o teste que o gotrue faz, nao o socket)...
-call :probetcp
-if not errorlevel 1 goto tcp_ok
-echo       host rules ainda exigem senha - corrigendo pg_hba + SIGHUP...
-docker compose -f "%COMPOSE%" exec -T db sh -c "psql -U postgres -q -f /sql/initdb/03_password.sql; sed -i 's/scram-sha-256/trust/g; s/md5/trust/g; s/password/trust/g' /var/lib/postgresql/data/pg_hba.conf; kill -HUP 1"
+echo [2/8] Consertando o Postgres por duas bandas (senha + trust TCP)...
+docker compose -f "%COMPOSE%" exec -T db sh -c "psql -U postgres -q -c \"ALTER USER postgres PASSWORD 'PLMLocal2026';\"; sed -i 's/scram-sha-256/trust/g; s/md5/trust/g; s/password/trust/g' /var/lib/postgresql/data/pg_hba.conf; kill -HUP 1" >nul 2>&1
 timeout /t 4 /nobreak >nul
 call :probetcp
 if not errorlevel 1 goto tcp_ok
-echo       ainda nao - restart completo do db para reler o arquivo...
+echo       TCP ainda recusa - restart completo do db para reler o arquivo...
 docker compose -f "%COMPOSE%" restart db
 timeout /t 8 /nobreak >nul
 call :probetcp
@@ -143,5 +147,5 @@ docker compose -f "%COMPOSE%" logs --tail=20 postgrest
 echo Relatorio em deploy-local\plm-corrigir-login.txt
 timeout /t 5
 docker compose -f "%COMPOSE%" down -v
-call deploy-local\plm-local.bat
+call "%DROOT%plm-local.bat"
 exit /b 1

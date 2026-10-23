@@ -50,9 +50,13 @@ sementes (todas idempotentes — nada é duplicado nem pisado).
 ## Deu ruim? O botão `plm-corrigir-login.bat` (login 502) — ou `plm-arrumar.bat`
 
 Rode **`plm-corrigir-login.bat`** se o problema for o login (502/credenciais):
-ele sonda o trust **via TCP** (o caminho real do GoTrue), aplica fase 2 com o
-usuário certo, e fecha com autoteste de `grant_type=password` — não declara
-sucesso sem `access_token`. Para qualquer outro sintoma:
+
+> Ele é **autossuficiente**: pode ser copiado sozinho para dentro de
+> `deploy-local` (ou posto na raiz do pacote, que ele autodetecta) em qualquer
+> instalação existente — fecha o 502 sem re-extrair o zip inteiro.
+> ele sonda o trust **via TCP** (o caminho real do GoTrue), aplica fase 2 com o
+> usuário certo, e fecha com autoteste de `grant_type=password` — não declara
+> sucesso sem `access_token`. Para qualquer outro sintoma:
 
 Rode **`plm-arrumar.bat`** (v2): sobe a stack, conserta a autenticação do
 Postgres, aplica as migrations adiadas, garante admin/bucket, refaz os seeds e
