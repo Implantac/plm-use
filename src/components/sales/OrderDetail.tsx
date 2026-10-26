@@ -1063,6 +1063,7 @@ function ItemCard({
                     aria-label="Setor"
                     className="h-7 w-28 text-xs"
                     placeholder="Setor"
+                    value={form.opSector ?? ""}
                     onChange={setF("opSector")}
                   />
                   <Input

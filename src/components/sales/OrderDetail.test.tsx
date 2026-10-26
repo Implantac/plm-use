@@ -352,6 +352,9 @@ describe("OrderDetail", () => {
     await screen.findByText(/Sem linhas de custo ainda/);
     fireEvent.click(screen.getByRole("button", { name: "+ Bordado" }));
     expect(await screen.findByRole("button", { name: /Adicionar operação/i })).toBeTruthy();
+    // o pré-preenchimento do chip precisa ser VISÍVEL no campo (input controlado)
+    const setor = screen.getByLabelText("Setor") as HTMLInputElement;
+    expect(setor.value).toBe("Bordado");
   });
 
   it("linha aprovada congela a edição (sem lápis, sem botões de delta)", async () => {

@@ -91,6 +91,35 @@ aprovado → liberado_pcp. OP gerada: `OP-PED-2026-0001` ('planejada'), item com
 - **F5 (ok):** setup amortizado na quantidade (chapa 38+38+55 → R$ 2,18/peça
   neste pedido) — a regra que diferencia custo de produto personalizado.
 
+## Quem pode o quê (papéis → ações)
+
+Gates verificados no código (`_authenticated.orders.tsx`) contra o enum real
+`app_role` (migração `20260708154154` acrescenta `pcp`; `types.ts` gerado confere):
+
+| Ação no fluxo                                             | Papéis que a destravam                                        |
+| --------------------------------------------------------- | ------------------------------------------------------------- |
+| Criar/editar pedido, enviar para custo                    | `admin`, `manager`, `comercial`, `diretor_produto`            |
+| Detalhar custo (operações/materiais), recalcular, aprovar | `admin`, `manager`, `engenharia_custo`, `coordenador_produto` |
+| Liberar para PCP (gera OP)                                | `admin`, `manager`, `pcp`                                     |
+| Editar catálogo                                           | `admin`, `manager`, `engenharia_custo`, `coordenador_produto` |
+
+Conta **sem linha em `user_roles`** não vê ação nenhuma do fluxo — e agora a
+lista de pedidos exibe um banner de diagnóstico ("Esta conta ainda não tem
+papéis atribuídos"), em vez de uma tela muda. Atribuição de papel é SQL no
+editor do Lovable (More → Database → Manage → SQL editor), padrão
+`docs/sql/2026-10-26_grant-admin-etcsuporte889.sql`.
+
+## Detalhar custo manualmente quando a explosão não gera ficha
+
+A explosão do catálogo pode vir sem linhas (achado F2: `material_consumption
+= '[]'` por design no BASE). Nesse caso o painel "Ficha do pedido · custo"
+mostra, para quem tem papel de custo, os atalhos de setor — `+ Costura`,
+`+ Bordado`, `+ Estampa` (silk), `+ Acabamento`, `+ Lavanderia` — que abrem o
+formulário de nova operação com o setor já preenchido (campo visível e
+editável). O nome da operação é livre; driver `peça/minuto/mil pontos/m²/cor/
+lote`; o recálculo entra no custo do item na hora — mesmo caminho do botão
+"Nova operação", coberto por teste de regressão (`OrderDetail.test.tsx`).
+
 ## Como reproduzir no sistema publicado (sem SQL)
 
 `/orders` → **Novo pedido** (vendedor) → produto validado + grade + opções

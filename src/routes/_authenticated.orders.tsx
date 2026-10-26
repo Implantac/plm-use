@@ -200,7 +200,10 @@ function OrdersPage() {
       {/* Diagnóstico (26/out): conta sem papel em user_roles via todas as listas
           canSell/canCost/canPlan viravam "tela muda" — o dono testou etcsuporte889
           e concluiu que a opção de custo não existia. Nunca mais silencioso. */}
-      {!rolesLoading && roles.length === 0 && (
+      {/* user===null durante o getSession(): sem o gate, o banner piscava em
+          todo load mesmo para contas COM papel (useUserRoles(undefined) devolve
+          loading=false + roles=[] de imediato). */}
+      {!!user && !rolesLoading && roles.length === 0 && (
         <div className="mb-6 flex items-start gap-3 rounded-md border border-status-progress/30 bg-status-progress/10 p-4 text-sm">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-status-progress" />
           <div className="space-y-1">
