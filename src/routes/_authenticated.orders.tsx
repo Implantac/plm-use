@@ -90,7 +90,7 @@ function OrdersPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const { user } = useAuth();
-  const { roles } = useUserRoles(user?.id);
+  const { roles, loading: rolesLoading } = useUserRoles(user?.id);
 
   const canCost = roles.some((r) =>
     ["admin", "manager", "engenharia_custo", "coordenador_produto"].includes(String(r)),
@@ -197,6 +197,25 @@ function OrdersPage() {
       searchPlaceholder="Buscar por número ou cliente"
       metrics={metrics}
     >
+      {/* Diagnóstico (26/out): conta sem papel em user_roles via todas as listas
+          canSell/canCost/canPlan viravam "tela muda" — o dono testou etcsuporte889
+          e concluiu que a opção de custo não existia. Nunca mais silencioso. */}
+      {!rolesLoading && roles.length === 0 && (
+        <div className="mb-6 flex items-start gap-3 rounded-md border border-status-progress/30 bg-status-progress/10 p-4 text-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-status-progress" />
+          <div className="space-y-1">
+            <p className="font-medium">Esta conta ainda não tem papéis atribuídos.</p>
+            <p className="text-xs text-muted-foreground">
+              Você consegue ver os pedidos, mas as ações do fluxo (enviar, detalhar custo, aprovar,
+              liberar PCP) só aparecem para contas com papel <code>admin</code>,{" "}
+              <code>manager</code>, <code>comercial</code>, <code>engenharia_custo</code>,{" "}
+              <code>coordenador_produto</code> ou <code>pcp</code>. Peça a atribuição ao
+              administrador do sistema.
+            </p>
+          </div>
+        </div>
+      )}
+
       {fatal && (
         <div className="mb-6 flex items-start gap-3 rounded-md border border-status-progress/30 bg-status-progress/10 p-4">
           <AlertTriangle className="w-4 h-4 text-status-progress mt-0.5 shrink-0" />
