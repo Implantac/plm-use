@@ -20,6 +20,10 @@ if not exist "%DROOT%docker-compose.yml" if exist "%DROOT%deploy-local\docker-co
 set "COMPOSE=%DROOT%docker-compose.yml"
 set "KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoicGxtdXNlLWxvY2FsIiwiaWF0IjoxNzYxMTc3NjAwLCJleHAiOjIwNzY2NTI4MDB9.jDHTwp5sPH5ViBPILRjzsV9H7m2HRX9GV-thrJ0PUX4"
 set "ERR=%DROOT%plm-corrigir-login.txt"
+rem Artefato visivel mesmo se a janela fechar: log de passo a passo. Nao
+rem mexe em errorlevel de nada (redirecionamento simples, linha propria).
+set "LOG=%DROOT%plm-corrigir-login.log"
+>"%LOG%" echo === plm-corrigir-login %date% %time% ===
 for /f "tokens=2 delims==" %%p in ('findstr /b APP_PORT= "%DROOT%.env"') do set "PORT=%%p"
 if "%PORT%"=="" set "PORT=18080"
 
@@ -47,6 +51,7 @@ if not errorlevel 1 goto tcp_ok
 goto report
 :probetcp
 docker compose -f "%COMPOSE%" exec -T -e PGCONNECT_TIMEOUT=4 db psql -w -U postgres -h 127.0.0.1 -t -A -c "select 'tcp-trust-ok'" >"%TEMP%\plm_tcp.txt" 2>&1
+type "%TEMP%\plm_tcp.txt" >>"%LOG%" 2>nul
 findstr /c:"tcp-trust-ok" "%TEMP%\plm_tcp.txt" >nul
 exit /b
 
@@ -68,6 +73,7 @@ echo [5/8] Fase 2 das migrations (02_finish) + contagem de tabelas...
 docker compose -f "%COMPOSE%" exec -T db bash /sql/initdb/02_finish.sh
 set TBL=
 for /f "delims=" %%t in ('docker compose -f "%COMPOSE%" exec -T db psql -U postgres -t -A -c "select count(*) from information_schema.tables where table_schema='public'" 2^>nul') do set TBL=%%t
+>>"%LOG%" echo [5/8] tabelas=%TBL%
 echo %TBL%| findstr /r "^[0-9][0-9]*$" >nul
 if errorlevel 1 goto report
 echo       %TBL% tabelas em public
@@ -110,9 +116,12 @@ echo [8/8] AUTOTESTE de login (POST token?grant_type=password)...
 curl -s -X POST "http://localhost:%PORT%/auth/v1/token?grant_type=password" -H "Content-Type: application/json" -H "apikey: %KEY%" -d "{\"email\":\"admin@plm.local\",\"password\":\"PlmLocal!2026\"}" -o "%TEMP%\plm_login.json"
 findstr /c:"access_token" "%TEMP%\plm_login.json" >nul
 if errorlevel 1 goto report
+>>"%LOG%" echo [8/8] LOGIN OK - access_token emitido
 echo       LOGIN OK (access_token emitido pelo gotrue)
 start "" http://localhost:%PORT%
 echo Concluido: entre com admin@plm.local / PlmLocal!2026
+echo Passo a passo gravado em deploy-local\plm-corrigir-login.log
+pause
 exit /b 0
 
 :fail_docker
@@ -146,7 +155,10 @@ docker compose -f "%COMPOSE%" logs --tail=40 db
 echo === postgrest ===
 docker compose -f "%COMPOSE%" logs --tail=20 postgrest
 ) > "%ERR%" 2>&1
-echo Relatorio em deploy-local\plm-corrigir-login.txt
+>>"%ERR%" echo === log de passos (%LOG%) ===
+type "%LOG%" >>"%ERR%" 2>nul
+echo Relatorio em deploy-local\plm-corrigir-login.txt - abrindo no Bloco de Notas...
+start "" notepad "%ERR%"
 timeout /t 5
 docker compose -f "%COMPOSE%" down -v
 call "%DROOT%plm-local.bat"
