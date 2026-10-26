@@ -58,26 +58,32 @@ const overall = (r: ScoreRow) =>
 
 const tier = (s: number) =>
   s >= 90
-    ? { label: "A+", color: "text-emerald-400 border-emerald-500/40 bg-emerald-500/10" }
+    ? { label: "A+", color: "text-status-approved border-status-approved/40 bg-status-approved/10" }
     : s >= 80
       ? { label: "A", color: "text-primary border-primary/40 bg-primary/10" }
       : s >= 70
-        ? { label: "B", color: "text-amber-300 border-amber-500/40 bg-amber-500/10" }
-        : { label: "C", color: "text-rose-400 border-rose-500/40 bg-rose-500/10" };
+        ? {
+            label: "B",
+            color: "text-status-progress border-status-progress/40 bg-status-progress/10",
+          }
+        : {
+            label: "C",
+            color: "text-status-rejected border-status-rejected/40 bg-status-rejected/10",
+          };
 
 export function SupplierScoreboard() {
   const sorted = [...ROWS].sort((a, b) => overall(b) - overall(a));
   return (
     <Card className="glass-card rounded-lg p-6 space-y-5 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Trophy className="w-4 h-4 text-primary" /> Score de Fornecedores · qualidade · prazo ·
           custo · confiabilidade
         </h3>
       </div>
       <div className="rounded-lg border border-white/5 overflow-hidden">
         <table className="w-full text-left">
-          <thead className="border-b border-white/5 bg-white/5 text-[9px] uppercase tracking-widest text-muted-foreground">
+          <thead className="border-b border-white/5 bg-white/5 text-[11px] uppercase tracking-widest text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Fornecedor</th>
               <th className="px-4 py-3">Segmento</th>
@@ -104,7 +110,7 @@ export function SupplierScoreboard() {
               <th className="px-4 py-3 text-right">Score</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5 text-[11px] text-white">
+          <tbody className="divide-y divide-white/5 text-xs text-white">
             {sorted.map((r) => {
               const s = overall(r);
               const t = tier(s);
@@ -126,7 +132,7 @@ export function SupplierScoreboard() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <span
-                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-md border text-[10px] font-bold ${t.color}`}
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-md border text-[11px] font-bold ${t.color}`}
                     >
                       {t.label} · {s}
                     </span>
@@ -146,11 +152,11 @@ function Mini({ value }: { value: number }) {
     <div className="flex items-center gap-2">
       <div className="w-20 h-1.5 rounded-full bg-white/5 overflow-hidden">
         <div
-          className={`h-full ${value >= 85 ? "bg-emerald-500/70" : value >= 75 ? "bg-primary/70" : "bg-amber-500/70"}`}
+          className={`h-full ${value >= 85 ? "bg-status-approved/70" : value >= 75 ? "bg-primary/70" : "bg-status-progress/70"}`}
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-[10px] text-white font-bold w-6">{value}</span>
+      <span className="text-[11px] text-white font-bold w-6">{value}</span>
     </div>
   );
 }

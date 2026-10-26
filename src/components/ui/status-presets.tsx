@@ -14,16 +14,16 @@ export const STATUS_TOAST_CLASS: Record<StatusTone, string> = {
   error:
     "!border !border-status-rejected/50 !bg-status-rejected/10 !text-status-rejected [&_[data-icon]]:!text-status-rejected [&_[data-description]]:!text-status-rejected/80",
   warning:
-    "!border !border-amber-400/50 !bg-amber-400/10 !text-amber-300 [&_[data-icon]]:!text-amber-300 [&_[data-description]]:!text-amber-200/80",
-  info: "!border !border-sky-400/50 !bg-sky-400/10 !text-sky-300 [&_[data-icon]]:!text-sky-300 [&_[data-description]]:!text-sky-200/80",
+    "!border !border-status-progress/50 !bg-status-progress/10 !text-status-progress [&_[data-icon]]:!text-status-progress [&_[data-description]]:!text-status-progress/80",
+  info: "!border !border-status-review/50 !bg-status-review/10 !text-status-review [&_[data-icon]]:!text-status-review [&_[data-description]]:!text-status-review/80",
   neutral: "!border !border-white/20 !bg-white/5 !text-white [&_[data-description]]:!text-white/70",
 };
 
 export const STATUS_BADGE_CLASS: Record<StatusTone, string> = {
   success: "border-status-approved/50 bg-status-approved/10 text-status-approved",
   error: "border-status-rejected/50 bg-status-rejected/10 text-status-rejected",
-  warning: "border-amber-400/40 bg-amber-400/10 text-amber-300",
-  info: "border-sky-400/40 bg-sky-400/10 text-sky-300",
+  warning: "border-status-progress/40 bg-status-progress/10 text-status-progress",
+  info: "border-status-review/40 bg-status-review/10 text-status-review",
   neutral: "border-white/20 bg-white/5 text-white/80",
 };
 
@@ -82,7 +82,7 @@ export function StatusBadge({
   return (
     <Badge
       variant="outline"
-      className={`text-[9px] gap-1 ${STATUS_BADGE_CLASS[tone]} ${className}`}
+      className={`text-[11px] gap-1 ${STATUS_BADGE_CLASS[tone]} ${className}`}
     >
       {withIcon && ICONS[tone]}
       {children}

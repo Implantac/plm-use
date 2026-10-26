@@ -292,7 +292,7 @@ function LaunchPage() {
                                 {it.reference_id.slice(0, 8)} · meta {it.meta_unidades}
                               </span>
                               <div className="flex items-center gap-1">
-                                <Badge variant="outline" className="text-[10px]">
+                                <Badge variant="outline" className="text-[11px]">
                                   {ITEM_STATUS_LABEL[is]}
                                 </Badge>
                                 {ITEM_NEXT[is].slice(0, 1).map((to) => (
@@ -300,7 +300,7 @@ function LaunchPage() {
                                     key={to}
                                     size="sm"
                                     variant="ghost"
-                                    className="h-6 text-[11px]"
+                                    className="h-6 text-xs"
                                     onClick={() => handleTransitionItem(it.id, is, to)}
                                   >
                                     → {ITEM_STATUS_LABEL[to]}
@@ -449,7 +449,7 @@ function LaunchPage() {
                         </div>
                       </div>
                       {h.synced_at ? (
-                        <Badge className="bg-emerald-600">confirmado</Badge>
+                        <Badge className="bg-status-approved">confirmado</Badge>
                       ) : (
                         <Badge variant="secondary">pendente</Badge>
                       )}

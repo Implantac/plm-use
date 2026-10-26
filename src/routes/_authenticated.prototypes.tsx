@@ -211,11 +211,11 @@ function PrototypesPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
                 <div className="absolute left-4 bottom-4 right-4 flex items-end justify-between gap-4">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
                       {prototype.id}
                     </p>
                     <h3 className="mt-1 text-xl font-bold text-white">{prototype.name}</h3>
-                    <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                    <p className="mt-1 text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
                       {prototype.version}
                     </p>
                   </div>
@@ -239,7 +239,7 @@ function PrototypesPage() {
                       className="rounded-md border border-white/10 bg-white/[0.035] p-3"
                     >
                       <item.icon className="h-4 w-4 text-primary" />
-                      <p className="mt-2 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                         {item.label}
                       </p>
                       <p className="mt-1 text-xs font-bold text-white">{item.value}</p>
@@ -247,14 +247,14 @@ function PrototypesPage() {
                   ))}
                 </div>
                 <div className="space-y-2">
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                     <span>Progresso do piloto</span>
                     <span className="text-white">{prototype.progress}%</span>
                   </div>
                   <Progress value={prototype.progress} className="h-2 bg-white/10" />
                 </div>
                 <div className="flex items-center justify-between border-t border-white/5 pt-4">
-                  <div className="flex gap-3 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                  <div className="flex gap-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Image className="h-3.5 w-3.5" /> {prototype.photos}
                     </span>
@@ -268,7 +268,7 @@ function PrototypesPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-1.5 text-[10px] tracking-[0.14em] text-primary hover:bg-primary/10"
+                    className="gap-1.5 text-[11px] tracking-[0.04em] text-primary hover:bg-primary/10"
                     onClick={() =>
                       openEntity({
                         type: "piloto",
@@ -289,7 +289,7 @@ function PrototypesPage() {
         <div className="space-y-6">
           <Card className="glass-card rounded-lg">
             <CardHeader className="p-5 border-b border-white/5">
-              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
                 Fluxo do protótipo
               </CardTitle>
             </CardHeader>
@@ -305,7 +305,7 @@ function PrototypesPage() {
                       <Clock className="h-4 w-4" />
                     )}
                   </div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
                     {stage}
                   </p>
                 </div>
@@ -315,7 +315,7 @@ function PrototypesPage() {
 
           <Card className="glass-card rounded-lg border-primary/20 bg-primary/[0.025]">
             <CardContent className="p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary flex items-center gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
                 <Shirt className="h-4 w-4" />
                 Próxima aprovação
               </p>
@@ -323,7 +323,7 @@ function PrototypesPage() {
                 Blusa Linho Amalfi precisa de validação de gola e vídeo de caimento antes de liberar
                 OP piloto.
               </p>
-              <Button className="mt-5 w-full text-[10px] tracking-[0.14em]">
+              <Button className="mt-5 w-full text-[11px] tracking-[0.04em]">
                 Solicitar aprovação
               </Button>
             </CardContent>
@@ -346,7 +346,7 @@ function PrototypesPage() {
               ["owner", "Responsável", "Ex: Sandra Pilotagem"],
             ].map(([key, label, placeholder]) => (
               <div key={key} className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                   {label}
                 </Label>
                 <Input
@@ -359,10 +359,10 @@ function PrototypesPage() {
             ))}
           </div>
           <DialogFooter className="gap-3">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[10px]">
+            <Button onClick={handleSave} className="text-[11px]">
               Salvar protótipo
             </Button>
           </DialogFooter>

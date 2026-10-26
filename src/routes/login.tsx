@@ -151,7 +151,7 @@ function Login() {
         <img src="/assets/logo.png" alt="USE MODA" className="h-12 w-fit" />
         <div className="max-w-2xl space-y-8">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-primary">
+            <p className="text-xs font-semibold uppercase tracking-[0.03em] text-primary">
               Enterprise Access
             </p>
             <h1 className="mt-4 text-5xl font-semibold text-white">

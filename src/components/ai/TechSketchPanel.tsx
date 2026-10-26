@@ -120,7 +120,7 @@ export function TechSketchPanel({
   return (
     <div className="rounded-md border border-white/10 bg-white/[0.025] p-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">
+        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.05em] text-foreground">
           <PencilRuler className="h-3.5 w-3.5 text-primary" /> Desenho técnico
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -185,7 +185,7 @@ export function TechSketchPanel({
       {spec && (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <table className="w-full text-xs">
-            <caption className="mb-1 text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+            <caption className="mb-1 text-left text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
               Medidas da peça pronta · tam. {shownSize} ·{" "}
               {official ? `tabela oficial: ${official.nome}` : "base ABNT"}
             </caption>
@@ -194,7 +194,7 @@ export function TechSketchPanel({
                 <tr key={m.point} className="border-b border-white/5">
                   <td className="py-1 text-muted-foreground" title={m.how}>
                     {m.point}
-                    {m.how && <span className="block text-[10px] opacity-70">{m.how}</span>}
+                    {m.how && <span className="block text-[11px] opacity-70">{m.how}</span>}
                   </td>
                   <td className="py-1 text-right font-medium text-foreground">{m.value}</td>
                   <td className="py-1 pl-2 text-right text-muted-foreground">{m.tolerance}</td>
@@ -203,7 +203,7 @@ export function TechSketchPanel({
             </tbody>
           </table>
           <div>
-            <p className="mb-1 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+            <p className="mb-1 text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
               Detalhes construtivos
             </p>
             <ul className="list-disc space-y-1 pl-4 text-xs text-foreground">
@@ -215,7 +215,7 @@ export function TechSketchPanel({
         </div>
       )}
 
-      <p className="mt-3 text-[11px] text-muted-foreground">
+      <p className="mt-3 text-xs text-muted-foreground">
         Esboço e medidas são sugestões da IA para iniciar a modelagem — valide com a tabela de
         medidas oficial antes da ficha técnica.
       </p>

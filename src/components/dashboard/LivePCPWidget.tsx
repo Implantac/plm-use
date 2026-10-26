@@ -35,13 +35,13 @@ export function LivePCPWidget() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary animate-pulse" />
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
               Operação ao vivo · PCP
             </p>
           </div>
           <Link
             to="/production"
-            className="text-[10px] font-bold uppercase tracking-wider text-primary hover:underline flex items-center gap-1"
+            className="text-[11px] font-bold uppercase tracking-wider text-primary hover:underline flex items-center gap-1"
           >
             Abrir PCP <ArrowRight className="h-3 w-3" />
           </Link>
@@ -52,9 +52,13 @@ export function LivePCPWidget() {
           <Mini
             label="Atrasados"
             value={String(stats.atrasados)}
-            tone={stats.atrasados ? "text-rose-300" : "text-emerald-300"}
+            tone={stats.atrasados ? "text-status-rejected" : "text-status-approved"}
           />
-          <Mini label="Peças pendentes" value={String(stats.pendentes)} tone="text-amber-300" />
+          <Mini
+            label="Peças pendentes"
+            value={String(stats.pendentes)}
+            tone="text-status-progress"
+          />
           <Mini label="Ocorrências" value={String(stats.ocorr)} tone="text-primary" />
         </div>
 
@@ -68,18 +72,18 @@ export function LivePCPWidget() {
               >
                 <Factory className="h-4 w-4 text-muted-foreground" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-bold text-white truncate">
+                  <p className="text-xs font-bold text-white truncate">
                     {l.numero} • {l.grupo}
                   </p>
                   <Progress value={percentualLote(l)} className="h-1 bg-white/5 mt-1" />
                 </div>
                 <Badge
                   variant="outline"
-                  className={`text-[9px] shrink-0 ${
+                  className={`text-[11px] shrink-0 ${
                     dias < 0
-                      ? "border-rose-400/40 text-rose-300"
+                      ? "border-status-rejected/40 text-status-rejected"
                       : dias <= 7
-                        ? "border-amber-400/40 text-amber-200"
+                        ? "border-status-progress/40 text-status-progress"
                         : "border-white/20"
                   }`}
                 >
@@ -98,7 +102,7 @@ export function LivePCPWidget() {
 function Mini({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
     <div className="rounded-md bg-white/[0.03] border border-white/10 p-2.5">
-      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className={`text-xl font-bold ${tone}`}>{value}</p>
     </div>
   );

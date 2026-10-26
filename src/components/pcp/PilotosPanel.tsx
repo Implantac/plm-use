@@ -16,8 +16,8 @@ import { STATUS_BADGE_CLASS, STATUS_TOAST_CLASS } from "@/components/ui/status-p
 // Compat: mesmos nomes/valores, agora derivados dos presets compartilhados.
 const REPILOT_TOAST_SUCCESS_CLASS = STATUS_TOAST_CLASS.success;
 const REPILOT_TOAST_ERROR_CLASS = STATUS_TOAST_CLASS.error;
-const REPILOT_BADGE_SUCCESS_CLASS = `text-[9px] gap-1 ${STATUS_BADGE_CLASS.success}`;
-const REPILOT_BADGE_ERROR_CLASS = `text-[9px] gap-1 ${STATUS_BADGE_CLASS.error}`;
+const REPILOT_BADGE_SUCCESS_CLASS = `text-[11px] gap-1 ${STATUS_BADGE_CLASS.success}`;
+const REPILOT_BADGE_ERROR_CLASS = `text-[11px] gap-1 ${STATUS_BADGE_CLASS.error}`;
 const REPILOT_BANNER_ERROR_CLASS = "border-status-rejected/40 bg-status-rejected/[0.08]";
 const REPILOT_BANNER_TEXT_ERROR = "text-status-rejected";
 const REPILOT_BANNER_TEXT_SUCCESS = "text-status-approved";
@@ -118,7 +118,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
 
   if (resolving) {
     return (
-      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Loader2 className="h-3 w-3 animate-spin" /> Resolvendo referência…
       </div>
     );
@@ -126,7 +126,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
 
   if (!referenceId) {
     return (
-      <div className="rounded-md border border-white/10 bg-white/[0.03] p-4 text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-white/10 bg-white/[0.03] p-4 text-xs text-muted-foreground">
         Referência <span className="font-mono text-white">{referenciaRef}</span> ainda não está
         cadastrada em <code>references</code>. Crie-a no módulo Desenvolvimento para habilitar
         pilotos.
@@ -151,10 +151,10 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
             Pilotos de {referenciaNome}
           </p>
-          <p className="text-[10px] text-muted-foreground/70">
+          <p className="text-[11px] text-muted-foreground/70">
             {items.length} rodada{items.length === 1 ? "" : "s"}
           </p>
         </div>
@@ -173,17 +173,17 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
           }`}
         >
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-wider text-primary/80">Estado atual</p>
+            <p className="text-[11px] uppercase tracking-wider text-primary/80">Estado atual</p>
             <div className="mt-1 flex items-center gap-2 flex-wrap">
               <span className="text-sm font-bold text-white">Rodada {current.rodada}</span>
-              <Badge variant="outline" className="text-[9px] border-white/20">
+              <Badge variant="outline" className="text-[11px] border-white/20">
                 {current.tipo}
               </Badge>
               <StatusBadge status={current.status} />
               {repiloting.active && (
                 <Badge
                   variant="outline"
-                  className="text-[9px] gap-1 border-primary/50 text-primary animate-pulse"
+                  className="text-[11px] gap-1 border-primary/50 text-primary animate-pulse"
                 >
                   <Loader2 className="h-2.5 w-2.5 animate-spin" />
                   Reexecutando…
@@ -203,20 +203,20 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               )}
             </div>
             {repiloting.active ? (
-              <p className="mt-1 text-[10px] text-primary/80">
+              <p className="mt-1 text-[11px] text-primary/80">
                 Aguardando confirmação do servidor para a Rodada {repiloting.rodada}…
               </p>
             ) : repilotError ? (
-              <p className={`mt-1 text-[10px] ${REPILOT_BANNER_TEXT_ERROR}`}>
+              <p className={`mt-1 text-[11px] ${REPILOT_BANNER_TEXT_ERROR}`}>
                 Reexecução R{repilotError.piloto.rodada} revertida — {repilotError.message}
               </p>
             ) : confirmedRodada != null ? (
-              <p className={`mt-1 text-[10px] ${REPILOT_BANNER_TEXT_SUCCESS}`}>
+              <p className={`mt-1 text-[11px] ${REPILOT_BANNER_TEXT_SUCCESS}`}>
                 Reexecução R{confirmedRodada} confirmada pelo servidor.
               </p>
             ) : (
               !canRepilot && (
-                <p className="mt-1 text-[10px] text-muted-foreground">
+                <p className="mt-1 text-[11px] text-muted-foreground">
                   Aguardando avaliação para liberar reexecução.
                 </p>
               )
@@ -275,16 +275,16 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       )}
 
       {current?.status === "APROVADO" && (
-        <div className="rounded-md border border-emerald-400/30 bg-emerald-400/[0.06] p-3 flex items-center justify-between gap-3">
+        <div className="rounded-md border border-status-approved/30 bg-status-approved/[0.06] p-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+            <p className="text-[11px] uppercase tracking-wider text-status-approved flex items-center gap-1.5">
               <Workflow className="h-3 w-3" /> Handoff PLM → PCP
             </p>
-            <p className="mt-1 text-[11px] text-white/90">
+            <p className="mt-1 text-xs text-white/90">
               Piloto R{current.rodada} aprovado. Inicie o fluxo do PCP para abrir a Ordem de
               Produção de <span className="font-bold">{referenciaNome}</span>.
             </p>
-            <p className="mt-0.5 text-[10px] text-white/60">
+            <p className="mt-0.5 text-[11px] text-white/60">
               Analisar produção → almoxarifado → organizar → finalizar OP → rota → lançar no Kanban.
             </p>
           </div>
@@ -292,7 +292,7 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
             size="sm"
             variant="outline"
             onClick={() => setPcpDialogOpen(true)}
-            className="gap-1.5 shrink-0 border-emerald-400/50 text-emerald-200 hover:bg-emerald-400/10"
+            className="gap-1.5 shrink-0 border-status-approved/50 text-status-approved hover:bg-status-approved/10"
           >
             <Workflow className="h-3 w-3" />
             Iniciar fluxo PCP
@@ -308,11 +308,11 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       />
 
       {loading ? (
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="h-3 w-3 animate-spin" /> Carregando…
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
+        <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-xs text-muted-foreground">
           Nenhum piloto criado. Clique em "Novo piloto" para iniciar a 1ª rodada.
         </div>
       ) : (
@@ -322,18 +322,18 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
                       Rodada {p.rodada}
                     </span>
-                    <Badge variant="outline" className="text-[9px] border-white/20">
+                    <Badge variant="outline" className="text-[11px] border-white/20">
                       {p.tipo}
                     </Badge>
                     <StatusBadge status={p.status} />
                   </div>
                   {p.observacoes && (
-                    <p className="mt-1 text-[11px] text-white/80 line-clamp-2">{p.observacoes}</p>
+                    <p className="mt-1 text-xs text-white/80 line-clamp-2">{p.observacoes}</p>
                   )}
-                  <p className="mt-1 text-[10px] text-muted-foreground">
+                  <p className="mt-1 text-[11px] text-muted-foreground">
                     Criado {new Date(p.created_at).toLocaleString()}
                   </p>
                 </div>
@@ -370,16 +370,16 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
 function StatusBadge({ status }: { status: string }) {
   const tone =
     status === "APROVADO"
-      ? "border-emerald-400/40 text-emerald-300"
+      ? "border-status-approved/40 text-status-approved"
       : status === "REPROVADO"
-        ? "border-rose-400/40 text-rose-300"
+        ? "border-status-rejected/40 text-status-rejected"
         : status === "AJUSTE_SOLICITADO"
-          ? "border-amber-300/40 text-amber-300"
+          ? "border-status-progress/40 text-status-progress"
           : status === "EM_AVALIACAO"
-            ? "border-sky-400/40 text-sky-300"
+            ? "border-status-review/40 text-status-review"
             : "border-white/20 text-white/80";
   return (
-    <Badge variant="outline" className={`text-[9px] ${tone}`}>
+    <Badge variant="outline" className={`text-[11px] ${tone}`}>
       {status}
     </Badge>
   );

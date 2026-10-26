@@ -122,19 +122,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
       { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-      {
-        rel: "preconnect",
-        href: "https://fonts.googleapis.com",
-      },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap",
-      },
+      // 2026-10-26 (redesign): nenhuma fonte externa — o pacote @fontsource em
+      // styles.css cobre o charset completo, self-hosted, sem FOUT e sem dependência
+      // do Google Fonts (a URL antiga puxava Cormorant serifada, que saiu da marca).
     ],
   }),
   shellComponent: RootShell,

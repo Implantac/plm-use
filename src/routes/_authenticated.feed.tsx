@@ -82,8 +82,8 @@ function FeedPage() {
       </motion.div>
 
       {failed && (
-        <Card className="glass-card rounded-[2rem] p-6 border-amber-500/20">
-          <CardContent className="p-0 flex items-start gap-3 text-sm text-amber-200/90">
+        <Card className="glass-card rounded-[2rem] p-6 border-status-progress/20">
+          <CardContent className="p-0 flex items-start gap-3 text-sm text-status-progress/90">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
             <span>
               A trilha de atividade está inacessível no momento — o restante do sistema segue
@@ -156,7 +156,7 @@ function FeedPage() {
             >
               <Card className="glass-card rounded-[2rem]">
                 <CardContent className="p-5 flex items-start gap-4">
-                  <div className="h-10 w-10 shrink-0 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-[10px] font-bold text-white/80">
+                  <div className="h-10 w-10 shrink-0 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-[11px] font-bold text-white/80">
                     {item.initials}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -164,13 +164,13 @@ function FeedPage() {
                       <span className="font-semibold text-white">{item.actor}</span>{" "}
                       <span className="text-muted-foreground">{item.verb}</span>{" "}
                       <span className="font-medium text-white/90 capitalize">{item.target}</span>
-                      <span className="ml-1.5 font-mono text-[10px] text-muted-foreground/70">
+                      <span className="ml-1.5 font-mono text-[11px] text-muted-foreground/70">
                         #{item.ref}
                       </span>
                       {item.statusFrom && item.statusTo && (
                         <Badge
                           variant="outline"
-                          className="ml-2 text-[10px] capitalize border-white/15 align-middle"
+                          className="ml-2 text-[11px] capitalize border-white/15 align-middle"
                         >
                           {item.statusFrom} → {item.statusTo}
                         </Badge>
@@ -183,11 +183,11 @@ function FeedPage() {
                     )}
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="text-[11px] text-muted-foreground">{item.when}</span>
+                    <span className="text-xs text-muted-foreground">{item.when}</span>
                     {item.route && (
                       <button
                         onClick={() => navigate({ to: item.route })}
-                        className="text-[11px] text-white/60 hover:text-white flex items-center gap-1"
+                        className="text-xs text-white/60 hover:text-white flex items-center gap-1"
                       >
                         abrir <ArrowRight className="h-3 w-3" />
                       </button>

@@ -81,10 +81,10 @@ export function MoodBoard() {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-6 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Layers className="w-4 h-4 text-primary" /> Mood Board · Pré-Verão 2026
         </h3>
-        <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-[9px] font-bold uppercase">
+        <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold uppercase">
           <Sparkles className="w-3 h-3 inline mr-1" /> IA de tendência
         </span>
       </div>
@@ -108,7 +108,7 @@ export function MoodBoard() {
           ) : (
             <Upload className="w-5 h-5 mb-1" />
           )}
-          <span className="text-[9px] uppercase tracking-widest font-bold">
+          <span className="text-[11px] uppercase tracking-widest font-bold">
             {uploading ? "Enviando" : "Upload"}
           </span>
           <input
@@ -130,7 +130,7 @@ export function MoodBoard() {
           value={novo}
           onChange={(e) => setNovo(e.target.value)}
           placeholder="Cole URL de referência"
-          className="text-[11px]"
+          className="text-xs"
         />
         <Button
           size="sm"
@@ -148,7 +148,7 @@ export function MoodBoard() {
 
       <div className="grid lg:grid-cols-2 gap-6 border-t border-white/5 pt-6">
         <div>
-          <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
             <Palette className="w-3.5 h-3.5 text-primary" /> Cartela de cores
           </h4>
           <div className="flex gap-3 flex-wrap">
@@ -158,7 +158,7 @@ export function MoodBoard() {
                   className="w-16 h-20 rounded-md border border-white/10 shadow-lg"
                   style={{ background: c }}
                 />
-                <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
+                <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
                   {c}
                 </span>
               </div>
@@ -166,7 +166,7 @@ export function MoodBoard() {
           </div>
         </div>
         <div>
-          <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-3">
+          <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
             <Layers className="w-3.5 h-3.5 text-primary" /> Cartela de tecidos
           </h4>
           <div className="space-y-2">
@@ -180,8 +180,8 @@ export function MoodBoard() {
                   style={{ background: t.textura }}
                 />
                 <div className="flex-1">
-                  <p className="text-[11px] font-bold text-white">{t.nome}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                  <p className="text-xs font-bold text-white">{t.nome}</p>
+                  <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
                     {t.cor}
                   </p>
                 </div>

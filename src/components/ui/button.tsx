@@ -50,7 +50,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline hover:text-[hsl(var(--glow-500))]",
       },
       size: {
-        xs: "h-7 px-2.5 text-[11px] rounded-md [&_svg]:size-3.5",
+        xs: "h-7 px-2.5 text-xs rounded-md [&_svg]:size-3.5",
         sm: "h-8 px-3 text-xs rounded-md",
         default: "h-9 px-4 text-sm rounded-md",
         lg: "h-11 px-6 text-sm rounded-md tracking-wide",

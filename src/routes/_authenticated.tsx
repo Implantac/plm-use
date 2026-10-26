@@ -181,7 +181,7 @@ function AuthenticatedLayout() {
 
   if (loading || !isAuthenticated) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.3em]">
+      <div className="flex h-dvh items-center justify-center bg-background text-muted-foreground text-xs uppercase tracking-[0.06em]">
         Autenticando...
       </div>
     );
@@ -222,7 +222,7 @@ function AuthenticatedLayout() {
             </div>
             <div className="min-w-0">
               <p className="font-heading text-lg leading-none text-foreground truncate">USE MODA</p>
-              <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.28em] text-glow">
+              <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-glow">
                 PLM · AI
               </p>
             </div>
@@ -241,7 +241,7 @@ function AuthenticatedLayout() {
           <nav className="space-y-1 py-1">
             {favoriteItems.length > 0 && (
               <div>
-                <div className="px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] text-primary/70 flex items-center gap-1.5">
+                <div className="px-2 py-1 text-2xs font-bold uppercase tracking-[0.04em] text-primary/70 flex items-center gap-1.5">
                   <Star className="w-3 h-3 fill-primary/40" />
                   Favoritos
                 </div>
@@ -271,7 +271,7 @@ function AuthenticatedLayout() {
                     type="button"
                     onClick={() => toggleSection(section.id)}
                     aria-expanded={open}
-                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.18em] transition-colors ${sectionActive ? "text-primary" : "text-muted-foreground/70 hover:text-foreground"}`}
+                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.04em] transition-colors ${sectionActive ? "text-primary" : "text-muted-foreground/70 hover:text-foreground"}`}
                   >
                     <span>{section.label}</span>
                     <ChevronDown

@@ -11,7 +11,7 @@ import { diffSnapshots, type DiffRow, type FieldChange } from "@/lib/techsheet/d
 export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersion }) {
   if (!a || !b) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-4 text-[10px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 p-4 text-[11px] text-muted-foreground">
         Selecione duas versões para comparar.
       </div>
     );
@@ -19,7 +19,7 @@ export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersi
 
   if (a.id === b.id) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-4 text-[10px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 p-4 text-[11px] text-muted-foreground">
         Selecione duas versões diferentes.
       </div>
     );
@@ -33,13 +33,13 @@ export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersi
 
   return (
     <div className="rounded-md border border-white/10 bg-white/[0.02] p-4 space-y-4">
-      <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest">
-        <span className="text-rose-300">A · {a.versao}</span>
+      <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest">
+        <span className="text-status-rejected">A · {a.versao}</span>
         <ArrowRight className="w-3 h-3 text-muted-foreground" />
-        <span className="text-emerald-300">B · {b.versao}</span>
+        <span className="text-status-approved">B · {b.versao}</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 text-center text-[9px] uppercase tracking-widest">
+      <div className="grid grid-cols-3 gap-2 text-center text-[11px] uppercase tracking-widest">
         <Stat label="Removidos" value={removidos.length} tone="neg" />
         <Stat label="Mantidos" value={mantidos.length} tone="mut" />
         <Stat label="Adicionados" value={adicionados.length} tone="pos" />
@@ -56,7 +56,7 @@ export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersi
           <DiffLine key={`m${i}`} text={x} kind="eq" />
         ))}
         {removidos.length === 0 && adicionados.length === 0 && mantidos.length === 0 && (
-          <p className="text-[10px] text-muted-foreground">Sem alterações registradas.</p>
+          <p className="text-[11px] text-muted-foreground">Sem alterações registradas.</p>
         )}
       </div>
 
@@ -89,18 +89,18 @@ function StructRows({ title, rows }: { title: string; rows: DiffRow[] }) {
   if (!rows.length) return null;
   return (
     <div className="space-y-1">
-      <p className="text-[8px] uppercase tracking-widest text-muted-foreground font-bold">
+      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
         {title}
       </p>
       {rows.map((r, i) => (
         <p
           key={`${r.kind}-${i}`}
-          className={`text-[10px] flex flex-wrap items-center gap-x-2 gap-y-0.5 ${
+          className={`text-[11px] flex flex-wrap items-center gap-x-2 gap-y-0.5 ${
             r.kind === "add"
-              ? "text-emerald-200"
+              ? "text-status-approved"
               : r.kind === "rem"
-                ? "text-rose-200"
-                : "text-amber-100"
+                ? "text-status-rejected"
+                : "text-status-progress"
           }`}
         >
           <span className="font-bold">
@@ -122,7 +122,7 @@ function SnapshotSection({ a, b }: { a: TechSheetVersion; b: TechSheetVersion })
       .filter(Boolean)
       .join(" e ");
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-3 text-[9px] leading-relaxed text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 p-3 text-[11px] leading-relaxed text-muted-foreground">
         Sem instantâneo estrutural em <strong>{faltantes}</strong> — versões criadas antes de 15/10
         registram apenas o texto das alterações. Toda versão nova captura BOM/BOP/pré-custo ao
         nascer e ganha o comparativo numérico completo abaixo do texto.
@@ -132,12 +132,14 @@ function SnapshotSection({ a, b }: { a: TechSheetVersion; b: TechSheetVersion })
   return (
     <div className="space-y-3 border-t border-white/5 pt-4">
       <div className="flex items-center justify-between">
-        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-2">
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-2">
           <Layers className="w-3 h-3 text-primary" /> Diff estrutural (instantâneo)
         </p>
-        <span className="text-[9px] text-muted-foreground">
+        <span className="text-[11px] text-muted-foreground">
           Δ custo industrial{" "}
-          <strong className={d.custoIndustrialDelta > 0 ? "text-rose-300" : "text-emerald-300"}>
+          <strong
+            className={d.custoIndustrialDelta > 0 ? "text-status-rejected" : "text-status-approved"}
+          >
             {money(d.custoIndustrialDelta)}
           </strong>{" "}
           · Δ tempo{" "}
@@ -169,7 +171,7 @@ function SnapshotSection({ a, b }: { a: TechSheetVersion; b: TechSheetVersion })
         d.bop.changed.length +
         d.preCost.length ===
         0 && (
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-[11px] text-muted-foreground">
           Instantâneos idênticos — nada mudou na estrutura.
         </p>
       )}
@@ -188,14 +190,14 @@ function Stat({
 }) {
   const color =
     tone === "pos"
-      ? "text-emerald-300 border-emerald-500/30 bg-emerald-500/5"
+      ? "text-status-approved border-status-approved/30 bg-status-approved/5"
       : tone === "neg"
-        ? "text-rose-300 border-rose-500/30 bg-rose-500/5"
+        ? "text-status-rejected border-status-rejected/30 bg-status-rejected/5"
         : "text-muted-foreground border-white/10 bg-white/[0.02]";
   return (
     <div className={`rounded-md border p-2 ${color}`}>
       <p className="text-lg font-bold">{value}</p>
-      <p className="text-[8px] mt-0.5">{label}</p>
+      <p className="text-[10px] mt-0.5">{label}</p>
     </div>
   );
 }
@@ -204,15 +206,15 @@ function DiffLine({ text, kind }: { text: string; kind: "add" | "rem" | "eq" }) 
   const cfg =
     kind === "add"
       ? {
-          bg: "bg-emerald-500/10 border-emerald-500/30",
-          icon: <Plus className="w-3 h-3 text-emerald-400" />,
-          color: "text-emerald-200",
+          bg: "bg-status-approved/10 border-status-approved/30",
+          icon: <Plus className="w-3 h-3 text-status-approved" />,
+          color: "text-status-approved",
         }
       : kind === "rem"
         ? {
-            bg: "bg-rose-500/10 border-rose-500/30",
-            icon: <Minus className="w-3 h-3 text-rose-400" />,
-            color: "text-rose-200 line-through opacity-80",
+            bg: "bg-status-rejected/10 border-status-rejected/30",
+            icon: <Minus className="w-3 h-3 text-status-rejected" />,
+            color: "text-status-rejected line-through opacity-80",
           }
         : {
             bg: "bg-white/[0.02] border-white/5",
@@ -223,18 +225,18 @@ function DiffLine({ text, kind }: { text: string; kind: "add" | "rem" | "eq" }) 
   // Detecta "X → Y" ou "X -> Y"
   const m = text.match(/^(.*?)\s*(?:→|->)\s*(.*)$/);
   return (
-    <div className={`rounded-md border p-2 flex items-start gap-2 text-[10px] ${cfg.bg}`}>
+    <div className={`rounded-md border p-2 flex items-start gap-2 text-[11px] ${cfg.bg}`}>
       <span className="mt-0.5">{cfg.icon}</span>
       {m ? (
         <div className="flex-1 flex items-center gap-2 flex-wrap">
           <span
-            className={`px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-200 font-mono ${kind === "add" ? "opacity-60" : ""}`}
+            className={`px-1.5 py-0.5 rounded bg-status-rejected/15 text-status-rejected font-mono ${kind === "add" ? "opacity-60" : ""}`}
           >
             {m[1]}
           </span>
           <ArrowRight className="w-3 h-3 text-muted-foreground" />
           <span
-            className={`px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-200 font-mono ${kind === "rem" ? "opacity-60" : ""}`}
+            className={`px-1.5 py-0.5 rounded bg-status-approved/15 text-status-approved font-mono ${kind === "rem" ? "opacity-60" : ""}`}
           >
             {m[2]}
           </span>

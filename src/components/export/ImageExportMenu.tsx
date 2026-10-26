@@ -52,7 +52,7 @@ export function ImageExportMenu({ src, baseName }: { src: string; baseName: stri
             className="flex flex-col items-start"
           >
             <span className="text-sm">{f.label}</span>
-            <span className="text-[11px] text-muted-foreground">{f.hint}</span>
+            <span className="text-xs text-muted-foreground">{f.hint}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

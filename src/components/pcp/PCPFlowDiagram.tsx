@@ -179,9 +179,9 @@ const NODES: Node[] = [
 ];
 
 const KIND_STYLES: Record<Kind, string> = {
-  handoff: "border-emerald-400/40 bg-emerald-400/[0.06] text-emerald-200",
+  handoff: "border-status-approved/40 bg-status-approved/[0.06] text-status-approved",
   step: "border-white/10 bg-white/[0.03] text-white",
-  decision: "border-amber-300/40 bg-amber-300/[0.06] text-amber-100",
+  decision: "border-status-progress/40 bg-status-progress/[0.06] text-status-progress",
   terminal: "border-primary/40 bg-primary/[0.08] text-primary",
 };
 
@@ -202,11 +202,11 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
     <Card id="pcp-flow" className="glass-card rounded-lg p-6 space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+          <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
             <Workflow className="w-4 h-4 text-primary" />
             Fluxo do PCP · continuação da OP
           </h3>
-          <p className="text-[10px] text-muted-foreground mt-1 max-w-2xl">
+          <p className="text-[11px] text-muted-foreground mt-1 max-w-2xl">
             Rotina disparada logo após o piloto aprovado no PLM. Clique em uma etapa para abrir seu
             checklist sem sair desta tela.
           </p>
@@ -215,14 +215,14 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
           {refCode && (
             <Badge
               variant="outline"
-              className="border-primary/40 text-primary text-[9px] uppercase tracking-widest"
+              className="border-primary/40 text-primary text-[11px] uppercase tracking-widest"
             >
               Ref · {refCode}
             </Badge>
           )}
           <Badge
             variant="outline"
-            className="border-emerald-400/40 text-emerald-200 text-[9px] uppercase tracking-widest"
+            className="border-status-approved/40 text-status-approved text-[11px] uppercase tracking-widest"
           >
             Handoff PLM → PCP
           </Badge>
@@ -259,9 +259,9 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
                   <span
                     className={`shrink-0 rounded-md p-1.5 border ${
                       n.kind === "decision"
-                        ? "border-amber-300/40 bg-amber-300/10"
+                        ? "border-status-progress/40 bg-status-progress/10"
                         : n.kind === "handoff"
-                          ? "border-emerald-400/40 bg-emerald-400/10"
+                          ? "border-status-approved/40 bg-status-approved/10"
                           : n.kind === "terminal"
                             ? "border-primary/40 bg-primary/10"
                             : "border-white/10 bg-white/[0.04]"
@@ -270,14 +270,14 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
                     <Icon className="h-3.5 w-3.5" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em]">{n.label}</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.04em]">{n.label}</p>
                     {n.detail && (
-                      <p className="mt-1 text-[10px] leading-snug text-white/70">{n.detail}</p>
+                      <p className="mt-1 text-[11px] leading-snug text-white/70">{n.detail}</p>
                     )}
                   </div>
                 </div>
                 {i < NODES.length - 1 && (
-                  <span className="absolute -bottom-2 right-3 text-[9px] uppercase tracking-widest text-muted-foreground/60">
+                  <span className="absolute -bottom-2 right-3 text-[11px] uppercase tracking-widest text-muted-foreground/60">
                     ↓
                   </span>
                 )}
@@ -291,11 +291,11 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
         <div className="rounded-md border border-primary/30 bg-primary/[0.05] p-4 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
                 Etapa ativa {refCode ? `· ${refCode}` : ""}
               </p>
               <p className="mt-0.5 text-sm font-bold text-white">{active.label}</p>
-              {active.detail && <p className="mt-1 text-[11px] text-white/70">{active.detail}</p>}
+              {active.detail && <p className="mt-1 text-xs text-white/70">{active.detail}</p>}
             </div>
             <Button
               size="sm"
@@ -308,7 +308,7 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
           </div>
           <ul className="space-y-1.5">
             {active.checklist.map((c) => (
-              <li key={c} className="flex items-start gap-2 text-[11px] text-white/85">
+              <li key={c} className="flex items-start gap-2 text-xs text-white/85">
                 <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-primary shrink-0" />
                 <span>{c}</span>
               </li>
@@ -325,7 +325,7 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
               <ArrowLeft className="h-3 w-3" />
               {prev ? prev.label.replace(/^\d+\s·\s/, "") : "Início"}
             </Button>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground">
               {activeIdx + 1} / {NODES.length}
             </span>
             <Button
@@ -343,7 +343,7 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
       )}
 
       <details className="rounded-md border border-white/10 bg-black/20 p-3">
-        <summary className="cursor-pointer text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-white">
+        <summary className="cursor-pointer text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground hover:text-white">
           Ver fluxograma original
         </summary>
         <img

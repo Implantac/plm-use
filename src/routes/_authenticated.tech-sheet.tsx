@@ -161,7 +161,7 @@ function TechSheetPage() {
     >
       {refFromPcp && (
         <div className="mb-6 rounded-md border border-primary/30 bg-primary/10 px-4 py-3 flex items-center justify-between">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-primary flex items-center gap-2">
+          <p className="text-xs uppercase tracking-[0.04em] text-primary flex items-center gap-2">
             <Link2 className="h-3.5 w-3.5" /> Aberto a partir do PCP · referência{" "}
             <span className="font-bold text-white">{refFromPcp}</span>
           </p>
@@ -171,14 +171,14 @@ function TechSheetPage() {
       <div className="flex justify-end gap-4 mb-8">
         <Button
           variant="outline"
-          className="text-[10px] tracking-[0.16em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
           onClick={scrollToVersions}
         >
           <History className="w-4 h-4" /> Histórico
         </Button>
         <Button
           variant="outline"
-          className="text-[10px] tracking-[0.16em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
           onClick={scrollToDiff}
           title="Leva ao comparador A → B do painel de versões (diff textual + estrutural por instantâneo)."
         >
@@ -186,7 +186,7 @@ function TechSheetPage() {
         </Button>
         <Button
           variant="outline"
-          className="text-[10px] tracking-[0.16em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
           onClick={exportPdf}
         >
           <FileDown className="w-4 h-4" /> Exportar PDF
@@ -206,7 +206,7 @@ function TechSheetPage() {
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className="space-y-4 pt-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
+                <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-primary">
                   {productInfo.ref}
                 </span>
                 <h2 className="text-3xl font-bold text-white tracking-tight">{productInfo.name}</h2>
@@ -214,15 +214,15 @@ function TechSheetPage() {
                   {productInfo.category}
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+                  <span className="w-2 h-2 rounded-full bg-status-approved" />
+                  <span className="text-[11px] font-bold text-white uppercase tracking-widest">
                     {productInfo.status}
                   </span>
                 </div>
               </div>
             </div>
             <div className="text-right space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
                 Custo Industrial
               </p>
               <p className="text-3xl font-bold text-white tracking-tighter">{productInfo.cost}</p>
@@ -231,12 +231,12 @@ function TechSheetPage() {
 
           <div className="space-y-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+              <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
                 <Layers className="w-4 h-4 text-primary" /> Materiais e Insumos (Integração Estoque)
               </h3>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span className="w-2 h-2 rounded-full bg-status-approved" />
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                   Sincronizado com ERP
                 </span>
               </div>
@@ -245,19 +245,19 @@ function TechSheetPage() {
               <table className="w-full text-left">
                 <thead className="border-b border-white/5 bg-white/5">
                   <tr>
-                    <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       Tipo
                     </th>
-                    <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       Material
                     </th>
-                    <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       Consumo
                     </th>
-                    <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       Custo Unit.
                     </th>
-                    <th className="px-6 py-4 text-[9px] font-bold uppercase tracking-widest text-muted-foreground text-right">
+                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground text-right">
                       Ações
                     </th>
                   </tr>
@@ -265,12 +265,12 @@ function TechSheetPage() {
                 <tbody className="divide-y divide-white/5">
                   {materials.map((m) => (
                     <tr key={m.id} className="hover:bg-white/[0.02] transition-colors group">
-                      <td className="px-6 py-4 text-[10px] font-bold uppercase text-primary/70">
+                      <td className="px-6 py-4 text-[11px] font-bold uppercase text-primary/70">
                         {m.type}
                       </td>
-                      <td className="px-6 py-4 text-[11px] font-medium text-white">{m.name}</td>
-                      <td className="px-6 py-4 text-[11px] text-muted-foreground">{m.qty}</td>
-                      <td className="px-6 py-4 text-[11px] text-muted-foreground">{m.cost}</td>
+                      <td className="px-6 py-4 text-xs font-medium text-white">{m.name}</td>
+                      <td className="px-6 py-4 text-xs text-muted-foreground">{m.qty}</td>
+                      <td className="px-6 py-4 text-xs text-muted-foreground">{m.cost}</td>
                       <td className="px-6 py-4 text-right">
                         <ModuleActionMenu
                           onEdit={() => handleOpenDialog(m)}
@@ -285,14 +285,14 @@ function TechSheetPage() {
 
             <div className="p-5 rounded-lg bg-primary/5 border border-primary/20 space-y-4">
               <div className="flex justify-between items-center">
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary">
                   Inteligência Comercial (Previsão de Viabilidade)
                 </h4>
-                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[8px] font-bold uppercase">
+                <span className="px-3 py-1 rounded-full bg-status-approved/10 text-status-approved text-[10px] font-bold uppercase">
                   Probabilidade de Sucesso: 87%
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+              <p className="text-xs text-muted-foreground leading-relaxed italic">
                 Baseado no histórico de vendas da categoria "Feminino / Top" e na curva ABC da
                 última coleção, este produto apresenta alto fit comercial.
                 <span className="text-white font-bold ml-1">
@@ -306,7 +306,7 @@ function TechSheetPage() {
         <div className="space-y-8">
           <Card className="glass-card rounded-lg p-6">
             <CardHeader className="p-0 mb-6">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+              <CardTitle className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
                 <History className="w-4 h-4 text-primary" /> Linha do Tempo do Produto
               </CardTitle>
             </CardHeader>
@@ -317,7 +317,7 @@ function TechSheetPage() {
 
           <Card className="glass-card rounded-lg p-6">
             <CardHeader className="p-0 mb-6">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+              <CardTitle className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
                 <Scissors className="w-4 h-4 text-primary" /> Processos Operacionais
               </CardTitle>
             </CardHeader>
@@ -333,12 +333,12 @@ function TechSheetPage() {
                   className="flex justify-between items-center p-4 rounded-md bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer group"
                 >
                   <div className="space-y-1">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">
                       {proc.label}
                     </p>
-                    <p className="text-[9px] text-muted-foreground uppercase">{proc.time}</p>
+                    <p className="text-[11px] text-muted-foreground uppercase">{proc.time}</p>
                   </div>
-                  <p className="text-[11px] font-bold text-primary group-hover:scale-110 transition-transform">
+                  <p className="text-xs font-bold text-primary group-hover:scale-110 transition-transform">
                     {proc.cost}
                   </p>
                 </div>
@@ -347,19 +347,19 @@ function TechSheetPage() {
           </Card>
 
           <Card className="glass-card rounded-lg p-6 border-primary/20 bg-primary/[0.02]">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary mb-6">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-primary mb-6">
               Ações Rápidas
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="ghost"
-                className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[9px] tracking-[0.16em] text-white"
+                className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[11px] tracking-[0.04em] text-white"
               >
                 <Ruler className="w-5 h-5" /> Tabela Medidas
               </Button>
               <Button
                 variant="ghost"
-                className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[9px] tracking-[0.16em] text-white"
+                className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[11px] tracking-[0.04em] text-white"
               >
                 <Paintbrush className="w-5 h-5" /> Variantes
               </Button>
@@ -367,7 +367,7 @@ function TechSheetPage() {
           </Card>
 
           <Card className="glass-card rounded-lg p-6">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-5 flex items-center gap-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
               <FileDown className="w-4 h-4 text-primary" /> Arquivos técnicos
             </h3>
             <div className="grid grid-cols-3 gap-2">
@@ -377,7 +377,7 @@ function TechSheetPage() {
                     key={format}
                     onClick={exportPdf}
                     title="Gera a ficha A4 e abre a impressão do navegador (Salvar como PDF)."
-                    className="rounded-md border border-primary/40 bg-primary/10 p-3 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-white hover:bg-primary/20"
+                    className="rounded-md border border-primary/40 bg-primary/10 p-3 text-center text-[11px] font-bold uppercase tracking-[0.04em] text-white hover:bg-primary/20"
                   >
                     {format}
                   </button>
@@ -385,7 +385,7 @@ function TechSheetPage() {
                   <div
                     key={format}
                     title={`${format} ainda não é exportável daqui — a geração nativa deste formato está no roadmap (nenhuma conexão CAD foi assinada).`}
-                    className="rounded-md border border-white/10 bg-white/[0.02] p-3 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-white/30"
+                    className="rounded-md border border-white/10 bg-white/[0.02] p-3 text-center text-[11px] font-bold uppercase tracking-[0.04em] text-white/30"
                   >
                     {format}
                   </div>
@@ -393,7 +393,7 @@ function TechSheetPage() {
               )}
             </div>
             <div className="mt-4 rounded-md border border-primary/20 bg-primary/10 p-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary flex items-center gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
                 <Sparkles className="h-3.5 w-3.5" /> IA de ficha técnica
               </p>
               <p className="mt-2 text-sm text-white/80">
@@ -424,7 +424,7 @@ function TechSheetPage() {
           <div className="space-y-6 py-8">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Tipo
                 </Label>
                 <Input
@@ -435,7 +435,7 @@ function TechSheetPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Consumo
                 </Label>
                 <Input
@@ -447,7 +447,7 @@ function TechSheetPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Nome do Material
               </Label>
               <Input
@@ -458,7 +458,7 @@ function TechSheetPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Custo Unitário
               </Label>
               <Input
@@ -470,10 +470,10 @@ function TechSheetPage() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[10px]">
+            <Button onClick={handleSave} className="text-[11px]">
               Salvar na Ficha
             </Button>
           </DialogFooter>

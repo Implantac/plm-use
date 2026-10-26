@@ -39,9 +39,9 @@ export const Route = createFileRoute("/_authenticated/inventory")({
 });
 
 const abcColors: Record<string, string> = {
-  A: "bg-amber-300/10 text-amber-300 border-amber-300/20",
-  B: "bg-sky-300/10 text-sky-300 border-sky-300/20",
-  C: "bg-slate-300/10 text-slate-300 border-slate-300/20",
+  A: "bg-status-progress/10 text-status-progress border-status-progress/20",
+  B: "bg-status-review/10 text-status-review border-status-review/20",
+  C: "bg-muted/60 text-muted-foreground border-border",
 };
 
 const emptyForm = {
@@ -192,30 +192,30 @@ function InventoryPage() {
           variant="outline"
           onClick={handleClassifyAbc}
           disabled={busy}
-          className="text-[10px] tracking-[0.16em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
         >
           <RefreshCw className="w-4 h-4" /> Classificar ABC
         </Button>
         <Button
           variant="outline"
           onClick={() => handleOpenMove()}
-          className="text-[10px] tracking-[0.16em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
         >
           <ArrowRightLeft className="w-4 h-4" /> Movimentação
         </Button>
         <Button
           variant="outline"
           onClick={() => setIsResOpen(true)}
-          className="text-[10px] tracking-[0.16em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
         >
           <History className="w-4 h-4" /> Reservar
         </Button>
       </div>
 
       {criticalItems.length > 0 && (
-        <Card className="glass-card rounded-lg border border-rose-400/30 bg-rose-500/[0.06] mb-6">
+        <Card className="glass-card rounded-lg border border-status-rejected/30 bg-status-rejected/[0.06] mb-6">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-rose-200">
+            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.04em] text-status-rejected">
               <AlertTriangle className="h-4 w-4" />
               {criticalItems.length} insumo{criticalItems.length > 1 ? "s" : ""} abaixo do ponto do
               pedido
@@ -230,13 +230,13 @@ function InventoryPage() {
                   <button
                     key={it.id}
                     onClick={() => handleOpenDialog(it)}
-                    className={`text-left rounded-md border p-3 transition-colors ${belowSafety ? "border-rose-400/50 bg-rose-500/10 hover:bg-rose-500/15" : "border-amber-300/30 bg-amber-300/[0.05] hover:bg-amber-300/[0.09]"}`}
+                    className={`text-left rounded-md border p-3 transition-colors ${belowSafety ? "border-status-rejected/50 bg-status-rejected/10 hover:bg-status-rejected/15" : "border-status-progress/30 bg-status-progress/[0.05] hover:bg-status-progress/[0.09]"}`}
                   >
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                       {it.code} · {belowSafety ? "Crítico" : "Repor"}
                     </p>
                     <p className="mt-1 text-sm font-bold text-white truncate">{it.name}</p>
-                    <p className="mt-1 text-[11px] text-white/80">
+                    <p className="mt-1 text-xs text-white/80">
                       Saldo {onHand.toFixed(0)}
                       {it.unit} · PP {Number(it.reorder_point).toFixed(0)}
                       {it.unit}
@@ -246,7 +246,7 @@ function InventoryPage() {
               })}
             </div>
             {criticalItems.length > 6 && (
-              <p className="mt-3 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="mt-3 text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
                 +{criticalItems.length - 6} outros itens abaixo do PP na tabela
               </p>
             )}
@@ -273,7 +273,7 @@ function InventoryPage() {
                   ].map((heading) => (
                     <th
                       key={heading}
-                      className="px-4 py-4 text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground"
+                      className="px-4 py-4 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground"
                     >
                       {heading}
                     </th>
@@ -315,19 +315,19 @@ function InventoryPage() {
                         <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">
                           {item.name}
                         </p>
-                        <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                        <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                           {item.code} - {item.category}
                         </p>
                       </td>
                       <td className="px-4 py-4">
                         {item.abc_class ? (
                           <span
-                            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold ${abcColors[item.abc_class]}`}
+                            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-bold ${abcColors[item.abc_class]}`}
                           >
                             {item.abc_class}
                           </span>
                         ) : (
-                          <span className="text-[10px] text-muted-foreground">—</span>
+                          <span className="text-[11px] text-muted-foreground">—</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
@@ -341,7 +341,7 @@ function InventoryPage() {
                           {Number(item.reorder_point).toFixed(0)}
                           {item.unit}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[11px] text-muted-foreground">
                           seg. {Number(item.safety_stock).toFixed(0)}
                           {item.unit}
                         </p>
@@ -353,17 +353,17 @@ function InventoryPage() {
                       <td className="px-4 py-4">
                         {coverage !== null ? (
                           <p
-                            className={`text-xs font-bold ${coverage < item.coverage_days_min ? "text-rose-300" : "text-white"}`}
+                            className={`text-xs font-bold ${coverage < item.coverage_days_min ? "text-status-rejected" : "text-white"}`}
                           >
                             {coverage} dias
                           </p>
                         ) : (
-                          <span className="text-[10px] text-muted-foreground">—</span>
+                          <span className="text-[11px] text-muted-foreground">—</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
                         <div className="min-w-24">
-                          <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <div className="flex justify-between text-[11px] text-muted-foreground">
                             <span>
                               {reserved.toFixed(0)}
                               {item.unit}
@@ -375,7 +375,7 @@ function InventoryPage() {
                       </td>
                       <td className="px-4 py-4">
                         <span
-                          className={`inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${critical ? "bg-rose-400/10 text-rose-300" : "bg-emerald-300/10 text-emerald-300"}`}
+                          className={`inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.04em] ${critical ? "bg-status-rejected/10 text-status-rejected" : "bg-status-approved/10 text-status-approved"}`}
                         >
                           {critical ? (
                             <AlertTriangle className="h-3.5 w-3.5" />
@@ -424,7 +424,7 @@ function InventoryPage() {
 
           <Card className="glass-card rounded-lg">
             <CardContent className="p-5 space-y-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary flex items-center gap-2">
                 <PackageSearch className="h-4 w-4" /> Rastreabilidade
               </p>
               {[
@@ -448,10 +448,10 @@ function InventoryPage() {
                 return (
                   <div key={cat} className="rounded-md border border-white/10 bg-white/[0.035] p-4">
                     <Boxes className="h-4 w-4 text-primary" />
-                    <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white">
+                    <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-white">
                       {cat}
                     </p>
-                    <p className="mt-1 text-[10px] text-muted-foreground">{count} itens</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">{count} itens</p>
                   </div>
                 );
               })}
@@ -484,7 +484,7 @@ function InventoryPage() {
               ["holding_cost_unit", "Custo manutenção un/ano R$ (H)", "8.52"],
             ].map(([key, label, placeholder]) => (
               <div key={key} className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                   {label}
                 </Label>
                 <Input
@@ -496,14 +496,14 @@ function InventoryPage() {
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-muted-foreground -mt-2">
+          <p className="text-[11px] text-muted-foreground -mt-2">
             Estoque de segurança, ponto do pedido e LEC são recalculados automaticamente.
           </p>
           <DialogFooter className="gap-3">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={busy} className="text-[10px]">
+            <Button onClick={handleSave} disabled={busy} className="text-[11px]">
               {editingItem ? "Salvar" : "Cadastrar"}
             </Button>
           </DialogFooter>

@@ -110,7 +110,7 @@ export function AlertsBell() {
         >
           <Bell className="w-4 h-4 text-muted-foreground group-hover:text-white" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-bold flex items-center justify-center bg-rose-500 text-white ring-2 ring-background">
+            <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-1 rounded-full text-[11px] font-bold flex items-center justify-center bg-status-rejected text-white ring-2 ring-background">
               {unreadCount}
             </span>
           )}
@@ -118,17 +118,17 @@ export function AlertsBell() {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[420px] p-0 glass-card border-white/10 bg-popover">
         <div className="p-4 border-b border-white/10 flex items-center justify-between">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2">
+          <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
             <AlertTriangle className="w-3.5 h-3.5 text-primary" /> Alertas
           </p>
           <div className="flex items-center gap-2">
-            <span className="text-[9px] text-muted-foreground uppercase">
+            <span className="text-[11px] text-muted-foreground uppercase">
               {items.length} · {unreadCount} novos
             </span>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-[9px] uppercase tracking-[0.16em] text-primary hover:text-white flex items-center gap-1"
+                className="text-[11px] uppercase tracking-[0.04em] text-primary hover:text-white flex items-center gap-1"
               >
                 <CheckCheck className="w-3 h-3" /> Marcar tudo
               </button>
@@ -137,7 +137,7 @@ export function AlertsBell() {
         </div>
         <div className="max-h-[480px] overflow-y-auto divide-y divide-white/5">
           {items.length === 0 && (
-            <p className="p-6 text-center text-[11px] text-muted-foreground">
+            <p className="p-6 text-center text-xs text-muted-foreground">
               Nenhum alerta. Operação fluindo.
             </p>
           )}
@@ -153,9 +153,9 @@ export function AlertsBell() {
                 <div
                   className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
                     n.severity === "critical"
-                      ? "bg-rose-500/15 text-rose-400"
+                      ? "bg-status-rejected/15 text-status-rejected"
                       : n.severity === "warning"
-                        ? "bg-amber-500/15 text-amber-400"
+                        ? "bg-status-progress/15 text-status-progress"
                         : "bg-primary/15 text-primary"
                   }`}
                 >
@@ -164,10 +164,10 @@ export function AlertsBell() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     {!isRead && <span className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                    <p className="text-[11px] font-bold text-white truncate">{n.title}</p>
+                    <p className="text-xs font-bold text-white truncate">{n.title}</p>
                   </div>
-                  {n.detail && <p className="text-[10px] text-muted-foreground">{n.detail}</p>}
-                  <p className="text-[9px] text-muted-foreground/60 uppercase tracking-[0.16em] mt-1">
+                  {n.detail && <p className="text-[11px] text-muted-foreground">{n.detail}</p>}
+                  <p className="text-[11px] text-muted-foreground/60 uppercase tracking-[0.04em] mt-1">
                     {n.source} · {relativeTime(n.created_at)}
                   </p>
                 </div>
@@ -184,7 +184,7 @@ export function AlertsBell() {
                   <button
                     onClick={() => remove(n.id)}
                     title="Remover"
-                    className="p-1 rounded text-muted-foreground hover:text-rose-400 hover:bg-white/10"
+                    className="p-1 rounded text-muted-foreground hover:text-status-rejected hover:bg-white/10"
                   >
                     <X className="w-3 h-3" />
                   </button>

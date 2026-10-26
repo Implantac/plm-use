@@ -141,7 +141,7 @@ function FinancialPage() {
     >
       {receber && receber.count > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-md border border-primary/30 bg-primary/[0.06] p-3 text-xs">
-          <span className="font-bold uppercase tracking-[0.16em] text-primary">Dados reais</span>
+          <span className="font-bold uppercase tracking-[0.04em] text-primary">Dados reais</span>
           <span className="text-muted-foreground">
             A receber nos pedidos do PLM (aprovados + liberados): {receber.count} pedido(s), total
             R${" "}
@@ -153,10 +153,10 @@ function FinancialPage() {
         </div>
       )}
       <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
+        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
           <FileText className="w-4 h-4" /> DRE Gerencial
         </Button>
-        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
+        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
           <Wallet className="w-4 h-4" /> Conciliação
         </Button>
       </div>
@@ -171,7 +171,7 @@ function FinancialPage() {
           >
             <Card className="glass-card rounded-[2rem] p-8 group hover:border-primary/40 transition-all duration-500">
               <CardHeader className="p-0 mb-4 flex flex-row items-center justify-between">
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors">
+                <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground group-hover:text-primary transition-colors">
                   {stat.label}
                 </p>
                 <div className="p-2 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-primary/10 group-hover:text-primary transition-all">
@@ -182,7 +182,7 @@ function FinancialPage() {
                 <p className="text-3xl font-bold text-white tracking-tighter">{stat.value}</p>
                 <div className="flex items-center gap-2">
                   <div
-                    className={`p-1 rounded-full ${stat.trend === "up" ? "bg-emerald-400/10 text-emerald-400" : "bg-rose-400/10 text-rose-400"}`}
+                    className={`p-1 rounded-full ${stat.trend === "up" ? "bg-status-approved/10 text-status-approved" : "bg-status-rejected/10 text-status-rejected"}`}
                   >
                     {stat.trend === "up" ? (
                       <ArrowUpRight className="w-3 h-3" />
@@ -191,7 +191,7 @@ function FinancialPage() {
                     )}
                   </div>
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-widest ${stat.trend === "up" ? "text-emerald-400" : "text-rose-400"}`}
+                    className={`text-[11px] font-bold uppercase tracking-widest ${stat.trend === "up" ? "text-status-approved" : "text-status-rejected"}`}
                   >
                     {stat.change}
                   </span>
@@ -205,15 +205,15 @@ function FinancialPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-2 glass-card rounded-[2.5rem] p-10 space-y-8">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <BarChart3 className="w-5 h-5 text-primary" /> Distribuição de Custos por Unidade
             </h3>
             <div className="flex gap-4">
-              <span className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
+              <span className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase">
                 <span className="w-2 h-2 rounded-full bg-primary" /> Matéria-Prima
               </span>
-              <span className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Mão de Obra
+              <span className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase">
+                <span className="w-2 h-2 rounded-full bg-status-approved" /> Mão de Obra
               </span>
             </div>
           </div>
@@ -229,7 +229,7 @@ function FinancialPage() {
                     className="w-full bg-primary group-hover:bg-primary/80 transition-colors"
                   />
                 </div>
-                <p className="text-[8px] font-bold text-center text-muted-foreground uppercase tracking-widest">
+                <p className="text-[10px] font-bold text-center text-muted-foreground uppercase tracking-widest">
                   Col {i + 1}
                 </p>
               </div>
@@ -239,7 +239,7 @@ function FinancialPage() {
 
         <div className="space-y-8">
           <Card className="glass-card rounded-[2.5rem] p-10 space-y-8">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-6">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-white mb-6">
               Ativos em Transação
             </h3>
             <div className="space-y-4">
@@ -256,13 +256,13 @@ function FinancialPage() {
                     />
                   </div>
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">
                       {item.label}
                     </p>
                     <p className="text-sm font-bold text-white">{item.val}</p>
                   </div>
                   <div className="flex justify-between items-center">
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-widest">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-widest">
                       Vencimento em {item.due}
                     </p>
                     <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
@@ -272,21 +272,21 @@ function FinancialPage() {
             </div>
           </Card>
 
-          <Card className="glass-card rounded-[2.5rem] p-10 bg-linear-to-br from-emerald-500/10 to-transparent border-emerald-500/20">
+          <Card className="glass-card rounded-[2.5rem] p-10 bg-linear-to-br from-status-approved/10 to-transparent border-status-approved/20">
             <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-400">
+              <div className="p-3 rounded-2xl bg-status-approved/20 text-status-approved">
                 <Landmark className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-tight">
                   Saúde Financeira
                 </h3>
-                <p className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest">
+                <p className="text-[11px] text-status-approved font-bold uppercase tracking-widest">
                   Excelente
                 </p>
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground font-light leading-relaxed italic lowercase">
+            <p className="text-[11px] text-muted-foreground font-light leading-relaxed italic lowercase">
               o fluxo de caixa projetado para o próximo trimestre indica uma reserva de capital 24%
               superior ao planejado.
             </p>
@@ -303,7 +303,7 @@ function FinancialPage() {
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Título / Categoria
               </Label>
               <Input
@@ -315,7 +315,7 @@ function FinancialPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Fonte
                 </Label>
                 <Input
@@ -331,7 +331,7 @@ function FinancialPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Valor
                 </Label>
                 <Input
@@ -342,7 +342,7 @@ function FinancialPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Vencimento
                 </Label>
                 <Input
@@ -355,10 +355,10 @@ function FinancialPage() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[10px]">
+            <Button onClick={handleSave} className="text-[11px]">
               Efetivar Lançamento
             </Button>
           </DialogFooter>

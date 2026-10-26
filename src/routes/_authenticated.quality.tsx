@@ -28,19 +28,19 @@ export const Route = createFileRoute("/_authenticated/quality")({
 });
 
 const STATUS_STYLES: Record<CapaStatus, string> = {
-  Aberta: "bg-sky-500/15 text-sky-300 border-sky-400/30",
-  Investigação: "bg-violet-500/15 text-violet-300 border-violet-400/30",
-  Ação: "bg-amber-500/15 text-amber-300 border-amber-400/30",
+  Aberta: "bg-status-review/15 text-status-review border-status-review/30",
+  Investigação: "bg-status-review/15 text-status-review border-status-review/30",
+  Ação: "bg-status-progress/15 text-status-progress border-status-progress/30",
   Verificação: "bg-cyan-500/15 text-cyan-300 border-cyan-400/30",
-  Concluída: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
-  Reprovada: "bg-rose-500/15 text-rose-300 border-rose-400/30",
+  Concluída: "bg-status-approved/15 text-status-approved border-status-approved/30",
+  Reprovada: "bg-status-rejected/15 text-status-rejected border-status-rejected/30",
 };
 
 const SEV_STYLES: Record<CapaSeveridade, string> = {
   Baixa: "bg-white/5 text-white/70 border-white/10",
-  Média: "bg-sky-500/10 text-sky-300 border-sky-400/25",
-  Alta: "bg-amber-500/10 text-amber-300 border-amber-400/25",
-  Crítica: "bg-rose-500/15 text-rose-300 border-rose-400/40",
+  Média: "bg-status-review/10 text-status-review border-status-review/25",
+  Alta: "bg-status-progress/10 text-status-progress border-status-progress/25",
+  Crítica: "bg-status-rejected/15 text-status-rejected border-status-rejected/40",
 };
 
 function QualityPage() {
@@ -154,7 +154,7 @@ function QualityPage() {
       {/* CAPA board */}
       <Card className="glass-card rounded-lg p-6 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+          <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
             <ClipboardList className="w-4 h-4 text-primary" /> CAPA · workflow
           </h3>
           <div className="flex items-center gap-2">
@@ -164,13 +164,13 @@ function QualityPage() {
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder="Buscar defeito, ref, lote..."
-                className="pl-7 w-64 text-[11px]"
+                className="pl-7 w-64 text-xs"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as CapaStatus | "Todas")}
-              className="h-8 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+              className="h-8 bg-white/5 border border-white/10 rounded-md text-xs px-2"
             >
               <option value="Todas">Todos os status</option>
               {CAPA_STATUSES.map((s) => (
@@ -190,13 +190,13 @@ function QualityPage() {
                 if (e.target.value) setCapaErrors((p) => ({ ...p, defeito: undefined }));
               }}
               placeholder="Defeito / problema"
-              className="flex-1 min-w-[220px] text-[11px]"
+              className="flex-1 min-w-[220px] text-xs"
               aria-invalid={!!capaErrors.defeito}
             />
             <select
               value={form.setor}
               onChange={(e) => setForm({ ...form, setor: e.target.value })}
-              className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+              className="h-9 bg-white/5 border border-white/10 rounded-md text-xs px-2"
             >
               {[
                 "Corte",
@@ -214,7 +214,7 @@ function QualityPage() {
             <select
               value={form.tipo}
               onChange={(e) => setForm({ ...form, tipo: e.target.value as CapaTipo })}
-              className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+              className="h-9 bg-white/5 border border-white/10 rounded-md text-xs px-2"
             >
               <option>Corretiva</option>
               <option>Preventiva</option>
@@ -227,7 +227,7 @@ function QualityPage() {
                   severidade: e.target.value as CapaSeveridade,
                 })
               }
-              className="h-9 bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+              className="h-9 bg-white/5 border border-white/10 rounded-md text-xs px-2"
             >
               {CAPA_SEVERIDADES.map((s) => (
                 <option key={s}>{s}</option>
@@ -240,14 +240,14 @@ function QualityPage() {
                 if (e.target.value) setCapaErrors((p) => ({ ...p, responsavel: undefined }));
               }}
               placeholder="Responsável"
-              className="w-36 text-[11px]"
+              className="w-36 text-xs"
               aria-invalid={!!capaErrors.responsavel}
             />
             <Input
               type="date"
               value={form.prazo}
               onChange={(e) => setForm({ ...form, prazo: e.target.value })}
-              className="w-36 text-[11px]"
+              className="w-36 text-xs"
             />
             <Button size="sm" className="gap-1" onClick={submit}>
               <Plus className="w-3.5 h-3.5" /> Abrir CAPA
@@ -262,7 +262,7 @@ function QualityPage() {
 
         <div className="rounded-lg border border-white/5 overflow-hidden">
           <table className="w-full text-left">
-            <thead className="border-b border-white/5 bg-white/5 text-[9px] uppercase tracking-widest text-muted-foreground">
+            <thead className="border-b border-white/5 bg-white/5 text-[11px] uppercase tracking-widest text-muted-foreground">
               <tr>
                 <th className="px-3 py-3">Status</th>
                 <th className="px-3 py-3">Sev</th>
@@ -274,7 +274,7 @@ function QualityPage() {
                 <th className="px-3 py-3">Prazo</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-[11px] text-white">
+            <tbody className="divide-y divide-white/5 text-xs text-white">
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
@@ -291,20 +291,23 @@ function QualityPage() {
                     onClick={() => setSelected(c)}
                   >
                     <td className="px-3 py-3">
-                      <Badge variant="outline" className={`text-[9px] ${STATUS_STYLES[c.status]}`}>
+                      <Badge variant="outline" className={`text-[11px] ${STATUS_STYLES[c.status]}`}>
                         {c.status}
                       </Badge>
                     </td>
                     <td className="px-3 py-3">
-                      <Badge variant="outline" className={`text-[9px] ${SEV_STYLES[c.severidade]}`}>
+                      <Badge
+                        variant="outline"
+                        className={`text-[11px] ${SEV_STYLES[c.severidade]}`}
+                      >
                         {c.severidade}
                       </Badge>
                     </td>
-                    <td className="px-3 py-3 text-primary/70 font-bold uppercase text-[10px]">
+                    <td className="px-3 py-3 text-primary/70 font-bold uppercase text-[11px]">
                       {c.tipo}
                     </td>
                     <td className="px-3 py-3 max-w-[280px] truncate">{c.defeito}</td>
-                    <td className="px-3 py-3 text-primary/80 text-[10px]">
+                    <td className="px-3 py-3 text-primary/80 text-[11px]">
                       {c.ref ?? "—"}
                       {c.lote && <span className="text-muted-foreground"> · {c.lote}</span>}
                     </td>
@@ -312,7 +315,7 @@ function QualityPage() {
                     <td className="px-3 py-3 text-muted-foreground">{c.responsavel}</td>
                     <td
                       className={`px-3 py-3 ${
-                        overdue ? "text-rose-400 font-bold" : "text-muted-foreground"
+                        overdue ? "text-status-rejected font-bold" : "text-muted-foreground"
                       }`}
                     >
                       {c.prazo ?? "—"}
@@ -329,12 +332,12 @@ function QualityPage() {
       {/* Defeitos derivados do PCP */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <Card className="lg:col-span-2 glass-card rounded-lg p-6 space-y-4">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
-            <AlertTriangle className="w-4 h-4 text-amber-400" /> Defeitos registrados (PCP)
+          <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+            <AlertTriangle className="w-4 h-4 text-status-progress" /> Defeitos registrados (PCP)
           </h3>
           <div className="rounded-lg border border-white/5 overflow-hidden max-h-[420px] overflow-y-auto">
             <table className="w-full text-left">
-              <thead className="border-b border-white/5 bg-white/5 text-[9px] uppercase tracking-widest text-muted-foreground sticky top-0">
+              <thead className="border-b border-white/5 bg-white/5 text-[11px] uppercase tracking-widest text-muted-foreground sticky top-0">
                 <tr>
                   <th className="px-4 py-3">Quando</th>
                   <th className="px-4 py-3">Lote</th>
@@ -344,7 +347,7 @@ function QualityPage() {
                   <th className="px-4 py-3 text-right">Qtd</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 text-[11px] text-white">
+              <tbody className="divide-y divide-white/5 text-xs text-white">
                 {defeitos.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
@@ -354,14 +357,14 @@ function QualityPage() {
                 )}
                 {defeitos.map((d, i) => (
                   <tr key={i} className="hover:bg-white/[0.02]">
-                    <td className="px-4 py-3 text-muted-foreground text-[10px]">
+                    <td className="px-4 py-3 text-muted-foreground text-[11px]">
                       {new Date(d.timestamp).toLocaleString("pt-BR")}
                     </td>
                     <td className="px-4 py-3">{d.lote}</td>
                     <td className="px-4 py-3 text-primary">{d.ref}</td>
                     <td className="px-4 py-3">{d.setor}</td>
                     <td className="px-4 py-3">{d.motivo}</td>
-                    <td className="px-4 py-3 text-right font-bold text-rose-400">{d.qtd}</td>
+                    <td className="px-4 py-3 text-right font-bold text-status-rejected">{d.qtd}</td>
                   </tr>
                 ))}
               </tbody>
@@ -371,13 +374,13 @@ function QualityPage() {
 
         <div className="space-y-4">
           <Card className="glass-card rounded-lg p-5">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-4">
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-4">
               <ShieldAlert className="w-3.5 h-3.5 text-primary" /> Ranking por setor
             </h4>
             <BarList rows={rankSetor} />
           </Card>
           <Card className="glass-card rounded-lg p-5">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-4">
+            <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-4">
               <ShieldAlert className="w-3.5 h-3.5 text-primary" /> Top motivos
             </h4>
             <BarList rows={rankMotivo} />
@@ -396,12 +399,12 @@ function QualityPage() {
 
 function BarList({ rows }: { rows: [string, number][] }) {
   const max = Math.max(...rows.map((r) => r[1]), 1);
-  if (rows.length === 0) return <p className="text-[10px] text-muted-foreground">Sem dados.</p>;
+  if (rows.length === 0) return <p className="text-[11px] text-muted-foreground">Sem dados.</p>;
   return (
     <div className="space-y-2">
       {rows.slice(0, 6).map(([label, val]) => (
         <div key={label} className="space-y-1">
-          <div className="flex justify-between text-[10px]">
+          <div className="flex justify-between text-[11px]">
             <span className="text-white">{label}</span>
             <span className="text-primary font-bold">{val}</span>
           </div>

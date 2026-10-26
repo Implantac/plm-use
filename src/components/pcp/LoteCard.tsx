@@ -13,10 +13,10 @@ import {
 } from "@/types/pcp";
 
 const prioridadeColor: Record<Prioridade, string> = {
-  Baixa: "bg-slate-400/10 text-slate-300 border-slate-300/20",
-  Média: "bg-sky-400/10 text-sky-300 border-sky-300/20",
-  Alta: "bg-amber-300/10 text-amber-300 border-amber-300/20",
-  Urgente: "bg-rose-400/10 text-rose-300 border-rose-300/20",
+  Baixa: "bg-muted/60 text-muted-foreground border-border",
+  Média: "bg-status-review/10 text-status-review border-status-review/20",
+  Alta: "bg-status-progress/10 text-status-progress border-status-progress/20",
+  Urgente: "bg-status-rejected/10 text-status-rejected border-status-rejected/20",
 };
 
 interface Props {
@@ -50,15 +50,15 @@ export function LoteCard({ lote, setor, onClick }: Props) {
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
             {lote.numero}
           </p>
           <p className="mt-0.5 text-sm font-bold text-white leading-tight">{lote.grupo}</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">{lote.colecao}</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">{lote.colecao}</p>
         </div>
         <Badge
           variant="outline"
-          className={`text-[9px] font-bold uppercase tracking-[0.12em] ${prioridadeColor[lote.prioridade]}`}
+          className={`text-[11px] font-bold uppercase tracking-[0.04em] ${prioridadeColor[lote.prioridade]}`}
         >
           {lote.prioridade}
         </Badge>
@@ -66,50 +66,50 @@ export function LoteCard({ lote, setor, onClick }: Props) {
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">Prog.</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Prog.</p>
           <p className="text-xs font-bold text-white">{totalProgramado}</p>
         </div>
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">Feito</p>
-          <p className="text-xs font-bold text-emerald-300">{totalProduzido}</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Feito</p>
+          <p className="text-xs font-bold text-status-approved">{totalProduzido}</p>
         </div>
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[8px] uppercase tracking-wider text-muted-foreground">Saldo</p>
-          <p className="text-xs font-bold text-amber-300">{saldoPendente}</p>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Saldo</p>
+          <p className="text-xs font-bold text-status-progress">{saldoPendente}</p>
         </div>
       </div>
 
       <div className="mt-3">
-        <div className="flex items-center justify-between text-[9px] uppercase tracking-wider text-muted-foreground">
+        <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
           <span>Concluído</span>
           <span className="font-bold text-white">{pct}%</span>
         </div>
         <Progress value={pct} className="mt-1 h-1.5 bg-white/10" />
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[9px]">
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px]">
         <span className="inline-flex items-center gap-1 rounded bg-white/5 px-2 py-1 text-muted-foreground">
           <Package className="h-3 w-3" /> {refsNoSetor.length} ref
           {refsNoSetor.length > 1 ? "s" : ""}
         </span>
         <span
-          className={`inline-flex items-center gap-1 rounded px-2 py-1 ${atraso ? "bg-rose-400/10 text-rose-300" : "bg-white/5 text-muted-foreground"}`}
+          className={`inline-flex items-center gap-1 rounded px-2 py-1 ${atraso ? "bg-status-rejected/10 text-status-rejected" : "bg-white/5 text-muted-foreground"}`}
         >
           <Clock className="h-3 w-3" />
           {atraso ? `${Math.abs(dias)}d atraso` : `${dias}d`}
         </span>
         {ocorrenciasPos > 0 && (
-          <span className="inline-flex items-center gap-1 rounded bg-emerald-400/10 px-2 py-1 text-emerald-300">
+          <span className="inline-flex items-center gap-1 rounded bg-status-approved/10 px-2 py-1 text-status-approved">
             <TrendingUp className="h-3 w-3" /> {ocorrenciasPos}
           </span>
         )}
         {ocorrenciasNeg > 0 && (
-          <span className="inline-flex items-center gap-1 rounded bg-rose-400/10 px-2 py-1 text-rose-300">
+          <span className="inline-flex items-center gap-1 rounded bg-status-rejected/10 px-2 py-1 text-status-rejected">
             <TrendingDown className="h-3 w-3" /> {ocorrenciasNeg}
           </span>
         )}
         {ocorrencias > 0 && (
-          <span className="inline-flex items-center gap-1 rounded bg-amber-300/10 px-2 py-1 text-amber-300">
+          <span className="inline-flex items-center gap-1 rounded bg-status-progress/10 px-2 py-1 text-status-progress">
             <AlertOctagon className="h-3 w-3" /> {ocorrencias}
           </span>
         )}

@@ -101,13 +101,13 @@ export function TechnicalSheetDialog({
           <DialogTitle className="flex items-center justify-between gap-3">
             <span>
               Ficha técnica · {order.number ?? "pedido"}{" "}
-              <span className="text-[10px] font-normal uppercase tracking-[0.14em] text-muted-foreground">
+              <span className="text-[11px] font-normal uppercase tracking-[0.04em] text-muted-foreground">
                 sem custo
               </span>
             </span>
             <Button
               variant="ghost"
-              className="text-[10px] gap-2 text-muted-foreground"
+              className="text-[11px] gap-2 text-muted-foreground"
               onClick={() => window.print()}
             >
               <Printer className="w-3.5 h-3.5" /> Imprimir
@@ -121,12 +121,12 @@ export function TechnicalSheetDialog({
           </p>
         )}
         {error && (
-          <p className="text-xs text-red-400">Não foi possível carregar a ficha: {error}</p>
+          <p className="text-xs text-status-rejected">Não foi possível carregar a ficha: {error}</p>
         )}
 
         {!loading && !error && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
               <Field label="Cliente" value={order.customer ?? "—"} />
               <Field label="Prazo" value={fmtDate(order.due_date)} />
               <Field label="Liberado ao PCP" value={fmtDate(order.released_at)} />
@@ -146,7 +146,7 @@ export function TechnicalSheetDialog({
               >
                 <div className="flex flex-wrap items-baseline gap-2">
                   <p className="font-semibold text-white">{item.description}</p>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {item.color ?? "sem cor"} · {num(item.quantity)} pç
                     {item.reference_code ? ` · ref. ${item.reference_code}` : ""}
                   </span>
@@ -154,7 +154,7 @@ export function TechnicalSheetDialog({
                     {Object.entries(item.grade ?? {}).map(([size, qty]) => (
                       <span
                         key={size}
-                        className="px-1.5 py-0.5 rounded border border-border text-[10px]"
+                        className="px-1.5 py-0.5 rounded border border-border text-[11px]"
                       >
                         {size} × {qty}
                       </span>
@@ -163,10 +163,10 @@ export function TechnicalSheetDialog({
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-primary mb-1">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary mb-1">
                     Operações por setor
                   </p>
-                  <table className="w-full text-[11px]">
+                  <table className="w-full text-xs">
                     <thead>
                       <tr className="text-muted-foreground text-left">
                         <th className="py-1">Setor</th>
@@ -208,10 +208,10 @@ export function TechnicalSheetDialog({
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-primary mb-1">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary mb-1">
                     Materiais
                   </p>
-                  <table className="w-full text-[11px]">
+                  <table className="w-full text-xs">
                     <thead>
                       <tr className="text-muted-foreground text-left">
                         <th className="py-1">Material</th>
@@ -250,7 +250,7 @@ export function TechnicalSheetDialog({
               </div>
             ))}
 
-            <p className="text-[10px] text-muted-foreground border-t border-border pt-2">
+            <p className="text-[11px] text-muted-foreground border-t border-border pt-2">
               Esta ficha não carrega custo, preço nem margem — é a versão que circula em produção.
             </p>
           </div>
@@ -263,7 +263,7 @@ export function TechnicalSheetDialog({
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+      <p className="text-[11px] uppercase tracking-[0.04em] text-muted-foreground">{label}</p>
       <p className="font-semibold text-white">{value}</p>
     </div>
   );

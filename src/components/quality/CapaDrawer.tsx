@@ -33,19 +33,19 @@ import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { Network } from "lucide-react";
 
 const STATUS_STYLES: Record<CapaStatus, string> = {
-  Aberta: "bg-sky-500/15 text-sky-300 border-sky-400/30",
-  Investigação: "bg-violet-500/15 text-violet-300 border-violet-400/30",
-  Ação: "bg-amber-500/15 text-amber-300 border-amber-400/30",
+  Aberta: "bg-status-review/15 text-status-review border-status-review/30",
+  Investigação: "bg-status-review/15 text-status-review border-status-review/30",
+  Ação: "bg-status-progress/15 text-status-progress border-status-progress/30",
   Verificação: "bg-cyan-500/15 text-cyan-300 border-cyan-400/30",
-  Concluída: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
-  Reprovada: "bg-rose-500/15 text-rose-300 border-rose-400/30",
+  Concluída: "bg-status-approved/15 text-status-approved border-status-approved/30",
+  Reprovada: "bg-status-rejected/15 text-status-rejected border-status-rejected/30",
 };
 
 const SEV_STYLES: Record<CapaSeveridade, string> = {
   Baixa: "bg-white/5 text-white/70 border-white/10",
-  Média: "bg-sky-500/10 text-sky-300 border-sky-400/25",
-  Alta: "bg-amber-500/10 text-amber-300 border-amber-400/25",
-  Crítica: "bg-rose-500/15 text-rose-300 border-rose-400/40",
+  Média: "bg-status-review/10 text-status-review border-status-review/25",
+  Alta: "bg-status-progress/10 text-status-progress border-status-progress/25",
+  Crítica: "bg-status-rejected/15 text-status-rejected border-status-rejected/40",
 };
 
 const STEPS: CapaStatus[] = ["Aberta", "Investigação", "Ação", "Verificação", "Concluída"];
@@ -122,7 +122,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
         <SheetHeader className="pb-3 border-b border-white/10">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
                 CAPA · {local.tipo}
                 {local.ref && <> · {local.ref}</>}
                 {local.lote && <> · {local.lote}</>}
@@ -131,19 +131,19 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 {local.defeito}
               </SheetTitle>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <Badge variant="outline" className={`text-[10px] ${STATUS_STYLES[local.status]}`}>
+                <Badge variant="outline" className={`text-[11px] ${STATUS_STYLES[local.status]}`}>
                   {local.status}
                 </Badge>
-                <Badge variant="outline" className={`text-[10px] ${SEV_STYLES[local.severidade]}`}>
+                <Badge variant="outline" className={`text-[11px] ${SEV_STYLES[local.severidade]}`}>
                   {local.severidade}
                 </Badge>
-                <Badge variant="outline" className="text-[10px] border-white/20">
+                <Badge variant="outline" className="text-[11px] border-white/20">
                   {local.setor}
                 </Badge>
                 {overdue && (
                   <Badge
                     variant="outline"
-                    className="text-[10px] bg-rose-500/15 text-rose-300 border-rose-400/40 gap-1"
+                    className="text-[11px] bg-status-rejected/15 text-status-rejected border-status-rejected/40 gap-1"
                   >
                     <AlertTriangle className="h-3 w-3" /> Atrasada
                   </Badge>
@@ -186,11 +186,11 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
               return (
                 <div key={s} className="flex items-center gap-1 shrink-0">
                   <div
-                    className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[10px] uppercase tracking-wider ${
+                    className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] uppercase tracking-wider ${
                       active
                         ? STATUS_STYLES[s]
                         : done
-                          ? "border-emerald-400/30 text-emerald-300"
+                          ? "border-status-approved/30 text-status-approved"
                           : "border-white/10 text-white/40"
                     }`}
                   >
@@ -206,16 +206,16 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
 
         <Tabs defaultValue="investigacao" className="mt-4">
           <TabsList className="grid w-full grid-cols-4 bg-white/5 h-auto">
-            <TabsTrigger value="investigacao" className="text-[10px] gap-1">
+            <TabsTrigger value="investigacao" className="text-[11px] gap-1">
               <FileText className="h-3 w-3" /> Investigação
             </TabsTrigger>
-            <TabsTrigger value="acoes" className="text-[10px] gap-1">
+            <TabsTrigger value="acoes" className="text-[11px] gap-1">
               <ListChecks className="h-3 w-3" /> Ações
             </TabsTrigger>
-            <TabsTrigger value="evidencias" className="text-[10px] gap-1">
+            <TabsTrigger value="evidencias" className="text-[11px] gap-1">
               <Paperclip className="h-3 w-3" /> Evidências
             </TabsTrigger>
-            <TabsTrigger value="timeline" className="text-[10px] gap-1">
+            <TabsTrigger value="timeline" className="text-[11px] gap-1">
               <History className="h-3 w-3" /> Timeline
             </TabsTrigger>
           </TabsList>
@@ -240,7 +240,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 {local.cinco_porques.map((p, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-2 rounded-md border border-white/10 bg-white/[0.03] p-2 text-[11px]"
+                    className="flex items-start gap-2 rounded-md border border-white/10 bg-white/[0.03] p-2 text-xs"
                   >
                     <span className="text-primary font-bold w-5 shrink-0">{i + 1}.</span>
                     <span className="flex-1">{p}</span>
@@ -258,7 +258,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                         );
                       }}
                     >
-                      <Trash2 className="h-3 w-3 text-rose-400" />
+                      <Trash2 className="h-3 w-3 text-status-rejected" />
                     </Button>
                   </div>
                 ))}
@@ -268,7 +268,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                       value={porqueDraft}
                       onChange={(e) => setPorqueDraft(e.target.value)}
                       placeholder={`Porquê #${local.cinco_porques.length + 1}`}
-                      className="text-[11px]"
+                      className="text-xs"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -320,7 +320,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   setLocal({ ...local, eficacia: v });
                   persistPatch({ eficacia: v }, "Eficácia atualizada");
                 }}
-                className="h-8 w-full bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+                className="h-8 w-full bg-white/5 border border-white/10 rounded-md text-xs px-2"
               >
                 <option value="">— não avaliada —</option>
                 <option>Eficaz</option>
@@ -333,12 +333,12 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
           {/* Evidências */}
           <TabsContent value="evidencias" className="mt-4 space-y-3">
             {local.evidencias.length === 0 && (
-              <p className="text-[11px] text-muted-foreground">Nenhuma evidência anexada.</p>
+              <p className="text-xs text-muted-foreground">Nenhuma evidência anexada.</p>
             )}
             {local.evidencias.map((e, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] p-2 text-[11px]"
+                className="flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] p-2 text-xs"
               >
                 <Paperclip className="h-3 w-3 text-primary" />
                 <a
@@ -359,7 +359,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                     persistPatch({ evidencias: arr }, "Evidência removida");
                   }}
                 >
-                  <Trash2 className="h-3 w-3 text-rose-400" />
+                  <Trash2 className="h-3 w-3 text-status-rejected" />
                 </Button>
               </div>
             ))}
@@ -368,14 +368,14 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 value={evUrl}
                 onChange={(e) => setEvUrl(e.target.value)}
                 placeholder="URL da evidência (foto, laudo, doc)"
-                className="text-[11px]"
+                className="text-xs"
               />
               <div className="flex gap-2">
                 <Input
                   value={evLabel}
                   onChange={(e) => setEvLabel(e.target.value)}
                   placeholder="Descrição (opcional)"
-                  className="text-[11px] flex-1"
+                  className="text-xs flex-1"
                 />
                 <Button
                   size="sm"
@@ -401,18 +401,18 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
           {/* Timeline */}
           <TabsContent value="timeline" className="mt-4 space-y-2">
             {events.length === 0 ? (
-              <p className="text-[11px] text-muted-foreground">Nenhum evento registrado ainda.</p>
+              <p className="text-xs text-muted-foreground">Nenhum evento registrado ainda.</p>
             ) : (
               events.map((e) => (
                 <div
                   key={e.id}
-                  className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]"
+                  className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold uppercase tracking-wider text-primary">
                       {e.event}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-[11px] text-muted-foreground">
                       {new Date(e.created_at).toLocaleString("pt-BR")}
                     </span>
                   </div>
@@ -423,7 +423,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   )}
                   {e.note && <p className="mt-1 text-white">{e.note}</p>}
                   {e.actor_name && (
-                    <p className="mt-1 text-[10px] text-muted-foreground">por {e.actor_name}</p>
+                    <p className="mt-1 text-[11px] text-muted-foreground">por {e.actor_name}</p>
                   )}
                 </div>
               ))
@@ -437,7 +437,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Nota da transição (opcional)"
-            className="min-h-[52px] text-[11px]"
+            className="min-h-[52px] text-xs"
           />
           <div className="flex flex-wrap gap-2">
             {nextStatuses(local.status).map((to) => (
@@ -446,7 +446,9 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 size="sm"
                 variant={to === "Reprovada" ? "outline" : "default"}
                 className={
-                  to === "Reprovada" ? "border-rose-400/40 text-rose-300 hover:bg-rose-500/10" : ""
+                  to === "Reprovada"
+                    ? "border-status-rejected/40 text-status-rejected hover:bg-status-rejected/10"
+                    : ""
                 }
 
                 onClick={() => doTransition(to)}
@@ -455,13 +457,13 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
               </Button>
             ))}
             {nextStatuses(local.status).length === 0 && (
-              <p className="text-[11px] text-muted-foreground">Fluxo encerrado.</p>
+              <p className="text-xs text-muted-foreground">Fluxo encerrado.</p>
             )}
             <div className="flex-1" />
             <Button
               size="sm"
               variant="ghost"
-              className="text-rose-400 hover:bg-rose-500/10"
+              className="text-status-rejected hover:bg-status-rejected/10"
               onClick={async () => {
                 await remove(local.id);
                 statusToast.success("CAPA removida");
@@ -480,7 +482,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+      <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
         {label}
       </label>
       {children}
@@ -508,7 +510,7 @@ function ActionField({
           if (v !== (value ?? "")) onSave(v);
         }}
         placeholder="Descreva a ação, responsável e prazo"
-        className="min-h-[64px] text-[11px]"
+        className="min-h-[64px] text-xs"
       />
     </Field>
   );
@@ -530,7 +532,7 @@ function MetaRow({
             e.target.value !== local.responsavel &&
             onSave({ responsavel: e.target.value }, "Responsável atualizado")
           }
-          className="text-[11px]"
+          className="text-xs"
         />
       </Field>
       <Field label="Prazo">
@@ -541,14 +543,14 @@ function MetaRow({
             e.target.value !== (local.prazo ?? "") &&
             onSave({ prazo: e.target.value || null }, "Prazo atualizado")
           }
-          className="text-[11px]"
+          className="text-xs"
         />
       </Field>
       <Field label="Severidade">
         <select
           defaultValue={local.severidade}
           onChange={(e) => onSave({ severidade: e.target.value as CapaSeveridade }, "Severidade")}
-          className="h-8 w-full bg-white/5 border border-white/10 rounded-md text-[11px] px-2"
+          className="h-8 w-full bg-white/5 border border-white/10 rounded-md text-xs px-2"
         >
           {CAPA_SEVERIDADES.map((s) => (
             <option key={s}>{s}</option>
@@ -563,7 +565,7 @@ function MetaRow({
             onSave({ fornecedor: e.target.value || null }, "Fornecedor")
           }
           placeholder="—"
-          className="text-[11px]"
+          className="text-xs"
         />
       </Field>
     </div>

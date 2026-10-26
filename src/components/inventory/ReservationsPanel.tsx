@@ -68,7 +68,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
   return (
     <Card className="glass-card rounded-lg">
       <CardHeader className="pb-3">
-        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+        <CardTitle className="text-xs font-bold uppercase tracking-[0.04em] text-primary">
           Reservas ativas ({rows.length})
         </CardTitle>
       </CardHeader>
@@ -81,7 +81,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
           >
             <div className="min-w-0">
               <p className="text-sm font-bold text-white truncate">{nameOf(r.item_id)}</p>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
                 {r.qty} · {r.ref_type} ·{" "}
                 {r.ref_type === "op" && opMeta[r.ref_id] ? (
                   <Link
@@ -102,7 +102,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
                 variant="ghost"
                 disabled={busyId === r.id}
                 onClick={() => act(r.id, "consumida")}
-                className="text-emerald-300 hover:text-emerald-200"
+                className="text-status-approved hover:text-status-approved"
               >
                 <CheckCircle2 className="h-4 w-4" />
               </Button>
@@ -111,7 +111,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
                 variant="ghost"
                 disabled={busyId === r.id}
                 onClick={() => act(r.id, "cancelada")}
-                className="text-rose-300 hover:text-rose-200"
+                className="text-status-rejected hover:text-status-rejected"
               >
                 <XCircle className="h-4 w-4" />
               </Button>

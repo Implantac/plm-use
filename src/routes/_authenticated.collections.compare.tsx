@@ -184,7 +184,7 @@ function CompareCollectionsPage() {
       </div>
       <div className="mb-6 flex items-end gap-4 flex-wrap">
         <div className="min-w-[240px] flex-1 space-y-2">
-          <label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
             Coleção A
           </label>
           <Select value={String(leftId)} onValueChange={(v) => setLeftId(Number(v))}>
@@ -212,7 +212,7 @@ function CompareCollectionsPage() {
         </Button>
 
         <div className="min-w-[240px] flex-1 space-y-2">
-          <label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+          <label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
             Coleção B
           </label>
           <Select value={String(rightId)} onValueChange={(v) => setRightId(Number(v))}>
@@ -229,7 +229,7 @@ function CompareCollectionsPage() {
           </Select>
         </div>
 
-        <Button asChild variant="ghost" className="border text-[10px] tracking-[0.14em]">
+        <Button asChild variant="ghost" className="border text-[11px] tracking-[0.04em]">
           <Link to="/collections">Voltar</Link>
         </Button>
       </div>
@@ -241,13 +241,13 @@ function CompareCollectionsPage() {
 
           <Card className="glass-card rounded-lg lg:col-span-2">
             <CardHeader className="p-5 border-b border-white/5">
-              <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
                 Comparativo métrica a métrica
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-white/5">
-                <div className="grid grid-cols-[1fr_1fr_1fr] px-5 py-3 text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                <div className="grid grid-cols-[1fr_1fr_1fr] px-5 py-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                   <span>Métrica</span>
                   <span className="text-right">{left.name}</span>
                   <span className="text-right">{right.name}</span>
@@ -262,17 +262,17 @@ function CompareCollectionsPage() {
                       key={row.key}
                       className="grid grid-cols-[1fr_1fr_1fr] items-center px-5 py-3"
                     >
-                      <span className="flex items-center gap-2 text-[11px] text-white/80">
+                      <span className="flex items-center gap-2 text-xs text-white/80">
                         <row.icon className="h-3.5 w-3.5 text-primary" />
                         {row.label}
                       </span>
                       <span
-                        className={`text-right text-sm font-bold ${leftWins ? "text-emerald-300" : "text-white"}`}
+                        className={`text-right text-sm font-bold ${leftWins ? "text-status-approved" : "text-white"}`}
                       >
                         {row.fmt(left)}
                       </span>
                       <span
-                        className={`text-right text-sm font-bold ${rightWins ? "text-emerald-300" : "text-white"}`}
+                        className={`text-right text-sm font-bold ${rightWins ? "text-status-approved" : "text-white"}`}
                       >
                         {row.fmt(right)}
                       </span>
@@ -285,7 +285,7 @@ function CompareCollectionsPage() {
 
           <Card className="glass-card rounded-lg lg:col-span-2 border-primary/20 bg-primary/[0.025]">
             <CardContent className="p-5 space-y-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
                 Leitura rápida
               </p>
               <p className="text-sm leading-relaxed text-white/85">{readingSummary(left, right)}</p>
@@ -313,23 +313,23 @@ function CollectionHeaderCard({ collection }: { collection: Collection }) {
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/85 to-transparent" />
-        <span className="absolute left-4 top-4 rounded-md bg-black/55 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur">
+        <span className="absolute left-4 top-4 rounded-md bg-black/55 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.04em] text-white backdrop-blur">
           {collection.status}
         </span>
       </div>
       <CardContent className="p-5 space-y-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+        <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
           {collection.brand} · {collection.season} {collection.year}
         </p>
         <h2 className="text-xl font-bold tracking-tight text-white">{collection.name}</h2>
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
             <span>Ciclo</span>
             <span className="text-white">{collection.progress}%</span>
           </div>
           <Progress value={collection.progress} className="h-2 bg-white/10" />
         </div>
-        <p className="text-[11px] text-muted-foreground">{collection.abc}</p>
+        <p className="text-xs text-muted-foreground">{collection.abc}</p>
       </CardContent>
     </Card>
   );

@@ -42,8 +42,8 @@ export const Route = createFileRoute("/_authenticated/approvals")({
 });
 
 const STATUS_TONE: Record<GateStatus, string> = {
-  pendente: "border-amber-400/40 text-amber-300",
-  aprovado: "border-emerald-400/40 text-emerald-300",
+  pendente: "border-status-progress/40 text-status-progress",
+  aprovado: "border-status-approved/40 text-status-approved",
   reprovado: "border-destructive/40 text-destructive",
   dispensado: "border-white/15 text-muted-foreground",
 };
@@ -110,7 +110,7 @@ function ApprovalsPage() {
       <header className="rounded-lg border border-white/10 bg-white/[0.025] p-5 md:p-6">
         <div className="flex items-center gap-2 text-primary">
           <ShieldCheck className="h-4 w-4" />
-          <span className="text-[9px] font-bold uppercase tracking-[0.22em]">
+          <span className="text-[11px] font-bold uppercase tracking-[0.05em]">
             Governança · gates do ciclo de vida
           </span>
         </div>
@@ -123,12 +123,17 @@ function ApprovalsPage() {
         </p>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
-          <Metric label="Pendentes" value={pendentes.length} icon={Clock} tone="text-amber-300" />
+          <Metric
+            label="Pendentes"
+            value={pendentes.length}
+            icon={Clock}
+            tone="text-status-progress"
+          />
           <Metric
             label="Aprovados"
             value={aprovados.length}
             icon={CheckCircle2}
-            tone="text-emerald-300"
+            tone="text-status-approved"
           />
           <Metric
             label="Reprovados"
@@ -152,7 +157,7 @@ function ApprovalsPage() {
         </CardHeader>
         <CardContent className="space-y-2">
           {loadingRefs && (
-            <p className="py-6 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="py-6 text-center text-xs uppercase tracking-[0.05em] text-muted-foreground">
               Carregando referências...
             </p>
           )}
@@ -170,7 +175,7 @@ function ApprovalsPage() {
                 <p className="truncate text-sm font-semibold">
                   {ref.code} · {ref.name}
                 </p>
-                <p className="mt-0.5 text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                <p className="mt-0.5 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                   {gate.label} · dono {gate.owner} · {gate.criterio}
                 </p>
               </div>
@@ -194,7 +199,7 @@ function ApprovalsPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           {loading && (
-            <p className="py-6 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="py-6 text-center text-xs uppercase tracking-[0.05em] text-muted-foreground">
               Carregando aprovações...
             </p>
           )}
@@ -218,7 +223,7 @@ function ApprovalsPage() {
                     <p className="truncate text-sm font-semibold">
                       {ref ? `${ref.code} · ${ref.name}` : "Referência"}
                     </p>
-                    <p className="mt-0.5 text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                    <p className="mt-0.5 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                       {def?.label ?? g.gate} · dono {def?.owner ?? "—"}
                     </p>
                   </button>
@@ -226,7 +231,7 @@ function ApprovalsPage() {
                     <Badge variant="outline" className={STATUS_TONE[status]}>
                       {GATE_STATUS_LABEL[status]}
                     </Badge>
-                    <span className="text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                    <span className="text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                       decidido em {fmt(g.decided_at)}
                     </span>
                   </div>
@@ -240,7 +245,7 @@ function ApprovalsPage() {
                   <div className="mt-3 space-y-2">
                     <Label
                       htmlFor={`parecer-${g.id}`}
-                      className="text-2xs uppercase tracking-[0.16em]"
+                      className="text-2xs uppercase tracking-[0.04em]"
                     >
                       Parecer da decisão
                     </Label>
@@ -315,7 +320,7 @@ function Metric({
     <div className="rounded-md border border-white/10 bg-white/[0.02] p-4">
       <div className={`flex items-center gap-2 ${tone}`}>
         <Icon className="h-4 w-4" />
-        <span className="text-2xs font-bold uppercase tracking-[0.18em]">{label}</span>
+        <span className="text-2xs font-bold uppercase tracking-[0.04em]">{label}</span>
       </div>
       <p className="mt-2 text-2xl font-bold tabular-nums">{value}</p>
     </div>

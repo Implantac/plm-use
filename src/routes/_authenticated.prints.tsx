@@ -81,8 +81,8 @@ const STATUS_LABEL: Record<PrintAsset["status"], string> = {
 
 const STATUS_CLASS: Record<PrintAsset["status"], string> = {
   rascunho: "bg-muted/40 text-muted-foreground",
-  em_prova: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  aprovada: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  em_prova: "bg-status-progress/15 text-status-progress border-status-progress/30",
+  aprovada: "bg-status-approved/15 text-status-approved border-status-approved/30",
   arquivada: "bg-white/5 text-muted-foreground",
 };
 
@@ -184,7 +184,7 @@ function PrintsRoute() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-widest border transition-colors ${
+            className={`px-3 py-1 rounded-full text-[11px] uppercase tracking-widest border transition-colors ${
               filter === f
                 ? "border-primary/60 bg-primary/10 text-primary"
                 : "border-white/10 text-muted-foreground hover:border-white/20"
@@ -221,7 +221,7 @@ function PrintsRoute() {
                   <div className="absolute top-2 left-2 flex gap-1">
                     <Badge
                       variant="outline"
-                      className={`text-[9px] uppercase tracking-widest ${STATUS_CLASS[p.status]}`}
+                      className={`text-[11px] uppercase tracking-widest ${STATUS_CLASS[p.status]}`}
                     >
                       {STATUS_LABEL[p.status]}
                     </Badge>
@@ -236,7 +236,7 @@ function PrintsRoute() {
                     ))}
                     {p.colors.length > 5 && (
                       <span
-                        className="text-[9px] text-white/80 ml-0.5 self-center"
+                        className="text-[11px] text-white/80 ml-0.5 self-center"
                         title={`${p.colors.length} variações de cor da estampa`}
                       >
                         +{p.colors.length - 5}
@@ -245,9 +245,9 @@ function PrintsRoute() {
                   </div>
                 </div>
                 <div className="p-2.5 bg-white/[0.02]">
-                  <p className="text-[10px] font-mono text-muted-foreground">{p.code}</p>
+                  <p className="text-[11px] font-mono text-muted-foreground">{p.code}</p>
                   <p className="text-xs font-semibold text-white truncate">{p.name}</p>
-                  <div className="flex items-center justify-between mt-1 text-[10px] text-muted-foreground">
+                  <div className="flex items-center justify-between mt-1 text-[11px] text-muted-foreground">
                     <span>{TECNICA_LABEL[p.tecnica]}</span>
                     <span className="flex items-center gap-1">
                       <Link2 className="h-2.5 w-2.5" /> {p.linkedRefs}
@@ -284,7 +284,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[10px] font-mono text-white/60 uppercase tracking-widest">
+              <p className="text-[11px] font-mono text-white/60 uppercase tracking-widest">
                 {print.code}
               </p>
               <h2 className="text-2xl font-bold text-white leading-tight">{print.name}</h2>
@@ -303,7 +303,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
               />
               <Badge
                 variant="outline"
-                className={`${STATUS_CLASS[print.status]} text-[10px] uppercase tracking-widest`}
+                className={`${STATUS_CLASS[print.status]} text-[11px] uppercase tracking-widest`}
               >
                 {STATUS_LABEL[print.status]}
               </Badge>
@@ -355,7 +355,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
               {print.tags.map((t) => (
                 <span
                   key={t}
-                  className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-muted-foreground"
+                  className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-muted-foreground"
                 >
                   <Tag className="h-2.5 w-2.5" />
                   {t}
@@ -395,7 +395,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
         <CardContent className="p-5">
           <div className="flex items-center gap-2 mb-3">
             <History className="h-4 w-4 text-primary" />
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
               Histórico de versões
             </span>
           </div>
@@ -414,7 +414,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white">{v.label}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">
+                  <p className="text-[11px] text-muted-foreground truncate">
                     {v.createdAt} · {v.createdBy}
                     {v.note ? ` · ${v.note}` : ""}
                   </p>
@@ -431,7 +431,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
 function MetaCell({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5">
-      <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-widest text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-muted-foreground">
         {icon}
         {label}
       </div>
@@ -464,7 +464,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[10px] uppercase tracking-widest" required>
+              <Label className="text-[11px] uppercase tracking-widest" required>
                 Rótulo
               </Label>
               <Input
@@ -479,7 +479,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
               {labelError && <FieldMessage variant="error">{labelError}</FieldMessage>}
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-widest">Formato</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Formato</Label>
               <Select
                 value={format}
                 onValueChange={(v) => setFormat(v as PrintAsset["fileFormat"])}
@@ -498,13 +498,13 @@ function NewVersionDialog({ printId }: { printId: string }) {
             </div>
           </div>
           <div>
-            <Label className="text-[10px] uppercase tracking-widest">
+            <Label className="text-[11px] uppercase tracking-widest">
               URL da prévia (upload em breve)
             </Label>
             <Input value={image} onChange={(e) => setImage(e.target.value)} />
           </div>
           <div>
-            <Label className="text-[10px] uppercase tracking-widest">Nota</Label>
+            <Label className="text-[11px] uppercase tracking-widest">Nota</Label>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}

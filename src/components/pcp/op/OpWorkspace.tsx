@@ -167,12 +167,12 @@ export function OpWorkspace({
                     <Link
                       to="/orders"
                       search={{ pedido: originOrderId }}
-                      className="text-[10px] font-normal uppercase tracking-[0.16em] text-primary hover:underline"
+                      className="text-[11px] font-normal uppercase tracking-[0.04em] text-primary hover:underline"
                     >
                       Gerada do pedido {pedidoNumber}
                     </Link>
                   ) : (
-                    <span className="text-[10px] font-normal uppercase tracking-[0.16em] text-muted-foreground">
+                    <span className="text-[11px] font-normal uppercase tracking-[0.04em] text-muted-foreground">
                       Pedido {pedidoNumber}
                     </span>
                   ))}
@@ -224,7 +224,7 @@ export function OpWorkspace({
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="text-[10px] uppercase text-muted-foreground">
+                    <thead className="text-[11px] uppercase text-muted-foreground">
                       <tr>
                         <th className="p-2 text-left" />
                         <th className="p-2 text-left">Item</th>
@@ -342,7 +342,7 @@ export function OpWorkspace({
                           <span key={s.id} className="flex items-center gap-1">
                             <Badge
                               variant={at.get(s.id) ? "default" : "outline"}
-                              className="text-[10px]"
+                              className="text-[11px]"
                             >
                               {s.sequence}. {s.operation}
                               {at.get(s.id) ? ` · ${at.get(s.id)}` : ""}
@@ -382,7 +382,7 @@ export function OpWorkspace({
                           · {o?.operation ?? "—"} →{" "}
                           {d?.operation ?? (p.type === "perda" ? "perda" : "concluído")} ·{" "}
                           {p.quantity} pç ·{" "}
-                          <Badge variant="outline" className="text-[10px]">
+                          <Badge variant="outline" className="text-[11px]">
                             {TYPE_LABEL[p.type] ?? p.type}
                           </Badge>
                           <div className="text-muted-foreground">
@@ -525,7 +525,7 @@ function ScheduleTab({
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <label className="space-y-1 block">
-          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
             Início planejado
           </span>
           <Input
@@ -537,7 +537,7 @@ function ScheduleTab({
           />
         </label>
         <label className="space-y-1 block">
-          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
             Fim planejado
           </span>
           <Input
@@ -549,7 +549,7 @@ function ScheduleTab({
           />
         </label>
         <label className="space-y-1 block">
-          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+          <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
             Prioridade
           </span>
           <select
@@ -566,10 +566,12 @@ function ScheduleTab({
       </div>
 
       {invalidWindow && (
-        <p className="text-xs text-amber-300">O início não pode ser depois do fim.</p>
+        <p className="text-xs text-status-progress">O início não pode ser depois do fim.</p>
       )}
       {msg && (
-        <p className={`text-xs ${msg.kind === "ok" ? "text-emerald-300" : "text-red-400"}`}>
+        <p
+          className={`text-xs ${msg.kind === "ok" ? "text-status-approved" : "text-status-rejected"}`}
+        >
           {msg.text}
         </p>
       )}
@@ -580,7 +582,7 @@ function ScheduleTab({
       )}
 
       <Button
-        className="text-[10px] tracking-[0.16em]"
+        className="text-[11px] tracking-[0.04em]"
         disabled={!canPlan || saving || invalidWindow}
         onClick={async () => {
           setMsg(null);

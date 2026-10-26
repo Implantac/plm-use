@@ -100,13 +100,13 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
   return (
     <div className="glass-card rounded-lg p-6 space-y-5">
       <div className="flex items-start justify-between flex-wrap gap-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Layers className="w-4 h-4 text-primary" /> Aplicações · {apps.length} posições
         </h3>
         <Button
           size="sm"
           variant="outline"
-          className="text-[9px] tracking-[0.15em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
           onClick={() => abrir()}
         >
           <Plus className="w-3.5 h-3.5" /> Nova aplicação
@@ -114,7 +114,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
       </div>
 
       {apps.length === 0 ? (
-        <p className="rounded-md border border-dashed border-white/10 p-4 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="rounded-md border border-dashed border-white/10 p-4 text-xs leading-relaxed text-muted-foreground">
           Nenhuma aplicação nesta ficha. Em uniforme, cada escudo/número/patrocinador entra AQUI —
           não como linha genérica de BOM — para o custo por posição e o setup (telas/chapas) serem
           amortizados pela tiragem real do pedido.
@@ -122,9 +122,9 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
       ) : (
         <>
           <div className="overflow-x-auto rounded-md border border-white/10">
-            <table className="w-full text-left text-[11px]">
+            <table className="w-full text-left text-xs">
               <thead className="bg-white/5">
-                <tr className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                <tr className="text-[11px] uppercase tracking-wider text-muted-foreground">
                   <th className="px-3 py-2">Técnica · Posição</th>
                   <th className="px-3 py-2">Arte</th>
                   <th className="px-3 py-2 text-right">L×A (área)</th>
@@ -140,11 +140,11 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                 {apps.map((a) => (
                   <tr key={a.id} className="hover:bg-white/[0.03]">
                     <td className="px-3 py-2">
-                      <p className="text-white font-bold text-[10px] uppercase tracking-wider">
+                      <p className="text-white font-bold text-[11px] uppercase tracking-wider">
                         {a.tipo}
                       </p>
                       <p className="text-muted-foreground">{a.posicao}</p>
-                      {a.obs && <p className="text-[9px] text-muted-foreground/70">{a.obs}</p>}
+                      {a.obs && <p className="text-[11px] text-muted-foreground/70">{a.obs}</p>}
                     </td>
                     <td className="px-3 py-2 text-muted-foreground">{a.arte || "—"}</td>
                     <td className="px-3 py-2 text-right text-white whitespace-nowrap">
@@ -176,7 +176,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                             remove(refAtual, a.id);
                             toast.info("Aplicação removida.");
                           }}
-                          className="p-1.5 rounded text-muted-foreground hover:bg-rose-500/10 hover:text-rose-300"
+                          className="p-1.5 rounded text-muted-foreground hover:bg-status-rejected/10 hover:text-status-rejected"
                           title="Remover"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -186,7 +186,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="bg-white/5 text-[10px]">
+              <tfoot className="bg-white/5 text-[11px]">
                 <tr>
                   <td
                     colSpan={7}
@@ -213,7 +213,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                         min={1}
                         value={tiragem}
                         onChange={(e) => setTiragem(num(e.target.value) ?? 0)}
-                        className="ml-2 inline-block h-6 w-20 bg-black/30 text-[10px]"
+                        className="ml-2 inline-block h-6 w-20 bg-black/30 text-[11px]"
                         title="Tiragem do lote para amortização"
                       />
                     )}
@@ -240,13 +240,13 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-[11px] uppercase tracking-[0.2em]">
+            <DialogTitle className="text-xs uppercase tracking-[0.05em]">
               {draft.id ? "Editar aplicação" : "Nova aplicação"}
             </DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3 text-[11px]">
+          <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">Técnica</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Técnica</Label>
               <select
                 value={draft.tipo ?? "Bordado"}
                 onChange={(e) =>
@@ -263,7 +263,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               {errors.tipo && <FieldMessage variant="error">{errors.tipo}</FieldMessage>}
             </div>
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">Posição</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Posição</Label>
               <Input
                 list="aposicoes"
                 value={draft.posicao ?? ""}
@@ -278,7 +278,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               {errors.posicao && <FieldMessage variant="error">{errors.posicao}</FieldMessage>}
             </div>
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">
+              <Label className="text-[11px] uppercase tracking-widest">
                 Arte (cartela de estampas)
               </Label>
               <Input
@@ -296,7 +296,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               </datalist>
             </div>
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">Qtde por peça</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Qtde por peça</Label>
               <Input
                 type="number"
                 min={1}
@@ -308,7 +308,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               )}
             </div>
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">Largura (cm)</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Largura (cm)</Label>
               <Input
                 type="number"
                 min={0}
@@ -319,7 +319,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               {errors.larguraCm && <FieldMessage variant="error">{errors.larguraCm}</FieldMessage>}
             </div>
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">Altura (cm)</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Altura (cm)</Label>
               <Input
                 type="number"
                 min={0}
@@ -330,7 +330,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               {errors.alturaCm && <FieldMessage variant="error">{errors.alturaCm}</FieldMessage>}
             </div>
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">
+              <Label className="text-[11px] uppercase tracking-widest">
                 {draft.tipo === "Bordado" ? "Pontos (milhares)" : "Cores"}
               </Label>
               {draft.tipo === "Bordado" ? (
@@ -355,7 +355,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               })()}
             </div>
             <div className="space-y-1">
-              <Label className="text-[9px] uppercase tracking-widest">Custo unitário (R$)</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Custo unitário (R$)</Label>
               <Input
                 type="number"
                 min={0}
@@ -368,7 +368,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               )}
             </div>
             <div className="space-y-1 col-span-2">
-              <Label className="text-[9px] uppercase tracking-widest">
+              <Label className="text-[11px] uppercase tracking-widest">
                 Setup único — telas/chapas (R$, opcional)
               </Label>
               <Input
@@ -384,7 +384,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               )}
             </div>
             <div className="space-y-1 col-span-2">
-              <Label className="text-[9px] uppercase tracking-widest">Observações do custo</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Observações do custo</Label>
               <Input
                 value={draft.obs ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, obs: e.target.value }))}

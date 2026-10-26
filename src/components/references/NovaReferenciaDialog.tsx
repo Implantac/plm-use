@@ -171,7 +171,7 @@ export function NovaReferenciaDialog({
 
         <div className="space-y-5">
           <section className="space-y-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               1 · Identificação
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -240,7 +240,7 @@ export function NovaReferenciaDialog({
           </section>
 
           <section className="space-y-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               2 · Coleção
             </p>
             <div className="grid gap-3 sm:grid-cols-4">
@@ -284,7 +284,7 @@ export function NovaReferenciaDialog({
           </section>
 
           <section className="space-y-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               3 · Ciclo de vida
             </p>
             <div className="grid gap-3 sm:grid-cols-2">

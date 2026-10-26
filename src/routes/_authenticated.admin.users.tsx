@@ -147,8 +147,8 @@ function AdminUsersPage() {
       <ModuleLayout title="Administração de Usuários" subtitle="Acesso restrito" version="ADMIN">
         <div className="rounded-md border border-white/10 bg-white/5 p-10 text-center text-muted-foreground">
           <ShieldOff className="w-10 h-10 mx-auto mb-4 opacity-40" />
-          <p className="text-xs uppercase tracking-[0.2em]">Sem permissão de administrador</p>
-          <p className="text-[11px] mt-2 opacity-70">
+          <p className="text-xs uppercase tracking-[0.05em]">Sem permissão de administrador</p>
+          <p className="text-xs mt-2 opacity-70">
             Solicite a um admin que conceda o papel <b>admin</b> ao seu usuário.
           </p>
         </div>
@@ -172,7 +172,7 @@ function AdminUsersPage() {
       ) : (
         <div className="rounded-md border border-white/10 overflow-hidden">
           <table className="w-full text-[12px]">
-            <thead className="bg-white/5 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+            <thead className="bg-white/5 text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
               <tr>
                 <th className="text-left px-4 py-3">Usuário</th>
                 <th className="text-left px-4 py-3">Cargo</th>
@@ -190,13 +190,13 @@ function AdminUsersPage() {
                     <td className="px-4 py-3">
                       <div className="flex gap-1 flex-wrap">
                         {r.roles.length === 0 && (
-                          <span className="text-muted-foreground text-[10px]">sem papéis</span>
+                          <span className="text-muted-foreground text-[11px]">sem papéis</span>
                         )}
                         {r.roles.map((role) => (
                           <Badge
                             key={role}
                             variant={role === "admin" ? "default" : "outline"}
-                            className="text-[9px] uppercase gap-1 pr-1"
+                            className="text-[11px] uppercase gap-1 pr-1"
                           >
                             {role}
                             <button
@@ -219,14 +219,14 @@ function AdminUsersPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="h-7 text-[9px] tracking-wider gap-1"
+                              className="h-7 text-[11px] tracking-wider gap-1"
                               disabled={missing.length === 0}
                             >
                               <Plus className="w-3 h-3" /> papel
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="max-h-80 overflow-y-auto">
-                            <DropdownMenuLabel className="text-[9px] uppercase tracking-[0.16em]">
+                            <DropdownMenuLabel className="text-[11px] uppercase tracking-[0.04em]">
                               Conceder papel
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
@@ -235,7 +235,7 @@ function AdminUsersPage() {
                                 key={role}
                                 disabled={busy === `${r.id}:${role}`}
                                 onSelect={() => void toggleRole(r.id, role, false)}
-                                className="text-[11px]"
+                                className="text-xs"
                               >
                                 {ROLE_LABEL[role] ?? role}
                               </DropdownMenuItem>

@@ -240,7 +240,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+            <Label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
               Observações
             </Label>
             <Textarea
@@ -252,10 +252,10 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
           </div>
         </div>
         <DialogFooter className="gap-3">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-[10px]">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-[11px]">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} disabled={busy} className="text-[10px]">
+          <Button onClick={handleSubmit} disabled={busy} className="text-[11px]">
             Reservar
           </Button>
         </DialogFooter>

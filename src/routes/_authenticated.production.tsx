@@ -127,7 +127,7 @@ function ProductionPage() {
     >
       <div className="space-y-4">
         {isDemo && (
-          <div className="rounded-md border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-[11px] text-amber-200">
+          <div className="rounded-md border border-status-progress/30 bg-status-progress/10 px-4 py-2 text-xs text-status-progress">
             <strong>Demonstração:</strong> não há OP no banco — as colunas abaixo usam o seed de
             exemplo. Libere um pedido aprovado para o PCP (em <em>Pedidos → Liberar para PCP</em>) e
             esta tela passa a mostrar a produção real.
@@ -145,7 +145,7 @@ function ProductionPage() {
           <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
             <button
               onClick={() => setView("kanban")}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "kanban"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -156,7 +156,7 @@ function ProductionPage() {
             </button>
             <button
               onClick={() => setView("torre")}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "torre"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -167,7 +167,7 @@ function ProductionPage() {
             </button>
             <button
               onClick={() => setView("gantt")}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "gantt"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -178,7 +178,7 @@ function ProductionPage() {
             </button>
             <button
               onClick={() => setView("op")}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "op"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -288,11 +288,11 @@ function ProductionPage() {
           {loteSelecionadoAtual && (
             <>
               <DialogHeader>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
                   {loteSelecionadoAtual.lote.numero} • {loteSelecionadoAtual.setor}
                 </p>
                 <DialogTitle className="text-xl">{loteSelecionadoAtual.lote.grupo}</DialogTitle>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {loteSelecionadoAtual.lote.colecao} • Responsável{" "}
                   {loteSelecionadoAtual.lote.responsavel} • Prazo{" "}
                   {new Date(loteSelecionadoAtual.lote.data_prevista).toLocaleDateString()}
@@ -303,7 +303,7 @@ function ProductionPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10 text-[10px] tracking-[0.14em]"
+                  className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10 text-[11px] tracking-[0.04em]"
                   onClick={() =>
                     openEntity({
                       type: "lote",
@@ -317,7 +317,7 @@ function ProductionPage() {
                 </Button>
               </div>
 
-              <div className="mt-2 flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]">
+              <div className="mt-2 flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs">
                 <span className="text-muted-foreground">Conclusão geral do lote</span>
                 <div className="flex-1 mx-3">
                   <Progress
@@ -330,17 +330,17 @@ function ProductionPage() {
 
               <Tabs defaultValue="refs" className="mt-4">
                 <TabsList className="bg-white/[0.04] border border-white/10">
-                  <TabsTrigger value="refs" className="text-[10px] gap-1">
+                  <TabsTrigger value="refs" className="text-[11px] gap-1">
                     <LayoutGrid className="h-3 w-3" /> Referências
                   </TabsTrigger>
-                  <TabsTrigger value="timeline" className="text-[10px] gap-1">
+                  <TabsTrigger value="timeline" className="text-[11px] gap-1">
                     <History className="h-3 w-3" /> Timeline
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="refs" className="mt-3">
                   <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                       Referências neste setor
                     </p>
                     {loteSelecionadoAtual.lote.referencias
@@ -359,25 +359,25 @@ function ProductionPage() {
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div>
-                              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
                                 {r.ref}
                               </p>
                               <p className="text-sm font-bold text-white">{r.nome}</p>
                             </div>
                             <Badge
                               variant="outline"
-                              className={`text-[9px] ${
+                              className={`text-[11px] ${
                                 r.status === "Concluído"
-                                  ? "border-emerald-400/40 text-emerald-300"
+                                  ? "border-status-approved/40 text-status-approved"
                                   : r.status === "Ocorrência"
-                                    ? "border-rose-400/40 text-rose-300"
+                                    ? "border-status-rejected/40 text-status-rejected"
                                     : "border-white/20"
                               }`}
                             >
                               {r.status}
                             </Badge>
                           </div>
-                          <div className="mt-2 grid grid-cols-4 gap-2 text-center text-[10px]">
+                          <div className="mt-2 grid grid-cols-4 gap-2 text-center text-[11px]">
                             <Mini label="Prog" v={r.qtd_programada} />
                             <Mini label="Saldo" v={saldoReferencia(r)} tone="primary" />
                             <Mini label="Feito" v={r.qtd_produzida} tone="pos" />
@@ -394,7 +394,7 @@ function ProductionPage() {
                       (r) => r.setor_atual !== loteSelecionadoAtual.setor,
                     ).length > 0 && (
                       <>
-                        <p className="pt-3 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        <p className="pt-3 text-[11px] uppercase tracking-wider text-muted-foreground">
                           Outras referências do lote (em outros setores)
                         </p>
                         {loteSelecionadoAtual.lote.referencias
@@ -402,7 +402,7 @@ function ProductionPage() {
                           .map((r) => (
                             <div
                               key={r.ref}
-                              className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-[11px] flex justify-between"
+                              className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-xs flex justify-between"
                             >
                               <span>
                                 <span className="text-primary font-bold">{r.ref}</span> — {r.nome}
@@ -442,15 +442,15 @@ function ProductionPage() {
 function Mini({ label, v, tone }: { label: string; v: number; tone?: "pos" | "neg" | "primary" }) {
   const c =
     tone === "pos"
-      ? "text-emerald-300"
+      ? "text-status-approved"
       : tone === "neg"
-        ? "text-rose-300"
+        ? "text-status-rejected"
         : tone === "primary"
           ? "text-primary"
           : "text-white";
   return (
     <div className="rounded bg-black/30 py-1.5">
-      <p className="text-[8px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className={`text-xs font-bold ${c}`}>{v}</p>
     </div>
   );

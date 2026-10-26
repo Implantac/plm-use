@@ -74,7 +74,7 @@ export const NAV_GROUPS: Record<
   "plm-engenharia": { id: "plm-engenharia", label: "Engenharia", parent: "PLM · Produto" },
   pcp: { id: "pcp", label: "PCP · Produção" },
   supply: { id: "supply", label: "Supply Chain" },
-  gtm: { id: "gtm", label: "Go-to-Market" },
+  gtm: { id: "gtm", label: "Pedidos & Vendas" },
   insights: { id: "insights", label: "Insights & IA" },
   admin: { id: "admin", label: "Administração" },
 };

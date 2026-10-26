@@ -105,7 +105,7 @@ function ProductionTodayPage() {
               <button
                 key={s}
                 onClick={() => setSetor(s)}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition border ${
+                className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition border ${
                   setor === s
                     ? "border-primary/60 bg-primary/15 text-primary"
                     : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/25 hover:text-white"
@@ -120,9 +120,9 @@ function ProductionTodayPage() {
         {fila.length === 0 ? (
           <Card className="glass-card rounded-lg">
             <CardContent className="p-10 text-center">
-              <Zap className="h-8 w-8 text-emerald-300 mx-auto mb-2" />
+              <Zap className="h-8 w-8 text-status-approved mx-auto mb-2" />
               <p className="text-sm text-white">Nenhuma peça pendente em {setor}.</p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Fila vazia — setor disponível para novos lotes.
               </p>
             </CardContent>
@@ -134,9 +134,9 @@ function ProductionTodayPage() {
                 key={`${i.loteNumero}-${i.ref}`}
                 className={`glass-card rounded-lg ${
                   i.diasPrazo < 0
-                    ? "border-rose-400/30"
+                    ? "border-status-rejected/30"
                     : i.diasPrazo <= 3
-                      ? "border-amber-400/30"
+                      ? "border-status-progress/30"
                       : ""
                 }`}
               >
@@ -148,22 +148,22 @@ function ProductionTodayPage() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-3 flex-wrap">
                         <div>
-                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
                             {i.loteNumero} • {i.ref}
                           </p>
                           <p className="text-sm font-bold text-white">{i.nome}</p>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-[11px] text-muted-foreground">
                             {i.grupo} • {i.colecao} • {i.responsavel}
                           </p>
                         </div>
                         <div className="text-right space-y-1">
                           <Badge
                             variant="outline"
-                            className={`text-[10px] ${
+                            className={`text-[11px] ${
                               i.diasPrazo < 0
-                                ? "border-rose-400/40 text-rose-300"
+                                ? "border-status-rejected/40 text-status-rejected"
                                 : i.diasPrazo <= 3
-                                  ? "border-amber-400/40 text-amber-200"
+                                  ? "border-status-progress/40 text-status-progress"
                                   : "border-white/20"
                             }`}
                           >
@@ -174,13 +174,13 @@ function ProductionTodayPage() {
                           </Badge>
                           <p className="text-lg font-bold text-white">
                             {i.pendente}{" "}
-                            <span className="text-[10px] text-muted-foreground">pç</span>
+                            <span className="text-[11px] text-muted-foreground">pç</span>
                           </p>
                         </div>
                       </div>
                       <div className="mt-2 flex items-center gap-2">
                         <Progress value={i.progresso} className="h-1 bg-white/5 flex-1" />
-                        <span className="text-[10px] text-muted-foreground w-10 text-right">
+                        <span className="text-[11px] text-muted-foreground w-10 text-right">
                           {i.progresso}%
                         </span>
                       </div>

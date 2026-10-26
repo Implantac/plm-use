@@ -134,7 +134,7 @@ function MaterialsPage() {
       ]}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+        <p className="text-xs uppercase tracking-[0.05em] text-muted-foreground flex items-center gap-2">
           <Library className="w-3.5 h-3.5 text-primary" /> catálogo · {visible.length} itens
         </p>
         <ExportMenu
@@ -172,11 +172,11 @@ function MaterialsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-white truncate">{m.name}</p>
-                    <p className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                    <p className="text-[11px] font-mono text-muted-foreground mt-0.5">
                       {m.sku || "sem SKU"} · {m.supplier || "fornecedor não informado"}
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full border border-white/15 px-2 py-0.5 text-[9px] uppercase tracking-widest text-muted-foreground">
+                  <span className="shrink-0 rounded-full border border-white/15 px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
                     {m.tipo}
                   </span>
                 </div>
@@ -186,7 +186,7 @@ function MaterialsPage() {
                 <div className="mt-auto flex items-end justify-between">
                   <p className="text-lg font-bold text-white">
                     {brl(m.unitCost)}
-                    <span className="ml-1 text-[10px] font-normal text-muted-foreground">
+                    <span className="ml-1 text-[11px] font-normal text-muted-foreground">
                       /{m.unit}
                     </span>
                   </p>
@@ -205,7 +205,7 @@ function MaterialsPage() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8 text-red-300"
+                      className="h-8 w-8 text-status-rejected"
                       onClick={() => remove(m)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />

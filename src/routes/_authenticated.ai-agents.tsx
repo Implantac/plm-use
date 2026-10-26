@@ -44,7 +44,7 @@ const AGENTS: Record<
   pcp: {
     label: "PCP AI",
     icon: Factory,
-    color: "text-emerald-300",
+    color: "text-status-approved",
     sugestoes: [
       "Quais lotes estão atrasados e por quê?",
       "Onde está meu maior gargalo agora?",
@@ -54,7 +54,7 @@ const AGENTS: Record<
   marketing: {
     label: "Marketing AI",
     icon: Megaphone,
-    color: "text-amber-300",
+    color: "text-status-progress",
     sugestoes: [
       "Quais métricas reais de influencers estão disponíveis? Cite as fontes e sinalize quando faltarem dados.",
       "Em qual região investir mais a próxima campanha?",
@@ -180,7 +180,7 @@ function AIAgentsPage() {
                   <Ai className={`h-4 w-4 ${AGENTS[id].color}`} />
                   <p className="text-sm font-bold text-white">{AGENTS[id].label}</p>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-1">
+                <p className="text-[11px] text-muted-foreground mt-1">
                   {id === "fashion"
                     ? "Coleção, tendência, mood."
                     : id === "pcp"
@@ -193,7 +193,7 @@ function AIAgentsPage() {
 
           <Card className="glass-card rounded-lg mt-4">
             <CardContent className="p-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
                 Sugestões
               </p>
               <div className="space-y-1.5">
@@ -202,7 +202,7 @@ function AIAgentsPage() {
                     key={s}
                     onClick={() => enviar(s)}
                     disabled={loading}
-                    className="w-full text-left text-[11px] text-white/80 hover:text-white rounded-md border border-white/5 bg-white/[0.02] hover:border-primary/30 p-2 transition disabled:opacity-50"
+                    className="w-full text-left text-xs text-white/80 hover:text-white rounded-md border border-white/5 bg-white/[0.02] hover:border-primary/30 p-2 transition disabled:opacity-50"
                   >
                     {s}
                   </button>
@@ -218,7 +218,7 @@ function AIAgentsPage() {
             <div className="flex items-center gap-2 pb-3 border-b border-white/10">
               <Icon className={`h-5 w-5 ${A.color}`} />
               <p className="text-sm font-bold text-white">{A.label}</p>
-              <Badge variant="outline" className="text-[9px] border-white/15 ml-auto">
+              <Badge variant="outline" className="text-[11px] border-white/15 ml-auto">
                 google/gemini-3-flash-preview
               </Badge>
             </div>
@@ -228,7 +228,7 @@ function AIAgentsPage() {
                 <div className="text-center text-muted-foreground py-12">
                   <Bot className={`h-10 w-10 mx-auto mb-2 ${A.color}`} />
                   <p className="text-sm">Comece uma conversa com {A.label}.</p>
-                  <p className="text-[11px] mt-1">
+                  <p className="text-xs mt-1">
                     {agent === "pcp"
                       ? "Eu já tenho contexto dos seus lotes atuais."
                       : "Pergunte qualquer coisa sobre sua área."}

@@ -153,11 +153,11 @@ function CatalogPage() {
       metrics={metrics}
     >
       {fatal && (
-        <div className="mb-6 flex items-start gap-3 rounded-md border border-amber-400/30 bg-amber-400/10 p-4">
-          <AlertTriangle className="w-4 h-4 text-amber-300 mt-0.5 shrink-0" />
+        <div className="mb-6 flex items-start gap-3 rounded-md border border-status-progress/30 bg-status-progress/10 p-4">
+          <AlertTriangle className="w-4 h-4 text-status-progress mt-0.5 shrink-0" />
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-amber-100">Catálogo ainda não ativo</p>
-            <p className="text-[11px] text-amber-100/80">{fatal}</p>
+            <p className="text-xs font-semibold text-status-progress">Catálogo ainda não ativo</p>
+            <p className="text-xs text-status-progress/80">{fatal}</p>
           </div>
         </div>
       )}
@@ -166,7 +166,7 @@ function CatalogPage() {
         <Button
           variant="outline"
           onClick={() => void load()}
-          className="text-[10px] tracking-[0.14em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Atualizar
         </Button>
@@ -187,7 +187,7 @@ function CatalogPage() {
           {canEdit && (
             <Button
               onClick={() => setEditing("new")}
-              className="text-[10px] tracking-[0.16em] gap-2"
+              className="text-[11px] tracking-[0.04em] gap-2"
             >
               <Plus className="w-4 h-4" /> Novo produto
             </Button>
@@ -202,16 +202,16 @@ function CatalogPage() {
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-primary">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
                         {p.code}
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded border text-[8px] font-bold uppercase tracking-[0.14em] ${meta.cls}`}
+                        className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-[0.04em] ${meta.cls}`}
                       >
                         {meta.label}
                       </span>
                       {p.family && (
-                        <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
                           {p.family}
                         </span>
                       )}
@@ -229,21 +229,21 @@ function CatalogPage() {
                         <Button
                           variant="outline"
                           onClick={() => setManaging(p)}
-                          className="text-[9px] tracking-[0.14em] gap-1.5"
+                          className="text-[11px] tracking-[0.04em] gap-1.5"
                         >
                           <Sparkles className="w-3.5 h-3.5" /> Opções
                         </Button>
                         <Button
                           variant="ghost"
                           onClick={() => setEditing(p)}
-                          className="text-[9px] tracking-[0.14em] gap-1.5"
+                          className="text-[11px] tracking-[0.04em] gap-1.5"
                         >
                           <Pencil className="w-3.5 h-3.5" /> Editar
                         </Button>
                         {p.status !== "validado" ? (
                           <Button
                             onClick={() => validate(p, "validado")}
-                            className="text-[9px] tracking-[0.14em] gap-1.5"
+                            className="text-[11px] tracking-[0.04em] gap-1.5"
                           >
                             <BadgeCheck className="w-3.5 h-3.5" /> Validar
                           </Button>
@@ -251,7 +251,7 @@ function CatalogPage() {
                           <Button
                             variant="outline"
                             onClick={() => validate(p, "descontinuado")}
-                            className="text-[9px] tracking-[0.14em] gap-1.5 text-red-300"
+                            className="text-[11px] tracking-[0.04em] gap-1.5 text-status-rejected"
                           >
                             <CircleSlash className="w-3.5 h-3.5" /> Descontinuar
                           </Button>
@@ -266,7 +266,7 @@ function CatalogPage() {
                     {p.options.map((o) => (
                       <span
                         key={o.id}
-                        className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[10px] text-white"
+                        className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[11px] text-white"
                         title={`${o.sector ?? "produção"} · ${o.driver} · ${brl(o.unitCost)}`}
                       >
                         {o.name}
@@ -445,7 +445,7 @@ function ProductDialog({
                   </option>
                 ))}
               </select>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 Sem configuração, a liberação para o PCP não acha a rota.
               </p>
             </div>
@@ -603,7 +603,7 @@ function OptionsDialog({
 
         <div className="space-y-5">
           <div className="space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground flex items-center gap-1.5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground flex items-center gap-1.5">
               <Layers className="w-3 h-3" /> Grupos e opções
             </p>
             {groups.length === 0 ? (
@@ -619,19 +619,19 @@ function OptionsDialog({
                     <div key={gid} className="rounded-md border border-white/10 bg-black/20 p-3">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-semibold text-white">{String(g.name)}</span>
-                        <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
                           {String(g.selection) === "multi" ? "múltipla" : "única"}
                           {g.required === true ? " · obrigatória" : ""}
                         </span>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {opts.length === 0 ? (
-                          <span className="text-[10px] text-muted-foreground">sem opções</span>
+                          <span className="text-[11px] text-muted-foreground">sem opções</span>
                         ) : (
                           opts.map((o) => (
                             <span
                               key={o.id}
-                              className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[10px] text-white"
+                              className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[11px] text-white"
                             >
                               {o.name}
                               <span className="text-primary"> · {o.driver}</span>
@@ -652,7 +652,7 @@ function OptionsDialog({
           </div>
 
           <div className="rounded-md border border-white/10 p-3 space-y-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
               Novo grupo
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -669,7 +669,7 @@ function OptionsDialog({
                 className="h-9"
               />
             </div>
-            <div className="flex items-center gap-4 text-[11px] text-white">
+            <div className="flex items-center gap-4 text-xs text-white">
               <label className="flex items-center gap-1.5">
                 <input
                   type="radio"
@@ -699,19 +699,19 @@ function OptionsDialog({
               variant="outline"
               onClick={addGroup}
               disabled={saving}
-              className="text-[10px] tracking-[0.14em]"
+              className="text-[11px] tracking-[0.04em]"
             >
               Criar grupo
             </Button>
           </div>
 
           <div className="rounded-md border border-primary/20 bg-primary/[0.04] p-3 space-y-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
               Nova opção (com custeio)
             </p>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Grupo
                 </Label>
                 <select
@@ -728,7 +728,7 @@ function OptionsDialog({
                 </select>
               </div>
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Nome
                 </Label>
                 <Input
@@ -739,7 +739,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Setor
                 </Label>
                 <Input
@@ -750,7 +750,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Operação
                 </Label>
                 <Input
@@ -761,7 +761,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Driver
                 </Label>
                 <select
@@ -777,7 +777,7 @@ function OptionsDialog({
                 </select>
               </div>
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Custo unitário (R$)
                 </Label>
                 <Input
@@ -789,7 +789,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Setup do pedido (R$)
                 </Label>
                 <Input
@@ -801,7 +801,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
                   Δ preço de venda (R$)
                 </Label>
                 <Input
@@ -814,7 +814,7 @@ function OptionsDialog({
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-1.5 text-[11px] text-white">
+              <label className="flex items-center gap-1.5 text-xs text-white">
                 <input
                   type="checkbox"
                   checked={optOutsourced}
@@ -825,12 +825,12 @@ function OptionsDialog({
               <Button
                 onClick={addOption}
                 disabled={saving}
-                className="text-[10px] tracking-[0.14em]"
+                className="text-[11px] tracking-[0.04em]"
               >
                 {saving ? "Salvando…" : "Criar opção"}
               </Button>
             </div>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               O driver define como o custo multiplica: por peça, por mil pontos de bordado, por m²
               de sublimação, por cor de silk ou fixo por pedido (setup amortizado na quantidade).
             </p>

@@ -13,11 +13,11 @@ function timeAgo(iso: string) {
 }
 
 const actionColor: Record<string, string> = {
-  create: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
-  update: "text-sky-300 bg-sky-500/10 border-sky-500/30",
-  delete: "text-rose-300 bg-rose-500/10 border-rose-500/30",
-  occurrence: "text-amber-300 bg-amber-500/10 border-amber-500/30",
-  capa: "text-violet-300 bg-violet-500/10 border-violet-500/30",
+  create: "text-status-approved bg-status-approved/10 border-status-approved/30",
+  update: "text-status-review bg-status-review/10 border-status-review/30",
+  delete: "text-status-rejected bg-status-rejected/10 border-status-rejected/30",
+  occurrence: "text-status-progress bg-status-progress/10 border-status-progress/30",
+  capa: "text-status-review bg-status-review/10 border-status-review/30",
 };
 
 export function ActivityFeedButton() {
@@ -33,7 +33,7 @@ export function ActivityFeedButton() {
         >
           <Activity className="w-4 h-4 text-muted-foreground group-hover:text-white transition-colors" />
           {items.length > 0 && (
-            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-status-approved animate-pulse" />
           )}
         </button>
       </PopoverTrigger>
@@ -43,10 +43,10 @@ export function ActivityFeedButton() {
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
           <div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold">
+            <div className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground font-bold">
               Atividade ao vivo
             </div>
-            <div className="text-[11px] text-white mt-0.5">{items.length} eventos recentes</div>
+            <div className="text-xs text-white mt-0.5">{items.length} eventos recentes</div>
           </div>
           <button
             onClick={() => setOpen(false)}
@@ -59,12 +59,12 @@ export function ActivityFeedButton() {
         <ScrollArea className="max-h-[440px]">
           <div className="divide-y divide-white/5">
             {loading && (
-              <div className="px-4 py-6 text-center text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <div className="px-4 py-6 text-center text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
                 Carregando...
               </div>
             )}
             {!loading && items.length === 0 && (
-              <div className="px-4 py-10 text-center text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <div className="px-4 py-10 text-center text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
                 Nenhuma atividade ainda
               </div>
             )}
@@ -75,13 +75,13 @@ export function ActivityFeedButton() {
                 <div key={it.id} className="px-4 py-3 hover:bg-white/[0.03] transition-colors">
                   <div className="flex items-start gap-3">
                     <span
-                      className={`shrink-0 px-2 py-0.5 rounded text-[8px] uppercase tracking-[0.16em] font-bold border ${color}`}
+                      className={`shrink-0 px-2 py-0.5 rounded text-[10px] uppercase tracking-[0.04em] font-bold border ${color}`}
                     >
                       {it.module}
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] text-white leading-snug">{it.message}</p>
-                      <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground">
+                      <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
                         <span className="font-medium text-white/70">{it.user_name}</span>
                         <span>·</span>
                         <span>há {timeAgo(it.created_at)}</span>

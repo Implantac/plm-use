@@ -64,14 +64,14 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
 
   const corTipo =
     tipo === "positiva"
-      ? "border-emerald-400/30 bg-emerald-400/5"
+      ? "border-status-approved/30 bg-status-approved/5"
       : tipo === "negativa"
-        ? "border-rose-400/30 bg-rose-400/5"
-        : "border-amber-300/30 bg-amber-300/5";
+        ? "border-status-rejected/30 bg-status-rejected/5"
+        : "border-status-progress/30 bg-status-progress/5";
 
   return (
     <div className="space-y-4">
-      <div className={`rounded-md border p-3 text-[11px] ${corTipo}`}>
+      <div className={`rounded-md border p-3 text-xs ${corTipo}`}>
         <p className="text-muted-foreground">
           <strong className="text-white">Positiva</strong>: aumenta produção final •{" "}
           <strong className="text-white">Negativa</strong>: reduz saldo final •{" "}
@@ -85,7 +85,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Tipo</Label>
+          <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Tipo</Label>
           <Select value={tipo} onValueChange={(v) => setTipo(v as TipoOcorrencia)}>
             <SelectTrigger className="">
               <SelectValue />
@@ -98,7 +98,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
           </Select>
         </div>
         <div>
-          <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
             Quantidade
           </Label>
           <Input
@@ -136,7 +136,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
 
       {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
-      <Button onClick={handleSubmit} className="w-full text-[10px]">
+      <Button onClick={handleSubmit} className="w-full text-[11px]">
         Registrar Ocorrência
       </Button>
     </div>

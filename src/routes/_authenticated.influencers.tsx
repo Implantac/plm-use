@@ -108,26 +108,26 @@ function InfluencersPage() {
                         <p className="text-sm font-bold text-white">{i.nome}</p>
                         <Badge
                           variant="outline"
-                          className="text-[9px] border-primary/40 text-primary"
+                          className="text-[11px] border-primary/40 text-primary"
                         >
                           {i.perfil}
                         </Badge>
                       </div>
-                      <p className="text-[11px] text-muted-foreground flex items-center gap-2 mt-0.5">
+                      <p className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
                         <Instagram className="h-3 w-3" /> {i.handle} •
                         <MapPin className="h-3 w-3" /> {i.uf} • {i.segmento}
                       </p>
-                      <p className="text-[10px] text-muted-foreground mt-1">
+                      <p className="text-[11px] text-muted-foreground mt-1">
                         {(i.seguidores / 1000).toFixed(0)}k seguidores • R${" "}
                         {i.custoMedio.toLocaleString("pt-BR")} médio/envio
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                         Vendas geradas
                       </p>
-                      <p className="text-2xl font-bold text-emerald-300">{i.vendasGeradas}</p>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-2xl font-bold text-status-approved">{i.vendasGeradas}</p>
+                      <p className="text-[11px] text-muted-foreground">
                         {i.envios.length} envios • {eng.toFixed(1)}% eng
                       </p>
                     </div>
@@ -150,7 +150,7 @@ function InfluencersPage() {
                   const v = heatmap.map[r];
                   const pct = Math.round((v / heatmap.max) * 100);
                   return (
-                    <div key={r} className="flex items-center gap-3 text-[11px]">
+                    <div key={r} className="flex items-center gap-3 text-xs">
                       <span className="w-24 truncate text-muted-foreground">{r}</span>
                       <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
                         <div
@@ -163,7 +163,7 @@ function InfluencersPage() {
                   );
                 })}
               </div>
-              <p className="text-[10px] text-muted-foreground mt-3">
+              <p className="text-[11px] text-muted-foreground mt-3">
                 Concentração de vendas atribuídas a creators por macro-região.
               </p>
             </CardContent>
@@ -171,15 +171,15 @@ function InfluencersPage() {
 
           <Card className="glass-card rounded-lg border-primary/20">
             <CardContent className="p-4">
-              <p className="text-[10px] uppercase tracking-wider text-primary mb-1 flex items-center gap-1">
+              <p className="text-[11px] uppercase tracking-wider text-primary mb-1 flex items-center gap-1">
                 <Heart className="h-3 w-3" /> Investimento total
               </p>
               <p className="text-2xl font-bold text-white">
                 R$ {totais.investido.toLocaleString("pt-BR")}
               </p>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 ROI estimado:{" "}
-                <span className="text-emerald-300 font-bold">
+                <span className="text-status-approved font-bold">
                   {totais.investido > 0
                     ? `${Math.round(((totais.vendasTot * 350) / totais.investido) * 100)}%`
                     : "—"}
@@ -197,17 +197,17 @@ function InfluencersPage() {
           {sel && (
             <>
               <DialogHeader>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
                   {sel.handle}
                 </p>
                 <DialogTitle className="text-xl">{sel.nome}</DialogTitle>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {sel.regiao} • {sel.uf} • {sel.segmento} • {(sel.seguidores / 1000).toFixed(0)}k
                 </p>
               </DialogHeader>
 
               <div className="flex justify-between items-center mt-2">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                   Histórico de envios ({sel.envios.length})
                 </p>
                 <Button
@@ -227,34 +227,36 @@ function InfluencersPage() {
                     className="rounded-md border border-white/10 bg-white/[0.03] p-3 flex items-center justify-between gap-3"
                   >
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
                         {e.ref}
                       </p>
                       <p className="text-sm font-bold text-white flex items-center gap-2">
                         <Package className="h-3 w-3 text-muted-foreground" />
                         {e.nome}
                       </p>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-[11px] text-muted-foreground">
                         {new Date(e.data).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="text-right">
                       <Badge
                         variant="outline"
-                        className={`text-[10px] ${
+                        className={`text-[11px] ${
                           e.status === "Engajou"
-                            ? "border-emerald-400/40 text-emerald-300"
+                            ? "border-status-approved/40 text-status-approved"
                             : e.status === "Postou"
                               ? "border-primary/40 text-primary"
                               : e.status === "Pendente"
-                                ? "border-amber-400/40 text-amber-300"
+                                ? "border-status-progress/40 text-status-progress"
                                 : "border-white/20"
                         }`}
                       >
                         {e.status}
                       </Badge>
                       {e.engajamento && (
-                        <p className="text-[10px] text-emerald-300 mt-1">{e.engajamento}% eng</p>
+                        <p className="text-[11px] text-status-approved mt-1">
+                          {e.engajamento}% eng
+                        </p>
                       )}
                     </div>
                   </div>
@@ -263,13 +265,13 @@ function InfluencersPage() {
 
               <div className="mt-3 grid grid-cols-3 gap-2 text-center">
                 <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                     Vendas
                   </p>
-                  <p className="text-lg font-bold text-emerald-300">{sel.vendasGeradas}</p>
+                  <p className="text-lg font-bold text-status-approved">{sel.vendasGeradas}</p>
                 </div>
                 <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                     Custo médio
                   </p>
                   <p className="text-lg font-bold text-white">
@@ -277,7 +279,7 @@ function InfluencersPage() {
                   </p>
                 </div>
                 <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
                     Conversão
                   </p>
                   <p className="text-lg font-bold text-primary">
@@ -299,7 +301,7 @@ function InfluencersPage() {
           <div className="space-y-3 mt-2">
             <div>
               <Label
-                className="text-[10px] uppercase tracking-wider text-muted-foreground"
+                className="text-[11px] uppercase tracking-wider text-muted-foreground"
                 required
               >
                 Referência
@@ -318,7 +320,7 @@ function InfluencersPage() {
             </div>
             <div>
               <Label
-                className="text-[10px] uppercase tracking-wider text-muted-foreground"
+                className="text-[11px] uppercase tracking-wider text-muted-foreground"
                 required
               >
                 Nome da peça

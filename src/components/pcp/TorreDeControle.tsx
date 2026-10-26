@@ -109,18 +109,21 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
 
       {/* Gargalo */}
       {gargalo && gargalo.pecas > 0 && (
-        <Card className="glass-card rounded-lg border-amber-400/30">
+        <Card className="glass-card rounded-lg border-status-progress/30">
           <CardContent className="p-4 flex items-center gap-3">
-            <TrendingDown className="h-5 w-5 text-amber-300" />
+            <TrendingDown className="h-5 w-5 text-status-progress" />
             <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-wider text-amber-300/80">
+              <p className="text-[11px] uppercase tracking-wider text-status-progress/80">
                 Gargalo identificado
               </p>
               <p className="text-sm font-bold text-white">
                 {gargalo.setor} — {gargalo.pecas} peças pendentes
               </p>
             </div>
-            <Badge variant="outline" className="border-amber-400/40 text-amber-200 text-[10px]">
+            <Badge
+              variant="outline"
+              className="border-status-progress/40 text-status-progress text-[11px]"
+            >
               Priorizar
             </Badge>
           </CardContent>
@@ -135,7 +138,10 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
               <h3 className="text-sm font-bold uppercase tracking-wider text-white">
                 Lotes atrasados
               </h3>
-              <Badge variant="outline" className="border-rose-400/40 text-rose-200 text-[10px]">
+              <Badge
+                variant="outline"
+                className="border-status-rejected/40 text-status-rejected text-[11px]"
+              >
                 {atrasados.length}
               </Badge>
             </div>
@@ -149,23 +155,23 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
                   <button
                     key={l.numero}
                     onClick={() => onSelectLote?.(l)}
-                    className="w-full text-left rounded-md border border-rose-400/20 bg-rose-500/5 p-3 hover:border-rose-400/50 transition"
+                    className="w-full text-left rounded-md border border-status-rejected/20 bg-status-rejected/5 p-3 hover:border-status-rejected/50 transition"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-rose-300">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-status-rejected">
                           {l.numero}
                         </p>
                         <p className="text-sm font-bold text-white">{l.grupo}</p>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[11px] text-muted-foreground">
                           {l.colecao} • {l.responsavel}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs font-bold text-rose-300">
+                        <p className="text-xs font-bold text-status-rejected">
                           {Math.abs(diasParaPrazo(l))}d atrasado
                         </p>
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[11px] text-muted-foreground">
                           {percentualLote(l)}% pronto
                         </p>
                       </div>
@@ -193,7 +199,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
                 const max = Math.max(...SETORES_PCP.map((x) => cargaPorSetor[x].pecasPendentes), 1);
                 const pct = Math.round((c.pecasPendentes / max) * 100);
                 return (
-                  <div key={s} className="flex items-center gap-3 text-[11px]">
+                  <div key={s} className="flex items-center gap-3 text-xs">
                     <span className="w-24 truncate text-muted-foreground">{s}</span>
                     <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
                       <div
@@ -231,21 +237,21 @@ function KPI({
 }) {
   const color =
     tone === "pos"
-      ? "text-emerald-300"
+      ? "text-status-approved"
       : tone === "neg"
-        ? "text-rose-300"
+        ? "text-status-rejected"
         : tone === "warn"
-          ? "text-amber-300"
+          ? "text-status-progress"
           : "text-white";
   return (
     <Card className="glass-card rounded-lg">
       <CardContent className="p-3">
-        <div className="flex items-center gap-2 text-muted-foreground text-[10px] uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-muted-foreground text-[11px] uppercase tracking-wider">
           {icon}
           {label}
         </div>
         <p className={`mt-1 text-2xl font-bold ${color}`}>{value}</p>
-        {hint && <p className="text-[10px] text-muted-foreground">{hint}</p>}
+        {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
       </CardContent>
     </Card>
   );

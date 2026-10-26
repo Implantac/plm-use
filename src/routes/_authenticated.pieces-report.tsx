@@ -116,7 +116,7 @@ function PiecesReportPage() {
             <button
               key={opt.id}
               onClick={() => setSort(opt.id)}
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] transition ${
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.04em] transition ${
                 active
                   ? "border-primary/60 bg-primary/15 text-white"
                   : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-white"
@@ -131,8 +131,8 @@ function PiecesReportPage() {
 
       <Card className="glass-card border-white/10 rounded-2xl">
         <CardContent className="p-0 overflow-x-auto">
-          <table className="w-full text-[11px]">
-            <thead className="bg-white/[0.03] uppercase tracking-widest text-[9px] text-muted-foreground">
+          <table className="w-full text-xs">
+            <thead className="bg-white/[0.03] uppercase tracking-widest text-[11px] text-muted-foreground">
               <tr>
                 <th className="p-3 text-left">Referência</th>
                 <th className="p-3 text-left">Coleção · Designer</th>
@@ -159,7 +159,7 @@ function PiecesReportPage() {
                         search={{ ref: lc.ref }}
                         className="block hover:text-primary transition"
                       >
-                        <span className="text-[9px] uppercase tracking-[0.2em] text-primary">
+                        <span className="text-[11px] uppercase tracking-[0.05em] text-primary">
                           {lc.ref}
                         </span>
                         <p className="text-sm font-bold text-white">{lc.nome}</p>
@@ -167,14 +167,14 @@ function PiecesReportPage() {
                     </td>
                     <td className="p-3 text-muted-foreground">
                       {lc.colecao ?? "—"}
-                      <div className="text-[9px] uppercase tracking-wider opacity-70">
+                      <div className="text-[11px] uppercase tracking-wider opacity-70">
                         {lc.designer ?? "—"}
                       </div>
                     </td>
                     <td className="p-3">
                       <Badge
                         variant="outline"
-                        className="border-white/15 text-[9px] uppercase text-white"
+                        className="border-white/15 text-[11px] uppercase text-white"
                       >
                         {stage?.label ?? "—"}
                       </Badge>
@@ -183,9 +183,9 @@ function PiecesReportPage() {
                       <span
                         className={
                           dias > 14
-                            ? "text-rose-300 font-bold"
+                            ? "text-status-rejected font-bold"
                             : dias > 7
-                              ? "text-amber-300"
+                              ? "text-status-progress"
                               : "text-muted-foreground"
                         }
                       >
@@ -194,7 +194,7 @@ function PiecesReportPage() {
                     </td>
                     <td className="p-3 text-right tabular-nums">
                       {rep > 0 ? (
-                        <span className="inline-flex items-center gap-1 text-amber-300">
+                        <span className="inline-flex items-center gap-1 text-status-progress">
                           <Repeat className="w-3 h-3" /> {rep}
                         </span>
                       ) : (
@@ -207,20 +207,24 @@ function PiecesReportPage() {
                           <div
                             className={`h-full ${
                               pct >= 100
-                                ? "bg-emerald-400"
+                                ? "bg-status-approved"
                                 : "bg-gradient-to-r from-primary/60 to-primary"
                             }`}
                             style={{ width: `${pct}%` }}
                           />
                         </div>
                         <span className="tabular-nums text-white w-10 text-right">{pct}%</span>
-                        {pct >= 100 && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+                        {pct >= 100 && (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-status-approved" />
+                        )}
                       </div>
                     </td>
-                    <td className="p-3 text-right text-[10px]">
+                    <td className="p-3 text-right text-[11px]">
                       {lc.prazo ? (
                         <span
-                          className={atrasada ? "text-rose-300 font-bold" : "text-muted-foreground"}
+                          className={
+                            atrasada ? "text-status-rejected font-bold" : "text-muted-foreground"
+                          }
                         >
                           {lc.prazo}
                           {atrasada && <AlertTriangle className="inline w-3 h-3 ml-1" />}
@@ -237,7 +241,7 @@ function PiecesReportPage() {
         </CardContent>
       </Card>
 
-      <p className="mt-4 text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+      <p className="mt-4 text-[11px] uppercase tracking-widest text-muted-foreground flex items-center gap-2">
         <BarChart3 className="w-3 h-3" />
         {sorted.length} peças · ordenadas por {SORT_OPTIONS.find((o) => o.id === sort)?.label}
       </p>

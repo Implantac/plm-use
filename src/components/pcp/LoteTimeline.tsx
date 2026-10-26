@@ -104,7 +104,7 @@ export function LoteTimeline({ lote }: { lote: Lote }) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-8 text-center text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-8 text-center text-xs text-muted-foreground">
         Nenhum evento registrado neste lote ainda.
       </div>
     );
@@ -134,12 +134,12 @@ function TimelineRow({ item }: { item: TimelineItem }) {
       <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold text-white">{item.title}</p>
+            <p className="text-xs font-bold text-white">{item.title}</p>
             {item.detail && (
-              <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{item.detail}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{item.detail}</p>
             )}
           </div>
-          <span className="shrink-0 text-[9px] uppercase tracking-wider text-muted-foreground">
+          <span className="shrink-0 text-[11px] uppercase tracking-wider text-muted-foreground">
             {ts.toLocaleDateString("pt-BR")}{" "}
             {ts.toLocaleTimeString("pt-BR", {
               hour: "2-digit",
@@ -147,7 +147,7 @@ function TimelineRow({ item }: { item: TimelineItem }) {
             })}
           </span>
         </div>
-        <div className="mt-1.5 flex flex-wrap gap-1.5 text-[9px] uppercase tracking-wider">
+        <div className="mt-1.5 flex flex-wrap gap-1.5 text-[11px] uppercase tracking-wider">
           {item.ref && (
             <span className="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-primary">
               {item.ref}
@@ -174,27 +174,27 @@ function kindMeta(k: TimelineItem["kind"]) {
     case "passagem-integral":
       return {
         icon: Truck,
-        tone: "text-emerald-300 border-emerald-400/40 bg-emerald-400/10",
+        tone: "text-status-approved border-status-approved/40 bg-status-approved/10",
       };
     case "passagem-parcial":
       return {
         icon: ArrowRight,
-        tone: "text-sky-300 border-sky-400/40 bg-sky-400/10",
+        tone: "text-status-review border-status-review/40 bg-status-review/10",
       };
     case "retrabalho":
       return {
         icon: Clock,
-        tone: "text-amber-300 border-amber-400/40 bg-amber-400/10",
+        tone: "text-status-progress border-status-progress/40 bg-status-progress/10",
       };
     case "ocor-pos":
       return {
         icon: PlusCircle,
-        tone: "text-emerald-300 border-emerald-400/40 bg-emerald-400/10",
+        tone: "text-status-approved border-status-approved/40 bg-status-approved/10",
       };
     case "ocor-neg":
       return {
         icon: MinusCircle,
-        tone: "text-rose-300 border-rose-400/40 bg-rose-400/10",
+        tone: "text-status-rejected border-status-rejected/40 bg-status-rejected/10",
       };
     case "ocor-neutra":
       return {

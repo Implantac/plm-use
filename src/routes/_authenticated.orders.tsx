@@ -198,11 +198,13 @@ function OrdersPage() {
       metrics={metrics}
     >
       {fatal && (
-        <div className="mb-6 flex items-start gap-3 rounded-md border border-amber-400/30 bg-amber-400/10 p-4">
-          <AlertTriangle className="w-4 h-4 text-amber-300 mt-0.5 shrink-0" />
+        <div className="mb-6 flex items-start gap-3 rounded-md border border-status-progress/30 bg-status-progress/10 p-4">
+          <AlertTriangle className="w-4 h-4 text-status-progress mt-0.5 shrink-0" />
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-amber-100">Fluxo de pedidos ainda não ativo</p>
-            <p className="text-[11px] text-amber-100/80">{fatal}</p>
+            <p className="text-xs font-semibold text-status-progress">
+              Fluxo de pedidos ainda não ativo
+            </p>
+            <p className="text-xs text-status-progress/80">{fatal}</p>
           </div>
         </div>
       )}
@@ -212,7 +214,7 @@ function OrdersPage() {
           <button
             key={f.id}
             onClick={() => setFilter(f.id)}
-            className={`px-3 py-1.5 rounded-md border text-[10px] font-bold uppercase tracking-[0.14em] transition-colors ${
+            className={`px-3 py-1.5 rounded-md border text-[11px] font-bold uppercase tracking-[0.04em] transition-colors ${
               filter === f.id
                 ? "border-primary/40 bg-primary/10 text-primary"
                 : "border-white/10 text-muted-foreground hover:text-white"
@@ -225,7 +227,7 @@ function OrdersPage() {
         <Button
           variant="outline"
           onClick={() => void load()}
-          className="text-[10px] tracking-[0.14em] gap-2"
+          className="text-[11px] tracking-[0.04em] gap-2"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Atualizar
         </Button>
@@ -246,7 +248,7 @@ function OrdersPage() {
           {canSell && (
             <Button
               onClick={() => setNewOpen(true)}
-              className="text-[10px] tracking-[0.16em] gap-2"
+              className="text-[11px] tracking-[0.04em] gap-2"
             >
               <Plus className="w-4 h-4" /> Novo pedido
             </Button>
@@ -257,7 +259,7 @@ function OrdersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-left text-[9px] uppercase tracking-[0.14em] text-muted-foreground border-b border-white/10">
+                <tr className="text-left text-[11px] uppercase tracking-[0.04em] text-muted-foreground border-b border-white/10">
                   <th className="px-4 py-3 font-bold">Pedido</th>
                   <th className="px-4 py-3 font-bold">Cliente</th>
                   <th className="px-4 py-3 font-bold">Status</th>
@@ -277,18 +279,18 @@ function OrdersPage() {
                       <td className="px-4 py-3">
                         <span className="text-white font-semibold">{o.number}</span>
                         {o.isQuote && (
-                          <span className="ml-2 text-[8px] uppercase tracking-[0.14em] text-sky-300">
+                          <span className="ml-2 text-[10px] uppercase tracking-[0.04em] text-status-review">
                             orçamento
                           </span>
                         )}
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[11px] text-muted-foreground">
                           criado {new Date(o.createdAt).toLocaleDateString("pt-BR")}
                         </p>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{o.customerName ?? "—"}</td>
                       <td className="px-4 py-3">
                         <span
-                          className={`px-2 py-0.5 rounded border text-[8px] font-bold uppercase tracking-[0.14em] ${meta.cls}`}
+                          className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-[0.04em] ${meta.cls}`}
                         >
                           {meta.label}
                         </span>
@@ -305,7 +307,7 @@ function OrdersPage() {
                         <Button
                           variant="outline"
                           onClick={() => setSearch({ pedido: o.id })}
-                          className="text-[9px] tracking-[0.14em]"
+                          className="text-[11px] tracking-[0.04em]"
                         >
                           Abrir
                         </Button>
@@ -406,7 +408,7 @@ function NewOrderDialog({
               <Label>Cliente</Label>
               <button
                 onClick={onNeedCustomer}
-                className="text-[10px] text-primary uppercase tracking-[0.14em] flex items-center gap-1"
+                className="text-[11px] text-primary uppercase tracking-[0.04em] flex items-center gap-1"
               >
                 <UserPlus className="w-3 h-3" /> cadastrar
               </button>
@@ -424,7 +426,7 @@ function NewOrderDialog({
               ))}
             </select>
             {customers.length === 0 && (
-              <p className="text-[10px] text-amber-300">
+              <p className="text-[11px] text-status-progress">
                 Nenhum cliente cadastrado — use “cadastrar” ao lado.
               </p>
             )}

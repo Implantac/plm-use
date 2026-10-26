@@ -38,14 +38,14 @@ export function StockItemSelect({
     <span className="flex items-center gap-1">
       <Input
         aria-label="Buscar item de estoque"
-        className="h-7 w-24 text-[11px]"
+        className="h-7 w-24 text-xs"
         placeholder="Buscar"
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
       <select
         aria-label="Item de estoque (reserva)"
-        className="h-7 max-w-48 rounded border border-input bg-transparent px-2 text-[11px]"
+        className="h-7 max-w-48 rounded border border-input bg-transparent px-2 text-xs"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >

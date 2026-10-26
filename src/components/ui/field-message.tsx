@@ -11,7 +11,7 @@ import { useFieldContext } from "@/components/ui/field";
  * aria-describedby (no manual wiring needed).
  */
 const fieldMessageVariants = cva(
-  "flex items-start gap-1.5 text-[11px] leading-snug font-normal transition-colors duration-150",
+  "flex items-start gap-1.5 text-xs leading-snug font-normal transition-colors duration-150",
   {
     variants: {
       variant: {
@@ -21,8 +21,8 @@ const fieldMessageVariants = cva(
         // fica em ~3.3–4.2:1 e reprova WCAG AA. --danger-text é a variante
         // legível (≥5.4:1) definida em styles.css.
         error: "text-danger-text",
-        success: "text-emerald-400",
-        warning: "text-amber-400",
+        success: "text-status-approved",
+        warning: "text-status-progress",
         info: "text-primary",
       },
     },

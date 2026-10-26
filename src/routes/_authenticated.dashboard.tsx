@@ -6,13 +6,18 @@ import {
   ArrowRight,
   BadgeCheck,
   Boxes,
+  Calculator,
   CircleDot,
   ClipboardCheck,
+  Factory,
   Layers3,
   PackageOpen,
   Scissors,
+  Send,
   Sparkles,
 } from "lucide-react";
+
+import { ORDER_FLOW_STEPS, ORDER_STATUS } from "@/lib/sales/types";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,12 +35,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 const PIPELINE_STAGES: { status: ReferenceStatus; color: string }[] = [
-  { status: "IDEIA", color: "bg-sky-400" },
+  { status: "IDEIA", color: "bg-status-review" },
   { status: "CROQUI", color: "bg-cyan-300" },
   { status: "MODELAGEM", color: "bg-primary" },
-  { status: "PILOTO", color: "bg-amber-300" },
-  { status: "AJUSTE", color: "bg-orange-300" },
-  { status: "APROVACAO", color: "bg-emerald-300" },
+  { status: "PILOTO", color: "bg-status-progress" },
+  { status: "AJUSTE", color: "bg-status-progress" },
+  { status: "APROVACAO", color: "bg-status-approved" },
   { status: "ENGENHARIA", color: "bg-teal-300" },
   { status: "PRODUCAO", color: "bg-blue-300" },
 ];
@@ -70,15 +75,20 @@ function Dashboard() {
       label: "Em piloto",
       value: statusCounts.get("PILOTO") ?? 0,
       icon: Boxes,
-      tone: "text-amber-300",
+      tone: "text-status-progress",
     },
     {
       label: "Em aprovação",
       value: statusCounts.get("APROVACAO") ?? 0,
       icon: ClipboardCheck,
-      tone: "text-emerald-300",
+      tone: "text-status-approved",
     },
-    { label: "Coleções vinculadas", value: collectionCount, icon: Layers3, tone: "text-sky-300" },
+    {
+      label: "Coleções vinculadas",
+      value: collectionCount,
+      icon: Layers3,
+      tone: "text-status-review",
+    },
   ];
 
   return (
@@ -111,12 +121,64 @@ function Dashboard() {
         </div>
       </motion.section>
 
+      {/* Redesign 26/out — "onde começa e onde termina": o ciclo comercial vira
+          trilha numerada na primeira dobra do dashboard. Fonte: ORDER_FLOW_STEPS
+          (mesma máquina que o backend executa — docs/FLUXO-OPERACIONAL-PEDIDO.md). */}
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        aria-label="Fluxo operacional do pedido"
+        className="glass-card rounded-xl p-4"
+      >
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-sm font-semibold">Fluxo operacional — do pedido à OP</h2>
+          <p className="text-xs text-muted-foreground">
+            Começa com o <span className="font-medium text-foreground">vendedor</span> criando o
+            pedido; termina quando a{" "}
+            <span className="font-medium text-foreground">OP entra na régua do PCP</span>.
+          </p>
+        </div>
+        <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          {ORDER_FLOW_STEPS.map((step, i) => (
+            <li key={step.status}>
+              <Link
+                to={step.status === "liberado_pcp" ? "/production" : "/orders"}
+                className="group flex h-full items-start gap-2.5 rounded-lg border border-border/60 px-3 py-2.5 transition-colors hover:border-primary/40 hover:bg-primary/5"
+              >
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold tabular-nums text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground">
+                  {i + 1}
+                </span>
+                <span className="min-w-0">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold">
+                    {step.status === "rascunho" && <Send className="h-3.5 w-3.5 text-primary" />}
+                    {(step.status === "enviado" || step.status === "em_custo") && (
+                      <Calculator className="h-3.5 w-3.5 text-primary" />
+                    )}
+                    {(step.status === "custo_concluido" || step.status === "aprovado") && (
+                      <BadgeCheck className="h-3.5 w-3.5 text-primary" />
+                    )}
+                    {step.status === "liberado_pcp" && (
+                      <Factory className="h-3.5 w-3.5 text-primary" />
+                    )}
+                    {ORDER_STATUS[step.status].label}
+                  </span>
+                  <span className="block text-[11px] leading-snug text-muted-foreground">
+                    {step.who} · {step.action}
+                  </span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      </motion.section>
+
       {error && (
         <div
           role="alert"
-          className="flex items-start gap-3 rounded-md border border-rose-400/30 bg-rose-400/5 p-4 text-sm"
+          className="flex items-start gap-3 rounded-md border border-destructive/25 bg-destructive/5 p-4 text-sm"
         >
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300" />
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-status-rejected" />
           <div>
             <p className="font-medium text-white">Não foi possível atualizar as referências.</p>
             <p className="mt-1 text-muted-foreground">

@@ -79,14 +79,14 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]">
+      <div className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs">
         <div className="flex justify-between text-muted-foreground">
           <span>Setor atual</span>
           <span className="font-bold text-white">{referencia.setor_atual}</span>
         </div>
         <div className="mt-1 flex justify-between text-muted-foreground">
           <span>Saldo pendente</span>
-          <span className="font-bold text-amber-300">{pendente} pç</span>
+          <span className="font-bold text-status-progress">{pendente} pç</span>
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
         <>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
                 Tipo
               </Label>
               <Select
@@ -114,7 +114,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
               </Select>
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
                 Setor destino
               </Label>
               <Select value={destino} onValueChange={(v) => setDestino(v as SetorPCP)}>
@@ -176,7 +176,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
 
       {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
-      <Button onClick={handleSubmit} className="w-full text-[10px]">
+      <Button onClick={handleSubmit} className="w-full text-[11px]">
         Registrar {linha === "1a" ? "Passagem" : "Retrabalho"}
       </Button>
     </div>

@@ -45,25 +45,25 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
             Identificação
           </p>
           <p className="text-sm font-bold text-white">
             {referencia.ref} · {referencia.nome}
           </p>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {grupo ?? "Grupo —"}
             {colecao ? ` • ${colecao}` : ""}
           </p>
           <p
-            className={`mt-1 text-[10px] font-bold uppercase tracking-wider ${
-              summary.exists ? "text-emerald-400/90" : "text-amber-400/90"
+            className={`mt-1 text-[11px] font-bold uppercase tracking-wider ${
+              summary.exists ? "text-status-approved/90" : "text-status-progress/90"
             }`}
           >
             {formatSheetSummary(summary)}
           </p>
         </div>
-        <Button asChild size="sm" variant="outline" className="text-[10px] tracking-[0.15em] gap-1">
+        <Button asChild size="sm" variant="outline" className="text-[11px] tracking-[0.04em] gap-1">
           <Link to="/tech-sheet" search={{ ref: referencia.ref }}>
             Abrir ficha completa <ExternalLink className="h-3 w-3" />
           </Link>
@@ -89,12 +89,12 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
 
       <Section icon={<Ruler className="h-3 w-3" />} title="Grade programada">
         {grade.length === 0 ? (
-          <p className="text-[11px] text-muted-foreground">Sem grade definida.</p>
+          <p className="text-xs text-muted-foreground">Sem grade definida.</p>
         ) : (
           <div className="grid grid-cols-5 gap-2">
             {grade.map(([tam, qtd]) => (
               <div key={tam} className="rounded border border-white/10 bg-white/5 py-2 text-center">
-                <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{tam}</p>
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{tam}</p>
                 <p className="text-sm font-bold text-white">{qtd}</p>
               </div>
             ))}
@@ -109,9 +109,9 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
             title={`Materiais · ${doc.bom.length} itens`}
           >
             <div className="rounded-md border border-white/10 overflow-hidden">
-              <table className="w-full text-left text-[11px]">
+              <table className="w-full text-left text-xs">
                 <thead className="bg-white/5">
-                  <tr className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="text-[11px] uppercase tracking-wider text-muted-foreground">
                     <th className="px-3 py-2">Tipo</th>
                     <th className="px-3 py-2">Material</th>
                     <th className="px-3 py-2 text-right">Consumo</th>
@@ -121,7 +121,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                 <tbody className="divide-y divide-white/5">
                   {doc.bom.map((m) => (
                     <tr key={m.id}>
-                      <td className="px-3 py-2 text-primary/80 text-[10px] uppercase">{m.tipo}</td>
+                      <td className="px-3 py-2 text-primary/80 text-[11px] uppercase">{m.tipo}</td>
                       <td className="px-3 py-2 text-white">{m.material}</td>
                       <td className="px-3 py-2 text-right text-muted-foreground">
                         {m.consumo} {m.unidade}
@@ -133,7 +133,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                     <tr>
                       <td
                         colSpan={4}
-                        className="px-3 py-3 text-center text-[10px] text-muted-foreground"
+                        className="px-3 py-3 text-center text-[11px] text-muted-foreground"
                       >
                         Ficha criada, BOM ainda vazio — preencha na ficha completa.
                       </td>
@@ -142,7 +142,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                 </tbody>
                 {doc.bom.length > 0 && (
                   <tfoot>
-                    <tr className="bg-white/5 text-[10px]">
+                    <tr className="bg-white/5 text-[11px]">
                       <td
                         colSpan={3}
                         className="px-3 py-2 uppercase tracking-wider text-muted-foreground"
@@ -168,10 +168,10 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                 {doc.aplicacoes.map((a) => (
                   <div
                     key={a.id}
-                    className="flex items-center justify-between rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px]"
+                    className="flex items-center justify-between rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-xs"
                   >
                     <span className="text-white">
-                      <span className="text-[9px] uppercase tracking-wider text-primary mr-2">
+                      <span className="text-[11px] uppercase tracking-wider text-primary mr-2">
                         {a.tipo}
                       </span>
                       {a.posicao}{" "}
@@ -184,7 +184,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                     </span>
                   </div>
                 ))}
-                <p className="pt-1 text-right text-[10px] uppercase tracking-wider text-muted-foreground">
+                <p className="pt-1 text-right text-[11px] uppercase tracking-wider text-muted-foreground">
                   Aplicações/peça:{" "}
                   <strong className="text-white normal-case tracking-normal">
                     {brl(custoAplicacoesPecasTotal(doc.aplicacoes))}
@@ -193,7 +193,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                     <>
                       {" "}
                       · setup único:{" "}
-                      <strong className="text-amber-200 normal-case tracking-normal">
+                      <strong className="text-status-progress normal-case tracking-normal">
                         {brl(setupTotal(doc.aplicacoes))}
                       </strong>
                     </>
@@ -211,12 +211,12 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
               {bopOrdem.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px]"
+                  className="flex items-center justify-between rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-xs"
                 >
                   <span className="flex items-center gap-2 text-white">
-                    <span className="text-[9px] text-muted-foreground">{p.seq}.</span>
+                    <span className="text-[11px] text-muted-foreground">{p.seq}.</span>
                     {p.etapa}
-                    <span className="text-[9px] text-muted-foreground">· {p.setor}</span>
+                    <span className="text-[11px] text-muted-foreground">· {p.setor}</span>
                   </span>
                   <span className="text-muted-foreground">
                     {p.tempoMin} min · <span className="text-white">{brl(p.custo)}</span>
@@ -224,12 +224,12 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                 </div>
               ))}
               {doc.bop.length === 0 && (
-                <p className="rounded-md border border-dashed border-white/10 p-3 text-center text-[10px] text-muted-foreground">
+                <p className="rounded-md border border-dashed border-white/10 p-3 text-center text-[11px] text-muted-foreground">
                   Nenhuma etapa de operação na ficha ainda.
                 </p>
               )}
               {doc.bom.length + doc.bop.length > 0 && (
-                <p className="pt-1 text-right text-[10px] uppercase tracking-wider text-muted-foreground">
+                <p className="pt-1 text-right text-[11px] uppercase tracking-wider text-muted-foreground">
                   Custo industrial (BOM+BOP):{" "}
                   <strong className="text-white normal-case tracking-normal">
                     {brl(custoIndustrial)}
@@ -240,7 +240,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
           </Section>
         </>
       ) : (
-        <div className="rounded-md border border-dashed border-amber-500/30 bg-amber-500/5 p-4 text-[11px] leading-relaxed text-muted-foreground">
+        <div className="rounded-md border border-dashed border-status-progress/30 bg-status-progress/5 p-4 text-xs leading-relaxed text-muted-foreground">
           Esta referência ainda não tem ficha técnica registrada (nem local, nem na nuvem). "Abrir
           ficha completa" cria e edita a real — nada aqui é exemplo: a versão anterior desta tela
           mostrava materiais e processos hardcoded que não existiam em ficha nenhuma.
@@ -261,7 +261,7 @@ function Section({
 }) {
   return (
     <div className="space-y-2">
-      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-primary">
+      <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.05em] text-primary">
         {icon} {title}
       </p>
       {children}

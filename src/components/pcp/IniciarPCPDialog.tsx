@@ -64,11 +64,11 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em]">
+          <DialogTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.04em]">
             <Workflow className="h-4 w-4 text-primary" />
             Iniciar fluxo PCP
           </DialogTitle>
-          <DialogDescription className="text-[11px] leading-relaxed">
+          <DialogDescription className="text-xs leading-relaxed">
             Confirme o handoff do piloto aprovado{" "}
             <span className="font-bold text-white">{referenciaNome}</span> para o PCP e escolha por
             onde começar. O restante do fluxo permanecerá carregado no mesmo contexto em Produção.
@@ -78,7 +78,7 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
         <div className="space-y-3">
           <Badge
             variant="outline"
-            className="border-primary/40 text-primary text-[9px] uppercase tracking-widest"
+            className="border-primary/40 text-primary text-[11px] uppercase tracking-widest"
           >
             Ref · {referenciaRef}
           </Badge>
@@ -100,10 +100,10 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
               >
                 <RadioGroupItem id={`pcp-start-${s.id}`} value={s.id} className="mt-0.5" />
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+                  <p className="text-xs font-bold uppercase tracking-[0.04em] text-white">
                     {s.label}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-white/70">{s.detail}</p>
+                  <p className="mt-0.5 text-[11px] text-white/70">{s.detail}</p>
                 </div>
               </Label>
             ))}

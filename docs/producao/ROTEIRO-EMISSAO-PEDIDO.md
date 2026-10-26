@@ -1,6 +1,6 @@
 # Onde fica a emissão de pedido
 
-Resposta curta: **menu lateral → grupo `Go-to-Market` → `Pedidos`**
+Resposta curta: **menu lateral → grupo `Pedidos & Vendas` → `Pedidos`**
 (`https://plmuse.lovable.app/orders`).
 
 Não é em **Comercial**. Essa tela (`/commercial`) ainda é painel de demonstração
@@ -13,7 +13,7 @@ O fluxo real fica em duas telas:
 | Tela                 | Onde no menu               | Rota       |
 | -------------------- | -------------------------- | ---------- |
 | **Catálogo técnico** | PLM · Produto → Engenharia | `/catalog` |
-| **Pedidos**          | Go-to-Market               | `/orders`  |
+| **Pedidos**          | Pedidos & Vendas           | `/orders`  |
 
 ---
 

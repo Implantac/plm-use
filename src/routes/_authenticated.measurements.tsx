@@ -137,7 +137,7 @@ function MeasurementsPage() {
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] transition ${
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.04em] transition ${
                 active
                   ? "border-primary/60 bg-primary/15 text-white"
                   : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-white"
@@ -148,7 +148,7 @@ function MeasurementsPage() {
               {s === "rascunho" && <Ruler className="h-3 w-3" />}
               {s === "arquivada" && <Archive className="h-3 w-3" />}
               {s === "todos" ? "Todas" : s}
-              <span className="rounded-full bg-white/10 px-1.5 text-[9px]">{count}</span>
+              <span className="rounded-full bg-white/10 px-1.5 text-[11px]">{count}</span>
             </button>
           );
         })}
@@ -158,9 +158,7 @@ function MeasurementsPage() {
         {/* Lista */}
         <div className="space-y-2 overflow-y-auto pr-2 max-h-[calc(100vh-320px)]">
           {filtered.length === 0 ? (
-            <p className="text-[11px] italic text-muted-foreground">
-              Nenhuma tabela para este filtro.
-            </p>
+            <p className="text-xs italic text-muted-foreground">Nenhuma tabela para este filtro.</p>
           ) : (
             filtered.map((c) => {
               const active = selected?.id === c.id;
@@ -176,26 +174,28 @@ function MeasurementsPage() {
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div>
-                      <p className="text-[9px] uppercase tracking-[0.2em] text-primary">{c.code}</p>
+                      <p className="text-[11px] uppercase tracking-[0.05em] text-primary">
+                        {c.code}
+                      </p>
                       <p className="text-sm font-bold text-white mt-0.5">{c.name}</p>
-                      <p className="text-[10px] text-muted-foreground mt-1">
+                      <p className="text-[11px] text-muted-foreground mt-1">
                         {c.category} · {c.segment} · {c.fit ?? "—"}
                       </p>
                     </div>
                     <Badge
                       variant="outline"
-                      className={`text-[8px] uppercase ${
+                      className={`text-[10px] uppercase ${
                         c.status === "aprovada"
-                          ? "border-emerald-400/40 text-emerald-300"
+                          ? "border-status-approved/40 text-status-approved"
                           : c.status === "rascunho"
-                            ? "border-amber-400/40 text-amber-300"
+                            ? "border-status-progress/40 text-status-progress"
                             : "border-white/20 text-muted-foreground"
                       }`}
                     >
                       {c.status}
                     </Badge>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-[9px] text-muted-foreground uppercase tracking-wider">
+                  <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground uppercase tracking-wider">
                     <span>{c.grade.length} tamanhos</span>
                     <span>{c.linkedRefs} refs</span>
                   </div>
@@ -211,11 +211,11 @@ function MeasurementsPage() {
             <CardContent className="p-6 space-y-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.25em] text-primary">
+                  <p className="text-[11px] uppercase tracking-[0.05em] text-primary">
                     {selected.code}
                   </p>
                   <h2 className="text-2xl font-bold text-white mt-1">{selected.name}</h2>
-                  <p className="text-[11px] text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {selected.category} · {selected.segment} · fit {selected.fit ?? "—"} ·{" "}
                     {selected.brand ?? "sem marca"} · atualizada em {selected.updatedAt} por{" "}
                     {selected.updatedBy}
@@ -233,7 +233,7 @@ function MeasurementsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-rose-300 hover:text-rose-200"
+                    className="text-status-rejected hover:text-status-rejected"
                     onClick={() => {
                       deleteChart(selected.id);
                       toast.error("Tabela removida");
@@ -246,22 +246,22 @@ function MeasurementsPage() {
               </div>
 
               {selected.notes && (
-                <p className="text-[11px] italic text-muted-foreground border-l-2 border-white/10 pl-3">
+                <p className="text-xs italic text-muted-foreground border-l-2 border-white/10 pl-3">
                   {selected.notes}
                 </p>
               )}
 
               {/* Grade */}
               <div className="overflow-x-auto rounded-lg border border-white/10">
-                <table className="w-full text-[11px]">
-                  <thead className="bg-white/[0.03] uppercase tracking-widest text-[9px] text-muted-foreground">
+                <table className="w-full text-xs">
+                  <thead className="bg-white/[0.03] uppercase tracking-widest text-[11px] text-muted-foreground">
                     <tr>
                       <th className="p-3 text-left">Tamanho</th>
                       {selected.points.map((p) => (
                         <th key={p.id} className="p-3 text-right">
                           <div className="flex flex-col items-end">
                             <span className="text-white">{p.code}</span>
-                            <span className="text-[8px] normal-case text-muted-foreground">
+                            <span className="text-[10px] normal-case text-muted-foreground">
                               {p.label} · ±{p.toleranceCm}
                             </span>
                           </div>
@@ -279,7 +279,7 @@ function MeasurementsPage() {
                             className="p-3 text-right tabular-nums text-muted-foreground"
                           >
                             {row.values[p.code] ?? "—"}{" "}
-                            <span className="text-[9px] opacity-60">{selected.unit}</span>
+                            <span className="text-[11px] opacity-60">{selected.unit}</span>
                           </td>
                         ))}
                       </tr>
@@ -292,7 +292,7 @@ function MeasurementsPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-[10px]"
+                  className="text-[11px]"
                   onClick={() => {
                     upsertChart({
                       ...selected,
@@ -307,7 +307,7 @@ function MeasurementsPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-[10px]"
+                  className="text-[11px]"
                   onClick={() => {
                     upsertChart({
                       ...selected,
@@ -322,7 +322,7 @@ function MeasurementsPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-[10px]"
+                  className="text-[11px]"
                   onClick={() => {
                     const dup: MeasurementChart = {
                       ...selected,
@@ -345,7 +345,7 @@ function MeasurementsPage() {
           </Card>
         ) : (
           <Card className="glass-card border-white/10 rounded-2xl">
-            <CardContent className="p-10 text-center text-muted-foreground text-[11px]">
+            <CardContent className="p-10 text-center text-muted-foreground text-xs">
               Selecione uma tabela ao lado ou crie uma nova.
             </CardContent>
           </Card>
@@ -363,7 +363,7 @@ function MeasurementsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label
-                  className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground"
+                  className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
                   required
                 >
                   Código
@@ -381,7 +381,7 @@ function MeasurementsPage() {
               </div>
               <div className="space-y-1.5">
                 <Label
-                  className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground"
+                  className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
                   required
                 >
                   Nome
@@ -400,7 +400,7 @@ function MeasurementsPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
                   Categoria
                 </Label>
                 <select
@@ -421,7 +421,7 @@ function MeasurementsPage() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
                   Segmento
                 </Label>
                 <select

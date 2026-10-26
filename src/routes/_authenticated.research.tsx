@@ -160,10 +160,10 @@ function ResearchHub() {
       ]}
     >
       <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
+        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
           <ImagePlus className="w-4 h-4" /> Importar Inspiração
         </Button>
-        <Button variant="outline" className="text-[10px] tracking-[0.16em] gap-2">
+        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
           <Sparkles className="w-4 h-4" /> Gerar Moodboard AI
         </Button>
       </div>
@@ -179,7 +179,7 @@ function ResearchHub() {
             ].map((item) => (
               <div key={item.label} className="rounded-md border border-white/10 bg-black/20 p-4">
                 <item.icon className="h-4 w-4 text-primary" />
-                <p className="mt-3 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                   {item.label}
                 </p>
                 <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
@@ -188,7 +188,7 @@ function ResearchHub() {
           </div>
         </Card>
         <Card className="glass-card rounded-lg p-5">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white mb-4 flex items-center gap-2">
+          <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-4 flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-primary" /> Benchmark
           </h3>
           {[
@@ -204,14 +204,17 @@ function ResearchHub() {
       </div>
 
       <div className="flex items-center gap-4 border-b border-white/5 pb-6 mb-8 overflow-x-auto no-scrollbar">
-        <Button variant="ghost" className="text-primary text-[10px] tracking-[0.2em] bg-primary/10">
+        <Button
+          variant="ghost"
+          className="text-primary text-[11px] tracking-[0.05em] bg-primary/10"
+        >
           Todos
         </Button>
         {categories.map((cat) => (
           <Button
             key={cat}
             variant="ghost"
-            className="text-muted-foreground hover:text-white text-[10px] tracking-[0.2em] transition-colors"
+            className="text-muted-foreground hover:text-white text-[11px] tracking-[0.05em] transition-colors"
           >
             {cat}
           </Button>
@@ -275,10 +278,10 @@ function ResearchHub() {
                       key={label}
                       className="rounded-md bg-white/[0.035] border border-white/5 p-2"
                     >
-                      <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                         {label}
                       </p>
-                      <p className="mt-1 text-[10px] font-bold text-white">{value}</p>
+                      <p className="mt-1 text-[11px] font-bold text-white">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -286,7 +289,7 @@ function ResearchHub() {
                   {item.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 flex items-center gap-1"
+                      className="text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 flex items-center gap-1"
                     >
                       <Hash className="w-3 h-3" /> {tag.replace("#", "")}
                     </span>
@@ -307,7 +310,7 @@ function ResearchHub() {
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Título do Insight
               </Label>
               <Input
@@ -318,7 +321,7 @@ function ResearchHub() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Tags (separadas por vírgula)
               </Label>
               <Input
@@ -330,10 +333,10 @@ function ResearchHub() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[10px]">
+            <Button onClick={handleSave} className="text-[11px]">
               Fixar no Board
             </Button>
           </DialogFooter>

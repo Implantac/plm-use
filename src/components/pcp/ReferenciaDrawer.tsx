@@ -48,21 +48,21 @@ export function ReferenciaDrawer({ loteNumero, grupo, colecao, referencia, open,
         <SheetHeader className="pb-3 border-b border-white/10">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
                 {loteNumero} • {referencia.ref}
               </p>
               <SheetTitle className="mt-1 text-white text-xl">{referencia.nome}</SheetTitle>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="text-[10px] border-white/20">
+                <Badge variant="outline" className="text-[11px] border-white/20">
                   {referencia.setor_atual}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className={`text-[10px] ${
+                  className={`text-[11px] ${
                     referencia.status === "Concluído"
-                      ? "border-emerald-400/40 text-emerald-300"
+                      ? "border-status-approved/40 text-status-approved"
                       : referencia.status === "Ocorrência"
-                        ? "border-rose-400/40 text-rose-300"
+                        ? "border-status-rejected/40 text-status-rejected"
                         : "border-white/20"
                   }`}
                 >
@@ -79,7 +79,7 @@ export function ReferenciaDrawer({ loteNumero, grupo, colecao, referencia, open,
             <Metric label="Saldo" value={saldoReferencia(referencia)} tone="strong" />
           </div>
           <div>
-            <div className="flex justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="flex justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
               <span>Produzido {referencia.qtd_produzida}</span>
               <span>Pendente {pendenteReferencia(referencia)}</span>
             </div>
@@ -117,31 +117,31 @@ function ReferenciaTabs({
   return (
     <Tabs defaultValue="ficha" className="mt-4">
       <TabsList className="grid w-full grid-cols-9 bg-white/5 h-auto">
-        <TabsTrigger value="ficha" className="text-[10px] gap-1">
+        <TabsTrigger value="ficha" className="text-[11px] gap-1">
           <ScrollText className="h-3 w-3" /> Ficha
         </TabsTrigger>
-        <TabsTrigger value="pilotos" className="text-[10px] gap-1">
+        <TabsTrigger value="pilotos" className="text-[11px] gap-1">
           <Shirt className="h-3 w-3" /> Pilotos
         </TabsTrigger>
-        <TabsTrigger value="timeline" className="text-[10px] gap-1">
+        <TabsTrigger value="timeline" className="text-[11px] gap-1">
           <GitBranch className="h-3 w-3" /> Timeline
         </TabsTrigger>
-        <TabsTrigger value="layout" className="text-[10px] gap-1">
+        <TabsTrigger value="layout" className="text-[11px] gap-1">
           <Layers className="h-3 w-3" /> Layout
         </TabsTrigger>
-        <TabsTrigger value="p1" className="text-[10px] gap-1">
+        <TabsTrigger value="p1" className="text-[11px] gap-1">
           <Workflow className="h-3 w-3" /> 1ª Linha
         </TabsTrigger>
-        <TabsTrigger value="p2" className="text-[10px] gap-1">
+        <TabsTrigger value="p2" className="text-[11px] gap-1">
           <Workflow className="h-3 w-3" /> 2ª Linha
         </TabsTrigger>
-        <TabsTrigger value="oco" className="text-[10px] gap-1">
+        <TabsTrigger value="oco" className="text-[11px] gap-1">
           <AlertOctagon className="h-3 w-3" /> Ocorr.
         </TabsTrigger>
-        <TabsTrigger value="hist" className="text-[10px] gap-1">
+        <TabsTrigger value="hist" className="text-[11px] gap-1">
           <History className="h-3 w-3" /> Hist.
         </TabsTrigger>
-        <TabsTrigger value="chat" className="text-[10px] gap-1">
+        <TabsTrigger value="chat" className="text-[11px] gap-1">
           <MessageSquare className="h-3 w-3" /> Chat
         </TabsTrigger>
       </TabsList>
@@ -184,18 +184,18 @@ function ReferenciaTabs({
         <OcorrenciaForm loteNumero={loteNumero} referencia={referencia} />
         {referencia.ocorrencias.length > 0 && (
           <div className="mt-4 space-y-2">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
               Ocorrências registradas
             </p>
             {referencia.ocorrencias.map((o) => (
               <div
                 key={o.id}
-                className={`rounded-md border p-3 text-[11px] ${
+                className={`rounded-md border p-3 text-xs ${
                   o.tipo === "positiva"
-                    ? "border-emerald-400/30 bg-emerald-400/5"
+                    ? "border-status-approved/30 bg-status-approved/5"
                     : o.tipo === "negativa"
-                      ? "border-rose-400/30 bg-rose-400/5"
-                      : "border-amber-300/30 bg-amber-300/5"
+                      ? "border-status-rejected/30 bg-status-rejected/5"
+                      : "border-status-progress/30 bg-status-progress/5"
                 }`}
               >
                 <div className="flex justify-between">
@@ -216,12 +216,12 @@ function ReferenciaTabs({
 
       <TabsContent value="hist" className="mt-4 space-y-2">
         {referencia.passagens.length === 0 ? (
-          <p className="text-[11px] text-muted-foreground">Nenhuma passagem registrada ainda.</p>
+          <p className="text-xs text-muted-foreground">Nenhuma passagem registrada ainda.</p>
         ) : (
           referencia.passagens.map((p) => (
             <div
               key={p.id}
-              className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px]"
+              className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs"
             >
               <div className="flex justify-between">
                 <span className="font-bold uppercase tracking-wider text-primary">
@@ -233,9 +233,9 @@ function ReferenciaTabs({
                 {p.setor_origem}
                 {p.setor_destino ? ` → ${p.setor_destino}` : ""} · {p.responsavel}
               </p>
-              {p.defeito && <p className="mt-1 text-rose-300">Defeito: {p.defeito}</p>}
+              {p.defeito && <p className="mt-1 text-status-rejected">Defeito: {p.defeito}</p>}
               {p.observacao && <p className="mt-1 text-white">{p.observacao}</p>}
-              <p className="mt-1 text-[10px] text-muted-foreground">
+              <p className="mt-1 text-[11px] text-muted-foreground">
                 {new Date(p.timestamp).toLocaleString()}
               </p>
             </div>
@@ -257,15 +257,15 @@ function Metric({
 }) {
   const color =
     tone === "pos"
-      ? "text-emerald-300"
+      ? "text-status-approved"
       : tone === "neg"
-        ? "text-rose-300"
+        ? "text-status-rejected"
         : tone === "strong"
           ? "text-primary"
           : "text-white";
   return (
     <div className="rounded bg-white/5 py-2">
-      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className={`text-sm font-bold ${color}`}>{value}</p>
     </div>
   );

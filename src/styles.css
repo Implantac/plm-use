@@ -2,16 +2,13 @@
 @source "../src";
 @import "tw-animate-css";
 
-/* Fontes ANUNCIADAS nos tokens (L. "DM Sans"/"Cormorant"/"JetBrains") que nunca
-   foram carregadas — até 23/out o app renderizava no fallback do sistema, a
-   "fonte robotizada" do diagnóstico. Self-hosted via @fontsource: funciona em
-   qualquer host (Lovable/Docker local) sem depender de CDN. */
-@import "@fontsource-variable/dm-sans/index.css";
+/* Self-hosted via @fontsource (funciona em qualquer host, sem CDN).
+   2026-10-26 (redesign): Inter Variable assume UI e títulos — DM Sans e a serifada
+   Cormorant Garamond saem; "fontes nada comerciais" era a serifada editorial no h1.
+   Inter 700 com tracking negativo é a voz padrão de software de gestão (Linear/Notion).
+   JetBrains Mono só em números/tabulações. */
+@import "@fontsource-variable/inter/index.css";
 @import "@fontsource-variable/jetbrains-mono/index.css";
-@import "@fontsource/cormorant-garamond/400.css";
-@import "@fontsource/cormorant-garamond/500.css";
-@import "@fontsource/cormorant-garamond/600.css";
-@import "@fontsource/cormorant-garamond/700.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -25,64 +22,68 @@
  * Neutros de grafite, verde-jade de marca e acentos de status distintos.
  * ------------------------------------------------------------------------ */
 :root {
-  /* Ink neutral: warm near-black, matches the logo's dark copper */
-  --ink-0: 30 20% 98%;
-  --ink-50: 30 12% 94%;
-  --ink-200: 28 9% 77%;
-  --ink-400: 26 7% 61%;
-  --ink-600: 24 8% 40%;
-  --ink-800: 22 10% 15%;
-  --ink-900: 20 11% 11%;
-  --ink-950: 20 12% 8%;
-  --ink-1000: 18 14% 5%;
+  /* Ink neutral: grafite levemente frio (redesign 26/out — o "quente" casava com
+     o cobre; com marca azul-aço o neutro tende ao slate, como em ERP comercial). */
+  --ink-0: 210 17% 98%;
+  --ink-50: 210 12% 94.5%;
+  --ink-200: 210 9% 78%;
+  --ink-400: 211 8% 59%;
+  --ink-600: 212 8% 41%;
+  --ink-800: 213 9% 17%;
+  --ink-900: 214 10% 13%;
+  --ink-950: 215 11% 9%;
+  --ink-1000: 216 12% 6%;
 
-  /* Brand: soft burnt orange / copper, from the logo */
-  --brand-50: 28 60% 93%;
-  --brand-200: 27 62% 76%;
-  --brand-500: 24 72% 46%;
-  --brand-700: 22 74% 36%;
-  --brand-900: 20 70% 24%;
+  /* Brand: DESIGN 05 era cobre saturado (72%). Redesign 26/out: azul-aço calmo
+     (42% de saturação) — a mesma confiança da marca, sem "cores fortes".
+     L*38% no claro entrega 7:1 de contraste com branco em botões. */
+  --brand-50: 210 42% 96%;
+  --brand-200: 212 30% 78%;
+  --brand-500: 212 42% 38%;
+  --brand-700: 212 48% 26%;
+  --brand-900: 212 52% 16%;
 
-  /* Soft amber highlight complements the copper */
-  --glow-500: 32 85% 58%;
-  --glow-700: 30 80% 45%;
+  /* Accent: o âmbar 85% era o segundo grito. Vira areia quente discreta. */
+  --glow-500: 36 34% 52%;
+  --glow-700: 36 40% 36%;
 
-  /* Premium accent: deep bronze */
-  --wine-500: 18 45% 32%;
-  --wine-700: 16 48% 20%;
+  /* Accent secundário: bronze -> slate profundo (série de gráfico/realce fino) */
+  --wine-500: 213 24% 42%;
+  --wine-700: 213 28% 28%;
 
-  /* Status colors stay visually distinct */
-  --info-500: 199 68% 48%;
-  --info-700: 199 68% 34%;
-  --success-500: 151 45% 39%;
-  --success-700: 153 48% 27%;
-  --warning-500: 42 82% 49%;
-  --warning-700: 40 78% 37%;
-  --danger-500: 3 70% 52%;
-  --danger-700: 3 72% 39%;
+  /* Status: mantidos semanticamente distintos, com saturação ~40-50% —
+     um sistema de gestão sinaliza por FORMA (badge/ícone) antes de gritar cor. */
+  --info-500: 205 42% 46%;
+  --info-700: 205 52% 33%;
+  --success-500: 152 34% 36%;
+  --success-700: 152 40% 25%;
+  --warning-500: 40 58% 48%;
+  --warning-700: 38 66% 32%;
+  --danger-500: 5 48% 47%;
+  --danger-700: 5 56% 34%;
   /* Cor SEMÂNTICA para texto de erro (não é a cor de background).
    * Motivo: usar --destructive (= danger-500, L* 52%) como texto rende
    * ~3.7:1 sobre superfícies escuras — reprova WCAG AA em fontes pequenas.
    * Valor do tema claro: vermelho escuro. Em .dark é clareado abaixo. */
-  --danger-text: 3 72% 36%;
-  --neutral-500: 26 6% 50%;
-  --neutral-700: 24 7% 36%;
-  --purple-500: 279 42% 56%;
-  --purple-700: 280 43% 42%;
+  --danger-text: 5 58% 35%;
+  --neutral-500: 212 8% 50%;
+  --neutral-700: 213 9% 37%;
+  --purple-500: 258 22% 55%;
+  --purple-700: 258 26% 42%;
 }
 
 /* ---------- Semantics — LIGHT (default when no .dark) ------------------- */
 :root {
-  --background: 30 25% 99%;
+  --background: 210 33% 99%;
   --foreground: var(--ink-900);
-  --surface: 30 16% 97%;
-  --surface-elevated: 30 20% 100%;
-  --surface-sunken: 28 14% 94%;
-  --muted: 28 14% 93%;
+  --surface: 210 26% 98.2%;
+  --surface-elevated: 210 33% 100%;
+  --surface-sunken: 210 20% 96%;
+  --muted: 210 16% 95%;
   --muted-foreground: var(--ink-600);
-  --border: 26 12% 87%;
-  --border-strong: 24 11% 75%;
-  --ring: var(--brand-500);
+  --border: 210 14% 90%;
+  --border-strong: 210 12% 78%;
+  --ring: var(--brand-700);
 
   --card: var(--surface);
   --card-foreground: var(--foreground);
@@ -154,9 +155,9 @@
   --motion-slow: 320ms cubic-bezier(0.16, 1, 0.3, 1);
   --motion-pulse: 1600ms ease-in-out infinite;
 
-  /* DM Sans for dense tools; Cormorant for editorial page titles */
-  --font-sans: "DM Sans", sans-serif;
-  --font-heading: "Cormorant Garamond", Georgia, serif;
+  /* Inter para ferramenta E título (redesign 26/out; ver nota do topo) */
+  --font-sans: "Inter Variable", "Inter", sans-serif;
+  --font-heading: "Inter Variable", "Inter", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* Density defaults */
@@ -168,20 +169,20 @@
  * Superfícies de grafite com jade como cor de ação e coral só para destaque.
  * ------------------------------------------------------------------------ */
 .dark {
-  --brand-500: 26 78% 58%;
-  --brand-700: 24 74% 47%;
-  --brand-900: 22 70% 30%;
-  /* 23/out — "cansativo para os olhos": fundo 8%→10% (menos contraste
-     esmagador), texto 94%→87% (adeus brilho puro) e camadas mais próximas. */
-  --background: 20 11% 10%;
-  --foreground: 30 14% 87%;
-  --surface: 20 10% 12.5%;
-  --surface-elevated: 20 10% 16%;
-  --surface-sunken: 18 14% 5%;
-  --muted: 20 9% 17%;
+  --brand-500: 212 50% 62%;
+  --brand-700: 212 46% 72%;
+  --brand-900: 212 40% 82%;
+  /* 23/out — menos contraste esmagador; 26/out — hue quente→slate (mesma
+     família da marca nova; o cobre no claro deixava o escuro "alaranjado"). */
+  --background: 214 17% 9.5%;
+  --foreground: 210 13% 89%;
+  --surface: 214 14% 12.5%;
+  --surface-elevated: 214 13% 16%;
+  --surface-sunken: 216 18% 6.5%;
+  --muted: 214 11% 17%;
   --muted-foreground: var(--ink-400);
-  --border: 20 9% 22%;
-  --border-strong: 20 9% 31%;
+  --border: 214 10% 21%;
+  --border-strong: 214 10% 30%;
   --ring: var(--brand-500);
 
   --card: var(--surface);
@@ -200,16 +201,16 @@
   --destructive: var(--danger-500);
   --destructive-foreground: var(--ink-0);
   /* Sobre grafite, o texto de erro precisa CLAREAR para bater AA (≥4.5:1). */
-  --danger-text: 6 85% 68%;
+  --danger-text: 5 62% 70%;
 
   /* Sidebar uses a subtle value shift, not a separate blue-black */
   --sidebar: var(--ink-1000);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: 20 10% 13%;
+  --sidebar-accent: 214 13% 14%;
   --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: 20 10% 14%;
+  --sidebar-border: 214 12% 16%;
   --sidebar-ring: var(--brand-500);
 
   /* Elevation dark: quiet neutral edges, minimal colored shadow */
@@ -222,12 +223,13 @@
     inset 0 0 0 1px hsl(var(--border-strong)), 0 24px 60px -18px hsl(var(--brand-500) / 0.16),
     0 10px 24px -8px rgba(0, 0, 0, 0.7);
 
-  /* Signature gradients & glows — kept subtle for the product workspace */
-  --gradient-ember: linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
-  --gradient-forge: linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(18 14% 6%) 100%);
-  --shadow-ember:
-    0 0 0 1px hsl(var(--brand-500) / 0.24), 0 12px 32px -8px hsl(var(--brand-500) / 0.18);
-  --glow-ember: 0 0 24px -4px hsl(var(--brand-500) / 0.25);
+  /* Redesign 26/out: os "glows" viram sombras neutras curtas. Gradiente ember
+     encolhe p/ duas paradas da MESMA matiz (vida sem queima). Nomes preservados —
+     os usos herdam a calmaria sem tocar 100+ arquivos. */
+  --gradient-ember: linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--brand-700)) 100%);
+  --gradient-forge: linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(216 12% 6%) 100%);
+  --shadow-ember: 0 0 0 1px hsl(var(--border)), 0 12px 32px -14px rgba(0, 0, 0, 0.5);
+  --glow-ember: 0 1px 2px rgba(0, 0, 0, 0.3);
   color-scheme: dark;
 }
 
@@ -362,15 +364,17 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
-    font-feature-settings: "cv02", "ss01", "ss02", "kern";
+    font-feature-settings: "cv05", "cv11", "ss01", "kern";
     font-optical-sizing: auto;
   }
 
   h1 {
     font-family: var(--font-heading);
-    letter-spacing: 0;
-    font-weight: 600;
-    line-height: 1.08;
+    /* título comercial: peso 700 + tracking negativo (a serifa abria espaço;
+       o Inter fecha — padrão das suítes de gestão) */
+    font-weight: 700;
+    letter-spacing: -0.016em;
+    line-height: 1.14;
   }
 
   h2,
@@ -409,7 +413,7 @@
   }
 
   ::selection {
-    background: hsl(var(--primary) / 0.28);
+    background: hsl(var(--primary) / 0.2);
     color: hsl(var(--foreground));
   }
 }
@@ -440,7 +444,7 @@
 
 @utility uppercase-label {
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   font-size: 11px;
   line-height: 14px;
   font-weight: 600;
@@ -532,45 +536,29 @@
   backdrop-filter: blur(12px);
 }
 @utility text-gradient {
-  background-image: linear-gradient(180deg, hsl(var(--foreground)), hsl(var(--muted-foreground)));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* degradê de tinta -> sólido: "texto que parece banner" era a queixa. */
+  color: hsl(var(--foreground));
 }
 @utility text-gradient-primary {
-  background-image: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--glow-500)) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: hsl(var(--primary));
 }
 
 /* ---------- Signature ember gradients & surfaces --------------------- */
 @utility text-gradient-ember {
-  background-image: linear-gradient(
-    120deg,
-    hsl(var(--glow-500)) 0%,
-    hsl(var(--brand-500)) 55%,
-    hsl(var(--wine-500)) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: hsl(var(--foreground));
 }
 @utility bg-ember {
-  background-image: linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--glow-500)) 100%);
+  /* brasa -> chapa sólida da cor de ação (botões/heróis herdam a calma) */
+  background-color: hsl(var(--primary));
 }
 @utility bg-forge {
-  background-image:
-    radial-gradient(1200px 600px at 15% -10%, hsl(var(--brand-500) / 0.08), transparent 55%),
-    linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(var(--ink-1000)) 100%);
+  background-color: hsl(var(--ink-950));
 }
 @utility ring-ember {
-  box-shadow:
-    0 0 0 1px hsl(var(--brand-500) / 0.5),
-    0 0 20px -2px hsl(var(--glow-500) / 0.4);
+  box-shadow: 0 0 0 1px hsl(var(--ring) / 0.35);
 }
 @utility glow-ember {
-  box-shadow: 0 0 32px -6px hsl(var(--brand-500) / 0.28);
+  box-shadow: 0 1px 2px hsl(var(--ink-950) / 0.06);
 }
 
 #lovable-badge {

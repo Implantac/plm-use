@@ -59,14 +59,14 @@ export function OpSummary({ sector }: { sector?: string }) {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           {kpis.map((k) => (
             <div key={k.label} className="rounded-md border border-border p-2">
-              <p className="text-[10px] uppercase text-muted-foreground">{k.label}</p>
+              <p className="text-[11px] uppercase text-muted-foreground">{k.label}</p>
               <p className="text-lg font-bold">{k.value}</p>
             </div>
           ))}
         </div>
         <div className="flex flex-wrap gap-1">
           {data.perSector.map(([s, q]) => (
-            <Badge key={s} variant={s === sector ? "default" : "outline"} className="text-[10px]">
+            <Badge key={s} variant={s === sector ? "default" : "outline"} className="text-[11px]">
               {s}: {q} pç
             </Badge>
           ))}

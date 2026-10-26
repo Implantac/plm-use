@@ -64,8 +64,8 @@ const STATUS_LABEL: Record<ColorPalette["status"], string> = {
 
 const STATUS_CLASS: Record<ColorPalette["status"], string> = {
   rascunho: "bg-muted/40 text-muted-foreground",
-  em_revisao: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  aprovada: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  em_revisao: "bg-status-progress/15 text-status-progress border-status-progress/30",
+  aprovada: "bg-status-approved/15 text-status-approved border-status-approved/30",
   arquivada: "bg-white/5 text-muted-foreground",
 };
 
@@ -160,13 +160,13 @@ function ColorPaletteRoute() {
                   <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between gap-2">
                     <div>
                       <p className="text-sm font-semibold text-white leading-tight">{p.name}</p>
-                      <p className="text-[10px] uppercase tracking-widest text-white/70">
+                      <p className="text-[11px] uppercase tracking-widest text-white/70">
                         {p.season} · {p.brand}
                       </p>
                     </div>
                     <Badge
                       variant="outline"
-                      className={`text-[9px] uppercase tracking-widest ${STATUS_CLASS[p.status]}`}
+                      className={`text-[11px] uppercase tracking-widest ${STATUS_CLASS[p.status]}`}
                     >
                       {STATUS_LABEL[p.status]}
                     </Badge>
@@ -182,12 +182,12 @@ function ColorPaletteRoute() {
                     />
                   ))}
                   {p.colors.length === 0 && (
-                    <span className="text-[10px] text-muted-foreground italic px-2 py-1">
+                    <span className="text-[11px] text-muted-foreground italic px-2 py-1">
                       Sem cores ainda
                     </span>
                   )}
                 </div>
-                <div className="flex items-center justify-between px-3 pb-2 text-[10px] text-muted-foreground">
+                <div className="flex items-center justify-between px-3 pb-2 text-[11px] text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Link2 className="h-3 w-3" /> {p.linkedRefs} refs
                   </span>
@@ -216,7 +216,7 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <Palette className="h-4 w-4 text-primary" />
-                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                <span className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
                   Paleta · {palette.season}
                 </span>
               </div>
@@ -309,7 +309,7 @@ function ColorSwatch({ color, onDelete }: { color: ColorRef; onDelete: () => voi
         style={{ background: color.hex, color: fg }}
       >
         <div className="flex items-start justify-between">
-          <span className="text-[10px] uppercase tracking-widest opacity-80">
+          <span className="text-[11px] uppercase tracking-widest opacity-80">
             {color.pantone ?? "—"}
           </span>
           <button
@@ -325,7 +325,7 @@ function ColorSwatch({ color, onDelete }: { color: ColorRef; onDelete: () => voi
       </div>
       <div className="p-2 bg-background/50 text-xs">
         <p className="font-semibold text-white truncate">{color.name}</p>
-        <p className="text-[10px] text-muted-foreground flex items-center justify-between mt-0.5">
+        <p className="text-[11px] text-muted-foreground flex items-center justify-between mt-0.5">
           <span>{color.supplier ?? "Sem fornecedor"}</span>
           {color.usageCount ? <span>{color.usageCount} refs</span> : null}
         </p>
@@ -376,7 +376,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             />
             <div className="flex-1 space-y-2">
               <div>
-                <Label className="text-[10px] uppercase tracking-widest" required>
+                <Label className="text-[11px] uppercase tracking-widest" required>
                   Nome
                 </Label>
                 <Input
@@ -391,14 +391,14 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
                 {nameError && <FieldMessage variant="error">{nameError}</FieldMessage>}
               </div>
               <div>
-                <Label className="text-[10px] uppercase tracking-widest">HEX</Label>
+                <Label className="text-[11px] uppercase tracking-widest">HEX</Label>
                 <Input value={hex} onChange={(e) => setHex(e.target.value)} className="font-mono" />
               </div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[10px] uppercase tracking-widest">Pantone TCX</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Pantone TCX</Label>
               <Input
                 value={pantone}
                 onChange={(e) => setPantone(e.target.value)}
@@ -406,7 +406,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
               />
             </div>
             <div>
-              <Label className="text-[10px] uppercase tracking-widest">Fornecedor</Label>
+              <Label className="text-[11px] uppercase tracking-widest">Fornecedor</Label>
               <Input
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}

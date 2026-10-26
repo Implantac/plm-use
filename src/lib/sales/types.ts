@@ -25,27 +25,27 @@ export const ORDER_STATUS: Record<SalesOrderStatus, { label: string; cls: string
   {
     rascunho: {
       label: "Rascunho",
-      cls: "bg-zinc-400/10 text-zinc-300 border-zinc-400/30",
+      cls: "badge-status-draft",
       hint: "em edição pelo vendedor",
     },
     enviado: {
       label: "Enviado",
-      cls: "bg-sky-400/10 text-sky-300 border-sky-400/30",
+      cls: "badge-status-review",
       hint: "aguardando a engenharia de custo",
     },
     em_custo: {
       label: "Em custo",
-      cls: "bg-amber-400/10 text-amber-300 border-amber-400/30",
+      cls: "badge-status-progress",
       hint: "custos em detalhamento",
     },
     custo_concluido: {
       label: "Custo concluído",
-      cls: "bg-violet-400/10 text-violet-300 border-violet-400/30",
+      cls: "badge-status-review",
       hint: "aguardando aprovação",
     },
     aprovado: {
       label: "Aprovado",
-      cls: "bg-emerald-400/10 text-emerald-300 border-emerald-400/30",
+      cls: "badge-status-approved",
       hint: "liberado para o PCP",
     },
     liberado_pcp: {
@@ -55,7 +55,7 @@ export const ORDER_STATUS: Record<SalesOrderStatus, { label: string; cls: string
     },
     cancelado: {
       label: "Cancelado",
-      cls: "bg-red-400/10 text-red-300 border-red-400/30",
+      cls: "badge-status-rejected",
       hint: "fora do fluxo",
     },
   };
@@ -63,34 +63,34 @@ export const ORDER_STATUS: Record<SalesOrderStatus, { label: string; cls: string
 export const ITEM_COST_STATUS: Record<SalesItemCostStatus, { label: string; cls: string }> = {
   aguardando_custo: {
     label: "Aguardando custo",
-    cls: "bg-zinc-400/10 text-zinc-300 border-zinc-400/30",
+    cls: "badge-status-draft",
   },
-  em_custo: { label: "Em custo", cls: "bg-amber-400/10 text-amber-300 border-amber-400/30" },
+  em_custo: { label: "Em custo", cls: "badge-status-progress" },
   custo_concluido: {
     label: "Custo concluído",
-    cls: "bg-violet-400/10 text-violet-300 border-violet-400/30",
+    cls: "badge-status-review",
   },
   aprovado: {
     label: "Custo aprovado",
-    cls: "bg-emerald-400/10 text-emerald-300 border-emerald-400/30",
+    cls: "badge-status-approved",
   },
-  reprovado: { label: "Custo reprovado", cls: "bg-red-400/10 text-red-300 border-red-400/30" },
+  reprovado: { label: "Custo reprovado", cls: "badge-status-rejected" },
 };
 
 export const CATALOG_STATUS: Record<CatalogStatus, { label: string; cls: string; hint: string }> = {
   rascunho: {
     label: "Rascunho",
-    cls: "bg-zinc-400/10 text-zinc-300 border-zinc-400/30",
+    cls: "badge-status-draft",
     hint: "não pode ser vendido",
   },
   validado: {
     label: "Validado",
-    cls: "bg-emerald-400/10 text-emerald-300 border-emerald-400/30",
+    cls: "badge-status-approved",
     hint: "disponível no pedido",
   },
   descontinuado: {
     label: "Descontinuado",
-    cls: "bg-red-400/10 text-red-300 border-red-400/30",
+    cls: "badge-status-rejected",
     hint: "fora do catálogo",
   },
 };
@@ -246,3 +246,25 @@ export const brl = (n: number): string =>
 
 export const orderTotal = (items: Array<{ quantity: number; unitPrice: number }>): number =>
   items.reduce((acc, i) => acc + (Number(i.quantity) || 0) * (Number(i.unitPrice) || 0), 0);
+
+/**
+ * O fluxo operacional ponta-a-ponta (redesign 26/out; fonte das etapas:
+ * docs/FLUXO-OPERACIONAL-PEDIDO.md, provado contra o ciclo real no banco).
+ * Cada etapa declara QUEM age e O QUE a pessoa faz para o pedido avançar — o
+ * stepper do pedido e a trilha do dashboard leem daqui, então "onde começa e
+ * onde termina" deixa de ser conhecimento tribal. `cancelado` é saída lateral.
+ */
+export const ORDER_FLOW_STEPS: ReadonlyArray<{
+  status: SalesOrderStatus;
+  who: string;
+  action: string;
+}> = [
+  { status: "rascunho", who: "Vendedor", action: "montar os itens e enviar para custo" },
+  { status: "enviado", who: "Custos", action: "assumir o pedido na aba Custo" },
+  { status: "em_custo", who: "Custos", action: "insumos + operações → recalcular → concluir" },
+  { status: "custo_concluido", who: "Gestor", action: "revisar a margem e aprovar o custo" },
+  { status: "aprovado", who: "PCP", action: "liberar para PCP — isto gera a OP" },
+  { status: "liberado_pcp", who: "PCP", action: "OP na régua de produção" },
+];
+
+export const ORDER_FLOW_TERMINAL: SalesOrderStatus = "liberado_pcp";

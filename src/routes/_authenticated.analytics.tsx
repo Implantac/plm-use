@@ -120,8 +120,10 @@ function AnalyticsPage() {
   };
 
   const toneClass = (tone: string) => {
-    if (tone === "emerald") return "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
-    if (tone === "amber") return "bg-amber-500/10 border-amber-500/20 text-amber-400";
+    if (tone === "emerald")
+      return "bg-status-approved/10 border-status-approved/20 text-status-approved";
+    if (tone === "amber")
+      return "bg-status-progress/10 border-status-progress/20 text-status-progress";
     return "bg-primary/10 border-primary/20 text-primary";
   };
 
@@ -232,7 +234,7 @@ function AnalyticsPage() {
               >
                 {iconFor(kpi.iconName)}
               </div>
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+              <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
                 {kpi.label}
               </h3>
               {kpi.progress !== undefined ? (
@@ -246,7 +248,7 @@ function AnalyticsPage() {
 
             {kpi.progress !== undefined ? (
               <div className="space-y-2 mt-8">
-                <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-white">
+                <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-white">
                   <span>Progresso</span>
                   <span>{kpi.progress}%</span>
                 </div>
@@ -258,7 +260,7 @@ function AnalyticsPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-[10px] text-muted-foreground font-light italic lowercase mt-8">
+              <p className="text-[11px] text-muted-foreground font-light italic lowercase mt-8">
                 {kpi.sub}
               </p>
             )}
@@ -270,22 +272,22 @@ function AnalyticsPage() {
         <Card className="glass-card rounded-4xl p-10 space-y-8 h-125 relative overflow-hidden">
           {/* Seção Diferencial: Dashboard de Marketing */}
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <PieChart className="w-5 h-5 text-primary" /> Dashboard de Marketing
             </h3>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-status-approved">
               Realizado
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Investimento previsto x real
               </p>
               <div className="mt-4 space-y-4">
                 <div>
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Previsto</span>
                     <span className="text-white">{formatBRL(marketingTotals.planned)}</span>
                   </div>
@@ -294,17 +296,17 @@ function AnalyticsPage() {
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Realizado</span>
                     <span className="text-white">{formatBRL(marketingTotals.real)}</span>
                   </div>
                   <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-400" style={{ width: "78%" }} />
+                    <div className="h-full bg-status-approved" style={{ width: "78%" }} />
                   </div>
                 </div>
               </div>
               <div className="mt-5 rounded-md bg-black/20 border border-white/5 p-4">
-                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                   ROI (Receita/Invest.)
                 </p>
                 <p className="mt-2 text-3xl font-bold text-white">
@@ -314,18 +316,18 @@ function AnalyticsPage() {
             </div>
 
             <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Mix por canal
               </p>
               <div className="mt-5 space-y-3">
                 {[
                   { label: "Meta Ads", pct: 44, tone: "bg-primary" },
-                  { label: "Google Ads", pct: 28, tone: "bg-emerald-400" },
-                  { label: "Instagram", pct: 18, tone: "bg-sky-400" },
-                  { label: "TikTok Ads", pct: 10, tone: "bg-amber-300" },
+                  { label: "Google Ads", pct: 28, tone: "bg-status-approved" },
+                  { label: "Instagram", pct: 18, tone: "bg-status-review" },
+                  { label: "TikTok Ads", pct: 10, tone: "bg-status-progress" },
                 ].map((row) => (
                   <div key={row.label}>
-                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                       <span>{row.label}</span>
                       <span className="text-white">{row.pct}%</span>
                     </div>
@@ -340,10 +342,10 @@ function AnalyticsPage() {
 
           <div className="mt-6 rounded-4xl border border-white/10 bg-black/20 p-5">
             <div className="flex items-center justify-between">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
                 Performance por coleção
               </p>
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+              <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
                 Top
               </span>
             </div>
@@ -357,7 +359,7 @@ function AnalyticsPage() {
                   className="rounded-md border border-white/10 bg-white/[0.035] p-4"
                 >
                   <p className="text-sm font-bold text-white">{c.name}</p>
-                  <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     {formatBRL(c.revenue)} • ROI {c.roi.toFixed(2)}x
                   </p>
                 </div>
@@ -369,14 +371,14 @@ function AnalyticsPage() {
         <Card className="glass-card rounded-[2.5rem] p-10 space-y-8 h-125 relative overflow-hidden">
           {/* Seção Diferencial: Controle de Investimentos */}
           <div className="flex items-center justify-between mb-10">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <CircleDollarSign className="w-5 h-5 text-primary" /> Controle de Investimentos
             </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Registrar
               </p>
               <div className="mt-4 space-y-3">
@@ -390,7 +392,7 @@ function AnalyticsPage() {
                   <div key={x} className="flex items-center justify-between">
                     <span className="text-sm font-bold text-white/90">{x}</span>
                     <button
-                      className="rounded-md border border-white/10 bg-black/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-primary"
+                      className="rounded-md border border-white/10 bg-black/20 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary"
                       onClick={() => toast.info(`Registrar: ${x}`)}
                     >
                       Adicionar
@@ -401,12 +403,12 @@ function AnalyticsPage() {
             </div>
 
             <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Comparativos
               </p>
               <div className="mt-4 space-y-4">
                 <div>
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Previsto x Realizado</span>
                     <span className="text-white">
                       {marketingTotals.real >= marketingTotals.planned ? "+" : "-"}
@@ -415,13 +417,13 @@ function AnalyticsPage() {
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Retorno sobre investimento</span>
                     <span className="text-white">ROI {marketingTotals.roi.toFixed(2)}x</span>
                   </div>
                 </div>
                 <div className="rounded-md border border-white/10 bg-black/20 p-4">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                     Receita gerada
                   </p>
                   <p className="mt-2 text-3xl font-bold text-white">
@@ -429,10 +431,10 @@ function AnalyticsPage() {
                   </p>
                 </div>
                 <div className="rounded-md border border-white/10 bg-black/20 p-4">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground flex items-center gap-2">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground flex items-center gap-2">
                     <Workflow className="w-4 h-4 text-primary" /> Integração Financeiro
                   </p>
-                  <p className="mt-2 text-[10px] text-white/85">
+                  <p className="mt-2 text-[11px] text-white/85">
                     Valores de “Fonte: marketing” no Financeiro alimentam o realizado.
                   </p>
                 </div>
@@ -441,7 +443,7 @@ function AnalyticsPage() {
           </div>
 
           <div className="mt-6 rounded-4xl border border-white/10 bg-black/20 p-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
               Performance por produto / cor / categoria
             </p>
             <div className="mt-4 space-y-3">
@@ -453,12 +455,12 @@ function AnalyticsPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-sm font-bold text-white">{m.product}</p>
-                      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                         {m.collection} • {m.category} • Cor {m.color}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                         {m.channel}
                       </p>
                       <p className="mt-2 text-lg font-bold text-primary">ROI {m.roi.toFixed(2)}x</p>
@@ -466,13 +468,13 @@ function AnalyticsPage() {
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                         Spend (real)
                       </p>
                       <p className="text-sm font-bold text-white">{formatBRL(m.spendReal)}</p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                         Receita gerada
                       </p>
                       <p className="text-sm font-bold text-white">
@@ -488,7 +490,7 @@ function AnalyticsPage() {
 
         <Card className="glass-card rounded-[2.5rem] p-10 space-y-8 relative overflow-hidden">
           <div className="flex justify-between items-center mb-10">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <Globe className="w-5 h-5 text-primary" /> Penetração de Mercado por Região
             </h3>
           </div>
@@ -499,7 +501,7 @@ function AnalyticsPage() {
               { region: "Nordeste", val: "15%", count: "R$ 450k" },
             ].map((reg, i) => (
               <div key={i} className="flex items-center gap-6 group cursor-pointer">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-24">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground w-24">
                   {reg.region}
                 </span>
                 <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
@@ -527,7 +529,7 @@ function AnalyticsPage() {
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Nome do Indicador
               </Label>
               <Input
@@ -539,7 +541,7 @@ function AnalyticsPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Valor Atual
                 </Label>
                 <Input
@@ -550,7 +552,7 @@ function AnalyticsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Meta / Subtítulo
                 </Label>
                 <Input
@@ -563,10 +565,10 @@ function AnalyticsPage() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[10px]">
+            <Button onClick={handleSave} className="text-[11px]">
               Salvar Indicador
             </Button>
           </DialogFooter>

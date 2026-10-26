@@ -51,7 +51,7 @@ export function CollectionPerformance({
   return (
     <Card className="glass-card rounded-lg">
       <CardHeader className="p-5 border-b border-white/5">
-        <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2">
+        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
           <BarChart3 className="h-3.5 w-3.5 text-primary" /> Meta × Realizado
         </CardTitle>
       </CardHeader>
@@ -65,10 +65,11 @@ export function CollectionPerformance({
         <div className="space-y-3">
           {collections.map((c) => {
             const st = c.plannedMix > 0 ? (c.realizedMix / c.plannedMix) * 100 : 0;
-            const tone = st >= 85 ? "bg-emerald-400" : st >= 60 ? "bg-primary" : "bg-amber-400";
+            const tone =
+              st >= 85 ? "bg-status-approved" : st >= 60 ? "bg-primary" : "bg-status-progress";
             return (
               <div key={c.id} className="space-y-1.5">
-                <div className="flex items-center justify-between text-[10px]">
+                <div className="flex items-center justify-between text-[11px]">
                   <span className="text-white/85 truncate pr-2">{c.name}</span>
                   <span className="font-bold text-white tabular-nums">
                     {c.realizedMix}/{c.plannedMix} · {st.toFixed(0)}%
@@ -83,7 +84,7 @@ export function CollectionPerformance({
         </div>
 
         <div className="space-y-2 pt-2 border-t border-white/5">
-          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Activity className="h-3 w-3 text-primary" /> Curva ABC (média)
             </span>
@@ -93,7 +94,7 @@ export function CollectionPerformance({
           </div>
           <div className="flex h-2 w-full overflow-hidden rounded-full bg-white/10">
             <div
-              className="bg-emerald-400"
+              className="bg-status-approved"
               style={{ width: `${totals.a}%` }}
               title={`A ${totals.a.toFixed(0)}%`}
             />
@@ -103,23 +104,23 @@ export function CollectionPerformance({
               title={`B ${totals.b.toFixed(0)}%`}
             />
             <div
-              className="bg-amber-400"
+              className="bg-status-progress"
               style={{ width: `${totals.c}%` }}
               title={`C ${totals.c.toFixed(0)}%`}
             />
           </div>
-          <div className="flex items-center justify-between text-[9px] text-muted-foreground">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
             <span>A · top giro</span>
             <span>B · médio</span>
             <span>C · cauda</span>
           </div>
         </div>
 
-        <div className="rounded-md border border-emerald-300/20 bg-emerald-300/[0.06] p-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-emerald-300" />
-          <p className="text-[10px] text-white/85 leading-snug">
+        <div className="rounded-md border border-status-approved/20 bg-status-approved/[0.06] p-3 flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-status-approved" />
+          <p className="text-[11px] text-white/85 leading-snug">
             Sell-through combinado de{" "}
-            <span className="font-bold text-emerald-300">{totals.sellThrough.toFixed(0)}%</span>{" "}
+            <span className="font-bold text-status-approved">{totals.sellThrough.toFixed(0)}%</span>{" "}
             sobre o mix planejado.
           </p>
         </div>
@@ -138,10 +139,14 @@ function Metric({
   tone?: "emerald" | "primary";
 }) {
   const color =
-    tone === "emerald" ? "text-emerald-400" : tone === "primary" ? "text-primary" : "text-white";
+    tone === "emerald"
+      ? "text-status-approved"
+      : tone === "primary"
+        ? "text-primary"
+        : "text-white";
   return (
     <div className="rounded-md border border-white/10 bg-white/[0.035] p-2.5 text-center">
-      <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
         {label}
       </p>
       <p className={`mt-1 text-base font-bold ${color} tabular-nums`}>{value}</p>

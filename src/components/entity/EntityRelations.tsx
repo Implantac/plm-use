@@ -28,7 +28,7 @@ export function EntityRelations({
 
   if (loading) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-xs text-muted-foreground">
         Carregando relações…
       </div>
     );
@@ -36,7 +36,7 @@ export function EntityRelations({
 
   if (outgoing.length === 0 && incoming.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-xs text-muted-foreground">
         Nenhum relacionamento registrado. Use as ações de vinculação em Ficha, Piloto, Lote ou CAPA.
       </div>
     );
@@ -66,7 +66,7 @@ function Section({
   const { openEntity } = useEntityDrawer();
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-2">{title}</p>
+      <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground mb-2">{title}</p>
       <ul className="space-y-1.5">
         {items.map((r) => {
           const type = incoming ? r.from_type : r.to_type;
@@ -75,13 +75,13 @@ function Section({
           return (
             <li
               key={r.id}
-              className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px]"
+              className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-xs"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <span className="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-primary">
+                <span className="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[11px] uppercase tracking-wider text-primary">
                   {RELATION_LABEL[r.relation] ?? r.relation}
                 </span>
-                <span className="text-muted-foreground uppercase tracking-wider text-[9px]">
+                <span className="text-muted-foreground uppercase tracking-wider text-[11px]">
                   {type}
                 </span>
                 {external ? (
@@ -111,7 +111,7 @@ function Section({
                   variant="ghost"
                   size="sm"
                   onClick={() => onUnlink(r.id)}
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-rose-300"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-status-rejected"
                   title="Desvincular"
                 >
                   <Unlink className="h-3.5 w-3.5" />

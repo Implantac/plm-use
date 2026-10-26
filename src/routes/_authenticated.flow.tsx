@@ -175,15 +175,15 @@ const daysSince = (iso: string) =>
   Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
 
 const GATE_TONE: Record<GateStatus, string> = {
-  pendente: "border-amber-400/40 text-amber-300",
-  aprovado: "border-emerald-400/40 text-emerald-300",
+  pendente: "border-status-progress/40 text-status-progress",
+  aprovado: "border-status-approved/40 text-status-approved",
   reprovado: "border-destructive/40 text-destructive",
   dispensado: "border-white/15 text-muted-foreground",
 };
 
 const PRIORITY_TONE: Record<string, string> = {
   URGENTE: "border-destructive/40 text-destructive",
-  ALTA: "border-amber-400/40 text-amber-300",
+  ALTA: "border-status-progress/40 text-status-progress",
   MEDIA: "border-primary/30 text-primary",
   BAIXA: "border-white/15 text-muted-foreground",
 };
@@ -273,7 +273,7 @@ function FlowPage() {
       {error && (
         <div
           role="alert"
-          className="rounded-md border border-rose-400/30 bg-rose-400/5 p-4 text-sm text-muted-foreground"
+          className="rounded-md border border-status-rejected/30 bg-status-rejected/5 p-4 text-sm text-muted-foreground"
         >
           Não foi possível carregar as referências. Verifique sua conexão e tente novamente mais
           tarde.
@@ -292,7 +292,7 @@ function FlowPage() {
       <header className="rounded-lg border border-white/10 bg-white/[0.025] p-5 md:p-6">
         <div className="flex items-center gap-2 text-primary">
           <Workflow className="h-4 w-4" />
-          <span className="text-[9px] font-bold uppercase tracking-[0.22em]">
+          <span className="text-[11px] font-bold uppercase tracking-[0.05em]">
             Fluxo guiado · ciclo de vida
           </span>
         </div>
@@ -314,18 +314,18 @@ function FlowPage() {
             label="Aguardando aprovação"
             value={valueState ?? String(awaitingApproval)}
             icon={ShieldCheck}
-            tone="text-sky-300"
+            tone="text-status-review"
           />
           <Metric
             label="Prontas para o PCP"
             value={valueState ?? String(readyForPcp.length)}
             icon={Factory}
-            tone="text-emerald-300"
+            tone="text-status-approved"
           />
         </div>
 
         <div className="mt-5">
-          <div className="mb-2 flex justify-between text-2xs uppercase tracking-[0.18em] text-muted-foreground">
+          <div className="mb-2 flex justify-between text-2xs uppercase tracking-[0.04em] text-muted-foreground">
             <span>Referências finalizadas</span>
             <span>{valueState ?? (items.length ? `${progress}%` : "Sem dados")}</span>
           </div>
@@ -345,7 +345,7 @@ function FlowPage() {
         {(Object.keys(PHASES) as PhaseId[]).map((phase) => (
           <div key={phase}>
             <div className="mb-2 flex items-baseline gap-3">
-              <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground">
+              <h2 className="text-xs font-bold uppercase tracking-[0.05em] text-foreground">
                 {PHASES[phase].label}
               </h2>
               <span className="text-2xs text-muted-foreground">{PHASES[phase].hint}</span>
@@ -374,7 +374,7 @@ function FlowPage() {
                         {valueState ?? String(list.length)}
                       </span>
                     </div>
-                    <p className="mt-1 text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                    <p className="mt-1 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                       {stage.owner}
                     </p>
                     <p className="mt-2 text-xs text-muted-foreground">{stage.action}</p>
@@ -425,7 +425,7 @@ function FlowPage() {
         </CardHeader>
         <CardContent className="space-y-2">
           {loading && (
-            <p className="py-6 text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="py-6 text-center text-xs uppercase tracking-[0.05em] text-muted-foreground">
               Carregando fluxo...
             </p>
           )}
@@ -454,7 +454,7 @@ function FlowPage() {
                   <p className="truncate text-sm font-semibold">
                     {ref.code} · {ref.name}
                   </p>
-                  <p className="mt-0.5 text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                  <p className="mt-0.5 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                     {ref.line ?? "sem linha"} · atualizada há {days}d
                   </p>
                 </button>
@@ -534,7 +534,7 @@ function FlowPage() {
             </p>
           ) : oldestUpdates.length === 0 ? (
             <p className="flex items-center gap-2 py-4 text-xs text-muted-foreground">
-              <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+              <CheckCircle2 className="h-4 w-4 text-status-approved" />
               Nenhuma referência ativa para exibir.
             </p>
           ) : (
@@ -549,7 +549,7 @@ function FlowPage() {
                   <span className="block truncate text-sm font-semibold">
                     {ref.code} · {ref.name}
                   </span>
-                  <span className="mt-0.5 block text-2xs uppercase tracking-[0.16em] text-muted-foreground">
+                  <span className="mt-0.5 block text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                     {REFERENCE_STATUS_LABEL[ref.status]} · {stage?.owner}
                   </span>
                 </span>
@@ -589,7 +589,7 @@ function Metric({
     <div className="rounded-md border border-white/10 bg-white/[0.02] p-4">
       <div className={`flex items-center gap-2 ${tone}`}>
         <Icon className="h-4 w-4" />
-        <span className="text-2xs font-bold uppercase tracking-[0.18em]">{label}</span>
+        <span className="text-2xs font-bold uppercase tracking-[0.04em]">{label}</span>
       </div>
       <p className="mt-2 text-2xl font-bold tabular-nums">{value}</p>
     </div>

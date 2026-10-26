@@ -199,7 +199,7 @@ function LooksPage() {
                   ))}
                   {look.items.length > 5 && (
                     <div
-                      className="h-6 w-6 rounded-full border-2 border-background bg-black/45 text-white text-[9px] font-semibold flex items-center justify-center"
+                      className="h-6 w-6 rounded-full border-2 border-background bg-black/45 text-white text-[11px] font-semibold flex items-center justify-center"
                       title={`${look.items.length} referências no look`}
                     >
                       +{look.items.length - 5}

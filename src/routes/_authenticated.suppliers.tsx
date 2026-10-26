@@ -225,17 +225,17 @@ function SuppliersPage() {
                     <h3 className="text-xl font-bold text-white tracking-tight">{sup.name}</h3>
                     {sup.status === "Premium" && <ShieldCheck className="w-5 h-5 text-primary" />}
                   </div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
                     {sup.type}
                   </p>
                 </div>
               </div>
               <div className="text-right pr-12">
-                <div className="flex items-center gap-1 text-amber-400 mb-1">
+                <div className="flex items-center gap-1 text-status-progress mb-1">
                   <Star className="w-3.5 h-3.5 fill-current" />
                   <span className="text-sm font-bold text-white">{sup.rating}</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                <p className="text-[11px] text-muted-foreground uppercase tracking-widest">
                   {sup.status}
                 </p>
               </div>
@@ -245,30 +245,30 @@ function SuppliersPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Local</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Local</span>
                 </div>
                 <p className="text-sm font-medium text-white">{sup.location}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                  <span className="text-[11px] font-bold uppercase tracking-widest">
                     Compliance
                   </span>
                 </div>
-                <p className="text-sm font-medium text-emerald-400">{sup.compliance}</p>
+                <p className="text-sm font-medium text-status-approved">{sup.compliance}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <TrendingUp className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">OTIF</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest">OTIF</span>
                 </div>
-                <p className="text-sm font-medium text-emerald-400">{sup.delivery}</p>
+                <p className="text-sm font-medium text-status-approved">{sup.delivery}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="w-3.5 h-3.5" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Canal</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Canal</span>
                 </div>
                 <p className="text-sm font-medium text-white">comercial@...</p>
               </div>
@@ -285,7 +285,7 @@ function SuppliersPage() {
                   className="rounded-md border border-white/10 bg-white/[0.035] p-3"
                 >
                   <item.icon className="h-4 w-4 text-primary" />
-                  <p className="mt-2 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                     {item.label}
                   </p>
                   <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
@@ -296,7 +296,7 @@ function SuppliersPage() {
             <div className="flex gap-4">
               <Button
                 variant="ghost"
-                className="flex-1 border bg-white/5 hover:bg-white/10 text-[10px] tracking-[0.14em] text-white"
+                className="flex-1 border bg-white/5 hover:bg-white/10 text-[11px] tracking-[0.04em] text-white"
               >
                 Portal do fornecedor
               </Button>
@@ -337,7 +337,7 @@ function SuppliersPage() {
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                 Nome da Empresa
               </Label>
               <Input
@@ -349,7 +349,7 @@ function SuppliersPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Tipo de Insumo
                 </Label>
                 <Input
@@ -360,7 +360,7 @@ function SuppliersPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                   Localização
                 </Label>
                 <Input
@@ -373,10 +373,10 @@ function SuppliersPage() {
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[10px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[10px]">
+            <Button onClick={handleSave} className="text-[11px]">
               Salvar Fornecedor
             </Button>
           </DialogFooter>

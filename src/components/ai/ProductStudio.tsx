@@ -580,7 +580,7 @@ export function ProductStudio() {
       {referencesError && (
         <p
           role="alert"
-          className="rounded-md border border-rose-400/30 bg-rose-400/5 p-3 text-sm text-muted-foreground"
+          className="rounded-md border border-status-rejected/30 bg-status-rejected/5 p-3 text-sm text-muted-foreground"
         >
           Não foi possível carregar referências existentes para validar códigos. Tente novamente
           antes de salvar.
@@ -800,7 +800,7 @@ export function ProductStudio() {
               </p>
             </div>
             {proposalText && (
-              <Badge variant="outline" className="border-amber-300/30 text-amber-200">
+              <Badge variant="outline" className="border-status-progress/30 text-status-progress">
                 Rascunho IA
               </Badge>
             )}
@@ -873,7 +873,7 @@ export function ProductStudio() {
 
               <div className="rounded-md border border-white/10 bg-white/[0.025] p-3">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
                     Geração visual
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -884,7 +884,7 @@ export function ProductStudio() {
                         size="xs"
                         variant={visualView === view ? "secondary" : "ghost"}
                         onClick={() => setVisualView(view)}
-                        className="h-6 rounded-full px-2 text-[9px] uppercase"
+                        className="h-6 rounded-full px-2 text-[11px] uppercase"
                       >
                         {view}
                       </Button>
@@ -928,7 +928,7 @@ export function ProductStudio() {
                 </div>
 
                 <div className="mt-3 space-y-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
                     Variações de cor
                   </p>
                   <Input
@@ -960,7 +960,7 @@ export function ProductStudio() {
 
                 <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-foreground">
                       Aplicar logo ou estampa
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -1099,11 +1099,11 @@ export function ProductStudio() {
                         aria-label={`Visual ${image.view} para ${image.conceptName}`}
                       >
                         <img src={image.src} alt="" className="aspect-square w-full object-cover" />
-                        <span className="block truncate px-1 pt-1 text-[10px] text-muted-foreground">
+                        <span className="block truncate px-1 pt-1 text-[11px] text-muted-foreground">
                           {image.view}
                         </span>
                         {image.conceptName !== proposal?.name && (
-                          <span className="block truncate px-1 pb-1 text-[9px] text-muted-foreground">
+                          <span className="block truncate px-1 pb-1 text-[11px] text-muted-foreground">
                             {image.conceptName}
                           </span>
                         )}
@@ -1130,7 +1130,9 @@ export function ProductStudio() {
             </div>
           ) : (
             <div className="mt-5 rounded-md border border-white/10 bg-white/[0.025] p-4">
-              <p className="mb-2 text-xs font-medium text-amber-200">Resposta em formato livre</p>
+              <p className="mb-2 text-xs font-medium text-status-progress">
+                Resposta em formato livre
+              </p>
               <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted-foreground">
                 {proposalText}
               </pre>
@@ -1214,7 +1216,7 @@ export function ProductStudio() {
 function ConceptField({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 border-b border-white/10 pb-3">
-      <p className="text-[10px] uppercase text-muted-foreground">{label}</p>
+      <p className="text-[11px] uppercase text-muted-foreground">{label}</p>
       <p className="mt-1 break-words text-sm text-white">{value || "Não informado"}</p>
     </div>
   );
@@ -1223,7 +1225,7 @@ function ConceptField({ label, value }: { label: string; value: string }) {
 function ConceptList({ label, values }: { label: string; values: string[] }) {
   return (
     <div className="min-w-0 border-b border-white/10 pb-3">
-      <p className="text-[10px] uppercase text-muted-foreground">{label}</p>
+      <p className="text-[11px] uppercase text-muted-foreground">{label}</p>
       <p className="mt-1 text-sm text-white">
         {values.length ? values.join(" · ") : "Não informado"}
       </p>

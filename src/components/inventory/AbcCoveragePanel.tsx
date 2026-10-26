@@ -11,9 +11,9 @@ interface Props {
 }
 
 const classColors: Record<string, string> = {
-  A: "text-amber-300 bg-amber-300/10 border-amber-300/20",
-  B: "text-sky-300 bg-sky-300/10 border-sky-300/20",
-  C: "text-slate-300 bg-slate-300/10 border-slate-300/20",
+  A: "text-status-progress bg-status-progress/10 border-status-progress/20",
+  B: "text-status-review bg-status-review/10 border-status-review/20",
+  C: "text-muted-foreground bg-muted/60 border-border",
 };
 
 export function AbcCoveragePanel({ items, balances }: Props) {
@@ -37,7 +37,7 @@ export function AbcCoveragePanel({ items, balances }: Props) {
     <>
       <Card className="glass-card rounded-lg">
         <CardHeader className="p-5 border-b border-white/5">
-          <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-2">
+          <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-primary" /> Curva ABC
           </CardTitle>
         </CardHeader>
@@ -47,15 +47,15 @@ export function AbcCoveragePanel({ items, balances }: Props) {
             const pct = Math.round((bucket.revenue / total) * 100);
             return (
               <div key={cls} className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-xs">
                   <span
-                    className={`inline-flex items-center gap-2 rounded-md border px-2 py-0.5 font-bold uppercase tracking-[0.14em] ${classColors[cls]}`}
+                    className={`inline-flex items-center gap-2 rounded-md border px-2 py-0.5 font-bold uppercase tracking-[0.04em] ${classColors[cls]}`}
                   >
                     Classe {cls}
                   </span>
                   <span className="text-white font-bold">{bucket.count} itens</span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                   <span>{fmtBRL(bucket.revenue)}</span>
                   <span>{pct}%</span>
                 </div>
@@ -65,14 +65,14 @@ export function AbcCoveragePanel({ items, balances }: Props) {
           })}
           {summary.unclassified.count > 0 && (
             <div className="pt-2 border-t border-white/5">
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 {summary.unclassified.count} itens sem classificação — rode &quot;Classificar
                 ABC&quot;
               </p>
             </div>
           )}
           <div className="pt-3 border-t border-white/5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
               Faturamento anual total
             </p>
             <p className="text-lg font-bold text-white mt-1">{fmtBRL(total)}</p>
@@ -81,9 +81,9 @@ export function AbcCoveragePanel({ items, balances }: Props) {
       </Card>
 
       {belowReorder.length > 0 && (
-        <Card className="glass-card rounded-lg border-amber-300/20 bg-amber-300/[0.035]">
+        <Card className="glass-card rounded-lg border-status-progress/20 bg-status-progress/[0.035]">
           <CardHeader className="p-5 border-b border-white/5">
-            <CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">
+            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
               Reposição sugerida ({belowReorder.length})
             </CardTitle>
           </CardHeader>
@@ -97,13 +97,13 @@ export function AbcCoveragePanel({ items, balances }: Props) {
                     <p className="text-xs font-bold text-white truncate">{it.name}</p>
                     {it.abc_class && (
                       <span
-                        className={`inline-flex items-center rounded-md border px-1.5 py-0 text-[9px] font-bold ${classColors[it.abc_class]}`}
+                        className={`inline-flex items-center rounded-md border px-1.5 py-0 text-[11px] font-bold ${classColors[it.abc_class]}`}
                       >
                         {it.abc_class}
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-amber-300">
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.04em] text-status-progress">
                     saldo {onHand.toFixed(0)}
                     {it.unit} · PP {Number(it.reorder_point).toFixed(0)}
                     {it.unit} · LEC {Number(it.eoq).toFixed(0)}

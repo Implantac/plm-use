@@ -218,14 +218,14 @@ function OfficialModelsPage() {
                   {m.medidas.length} medidas
                 </span>
                 {m.ativa ? (
-                  <span className="mt-1 inline-block rounded bg-primary/15 px-1.5 text-[10px] font-semibold text-primary">
+                  <span className="mt-1 inline-block rounded bg-primary/15 px-1.5 text-[11px] font-semibold text-primary">
                     Oficial da coleção
                   </span>
                 ) : m.colecao ? (
                   <span
                     role="button"
                     tabIndex={0}
-                    className="mt-1 inline-block text-[10px] text-primary hover:underline"
+                    className="mt-1 inline-block text-[11px] text-primary hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
                       void makeActive(m);

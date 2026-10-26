@@ -78,14 +78,14 @@ function DrawerBody({ entity, onClose }: { entity: EntityRef; onClose: () => voi
       <SheetHeader className="p-5 border-b border-white/10">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary">
+            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
               {ENTITY_LABEL[entity.type] ?? entity.type}
             </p>
             <SheetTitle className="text-xl text-white mt-1">
               {entity.title ?? entity.id.slice(0, 8)}
             </SheetTitle>
             {entity.subtitle && (
-              <p className="text-[11px] text-muted-foreground mt-0.5">{entity.subtitle}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{entity.subtitle}</p>
             )}
           </div>
           <Button variant="ghost" size="sm" onClick={onClose} className="w-8 p-0">
@@ -154,7 +154,7 @@ function ReferenceBody({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando referência…
       </div>
     );
@@ -162,7 +162,7 @@ function ReferenceBody({ id }: { id: string }) {
 
   if (!row) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-xs text-muted-foreground">
         {loadError
           ? "Não foi possível carregar esta referência. Verifique a conexão e tente novamente."
           : "Referência não encontrada."}
@@ -208,21 +208,21 @@ function ReferenceBody({ id }: { id: string }) {
   return (
     <Tabs value={tab} onValueChange={setTab}>
       <TabsList className="w-full justify-start overflow-x-auto bg-white/[0.04] border border-white/10">
-        <TabsTrigger value="summary" className="text-[10px] gap-1">
+        <TabsTrigger value="summary" className="text-[11px] gap-1">
           <Package className="h-3 w-3" /> Produto
         </TabsTrigger>
-        <TabsTrigger value="workflow" className="text-[10px] gap-1">
+        <TabsTrigger value="workflow" className="text-[11px] gap-1">
           <GitBranch className="h-3 w-3" /> Workflow
         </TabsTrigger>
-        <TabsTrigger value="timeline" className="text-[10px] gap-1 relative">
+        <TabsTrigger value="timeline" className="text-[11px] gap-1 relative">
           <History className="h-3 w-3" /> Timeline
           {newTimelineCount > 0 && (
-            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] leading-none flex items-center justify-center animate-pulse">
+            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[11px] leading-none flex items-center justify-center animate-pulse">
               {newTimelineCount}
             </Badge>
           )}
         </TabsTrigger>
-        <TabsTrigger value="relations" className="text-[10px] gap-1">
+        <TabsTrigger value="relations" className="text-[11px] gap-1">
           <Link2 className="h-3 w-3" /> Relações
         </TabsTrigger>
       </TabsList>
@@ -247,13 +247,13 @@ function ReferenceBody({ id }: { id: string }) {
           </div>
           <div className="space-y-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase text-primary">{row.code}</p>
+              <p className="text-[11px] font-semibold uppercase text-primary">{row.code}</p>
               <h2 className="mt-1 text-xl font-semibold text-white">{row.name}</h2>
               <Badge className="mt-2 bg-primary/15 text-primary border-primary/30">
                 {REFERENCE_STATUS_LABEL[row.status]}
               </Badge>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-[11px]">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <Field label="Coleção" value={row.collection_id ?? "Não vinculada"} />
               <Field label="Linha" value={row.line ?? "Não definida"} />
               <Field label="Tema" value={row.theme ?? "Não definido"} />
@@ -305,7 +305,7 @@ function ReferenceBody({ id }: { id: string }) {
                 </div>
               ))}
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Conceitos de IA para exploração. Validar a peça e sua construção antes do
               desenvolvimento.
             </p>
@@ -317,7 +317,7 @@ function ReferenceBody({ id }: { id: string }) {
             <h3 id="reference-lifecycle-title" className="text-sm font-semibold text-white">
               Ciclo de vida
             </h3>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground">
               Etapa atual: {REFERENCE_STATUS_LABEL[row.status]}
             </span>
           </div>
@@ -341,7 +341,7 @@ function ReferenceBody({ id }: { id: string }) {
                         current
                           ? "border-primary bg-primary/15 text-primary"
                           : complete
-                            ? "border-emerald-400/50 bg-emerald-400/10 text-emerald-300"
+                            ? "border-status-approved/50 bg-status-approved/10 text-status-approved"
                             : "border-white/15 text-muted-foreground"
                       }`}
                     >
@@ -352,7 +352,7 @@ function ReferenceBody({ id }: { id: string }) {
                       )}
                     </span>
                     <span
-                      className={`text-[9px] leading-tight ${current ? "text-primary" : "text-muted-foreground"}`}
+                      className={`text-[11px] leading-tight ${current ? "text-primary" : "text-muted-foreground"}`}
                     >
                       {REFERENCE_STATUS_LABEL[status]}
                     </span>
@@ -398,11 +398,11 @@ function ReferenceBody({ id }: { id: string }) {
 
       <TabsContent value="workflow" className="mt-4">
         <div className="rounded-md border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-3">
+          <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground mb-3">
             Próximas transições permitidas
           </p>
           {next.length === 0 ? (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+            <div className="text-xs text-muted-foreground flex items-center gap-2">
               <Sparkles className="h-3.5 w-3.5" /> Nenhuma transição a partir de{" "}
               <b className="text-white">{REFERENCE_STATUS_LABEL[row.status]}</b>.
             </div>
@@ -450,18 +450,18 @@ function GenericBody({ entity }: { entity: EntityRef }) {
   return (
     <Tabs value={tab} onValueChange={setTab}>
       <TabsList className="bg-white/[0.04] border border-white/10">
-        <TabsTrigger value="timeline" className="text-[10px] gap-1 relative">
+        <TabsTrigger value="timeline" className="text-[11px] gap-1 relative">
           <History className="h-3 w-3" /> Timeline
           {newTimelineCount > 0 && (
-            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] leading-none flex items-center justify-center animate-pulse">
+            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[11px] leading-none flex items-center justify-center animate-pulse">
               {newTimelineCount}
             </Badge>
           )}
         </TabsTrigger>
-        <TabsTrigger value="relations" className="text-[10px] gap-1">
+        <TabsTrigger value="relations" className="text-[11px] gap-1">
           <Link2 className="h-3 w-3" /> Relações
         </TabsTrigger>
-        <TabsTrigger value="raw" className="text-[10px] gap-1">
+        <TabsTrigger value="raw" className="text-[11px] gap-1">
           <Layers className="h-3 w-3" /> ID
         </TabsTrigger>
       </TabsList>
@@ -477,7 +477,7 @@ function GenericBody({ entity }: { entity: EntityRef }) {
         <EntityRelations entityType={entity.type} entityId={entity.id} />
       </TabsContent>
       <TabsContent value="raw" className="mt-4">
-        <div className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-[11px] font-mono text-muted-foreground break-all">
+        <div className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs font-mono text-muted-foreground break-all">
           {entity.type} · {entity.id}
         </div>
       </TabsContent>
@@ -488,7 +488,7 @@ function GenericBody({ entity }: { entity: EntityRef }) {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
-      <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className="text-[12px] text-white truncate">{value}</p>
     </div>
   );

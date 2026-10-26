@@ -45,7 +45,7 @@ export function ModuleLayout({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
             <div className="flex items-center gap-3 mb-3">
-              <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.18em]">
+              <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold uppercase tracking-[0.04em]">
                 {version}
               </span>
             </div>
@@ -59,14 +59,14 @@ export function ModuleLayout({
               <div className="relative group w-full sm:w-72">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                 <Input
-                  className="pl-10 focus:border-primary/40 focus:ring-0 text-[10px] font-bold uppercase tracking-widest/40"
+                  className="pl-10 focus:border-primary/40 focus:ring-0 text-[11px] font-bold uppercase tracking-widest/40"
                   placeholder={searchPlaceholder}
                   onChange={(e) => onSearch(e.target.value)}
                 />
               </div>
             )}
             {onAdd && (
-              <Button onClick={onAdd} className="text-[10px] tracking-[0.16em] gap-2">
+              <Button onClick={onAdd} className="text-[11px] tracking-[0.04em] gap-2">
                 <Plus className="w-4 h-4" /> Adicionar
               </Button>
             )}
@@ -77,12 +77,12 @@ export function ModuleLayout({
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 border-t border-white/5 pt-4">
             {metrics.map((metric) => (
               <div key={metric.label} className="rounded-md border border-white/10 bg-black/20 p-3">
-                <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
                   {metric.label}
                 </p>
                 <p className="mt-2 text-xl font-bold tracking-tight text-white">{metric.value}</p>
                 {metric.detail && (
-                  <p className="mt-1 text-[10px] text-muted-foreground">{metric.detail}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{metric.detail}</p>
                 )}
               </div>
             ))}
@@ -130,7 +130,7 @@ export function ModuleActionMenu({
         {onView && (
           <DropdownMenuItem
             onClick={onView}
-            className="gap-3 text-[9px] font-bold uppercase tracking-widest p-3 rounded-md cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-primary group"
+            className="gap-3 text-[11px] font-bold uppercase tracking-widest p-3 rounded-md cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-primary group"
           >
             <Eye className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Visualizar
           </DropdownMenuItem>
@@ -138,7 +138,7 @@ export function ModuleActionMenu({
         {onEdit && (
           <DropdownMenuItem
             onClick={onEdit}
-            className="gap-3 text-[9px] font-bold uppercase tracking-widest p-3 rounded-md cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-primary group"
+            className="gap-3 text-[11px] font-bold uppercase tracking-widest p-3 rounded-md cursor-pointer hover:bg-white/5 focus:bg-white/5 focus:text-primary group"
           >
             <Edit2 className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Editar
           </DropdownMenuItem>
@@ -146,7 +146,7 @@ export function ModuleActionMenu({
         {onDelete && (
           <DropdownMenuItem
             onClick={onDelete}
-            className="gap-3 text-[9px] font-bold uppercase tracking-widest p-3 rounded-md cursor-pointer hover:bg-rose-500/10 focus:bg-rose-500/10 text-rose-400 group"
+            className="gap-3 text-[11px] font-bold uppercase tracking-widest p-3 rounded-md cursor-pointer hover:bg-status-rejected/10 focus:bg-status-rejected/10 text-status-rejected group"
           >
             <Trash2 className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> Excluir
           </DropdownMenuItem>

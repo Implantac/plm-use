@@ -333,8 +333,8 @@ export function GlobalSearch() {
         className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/5 text-muted-foreground hover:text-white cursor-pointer transition-all hover:bg-white/10 group shadow-sm"
       >
         <Search className="w-4 h-4" />
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] flex-1">Comandos</span>
-        <span className="text-[9px] font-black border border-white/10 rounded-md px-1.5 py-0.5 bg-black/20 group-hover:border-primary/40 transition-colors">
+        <span className="text-[11px] font-bold uppercase tracking-[0.05em] flex-1">Comandos</span>
+        <span className="text-[11px] font-black border border-white/10 rounded-md px-1.5 py-0.5 bg-black/20 group-hover:border-primary/40 transition-colors">
           ⌘K
         </span>
       </div>
@@ -349,7 +349,7 @@ export function GlobalSearch() {
             <CommandEmpty className="py-12 text-center">
               <div className="flex flex-col items-center gap-4">
                 <Search className="w-10 h-10 text-white/10" />
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+                <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
                   Nenhum registro encontrado
                 </p>
               </div>
@@ -368,10 +368,10 @@ export function GlobalSearch() {
                         <ZapAction className="w-4 h-4" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-white">
                           {qa.label}
                         </p>
-                        <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
+                        <p className="text-[11px] text-muted-foreground uppercase italic tracking-tighter">
                           Aqui no {currentMeta.label}
                         </p>
                       </div>
@@ -392,10 +392,10 @@ export function GlobalSearch() {
                   <CommandIcon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-white">
                     AI Product Studio
                   </p>
-                  <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
+                  <p className="text-[11px] text-muted-foreground uppercase italic tracking-tighter">
                     Consultar inteligência aplicada
                   </p>
                 </div>
@@ -412,12 +412,12 @@ export function GlobalSearch() {
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">
                       {isFavorite(currentMeta.path)
                         ? "Remover dos favoritos"
                         : "Adicionar aos favoritos"}
                     </p>
-                    <p className="text-[9px] text-muted-foreground uppercase italic tracking-tighter">
+                    <p className="text-[11px] text-muted-foreground uppercase italic tracking-tighter">
                       {currentMeta.label}
                     </p>
                   </div>
@@ -516,28 +516,28 @@ export function GlobalSearch() {
           <div className="p-4 border-t border-white/5 flex justify-between items-center bg-black/40">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                   Navegar
                 </span>
                 <div className="flex gap-1">
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
+                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[8px] text-white font-black">
                     ↑
                   </span>
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
+                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[8px] text-white font-black">
                     ↓
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                   Abrir
                 </span>
-                <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[7px] text-white font-black">
+                <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[8px] text-white font-black">
                   ENTER
                 </span>
               </div>
             </div>
-            <p className="text-[8px] font-bold text-primary/40 uppercase tracking-[0.3em]">
+            <p className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.06em]">
               USE MODA Neural Search · live
             </p>
           </div>
@@ -558,17 +558,17 @@ function EntryRow({ entry, onSelect }: { entry: Entry; onSelect: () => void }) {
         {entry.icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[11px] font-bold text-white group-hover:text-primary transition-colors truncate">
+        <p className="text-xs font-bold text-white group-hover:text-primary transition-colors truncate">
           {entry.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-[8px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+          <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-muted-foreground/60">
             {entry.module}
           </span>
           {entry.subtitle && (
             <>
               <span className="w-1 h-1 rounded-full bg-white/10" />
-              <span className="text-[8px] font-medium text-muted-foreground/50 italic truncate">
+              <span className="text-[10px] font-medium text-muted-foreground/50 italic truncate">
                 {entry.subtitle}
               </span>
             </>

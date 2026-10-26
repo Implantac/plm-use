@@ -75,6 +75,7 @@ import {
   type SalesOrder,
   type SalesOrderItem,
 } from "@/lib/sales/types";
+import { OrderFlowStepper } from "@/components/sales/OrderFlowStepper";
 
 type Props = {
   orderId: string;
@@ -212,7 +213,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
     return (
       <Card className="glass-card rounded-lg p-6 space-y-4">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-400 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-status-progress mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-white">Não foi possível abrir o pedido</p>
             <p className="text-xs text-muted-foreground mt-1">
@@ -220,7 +221,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={onClose} className="text-[10px] tracking-[0.16em] gap-2">
+        <Button variant="outline" onClick={onClose} className="text-[11px] tracking-[0.04em] gap-2">
           <ArrowLeft className="w-4 h-4" /> Voltar para a lista
         </Button>
       </Card>
@@ -236,19 +237,19 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
           <Button
             variant="ghost"
             onClick={onClose}
-            className="text-[10px] tracking-[0.16em] gap-2 -ml-2 text-muted-foreground"
+            className="text-[11px] tracking-[0.04em] gap-2 -ml-2 text-muted-foreground"
           >
             <ArrowLeft className="w-4 h-4" /> Pedidos
           </Button>
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-2xl font-bold text-white tracking-tight">{order.number}</h2>
             <span
-              className={`px-2.5 py-1 rounded-md border text-[9px] font-bold uppercase tracking-[0.14em] ${status.cls}`}
+              className={`px-2.5 py-1 rounded-md border text-[11px] font-bold uppercase tracking-[0.04em] ${status.cls}`}
             >
               {status.label}
             </span>
             {order.isQuote && (
-              <span className="px-2.5 py-1 rounded-md border border-sky-400/30 bg-sky-400/10 text-sky-300 text-[9px] font-bold uppercase tracking-[0.14em]">
+              <span className="px-2.5 py-1 rounded-md border border-status-review/30 bg-status-review/10 text-status-review text-[11px] font-bold uppercase tracking-[0.04em]">
                 Orçamento
               </span>
             )}
@@ -260,7 +261,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
-            className="text-[10px] tracking-[0.16em] gap-2"
+            className="text-[11px] tracking-[0.04em] gap-2"
             onClick={() => setSheetOpen(true)}
           >
             <FileText className="w-4 h-4" /> Ficha técnica
@@ -271,7 +272,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
                 run("submit", () => submitOrder(order.id), "Pedido enviado para o custo.")
               }
               disabled={busy === "submit" || items.length === 0}
-              className="text-[10px] tracking-[0.16em] gap-2"
+              className="text-[11px] tracking-[0.04em] gap-2"
             >
               <Send className="w-4 h-4" /> Enviar para custo
             </Button>
@@ -284,7 +285,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
                 )
               }
               disabled={busy === "release"}
-              className="text-[10px] tracking-[0.16em] gap-2"
+              className="text-[11px] tracking-[0.04em] gap-2"
             >
               <Factory className="w-4 h-4" /> Liberar para PCP
             </Button>
@@ -293,13 +294,16 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
             <Link
               to="/production"
               search={{ pcpOp: opLink.id }}
-              className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-[10px] uppercase tracking-[0.16em] hover:bg-accent hover:text-accent-foreground"
+              className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-[11px] uppercase tracking-[0.04em] hover:bg-accent hover:text-accent-foreground"
             >
               <Factory className="w-4 h-4" /> Ver OP no PCP
             </Link>
           )}
         </div>
       </div>
+
+      {/* redesign 26/out: o fluxo ponta-a-ponta mora no topo do pedido */}
+      <OrderFlowStepper status={order.status} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Metric label="Valor comercial" value={brl(total)} detail={`${items.length} item(ns)`} />
@@ -321,14 +325,14 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
       </div>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-2">
+        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-2">
           <Layers className="w-4 h-4 text-primary" /> Itens do pedido
         </h3>
         {editable && (
           <Button
             variant="outline"
             onClick={() => setAddOpen(true)}
-            className="text-[10px] tracking-[0.16em] gap-2"
+            className="text-[11px] tracking-[0.04em] gap-2"
           >
             <Plus className="w-4 h-4" /> Adicionar item
           </Button>
@@ -345,7 +349,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
           {editable && (
             <Button
               onClick={() => setAddOpen(true)}
-              className="text-[10px] tracking-[0.16em] gap-2"
+              className="text-[11px] tracking-[0.04em] gap-2"
             >
               <Plus className="w-4 h-4" /> Adicionar o primeiro item
             </Button>
@@ -444,7 +448,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
       )}
 
       <Card className="glass-card rounded-lg p-5">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-2 mb-4">
+        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-2 mb-4">
           <Clock className="w-4 h-4 text-primary" /> Timeline
         </h3>
         {events.length === 0 ? (
@@ -468,7 +472,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
 
       {order.notes && (
         <Card className="glass-card rounded-lg p-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground mb-2">
+          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground mb-2">
             Observações
           </p>
           <p className="text-sm text-white whitespace-pre-wrap">{order.notes}</p>
@@ -498,12 +502,12 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
 function Metric({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return (
     <div className="rounded-md border border-white/10 bg-black/20 p-3">
-      <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
         {label}
       </p>
       <p className="text-lg font-bold text-white tracking-tight mt-1">{value}</p>
       {detail && (
-        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{detail}</p>
+        <p className="text-[11px] text-muted-foreground uppercase tracking-widest">{detail}</p>
       )}
     </div>
   );
@@ -642,16 +646,16 @@ function ItemCard({
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-primary">
+            <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
               Item {item.lineNo}
             </span>
             <span
-              className={`px-2 py-0.5 rounded border text-[8px] font-bold uppercase tracking-[0.14em] ${costStatus.cls}`}
+              className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-[0.04em] ${costStatus.cls}`}
             >
               {costStatus.label}
             </span>
             {item.referenceCode && (
-              <span className="text-[9px] text-muted-foreground uppercase tracking-widest">
+              <span className="text-[11px] text-muted-foreground uppercase tracking-widest">
                 ref {item.referenceCode}
               </span>
             )}
@@ -670,7 +674,7 @@ function ItemCard({
                 variant="outline"
                 onClick={onRecalc}
                 disabled={busy === `recalc-${item.id}`}
-                className="text-[9px] tracking-[0.14em] gap-1.5"
+                className="text-[11px] tracking-[0.04em] gap-1.5"
               >
                 <Calculator className="w-3.5 h-3.5" /> Recalcular
               </Button>
@@ -678,7 +682,7 @@ function ItemCard({
                 variant="outline"
                 onClick={onApprove}
                 disabled={busy === `approve-${item.id}` || item.costStatus !== "custo_concluido"}
-                className="text-[9px] tracking-[0.14em] gap-1.5"
+                className="text-[11px] tracking-[0.04em] gap-1.5"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" /> Aprovar
               </Button>
@@ -689,7 +693,7 @@ function ItemCard({
               variant="ghost"
               onClick={onDelete}
               disabled={busy === `del-${item.id}`}
-              className="text-[9px] tracking-[0.14em] gap-1.5 text-red-300"
+              className="text-[11px] tracking-[0.04em] gap-1.5 text-status-rejected"
             >
               <Trash2 className="w-3.5 h-3.5" /> Remover
             </Button>
@@ -699,7 +703,7 @@ function ItemCard({
 
       <div className="grid gap-3 md:grid-cols-2">
         <div className="rounded-md border border-white/10 bg-black/20 p-3">
-          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground mb-2 flex items-center gap-1.5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground mb-2 flex items-center gap-1.5">
             <Ruler className="w-3 h-3" /> Grade
           </p>
           {item.sizes.length === 0 ? (
@@ -711,19 +715,19 @@ function ItemCard({
               {item.sizes.map((s) => (
                 <span
                   key={s.size}
-                  className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[10px] text-white"
+                  className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[11px] text-white"
                 >
                   {s.size} <span className="text-muted-foreground">×{s.quantity}</span>
                 </span>
               ))}
-              <span className="text-[10px] text-muted-foreground self-center ml-1">
+              <span className="text-[11px] text-muted-foreground self-center ml-1">
                 = {sumSizes(item.sizes)} peças
               </span>
             </div>
           )}
         </div>
         <div className="rounded-md border border-white/10 bg-black/20 p-3">
-          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-muted-foreground mb-2 flex items-center gap-1.5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground mb-2 flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" /> Personalização
           </p>
           {item.options.length === 0 ? (
@@ -733,7 +737,7 @@ function ItemCard({
               {item.options.map((o) => (
                 <span
                   key={o.optionId}
-                  className="px-2 py-1 rounded border border-primary/20 bg-primary/10 text-[10px] text-primary"
+                  className="px-2 py-1 rounded border border-primary/20 bg-primary/10 text-[11px] text-primary"
                 >
                   {o.name}
                   {o.quantity > 1 ? ` ×${o.quantity}` : ""}
@@ -748,15 +752,15 @@ function ItemCard({
       {canCost && (
         <div className="rounded-md border border-primary/20 bg-primary/[0.04] p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-primary">
+            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
               Ficha do pedido · custo
             </p>
             {margin !== null && (
               <span
-                className={`text-[9px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded border ${
+                className={`text-[11px] font-bold uppercase tracking-[0.04em] px-2 py-0.5 rounded border ${
                   margin >= 25
-                    ? "border-emerald-400/30 text-emerald-300"
-                    : "border-amber-400/30 text-amber-300"
+                    ? "border-status-approved/30 text-status-approved"
+                    : "border-status-progress/30 text-status-progress"
                 }`}
               >
                 margem {margin.toFixed(1)}%
@@ -770,7 +774,7 @@ function ItemCard({
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-[11px]">
+              <table className="w-full text-xs">
                 <thead>
                   <tr className="text-muted-foreground text-left">
                     <th className="font-medium pb-1">Operação</th>
@@ -825,12 +829,12 @@ function ItemCard({
                         <tr className="border-t border-primary/10">
                           <td colSpan={8} className="py-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                              <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
                                 {op.operation}
                               </span>
                               <Input
                                 aria-label="Qtd do driver"
-                                className="h-7 w-24 text-[11px]"
+                                className="h-7 w-24 text-xs"
                                 value={editVals.driverQty}
                                 onChange={(e) =>
                                   setEditVals((v) => ({ ...v, driverQty: e.target.value }))
@@ -838,7 +842,7 @@ function ItemCard({
                               />
                               <Input
                                 aria-label="R$ por unidade"
-                                className="h-7 w-24 text-[11px]"
+                                className="h-7 w-24 text-xs"
                                 value={editVals.unitCost}
                                 onChange={(e) =>
                                   setEditVals((v) => ({ ...v, unitCost: e.target.value }))
@@ -846,7 +850,7 @@ function ItemCard({
                               />
                               <Input
                                 aria-label="Custo de setup"
-                                className="h-7 w-24 text-[11px]"
+                                className="h-7 w-24 text-xs"
                                 value={editVals.setupCost}
                                 onChange={(e) =>
                                   setEditVals((v) => ({ ...v, setupCost: e.target.value }))
@@ -864,7 +868,7 @@ function ItemCard({
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  className="text-red-400 hover:text-red-300"
+                                  className="text-status-rejected hover:text-status-rejected"
                                   disabled={!!busy}
                                   onClick={() => removeOp(op.id!)}
                                 >
@@ -886,7 +890,7 @@ function ItemCard({
                         <td className="py-1">
                           {m.material}
                           {m.stockItemCode && (
-                            <span className="ml-1 text-[9px] text-primary">{m.stockItemCode}</span>
+                            <span className="ml-1 text-[11px] text-primary">{m.stockItemCode}</span>
                           )}
                         </td>
                         <td className="py-1">material</td>
@@ -928,12 +932,12 @@ function ItemCard({
                         <tr className="border-t border-primary/10">
                           <td colSpan={8} className="py-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                              <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
                                 {m.material}
                               </span>
                               <Input
                                 aria-label="Consumo do material"
-                                className="h-7 w-24 text-[11px]"
+                                className="h-7 w-24 text-xs"
                                 value={matVals.consumption}
                                 onChange={(e) =>
                                   setMatVals((v) => ({ ...v, consumption: e.target.value }))
@@ -941,7 +945,7 @@ function ItemCard({
                               />
                               <Input
                                 aria-label="Perda do material (%)"
-                                className="h-7 w-20 text-[11px]"
+                                className="h-7 w-20 text-xs"
                                 value={matVals.wastePct}
                                 onChange={(e) =>
                                   setMatVals((v) => ({ ...v, wastePct: e.target.value }))
@@ -949,7 +953,7 @@ function ItemCard({
                               />
                               <Input
                                 aria-label="Custo unitário do material (R$)"
-                                className="h-7 w-24 text-[11px]"
+                                className="h-7 w-24 text-xs"
                                 value={matVals.unitCost}
                                 onChange={(e) =>
                                   setMatVals((v) => ({ ...v, unitCost: e.target.value }))
@@ -971,7 +975,7 @@ function ItemCard({
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  className="text-red-400 hover:text-red-300"
+                                  className="text-status-rejected hover:text-status-rejected"
                                   disabled={!!busy}
                                   onClick={() => removeMat(m.id!)}
                                 >
@@ -1020,19 +1024,19 @@ function ItemCard({
                 <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/20 bg-primary/[0.03] p-2">
                   <Input
                     aria-label="Setor"
-                    className="h-7 w-28 text-[11px]"
+                    className="h-7 w-28 text-xs"
                     placeholder="Setor"
                     onChange={setF("opSector")}
                   />
                   <Input
                     aria-label="Operação"
-                    className="h-7 w-40 text-[11px]"
+                    className="h-7 w-40 text-xs"
                     placeholder="Operação"
                     onChange={setF("opName")}
                   />
                   <select
                     aria-label="Driver"
-                    className="h-7 rounded border border-input bg-transparent px-2 text-[11px]"
+                    className="h-7 rounded border border-input bg-transparent px-2 text-xs"
                     value={form.opDriver ?? "peca"}
                     onChange={setF("opDriver")}
                   >
@@ -1045,24 +1049,24 @@ function ItemCard({
                   </select>
                   <Input
                     aria-label="Qtd do driver"
-                    className="h-7 w-20 text-[11px]"
+                    className="h-7 w-20 text-xs"
                     placeholder="Qtd"
                     defaultValue="1"
                     onChange={setF("opQty")}
                   />
                   <Input
                     aria-label="R$ por unidade"
-                    className="h-7 w-20 text-[11px]"
+                    className="h-7 w-20 text-xs"
                     placeholder="R$/un"
                     onChange={setF("opUnitCost")}
                   />
                   <Input
                     aria-label="Custo de setup"
-                    className="h-7 w-20 text-[11px]"
+                    className="h-7 w-20 text-xs"
                     placeholder="Setup"
                     onChange={setF("opSetup")}
                   />
-                  <label className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <label className="flex items-center gap-1 text-[11px] text-muted-foreground">
                     <input
                       type="checkbox"
                       aria-label="Terceirizada"
@@ -1086,13 +1090,13 @@ function ItemCard({
                 <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/20 bg-primary/[0.03] p-2">
                   <Input
                     aria-label="Material"
-                    className="h-7 w-40 text-[11px]"
+                    className="h-7 w-40 text-xs"
                     placeholder="Material"
                     onChange={setF("matName")}
                   />
                   <select
                     aria-label="Tipo de material"
-                    className="h-7 rounded border border-input bg-transparent px-2 text-[11px]"
+                    className="h-7 rounded border border-input bg-transparent px-2 text-xs"
                     value={form.matKind ?? "tecido"}
                     onChange={setF("matKind")}
                   >
@@ -1104,33 +1108,33 @@ function ItemCard({
                   </select>
                   <Input
                     aria-label="Unidade"
-                    className="h-7 w-16 text-[11px]"
+                    className="h-7 w-16 text-xs"
                     placeholder="un"
                     defaultValue="m"
                     onChange={setF("matUnit")}
                   />
                   <Input
                     aria-label="Consumo por peça"
-                    className="h-7 w-20 text-[11px]"
+                    className="h-7 w-20 text-xs"
                     placeholder="Consumo"
                     defaultValue="1"
                     onChange={setF("matConsumption")}
                   />
                   <Input
                     aria-label="Perda (%)"
-                    className="h-7 w-16 text-[11px]"
+                    className="h-7 w-16 text-xs"
                     placeholder="Perda"
                     onChange={setF("matWaste")}
                   />
                   <Input
                     aria-label="Custo unitário (R$)"
-                    className="h-7 w-20 text-[11px]"
+                    className="h-7 w-20 text-xs"
                     placeholder="R$/un"
                     onChange={setF("matUnitCost")}
                   />
                   <Input
                     aria-label="Observações"
-                    className="h-7 w-32 text-[11px]"
+                    className="h-7 w-32 text-xs"
                     placeholder="Obs."
                     onChange={setF("matNotes")}
                   />
@@ -1179,7 +1183,7 @@ function ItemCard({
             />
           </div>
           {preview && cost && round2(preview.unitCost) !== round2(cost.unitCost) && (
-            <p className="text-[10px] text-amber-300">
+            <p className="text-[11px] text-status-progress">
               Prévia pela ficha ({brl(preview.unitCost)}) difere do custo gravado (
               {brl(cost.unitCost)}) — recalcule para alinhar.
             </p>
@@ -1203,11 +1207,11 @@ function CostCell({
 }) {
   return (
     <div>
-      <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+      <p className="text-[10px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
         {label}
       </p>
       <p className={`text-sm font-semibold ${accent ? "text-primary" : "text-white"}`}>{value}</p>
-      {detail && <p className="text-[9px] text-muted-foreground">{detail}</p>}
+      {detail && <p className="text-[11px] text-muted-foreground">{detail}</p>}
     </div>
   );
 }
@@ -1323,9 +1327,9 @@ function AddItemDialog({
         </DialogHeader>
 
         {hint && (
-          <div className="flex items-start gap-2 rounded-md border border-amber-400/30 bg-amber-400/10 p-3">
-            <AlertTriangle className="w-4 h-4 text-amber-300 mt-0.5 shrink-0" />
-            <p className="text-[11px] text-amber-100">{hint}</p>
+          <div className="flex items-start gap-2 rounded-md border border-status-progress/30 bg-status-progress/10 p-3">
+            <AlertTriangle className="w-4 h-4 text-status-progress mt-0.5 shrink-0" />
+            <p className="text-xs text-status-progress">{hint}</p>
           </div>
         )}
 
@@ -1345,7 +1349,7 @@ function AddItemDialog({
               ))}
             </select>
             {product && (
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 mínimo {product.minQty} peças · grade {product.grade.join(" · ")} · base{" "}
                 {brl(product.basePrice)}
               </p>
@@ -1391,7 +1395,7 @@ function AddItemDialog({
               <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                 {product.grade.map((size) => (
                   <div key={size} className="space-y-1">
-                    <p className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                    <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
                       {size}
                     </p>
                     <Input
@@ -1404,7 +1408,7 @@ function AddItemDialog({
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 Soma da grade: {sizeSum} de {qty || 0} peças
                 {sizeSum > 0 && sizeSum !== qty ? " — precisa bater com a quantidade." : ""}
               </p>
@@ -1433,12 +1437,12 @@ function AddItemDialog({
                         />
                         <span className="text-xs text-white">{o.name}</span>
                         {o.groupName && (
-                          <span className="text-[9px] uppercase tracking-widest text-muted-foreground">
+                          <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
                             {o.groupName}
                           </span>
                         )}
                         {o.operationName && (
-                          <span className="text-[9px] text-primary">
+                          <span className="text-[11px] text-primary">
                             {o.sector ?? "produção"} · {o.driver}
                           </span>
                         )}

@@ -25,20 +25,20 @@ export function DefectHeatmap({ defeitos }: { defeitos: DefectRow[] }) {
   if (defeitos.length === 0) {
     return (
       <Card className="glass-card rounded-lg p-5">
-        <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-3">
-          <Flame className="w-3.5 h-3.5 text-amber-400" /> Heatmap setor × motivo
+        <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
+          <Flame className="w-3.5 h-3.5 text-status-progress" /> Heatmap setor × motivo
         </h4>
-        <p className="text-[10px] text-muted-foreground">Sem defeitos registrados.</p>
+        <p className="text-[11px] text-muted-foreground">Sem defeitos registrados.</p>
       </Card>
     );
   }
 
   return (
     <Card className="glass-card rounded-lg p-5 overflow-x-auto">
-      <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-4">
-        <Flame className="w-3.5 h-3.5 text-amber-400" /> Heatmap setor × motivo
+      <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-4">
+        <Flame className="w-3.5 h-3.5 text-status-progress" /> Heatmap setor × motivo
       </h4>
-      <table className="text-[10px] border-separate border-spacing-1">
+      <table className="text-[11px] border-separate border-spacing-1">
         <thead>
           <tr>
             <th />
@@ -64,7 +64,7 @@ export function DefectHeatmap({ defeitos }: { defeitos: DefectRow[] }) {
                 return (
                   <td key={m} className="p-0">
                     <div
-                      className="w-10 h-8 rounded flex items-center justify-center text-[10px] text-white font-bold"
+                      className="w-10 h-8 rounded flex items-center justify-center text-[11px] text-white font-bold"
                       style={{ background: bg }}
                       title={`${s} · ${m}: ${v} pç`}
                     >

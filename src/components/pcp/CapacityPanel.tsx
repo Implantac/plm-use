@@ -66,36 +66,36 @@ export function CapacityPanel({ lotes: injected }: { lotes?: Lote[] } = {}) {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-6 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Gauge className="w-4 h-4 text-primary" /> Capacidade vs Demanda + Gantt
         </h3>
-        <span className="text-[9px] uppercase text-muted-foreground tracking-widest">
+        <span className="text-[11px] uppercase text-muted-foreground tracking-widest">
           Simulação · pç/dia
         </span>
       </div>
 
       <div>
-        <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-3">
+        <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
           <BarChart3 className="w-3.5 h-3.5 text-primary" /> Ocupação por setor
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {data.map((d) => (
             <div key={d.setor} className="p-3 rounded-md border border-white/10 bg-white/[0.02]">
-              <div className="flex justify-between text-[10px] mb-2">
+              <div className="flex justify-between text-[11px] mb-2">
                 <span className="text-white font-bold uppercase tracking-widest">{d.setor}</span>
                 <span
-                  className={`font-bold ${d.ocupacao > 100 ? "text-rose-400" : d.ocupacao > 80 ? "text-amber-300" : "text-emerald-400"}`}
+                  className={`font-bold ${d.ocupacao > 100 ? "text-status-rejected" : d.ocupacao > 80 ? "text-status-progress" : "text-status-approved"}`}
                 >
                   {d.ocupacao}%
                 </span>
               </div>
               <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
                 <div
-                  className={`h-full ${d.ocupacao > 100 ? "bg-rose-500/70" : d.ocupacao > 80 ? "bg-amber-500/70" : "bg-emerald-500/70"}`}
+                  className={`h-full ${d.ocupacao > 100 ? "bg-status-rejected/70" : d.ocupacao > 80 ? "bg-status-progress/70" : "bg-status-approved/70"}`}
                   style={{ width: `${Math.min(d.ocupacao, 100)}%` }}
                 />
               </div>
-              <p className="mt-2 text-[9px] text-muted-foreground uppercase tracking-widest">
+              <p className="mt-2 text-[11px] text-muted-foreground uppercase tracking-widest">
                 {d.demanda} pç · {d.capDia}/dia · {d.diasNecessarios}d
               </p>
             </div>
@@ -104,13 +104,13 @@ export function CapacityPanel({ lotes: injected }: { lotes?: Lote[] } = {}) {
       </div>
 
       <div>
-        <h4 className="text-[10px] font-bold uppercase tracking-[0.22em] text-white flex items-center gap-2 mb-3">
+        <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
           <CalendarRange className="w-3.5 h-3.5 text-primary" /> Gantt · planejado vs real
         </h4>
         <div className="space-y-2">
           {gantt.map((g) => (
             <div key={g.lote} className="p-3 rounded-md border border-white/5 bg-white/[0.02]">
-              <div className="flex justify-between text-[10px] mb-2">
+              <div className="flex justify-between text-[11px] mb-2">
                 <span className="text-white font-bold">
                   {g.lote} <span className="text-muted-foreground font-normal">· {g.grupo}</span>
                 </span>
@@ -124,13 +124,15 @@ export function CapacityPanel({ lotes: injected }: { lotes?: Lote[] } = {}) {
                   style={{ width: `${g.progresso}%` }}
                 />
                 <div
-                  className={`absolute inset-y-0 ${g.atraso ? "bg-rose-500/60" : "bg-primary/70"}`}
+                  className={`absolute inset-y-0 ${g.atraso ? "bg-status-rejected/60" : "bg-primary/70"}`}
                   style={{ width: `${g.real}%` }}
                 />
               </div>
-              <div className="flex justify-between text-[9px] mt-1 uppercase tracking-widest">
+              <div className="flex justify-between text-[11px] mt-1 uppercase tracking-widest">
                 <span className="text-muted-foreground">Tempo: {g.progresso.toFixed(0)}%</span>
-                <span className={g.atraso ? "text-rose-400 font-bold" : "text-primary font-bold"}>
+                <span
+                  className={g.atraso ? "text-status-rejected font-bold" : "text-primary font-bold"}
+                >
                   Real: {g.real.toFixed(0)}%
                 </span>
               </div>

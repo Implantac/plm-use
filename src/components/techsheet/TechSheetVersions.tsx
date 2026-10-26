@@ -10,9 +10,9 @@ import { VersionDiff } from "@/components/techsheet/VersionDiff";
 
 const statusIcon = (s: TechSheetVersion["status"]) =>
   s === "Aprovada" ? (
-    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+    <CheckCircle2 className="w-3.5 h-3.5 text-status-approved" />
   ) : s === "Em revisão" ? (
-    <Clock4 className="w-3.5 h-3.5 text-amber-400" />
+    <Clock4 className="w-3.5 h-3.5 text-status-progress" />
   ) : s === "Obsoleta" ? (
     <Archive className="w-3.5 h-3.5 text-muted-foreground" />
   ) : (
@@ -35,18 +35,18 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <GitBranch className="w-4 h-4 text-primary" /> Versionamento · {data.versoes.length}{" "}
           revisões
         </h3>
-        <span className="px-3 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[9px] font-bold uppercase">
+        <span className="px-3 py-1 rounded-md bg-status-approved/10 border border-status-approved/30 text-status-approved text-[11px] font-bold uppercase">
           Ativa: {data.versoes.find((v) => v.status === "Aprovada")?.versao ?? "—"}
         </span>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
             Histórico
           </p>
           <div className="rounded-lg border border-white/5 overflow-hidden divide-y divide-white/5">
@@ -64,26 +64,26 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
               >
                 {statusIcon(v.status)}
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-bold text-white">
+                  <p className="text-xs font-bold text-white">
                     {v.versao}{" "}
                     <span className="text-muted-foreground font-normal">
                       · {v.data} · {v.autor}
                     </span>
                   </p>
-                  <p className="text-[10px] text-muted-foreground truncate">
+                  <p className="text-[11px] text-muted-foreground truncate">
                     {v.resumo}
                     {v.snapshot ? (
-                      <span className="ml-2 text-[8px] uppercase tracking-widest text-emerald-400/80">
+                      <span className="ml-2 text-[10px] uppercase tracking-widest text-status-approved/80">
                         com instantâneo
                       </span>
                     ) : (
-                      <span className="ml-2 text-[8px] uppercase tracking-widest text-muted-foreground/70">
+                      <span className="ml-2 text-[10px] uppercase tracking-widest text-muted-foreground/70">
                         pré-instantâneo
                       </span>
                     )}
                   </p>
                 </div>
-                <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground">
                   {v.status}
                 </span>
               </button>
@@ -92,7 +92,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
         </div>
 
         <div id="ts-diff" className="space-y-3">
-          <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
             Diff visual A → B
           </p>
           <VersionDiff a={va} b={vb} />
@@ -104,7 +104,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
       </div>
 
       <div className="border-t border-white/5 pt-5 space-y-3">
-        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
           Criar nova versão
         </p>
         <Input
@@ -114,7 +114,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
             if (e.target.value.trim()) setResumoError(null);
           }}
           placeholder="Resumo da alteração"
-          className="text-[11px]"
+          className="text-xs"
           aria-invalid={!!resumoError}
         />
         {resumoError && <FieldMessage variant="error">{resumoError}</FieldMessage>}
@@ -122,7 +122,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
           value={alteracoes}
           onChange={(e) => setAlteracoes(e.target.value)}
           placeholder="Alterações (separe por ; )"
-          className="text-[11px]"
+          className="text-xs"
         />
         <Button
           size="sm"
@@ -157,19 +157,19 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
 function DiffSide({ v, side }: { v?: TechSheetVersion; side: string }) {
   if (!v)
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-3 text-[10px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-white/10 p-3 text-[11px] text-muted-foreground">
         Selecione {side}
       </div>
     );
   return (
     <div className="rounded-md border border-white/10 bg-white/[0.02] p-3 space-y-2">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
+      <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
         {side} · {v.versao}
       </p>
-      <p className="text-[10px] text-muted-foreground">
+      <p className="text-[11px] text-muted-foreground">
         {v.data} · {v.autor}
       </p>
-      <ul className="text-[10px] text-white space-y-1">
+      <ul className="text-[11px] text-white space-y-1">
         {v.alteracoes.map((a, i) => (
           <li key={i} className="flex gap-2">
             <span className="text-primary">›</span>

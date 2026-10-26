@@ -58,8 +58,8 @@ const STATUS_LABEL: Record<DisplayBoard["status"], string> = {
 };
 const STATUS_CLASS: Record<DisplayBoard["status"], string> = {
   rascunho: "bg-muted/40 text-muted-foreground",
-  em_revisao: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  aprovada: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  em_revisao: "bg-status-progress/15 text-status-progress border-status-progress/30",
+  aprovada: "bg-status-approved/15 text-status-approved border-status-approved/30",
 };
 
 function DisplayRoute() {
@@ -119,7 +119,7 @@ function DisplayRoute() {
       <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)_240px]">
         {/* Lista de painéis */}
         <div className="space-y-2">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground px-1">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground px-1">
             Painéis
           </p>
           {boards.map((b) => {
@@ -144,17 +144,17 @@ function DisplayRoute() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                   <Badge
                     variant="outline"
-                    className={`absolute top-1.5 right-1.5 text-[9px] uppercase tracking-widest ${STATUS_CLASS[b.status]}`}
+                    className={`absolute top-1.5 right-1.5 text-[11px] uppercase tracking-widest ${STATUS_CLASS[b.status]}`}
                   >
                     {STATUS_LABEL[b.status]}
                   </Badge>
                 </div>
                 <div className="p-2">
                   <p className="text-xs font-semibold text-white truncate">{b.name}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">
+                  <p className="text-[11px] text-muted-foreground truncate">
                     {b.season} · {b.target}
                   </p>
-                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-1">
+                  <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1">
                     <Clock className="h-2.5 w-2.5" /> {b.updatedAt} · {b.items.length} peças
                   </p>
                 </div>
@@ -230,7 +230,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <LayoutTemplate className="h-4 w-4 text-primary" />
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
               Canvas · {board.season}
             </span>
           </div>
@@ -241,7 +241,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
           </p>
         </div>
         <div className="flex gap-2 items-center">
-          <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+          <label className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-muted-foreground">
             Fundo
             <input
               type="color"
@@ -329,7 +329,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
                   type="button"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={() => resizeItem(board.id, item.id, Math.min(item.w + 3, 45))}
-                  className="h-5 w-5 rounded bg-black/60 text-white text-[10px] flex items-center justify-center"
+                  className="h-5 w-5 rounded bg-black/60 text-white text-[11px] flex items-center justify-center"
                   aria-label="Aumentar"
                 >
                   <Plus className="h-2.5 w-2.5" />
@@ -338,7 +338,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
                   type="button"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={() => resizeItem(board.id, item.id, Math.max(item.w - 3, 8))}
-                  className="h-5 w-5 rounded bg-black/60 text-white text-[10px] flex items-center justify-center"
+                  className="h-5 w-5 rounded bg-black/60 text-white text-[11px] flex items-center justify-center"
                   aria-label="Diminuir"
                 >
                   <Minus className="h-2.5 w-2.5" />
@@ -350,14 +350,14 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
                     removeItem(board.id, item.id);
                     toast.success(`${item.refCode} removida`);
                   }}
-                  className="h-5 w-5 rounded bg-red-500/80 text-white flex items-center justify-center"
+                  className="h-5 w-5 rounded bg-status-rejected/80 text-white flex items-center justify-center"
                   aria-label="Remover"
                 >
                   <Trash2 className="h-2.5 w-2.5" />
                 </button>
               </div>
             </div>
-            <div className="px-1.5 py-1 bg-[#fff] text-[9px] leading-tight">
+            <div className="px-1.5 py-1 bg-[#fff] text-[11px] leading-tight">
               <p className="font-mono text-black/60">{item.refCode}</p>
               <p className="font-semibold text-black truncate">{item.refName}</p>
             </div>
@@ -380,7 +380,7 @@ function RefPalette({ boardId }: { boardId: string }) {
     <Card className="border-white/10 bg-white/[0.03] h-fit sticky top-4">
       <CardContent className="p-3 space-y-2">
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5 px-0.5">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-1.5 px-0.5">
             Biblioteca de referências
           </p>
           <Input
@@ -426,18 +426,18 @@ function RefPalette({ boardId }: { boardId: string }) {
                 />
               </div>
               <div className="p-1.5">
-                <p className="text-[9px] font-mono text-muted-foreground">{r.code}</p>
-                <p className="text-[10px] font-semibold text-white truncate leading-tight">
+                <p className="text-[11px] font-mono text-muted-foreground">{r.code}</p>
+                <p className="text-[11px] font-semibold text-white truncate leading-tight">
                   {r.name}
                 </p>
-                <p className="text-[9px] text-muted-foreground">
+                <p className="text-[11px] text-muted-foreground">
                   {r.category} · R$ {r.price}
                 </p>
               </div>
             </div>
           ))}
         </div>
-        <p className="text-[9px] text-muted-foreground text-center pt-1 border-t border-white/5">
+        <p className="text-[11px] text-muted-foreground text-center pt-1 border-t border-white/5">
           Arraste ou dê duplo clique
         </p>
       </CardContent>
