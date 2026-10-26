@@ -94,6 +94,11 @@ type MatEditPatch = {
   unitCost: number;
   stockItemId?: string | null;
 };
+// Setores de custo usados no atalho de detalhamento manual (o dono pediu
+// "opção para detalhar Bordado, Costura" quando a explosão do catálogo não
+// gerou ficha). O vocabulário espelha os setores do catálogo BASE.
+const SETOR_ATALHOS = ["Costura", "Bordado", "Estampa", "Acabamento", "Lavanderia"];
+
 type AddOpFields = {
   sector: string;
   operation: string;
@@ -769,9 +774,41 @@ function ItemCard({
           </div>
 
           {!sheet || (sheet.operations.length === 0 && sheet.materials.length === 0) ? (
-            <p className="text-xs text-muted-foreground">
-              A ficha é gerada na explosão do catálogo ao enviar o pedido para o custo.
-            </p>
+            costEditable ? (
+              /* 26/out — queixa do dono: "pedido em custo sem opção de detalhar
+                 Bordado/Costura". A explosão do catálogo pode vir sem linhas
+                 (material_consumption '[]' por design no BASE — docs/FLUXO-
+                 OPERACIONAL-PEDIDO.md F2); o detalhamento manual agora é o
+                 caminho óbvio, com o setor pré-preenchido num clique. */
+              <div className="rounded-md border border-dashed border-primary/30 bg-primary/[0.03] p-3">
+                <p className="text-xs font-semibold">
+                  Sem linhas de custo ainda — detalhe as operações deste item:
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {SETOR_ATALHOS.map((setor) => (
+                    <button
+                      key={setor}
+                      type="button"
+                      onClick={() => {
+                        setForm({ opSector: setor, opName: "" });
+                        setAddKind("op");
+                      }}
+                      className="rounded-md border border-primary/25 bg-primary/[0.06] px-2.5 py-1 text-[11px] font-semibold text-primary transition-colors hover:bg-primary/15"
+                    >
+                      + {setor}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+                  Uma linha por operação (ex.: Costura · Overloque · por peça). O recálculo entra no
+                  custo do item na hora.
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                A ficha é gerada na explosão do catálogo ao enviar o pedido para o custo.
+              </p>
+            )
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-xs">

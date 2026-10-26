@@ -331,6 +331,29 @@ describe("OrderDetail", () => {
     expect(api.recalcItem).toHaveBeenCalledWith("i1");
   });
 
+  it("item sem explosão de ficha ainda pode ser detalhado pelo custo (setores)", async () => {
+    api.getOrder.mockResolvedValue({ data: { ...order, status: "em_custo" }, error: null });
+    api.listItems.mockResolvedValue({
+      data: [{ ...item, costStatus: "aguardando_custo" }],
+      error: null,
+    });
+    api.listCosts.mockResolvedValue({ data: [], error: null });
+    api.listMaterials.mockResolvedValue({ data: [], error: null });
+    api.listOperations.mockResolvedValue({ data: [], error: null });
+    render(
+      <OrderDetail
+        orderId="o1"
+        canSell={false}
+        canCost
+        canPlan={false}
+        onClose={() => undefined}
+      />,
+    );
+    await screen.findByText(/Sem linhas de custo ainda/);
+    fireEvent.click(screen.getByRole("button", { name: "+ Bordado" }));
+    expect(await screen.findByRole("button", { name: /Adicionar operação/i })).toBeTruthy();
+  });
+
   it("linha aprovada congela a edição (sem lápis, sem botões de delta)", async () => {
     api.listItems.mockResolvedValue({ data: [{ ...item, costStatus: "aprovado" }], error: null });
     render(<OrderDetail orderId="o1" canSell canCost canPlan={false} onClose={() => undefined} />);
