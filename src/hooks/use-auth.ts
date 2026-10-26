@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { canAnyRole, hasAppRole } from "@/lib/authz";
 
 export type AppRole = Database["public"]["Enums"]["app_role"];
 
@@ -57,11 +58,14 @@ export function useUserRoles(userId: string | undefined) {
     };
   }, [userId]);
 
-  const hasRole = (r: AppRole) => roles.includes(r);
+  // admin e o wildcard de superadmin (docs: src/lib/authz.ts) — hasRole ja o
+  // inclui, entao isManager nao precisa mais do "isAdmin ||" manual.
+  const hasRole = (r: AppRole) => hasAppRole(roles, r);
   const isAdmin = hasRole("admin");
-  const isManager = isAdmin || hasRole("manager");
+  const isManager = hasRole("manager");
+  const can = (allowed: AppRole[]) => canAnyRole(roles, allowed);
 
-  return { roles, loading, hasRole, isAdmin, isManager };
+  return { roles, loading, hasRole, isAdmin, isManager, can };
 }
 
 export async function signOut() {
