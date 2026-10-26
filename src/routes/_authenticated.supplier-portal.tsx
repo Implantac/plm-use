@@ -116,7 +116,7 @@ function SupplierPortalPage() {
       version="v1.0"
     >
       <Tabs defaultValue="suppliers" className="w-full">
-        <TabsList className="bg-white/5 border border-white/10">
+        <TabsList className="bg-muted/50 border border-border">
           <TabsTrigger value="suppliers">Fornecedores</TabsTrigger>
           <TabsTrigger value="orders">Ordens de Produção</TabsTrigger>
           <TabsTrigger value="samples">Amostras</TabsTrigger>
@@ -192,14 +192,14 @@ function SuppliersTab() {
             <div className="grid gap-3">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[11px] uppercase">Código</Label>
+                  <Label className="text-2xs uppercase">Código</Label>
                   <Input
                     value={form.code}
                     onChange={(e) => setForm({ ...form, code: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label className="text-[11px] uppercase">Tipo</Label>
+                  <Label className="text-2xs uppercase">Tipo</Label>
                   <Input
                     value={form.tipo}
                     onChange={(e) => setForm({ ...form, tipo: e.target.value })}
@@ -208,7 +208,7 @@ function SuppliersTab() {
                 </div>
               </div>
               <div>
-                <Label className="text-[11px] uppercase">Nome</Label>
+                <Label className="text-2xs uppercase">Nome</Label>
                 <Input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -216,14 +216,14 @@ function SuppliersTab() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[11px] uppercase">Cidade</Label>
+                  <Label className="text-2xs uppercase">Cidade</Label>
                   <Input
                     value={form.cidade}
                     onChange={(e) => setForm({ ...form, cidade: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label className="text-[11px] uppercase">UF</Label>
+                  <Label className="text-2xs uppercase">UF</Label>
                   <Input
                     value={form.uf}
                     onChange={(e) => setForm({ ...form, uf: e.target.value })}
@@ -231,14 +231,14 @@ function SuppliersTab() {
                 </div>
               </div>
               <div>
-                <Label className="text-[11px] uppercase">Contato · nome</Label>
+                <Label className="text-2xs uppercase">Contato · nome</Label>
                 <Input
                   value={form.contato_nome}
                   onChange={(e) => setForm({ ...form, contato_nome: e.target.value })}
                 />
               </div>
               <div>
-                <Label className="text-[11px] uppercase">Contato · e-mail</Label>
+                <Label className="text-2xs uppercase">Contato · e-mail</Label>
                 <Input
                   type="email"
                   value={form.contato_email}
@@ -278,7 +278,7 @@ function SuppliersTab() {
                   {s.contato_nome ? ` · ${s.contato_nome}` : ""}
                 </p>
               </div>
-              <Badge variant="outline" className="text-[11px] uppercase">
+              <Badge variant="outline" className="text-2xs uppercase">
                 {s.status}
               </Badge>
             </Card>
@@ -370,9 +370,9 @@ function OrdersTab() {
             </DialogHeader>
             <div className="grid gap-3">
               <div>
-                <Label className="text-[11px] uppercase">Fornecedor</Label>
+                <Label className="text-2xs uppercase">Fornecedor</Label>
                 <select
-                  className="w-full h-9 rounded-md border border-white/10 bg-white/5 text-[12px] px-2"
+                  className="w-full h-9 rounded-md border border-border bg-muted/50 text-xs px-2"
                   value={form.supplier_id}
                   onChange={(e) => setForm({ ...form, supplier_id: e.target.value })}
                 >
@@ -386,14 +386,14 @@ function OrdersTab() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[11px] uppercase">Código OP</Label>
+                  <Label className="text-2xs uppercase">Código OP</Label>
                   <Input
                     value={form.codigo}
                     onChange={(e) => setForm({ ...form, codigo: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label className="text-[11px] uppercase">Prazo</Label>
+                  <Label className="text-2xs uppercase">Prazo</Label>
                   <Input
                     type="date"
                     value={form.prazo}
@@ -402,7 +402,7 @@ function OrdersTab() {
                 </div>
               </div>
               <div>
-                <Label className="text-[11px] uppercase">Descrição</Label>
+                <Label className="text-2xs uppercase">Descrição</Label>
                 <Input
                   value={form.descricao}
                   onChange={(e) => setForm({ ...form, descricao: e.target.value })}
@@ -410,7 +410,7 @@ function OrdersTab() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-[11px] uppercase">Quantidade</Label>
+                  <Label className="text-2xs uppercase">Quantidade</Label>
                   <Input
                     type="number"
                     value={form.quantidade}
@@ -418,7 +418,7 @@ function OrdersTab() {
                   />
                 </div>
                 <div>
-                  <Label className="text-[11px] uppercase">Unidade</Label>
+                  <Label className="text-2xs uppercase">Unidade</Label>
                   <Input
                     value={form.unidade}
                     onChange={(e) => setForm({ ...form, unidade: e.target.value })}
@@ -426,7 +426,7 @@ function OrdersTab() {
                 </div>
               </div>
               <div>
-                <Label className="text-[11px] uppercase">Observações</Label>
+                <Label className="text-2xs uppercase">Observações</Label>
                 <Textarea
                   value={form.observacoes}
                   onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
@@ -466,15 +466,13 @@ function OrdersTab() {
                     {o.prazo ? ` · prazo ${new Date(o.prazo).toLocaleDateString("pt-BR")}` : ""}
                   </p>
                   {o.supplier_response && (
-                    <p className="text-[11px] text-cyan-300 mt-1">
-                      Fornecedor: {o.supplier_response}
-                    </p>
+                    <p className="text-2xs text-cyan-300 mt-1">Fornecedor: {o.supplier_response}</p>
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <Badge
                     variant="outline"
-                    className={`text-[11px] uppercase ${STATUS_COLORS[o.status] ?? ""}`}
+                    className={`text-2xs uppercase ${STATUS_COLORS[o.status] ?? ""}`}
                   >
                     {o.status}
                   </Badge>
@@ -484,7 +482,7 @@ function OrdersTab() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-7 text-[11px] gap-1"
+                          className="h-7 text-2xs gap-1"
                           onClick={() => transition.mutate({ id: o.id, status: "aceita" })}
                         >
                           <CheckCircle2 className="w-3 h-3" /> Aceitar
@@ -492,7 +490,7 @@ function OrdersTab() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-7 text-[11px] gap-1"
+                          className="h-7 text-2xs gap-1"
                           onClick={() => transition.mutate({ id: o.id, status: "cancelada" })}
                         >
                           <XCircle className="w-3 h-3" /> Cancelar
@@ -503,7 +501,7 @@ function OrdersTab() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-7 text-[11px] gap-1"
+                        className="h-7 text-2xs gap-1"
                         onClick={() => transition.mutate({ id: o.id, status: "em_producao" })}
                       >
                         <Clock className="w-3 h-3" /> Iniciar produção
@@ -513,7 +511,7 @@ function OrdersTab() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-7 text-[11px]"
+                        className="h-7 text-2xs"
                         onClick={() => transition.mutate({ id: o.id, status: "concluida" })}
                       >
                         Concluir
@@ -576,13 +574,13 @@ function SamplesTab() {
             <p className="text-sm font-bold text-white">OP {orderCode(s.supplier_order_id)}</p>
             <p className="text-xs text-muted-foreground">{s.observacoes ?? "—"}</p>
             {s.decision_note && (
-              <p className="text-[11px] text-cyan-300 mt-1">Nota: {s.decision_note}</p>
+              <p className="text-2xs text-cyan-300 mt-1">Nota: {s.decision_note}</p>
             )}
           </div>
           <div className="flex flex-col items-end gap-1">
             <Badge
               variant="outline"
-              className={`text-[11px] uppercase ${
+              className={`text-2xs uppercase ${
                 s.decision === "aprovada"
                   ? STATUS_COLORS.aprovada
                   : s.decision === "reprovada"
@@ -597,7 +595,7 @@ function SamplesTab() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 text-[11px] gap-1"
+                  className="h-7 text-2xs gap-1"
                   onClick={() => decide.mutate({ id: s.id, decision: "aprovada" })}
                 >
                   <CheckCircle2 className="w-3 h-3" /> Aprovar
@@ -605,7 +603,7 @@ function SamplesTab() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 text-[11px] gap-1"
+                  className="h-7 text-2xs gap-1"
                   onClick={() => decide.mutate({ id: s.id, decision: "reprovada" })}
                 >
                   <XCircle className="w-3 h-3" /> Reprovar

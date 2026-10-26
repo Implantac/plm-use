@@ -48,7 +48,7 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <DollarSign className="w-4 h-4 text-primary" /> Pré-custo · Referência {refAtual}
         </h3>
         <StatusBadge acima={totals.acimaTarget} desvio={totals.desvioMetaPct} />
@@ -66,7 +66,7 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2 border-t border-white/10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2 border-t border-border">
         <FieldNumber
           label="Meta de custo (R$)"
           value={data.preCost.targetCusto}
@@ -89,7 +89,7 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-white/10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-border">
         <Metric
           label="Custo final (com overhead)"
           value={brl(totals.custoFinal)}
@@ -131,13 +131,13 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
 function StatusBadge({ acima, desvio }: { acima: boolean; desvio: number }) {
   if (acima) {
     return (
-      <span className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-destructive/40 bg-destructive/10 text-destructive text-[11px] font-bold uppercase tracking-[0.04em]">
+      <span className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-destructive/40 bg-destructive/10 text-destructive text-2xs font-semibold uppercase tracking-[0.04em]">
         <AlertTriangle className="w-3.5 h-3.5" /> {desvio.toFixed(1)}% acima da meta
       </span>
     );
   }
   return (
-    <span className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-primary/30 bg-primary/10 text-primary text-[11px] font-bold uppercase tracking-[0.04em]">
+    <span className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-primary/30 bg-primary/10 text-primary text-2xs font-semibold uppercase tracking-[0.04em]">
       <CheckCircle2 className="w-3.5 h-3.5" /> Dentro da meta
     </span>
   );
@@ -163,11 +163,11 @@ function Metric({
     : accent
       ? "border-primary/30 bg-primary/10 text-primary"
       : muted
-        ? "border-white/10 bg-white/5 text-muted-foreground"
-        : "border-white/10 bg-white/5 text-white";
+        ? "border-border bg-muted/50 text-muted-foreground"
+        : "border-border bg-muted/50 text-white";
   return (
     <div className={`px-3 py-2 rounded-md border ${tone}`}>
-      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+      <div className="flex items-center gap-2 text-2xs uppercase tracking-[0.05em] text-muted-foreground">
         {icon} {label}
       </div>
       <div className="text-base font-bold mt-1">{value}</div>
@@ -186,9 +186,7 @@ function FieldNumber({
 }) {
   return (
     <div className="space-y-1">
-      <Label className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
-        {label}
-      </Label>
+      <Label className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">{label}</Label>
       <Input
         type="number"
         min={0}

@@ -21,11 +21,11 @@ export function ConsumoPanel({ items }: { items: ConsumoItem[] }) {
     <Card className="glass-card rounded-lg">
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary flex items-center gap-2">
+          <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary flex items-center gap-2">
             <ArrowDownUp className="h-4 w-4" /> Consumo previsto × real
           </p>
           <span
-            className={`text-[11px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${
+            className={`text-2xs font-semibold uppercase tracking-wider px-2 py-1 rounded-md ${
               Math.abs(desvioGeral) < 5
                 ? "bg-status-approved/10 text-status-approved"
                 : desvioGeral > 0
@@ -60,22 +60,22 @@ export function ConsumoPanel({ items }: { items: ConsumoItem[] }) {
             return (
               <div
                 key={i.ref}
-                className="rounded-md border border-white/10 bg-black/20 p-3 space-y-2"
+                className="rounded-md border border-border bg-black/20 p-3 space-y-2"
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-white truncate">{i.name}</p>
-                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <p className="text-2xs uppercase tracking-wider text-muted-foreground">
                       {i.ref}
                     </p>
                   </div>
-                  <div className={`flex items-center gap-1 text-[11px] font-bold ${cor}`}>
+                  <div className={`flex items-center gap-1 text-2xs font-bold ${cor}`}>
                     <Icon className="h-3 w-3" />
                     {desvioPct > 0 ? "+" : ""}
                     {desvioPct.toFixed(1)}%
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-[11px]">
+                <div className="grid grid-cols-3 gap-2 text-2xs">
                   <span className="text-muted-foreground">
                     Prev{" "}
                     <span className="text-white font-bold">
@@ -90,7 +90,7 @@ export function ConsumoPanel({ items }: { items: ConsumoItem[] }) {
                       {i.unit}
                     </span>
                   </span>
-                  <span className={`font-bold text-right ${cor}`}>
+                  <span className={`font-semibold text-right ${cor}`}>
                     {desvioAbs > 0 ? "+" : ""}
                     {desvioAbs}
                     {i.unit}
@@ -98,7 +98,7 @@ export function ConsumoPanel({ items }: { items: ConsumoItem[] }) {
                 </div>
                 <Progress
                   value={Math.min(100, usagePct)}
-                  className={`h-1 ${usagePct > 105 ? "bg-status-rejected/15" : "bg-white/10"}`}
+                  className={`h-1 ${usagePct > 105 ? "bg-status-rejected/15" : "bg-muted"}`}
                 />
               </div>
             );
@@ -119,8 +119,8 @@ function Metric({ label, value, signed }: { label: string; value: number; signed
         : "text-status-progress"
     : "text-white";
   return (
-    <div className="rounded-md bg-white/[0.03] border border-white/10 py-2">
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+    <div className="rounded-md bg-muted/50 border border-border py-2">
+      <p className="text-2xs uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className={`text-lg font-bold ${cor}`}>{display}</p>
     </div>
   );

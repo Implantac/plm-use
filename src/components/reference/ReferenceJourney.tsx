@@ -59,7 +59,7 @@ export function ReferenceJourney({
           Não foi possível carregar as referências. Tente novamente mais tarde.
         </p>
       ) : visibleReferences.length === 0 ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border py-4">
           <p className="text-sm text-muted-foreground">Crie uma ideia para iniciar o ciclo.</p>
           <Button asChild size="sm" variant="outline">
             <Link to="/ai-center">
@@ -69,7 +69,7 @@ export function ReferenceJourney({
           </Button>
         </div>
       ) : (
-        <ul className="divide-y divide-white/10 border-t border-white/10">
+        <ul className="divide-y divide-border border-t border-border">
           {visibleReferences.map((reference) => (
             <li key={reference.id} className="flex flex-wrap items-center gap-3 py-3">
               <div className="min-w-0 flex-1">

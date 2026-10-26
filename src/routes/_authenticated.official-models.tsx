@@ -187,7 +187,7 @@ function OfficialModelsPage() {
               setSketchFile(null);
             }}
           >
-            <Plus className="mr-2 h-4 w-4" /> Novo modelo
+            <Plus className="h-4 w-4" /> Novo modelo
           </Button>
           {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
           {!isLoading && !models.length && (
@@ -218,14 +218,14 @@ function OfficialModelsPage() {
                   {m.medidas.length} medidas
                 </span>
                 {m.ativa ? (
-                  <span className="mt-1 inline-block rounded bg-primary/15 px-1.5 text-[11px] font-semibold text-primary">
+                  <span className="mt-1 inline-block rounded bg-primary/15 px-1.5 text-2xs font-semibold text-primary">
                     Oficial da coleção
                   </span>
                 ) : m.colecao ? (
                   <span
                     role="button"
                     tabIndex={0}
-                    className="mt-1 inline-block text-[11px] text-primary hover:underline"
+                    className="mt-1 inline-block text-2xs text-primary hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
                       void makeActive(m);
@@ -305,7 +305,7 @@ function OfficialModelsPage() {
                 <Label>Tabela de medidas</Label>
                 <Button asChild size="sm" variant="outline">
                   <label className="cursor-pointer">
-                    <FileUp className="mr-2 h-4 w-4" /> Carregar CSV
+                    <FileUp className="h-4 w-4" /> Carregar CSV
                     <input
                       type="file"
                       accept=".csv,.txt,.tsv"
@@ -379,7 +379,7 @@ function OfficialModelsPage() {
                   setForm({ ...form, medidas: [...form.medidas, { point: "", value: "" }] })
                 }
               >
-                <Plus className="mr-2 h-4 w-4" /> Adicionar medida
+                <Plus className="h-4 w-4" /> Adicionar medida
               </Button>
             </div>
 
@@ -388,7 +388,7 @@ function OfficialModelsPage() {
                 <Label>Desenho técnico oficial</Label>
                 <Button asChild size="sm" variant="outline">
                   <label className="cursor-pointer">
-                    <ImageUp className="mr-2 h-4 w-4" /> Carregar imagem
+                    <ImageUp className="h-4 w-4" /> Carregar imagem
                     <input
                       type="file"
                       accept="image/png,image/jpeg,image/webp"
@@ -422,8 +422,7 @@ function OfficialModelsPage() {
 
           <div className="flex justify-end">
             <Button type="button" onClick={() => void save()} disabled={saving}>
-              {saving && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />} Salvar modelo
-              oficial
+              {saving && <LoaderCircle className="h-4 w-4 animate-spin" />} Salvar modelo oficial
             </Button>
           </div>
         </section>

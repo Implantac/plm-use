@@ -133,10 +133,10 @@ function MarketingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="flex justify-between items-center mb-4 px-4">
-            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <TrendingUp className="w-5 h-5 text-primary" /> Performance por Produto e Coleção
             </h3>
-            <Button variant="ghost" className="text-[11px] text-primary hover:bg-primary/10">
+            <Button variant="ghost" className="text-2xs text-primary hover:bg-primary/10">
               Ver Relatório Completo
             </Button>
           </div>
@@ -163,11 +163,11 @@ function MarketingPage() {
                     <div className="space-y-1">
                       <p className="text-lg font-bold text-white tracking-tight">{camp.name}</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-muted-foreground uppercase tracking-widest">
+                        <span className="text-2xs text-muted-foreground uppercase tracking-widest">
                           {camp.channel}
                         </span>
-                        <span className="w-1 h-1 rounded-full bg-white/10" />
-                        <span className="text-[11px] text-primary font-bold uppercase tracking-widest">
+                        <span className="w-1 h-1 rounded-full bg-muted" />
+                        <span className="text-2xs text-primary font-semibold uppercase tracking-widest">
                           {camp.product}
                         </span>
                       </div>
@@ -176,31 +176,31 @@ function MarketingPage() {
 
                   <div className="grid grid-cols-2 md:grid-cols-6 gap-4 xl:pr-12">
                     <div className="text-right">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Criativo
                       </p>
                       <p className="text-sm font-bold text-white">{camp.creative}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Produção
                       </p>
                       <p className="text-sm font-bold text-white">{camp.cost}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Investimento
                       </p>
                       <p className="text-sm font-bold text-white">{camp.spend}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Vendas
                       </p>
                       <p className="text-sm font-bold text-white">{camp.sales}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         ROAS
                       </p>
                       <p
@@ -210,7 +210,7 @@ function MarketingPage() {
                       </p>
                     </div>
                     <div className="text-right w-24">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Status
                       </p>
                       <p className="text-sm font-bold text-primary">{camp.status}</p>
@@ -224,7 +224,7 @@ function MarketingPage() {
 
         <div className="space-y-8">
           <Card className="glass-card rounded-lg p-6 border-primary/20 bg-primary/[0.02]">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-primary mb-8">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary mb-8">
               Ecosystem Sync
             </h3>
             <div className="space-y-6">
@@ -247,55 +247,53 @@ function MarketingPage() {
               ].map((sync, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-4 rounded-md bg-black/20 border border-white/5"
+                  className="flex items-center justify-between p-4 rounded-md bg-black/20 border border-border/60"
                 >
                   <div className="flex items-center gap-3">
                     <div className="text-muted-foreground">{sync.icon}</div>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+                    <p className="text-2xs font-semibold uppercase tracking-widest text-white">
                       {sync.label}
                     </p>
                   </div>
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-widest ${sync.status === "Conectado" ? "text-status-approved" : "text-status-progress"}`}
+                    className={`text-2xs font-semibold uppercase tracking-widest ${sync.status === "Conectado" ? "text-status-approved" : "text-status-progress"}`}
                   >
                     {sync.status}
                   </span>
                 </div>
               ))}
             </div>
-            <Button className="w-full mt-8 text-[11px] tracking-[0.04em]">
-              Gerenciar Conexões
-            </Button>
+            <Button className="w-full mt-8 text-2xs tracking-[0.04em]">Gerenciar Conexões</Button>
           </Card>
 
           <Card className="glass-card rounded-lg p-6 overflow-hidden relative">
             <div className="absolute top-0 right-0 p-4">
               <Users className="w-12 h-12 text-white/5" />
             </div>
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-white mb-6">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-white mb-6">
               Rede de Influenciadores
             </h3>
             <div className="flex -space-x-3 mb-6">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="w-12 h-12 rounded-full border-2 border-background bg-white/5 overflow-hidden"
+                  className="w-12 h-12 rounded-full border-2 border-background bg-muted/50 overflow-hidden"
                 >
                   <img src={`https://i.pravatar.cc/150?u=${i}`} alt="user" />
                 </div>
               ))}
-              <div className="w-12 h-12 rounded-full border-2 border-background bg-primary/20 flex items-center justify-center text-[11px] font-bold text-primary">
+              <div className="w-12 h-12 rounded-full border-2 border-background bg-primary/20 flex items-center justify-center text-2xs font-bold text-primary">
                 +12
               </div>
             </div>
-            <p className="text-[11px] text-muted-foreground font-light leading-relaxed italic">
+            <p className="text-2xs text-muted-foreground font-light leading-relaxed italic">
               selecionamos 12 novos perfis com alto fit para a cápsula verão 24 baseados em
               engajamento real.
             </p>
           </Card>
 
           <Card className="glass-card rounded-lg p-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-5">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-5">
               Biblioteca de ativos
             </h3>
             <div className="grid grid-cols-2 gap-3">
@@ -305,12 +303,9 @@ function MarketingPage() {
                 { label: "Catálogos", value: "8", icon: Camera },
                 { label: "Cliques", value: "42k", icon: MousePointerClick },
               ].map((asset) => (
-                <div
-                  key={asset.label}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-4"
-                >
+                <div key={asset.label} className="rounded-md border border-border bg-muted/60 p-4">
                   <asset.icon className="h-4 w-4 text-primary" />
-                  <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                  <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                     {asset.label}
                   </p>
                   <p className="mt-1 text-lg font-bold text-white">{asset.value}</p>
@@ -322,41 +317,41 @@ function MarketingPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingCampaign ? "Editar Campanha" : "Nova Campanha"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Nome da Campanha
               </Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Lançamento Outono Chic"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Canal de Veiculação
               </Label>
               <Input
                 value={formData.channel}
                 onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Meta Ads, Influencers..."
               />
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Salvar Campanha
             </Button>
           </DialogFooter>

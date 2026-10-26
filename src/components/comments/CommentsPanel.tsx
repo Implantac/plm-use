@@ -391,14 +391,12 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
   };
 
   return (
-    <div
-      className={`rounded-md border border-white/10 bg-white/[0.025] flex flex-col ${className ?? ""}`}
-    >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.05em] text-white font-bold">
+    <div className={`rounded-md border border-border bg-muted/50 flex flex-col ${className ?? ""}`}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border/60">
+        <div className="flex items-center gap-2 text-2xs uppercase tracking-[0.05em] text-white font-bold">
           <MessageSquare className="w-3.5 h-3.5 text-primary" /> {title}
         </div>
-        <span className="text-[11px] text-muted-foreground">{items.length}</span>
+        <span className="text-2xs text-muted-foreground">{items.length}</span>
       </div>
 
       <div className="flex-1 overflow-y-auto max-h-[420px] px-4 py-3 space-y-3">
@@ -408,7 +406,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
           </div>
         )}
         {!loading && items.length === 0 && (
-          <div className="text-center py-8 text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+          <div className="text-center py-8 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
             Seja o primeiro a comentar
           </div>
         )}
@@ -419,14 +417,14 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
           return (
             <div key={c.id} className="flex gap-3 group">
               <Avatar className="w-7 h-7 shrink-0">
-                <AvatarFallback className="text-[11px] bg-primary/15 text-primary font-bold">
+                <AvatarFallback className="text-2xs bg-primary/15 text-primary font-bold">
                   {c.user_name[0]?.toUpperCase() ?? "?"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline gap-2">
                   <span className="text-xs font-bold text-white">{c.user_name}</span>
-                  <span className="text-[11px] text-muted-foreground">{timeAgo(c.created_at)}</span>
+                  <span className="text-2xs text-muted-foreground">{timeAgo(c.created_at)}</span>
                   {c.edited && <HistoryButton commentId={c.id} />}
                 </div>
                 {isEditing ? (
@@ -435,28 +433,28 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                       value={editDraft}
                       onChange={(e) => setEditDraft(e.target.value)}
                       rows={2}
-                      className="resize-none text-[12px]"
+                      className="resize-none text-xs"
                     />
                     <div className="flex gap-1.5">
                       <Button
                         size="sm"
-                        className="h-6 text-[11px]"
+                        className="h-6 text-2xs"
                         onClick={() => void saveEdit(c.id)}
                       >
-                        <Check className="w-3 h-3 mr-1" /> Salvar
+                        <Check className="w-3 h-3" /> Salvar
                       </Button>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-6 text-[11px]"
+                        className="h-6 text-2xs"
                         onClick={cancelEdit}
                       >
-                        <X className="w-3 h-3 mr-1" /> Cancelar
+                        <X className="w-3 h-3" /> Cancelar
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[12px] text-white/90 leading-snug mt-0.5 whitespace-pre-wrap break-words">
+                  <p className="text-xs text-white/90 leading-snug mt-0.5 whitespace-pre-wrap break-words">
                     {renderMessage(c.message)}
                   </p>
                 )}
@@ -501,13 +499,13 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         <div ref={bottomRef} />
       </div>
 
-      <div className="border-t border-white/5 p-3 space-y-2">
+      <div className="border-t border-border/60 p-3 space-y-2">
         <Textarea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Escreva um comentário · use @nome para mencionar"
           rows={2}
-          className="resize-none text-[12px]"
+          className="resize-none text-xs"
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
               e.preventDefault();
@@ -520,7 +518,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
             {pendingFiles.map((f, i) => (
               <li
                 key={i}
-                className="flex items-center gap-1.5 rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-white/80"
+                className="flex items-center gap-1.5 rounded border border-border bg-muted/60 px-2 py-1 text-2xs text-white/80"
               >
                 <FileText className="w-3 h-3 text-primary" />
                 <span className="truncate max-w-[160px]">{f.name}</span>
@@ -551,12 +549,12 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
             <Button
               size="sm"
               variant="ghost"
-              className="text-[11px] gap-1"
+              className="text-2xs gap-1"
               onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip className="w-3.5 h-3.5" /> Anexar
             </Button>
-            <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+            <span className="text-2xs uppercase tracking-widest text-muted-foreground">
               Ctrl/Cmd + Enter para enviar
             </span>
           </div>
@@ -599,15 +597,15 @@ function HistoryButton({ commentId }: { commentId: string }) {
     <Popover onOpenChange={(open) => open && void load()}>
       <PopoverTrigger asChild>
         <button
-          className="text-[11px] text-muted-foreground italic hover:text-primary inline-flex items-center gap-0.5"
+          className="text-2xs text-muted-foreground italic hover:text-primary inline-flex items-center gap-0.5"
           aria-label="Ver histórico de edições"
         >
           <History className="w-2.5 h-2.5" />
           (editado)
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-3 bg-background/95 border-white/10">
-        <div className="text-[11px] uppercase tracking-[0.04em] font-bold text-white mb-2">
+      <PopoverContent className="w-96 p-3 bg-background/95 border-border">
+        <div className="text-2xs uppercase tracking-[0.04em] font-bold text-white mb-2">
           Histórico
         </div>
         {loading && (
@@ -621,8 +619,8 @@ function HistoryButton({ commentId }: { commentId: string }) {
         {!loading && revisions && revisions.length > 0 && (
           <ul className="space-y-2 max-h-72 overflow-y-auto">
             {revisions.map((r) => (
-              <li key={r.id} className="border-l-2 border-white/10 pl-2">
-                <div className="text-[11px] text-muted-foreground">{timeAgo(r.edited_at)}</div>
+              <li key={r.id} className="border-l-2 border-border pl-2">
+                <div className="text-2xs text-muted-foreground">{timeAgo(r.edited_at)}</div>
                 <div className="text-xs text-white/80 whitespace-pre-wrap">
                   {r.previous_message}
                 </div>
@@ -631,7 +629,7 @@ function HistoryButton({ commentId }: { commentId: string }) {
                     {r.previous_attachments.map((a, i) => (
                       <li
                         key={i}
-                        className="text-[11px] text-muted-foreground flex items-center gap-1"
+                        className="text-2xs text-muted-foreground flex items-center gap-1"
                       >
                         <FileText className="w-2.5 h-2.5" />
                         <button
@@ -717,22 +715,22 @@ export function AttachmentItem({
   }, [attachment.storage_path, previewable]);
 
   return (
-    <li className="rounded border border-white/10 bg-white/[0.03] overflow-hidden">
+    <li className="rounded border border-border bg-muted/50 overflow-hidden">
       {previewable && (
-        <div className="relative bg-black/40 border-b border-white/5">
+        <div className="relative bg-black/40 border-b border-border/60">
           {loading && (
             <div className="flex flex-col items-center justify-center gap-1.5 h-32 text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-[11px] uppercase tracking-widest">Carregando prévia…</span>
+              <span className="text-2xs uppercase tracking-widest">Carregando prévia…</span>
             </div>
           )}
           {!loading && error && (
             <div className="flex flex-col items-center justify-center gap-1.5 h-24 px-3 text-center">
-              <span className="text-[11px] text-status-rejected">{error}</span>
+              <span className="text-2xs text-status-rejected">{error}</span>
               <button
                 type="button"
                 onClick={loadPreview}
-                className="text-[11px] uppercase tracking-widest text-primary hover:underline"
+                className="text-2xs uppercase tracking-widest text-primary hover:underline"
               >
                 Tentar novamente
               </button>
@@ -785,7 +783,7 @@ export function AttachmentItem({
             <FileText className="w-3 h-3 text-primary shrink-0" />
           )}
           <span className="truncate flex-1">{attachment.file_name}</span>
-          <span className="text-[11px] text-muted-foreground shrink-0">
+          <span className="text-2xs text-muted-foreground shrink-0">
             {fmtSize(attachment.size_bytes)}
           </span>
           <button
@@ -810,9 +808,7 @@ export function AttachmentItem({
             </button>
           )}
         </div>
-        {downloadError && (
-          <div className="text-[11px] text-status-rejected pl-5">{downloadError}</div>
-        )}
+        {downloadError && <div className="text-2xs text-status-rejected pl-5">{downloadError}</div>}
       </div>
     </li>
   );

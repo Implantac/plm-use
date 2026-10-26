@@ -72,9 +72,7 @@ function FeedPage() {
   return (
     <div className="space-y-8 pb-12">
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-        <h1 className="text-5xl font-bold tracking-tighter uppercase text-white mb-2 leading-none">
-          Atividade
-        </h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground mb-2">Atividade</h1>
         <p className="text-muted-foreground text-sm font-light italic lowercase">
           o pulso real da sua marca — eventos gravados pelo pc p, fichas, amostras e lançamentos, ao
           vivo do banco.
@@ -82,7 +80,7 @@ function FeedPage() {
       </motion.div>
 
       {failed && (
-        <Card className="glass-card rounded-[2rem] p-6 border-status-progress/20">
+        <Card className="glass-card rounded-full p-6 border-status-progress/20">
           <CardContent className="p-0 flex items-start gap-3 text-sm text-status-progress/90">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
             <span>
@@ -99,8 +97,8 @@ function FeedPage() {
             onClick={() => setFilter(null)}
             className={`rounded-full px-3 py-1 text-xs border transition-colors ${
               !filter
-                ? "border-white/40 bg-white/10 text-white"
-                : "border-white/10 text-muted-foreground hover:text-white"
+                ? "border-border-strong bg-muted text-white"
+                : "border-border text-muted-foreground hover:text-white"
             }`}
           >
             tudo ({rows.length})
@@ -111,8 +109,8 @@ function FeedPage() {
               onClick={() => setFilter(chip.type === filter ? null : chip.type)}
               className={`rounded-full px-3 py-1 text-xs border transition-colors capitalize ${
                 chip.type === filter
-                  ? "border-white/40 bg-white/10 text-white"
-                  : "border-white/10 text-muted-foreground hover:text-white"
+                  ? "border-border-strong bg-muted text-white"
+                  : "border-border text-muted-foreground hover:text-white"
               }`}
             >
               {chip.label} ({chip.count})
@@ -122,14 +120,14 @@ function FeedPage() {
       )}
 
       {loading ? (
-        <Card className="glass-card rounded-[2.5rem] p-10">
+        <Card className="glass-card rounded-full p-10">
           <CardContent className="p-0 flex items-center gap-3 text-sm text-muted-foreground">
             <Activity className="h-4 w-4 animate-pulse" />
             carregando a trilha de atividade…
           </CardContent>
         </Card>
       ) : items.length === 0 ? (
-        <Card className="glass-card rounded-[2.5rem] p-10">
+        <Card className="glass-card rounded-full p-10">
           <CardContent className="p-0 flex flex-col items-center text-center gap-3 py-6">
             <Inbox className="h-8 w-8 text-muted-foreground/60" />
             <p className="text-sm text-muted-foreground max-w-md">
@@ -154,9 +152,9 @@ function FeedPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(index, 8) * 0.03 }}
             >
-              <Card className="glass-card rounded-[2rem]">
+              <Card className="glass-card rounded-full">
                 <CardContent className="p-5 flex items-start gap-4">
-                  <div className="h-10 w-10 shrink-0 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-[11px] font-bold text-white/80">
+                  <div className="h-10 w-10 shrink-0 rounded-full border border-border bg-muted/50 flex items-center justify-center text-2xs font-bold text-white/80">
                     {item.initials}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -164,13 +162,13 @@ function FeedPage() {
                       <span className="font-semibold text-white">{item.actor}</span>{" "}
                       <span className="text-muted-foreground">{item.verb}</span>{" "}
                       <span className="font-medium text-white/90 capitalize">{item.target}</span>
-                      <span className="ml-1.5 font-mono text-[11px] text-muted-foreground/70">
+                      <span className="ml-1.5 font-mono text-2xs text-muted-foreground/70">
                         #{item.ref}
                       </span>
                       {item.statusFrom && item.statusTo && (
                         <Badge
                           variant="outline"
-                          className="ml-2 text-[11px] capitalize border-white/15 align-middle"
+                          className="ml-2 text-2xs capitalize border-border-strong/70 align-middle"
                         >
                           {item.statusFrom} → {item.statusTo}
                         </Badge>

@@ -292,7 +292,7 @@ function LaunchPage() {
                                 {it.reference_id.slice(0, 8)} · meta {it.meta_unidades}
                               </span>
                               <div className="flex items-center gap-1">
-                                <Badge variant="outline" className="text-[11px]">
+                                <Badge variant="outline" className="text-2xs">
                                   {ITEM_STATUS_LABEL[is]}
                                 </Badge>
                                 {ITEM_NEXT[is].slice(0, 1).map((to) => (

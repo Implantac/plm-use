@@ -35,21 +35,21 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <GitBranch className="w-4 h-4 text-primary" /> Versionamento · {data.versoes.length}{" "}
           revisões
         </h3>
-        <span className="px-3 py-1 rounded-md bg-status-approved/10 border border-status-approved/30 text-status-approved text-[11px] font-bold uppercase">
+        <span className="px-3 py-1 rounded-md bg-status-approved/10 border border-status-approved/30 text-status-approved text-2xs font-semibold uppercase">
           Ativa: {data.versoes.find((v) => v.status === "Aprovada")?.versao ?? "—"}
         </span>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+          <p className="text-2xs uppercase tracking-widest text-muted-foreground font-bold">
             Histórico
           </p>
-          <div className="rounded-lg border border-white/5 overflow-hidden divide-y divide-white/5">
+          <div className="rounded-lg border border-border/60 overflow-hidden divide-y divide-border/70">
             {data.versoes.map((v) => (
               <button
                 key={v.id}
@@ -60,7 +60,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
                     setCompareA(v.id);
                   }
                 }}
-                className={`w-full text-left p-3 flex items-center gap-3 hover:bg-white/5 transition ${compareA === v.id ? "bg-primary/10" : compareB === v.id ? "bg-white/5" : "bg-white/[0.02]"}`}
+                className={`w-full text-left p-3 flex items-center gap-3 hover:bg-accent/60 transition ${compareA === v.id ? "bg-primary/10" : compareB === v.id ? "bg-muted/50" : "bg-muted/40"}`}
               >
                 {statusIcon(v.status)}
                 <div className="flex-1 min-w-0">
@@ -70,20 +70,20 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
                       · {v.data} · {v.autor}
                     </span>
                   </p>
-                  <p className="text-[11px] text-muted-foreground truncate">
+                  <p className="text-2xs text-muted-foreground truncate">
                     {v.resumo}
                     {v.snapshot ? (
-                      <span className="ml-2 text-[10px] uppercase tracking-widest text-status-approved/80">
+                      <span className="ml-2 text-2xs uppercase tracking-widest text-status-approved/80">
                         com instantâneo
                       </span>
                     ) : (
-                      <span className="ml-2 text-[10px] uppercase tracking-widest text-muted-foreground/70">
+                      <span className="ml-2 text-2xs uppercase tracking-widest text-muted-foreground/70">
                         pré-instantâneo
                       </span>
                     )}
                   </p>
                 </div>
-                <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground">
+                <span className="text-2xs uppercase tracking-widest font-bold text-muted-foreground">
                   {v.status}
                 </span>
               </button>
@@ -92,7 +92,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
         </div>
 
         <div id="ts-diff" className="space-y-3">
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+          <p className="text-2xs uppercase tracking-widest text-muted-foreground font-bold">
             Diff visual A → B
           </p>
           <VersionDiff a={va} b={vb} />
@@ -103,8 +103,8 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
         </div>
       </div>
 
-      <div className="border-t border-white/5 pt-5 space-y-3">
-        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+      <div className="border-t border-border/60 pt-5 space-y-3">
+        <p className="text-2xs uppercase tracking-widest text-muted-foreground font-bold">
           Criar nova versão
         </p>
         <Input
@@ -157,19 +157,19 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
 function DiffSide({ v, side }: { v?: TechSheetVersion; side: string }) {
   if (!v)
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-3 text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-border p-3 text-2xs text-muted-foreground">
         Selecione {side}
       </div>
     );
   return (
-    <div className="rounded-md border border-white/10 bg-white/[0.02] p-3 space-y-2">
-      <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
+    <div className="rounded-md border border-border bg-muted/40 p-3 space-y-2">
+      <p className="text-2xs font-semibold uppercase tracking-widest text-primary">
         {side} · {v.versao}
       </p>
-      <p className="text-[11px] text-muted-foreground">
+      <p className="text-2xs text-muted-foreground">
         {v.data} · {v.autor}
       </p>
-      <ul className="text-[11px] text-white space-y-1">
+      <ul className="text-2xs text-white space-y-1">
         {v.alteracoes.map((a, i) => (
           <li key={i} className="flex gap-2">
             <span className="text-primary">›</span>

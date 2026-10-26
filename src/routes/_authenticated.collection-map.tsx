@@ -160,18 +160,18 @@ function CollectionMapRoute() {
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         {/* Barra de filtros */}
         <div className="space-y-4">
-          <Card className="border-white/10 bg-white/[0.03]">
+          <Card className="border-border bg-muted/50">
             <CardContent className="p-3 space-y-3">
               <div className="flex items-center gap-2">
                 <Filter className="h-3.5 w-3.5 text-primary" />
-                <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <span className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Filtros
                 </span>
                 {selectedCats.length + selectedColors.length + selectedStatuses.length > 0 && (
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="ml-auto text-[11px] text-muted-foreground hover:text-foreground"
+                    className="ml-auto text-2xs text-muted-foreground hover:text-foreground"
                   >
                     limpar
                   </button>
@@ -218,7 +218,7 @@ function CollectionMapRoute() {
                         className={`h-6 w-6 rounded-full border-2 transition-all ${
                           active
                             ? "border-primary ring-2 ring-primary/40 scale-110"
-                            : "border-white/20"
+                            : "border-border-strong/70"
                         }`}
                         style={{ background: hex }}
                       />
@@ -255,23 +255,23 @@ function CollectionMapRoute() {
           </Card>
 
           {/* Filtros salvos */}
-          <Card className="border-white/10 bg-white/[0.03]">
+          <Card className="border-border bg-muted/50">
             <CardContent className="p-3 space-y-2">
               <div className="flex items-center gap-2">
                 <Bookmark className="h-3.5 w-3.5 text-primary" />
-                <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <span className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Filtros salvos
                 </span>
               </div>
               {filters.length === 0 && (
-                <p className="text-[11px] text-muted-foreground italic">
+                <p className="text-2xs text-muted-foreground italic">
                   Nenhum ainda — configure e salve.
                 </p>
               )}
               {filters.map((f) => (
                 <div
                   key={f.id}
-                  className="flex items-center gap-2 rounded-md border border-white/5 bg-white/[0.02] p-2"
+                  className="flex items-center gap-2 rounded-md border border-border/60 bg-muted/40 p-2"
                 >
                   <button
                     type="button"
@@ -279,7 +279,7 @@ function CollectionMapRoute() {
                     className="flex-1 min-w-0 text-left"
                   >
                     <p className="text-xs font-semibold text-white truncate">{f.name}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">
+                    <p className="text-2xs text-muted-foreground truncate">
                       {f.categories.length + f.colors.length + f.statuses.length} critérios
                     </p>
                   </button>
@@ -301,15 +301,15 @@ function CollectionMapRoute() {
         </div>
 
         {/* Matriz */}
-        <Card className="border-white/10 bg-white/[0.03] overflow-hidden">
+        <Card className="border-border bg-muted/50 overflow-hidden">
           <CardContent className="p-0">
-            <div className="p-4 border-b border-white/5 flex items-center gap-2">
+            <div className="p-4 border-b border-border/60 flex items-center gap-2">
               <Grid3x3 className="h-4 w-4 text-primary" />
               <h2 className="text-sm font-semibold text-white">{collectionMap.name}</h2>
-              <Badge variant="outline" className="text-[11px] uppercase tracking-widest">
+              <Badge variant="outline" className="text-2xs uppercase tracking-widest">
                 {collectionMap.season}
               </Badge>
-              <span className="ml-auto text-[11px] text-muted-foreground">
+              <span className="ml-auto text-2xs text-muted-foreground">
                 {filteredRows.length} modelos exibidos
               </span>
             </div>
@@ -317,7 +317,7 @@ function CollectionMapRoute() {
             <div className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
                 <thead>
-                  <tr className="text-[11px] uppercase tracking-widest text-muted-foreground border-b border-white/10">
+                  <tr className="text-2xs uppercase tracking-widest text-muted-foreground border-b border-border">
                     <th className="text-left p-3 min-w-[220px] sticky left-0 bg-background z-10">
                       Referência
                     </th>
@@ -337,12 +337,12 @@ function CollectionMapRoute() {
                     row.cells.map((cell, i) => (
                       <tr
                         key={`${row.refCode}-${cell.colorHex}`}
-                        className="border-b border-white/5 hover:bg-white/[0.03]"
+                        className="border-b border-border/60 hover:bg-accent/60"
                       >
                         {i === 0 && (
                           <td
                             rowSpan={row.cells.length}
-                            className="p-3 sticky left-0 bg-background/90 backdrop-blur align-top border-r border-white/5"
+                            className="p-3 sticky left-0 bg-background/90 backdrop-blur align-top border-r border-border/60"
                           >
                             <RefCell row={row} />
                           </td>
@@ -350,7 +350,7 @@ function CollectionMapRoute() {
                         <td className="p-2">
                           <div className="flex items-center gap-2">
                             <span
-                              className="h-4 w-4 rounded-full border border-white/20 flex-shrink-0"
+                              className="h-4 w-4 rounded-full border border-border-strong/70 flex-shrink-0"
                               style={{ background: cell.colorHex }}
                             />
                             <span className="text-xs">{cell.colorName}</span>
@@ -378,7 +378,7 @@ function CollectionMapRoute() {
                         <td className="p-2 text-center">
                           <Badge
                             variant="outline"
-                            className="text-[11px] uppercase tracking-widest gap-1"
+                            className="text-2xs uppercase tracking-widest gap-1"
                           >
                             <span
                               className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[cell.status]}`}
@@ -409,14 +409,14 @@ function CollectionMapRoute() {
 function RefCell({ row }: { row: MatrixRow }) {
   return (
     <div className="flex gap-2 items-start">
-      <div className="h-14 w-14 rounded overflow-hidden border border-white/10 flex-shrink-0">
+      <div className="h-14 w-14 rounded overflow-hidden border border-border flex-shrink-0">
         <OptimizedImage src={row.image} alt={row.refName} className="h-full w-full object-cover" />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-mono text-muted-foreground">{row.refCode}</p>
+        <p className="text-2xs font-mono text-muted-foreground">{row.refCode}</p>
         <p className="text-xs font-semibold text-white leading-tight">{row.refName}</p>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{row.category}</p>
-        <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
+        <p className="text-2xs text-muted-foreground mt-0.5">{row.category}</p>
+        <div className="flex items-center gap-2 mt-1 text-2xs text-muted-foreground">
           <span className="flex items-center gap-0.5">
             <DollarSign className="h-2.5 w-2.5" /> {row.price}
           </span>
@@ -432,7 +432,7 @@ function RefCell({ row }: { row: MatrixRow }) {
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-widest text-muted-foreground/70 mb-1">{label}</p>
+      <p className="text-2xs uppercase tracking-widest text-muted-foreground/70 mb-1">{label}</p>
       <div className="flex flex-wrap gap-1">{children}</div>
     </div>
   );
@@ -451,10 +451,10 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] uppercase tracking-widest border transition-colors ${
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-2xs uppercase tracking-widest border transition-colors ${
         active
           ? "border-primary/60 bg-primary/10 text-primary"
-          : "border-white/10 text-muted-foreground hover:border-white/20"
+          : "border-border text-muted-foreground hover:border-border-strong/70"
       }`}
     >
       {children}
@@ -488,7 +488,7 @@ function SaveFilterDialog({
           <DialogTitle>Salvar filtro atual</DialogTitle>
         </DialogHeader>
         <div className="space-y-2">
-          <Label className="text-[11px] uppercase tracking-widest" required>
+          <Label className="text-2xs uppercase tracking-widest" required>
             Nome
           </Label>
           <Input

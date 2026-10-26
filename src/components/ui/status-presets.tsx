@@ -16,7 +16,8 @@ export const STATUS_TOAST_CLASS: Record<StatusTone, string> = {
   warning:
     "!border !border-status-progress/50 !bg-status-progress/10 !text-status-progress [&_[data-icon]]:!text-status-progress [&_[data-description]]:!text-status-progress/80",
   info: "!border !border-status-review/50 !bg-status-review/10 !text-status-review [&_[data-icon]]:!text-status-review [&_[data-description]]:!text-status-review/80",
-  neutral: "!border !border-white/20 !bg-white/5 !text-white [&_[data-description]]:!text-white/70",
+  neutral:
+    "!border !border-border-strong/70 !bg-muted/50 !text-white [&_[data-description]]:!text-white/70",
 };
 
 export const STATUS_BADGE_CLASS: Record<StatusTone, string> = {
@@ -24,7 +25,7 @@ export const STATUS_BADGE_CLASS: Record<StatusTone, string> = {
   error: "border-status-rejected/50 bg-status-rejected/10 text-status-rejected",
   warning: "border-status-progress/40 bg-status-progress/10 text-status-progress",
   info: "border-status-review/40 bg-status-review/10 text-status-review",
-  neutral: "border-white/20 bg-white/5 text-white/80",
+  neutral: "border-border-strong/70 bg-muted/50 text-white/80",
 };
 
 const ICONS: Record<StatusTone, React.ReactNode> = {
@@ -80,10 +81,7 @@ export function StatusBadge({
   withIcon?: boolean;
 }) {
   return (
-    <Badge
-      variant="outline"
-      className={`text-[11px] gap-1 ${STATUS_BADGE_CLASS[tone]} ${className}`}
-    >
+    <Badge variant="outline" className={`text-2xs gap-1 ${STATUS_BADGE_CLASS[tone]} ${className}`}>
       {withIcon && ICONS[tone]}
       {children}
     </Badge>

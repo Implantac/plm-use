@@ -21,15 +21,15 @@ export function PresenceBar() {
 
   return (
     <TooltipProvider delayDuration={150}>
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/5 border border-white/5">
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted/50 border border-border/60">
         <div className="relative">
           <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-status-approved animate-pulse" />
-          <span className="text-[11px] uppercase tracking-[0.04em] text-muted-foreground font-bold">
+          <span className="text-2xs uppercase tracking-[0.04em] text-muted-foreground font-bold">
             {others.length === 0 ? "Sozinho" : `${others.length} online`}
           </span>
         </div>
         {sameModule.length > 0 && (
-          <span className="text-[11px] uppercase tracking-[0.04em] text-status-approved font-bold">
+          <span className="text-2xs uppercase tracking-[0.04em] text-status-approved font-bold">
             · {sameModule.length} aqui
           </span>
         )}
@@ -43,19 +43,19 @@ export function PresenceBar() {
                   }`}
                 >
                   <AvatarImage src={u.avatar_url} />
-                  <AvatarFallback className="text-[11px] bg-primary/20 text-primary font-bold">
+                  <AvatarFallback className="text-2xs bg-primary/20 text-primary font-bold">
                     {u.full_name[0]?.toUpperCase() ?? "?"}
                   </AvatarFallback>
                 </Avatar>
               </TooltipTrigger>
-              <TooltipContent className="text-[11px]">
+              <TooltipContent className="text-2xs">
                 <div className="font-bold">{u.full_name}</div>
                 <div className="opacity-70 capitalize">em {u.module}</div>
               </TooltipContent>
             </Tooltip>
           ))}
           {others.length > 5 && (
-            <div className="w-6 h-6 rounded-full bg-white/10 border-2 border-background flex items-center justify-center text-[11px] font-bold text-white">
+            <div className="w-6 h-6 rounded-full bg-muted border-2 border-background flex items-center justify-center text-2xs font-bold text-white">
               +{others.length - 5}
             </div>
           )}

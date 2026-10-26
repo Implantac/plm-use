@@ -104,7 +104,7 @@ export function LoteTimeline({ lote }: { lote: Lote }) {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-8 text-center text-xs text-muted-foreground">
+      <div className="rounded-md border border-dashed border-border bg-muted/40 p-8 text-center text-xs text-muted-foreground">
         Nenhum evento registrado neste lote ainda.
       </div>
     );
@@ -112,7 +112,7 @@ export function LoteTimeline({ lote }: { lote: Lote }) {
 
   return (
     <ol className="relative space-y-3">
-      <div className="absolute left-[11px] top-1 bottom-1 w-px bg-white/10" />
+      <div className="absolute left-[11px] top-1 bottom-1 w-px bg-muted" />
       {items.map((it) => (
         <TimelineRow key={it.id} item={it} />
       ))}
@@ -131,15 +131,15 @@ function TimelineRow({ item }: { item: TimelineItem }) {
       >
         <Icon className="h-3 w-3" />
       </span>
-      <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
+      <div className="rounded-md border border-border bg-muted/50 p-2.5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="text-xs font-bold text-white">{item.title}</p>
             {item.detail && (
-              <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{item.detail}</p>
+              <p className="text-2xs text-muted-foreground mt-0.5 leading-snug">{item.detail}</p>
             )}
           </div>
-          <span className="shrink-0 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <span className="shrink-0 text-2xs uppercase tracking-wider text-muted-foreground">
             {ts.toLocaleDateString("pt-BR")}{" "}
             {ts.toLocaleTimeString("pt-BR", {
               hour: "2-digit",
@@ -147,19 +147,19 @@ function TimelineRow({ item }: { item: TimelineItem }) {
             })}
           </span>
         </div>
-        <div className="mt-1.5 flex flex-wrap gap-1.5 text-[11px] uppercase tracking-wider">
+        <div className="mt-1.5 flex flex-wrap gap-1.5 text-2xs uppercase tracking-wider">
           {item.ref && (
             <span className="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-primary">
               {item.ref}
             </span>
           )}
           {item.setor && (
-            <span className="rounded border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-muted-foreground">
+            <span className="rounded border border-border-strong/70 bg-muted/60 px-1.5 py-0.5 text-muted-foreground">
               {item.setor}
             </span>
           )}
           {item.actor && (
-            <span className="rounded border border-white/10 px-1.5 py-0.5 text-muted-foreground">
+            <span className="rounded border border-border px-1.5 py-0.5 text-muted-foreground">
               {item.actor}
             </span>
           )}
@@ -199,7 +199,7 @@ function kindMeta(k: TimelineItem["kind"]) {
     case "ocor-neutra":
       return {
         icon: AlertTriangle,
-        tone: "text-muted-foreground border-white/15 bg-white/[0.03]",
+        tone: "text-muted-foreground border-border-strong/70 bg-muted/50",
       };
     case "capa":
       return {
@@ -209,7 +209,7 @@ function kindMeta(k: TimelineItem["kind"]) {
     default:
       return {
         icon: CheckCircle2,
-        tone: "text-white border-white/15 bg-white/[0.04]",
+        tone: "text-white border-border-strong/70 bg-muted/60",
       };
   }
 }

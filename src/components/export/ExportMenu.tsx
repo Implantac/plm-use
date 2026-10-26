@@ -29,17 +29,17 @@ export function ExportMenu({ title, filename, rows, columns, label = "Exportar" 
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="bg-white/5 hover:bg-white/10 text-[11px] tracking-[0.04em]"
+          className="bg-muted/50 hover:bg-accent text-2xs tracking-[0.04em]"
         >
           <Download className="w-3.5 h-3.5 mr-2" />
           {label}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="glass-card border-white/10 bg-popover w-56">
-        <DropdownMenuLabel className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+      <DropdownMenuContent align="end" className="glass-card border-border bg-popover w-56">
+        <DropdownMenuLabel className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
           {rows.length} registros
         </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-white/5" />
+        <DropdownMenuSeparator className="bg-muted/50" />
         <DropdownMenuItem
           className="text-xs cursor-pointer"
           onClick={() => {

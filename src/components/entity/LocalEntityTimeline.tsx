@@ -83,19 +83,19 @@ export function LocalEntityTimeline({
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-foreground">{label}</p>
                   {(it.from_status || it.to_status) && (
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <p className="text-2xs text-muted-foreground mt-0.5">
                       {it.from_status ?? "—"} → {it.to_status ?? "—"}
                     </p>
                   )}
                   {it.note && <p className="text-xs text-foreground/80 mt-1">{it.note}</p>}
                 </div>
-                <span className="shrink-0 text-[11px] uppercase tracking-wider text-muted-foreground">
+                <span className="shrink-0 text-2xs uppercase tracking-wider text-muted-foreground">
                   {ts.toLocaleDateString("pt-BR")}{" "}
                   {ts.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
               {it.actor_name && (
-                <div className="mt-1.5 flex items-center gap-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+                <div className="mt-1.5 flex items-center gap-1 text-2xs uppercase tracking-wider text-muted-foreground">
                   <CheckCircle2 className="h-2.5 w-2.5" />
                   {it.actor_name}
                 </div>

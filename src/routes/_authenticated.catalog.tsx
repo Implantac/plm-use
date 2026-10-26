@@ -166,7 +166,7 @@ function CatalogPage() {
         <Button
           variant="outline"
           onClick={() => void load()}
-          className="text-[11px] tracking-[0.04em] gap-2"
+          className="text-2xs tracking-[0.04em] gap-2"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Atualizar
         </Button>
@@ -185,10 +185,7 @@ function CatalogPage() {
             clique em <strong>Validar</strong> — só então ele aparece para o vendedor.
           </p>
           {canEdit && (
-            <Button
-              onClick={() => setEditing("new")}
-              className="text-[11px] tracking-[0.04em] gap-2"
-            >
+            <Button onClick={() => setEditing("new")} className="text-2xs tracking-[0.04em] gap-2">
               <Plus className="w-4 h-4" /> Novo produto
             </Button>
           )}
@@ -202,16 +199,16 @@ function CatalogPage() {
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+                      <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
                         {p.code}
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-[0.04em] ${meta.cls}`}
+                        className={`px-2 py-0.5 rounded border text-2xs font-semibold uppercase tracking-[0.04em] ${meta.cls}`}
                       >
                         {meta.label}
                       </span>
                       {p.family && (
-                        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                        <span className="text-2xs uppercase tracking-widest text-muted-foreground">
                           {p.family}
                         </span>
                       )}
@@ -229,21 +226,21 @@ function CatalogPage() {
                         <Button
                           variant="outline"
                           onClick={() => setManaging(p)}
-                          className="text-[11px] tracking-[0.04em] gap-1.5"
+                          className="text-2xs tracking-[0.04em] gap-1.5"
                         >
                           <Sparkles className="w-3.5 h-3.5" /> Opções
                         </Button>
                         <Button
                           variant="ghost"
                           onClick={() => setEditing(p)}
-                          className="text-[11px] tracking-[0.04em] gap-1.5"
+                          className="text-2xs tracking-[0.04em] gap-1.5"
                         >
                           <Pencil className="w-3.5 h-3.5" /> Editar
                         </Button>
                         {p.status !== "validado" ? (
                           <Button
                             onClick={() => validate(p, "validado")}
-                            className="text-[11px] tracking-[0.04em] gap-1.5"
+                            className="text-2xs tracking-[0.04em] gap-1.5"
                           >
                             <BadgeCheck className="w-3.5 h-3.5" /> Validar
                           </Button>
@@ -251,7 +248,7 @@ function CatalogPage() {
                           <Button
                             variant="outline"
                             onClick={() => validate(p, "descontinuado")}
-                            className="text-[11px] tracking-[0.04em] gap-1.5 text-status-rejected"
+                            className="text-2xs tracking-[0.04em] gap-1.5 text-status-rejected"
                           >
                             <CircleSlash className="w-3.5 h-3.5" /> Descontinuar
                           </Button>
@@ -262,11 +259,11 @@ function CatalogPage() {
                 </div>
 
                 {p.options.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-1.5 border-t border-white/5 pt-3">
+                  <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border/60 pt-3">
                     {p.options.map((o) => (
                       <span
                         key={o.id}
-                        className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[11px] text-white"
+                        className="px-2 py-1 rounded border border-border bg-muted/50 text-2xs text-white"
                         title={`${o.sector ?? "produção"} · ${o.driver} · ${brl(o.unitCost)}`}
                       >
                         {o.name}
@@ -436,7 +433,7 @@ function ProductDialog({
               <select
                 value={configurationId}
                 onChange={(e) => setConfigurationId(e.target.value)}
-                className="h-10 w-full rounded-md border border-white/10 bg-black/30 px-3 text-sm text-white"
+                className="h-10 w-full rounded-md border border-border bg-black/30 px-3 text-sm text-white"
               >
                 <option value="">— sem rota padrão —</option>
                 {configs.map((c) => (
@@ -445,7 +442,7 @@ function ProductDialog({
                   </option>
                 ))}
               </select>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-2xs text-muted-foreground">
                 Sem configuração, a liberação para o PCP não acha a rota.
               </p>
             </div>
@@ -603,7 +600,7 @@ function OptionsDialog({
 
         <div className="space-y-5">
           <div className="space-y-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground flex items-center gap-1.5">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground flex items-center gap-1.5">
               <Layers className="w-3 h-3" /> Grupos e opções
             </p>
             {groups.length === 0 ? (
@@ -616,22 +613,22 @@ function OptionsDialog({
                   const gid = String(g.id);
                   const opts = optionsByGroup(gid);
                   return (
-                    <div key={gid} className="rounded-md border border-white/10 bg-black/20 p-3">
+                    <div key={gid} className="rounded-md border border-border bg-black/20 p-3">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-semibold text-white">{String(g.name)}</span>
-                        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                        <span className="text-2xs uppercase tracking-widest text-muted-foreground">
                           {String(g.selection) === "multi" ? "múltipla" : "única"}
                           {g.required === true ? " · obrigatória" : ""}
                         </span>
                       </div>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {opts.length === 0 ? (
-                          <span className="text-[11px] text-muted-foreground">sem opções</span>
+                          <span className="text-2xs text-muted-foreground">sem opções</span>
                         ) : (
                           opts.map((o) => (
                             <span
                               key={o.id}
-                              className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[11px] text-white"
+                              className="px-2 py-1 rounded border border-border bg-muted/50 text-2xs text-white"
                             >
                               {o.name}
                               <span className="text-primary"> · {o.driver}</span>
@@ -651,8 +648,8 @@ function OptionsDialog({
             )}
           </div>
 
-          <div className="rounded-md border border-white/10 p-3 space-y-3">
-            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+          <div className="rounded-md border border-border p-3 space-y-3">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               Novo grupo
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -699,25 +696,25 @@ function OptionsDialog({
               variant="outline"
               onClick={addGroup}
               disabled={saving}
-              className="text-[11px] tracking-[0.04em]"
+              className="text-2xs tracking-[0.04em]"
             >
               Criar grupo
             </Button>
           </div>
 
           <div className="rounded-md border border-primary/20 bg-primary/[0.04] p-3 space-y-3">
-            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
               Nova opção (com custeio)
             </p>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Grupo
                 </Label>
                 <select
                   value={targetGroup}
                   onChange={(e) => setTargetGroup(e.target.value)}
-                  className="h-9 w-full rounded-md border border-white/10 bg-black/30 px-2 text-xs text-white"
+                  className="h-9 w-full rounded-md border border-border bg-black/30 px-2 text-xs text-white"
                 >
                   <option value="">—</option>
                   {groups.map((g) => (
@@ -728,7 +725,7 @@ function OptionsDialog({
                 </select>
               </div>
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Nome
                 </Label>
                 <Input
@@ -739,7 +736,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Setor
                 </Label>
                 <Input
@@ -750,7 +747,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Operação
                 </Label>
                 <Input
@@ -761,13 +758,13 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Driver
                 </Label>
                 <select
                   value={optDriver}
                   onChange={(e) => setOptDriver(e.target.value as CostDriver)}
-                  className="h-9 w-full rounded-md border border-white/10 bg-black/30 px-2 text-xs text-white"
+                  className="h-9 w-full rounded-md border border-border bg-black/30 px-2 text-xs text-white"
                 >
                   {DRIVERS.map((d) => (
                     <option key={d.value} value={d.value}>
@@ -777,7 +774,7 @@ function OptionsDialog({
                 </select>
               </div>
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Custo unitário (R$)
                 </Label>
                 <Input
@@ -789,7 +786,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Setup do pedido (R$)
                 </Label>
                 <Input
@@ -801,7 +798,7 @@ function OptionsDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-widest text-muted-foreground">
                   Δ preço de venda (R$)
                 </Label>
                 <Input
@@ -822,15 +819,11 @@ function OptionsDialog({
                 />
                 terceirizado
               </label>
-              <Button
-                onClick={addOption}
-                disabled={saving}
-                className="text-[11px] tracking-[0.04em]"
-              >
+              <Button onClick={addOption} disabled={saving} className="text-2xs tracking-[0.04em]">
                 {saving ? "Salvando…" : "Criar opção"}
               </Button>
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-2xs text-muted-foreground">
               O driver define como o custo multiplica: por peça, por mil pontos de bordado, por m²
               de sublimação, por cor de silk ou fixo por pedido (setup amortizado na quantidade).
             </p>

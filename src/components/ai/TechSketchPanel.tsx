@@ -118,9 +118,9 @@ export function TechSketchPanel({
   }
 
   return (
-    <div className="rounded-md border border-white/10 bg-white/[0.025] p-3">
+    <div className="rounded-md border border-border bg-muted/50 p-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.05em] text-foreground">
+        <p className="flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.05em] text-foreground">
           <PencilRuler className="h-3.5 w-3.5 text-primary" /> Desenho técnico
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -149,9 +149,9 @@ export function TechSketchPanel({
           />
           <Button type="button" size="sm" onClick={() => void generate()} disabled={busy}>
             {busy ? (
-              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+              <LoaderCircle className="h-4 w-4 animate-spin" />
             ) : (
-              <PencilRuler className="mr-2 h-4 w-4" />
+              <PencilRuler className="h-4 w-4" />
             )}
             Gerar esboço
           </Button>
@@ -160,7 +160,7 @@ export function TechSketchPanel({
 
       {busy && !image && (
         <div
-          className="flex h-56 items-center justify-center gap-2 rounded-md border border-dashed border-white/15 text-sm text-muted-foreground"
+          className="flex h-56 items-center justify-center gap-2 rounded-md border border-dashed border-border-strong/70 text-sm text-muted-foreground"
           role="status"
         >
           <LoaderCircle className="h-5 w-5 animate-spin text-primary" /> Desenhando frente e costas…
@@ -168,7 +168,7 @@ export function TechSketchPanel({
       )}
 
       {image && (
-        <div className="overflow-hidden rounded-md border border-white/10 bg-background">
+        <div className="overflow-hidden rounded-md border border-border bg-background">
           <img
             src={image}
             alt={`Desenho técnico de ${productName}`}
@@ -185,16 +185,16 @@ export function TechSketchPanel({
       {spec && (
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <table className="w-full text-xs">
-            <caption className="mb-1 text-left text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+            <caption className="mb-1 text-left text-2xs uppercase tracking-[0.04em] text-muted-foreground">
               Medidas da peça pronta · tam. {shownSize} ·{" "}
               {official ? `tabela oficial: ${official.nome}` : "base ABNT"}
             </caption>
             <tbody>
               {spec.measures.map((m) => (
-                <tr key={m.point} className="border-b border-white/5">
+                <tr key={m.point} className="border-b border-border/60">
                   <td className="py-1 text-muted-foreground" title={m.how}>
                     {m.point}
-                    {m.how && <span className="block text-[11px] opacity-70">{m.how}</span>}
+                    {m.how && <span className="block text-2xs opacity-70">{m.how}</span>}
                   </td>
                   <td className="py-1 text-right font-medium text-foreground">{m.value}</td>
                   <td className="py-1 pl-2 text-right text-muted-foreground">{m.tolerance}</td>
@@ -203,7 +203,7 @@ export function TechSketchPanel({
             </tbody>
           </table>
           <div>
-            <p className="mb-1 text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+            <p className="mb-1 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
               Detalhes construtivos
             </p>
             <ul className="list-disc space-y-1 pl-4 text-xs text-foreground">

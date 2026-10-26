@@ -230,29 +230,31 @@ function AnalyticsPage() {
             </div>
             <div className="space-y-4">
               <div
-                className={`p-3 rounded-2xl border w-fit group-hover:rotate-6 transition-transform ${toneClass(kpi.tone)}`}
+                className={`p-3 rounded-lg border w-fit group-hover:rotate-6 transition-transform ${toneClass(kpi.tone)}`}
               >
                 {iconFor(kpi.iconName)}
               </div>
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+              <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
                 {kpi.label}
               </h3>
               {kpi.progress !== undefined ? (
-                <p className="text-4xl font-bold text-white tracking-tighter">
+                <p className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">
                   R$ {kpi.value} / <span className="text-primary">R$ {kpi.sub}</span>
                 </p>
               ) : (
-                <p className="text-4xl font-bold text-white tracking-tighter">{kpi.value}</p>
+                <p className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">
+                  {kpi.value}
+                </p>
               )}
             </div>
 
             {kpi.progress !== undefined ? (
               <div className="space-y-2 mt-8">
-                <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-white">
+                <div className="flex justify-between text-2xs font-semibold uppercase tracking-widest text-white">
                   <span>Progresso</span>
                   <span>{kpi.progress}%</span>
                 </div>
-                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-muted/50 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary transition-all duration-1000"
                     style={{ width: `${kpi.progress}%` }}
@@ -260,7 +262,7 @@ function AnalyticsPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-[11px] text-muted-foreground font-light italic lowercase mt-8">
+              <p className="text-2xs text-muted-foreground font-light italic lowercase mt-8">
                 {kpi.sub}
               </p>
             )}
@@ -272,51 +274,51 @@ function AnalyticsPage() {
         <Card className="glass-card rounded-4xl p-10 space-y-8 h-125 relative overflow-hidden">
           {/* Seção Diferencial: Dashboard de Marketing */}
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <PieChart className="w-5 h-5 text-primary" /> Dashboard de Marketing
             </h3>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-status-approved">
+            <span className="text-2xs font-semibold uppercase tracking-widest text-status-approved">
               Realizado
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+            <div className="rounded-4xl border border-border bg-muted/60 p-5">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Investimento previsto x real
               </p>
               <div className="mt-4 space-y-4">
                 <div>
-                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                     <span>Previsto</span>
                     <span className="text-white">{formatBRL(marketingTotals.planned)}</span>
                   </div>
-                  <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-primary" style={{ width: "62%" }} />
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                     <span>Realizado</span>
                     <span className="text-white">{formatBRL(marketingTotals.real)}</span>
                   </div>
-                  <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-status-approved" style={{ width: "78%" }} />
                   </div>
                 </div>
               </div>
-              <div className="mt-5 rounded-md bg-black/20 border border-white/5 p-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+              <div className="mt-5 rounded-md bg-black/20 border border-border/60 p-4">
+                <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                   ROI (Receita/Invest.)
                 </p>
-                <p className="mt-2 text-3xl font-bold text-white">
+                <p className="mt-2 text-2xl font-semibold text-foreground tabular-nums">
                   {marketingTotals.roi.toFixed(2)}x
                 </p>
               </div>
             </div>
 
-            <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+            <div className="rounded-4xl border border-border bg-muted/60 p-5">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Mix por canal
               </p>
               <div className="mt-5 space-y-3">
@@ -327,11 +329,11 @@ function AnalyticsPage() {
                   { label: "TikTok Ads", pct: 10, tone: "bg-status-progress" },
                 ].map((row) => (
                   <div key={row.label}>
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <div className="flex justify-between text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                       <span>{row.label}</span>
                       <span className="text-white">{row.pct}%</span>
                     </div>
-                    <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
                       <div className={`h-full ${row.tone}`} style={{ width: `${row.pct}%` }} />
                     </div>
                   </div>
@@ -340,12 +342,12 @@ function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-4xl border border-white/10 bg-black/20 p-5">
+          <div className="mt-6 rounded-4xl border border-border bg-black/20 p-5">
             <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                 Performance por coleção
               </p>
-              <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+              <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
                 Top
               </span>
             </div>
@@ -354,12 +356,9 @@ function AnalyticsPage() {
                 { name: "Verão 2027", revenue: 189000, roi: 5.01 },
                 { name: "Inverno 2026", revenue: 73000, roi: 2.48 },
               ].map((c) => (
-                <div
-                  key={c.name}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-4"
-                >
+                <div key={c.name} className="rounded-md border border-border bg-muted/60 p-4">
                   <p className="text-sm font-bold text-white">{c.name}</p>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <p className="mt-2 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                     {formatBRL(c.revenue)} • ROI {c.roi.toFixed(2)}x
                   </p>
                 </div>
@@ -368,17 +367,17 @@ function AnalyticsPage() {
           </div>
         </Card>
 
-        <Card className="glass-card rounded-[2.5rem] p-10 space-y-8 h-125 relative overflow-hidden">
+        <Card className="glass-card rounded-full p-10 space-y-8 h-125 relative overflow-hidden">
           {/* Seção Diferencial: Controle de Investimentos */}
           <div className="flex items-center justify-between mb-10">
-            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <CircleDollarSign className="w-5 h-5 text-primary" /> Controle de Investimentos
             </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+            <div className="rounded-4xl border border-border bg-muted/60 p-5">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Registrar
               </p>
               <div className="mt-4 space-y-3">
@@ -392,7 +391,7 @@ function AnalyticsPage() {
                   <div key={x} className="flex items-center justify-between">
                     <span className="text-sm font-bold text-white/90">{x}</span>
                     <button
-                      className="rounded-md border border-white/10 bg-black/20 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary"
+                      className="rounded-md border border-border bg-black/20 px-3 py-1 text-2xs font-semibold uppercase tracking-widest text-primary"
                       onClick={() => toast.info(`Registrar: ${x}`)}
                     >
                       Adicionar
@@ -402,13 +401,13 @@ function AnalyticsPage() {
               </div>
             </div>
 
-            <div className="rounded-4xl border border-white/10 bg-white/[0.035] p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+            <div className="rounded-4xl border border-border bg-muted/60 p-5">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Comparativos
               </p>
               <div className="mt-4 space-y-4">
                 <div>
-                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                     <span>Previsto x Realizado</span>
                     <span className="text-white">
                       {marketingTotals.real >= marketingTotals.planned ? "+" : "-"}
@@ -417,24 +416,24 @@ function AnalyticsPage() {
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  <div className="flex justify-between text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                     <span>Retorno sobre investimento</span>
                     <span className="text-white">ROI {marketingTotals.roi.toFixed(2)}x</span>
                   </div>
                 </div>
-                <div className="rounded-md border border-white/10 bg-black/20 p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                <div className="rounded-md border border-border bg-black/20 p-4">
+                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                     Receita gerada
                   </p>
-                  <p className="mt-2 text-3xl font-bold text-white">
+                  <p className="mt-2 text-2xl font-semibold text-foreground tabular-nums">
                     {formatBRL(marketingTotals.revenue)}
                   </p>
                 </div>
-                <div className="rounded-md border border-white/10 bg-black/20 p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground flex items-center gap-2">
+                <div className="rounded-md border border-border bg-black/20 p-4">
+                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground flex items-center gap-2">
                     <Workflow className="w-4 h-4 text-primary" /> Integração Financeiro
                   </p>
-                  <p className="mt-2 text-[11px] text-white/85">
+                  <p className="mt-2 text-2xs text-white/85">
                     Valores de “Fonte: marketing” no Financeiro alimentam o realizado.
                   </p>
                 </div>
@@ -442,25 +441,22 @@ function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-4xl border border-white/10 bg-black/20 p-5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+          <div className="mt-6 rounded-4xl border border-border bg-black/20 p-5">
+            <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
               Performance por produto / cor / categoria
             </p>
             <div className="mt-4 space-y-3">
               {marketingMetrics.map((m) => (
-                <div
-                  key={m.product}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-4"
-                >
+                <div key={m.product} className="rounded-md border border-border bg-muted/60 p-4">
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-sm font-bold text-white">{m.product}</p>
-                      <p className="mt-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="mt-1 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         {m.collection} • {m.category} • Cor {m.color}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         {m.channel}
                       </p>
                       <p className="mt-2 text-lg font-bold text-primary">ROI {m.roi.toFixed(2)}x</p>
@@ -468,13 +464,13 @@ function AnalyticsPage() {
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Spend (real)
                       </p>
                       <p className="text-sm font-bold text-white">{formatBRL(m.spendReal)}</p>
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                         Receita gerada
                       </p>
                       <p className="text-sm font-bold text-white">
@@ -488,9 +484,9 @@ function AnalyticsPage() {
           </div>
         </Card>
 
-        <Card className="glass-card rounded-[2.5rem] p-10 space-y-8 relative overflow-hidden">
+        <Card className="glass-card rounded-full p-10 space-y-8 relative overflow-hidden">
           <div className="flex justify-between items-center mb-10">
-            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <Globe className="w-5 h-5 text-primary" /> Penetração de Mercado por Região
             </h3>
           </div>
@@ -501,10 +497,10 @@ function AnalyticsPage() {
               { region: "Nordeste", val: "15%", count: "R$ 450k" },
             ].map((reg, i) => (
               <div key={i} className="flex items-center gap-6 group cursor-pointer">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground w-24">
+                <span className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground w-24">
                   {reg.region}
                 </span>
-                <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-muted/50 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     whileInView={{ width: reg.val }}
@@ -521,54 +517,54 @@ function AnalyticsPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingKpi ? "Editar Indicador" : "Adicionar KPI Estratégico"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Nome do Indicador
               </Label>
               <Input
                 value={formData.label}
                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: ROI Campanha Digital"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Valor Atual
                 </Label>
                 <Input
                   value={formData.value}
                   onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 5.2x"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Meta / Subtítulo
                 </Label>
                 <Input
                   value={formData.sub}
                   onChange={(e) => setFormData({ ...formData, sub: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: target 6.0x"
                 />
               </div>
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Salvar Indicador
             </Button>
           </DialogFooter>

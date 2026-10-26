@@ -85,7 +85,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Tipo</Label>
+          <Label className="text-2xs uppercase tracking-wider text-muted-foreground">Tipo</Label>
           <Select value={tipo} onValueChange={(v) => setTipo(v as TipoOcorrencia)}>
             <SelectTrigger className="">
               <SelectValue />
@@ -98,7 +98,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
           </Select>
         </div>
         <div>
-          <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+          <Label className="text-2xs uppercase tracking-wider text-muted-foreground">
             Quantidade
           </Label>
           <Input
@@ -136,7 +136,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
 
       {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}
 
-      <Button onClick={handleSubmit} className="w-full text-[11px]">
+      <Button onClick={handleSubmit} className="w-full text-2xs">
         Registrar Ocorrência
       </Button>
     </div>

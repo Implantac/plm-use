@@ -171,33 +171,29 @@ function TechSheetPage() {
       <div className="flex justify-end gap-4 mb-8">
         <Button
           variant="outline"
-          className="text-[11px] tracking-[0.04em] gap-2"
+          className="text-2xs tracking-[0.04em] gap-2"
           onClick={scrollToVersions}
         >
           <History className="w-4 h-4" /> Histórico
         </Button>
         <Button
           variant="outline"
-          className="text-[11px] tracking-[0.04em] gap-2"
+          className="text-2xs tracking-[0.04em] gap-2"
           onClick={scrollToDiff}
           title="Leva ao comparador A → B do painel de versões (diff textual + estrutural por instantâneo)."
         >
           <GitCompare className="w-4 h-4" /> Comparar Versões
         </Button>
-        <Button
-          variant="outline"
-          className="text-[11px] tracking-[0.04em] gap-2"
-          onClick={exportPdf}
-        >
+        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2" onClick={exportPdf}>
           <FileDown className="w-4 h-4" /> Exportar PDF
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-2 glass-card rounded-lg p-6 space-y-8">
-          <div className="flex justify-between items-start border-b border-white/5 pb-8">
+          <div className="flex justify-between items-start border-b border-border/60 pb-8">
             <div className="flex gap-8">
-              <div className="w-48 h-64 rounded-lg bg-white/5 border border-white/5 overflow-hidden relative group">
+              <div className="w-48 h-64 rounded-lg bg-muted/50 border border-border/60 overflow-hidden relative group">
                 <img
                   src={fichaFoto}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
@@ -206,66 +202,70 @@ function TechSheetPage() {
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className="space-y-4 pt-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-primary">
+                <span className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary">
                   {productInfo.ref}
                 </span>
-                <h2 className="text-3xl font-bold text-white tracking-tight">{productInfo.name}</h2>
+                <h2 className="text-lg font-semibold text-foreground tracking-tight">
+                  {productInfo.name}
+                </h2>
                 <p className="text-xs text-muted-foreground uppercase tracking-widest">
                   {productInfo.category}
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-status-approved" />
-                  <span className="text-[11px] font-bold text-white uppercase tracking-widest">
+                  <span className="text-2xs font-bold text-white uppercase tracking-widest">
                     {productInfo.status}
                   </span>
                 </div>
               </div>
             </div>
             <div className="text-right space-y-2">
-              <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+              <p className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
                 Custo Industrial
               </p>
-              <p className="text-3xl font-bold text-white tracking-tighter">{productInfo.cost}</p>
+              <p className="text-xl font-semibold text-foreground tabular-nums">
+                {productInfo.cost}
+              </p>
             </div>
           </div>
 
           <div className="space-y-8">
             <div className="flex justify-between items-center">
-              <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
                 <Layers className="w-4 h-4 text-primary" /> Materiais e Insumos (Integração Estoque)
               </h3>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-status-approved" />
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest">
                   Sincronizado com ERP
                 </span>
               </div>
             </div>
-            <div className="rounded-lg border border-white/5 bg-white/[0.02] overflow-hidden">
+            <div className="rounded-lg border border-border/60 bg-muted/40 overflow-hidden">
               <table className="w-full text-left">
-                <thead className="border-b border-white/5 bg-white/5">
+                <thead className="border-b border-border/60 bg-muted/50">
                   <tr>
-                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Tipo
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Material
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Consumo
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Custo Unit.
                     </th>
-                    <th className="px-6 py-4 text-[11px] font-bold uppercase tracking-widest text-muted-foreground text-right">
+                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground text-right">
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border/70">
                   {materials.map((m) => (
-                    <tr key={m.id} className="hover:bg-white/[0.02] transition-colors group">
-                      <td className="px-6 py-4 text-[11px] font-bold uppercase text-primary/70">
+                    <tr key={m.id} className="hover:bg-accent/50 transition-colors group">
+                      <td className="px-6 py-4 text-2xs font-semibold uppercase text-primary/70">
                         {m.type}
                       </td>
                       <td className="px-6 py-4 text-xs font-medium text-white">{m.name}</td>
@@ -285,10 +285,10 @@ function TechSheetPage() {
 
             <div className="p-5 rounded-lg bg-primary/5 border border-primary/20 space-y-4">
               <div className="flex justify-between items-center">
-                <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary">
+                <h4 className="text-2xs font-semibold uppercase tracking-widest text-primary">
                   Inteligência Comercial (Previsão de Viabilidade)
                 </h4>
-                <span className="px-3 py-1 rounded-full bg-status-approved/10 text-status-approved text-[10px] font-bold uppercase">
+                <span className="px-3 py-1 rounded-full bg-status-approved/10 text-status-approved text-2xs font-semibold uppercase">
                   Probabilidade de Sucesso: 87%
                 </span>
               </div>
@@ -306,7 +306,7 @@ function TechSheetPage() {
         <div className="space-y-8">
           <Card className="glass-card rounded-lg p-6">
             <CardHeader className="p-0 mb-6">
-              <CardTitle className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+              <CardTitle className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
                 <History className="w-4 h-4 text-primary" /> Linha do Tempo do Produto
               </CardTitle>
             </CardHeader>
@@ -317,7 +317,7 @@ function TechSheetPage() {
 
           <Card className="glass-card rounded-lg p-6">
             <CardHeader className="p-0 mb-6">
-              <CardTitle className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+              <CardTitle className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
                 <Scissors className="w-4 h-4 text-primary" /> Processos Operacionais
               </CardTitle>
             </CardHeader>
@@ -330,13 +330,13 @@ function TechSheetPage() {
               ].map((proc, i) => (
                 <div
                   key={i}
-                  className="flex justify-between items-center p-4 rounded-md bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer group"
+                  className="flex justify-between items-center p-4 rounded-md bg-muted/50 border border-border/60 hover:border-primary/30 transition-all cursor-pointer group"
                 >
                   <div className="space-y-1">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+                    <p className="text-2xs font-semibold uppercase tracking-widest text-white">
                       {proc.label}
                     </p>
-                    <p className="text-[11px] text-muted-foreground uppercase">{proc.time}</p>
+                    <p className="text-2xs text-muted-foreground uppercase">{proc.time}</p>
                   </div>
                   <p className="text-xs font-bold text-primary group-hover:scale-110 transition-transform">
                     {proc.cost}
@@ -347,19 +347,19 @@ function TechSheetPage() {
           </Card>
 
           <Card className="glass-card rounded-lg p-6 border-primary/20 bg-primary/[0.02]">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-primary mb-6">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary mb-6">
               Ações Rápidas
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <Button
                 variant="ghost"
-                className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[11px] tracking-[0.04em] text-white"
+                className="h-20 flex flex-col gap-2 border bg-muted/50 hover:bg-accent text-2xs tracking-[0.04em] text-white"
               >
                 <Ruler className="w-5 h-5" /> Tabela Medidas
               </Button>
               <Button
                 variant="ghost"
-                className="h-20 flex flex-col gap-2 border bg-white/5 hover:bg-white/10 text-[11px] tracking-[0.04em] text-white"
+                className="h-20 flex flex-col gap-2 border bg-muted/50 hover:bg-accent text-2xs tracking-[0.04em] text-white"
               >
                 <Paintbrush className="w-5 h-5" /> Variantes
               </Button>
@@ -367,7 +367,7 @@ function TechSheetPage() {
           </Card>
 
           <Card className="glass-card rounded-lg p-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
               <FileDown className="w-4 h-4 text-primary" /> Arquivos técnicos
             </h3>
             <div className="grid grid-cols-3 gap-2">
@@ -377,7 +377,7 @@ function TechSheetPage() {
                     key={format}
                     onClick={exportPdf}
                     title="Gera a ficha A4 e abre a impressão do navegador (Salvar como PDF)."
-                    className="rounded-md border border-primary/40 bg-primary/10 p-3 text-center text-[11px] font-bold uppercase tracking-[0.04em] text-white hover:bg-primary/20"
+                    className="rounded-md border border-primary/40 bg-primary/10 p-3 text-center text-2xs font-semibold uppercase tracking-[0.04em] text-white hover:bg-primary/20"
                   >
                     {format}
                   </button>
@@ -385,7 +385,7 @@ function TechSheetPage() {
                   <div
                     key={format}
                     title={`${format} ainda não é exportável daqui — a geração nativa deste formato está no roadmap (nenhuma conexão CAD foi assinada).`}
-                    className="rounded-md border border-white/10 bg-white/[0.02] p-3 text-center text-[11px] font-bold uppercase tracking-[0.04em] text-white/30"
+                    className="rounded-md border border-border bg-muted/40 p-3 text-center text-2xs font-semibold uppercase tracking-[0.04em] text-white/30"
                   >
                     {format}
                   </div>
@@ -393,7 +393,7 @@ function TechSheetPage() {
               )}
             </div>
             <div className="mt-4 rounded-md border border-primary/20 bg-primary/10 p-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
+              <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
                 <Sparkles className="h-3.5 w-3.5" /> IA de ficha técnica
               </p>
               <p className="mt-2 text-sm text-white/80">
@@ -415,65 +415,65 @@ function TechSheetPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-lg p-6 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-lg p-6 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingMaterial ? "Editar Item" : "Adicionar Material"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Tipo
                 </Label>
                 <Input
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Tecido"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Consumo
                 </Label>
                 <Input
                   value={formData.qty}
                   onChange={(e) => setFormData({ ...formData, qty: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 1.5m"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Nome do Material
               </Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Algodão Pima"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Custo Unitário
               </Label>
               <Input
                 value={formData.cost}
                 onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: R$ 35,00"
               />
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Salvar na Ficha
             </Button>
           </DialogFooter>

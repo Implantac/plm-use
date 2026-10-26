@@ -69,7 +69,7 @@ export function LotesGantt({
 
   return (
     <Card className="glass-card rounded-lg p-5 overflow-x-auto">
-      <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-4">
+      <h4 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-4">
         <Calendar className="w-3.5 h-3.5 text-primary" /> Gantt · {totalDays} dias · {rows.length}{" "}
         lotes
       </h4>
@@ -148,7 +148,7 @@ export function LotesGantt({
           );
         })}
       </svg>
-      <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">
+      <div className="mt-3 flex items-center gap-3 text-2xs text-muted-foreground">
         {Object.entries(colorByPrio).map(([k, v]) => (
           <span key={k} className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-sm" style={{ background: v }} /> {k}

@@ -14,7 +14,7 @@ export function ReferenceTimeline({ lifecycle, compact }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+          <p className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
             Ciclo de vida
           </p>
           <p className="text-sm font-bold text-white">
@@ -22,12 +22,12 @@ export function ReferenceTimeline({ lifecycle, compact }: Props) {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">Progresso</p>
+          <p className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">Progresso</p>
           <p className="text-lg font-bold text-primary">{pct}%</p>
         </div>
       </div>
 
-      <div className="h-1 w-full rounded-full bg-white/10 overflow-hidden">
+      <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-primary/60 to-primary"
           style={{ width: `${pct}%` }}
@@ -58,7 +58,7 @@ function StageRow({
   compact?: boolean;
 }) {
   const tone = {
-    pendente: "text-muted-foreground border-white/15 bg-white/[0.02]",
+    pendente: "text-muted-foreground border-border-strong/70 bg-muted/40",
     em_andamento: "text-primary border-primary/40 bg-primary/10",
     aprovado: "text-status-approved border-status-approved/40 bg-status-approved/10",
     concluido: "text-status-approved border-status-approved/40 bg-status-approved/10",
@@ -82,19 +82,21 @@ function StageRow({
         <span className={`flex h-6 w-6 items-center justify-center rounded-full border ${tone}`}>
           {icon}
         </span>
-        {!isLast && <span className="h-full min-h-[18px] w-px bg-white/10" />}
+        {!isLast && <span className="h-full min-h-[18px] w-px bg-muted" />}
       </div>
       <div className={`flex-1 ${compact ? "pb-1" : "pb-2"}`}>
         <div className="flex items-center justify-between">
-          <p className="text-xs font-bold uppercase tracking-[0.04em] text-white">{stage.label}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.04em] text-white">
+            {stage.label}
+          </p>
           <span
-            className={`text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full border ${tone}`}
+            className={`text-2xs uppercase tracking-wider px-2 py-0.5 rounded-full border ${tone}`}
           >
             {stage.status.replace("_", " ")}
           </span>
         </div>
         {(stage.responsavel || stage.data) && (
-          <p className="text-[11px] text-muted-foreground mt-0.5">
+          <p className="text-2xs text-muted-foreground mt-0.5">
             {stage.responsavel ?? "—"}
             {stage.data ? ` · ${new Date(stage.data).toLocaleDateString()}` : ""}
           </p>

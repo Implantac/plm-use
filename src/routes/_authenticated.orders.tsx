@@ -236,21 +236,17 @@ function OrdersPage() {
           <button
             key={f.id}
             onClick={() => setFilter(f.id)}
-            className={`px-3 py-1.5 rounded-md border text-[11px] font-bold uppercase tracking-[0.04em] transition-colors ${
+            className={`px-3 py-1.5 rounded-md border text-2xs font-semibold uppercase tracking-[0.04em] transition-colors ${
               filter === f.id
                 ? "border-primary/40 bg-primary/10 text-primary"
-                : "border-white/10 text-muted-foreground hover:text-white"
+                : "border-border text-muted-foreground hover:text-white"
             }`}
           >
             {f.label}
           </button>
         ))}
         <div className="flex-1" />
-        <Button
-          variant="outline"
-          onClick={() => void load()}
-          className="text-[11px] tracking-[0.04em] gap-2"
-        >
+        <Button variant="outline" onClick={() => void load()} className="gap-2">
           <RefreshCw className="w-3.5 h-3.5" /> Atualizar
         </Button>
       </div>
@@ -268,10 +264,7 @@ function OrdersPage() {
             {canSell ? " Depois é só criar o pedido e adicionar os itens." : ""}
           </p>
           {canSell && (
-            <Button
-              onClick={() => setNewOpen(true)}
-              className="text-[11px] tracking-[0.04em] gap-2"
-            >
+            <Button onClick={() => setNewOpen(true)} className="gap-2">
               <Plus className="w-4 h-4" /> Novo pedido
             </Button>
           )}
@@ -281,13 +274,13 @@ function OrdersPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-[0.04em] text-muted-foreground border-b border-white/10">
-                  <th className="px-4 py-3 font-bold">Pedido</th>
-                  <th className="px-4 py-3 font-bold">Cliente</th>
-                  <th className="px-4 py-3 font-bold">Status</th>
-                  <th className="px-4 py-3 font-bold">Entrega</th>
-                  <th className="px-4 py-3 font-bold text-right">Valor</th>
-                  <th className="px-4 py-3 font-bold text-right">Ação</th>
+                <tr className="text-left text-2xs uppercase tracking-[0.04em] text-muted-foreground border-b border-border">
+                  <th className="px-4 py-3 font-semibold">Pedido</th>
+                  <th className="px-4 py-3 font-semibold">Cliente</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
+                  <th className="px-4 py-3 font-semibold">Entrega</th>
+                  <th className="px-4 py-3 font-semibold text-right">Valor</th>
+                  <th className="px-4 py-3 font-semibold text-right">Ação</th>
                 </tr>
               </thead>
               <tbody>
@@ -296,23 +289,23 @@ function OrdersPage() {
                   return (
                     <tr
                       key={o.id}
-                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]"
+                      className="border-b border-border/60 last:border-0 hover:bg-accent/50"
                     >
                       <td className="px-4 py-3">
                         <span className="text-white font-semibold">{o.number}</span>
                         {o.isQuote && (
-                          <span className="ml-2 text-[10px] uppercase tracking-[0.04em] text-status-review">
+                          <span className="ml-2 text-2xs uppercase tracking-[0.04em] text-status-review">
                             orçamento
                           </span>
                         )}
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-2xs text-muted-foreground">
                           criado {new Date(o.createdAt).toLocaleDateString("pt-BR")}
                         </p>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{o.customerName ?? "—"}</td>
                       <td className="px-4 py-3">
                         <span
-                          className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-[0.04em] ${meta.cls}`}
+                          className={`px-2 py-0.5 rounded border text-2xs font-semibold uppercase tracking-[0.04em] ${meta.cls}`}
                         >
                           {meta.label}
                         </span>
@@ -329,7 +322,7 @@ function OrdersPage() {
                         <Button
                           variant="outline"
                           onClick={() => setSearch({ pedido: o.id })}
-                          className="text-[11px] tracking-[0.04em]"
+                          className="text-2xs tracking-[0.04em]"
                         >
                           Abrir
                         </Button>
@@ -430,7 +423,7 @@ function NewOrderDialog({
               <Label>Cliente</Label>
               <button
                 onClick={onNeedCustomer}
-                className="text-[11px] text-primary uppercase tracking-[0.04em] flex items-center gap-1"
+                className="text-2xs text-primary uppercase tracking-[0.04em] flex items-center gap-1"
               >
                 <UserPlus className="w-3 h-3" /> cadastrar
               </button>
@@ -438,7 +431,7 @@ function NewOrderDialog({
             <select
               value={customerId}
               onChange={(e) => setCustomerId(e.target.value)}
-              className="h-10 w-full rounded-md border border-white/10 bg-black/30 px-3 text-sm text-white"
+              className="h-10 w-full rounded-md border border-border bg-black/30 px-3 text-sm text-white"
             >
               <option value="">Selecione…</option>
               {customers.map((c) => (
@@ -448,7 +441,7 @@ function NewOrderDialog({
               ))}
             </select>
             {customers.length === 0 && (
-              <p className="text-[11px] text-status-progress">
+              <p className="text-2xs text-status-progress">
                 Nenhum cliente cadastrado — use “cadastrar” ao lado.
               </p>
             )}

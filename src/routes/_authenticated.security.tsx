@@ -71,7 +71,7 @@ function SecurityPage() {
               <Card key={item.label} className="glass-card rounded-lg">
                 <CardContent className="p-5">
                   <item.icon className="h-5 w-5 text-primary" />
-                  <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                  <p className="mt-4 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                     {item.label}
                   </p>
                   <p className="mt-2 text-lg font-bold text-white">{item.value}</p>
@@ -81,43 +81,43 @@ function SecurityPage() {
           </div>
 
           <Card className="glass-card rounded-lg overflow-hidden">
-            <CardHeader className="p-5 border-b border-white/5 flex flex-row items-center justify-between">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+            <CardHeader className="p-5 border-b border-border/60 flex flex-row items-center justify-between">
+              <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                 RBAC avançado
               </CardTitle>
-              <Button className="text-[11px] tracking-[0.04em]">Novo perfil</Button>
+              <Button className="text-2xs tracking-[0.04em]">Novo perfil</Button>
             </CardHeader>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[780px] text-left">
-                <thead className="border-b border-white/5 bg-white/5">
+                <thead className="border-b border-border/60 bg-muted/50">
                   <tr>
                     {["Perfil", "Usuários", "Escopo", "Postura", "Status"].map((heading) => (
                       <th
                         key={heading}
-                        className="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground"
+                        className="px-5 py-4 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground"
                       >
                         {heading}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border/70">
                   {roles.map((role) => (
-                    <tr key={role.role} className="hover:bg-white/[0.025]">
+                    <tr key={role.role} className="hover:bg-accent/60">
                       <td className="px-5 py-4 text-sm font-bold text-white">{role.role}</td>
                       <td className="px-5 py-4 text-xs text-muted-foreground">{role.users}</td>
                       <td className="px-5 py-4 text-xs text-muted-foreground">{role.scope}</td>
                       <td className="px-5 py-4">
                         <div className="w-40">
-                          <div className="flex justify-between text-[11px] text-muted-foreground">
+                          <div className="flex justify-between text-2xs text-muted-foreground">
                             <span>score</span>
                             <span>{role.risk}%</span>
                           </div>
-                          <Progress value={role.risk} className="mt-2 h-1.5 bg-white/10" />
+                          <Progress value={role.risk} className="mt-2 h-1.5 bg-muted" />
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="inline-flex items-center gap-2 rounded-md bg-status-approved/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.04em] text-status-approved">
+                        <span className="inline-flex items-center gap-2 rounded-md bg-status-approved/10 px-2.5 py-1 text-2xs font-semibold uppercase tracking-[0.04em] text-status-approved">
                           <CheckCircle2 className="h-3.5 w-3.5" />
                           Ativo
                         </span>
@@ -132,8 +132,8 @@ function SecurityPage() {
 
         <div className="space-y-6">
           <Card className="glass-card rounded-lg">
-            <CardHeader className="p-5 border-b border-white/5">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+            <CardHeader className="p-5 border-b border-border/60">
+              <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                 Controles de acesso
               </CardTitle>
             </CardHeader>
@@ -144,12 +144,9 @@ function SecurityPage() {
                 { label: "OAuth", value: "Ativo", icon: LockKeyhole },
                 { label: "Logs", value: "365 dias", icon: ScrollText },
               ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-4"
-                >
+                <div key={item.label} className="rounded-md border border-border bg-muted/60 p-4">
                   <item.icon className="h-4 w-4 text-primary" />
-                  <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                  <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                     {item.label}
                   </p>
                   <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
@@ -160,13 +157,13 @@ function SecurityPage() {
 
           <Card className="glass-card rounded-lg border-primary/20 bg-primary/[0.025]">
             <CardContent className="p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
+              <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4" />
                 LGPD e auditoria
               </p>
               <div className="mt-4 space-y-3">
                 {auditEvents.map((event) => (
-                  <div key={event} className="rounded-md border border-white/10 bg-black/20 p-3">
+                  <div key={event} className="rounded-md border border-border bg-black/20 p-3">
                     <p className="text-sm text-white/85">{event}</p>
                   </div>
                 ))}
@@ -176,7 +173,7 @@ function SecurityPage() {
 
           <Card className="glass-card rounded-lg">
             <CardContent className="p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white flex items-center gap-2">
+              <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-white flex items-center gap-2">
                 <DatabaseBackup className="h-4 w-4 text-primary" />
                 Backup automático
               </p>
@@ -184,9 +181,7 @@ function SecurityPage() {
                 Snapshots incrementais a cada 15 minutos, retenção de 90 dias e restauração por
                 tenant.
               </p>
-              <Button className="mt-5 w-full text-[11px] tracking-[0.04em]">
-                Testar restauração
-              </Button>
+              <Button className="mt-5 w-full text-2xs tracking-[0.04em]">Testar restauração</Button>
             </CardContent>
           </Card>
         </div>

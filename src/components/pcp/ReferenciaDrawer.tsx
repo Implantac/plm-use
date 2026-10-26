@@ -43,27 +43,27 @@ export function ReferenciaDrawer({ loteNumero, grupo, colecao, referencia, open,
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-2xl bg-popover border-white/10 text-white overflow-y-auto"
+        className="w-full sm:max-w-2xl bg-popover border-border text-white overflow-y-auto"
       >
-        <SheetHeader className="pb-3 border-b border-white/10">
+        <SheetHeader className="pb-3 border-b border-border">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
                 {loteNumero} • {referencia.ref}
               </p>
               <SheetTitle className="mt-1 text-white text-xl">{referencia.nome}</SheetTitle>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="text-[11px] border-white/20">
+                <Badge variant="outline" className="text-2xs border-border-strong/70">
                   {referencia.setor_atual}
                 </Badge>
                 <Badge
                   variant="outline"
-                  className={`text-[11px] ${
+                  className={`text-2xs ${
                     referencia.status === "Concluído"
                       ? "border-status-approved/40 text-status-approved"
                       : referencia.status === "Ocorrência"
                         ? "border-status-rejected/40 text-status-rejected"
-                        : "border-white/20"
+                        : "border-border-strong/70"
                   }`}
                 >
                   {referencia.status}
@@ -79,11 +79,11 @@ export function ReferenciaDrawer({ loteNumero, grupo, colecao, referencia, open,
             <Metric label="Saldo" value={saldoReferencia(referencia)} tone="strong" />
           </div>
           <div>
-            <div className="flex justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
+            <div className="flex justify-between text-2xs uppercase tracking-wider text-muted-foreground">
               <span>Produzido {referencia.qtd_produzida}</span>
               <span>Pendente {pendenteReferencia(referencia)}</span>
             </div>
-            <Progress value={percentualReferencia(referencia)} className="mt-1 h-1.5 bg-white/10" />
+            <Progress value={percentualReferencia(referencia)} className="mt-1 h-1.5 bg-muted" />
           </div>
         </SheetHeader>
 
@@ -116,32 +116,32 @@ function ReferenciaTabs({
 
   return (
     <Tabs defaultValue="ficha" className="mt-4">
-      <TabsList className="grid w-full grid-cols-9 bg-white/5 h-auto">
-        <TabsTrigger value="ficha" className="text-[11px] gap-1">
+      <TabsList className="grid w-full grid-cols-9 bg-muted/50 h-auto">
+        <TabsTrigger value="ficha" className="text-2xs gap-1">
           <ScrollText className="h-3 w-3" /> Ficha
         </TabsTrigger>
-        <TabsTrigger value="pilotos" className="text-[11px] gap-1">
+        <TabsTrigger value="pilotos" className="text-2xs gap-1">
           <Shirt className="h-3 w-3" /> Pilotos
         </TabsTrigger>
-        <TabsTrigger value="timeline" className="text-[11px] gap-1">
+        <TabsTrigger value="timeline" className="text-2xs gap-1">
           <GitBranch className="h-3 w-3" /> Timeline
         </TabsTrigger>
-        <TabsTrigger value="layout" className="text-[11px] gap-1">
+        <TabsTrigger value="layout" className="text-2xs gap-1">
           <Layers className="h-3 w-3" /> Layout
         </TabsTrigger>
-        <TabsTrigger value="p1" className="text-[11px] gap-1">
+        <TabsTrigger value="p1" className="text-2xs gap-1">
           <Workflow className="h-3 w-3" /> 1ª Linha
         </TabsTrigger>
-        <TabsTrigger value="p2" className="text-[11px] gap-1">
+        <TabsTrigger value="p2" className="text-2xs gap-1">
           <Workflow className="h-3 w-3" /> 2ª Linha
         </TabsTrigger>
-        <TabsTrigger value="oco" className="text-[11px] gap-1">
+        <TabsTrigger value="oco" className="text-2xs gap-1">
           <AlertOctagon className="h-3 w-3" /> Ocorr.
         </TabsTrigger>
-        <TabsTrigger value="hist" className="text-[11px] gap-1">
+        <TabsTrigger value="hist" className="text-2xs gap-1">
           <History className="h-3 w-3" /> Hist.
         </TabsTrigger>
-        <TabsTrigger value="chat" className="text-[11px] gap-1">
+        <TabsTrigger value="chat" className="text-2xs gap-1">
           <MessageSquare className="h-3 w-3" /> Chat
         </TabsTrigger>
       </TabsList>
@@ -167,7 +167,7 @@ function ReferenciaTabs({
       </TabsContent>
 
       <TabsContent value="layout" className="mt-4">
-        <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground text-sm">
+        <div className="aspect-video rounded-lg border border-border bg-muted/50 flex items-center justify-center text-muted-foreground text-sm">
           Layout de silk/bordado da referência
         </div>
       </TabsContent>
@@ -184,7 +184,7 @@ function ReferenciaTabs({
         <OcorrenciaForm loteNumero={loteNumero} referencia={referencia} />
         {referencia.ocorrencias.length > 0 && (
           <div className="mt-4 space-y-2">
-            <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-2xs uppercase tracking-wider text-muted-foreground">
               Ocorrências registradas
             </p>
             {referencia.ocorrencias.map((o) => (
@@ -199,7 +199,7 @@ function ReferenciaTabs({
                 }`}
               >
                 <div className="flex justify-between">
-                  <span className="font-bold uppercase tracking-wider">
+                  <span className="font-semibold uppercase tracking-wider">
                     {o.tipo} • {o.qtd} pç
                   </span>
                   <span className="text-muted-foreground">{o.setor}</span>
@@ -219,12 +219,9 @@ function ReferenciaTabs({
           <p className="text-xs text-muted-foreground">Nenhuma passagem registrada ainda.</p>
         ) : (
           referencia.passagens.map((p) => (
-            <div
-              key={p.id}
-              className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs"
-            >
+            <div key={p.id} className="rounded-md border border-border bg-muted/50 p-3 text-xs">
               <div className="flex justify-between">
-                <span className="font-bold uppercase tracking-wider text-primary">
+                <span className="font-semibold uppercase tracking-wider text-primary">
                   {p.linha === "1a" ? "Passagem" : "Retrabalho"} • {p.tipo}
                 </span>
                 <span className="text-white">{p.qtd} pç</span>
@@ -235,7 +232,7 @@ function ReferenciaTabs({
               </p>
               {p.defeito && <p className="mt-1 text-status-rejected">Defeito: {p.defeito}</p>}
               {p.observacao && <p className="mt-1 text-white">{p.observacao}</p>}
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-2xs text-muted-foreground">
                 {new Date(p.timestamp).toLocaleString()}
               </p>
             </div>
@@ -264,8 +261,8 @@ function Metric({
           ? "text-primary"
           : "text-white";
   return (
-    <div className="rounded bg-white/5 py-2">
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+    <div className="rounded bg-muted/50 py-2">
+      <p className="text-2xs uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className={`text-sm font-bold ${color}`}>{value}</p>
     </div>
   );

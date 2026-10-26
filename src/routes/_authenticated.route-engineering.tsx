@@ -158,7 +158,7 @@ function RouteCard({
               <span className="flex-1">
                 {s.operation} <span className="text-muted-foreground">· {s.sector}</span>
                 {s.outsourced && (
-                  <Badge variant="outline" className="ml-2 text-[11px]">
+                  <Badge variant="outline" className="ml-2 text-2xs">
                     Terceirizado
                   </Badge>
                 )}

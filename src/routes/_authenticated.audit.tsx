@@ -340,8 +340,8 @@ function TaskRow({
           ? deadText
           : "Sondando…";
   return (
-    <div className="rounded-md border border-white/10 bg-black/20 p-3">
-      <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-white">
+    <div className="rounded-md border border-border bg-black/20 p-3">
+      <p className="flex items-center gap-2 text-2xs font-semibold uppercase tracking-widest text-white">
         <Icon
           className={`h-3.5 w-3.5 shrink-0 ${meta.tone} ${probe === "checking" ? "animate-spin" : ""}`}
         />
@@ -366,8 +366,8 @@ function OperatorTasks() {
     }
   };
   return (
-    <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
-      <h2 className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+    <div className="rounded-lg border border-border bg-muted/60 p-5">
+      <h2 className="flex items-center justify-between text-2xs font-semibold uppercase tracking-[0.05em] text-white">
         <span className="flex items-center gap-2">
           <Database className="h-4 w-4 text-primary" />
           Mãos do operador
@@ -375,7 +375,7 @@ function OperatorTasks() {
         <button
           onClick={p.refresh}
           title="Re-sondar (leitura pura, sem efeitos)"
-          className="rounded-md border border-white/10 p-1.5 text-muted-foreground hover:bg-white/5 hover:text-white"
+          className="rounded-md border border-border p-1.5 text-muted-foreground hover:bg-accent/60 hover:text-white"
         >
           <RotateCw className="h-3 w-3" />
         </button>
@@ -388,7 +388,7 @@ function OperatorTasks() {
           warnText="Migração 20261014220000 ainda não aplicada; o módulo 11 funciona por dispositivo até o paste no SQL editor."
           deadText="Sem resposta legível do banco nesta sessão — a sonda não pôde concluir."
           action={
-            <Button variant="outline" size="sm" className="h-7 gap-2 text-[11px]" onClick={copySql}>
+            <Button variant="outline" size="sm" className="h-7 gap-2 text-2xs" onClick={copySql}>
               <ClipboardCopy className="h-3 w-3" /> Copiar SQL do catálogo
             </Button>
           }
@@ -408,7 +408,7 @@ function OperatorTasks() {
           deadText="O endpoint de cron não respondeu a esta sonda."
         />
       </div>
-      <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground/80">
+      <p className="mt-3 text-2xs leading-relaxed text-muted-foreground/80">
         Cada linha vem de uma sonda feita agora contra o deploy real — não de nota de commit. Sondas
         só leem; nada muda no mundo ao abrir este painel.
       </p>
@@ -427,25 +427,23 @@ function AuditScreen() {
   return (
     <div className="min-h-dvh bg-background text-white p-6 md:p-10">
       <div className="mx-auto max-w-7xl space-y-8">
-        <header className="rounded-lg border border-white/10 bg-white/[0.035] p-6 md:p-8">
+        <header className="rounded-lg border border-border bg-muted/60 p-6 md:p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <Button
                 asChild
                 variant="ghost"
-                className="mb-5 text-[11px] tracking-[0.04em] text-primary"
+                className="mb-5 text-2xs tracking-[0.04em] text-primary"
               >
                 <Link to="/dashboard">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  <ArrowLeft className="h-4 w-4" />
                   Voltar ao cockpit
                 </Link>
               </Button>
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
                 USE MODA PLM AI
               </p>
-              <h1 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">
-                Estado real do produto
-              </h1>
+              <h1 className="mt-3 text-xl font-semibold tracking-tight">Estado real do produto</h1>
               <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">
                 Este painel é gerado do próprio código (registry de rotas, módulos de sincronização
                 e trilha de eventos). Vitrine é vitrine — e está escrita como vitrine.
@@ -465,9 +463,9 @@ function AuditScreen() {
                   icon: CheckCircle2,
                 },
               ].map((item) => (
-                <div key={item.label} className="rounded-md border border-white/10 bg-black/20 p-4">
+                <div key={item.label} className="rounded-md border border-border bg-black/20 p-4">
                   <item.icon className="h-4 w-4 text-primary" />
-                  <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                  <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                     {item.label}
                   </p>
                   <p className="mt-1 text-lg font-bold text-white">{item.value}</p>
@@ -478,8 +476,8 @@ function AuditScreen() {
         </header>
 
         <section className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
-          <div className="rounded-lg border border-white/10 bg-white/[0.025] overflow-hidden">
-            <div className="grid grid-cols-[1fr_120px] md:grid-cols-[220px_1fr_120px] border-b border-white/5 bg-white/[0.035] px-5 py-4 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+          <div className="rounded-lg border border-border bg-muted/50 overflow-hidden">
+            <div className="grid grid-cols-[1fr_120px] md:grid-cols-[220px_1fr_120px] border-b border-border/60 bg-muted/60 px-5 py-4 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               <span className="hidden md:block">Área</span>
               <span>Estado da arte</span>
               <span>Status</span>
@@ -488,17 +486,17 @@ function AuditScreen() {
               <Link
                 key={item.area}
                 to={item.route}
-                className="grid grid-cols-[1fr_120px] md:grid-cols-[220px_1fr_120px] gap-4 border-b border-white/5 px-5 py-4 last:border-0 hover:bg-primary/5 transition-colors"
+                className="grid grid-cols-[1fr_120px] md:grid-cols-[220px_1fr_120px] gap-4 border-b border-border/60 px-5 py-4 last:border-0 hover:bg-primary/5 transition-colors"
               >
                 <div>
                   <p className="text-sm font-bold text-white">{item.area}</p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.04em] text-primary">
+                  <p className="mt-1 text-2xs uppercase tracking-[0.04em] text-primary">
                     {item.route}
                   </p>
                 </div>
                 <p className="text-sm leading-relaxed text-muted-foreground">{item.evidence}</p>
                 <span
-                  className={`self-start inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.04em] ${STATUS_META[item.status].cls}`}
+                  className={`self-start inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-2xs font-semibold uppercase tracking-[0.04em] ${STATUS_META[item.status].cls}`}
                 >
                   {item.status === "vitrine" ? (
                     <Store className="h-3.5 w-3.5" />
@@ -509,7 +507,7 @@ function AuditScreen() {
                 </span>
               </Link>
             ))}
-            <p className="px-5 py-3 text-[11px] leading-relaxed text-muted-foreground">
+            <p className="px-5 py-3 text-2xs leading-relaxed text-muted-foreground">
               * Sync = espelho no Supabase via `creative-sync`. As migrations foram aplicadas via
               SQL editor do Lovable Cloud (14/10/2026) — os módulos criativos e a timeline
               cross-device já gravam no banco (enum atual ao vivo, verificado por sonda). As 12
@@ -522,8 +520,8 @@ function AuditScreen() {
 
           <div className="space-y-6">
             <OperatorTasks />
-            <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
+            <div className="rounded-lg border border-border bg-muted/60 p-5">
+              <h2 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
                 <Activity className="h-4 w-4 text-primary" />
                 Atividade recente
               </h2>
@@ -541,7 +539,7 @@ function AuditScreen() {
                   <p className="text-xs text-muted-foreground">Nenhum evento registrado ainda.</p>
                 )}
                 {(events ?? []).slice(0, 12).map((e) => (
-                  <div key={e.id} className="rounded-md border border-white/10 bg-black/20 p-3">
+                  <div key={e.id} className="rounded-md border border-border bg-black/20 p-3">
                     <p className="text-xs font-bold text-white">
                       {e.event_type}{" "}
                       <span className="text-muted-foreground font-normal">
@@ -551,7 +549,7 @@ function AuditScreen() {
                     {e.note && (
                       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{e.note}</p>
                     )}
-                    <p className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <p className="mt-1 text-2xs uppercase tracking-wider text-muted-foreground">
                       {new Date(e.created_at).toLocaleString("pt-BR", {
                         day: "2-digit",
                         month: "short",
@@ -565,14 +563,14 @@ function AuditScreen() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
+            <div className="rounded-lg border border-border bg-muted/60 p-5">
+              <h2 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
                 <Layers3 className="h-4 w-4 text-primary" />
                 Stack real
               </h2>
               <div className="mt-5 space-y-3">
                 {stack.map((item) => (
-                  <div key={item} className="rounded-md border border-white/10 bg-black/20 p-3">
+                  <div key={item} className="rounded-md border border-border bg-black/20 p-3">
                     <p className="text-sm leading-relaxed text-white/85">{item}</p>
                   </div>
                 ))}
@@ -580,7 +578,7 @@ function AuditScreen() {
             </div>
 
             <div className="rounded-lg border border-primary/20 bg-primary/[0.025] p-5">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary flex items-center gap-2">
+              <h2 className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4" />
                 Segurança, hoje
               </h2>
@@ -592,8 +590,8 @@ function AuditScreen() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
+            <div className="rounded-lg border border-border bg-muted/60 p-5">
+              <h2 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
                 Por dentro do espelho
               </h2>

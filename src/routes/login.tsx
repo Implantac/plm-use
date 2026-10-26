@@ -154,7 +154,7 @@ function Login() {
             <p className="text-xs font-semibold uppercase tracking-[0.03em] text-primary">
               Enterprise Access
             </p>
-            <h1 className="mt-4 text-5xl font-semibold text-white">
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground">
               Acesse o cockpit PLM da sua operação.
             </h1>
             <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
@@ -169,10 +169,7 @@ function Login() {
               { label: "SSO / OAuth", icon: KeyRound },
               { label: "Multiempresa", icon: Building2 },
             ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-md border border-white/10 bg-white/[0.025] p-4"
-              >
+              <div key={item.label} className="rounded-md border border-border bg-muted/50 p-4">
                 <item.icon className="h-5 w-5 text-primary" />
                 <p className="mt-4 text-xs font-semibold uppercase tracking-[0.06em] text-white">
                   {item.label}
@@ -199,7 +196,7 @@ function Login() {
         </div>
 
         {SELF_SIGNUP_ENABLED ? (
-          <div className="flex gap-1 p-1 rounded-md bg-white/5 border border-white/5">
+          <div className="flex gap-1 p-1 rounded-md bg-muted/50 border border-border/60">
             {(["signin", "signup"] as const).map((m) => (
               <button
                 key={m}
@@ -314,13 +311,13 @@ function Login() {
             type="button"
             variant="outline"
             onClick={handleGoogle}
-            className="w-full text-sm tracking-normal bg-white/5"
+            className="w-full text-sm tracking-normal bg-muted/50"
           >
             Continuar com Google
           </Button>
         </form>
 
-        <div className="text-center pt-6 border-t border-white/5">
+        <div className="text-center pt-6 border-t border-border/60">
           <p className="text-xs text-muted-foreground">
             Acesso exclusivo para empresas parceiras.{" "}
             <Link to="/" className="text-primary hover:text-white transition-colors">

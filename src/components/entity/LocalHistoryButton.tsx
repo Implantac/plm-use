@@ -45,7 +45,7 @@ export function LocalHistoryButton({
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-y-auto">
           <SheetHeader className="p-5 border-b border-border">
-            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+            <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
               {LOCAL_ENTITY_LABEL[entityType]}
             </p>
             <SheetTitle className="text-base mt-1 truncate">{entityLabel ?? entityId}</SheetTitle>

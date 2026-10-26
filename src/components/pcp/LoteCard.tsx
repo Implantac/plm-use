@@ -46,19 +46,19 @@ export function LoteCard({ lote, setor, onClick }: Props) {
   return (
     <Card
       onClick={onClick}
-      className="cursor-pointer rounded-lg border border-white/10 bg-white/[0.035] p-4 transition hover:border-primary/40 hover:bg-white/[0.06]"
+      className="cursor-pointer rounded-lg border border-border bg-muted/60 p-4 transition hover:border-primary/40 hover:bg-accent"
     >
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+          <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
             {lote.numero}
           </p>
           <p className="mt-0.5 text-sm font-bold text-white leading-tight">{lote.grupo}</p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">{lote.colecao}</p>
+          <p className="mt-0.5 text-2xs text-muted-foreground">{lote.colecao}</p>
         </div>
         <Badge
           variant="outline"
-          className={`text-[11px] font-bold uppercase tracking-[0.04em] ${prioridadeColor[lote.prioridade]}`}
+          className={`text-2xs font-semibold uppercase tracking-[0.04em] ${prioridadeColor[lote.prioridade]}`}
         >
           {lote.prioridade}
         </Badge>
@@ -66,34 +66,34 @@ export function LoteCard({ lote, setor, onClick }: Props) {
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Prog.</p>
+          <p className="text-2xs uppercase tracking-wider text-muted-foreground">Prog.</p>
           <p className="text-xs font-bold text-white">{totalProgramado}</p>
         </div>
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Feito</p>
+          <p className="text-2xs uppercase tracking-wider text-muted-foreground">Feito</p>
           <p className="text-xs font-bold text-status-approved">{totalProduzido}</p>
         </div>
         <div className="rounded bg-black/30 py-1.5">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Saldo</p>
+          <p className="text-2xs uppercase tracking-wider text-muted-foreground">Saldo</p>
           <p className="text-xs font-bold text-status-progress">{saldoPendente}</p>
         </div>
       </div>
 
       <div className="mt-3">
-        <div className="flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
+        <div className="flex items-center justify-between text-2xs uppercase tracking-wider text-muted-foreground">
           <span>Concluído</span>
           <span className="font-bold text-white">{pct}%</span>
         </div>
-        <Progress value={pct} className="mt-1 h-1.5 bg-white/10" />
+        <Progress value={pct} className="mt-1 h-1.5 bg-muted" />
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px]">
-        <span className="inline-flex items-center gap-1 rounded bg-white/5 px-2 py-1 text-muted-foreground">
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 text-2xs">
+        <span className="inline-flex items-center gap-1 rounded bg-muted/50 px-2 py-1 text-muted-foreground">
           <Package className="h-3 w-3" /> {refsNoSetor.length} ref
           {refsNoSetor.length > 1 ? "s" : ""}
         </span>
         <span
-          className={`inline-flex items-center gap-1 rounded px-2 py-1 ${atraso ? "bg-status-rejected/10 text-status-rejected" : "bg-white/5 text-muted-foreground"}`}
+          className={`inline-flex items-center gap-1 rounded px-2 py-1 ${atraso ? "bg-status-rejected/10 text-status-rejected" : "bg-muted/50 text-muted-foreground"}`}
         >
           <Clock className="h-3 w-3" />
           {atraso ? `${Math.abs(dias)}d atraso` : `${dias}d`}

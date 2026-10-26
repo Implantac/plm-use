@@ -137,10 +137,10 @@ function MeasurementsPage() {
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.04em] transition ${
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-2xs uppercase tracking-[0.04em] transition ${
                 active
                   ? "border-primary/60 bg-primary/15 text-white"
-                  : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-white"
+                  : "border-border bg-muted/50 text-muted-foreground hover:border-border-strong/70 hover:text-white"
               }`}
             >
               {s === "todos" && <Layers className="h-3 w-3" />}
@@ -148,7 +148,7 @@ function MeasurementsPage() {
               {s === "rascunho" && <Ruler className="h-3 w-3" />}
               {s === "arquivada" && <Archive className="h-3 w-3" />}
               {s === "todos" ? "Todas" : s}
-              <span className="rounded-full bg-white/10 px-1.5 text-[11px]">{count}</span>
+              <span className="rounded-full bg-muted px-1.5 text-2xs">{count}</span>
             </button>
           );
         })}
@@ -169,33 +169,31 @@ function MeasurementsPage() {
                   className={`w-full text-left rounded-lg border p-3 transition ${
                     active
                       ? "border-primary/60 bg-primary/10"
-                      : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                      : "border-border bg-muted/50 hover:border-border-strong/70"
                   }`}
                 >
                   <div className="flex justify-between items-start gap-2">
                     <div>
-                      <p className="text-[11px] uppercase tracking-[0.05em] text-primary">
-                        {c.code}
-                      </p>
+                      <p className="text-2xs uppercase tracking-[0.05em] text-primary">{c.code}</p>
                       <p className="text-sm font-bold text-white mt-0.5">{c.name}</p>
-                      <p className="text-[11px] text-muted-foreground mt-1">
+                      <p className="text-2xs text-muted-foreground mt-1">
                         {c.category} · {c.segment} · {c.fit ?? "—"}
                       </p>
                     </div>
                     <Badge
                       variant="outline"
-                      className={`text-[10px] uppercase ${
+                      className={`text-2xs uppercase ${
                         c.status === "aprovada"
                           ? "border-status-approved/40 text-status-approved"
                           : c.status === "rascunho"
                             ? "border-status-progress/40 text-status-progress"
-                            : "border-white/20 text-muted-foreground"
+                            : "border-border-strong/70 text-muted-foreground"
                       }`}
                     >
                       {c.status}
                     </Badge>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground uppercase tracking-wider">
+                  <div className="mt-2 flex items-center justify-between text-2xs text-muted-foreground uppercase tracking-wider">
                     <span>{c.grade.length} tamanhos</span>
                     <span>{c.linkedRefs} refs</span>
                   </div>
@@ -207,11 +205,11 @@ function MeasurementsPage() {
 
         {/* Detalhe */}
         {selected ? (
-          <Card className="glass-card border-white/10 rounded-2xl">
+          <Card className="glass-card border-border rounded-lg">
             <CardContent className="p-6 space-y-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[11px] uppercase tracking-[0.05em] text-primary">
+                  <p className="text-2xs uppercase tracking-[0.05em] text-primary">
                     {selected.code}
                   </p>
                   <h2 className="text-2xl font-bold text-white mt-1">{selected.name}</h2>
@@ -246,22 +244,22 @@ function MeasurementsPage() {
               </div>
 
               {selected.notes && (
-                <p className="text-xs italic text-muted-foreground border-l-2 border-white/10 pl-3">
+                <p className="text-xs italic text-muted-foreground border-l-2 border-border pl-3">
                   {selected.notes}
                 </p>
               )}
 
               {/* Grade */}
-              <div className="overflow-x-auto rounded-lg border border-white/10">
+              <div className="overflow-x-auto rounded-lg border border-border">
                 <table className="w-full text-xs">
-                  <thead className="bg-white/[0.03] uppercase tracking-widest text-[11px] text-muted-foreground">
+                  <thead className="bg-muted/50 uppercase tracking-widest text-2xs text-muted-foreground">
                     <tr>
                       <th className="p-3 text-left">Tamanho</th>
                       {selected.points.map((p) => (
                         <th key={p.id} className="p-3 text-right">
                           <div className="flex flex-col items-end">
                             <span className="text-white">{p.code}</span>
-                            <span className="text-[10px] normal-case text-muted-foreground">
+                            <span className="text-2xs normal-case text-muted-foreground">
                               {p.label} · ±{p.toleranceCm}
                             </span>
                           </div>
@@ -271,7 +269,7 @@ function MeasurementsPage() {
                   </thead>
                   <tbody>
                     {selected.grade.map((row) => (
-                      <tr key={row.size} className="border-t border-white/5">
+                      <tr key={row.size} className="border-t border-border/60">
                         <td className="p-3 font-bold text-white">{row.size}</td>
                         {selected.points.map((p) => (
                           <td
@@ -279,7 +277,7 @@ function MeasurementsPage() {
                             className="p-3 text-right tabular-nums text-muted-foreground"
                           >
                             {row.values[p.code] ?? "—"}{" "}
-                            <span className="text-[11px] opacity-60">{selected.unit}</span>
+                            <span className="text-2xs opacity-60">{selected.unit}</span>
                           </td>
                         ))}
                       </tr>
@@ -288,11 +286,11 @@ function MeasurementsPage() {
                 </table>
               </div>
 
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-border/60">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-[11px]"
+                  className="text-2xs"
                   onClick={() => {
                     upsertChart({
                       ...selected,
@@ -302,12 +300,12 @@ function MeasurementsPage() {
                     toast.success("Tabela aprovada");
                   }}
                 >
-                  <CheckCircle2 className="w-3 h-3 mr-1" /> Aprovar
+                  <CheckCircle2 className="w-3 h-3" /> Aprovar
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-[11px]"
+                  className="text-2xs"
                   onClick={() => {
                     upsertChart({
                       ...selected,
@@ -317,12 +315,12 @@ function MeasurementsPage() {
                     toast.info("Tabela arquivada");
                   }}
                 >
-                  <Archive className="w-3 h-3 mr-1" /> Arquivar
+                  <Archive className="w-3 h-3" /> Arquivar
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="text-[11px]"
+                  className="text-2xs"
                   onClick={() => {
                     const dup: MeasurementChart = {
                       ...selected,
@@ -338,13 +336,13 @@ function MeasurementsPage() {
                     toast.success("Duplicada como rascunho");
                   }}
                 >
-                  <Plus className="w-3 h-3 mr-1" /> Duplicar
+                  <Plus className="w-3 h-3" /> Duplicar
                 </Button>
               </div>
             </CardContent>
           </Card>
         ) : (
-          <Card className="glass-card border-white/10 rounded-2xl">
+          <Card className="glass-card border-border rounded-lg">
             <CardContent className="p-10 text-center text-muted-foreground text-xs">
               Selecione uma tabela ao lado ou crie uma nova.
             </CardContent>
@@ -353,9 +351,9 @@ function MeasurementsPage() {
       </div>
 
       <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-3xl max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-3xl max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-xl font-semibold uppercase tracking-tighter italic">
               Nova tabela de medidas
             </DialogTitle>
           </DialogHeader>
@@ -363,7 +361,7 @@ function MeasurementsPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label
-                  className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
+                  className="text-2xs uppercase tracking-[0.05em] text-muted-foreground"
                   required
                 >
                   Código
@@ -381,7 +379,7 @@ function MeasurementsPage() {
               </div>
               <div className="space-y-1.5">
                 <Label
-                  className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground"
+                  className="text-2xs uppercase tracking-[0.05em] text-muted-foreground"
                   required
                 >
                   Nome
@@ -400,7 +398,7 @@ function MeasurementsPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
                   Categoria
                 </Label>
                 <select
@@ -411,7 +409,7 @@ function MeasurementsPage() {
                       category: e.target.value as MeasurementChart["category"],
                     })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-lg h-10 px-3 text-sm"
+                  className="w-full bg-muted/50 border border-border rounded-lg h-10 px-3 text-sm"
                 >
                   {["Top", "Bottom", "Dress", "Outwear", "Underwear", "Kids"].map((c) => (
                     <option key={c} value={c} className="bg-black">
@@ -421,7 +419,7 @@ function MeasurementsPage() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
                   Segmento
                 </Label>
                 <select
@@ -432,7 +430,7 @@ function MeasurementsPage() {
                       segment: e.target.value as MeasurementChart["segment"],
                     })
                   }
-                  className="w-full bg-white/5 border border-white/10 rounded-lg h-10 px-3 text-sm"
+                  className="w-full bg-muted/50 border border-border rounded-lg h-10 px-3 text-sm"
                 >
                   {["Feminino", "Masculino", "Unissex", "Infantil"].map((s) => (
                     <option key={s} value={s} className="bg-black">

@@ -12,7 +12,7 @@ export function OrderFlowStepper({ status }: { status: SalesOrderStatus }) {
   if (status === "cancelado") {
     return (
       <div className="glass-card flex flex-wrap items-center gap-2 rounded-lg px-3 py-2">
-        <span className="badge-status-rejected rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.03em]">
+        <span className="badge-status-rejected rounded-md px-2 py-0.5 text-2xs font-semibold uppercase tracking-[0.03em]">
           {ORDER_STATUS.cancelado.label}
         </span>
         <span className="text-xs text-muted-foreground">
@@ -57,7 +57,7 @@ export function OrderFlowStepper({ status }: { status: SalesOrderStatus }) {
             >
               <span
                 className={
-                  "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold tabular-nums " +
+                  "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-2xs font-semibold tabular-nums " +
                   (state === "done"
                     ? "border-transparent bg-primary text-primary-foreground"
                     : state === "current"
@@ -76,7 +76,7 @@ export function OrderFlowStepper({ status }: { status: SalesOrderStatus }) {
                 >
                   {ORDER_STATUS[step.status].label}
                 </span>
-                <span className="block text-[11px] leading-snug text-muted-foreground">
+                <span className="block text-2xs leading-snug text-muted-foreground">
                   {state === "current" ? step.action : step.who}
                 </span>
               </span>

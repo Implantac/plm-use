@@ -140,7 +140,7 @@ function ShowroomPage() {
                 const ref = referenceById.get(s.reference_id);
                 const next = SAMPLE_NEXT[s.status as ShowroomSampleStatus] ?? [];
                 return (
-                  <Card key={s.id} className="border-white/10 bg-white/[0.02]">
+                  <Card key={s.id} className="border-border bg-muted/40">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -229,7 +229,7 @@ function ShowroomPage() {
           ) : (
             <div className="grid gap-3 md:grid-cols-2">
               {publications.map((p) => (
-                <Card key={p.id} className="border-white/10 bg-white/[0.02]">
+                <Card key={p.id} className="border-border bg-muted/40">
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <CardTitle className="text-base">{p.titulo}</CardTitle>
@@ -275,7 +275,7 @@ function RequestSampleCard({
   const [qtd, setQtd] = useState(1);
 
   return (
-    <Card className="border-white/10 bg-white/[0.02]">
+    <Card className="border-border bg-muted/40">
       <CardHeader className="pb-2">
         <CardTitle className="text-base flex items-center gap-2">
           <PackageOpen className="h-4 w-4" /> Solicitar peça-mãe
@@ -365,7 +365,7 @@ function FeedbackCard({
   );
 
   return (
-    <Card className="border-white/10 bg-white/[0.02]">
+    <Card className="border-border bg-muted/40">
       <CardHeader className="pb-2">
         <CardTitle className="text-base flex items-center gap-2">
           <MessageSquarePlus className="h-4 w-4" /> Registrar feedback
@@ -485,7 +485,7 @@ function FeedbackList({
         const ref = referenceById.get(refId);
         const avg = arr.reduce((n, f) => n + f.nota, 0) / arr.length;
         return (
-          <Card key={refId} className="border-white/10 bg-white/[0.02]">
+          <Card key={refId} className="border-border bg-muted/40">
             <CardHeader className="pb-2">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-base">
@@ -548,7 +548,7 @@ function DecisionCard({
   };
 
   return (
-    <Card className="border-white/10 bg-white/[0.02]">
+    <Card className="border-border bg-muted/40">
       <CardHeader className="pb-2">
         <CardTitle className="text-base">Decisão de lançamento (Go / No-Go / Revisar)</CardTitle>
       </CardHeader>

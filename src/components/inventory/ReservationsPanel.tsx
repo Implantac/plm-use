@@ -68,7 +68,7 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
   return (
     <Card className="glass-card rounded-lg">
       <CardHeader className="pb-3">
-        <CardTitle className="text-xs font-bold uppercase tracking-[0.04em] text-primary">
+        <CardTitle className="text-xs font-semibold uppercase tracking-[0.04em] text-primary">
           Reservas ativas ({rows.length})
         </CardTitle>
       </CardHeader>
@@ -77,11 +77,11 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
         {rows.map((r) => (
           <div
             key={r.id}
-            className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.03] p-3"
+            className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted/50 p-3"
           >
             <div className="min-w-0">
               <p className="text-sm font-bold text-white truncate">{nameOf(r.item_id)}</p>
-              <p className="text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+              <p className="text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                 {r.qty} · {r.ref_type} ·{" "}
                 {r.ref_type === "op" && opMeta[r.ref_id] ? (
                   <Link

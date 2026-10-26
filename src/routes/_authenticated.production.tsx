@@ -142,10 +142,10 @@ function ProductionPage() {
         </div>
 
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="inline-flex rounded-full border border-white/10 bg-white/[0.03] p-1">
+          <div className="inline-flex rounded-full border border-border bg-muted/50 p-1">
             <button
               onClick={() => setView("kanban")}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-2xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "kanban"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -156,7 +156,7 @@ function ProductionPage() {
             </button>
             <button
               onClick={() => setView("torre")}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-2xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "torre"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -167,7 +167,7 @@ function ProductionPage() {
             </button>
             <button
               onClick={() => setView("gantt")}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-2xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "gantt"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -178,7 +178,7 @@ function ProductionPage() {
             </button>
             <button
               onClick={() => setView("op")}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${
+              className={`px-3 py-1.5 rounded-full text-2xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition ${
                 view === "op"
                   ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-white"
@@ -284,11 +284,11 @@ function ProductionPage() {
 
       {/* Dialog do lote: lista referências e abre o drawer */}
       <Dialog open={!!loteSelecionadoAtual} onOpenChange={(o) => !o && setLoteSelecionado(null)}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white max-w-3xl">
+        <DialogContent className="glass-card border-border bg-popover text-white max-w-3xl">
           {loteSelecionadoAtual && (
             <>
               <DialogHeader>
-                <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+                <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
                   {loteSelecionadoAtual.lote.numero} • {loteSelecionadoAtual.setor}
                 </p>
                 <DialogTitle className="text-xl">{loteSelecionadoAtual.lote.grupo}</DialogTitle>
@@ -303,7 +303,7 @@ function ProductionPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10 text-[11px] tracking-[0.04em]"
+                  className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10 text-2xs tracking-[0.04em]"
                   onClick={() =>
                     openEntity({
                       type: "lote",
@@ -317,30 +317,30 @@ function ProductionPage() {
                 </Button>
               </div>
 
-              <div className="mt-2 flex items-center justify-between rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs">
+              <div className="mt-2 flex items-center justify-between rounded-md border border-border bg-muted/50 p-3 text-xs">
                 <span className="text-muted-foreground">Conclusão geral do lote</span>
                 <div className="flex-1 mx-3">
                   <Progress
                     value={percentualLote(loteSelecionadoAtual.lote)}
-                    className="h-1.5 bg-white/10"
+                    className="h-1.5 bg-muted"
                   />
                 </div>
                 <span className="font-bold">{percentualLote(loteSelecionadoAtual.lote)}%</span>
               </div>
 
               <Tabs defaultValue="refs" className="mt-4">
-                <TabsList className="bg-white/[0.04] border border-white/10">
-                  <TabsTrigger value="refs" className="text-[11px] gap-1">
+                <TabsList className="bg-muted/60 border border-border">
+                  <TabsTrigger value="refs" className="text-2xs gap-1">
                     <LayoutGrid className="h-3 w-3" /> Referências
                   </TabsTrigger>
-                  <TabsTrigger value="timeline" className="text-[11px] gap-1">
+                  <TabsTrigger value="timeline" className="text-2xs gap-1">
                     <History className="h-3 w-3" /> Timeline
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="refs" className="mt-3">
                   <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <p className="text-2xs uppercase tracking-wider text-muted-foreground">
                       Referências neste setor
                     </p>
                     {loteSelecionadoAtual.lote.referencias
@@ -355,29 +355,29 @@ function ProductionPage() {
                             });
                             setDrawerOpen(true);
                           }}
-                          className="w-full text-left rounded-md border border-white/10 bg-white/[0.04] p-3 hover:border-primary/40 hover:bg-white/[0.07] transition"
+                          className="w-full text-left rounded-md border border-border bg-muted/60 p-3 hover:border-primary/40 hover:bg-accent transition"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div>
-                              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+                              <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
                                 {r.ref}
                               </p>
                               <p className="text-sm font-bold text-white">{r.nome}</p>
                             </div>
                             <Badge
                               variant="outline"
-                              className={`text-[11px] ${
+                              className={`text-2xs ${
                                 r.status === "Concluído"
                                   ? "border-status-approved/40 text-status-approved"
                                   : r.status === "Ocorrência"
                                     ? "border-status-rejected/40 text-status-rejected"
-                                    : "border-white/20"
+                                    : "border-border-strong/70"
                               }`}
                             >
                               {r.status}
                             </Badge>
                           </div>
-                          <div className="mt-2 grid grid-cols-4 gap-2 text-center text-[11px]">
+                          <div className="mt-2 grid grid-cols-4 gap-2 text-center text-2xs">
                             <Mini label="Prog" v={r.qtd_programada} />
                             <Mini label="Saldo" v={saldoReferencia(r)} tone="primary" />
                             <Mini label="Feito" v={r.qtd_produzida} tone="pos" />
@@ -394,7 +394,7 @@ function ProductionPage() {
                       (r) => r.setor_atual !== loteSelecionadoAtual.setor,
                     ).length > 0 && (
                       <>
-                        <p className="pt-3 text-[11px] uppercase tracking-wider text-muted-foreground">
+                        <p className="pt-3 text-2xs uppercase tracking-wider text-muted-foreground">
                           Outras referências do lote (em outros setores)
                         </p>
                         {loteSelecionadoAtual.lote.referencias
@@ -402,7 +402,7 @@ function ProductionPage() {
                           .map((r) => (
                             <div
                               key={r.ref}
-                              className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-xs flex justify-between"
+                              className="rounded-md border border-border/60 bg-muted/40 p-3 text-xs flex justify-between"
                             >
                               <span>
                                 <span className="text-primary font-bold">{r.ref}</span> — {r.nome}
@@ -450,7 +450,7 @@ function Mini({ label, v, tone }: { label: string; v: number; tone?: "pos" | "ne
           : "text-white";
   return (
     <div className="rounded bg-black/30 py-1.5">
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-2xs uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className={`text-xs font-bold ${c}`}>{v}</p>
     </div>
   );

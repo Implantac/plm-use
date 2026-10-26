@@ -42,11 +42,11 @@ export function BomBopPanel({ refAtual }: { refAtual: string }) {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-8">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Workflow className="w-4 h-4 text-primary" /> BOM + BOP · Engenharia da Referência{" "}
           {refAtual}
         </h3>
-        <div className="flex gap-3 text-[11px] uppercase font-bold tracking-[0.04em]">
+        <div className="flex gap-3 text-2xs uppercase font-semibold tracking-[0.04em]">
           <Stat icon={<Boxes className="w-3.5 h-3.5" />} label="BOM" value={brl(totals.bom)} />
           <Stat
             icon={<Clock className="w-3.5 h-3.5" />}
@@ -61,7 +61,7 @@ export function BomBopPanel({ refAtual }: { refAtual: string }) {
           />
           <button
             onClick={() => setCatalog(true)}
-            className="flex items-center gap-1.5 self-center rounded-full border border-white/15 px-2.5 py-1 hover:bg-white/10"
+            className="flex items-center gap-1.5 self-center rounded-full border border-border-strong/70 px-2.5 py-1 hover:bg-accent"
             title="Inserir linha a partir da Biblioteca de Materiais"
           >
             <Library className="w-3.5 h-3.5 text-primary" />
@@ -89,7 +89,7 @@ export function BomBopPanel({ refAtual }: { refAtual: string }) {
             {filterMaterials(materials, catalogQ).map((m) => (
               <button
                 key={m.id}
-                className="block w-full rounded-md border border-white/10 px-3 py-2 text-left hover:bg-white/5"
+                className="block w-full rounded-md border border-border px-3 py-2 text-left hover:bg-accent/60"
                 onClick={() => {
                   addBom(refAtual, materialForBom(m));
                   toast.success(`${m.name} adicionado ao BOM (consumo 1 ${m.unit}).`);
@@ -98,7 +98,7 @@ export function BomBopPanel({ refAtual }: { refAtual: string }) {
                 }}
               >
                 <span className="text-xs font-semibold text-white">{m.name}</span>
-                <span className="ml-2 text-[11px] uppercase tracking-wide text-muted-foreground">
+                <span className="ml-2 text-2xs uppercase tracking-wide text-muted-foreground">
                   {m.tipo} · {m.supplier || "—"} · {brl(m.unitCost)}/{m.unit}
                 </span>
               </button>
@@ -134,10 +134,10 @@ function Stat({
 }) {
   return (
     <div
-      className={`flex items-center gap-2 px-3 py-2 rounded-md border ${accent ? "border-primary/30 bg-primary/10 text-primary" : "border-white/10 bg-white/5 text-white"}`}
+      className={`flex items-center gap-2 px-3 py-2 rounded-md border ${accent ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-muted/50 text-white"}`}
     >
       {icon}
-      <span className="text-muted-foreground text-[11px]">{label}</span>
+      <span className="text-muted-foreground text-2xs">{label}</span>
       <span className="font-bold">{value}</span>
     </div>
   );
@@ -163,13 +163,13 @@ function BomTable({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
+        <h4 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
           <Boxes className="w-3.5 h-3.5 text-primary" /> Bill of Materials
         </h4>
       </div>
-      <div className="rounded-lg border border-white/5 bg-white/[0.02] overflow-hidden">
+      <div className="rounded-lg border border-border/60 bg-muted/40 overflow-hidden">
         <table className="w-full text-left">
-          <thead className="border-b border-white/5 bg-white/5 text-[11px] uppercase tracking-widest text-muted-foreground">
+          <thead className="border-b border-border/60 bg-muted/50 text-2xs uppercase tracking-widest text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Tipo</th>
               <th className="px-4 py-3">Material</th>
@@ -179,10 +179,10 @@ function BomTable({
               <th className="px-4 py-3 text-right" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5 text-xs text-white">
+          <tbody className="divide-y divide-border/70 text-xs text-white">
             {items.map((i) => (
-              <tr key={i.id} className="hover:bg-white/[0.02]">
-                <td className="px-4 py-3 text-primary/70 font-bold uppercase text-[11px]">
+              <tr key={i.id} className="hover:bg-accent/50">
+                <td className="px-4 py-3 text-primary/70 font-semibold uppercase text-2xs">
                   {i.tipo}
                 </td>
                 <td className="px-4 py-3">{i.material}</td>
@@ -198,12 +198,12 @@ function BomTable({
                 </td>
               </tr>
             ))}
-            <tr className="bg-white/[0.015]">
+            <tr className="bg-muted/30">
               <td className="px-4 py-2">
                 <select
                   value={form.tipo}
                   onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-                  className="h-9 bg-white/5 border border-white/10 rounded-md text-xs px-2 w-full"
+                  className="h-9 bg-muted/50 border border-border rounded-md text-xs px-2 w-full"
                 >
                   {["Tecido", "Aviamento", "Linha", "Embalagem", "Bordado", "Silk"].map((t) => (
                     <option key={t}>{t}</option>
@@ -290,26 +290,26 @@ function BopTable({
   const maxTempo = Math.max(...sorted.map((s) => s.tempoMin), 1);
   return (
     <div className="space-y-3">
-      <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
+      <h4 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
         <Workflow className="w-3.5 h-3.5 text-primary" /> Bill of Process · sequência produtiva
       </h4>
       <div className="space-y-2">
         {sorted.map((s) => (
           <div
             key={s.id}
-            className="flex items-center gap-3 p-3 rounded-md bg-white/[0.02] border border-white/5 group"
+            className="flex items-center gap-3 p-3 rounded-md bg-muted/40 border border-border/60 group"
           >
             <span className="w-8 h-8 rounded-md bg-primary/10 border border-primary/20 text-primary text-xs font-bold flex items-center justify-center">
               {s.seq}
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-white truncate">{s.etapa}</p>
-              <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+              <p className="text-2xs uppercase tracking-widest text-muted-foreground">
                 {s.setor} · {s.responsavel ?? "—"}
               </p>
             </div>
             <div className="w-40 hidden md:block">
-              <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
                 <div
                   className="h-full bg-primary/70"
                   style={{ width: `${(s.tempoMin / maxTempo) * 100}%` }}
@@ -318,7 +318,7 @@ function BopTable({
             </div>
             <div className="text-right">
               <p className="text-xs font-bold text-white">{s.tempoMin} min</p>
-              <p className="text-[11px] text-primary">{brl(s.custo)}</p>
+              <p className="text-2xs text-primary">{brl(s.custo)}</p>
             </div>
             <Button
               variant="ghost"
@@ -331,7 +331,7 @@ function BopTable({
           </div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-2 items-center p-3 rounded-md bg-white/[0.02] border border-white/5">
+      <div className="flex flex-wrap gap-2 items-center p-3 rounded-md bg-muted/40 border border-border/60">
         <Input
           value={form.etapa}
           onChange={(e) => setForm({ ...form, etapa: e.target.value })}
@@ -341,7 +341,7 @@ function BopTable({
         <select
           value={form.setor}
           onChange={(e) => setForm({ ...form, setor: e.target.value })}
-          className="h-9 bg-white/5 border border-white/10 rounded-md text-xs px-2"
+          className="h-9 bg-muted/50 border border-border rounded-md text-xs px-2"
         >
           {[
             "Compras",

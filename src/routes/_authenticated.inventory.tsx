@@ -192,21 +192,21 @@ function InventoryPage() {
           variant="outline"
           onClick={handleClassifyAbc}
           disabled={busy}
-          className="text-[11px] tracking-[0.04em] gap-2"
+          className="text-2xs tracking-[0.04em] gap-2"
         >
           <RefreshCw className="w-4 h-4" /> Classificar ABC
         </Button>
         <Button
           variant="outline"
           onClick={() => handleOpenMove()}
-          className="text-[11px] tracking-[0.04em] gap-2"
+          className="text-2xs tracking-[0.04em] gap-2"
         >
           <ArrowRightLeft className="w-4 h-4" /> Movimentação
         </Button>
         <Button
           variant="outline"
           onClick={() => setIsResOpen(true)}
-          className="text-[11px] tracking-[0.04em] gap-2"
+          className="text-2xs tracking-[0.04em] gap-2"
         >
           <History className="w-4 h-4" /> Reservar
         </Button>
@@ -215,7 +215,7 @@ function InventoryPage() {
       {criticalItems.length > 0 && (
         <Card className="glass-card rounded-lg border border-status-rejected/30 bg-status-rejected/[0.06] mb-6">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.04em] text-status-rejected">
+            <CardTitle className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.04em] text-status-rejected">
               <AlertTriangle className="h-4 w-4" />
               {criticalItems.length} insumo{criticalItems.length > 1 ? "s" : ""} abaixo do ponto do
               pedido
@@ -232,7 +232,7 @@ function InventoryPage() {
                     onClick={() => handleOpenDialog(it)}
                     className={`text-left rounded-md border p-3 transition-colors ${belowSafety ? "border-status-rejected/50 bg-status-rejected/10 hover:bg-status-rejected/15" : "border-status-progress/30 bg-status-progress/[0.05] hover:bg-status-progress/[0.09]"}`}
                   >
-                    <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                    <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                       {it.code} · {belowSafety ? "Crítico" : "Repor"}
                     </p>
                     <p className="mt-1 text-sm font-bold text-white truncate">{it.name}</p>
@@ -246,7 +246,7 @@ function InventoryPage() {
               })}
             </div>
             {criticalItems.length > 6 && (
-              <p className="mt-3 text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+              <p className="mt-3 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                 +{criticalItems.length - 6} outros itens abaixo do PP na tabela
               </p>
             )}
@@ -258,7 +258,7 @@ function InventoryPage() {
         <Card className="glass-card rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1080px] text-left">
-              <thead className="border-b border-white/5 bg-white/5">
+              <thead className="border-b border-border/60 bg-muted/50">
                 <tr>
                   {[
                     "Insumo",
@@ -273,14 +273,14 @@ function InventoryPage() {
                   ].map((heading) => (
                     <th
                       key={heading}
-                      className="px-4 py-4 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground"
+                      className="px-4 py-4 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground"
                     >
                       {heading}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-border/70">
                 {loading && (
                   <tr>
                     <td
@@ -310,24 +310,24 @@ function InventoryPage() {
                     item.demand_avg_daily > 0 ? Math.floor(onHand / item.demand_avg_daily) : null;
                   const usage = Math.min(Math.round((reserved / Math.max(onHand, 1)) * 100), 100);
                   return (
-                    <tr key={item.id} className="group hover:bg-white/[0.025] transition-colors">
+                    <tr key={item.id} className="group hover:bg-accent/60 transition-colors">
                       <td className="px-4 py-4">
                         <p className="text-sm font-bold text-white group-hover:text-primary transition-colors">
                           {item.name}
                         </p>
-                        <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                        <p className="mt-1 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                           {item.code} - {item.category}
                         </p>
                       </td>
                       <td className="px-4 py-4">
                         {item.abc_class ? (
                           <span
-                            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-bold ${abcColors[item.abc_class]}`}
+                            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-2xs font-bold ${abcColors[item.abc_class]}`}
                           >
                             {item.abc_class}
                           </span>
                         ) : (
-                          <span className="text-[11px] text-muted-foreground">—</span>
+                          <span className="text-2xs text-muted-foreground">—</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
@@ -341,7 +341,7 @@ function InventoryPage() {
                           {Number(item.reorder_point).toFixed(0)}
                           {item.unit}
                         </p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-2xs text-muted-foreground">
                           seg. {Number(item.safety_stock).toFixed(0)}
                           {item.unit}
                         </p>
@@ -358,24 +358,24 @@ function InventoryPage() {
                             {coverage} dias
                           </p>
                         ) : (
-                          <span className="text-[11px] text-muted-foreground">—</span>
+                          <span className="text-2xs text-muted-foreground">—</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
                         <div className="min-w-24">
-                          <div className="flex justify-between text-[11px] text-muted-foreground">
+                          <div className="flex justify-between text-2xs text-muted-foreground">
                             <span>
                               {reserved.toFixed(0)}
                               {item.unit}
                             </span>
                             <span>{usage}%</span>
                           </div>
-                          <Progress value={usage} className="mt-2 h-1.5 bg-white/10" />
+                          <Progress value={usage} className="mt-2 h-1.5 bg-muted" />
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <span
-                          className={`inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.04em] ${critical ? "bg-status-rejected/10 text-status-rejected" : "bg-status-approved/10 text-status-approved"}`}
+                          className={`inline-flex items-center gap-2 rounded-md px-2.5 py-1 text-2xs font-semibold uppercase tracking-[0.04em] ${critical ? "bg-status-rejected/10 text-status-rejected" : "bg-status-approved/10 text-status-approved"}`}
                         >
                           {critical ? (
                             <AlertTriangle className="h-3.5 w-3.5" />
@@ -424,7 +424,7 @@ function InventoryPage() {
 
           <Card className="glass-card rounded-lg">
             <CardContent className="p-5 space-y-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary flex items-center gap-2">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary flex items-center gap-2">
                 <PackageSearch className="h-4 w-4" /> Rastreabilidade
               </p>
               {[
@@ -446,12 +446,12 @@ function InventoryPage() {
               {(["tecido", "aviamento", "etiqueta", "embalagem"] as const).map((cat) => {
                 const count = items.filter((i) => i.category === cat).length;
                 return (
-                  <div key={cat} className="rounded-md border border-white/10 bg-white/[0.035] p-4">
+                  <div key={cat} className="rounded-md border border-border bg-muted/60 p-4">
                     <Boxes className="h-4 w-4 text-primary" />
-                    <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+                    <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-white">
                       {cat}
                     </p>
-                    <p className="mt-1 text-[11px] text-muted-foreground">{count} itens</p>
+                    <p className="mt-1 text-2xs text-muted-foreground">{count} itens</p>
                   </div>
                 );
               })}
@@ -461,9 +461,9 @@ function InventoryPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-lg p-6 max-w-2xl">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-lg p-6 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold uppercase tracking-tight">
+            <DialogTitle className="text-xl font-semibold uppercase tracking-tight">
               {editingItem ? "Editar insumo" : "Cadastrar insumo"}
             </DialogTitle>
           </DialogHeader>
@@ -484,7 +484,7 @@ function InventoryPage() {
               ["holding_cost_unit", "Custo manutenção un/ano R$ (H)", "8.52"],
             ].map(([key, label, placeholder]) => (
               <div key={key} className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                   {label}
                 </Label>
                 <Input
@@ -496,14 +496,14 @@ function InventoryPage() {
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-muted-foreground -mt-2">
+          <p className="text-2xs text-muted-foreground -mt-2">
             Estoque de segurança, ponto do pedido e LEC são recalculados automaticamente.
           </p>
           <DialogFooter className="gap-3">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={busy} className="text-[11px]">
+            <Button onClick={handleSave} disabled={busy} className="text-2xs">
               {editingItem ? "Salvar" : "Cadastrar"}
             </Button>
           </DialogFooter>

@@ -11,7 +11,7 @@ import { diffSnapshots, type DiffRow, type FieldChange } from "@/lib/techsheet/d
 export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersion }) {
   if (!a || !b) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-4 text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-border p-4 text-2xs text-muted-foreground">
         Selecione duas versões para comparar.
       </div>
     );
@@ -19,7 +19,7 @@ export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersi
 
   if (a.id === b.id) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-4 text-[11px] text-muted-foreground">
+      <div className="rounded-md border border-dashed border-border p-4 text-2xs text-muted-foreground">
         Selecione duas versões diferentes.
       </div>
     );
@@ -32,14 +32,14 @@ export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersi
   const mantidos = a.alteracoes.filter((x) => setB.has(x.trim()));
 
   return (
-    <div className="rounded-md border border-white/10 bg-white/[0.02] p-4 space-y-4">
-      <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-widest">
+    <div className="rounded-md border border-border bg-muted/40 p-4 space-y-4">
+      <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-widest">
         <span className="text-status-rejected">A · {a.versao}</span>
         <ArrowRight className="w-3 h-3 text-muted-foreground" />
         <span className="text-status-approved">B · {b.versao}</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 text-center text-[11px] uppercase tracking-widest">
+      <div className="grid grid-cols-3 gap-2 text-center text-2xs uppercase tracking-widest">
         <Stat label="Removidos" value={removidos.length} tone="neg" />
         <Stat label="Mantidos" value={mantidos.length} tone="mut" />
         <Stat label="Adicionados" value={adicionados.length} tone="pos" />
@@ -56,7 +56,7 @@ export function VersionDiff({ a, b }: { a?: TechSheetVersion; b?: TechSheetVersi
           <DiffLine key={`m${i}`} text={x} kind="eq" />
         ))}
         {removidos.length === 0 && adicionados.length === 0 && mantidos.length === 0 && (
-          <p className="text-[11px] text-muted-foreground">Sem alterações registradas.</p>
+          <p className="text-2xs text-muted-foreground">Sem alterações registradas.</p>
         )}
       </div>
 
@@ -89,13 +89,11 @@ function StructRows({ title, rows }: { title: string; rows: DiffRow[] }) {
   if (!rows.length) return null;
   return (
     <div className="space-y-1">
-      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-        {title}
-      </p>
+      <p className="text-2xs uppercase tracking-widest text-muted-foreground font-bold">{title}</p>
       {rows.map((r, i) => (
         <p
           key={`${r.kind}-${i}`}
-          className={`text-[11px] flex flex-wrap items-center gap-x-2 gap-y-0.5 ${
+          className={`text-2xs flex flex-wrap items-center gap-x-2 gap-y-0.5 ${
             r.kind === "add"
               ? "text-status-approved"
               : r.kind === "rem"
@@ -122,7 +120,7 @@ function SnapshotSection({ a, b }: { a: TechSheetVersion; b: TechSheetVersion })
       .filter(Boolean)
       .join(" e ");
     return (
-      <div className="rounded-md border border-dashed border-white/10 p-3 text-[11px] leading-relaxed text-muted-foreground">
+      <div className="rounded-md border border-dashed border-border p-3 text-2xs leading-relaxed text-muted-foreground">
         Sem instantâneo estrutural em <strong>{faltantes}</strong> — versões criadas antes de 15/10
         registram apenas o texto das alterações. Toda versão nova captura BOM/BOP/pré-custo ao
         nascer e ganha o comparativo numérico completo abaixo do texto.
@@ -130,12 +128,12 @@ function SnapshotSection({ a, b }: { a: TechSheetVersion; b: TechSheetVersion })
     );
   }
   return (
-    <div className="space-y-3 border-t border-white/5 pt-4">
+    <div className="space-y-3 border-t border-border/60 pt-4">
       <div className="flex items-center justify-between">
-        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-2">
+        <p className="text-2xs uppercase tracking-widest text-muted-foreground font-bold flex items-center gap-2">
           <Layers className="w-3 h-3 text-primary" /> Diff estrutural (instantâneo)
         </p>
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-2xs text-muted-foreground">
           Δ custo industrial{" "}
           <strong
             className={d.custoIndustrialDelta > 0 ? "text-status-rejected" : "text-status-approved"}
@@ -171,7 +169,7 @@ function SnapshotSection({ a, b }: { a: TechSheetVersion; b: TechSheetVersion })
         d.bop.changed.length +
         d.preCost.length ===
         0 && (
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-2xs text-muted-foreground">
           Instantâneos idênticos — nada mudou na estrutura.
         </p>
       )}
@@ -193,11 +191,11 @@ function Stat({
       ? "text-status-approved border-status-approved/30 bg-status-approved/5"
       : tone === "neg"
         ? "text-status-rejected border-status-rejected/30 bg-status-rejected/5"
-        : "text-muted-foreground border-white/10 bg-white/[0.02]";
+        : "text-muted-foreground border-border bg-muted/40";
   return (
     <div className={`rounded-md border p-2 ${color}`}>
       <p className="text-lg font-bold">{value}</p>
-      <p className="text-[10px] mt-0.5">{label}</p>
+      <p className="text-2xs mt-0.5">{label}</p>
     </div>
   );
 }
@@ -217,7 +215,7 @@ function DiffLine({ text, kind }: { text: string; kind: "add" | "rem" | "eq" }) 
             color: "text-status-rejected line-through opacity-80",
           }
         : {
-            bg: "bg-white/[0.02] border-white/5",
+            bg: "bg-muted/40 border-border/60",
             icon: <Equal className="w-3 h-3 text-muted-foreground" />,
             color: "text-muted-foreground",
           };
@@ -225,7 +223,7 @@ function DiffLine({ text, kind }: { text: string; kind: "add" | "rem" | "eq" }) 
   // Detecta "X → Y" ou "X -> Y"
   const m = text.match(/^(.*?)\s*(?:→|->)\s*(.*)$/);
   return (
-    <div className={`rounded-md border p-2 flex items-start gap-2 text-[11px] ${cfg.bg}`}>
+    <div className={`rounded-md border p-2 flex items-start gap-2 text-2xs ${cfg.bg}`}>
       <span className="mt-0.5">{cfg.icon}</span>
       {m ? (
         <div className="flex-1 flex items-center gap-2 flex-wrap">

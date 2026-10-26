@@ -86,14 +86,14 @@ function ReferencesPage() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Buscar…"
-                className="pl-9 bg-white/[0.03] text-[12px]"
+                className="pl-9 bg-muted/50 text-xs"
               />
             </div>
             <Select
               value={statusFilter}
               onValueChange={(v) => setStatusFilter(v as ReferenceStatus | "TODOS")}
             >
-              <SelectTrigger className="w-[180px] bg-white/[0.03] text-[12px]">
+              <SelectTrigger className="w-[180px] bg-muted/50 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -131,11 +131,11 @@ function ReferencesPage() {
         </div>
 
         {loading ? (
-          <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-10 text-center text-xs text-muted-foreground">
+          <div className="rounded-md border border-dashed border-border bg-muted/40 p-10 text-center text-xs text-muted-foreground">
             Carregando núcleo…
           </div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-10 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
+          <div className="rounded-md border border-dashed border-border bg-muted/40 p-10 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             Nenhuma referência ainda. Crie a primeira — ela virá a se conectar com ficha, piloto,
             lote e CAPA.
@@ -158,11 +158,11 @@ function ReferencesPage() {
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+                      <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
                         {r.code}
                       </p>
                       <p className="text-sm font-bold text-white truncate">{r.name}</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
+                      <p className="text-2xs text-muted-foreground mt-0.5 truncate">
                         {[r.collection_id, r.line, r.theme].filter(Boolean).join(" · ") ||
                           "sem coleção"}
                       </p>
@@ -171,8 +171,8 @@ function ReferencesPage() {
                       {REFERENCE_STATUS_LABEL[r.status]}
                     </Badge>
                   </div>
-                  <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
-                    <span className="rounded border border-white/10 bg-white/[0.03] px-1.5 py-0.5 uppercase tracking-wider">
+                  <div className="mt-3 flex items-center gap-2 text-2xs text-muted-foreground">
+                    <span className="rounded border border-border bg-muted/50 px-1.5 py-0.5 uppercase tracking-wider">
                       {r.priority}
                     </span>
                     {r.erp_product_id && (
@@ -189,7 +189,7 @@ function ReferencesPage() {
                       referenceId={r.id}
                       referenciaNome={`${r.code} · ${r.name}`}
                       trigger={
-                        <Button size="sm" variant="outline" className="h-7 text-[11px]">
+                        <Button size="sm" variant="outline" className="h-7 text-2xs">
                           <Plus className="mr-1 h-3 w-3" />
                           Novo piloto
                         </Button>
@@ -198,7 +198,7 @@ function ReferencesPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-7 text-[11px]"
+                      className="h-7 text-2xs"
                       onClick={() =>
                         openEntity({
                           type: "reference",

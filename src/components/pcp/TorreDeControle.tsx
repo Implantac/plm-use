@@ -113,7 +113,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
           <CardContent className="p-4 flex items-center gap-3">
             <TrendingDown className="h-5 w-5 text-status-progress" />
             <div className="flex-1">
-              <p className="text-[11px] uppercase tracking-wider text-status-progress/80">
+              <p className="text-2xs uppercase tracking-wider text-status-progress/80">
                 Gargalo identificado
               </p>
               <p className="text-sm font-bold text-white">
@@ -122,7 +122,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
             </div>
             <Badge
               variant="outline"
-              className="border-status-progress/40 text-status-progress text-[11px]"
+              className="border-status-progress/40 text-status-progress text-2xs"
             >
               Priorizar
             </Badge>
@@ -135,12 +135,12 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
         <Card className="glass-card rounded-lg">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
                 Lotes atrasados
               </h3>
               <Badge
                 variant="outline"
-                className="border-status-rejected/40 text-status-rejected text-[11px]"
+                className="border-status-rejected/40 text-status-rejected text-2xs"
               >
                 {atrasados.length}
               </Badge>
@@ -159,11 +159,11 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-status-rejected">
+                        <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-status-rejected">
                           {l.numero}
                         </p>
                         <p className="text-sm font-bold text-white">{l.grupo}</p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-2xs text-muted-foreground">
                           {l.colecao} • {l.responsavel}
                         </p>
                       </div>
@@ -171,12 +171,12 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
                         <p className="text-xs font-bold text-status-rejected">
                           {Math.abs(diasParaPrazo(l))}d atrasado
                         </p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-2xs text-muted-foreground">
                           {percentualLote(l)}% pronto
                         </p>
                       </div>
                     </div>
-                    <Progress value={percentualLote(l)} className="h-1 bg-white/5 mt-2" />
+                    <Progress value={percentualLote(l)} className="h-1 bg-muted/50 mt-2" />
                   </button>
                 ))}
               </div>
@@ -188,7 +188,7 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
         <Card className="glass-card rounded-lg">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
                 Carga por setor
               </h3>
               <TrendingUp className="h-4 w-4 text-primary" />
@@ -201,13 +201,13 @@ export function TorreDeControle({ lotes, onSelectLote }: Props) {
                 return (
                   <div key={s} className="flex items-center gap-3 text-xs">
                     <span className="w-24 truncate text-muted-foreground">{s}</span>
-                    <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                    <div className="flex-1 h-1.5 rounded-full bg-muted/50 overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-primary/60 to-primary"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="w-20 text-right font-bold text-white">
+                    <span className="w-20 text-right font-semibold text-white">
                       {c.pecasPendentes} pç
                     </span>
                     <span className="w-12 text-right text-muted-foreground">{c.lotes} lt</span>
@@ -246,12 +246,12 @@ function KPI({
   return (
     <Card className="glass-card rounded-lg">
       <CardContent className="p-3">
-        <div className="flex items-center gap-2 text-muted-foreground text-[11px] uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-muted-foreground text-2xs uppercase tracking-wider">
           {icon}
           {label}
         </div>
         <p className={`mt-1 text-2xl font-bold ${color}`}>{value}</p>
-        {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
+        {hint && <p className="text-2xs text-muted-foreground">{hint}</p>}
       </CardContent>
     </Card>
   );

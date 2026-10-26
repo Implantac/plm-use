@@ -159,8 +159,8 @@ export function OpKanban({ initialOpenId = null }: { initialOpenId?: string | nu
               {columns.map(([sector, cards]) => (
                 <div key={sector} className="w-64 space-y-2">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase tracking-wider">{sector}</h3>
-                    <Badge variant="outline" className="text-[11px]">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider">{sector}</h3>
+                    <Badge variant="outline" className="text-2xs">
                       {cards.reduce((a, c) => a + c.qty, 0)} pç
                     </Badge>
                   </div>
@@ -174,10 +174,7 @@ export function OpKanban({ initialOpenId = null }: { initialOpenId?: string | nu
                       >
                         <div className="flex justify-between items-start">
                           <p className="text-sm font-bold">{order.number}</p>
-                          <Badge
-                            variant={late ? "destructive" : "secondary"}
-                            className="text-[11px]"
-                          >
+                          <Badge variant={late ? "destructive" : "secondary"} className="text-2xs">
                             {late ? "Atrasada" : order.priority}
                           </Badge>
                         </div>
@@ -185,7 +182,7 @@ export function OpKanban({ initialOpenId = null }: { initialOpenId?: string | nu
                           {order.items.length} itens · {qty} pç nesta etapa
                         </p>
                         {order.planned_end && (
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="text-2xs text-muted-foreground">
                             Prazo{" "}
                             {new Date(order.planned_end + "T00:00").toLocaleDateString("pt-BR")}
                           </p>

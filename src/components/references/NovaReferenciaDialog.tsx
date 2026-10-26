@@ -160,7 +160,7 @@ export function NovaReferenciaDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-card max-h-[88dvh] overflow-y-auto border-white/10 sm:max-w-2xl">
+      <DialogContent className="glass-card max-h-[88dvh] overflow-y-auto border-border sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Nova referência</DialogTitle>
           <DialogDescription>
@@ -171,7 +171,7 @@ export function NovaReferenciaDialog({
 
         <div className="space-y-5">
           <section className="space-y-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               1 · Identificação
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -240,7 +240,7 @@ export function NovaReferenciaDialog({
           </section>
 
           <section className="space-y-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               2 · Coleção
             </p>
             <div className="grid gap-3 sm:grid-cols-4">
@@ -284,7 +284,7 @@ export function NovaReferenciaDialog({
           </section>
 
           <section className="space-y-3">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               3 · Ciclo de vida
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -331,13 +331,13 @@ export function NovaReferenciaDialog({
               </div>
             </div>
 
-            <label className="flex items-start gap-3 rounded-md border border-white/10 bg-white/[0.03] p-3">
+            <label className="flex items-start gap-3 rounded-md border border-border bg-muted/50 p-3">
               <Checkbox
                 checked={comPiloto}
                 onCheckedChange={(v) => setComPiloto(v === true)}
                 aria-label="Criar piloto rodada 1"
               />
-              <span className="text-[12px] leading-relaxed">
+              <span className="text-xs leading-relaxed">
                 <span className="flex items-center gap-1.5 font-semibold">
                   <Sparkles className="h-3.5 w-3.5 text-primary" />
                   Já abrir piloto rodada 1

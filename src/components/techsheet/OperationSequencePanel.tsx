@@ -64,25 +64,25 @@ export function OperationSequencePanel({ refAtual }: { refAtual: string }) {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-4 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Clock className="w-4 h-4 text-primary" /> Cronoanálise · SAM & Capacidade
         </h3>
-        <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+        <span className="text-2xs uppercase tracking-widest text-muted-foreground font-bold">
           Jornada {JORNADA_MIN}min · Efic. {Math.round(EFICIENCIA * 100)}%
         </span>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {cards.map((c) => (
-          <div key={c.label} className="p-4 rounded-md border border-white/10 bg-white/[0.02]">
+          <div key={c.label} className="p-4 rounded-md border border-border bg-muted/40">
             <div className="flex items-center gap-2 mb-2 text-primary">
               <c.icon className="w-3.5 h-3.5" />
-              <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground">
+              <span className="text-2xs uppercase tracking-widest font-bold text-muted-foreground">
                 {c.label}
               </span>
             </div>
             <p className="text-lg font-bold text-white">{c.value}</p>
-            <p className="text-[11px] text-muted-foreground mt-1">{c.detail}</p>
+            <p className="text-2xs text-muted-foreground mt-1">{c.detail}</p>
           </div>
         ))}
       </div>

@@ -64,7 +64,7 @@ export function EntityDrawer({
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-2xl border-l border-white/10 bg-popover text-white p-0 overflow-y-auto"
+        className="w-full sm:max-w-2xl border-l border-border bg-popover text-white p-0 overflow-y-auto"
       >
         {entity && <DrawerBody entity={entity} onClose={onClose} />}
       </SheetContent>
@@ -75,10 +75,10 @@ export function EntityDrawer({
 function DrawerBody({ entity, onClose }: { entity: EntityRef; onClose: () => void }) {
   return (
     <div className="flex flex-col h-full">
-      <SheetHeader className="p-5 border-b border-white/10">
+      <SheetHeader className="p-5 border-b border-border">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+            <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
               {ENTITY_LABEL[entity.type] ?? entity.type}
             </p>
             <SheetTitle className="text-xl text-white mt-1">
@@ -162,7 +162,7 @@ function ReferenceBody({ id }: { id: string }) {
 
   if (!row) {
     return (
-      <div className="rounded-md border border-dashed border-white/10 bg-white/[0.02] p-6 text-center text-xs text-muted-foreground">
+      <div className="rounded-md border border-dashed border-border bg-muted/40 p-6 text-center text-xs text-muted-foreground">
         {loadError
           ? "Não foi possível carregar esta referência. Verifique a conexão e tente novamente."
           : "Referência não encontrada."}
@@ -207,29 +207,29 @@ function ReferenceBody({ id }: { id: string }) {
 
   return (
     <Tabs value={tab} onValueChange={setTab}>
-      <TabsList className="w-full justify-start overflow-x-auto bg-white/[0.04] border border-white/10">
-        <TabsTrigger value="summary" className="text-[11px] gap-1">
+      <TabsList className="w-full justify-start overflow-x-auto bg-muted/60 border border-border">
+        <TabsTrigger value="summary" className="text-2xs gap-1">
           <Package className="h-3 w-3" /> Produto
         </TabsTrigger>
-        <TabsTrigger value="workflow" className="text-[11px] gap-1">
+        <TabsTrigger value="workflow" className="text-2xs gap-1">
           <GitBranch className="h-3 w-3" /> Workflow
         </TabsTrigger>
-        <TabsTrigger value="timeline" className="text-[11px] gap-1 relative">
+        <TabsTrigger value="timeline" className="text-2xs gap-1 relative">
           <History className="h-3 w-3" /> Timeline
           {newTimelineCount > 0 && (
-            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[11px] leading-none flex items-center justify-center animate-pulse">
+            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-2xs leading-none flex items-center justify-center animate-pulse">
               {newTimelineCount}
             </Badge>
           )}
         </TabsTrigger>
-        <TabsTrigger value="relations" className="text-[11px] gap-1">
+        <TabsTrigger value="relations" className="text-2xs gap-1">
           <Link2 className="h-3 w-3" /> Relações
         </TabsTrigger>
       </TabsList>
 
       <TabsContent value="summary" className="mt-4 space-y-5">
         <section className="grid gap-4 sm:grid-cols-[minmax(150px,0.75fr)_1.25fr]">
-          <div className="overflow-hidden rounded-md border border-white/10 bg-white/[0.03]">
+          <div className="overflow-hidden rounded-md border border-border bg-muted/50">
             {row.image_url ? (
               <OptimizedImage
                 src={row.image_url}
@@ -247,7 +247,7 @@ function ReferenceBody({ id }: { id: string }) {
           </div>
           <div className="space-y-4">
             <div>
-              <p className="text-[11px] font-semibold uppercase text-primary">{row.code}</p>
+              <p className="text-2xs font-semibold uppercase text-primary">{row.code}</p>
               <h2 className="mt-1 text-xl font-semibold text-white">{row.name}</h2>
               <Badge className="mt-2 bg-primary/15 text-primary border-primary/30">
                 {REFERENCE_STATUS_LABEL[row.status]}
@@ -292,7 +292,7 @@ function ReferenceBody({ id }: { id: string }) {
               {generatedImages.map((image, index) => (
                 <div
                   key={`${image.path}-${index}`}
-                  className="overflow-hidden rounded-md border border-white/10"
+                  className="overflow-hidden rounded-md border border-border"
                 >
                   <OptimizedImage
                     src={`storage://use-moda-assets/${image.path}`}
@@ -317,12 +317,12 @@ function ReferenceBody({ id }: { id: string }) {
             <h3 id="reference-lifecycle-title" className="text-sm font-semibold text-white">
               Ciclo de vida
             </h3>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-2xs text-muted-foreground">
               Etapa atual: {REFERENCE_STATUS_LABEL[row.status]}
             </span>
           </div>
           {row.status === "ARQUIVADA" ? (
-            <p className="rounded-md border border-white/10 bg-white/[0.02] p-3 text-xs text-muted-foreground">
+            <p className="rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
               Esta referência está arquivada e permanece disponível no histórico.
             </p>
           ) : (
@@ -342,7 +342,7 @@ function ReferenceBody({ id }: { id: string }) {
                           ? "border-primary bg-primary/15 text-primary"
                           : complete
                             ? "border-status-approved/50 bg-status-approved/10 text-status-approved"
-                            : "border-white/15 text-muted-foreground"
+                            : "border-border-strong/70 text-muted-foreground"
                       }`}
                     >
                       {complete ? (
@@ -352,7 +352,7 @@ function ReferenceBody({ id }: { id: string }) {
                       )}
                     </span>
                     <span
-                      className={`text-[11px] leading-tight ${current ? "text-primary" : "text-muted-foreground"}`}
+                      className={`text-2xs leading-tight ${current ? "text-primary" : "text-muted-foreground"}`}
                     >
                       {REFERENCE_STATUS_LABEL[status]}
                     </span>
@@ -363,7 +363,7 @@ function ReferenceBody({ id }: { id: string }) {
           )}
         </section>
 
-        <section className="space-y-3 border-t border-white/10 pt-4">
+        <section className="space-y-3 border-t border-border pt-4">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-sm font-semibold text-white">Próximo passo</h3>
@@ -387,7 +387,7 @@ function ReferenceBody({ id }: { id: string }) {
           )}
         </section>
 
-        <section className="rounded-md border border-dashed border-white/15 bg-white/[0.02] p-4">
+        <section className="rounded-md border border-dashed border-border-strong/70 bg-muted/40 p-4">
           <h3 className="text-sm font-medium text-white">Documentos e ficha técnica</h3>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             Os anexos da referência ainda não estão conectados a este workspace. A rota de ficha
@@ -397,8 +397,8 @@ function ReferenceBody({ id }: { id: string }) {
       </TabsContent>
 
       <TabsContent value="workflow" className="mt-4">
-        <div className="rounded-md border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground mb-3">
+        <div className="rounded-md border border-border bg-muted/50 p-4">
+          <p className="text-2xs uppercase tracking-[0.05em] text-muted-foreground mb-3">
             Próximas transições permitidas
           </p>
           {next.length === 0 ? (
@@ -449,19 +449,19 @@ function GenericBody({ entity }: { entity: EntityRef }) {
 
   return (
     <Tabs value={tab} onValueChange={setTab}>
-      <TabsList className="bg-white/[0.04] border border-white/10">
-        <TabsTrigger value="timeline" className="text-[11px] gap-1 relative">
+      <TabsList className="bg-muted/60 border border-border">
+        <TabsTrigger value="timeline" className="text-2xs gap-1 relative">
           <History className="h-3 w-3" /> Timeline
           {newTimelineCount > 0 && (
-            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[11px] leading-none flex items-center justify-center animate-pulse">
+            <Badge className="ml-1 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-2xs leading-none flex items-center justify-center animate-pulse">
               {newTimelineCount}
             </Badge>
           )}
         </TabsTrigger>
-        <TabsTrigger value="relations" className="text-[11px] gap-1">
+        <TabsTrigger value="relations" className="text-2xs gap-1">
           <Link2 className="h-3 w-3" /> Relações
         </TabsTrigger>
-        <TabsTrigger value="raw" className="text-[11px] gap-1">
+        <TabsTrigger value="raw" className="text-2xs gap-1">
           <Layers className="h-3 w-3" /> ID
         </TabsTrigger>
       </TabsList>
@@ -477,7 +477,7 @@ function GenericBody({ entity }: { entity: EntityRef }) {
         <EntityRelations entityType={entity.type} entityId={entity.id} />
       </TabsContent>
       <TabsContent value="raw" className="mt-4">
-        <div className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-xs font-mono text-muted-foreground break-all">
+        <div className="rounded-md border border-border bg-muted/50 p-3 text-xs font-mono text-muted-foreground break-all">
           {entity.type} · {entity.id}
         </div>
       </TabsContent>
@@ -487,9 +487,9 @@ function GenericBody({ entity }: { entity: EntityRef }) {
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-white/10 bg-white/[0.03] p-2.5">
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="text-[12px] text-white truncate">{value}</p>
+    <div className="rounded-md border border-border bg-muted/50 p-2.5">
+      <p className="text-2xs uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="text-xs text-white truncate">{value}</p>
     </div>
   );
 }

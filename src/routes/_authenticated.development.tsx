@@ -374,7 +374,7 @@ function DevelopmentPage() {
         {columns.map((col, i) => (
           <div key={i} className="min-w-73 flex flex-col gap-4">
             <div className="flex items-center justify-between px-1 mb-1">
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.04em] text-white flex items-center gap-3">
+              <h3 className="text-2xs font-semibold uppercase tracking-[0.04em] text-white flex items-center gap-3">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 {col.name}
                 <span className="text-muted-foreground ml-2">({col.tasks.length})</span>
@@ -388,7 +388,7 @@ function DevelopmentPage() {
               className={`flex-1 space-y-4 rounded-md border border-transparent p-1 transition-all duration-200 ${
                 dragOverColumn === col.name && draggedTask
                   ? "border-primary/60 bg-primary/5 ring-2 ring-primary/40"
-                  : "border-white/5"
+                  : "border-border/60"
               }`}
               onDragOver={(e) => onDragOverColumn(col.name as ColumnName, e)}
               onDrop={(e) => onDropColumn(col.name as ColumnName, e)}
@@ -404,7 +404,7 @@ function DevelopmentPage() {
                     draggable
                     onDragStart={(e) => onDragStartTask(task, col.name as ColumnName, e)}
                     onDragEnd={onDragEndTask}
-                    className={`glass-card rounded-lg border-white/5 hover:border-primary/30 transition-all group relative ${
+                    className={`glass-card rounded-lg border-border/60 hover:border-primary/30 transition-all group relative ${
                       isDragging ? "cursor-grabbing" : "cursor-grab"
                     } ${draggedTask?.task.id === task.id ? "opacity-70 scale-[0.98]" : "opacity-100"}`}
                   >
@@ -428,45 +428,45 @@ function DevelopmentPage() {
                       )}
                       <div className="p-4 space-y-4">
                         <div className="flex justify-between items-start">
-                          <span className="text-[11px] font-bold text-muted-foreground bg-white/5 px-2 py-0.5 rounded uppercase tracking-widest">
+                          <span className="text-2xs font-bold text-muted-foreground bg-muted/50 px-2 py-0.5 rounded uppercase tracking-widest">
                             {task.id}
                           </span>
                           <span
-                            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${task.priority === "Urgente" ? "bg-status-rejected/10 text-status-rejected" : "bg-primary/10 text-primary"}`}
+                            className={`text-2xs font-semibold uppercase px-2 py-0.5 rounded ${task.priority === "Urgente" ? "bg-status-rejected/10 text-status-rejected" : "bg-primary/10 text-primary"}`}
                           >
                             {task.priority}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 mb-2">
                           <TrendingUp className="w-3 h-3 text-status-approved" />
-                          <span className="text-[10px] font-black uppercase text-status-approved tracking-tighter">
+                          <span className="text-2xs font-black uppercase text-status-approved tracking-tighter">
                             Probabilidade: 87%
                           </span>
                         </div>
                         <h4 className="text-sm font-bold text-white group-hover:text-primary transition-colors">
                           {task.title}
                         </h4>
-                        <p className="text-[11px] text-muted-foreground uppercase tracking-wider">
+                        <p className="text-2xs text-muted-foreground uppercase tracking-wider">
                           {task.category}
                         </p>
 
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                        <div className="flex items-center justify-between pt-4 border-t border-border/60">
                           <div className="flex items-center gap-3">
-                            <Avatar className="w-6 h-6 border border-white/10">
+                            <Avatar className="w-6 h-6 border border-border">
                               <AvatarImage src={`https://i.pravatar.cc/100?u=${task.designer}`} />
-                              <AvatarFallback className="text-[10px] font-bold">
+                              <AvatarFallback className="text-2xs font-bold">
                                 {task.designer[0]}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+                            <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest">
                               {task.designer}
                             </span>
                           </div>
                           <div className="flex items-center gap-3 text-muted-foreground">
-                            <span className="flex items-center gap-1 text-[11px] font-bold">
+                            <span className="flex items-center gap-1 text-2xs font-bold">
                               <Paperclip className="w-3 h-3" /> 2
                             </span>
-                            <span className="flex items-center gap-1 text-[11px] font-bold">
+                            <span className="flex items-center gap-1 text-2xs font-bold">
                               <MessageSquare className="w-3 h-3" /> 4
                             </span>
                           </div>
@@ -482,54 +482,54 @@ function DevelopmentPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingTask ? "Editar Produto" : "Novo Produto"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Título do Modelo
               </Label>
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Blusa Verão Amalfi"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Categoria
                 </Label>
                 <Input
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Top"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Designer
                 </Label>
                 <Input
                   value={formData.designer}
                   onChange={(e) => setFormData({ ...formData, designer: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Julia"
                 />
               </div>
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Salvar no Kanban
             </Button>
           </DialogFooter>
@@ -603,12 +603,12 @@ function CentroDeDesenvolvimento() {
     <section className="mb-8 space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.05em] text-primary">
+          <p className="text-2xs uppercase tracking-[0.05em] text-primary">
             Centro de Desenvolvimento
           </p>
           <h2 className="text-lg font-bold text-white">Visão única da coleção</h2>
         </div>
-        <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+        <p className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
           {filtered.length} {filtered.length === 1 ? "referência" : "referências"}
         </p>
       </div>
@@ -622,17 +622,17 @@ function CentroDeDesenvolvimento() {
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.04em] transition ${
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-2xs uppercase tracking-[0.04em] transition ${
                 active
                   ? "border-primary/60 bg-primary/15 text-white"
-                  : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-white"
+                  : "border-border bg-muted/50 text-muted-foreground hover:border-border-strong/70 hover:text-white"
               }`}
             >
               <Icon className="h-3 w-3" />
               {f.label}
               <span
-                className={`rounded-full px-1.5 text-[11px] ${
-                  active ? "bg-white/15 text-white" : "bg-white/10 text-muted-foreground"
+                className={`rounded-full px-1.5 text-2xs ${
+                  active ? "bg-muted text-white" : "bg-muted text-muted-foreground"
                 }`}
               >
                 {count}
@@ -664,29 +664,29 @@ function LifecycleCard({ lc }: { lc: ReferenceLifecycle }) {
     <Link
       to="/tech-sheet"
       search={{ ref: lc.ref }}
-      className="block rounded-lg border border-white/10 bg-white/[0.03] p-4 hover:border-primary/40 transition"
+      className="block rounded-lg border border-border bg-muted/50 p-4 hover:border-primary/40 transition"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.05em] text-primary">{lc.ref}</p>
+          <p className="text-2xs uppercase tracking-[0.05em] text-primary">{lc.ref}</p>
           <p className="text-sm font-bold text-white mt-0.5">{lc.nome}</p>
-          <p className="text-[11px] text-muted-foreground mt-1">
+          <p className="text-2xs text-muted-foreground mt-1">
             {lc.colecao ?? "—"} · {lc.designer ?? "—"}
           </p>
         </div>
         {atrasada && (
-          <span className="text-[11px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-status-rejected/40 bg-status-rejected/10 text-status-rejected">
+          <span className="text-2xs uppercase tracking-wider px-2 py-0.5 rounded-full border border-status-rejected/40 bg-status-rejected/10 text-status-rejected">
             Atrasada
           </span>
         )}
       </div>
 
       <div className="mt-3 space-y-1.5">
-        <div className="flex justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
+        <div className="flex justify-between text-2xs uppercase tracking-wider text-muted-foreground">
           <span>{stage?.label ?? "—"}</span>
           <span className="text-white">{pct}%</span>
         </div>
-        <div className="h-1 w-full rounded-full bg-white/10 overflow-hidden">
+        <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-primary/60 to-primary"
             style={{ width: `${pct}%` }}

@@ -29,7 +29,7 @@ export function ActivityFeedButton() {
       <PopoverTrigger asChild>
         <button
           aria-label="Atividade do time"
-          className="relative w-10 h-10 rounded-md bg-white/5 border border-white/5 hover:bg-white/10 transition-all flex items-center justify-center group"
+          className="relative w-10 h-10 rounded-md bg-muted/50 border border-border/60 hover:bg-accent transition-all flex items-center justify-center group"
         >
           <Activity className="w-4 h-4 text-muted-foreground group-hover:text-white transition-colors" />
           {items.length > 0 && (
@@ -39,11 +39,11 @@ export function ActivityFeedButton() {
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[380px] p-0 bg-background/95 backdrop-blur-xl border-white/10"
+        className="w-[380px] p-0 bg-background/95 backdrop-blur-xl border-border"
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/60">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground font-bold">
+            <div className="text-2xs uppercase tracking-[0.05em] text-muted-foreground font-bold">
               Atividade ao vivo
             </div>
             <div className="text-xs text-white mt-0.5">{items.length} eventos recentes</div>
@@ -57,31 +57,31 @@ export function ActivityFeedButton() {
           </button>
         </div>
         <ScrollArea className="max-h-[440px]">
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-border/70">
             {loading && (
-              <div className="px-4 py-6 text-center text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+              <div className="px-4 py-6 text-center text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                 Carregando...
               </div>
             )}
             {!loading && items.length === 0 && (
-              <div className="px-4 py-10 text-center text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+              <div className="px-4 py-10 text-center text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                 Nenhuma atividade ainda
               </div>
             )}
             {items.map((it) => {
               const color =
-                actionColor[it.action] ?? "text-muted-foreground bg-white/5 border-white/10";
+                actionColor[it.action] ?? "text-muted-foreground bg-muted/50 border-border";
               return (
-                <div key={it.id} className="px-4 py-3 hover:bg-white/[0.03] transition-colors">
+                <div key={it.id} className="px-4 py-3 hover:bg-accent/60 transition-colors">
                   <div className="flex items-start gap-3">
                     <span
-                      className={`shrink-0 px-2 py-0.5 rounded text-[10px] uppercase tracking-[0.04em] font-bold border ${color}`}
+                      className={`shrink-0 px-2 py-0.5 rounded text-2xs uppercase tracking-[0.04em] font-bold border ${color}`}
                     >
                       {it.module}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[12px] text-white leading-snug">{it.message}</p>
-                      <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
+                      <p className="text-xs text-white leading-snug">{it.message}</p>
+                      <div className="flex items-center gap-2 mt-1 text-2xs text-muted-foreground">
                         <span className="font-medium text-white/70">{it.user_name}</span>
                         <span>·</span>
                         <span>há {timeAgo(it.created_at)}</span>

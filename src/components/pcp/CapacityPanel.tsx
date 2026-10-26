@@ -66,36 +66,38 @@ export function CapacityPanel({ lotes: injected }: { lotes?: Lote[] } = {}) {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-6 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Gauge className="w-4 h-4 text-primary" /> Capacidade vs Demanda + Gantt
         </h3>
-        <span className="text-[11px] uppercase text-muted-foreground tracking-widest">
+        <span className="text-2xs uppercase text-muted-foreground tracking-widest">
           Simulação · pç/dia
         </span>
       </div>
 
       <div>
-        <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
+        <h4 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
           <BarChart3 className="w-3.5 h-3.5 text-primary" /> Ocupação por setor
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {data.map((d) => (
-            <div key={d.setor} className="p-3 rounded-md border border-white/10 bg-white/[0.02]">
-              <div className="flex justify-between text-[11px] mb-2">
-                <span className="text-white font-bold uppercase tracking-widest">{d.setor}</span>
+            <div key={d.setor} className="p-3 rounded-md border border-border bg-muted/40">
+              <div className="flex justify-between text-2xs mb-2">
+                <span className="text-white font-semibold uppercase tracking-widest">
+                  {d.setor}
+                </span>
                 <span
                   className={`font-bold ${d.ocupacao > 100 ? "text-status-rejected" : d.ocupacao > 80 ? "text-status-progress" : "text-status-approved"}`}
                 >
                   {d.ocupacao}%
                 </span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-muted/50 overflow-hidden">
                 <div
                   className={`h-full ${d.ocupacao > 100 ? "bg-status-rejected/70" : d.ocupacao > 80 ? "bg-status-progress/70" : "bg-status-approved/70"}`}
                   style={{ width: `${Math.min(d.ocupacao, 100)}%` }}
                 />
               </div>
-              <p className="mt-2 text-[11px] text-muted-foreground uppercase tracking-widest">
+              <p className="mt-2 text-2xs text-muted-foreground uppercase tracking-widest">
                 {d.demanda} pç · {d.capDia}/dia · {d.diasNecessarios}d
               </p>
             </div>
@@ -104,13 +106,13 @@ export function CapacityPanel({ lotes: injected }: { lotes?: Lote[] } = {}) {
       </div>
 
       <div>
-        <h4 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
+        <h4 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2 mb-3">
           <CalendarRange className="w-3.5 h-3.5 text-primary" /> Gantt · planejado vs real
         </h4>
         <div className="space-y-2">
           {gantt.map((g) => (
-            <div key={g.lote} className="p-3 rounded-md border border-white/5 bg-white/[0.02]">
-              <div className="flex justify-between text-[11px] mb-2">
+            <div key={g.lote} className="p-3 rounded-md border border-border/60 bg-muted/40">
+              <div className="flex justify-between text-2xs mb-2">
                 <span className="text-white font-bold">
                   {g.lote} <span className="text-muted-foreground font-normal">· {g.grupo}</span>
                 </span>
@@ -118,17 +120,14 @@ export function CapacityPanel({ lotes: injected }: { lotes?: Lote[] } = {}) {
                   {g.ini} → {g.fim}
                 </span>
               </div>
-              <div className="relative h-3 rounded-md bg-white/5 overflow-hidden">
-                <div
-                  className="absolute inset-y-0 bg-white/10"
-                  style={{ width: `${g.progresso}%` }}
-                />
+              <div className="relative h-3 rounded-md bg-muted/50 overflow-hidden">
+                <div className="absolute inset-y-0 bg-muted" style={{ width: `${g.progresso}%` }} />
                 <div
                   className={`absolute inset-y-0 ${g.atraso ? "bg-status-rejected/60" : "bg-primary/70"}`}
                   style={{ width: `${g.real}%` }}
                 />
               </div>
-              <div className="flex justify-between text-[11px] mt-1 uppercase tracking-widest">
+              <div className="flex justify-between text-2xs mt-1 uppercase tracking-widest">
                 <span className="text-muted-foreground">Tempo: {g.progresso.toFixed(0)}%</span>
                 <span
                   className={g.atraso ? "text-status-rejected font-bold" : "text-primary font-bold"}

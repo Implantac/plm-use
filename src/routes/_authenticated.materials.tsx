@@ -172,11 +172,11 @@ function MaterialsPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-white truncate">{m.name}</p>
-                    <p className="text-[11px] font-mono text-muted-foreground mt-0.5">
+                    <p className="text-2xs font-mono text-muted-foreground mt-0.5">
                       {m.sku || "sem SKU"} · {m.supplier || "fornecedor não informado"}
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full border border-white/15 px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+                  <span className="shrink-0 rounded-full border border-border-strong/70 px-2 py-0.5 text-2xs uppercase tracking-widest text-muted-foreground">
                     {m.tipo}
                   </span>
                 </div>
@@ -186,7 +186,7 @@ function MaterialsPage() {
                 <div className="mt-auto flex items-end justify-between">
                   <p className="text-lg font-bold text-white">
                     {brl(m.unitCost)}
-                    <span className="ml-1 text-[11px] font-normal text-muted-foreground">
+                    <span className="ml-1 text-2xs font-normal text-muted-foreground">
                       /{m.unit}
                     </span>
                   </p>
@@ -236,7 +236,7 @@ function MaterialsPage() {
             <label className="text-xs text-muted-foreground">
               Tipo
               <select
-                className="mt-1 h-9 w-full rounded-md border border-white/15 bg-white/5 px-2 text-sm text-white"
+                className="mt-1 h-9 w-full rounded-md border border-border-strong/70 bg-muted/50 px-2 text-sm text-white"
                 value={draft.tipo}
                 onChange={(e) => setDraft({ ...draft, tipo: e.target.value as MaterialTipo })}
               >

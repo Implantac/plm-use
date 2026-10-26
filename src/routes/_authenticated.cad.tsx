@@ -45,30 +45,30 @@ function CadPage() {
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6">
         <div className="space-y-6">
           <Card className="glass-card rounded-lg overflow-hidden">
-            <CardHeader className="p-5 border-b border-white/5 flex flex-row items-center justify-between">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+            <CardHeader className="p-5 border-b border-border/60 flex flex-row items-center justify-between">
+              <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                 Visualizador técnico interno
               </CardTitle>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="text-[11px] tracking-[0.04em]"
+                  className="text-2xs tracking-[0.04em]"
                   disabled
                   title="A API de importação do seu CAD ainda não está conectada — roadmap do módulo (ver integrações acima)"
                 >
-                  <Upload className="mr-2 h-4 w-4" /> Importar
+                  <Upload className="h-4 w-4" /> Importar
                 </Button>
                 <Button
-                  className="text-[11px] tracking-[0.04em]"
+                  className="text-2xs tracking-[0.04em]"
                   disabled
                   title="A API de exportação do seu CAD ainda não está conectada — roadmap do módulo (ver integrações acima)"
                 >
-                  <Download className="mr-2 h-4 w-4" /> Exportar
+                  <Download className="h-4 w-4" /> Exportar
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="p-5">
-              <div className="relative min-h-[520px] rounded-lg border border-white/10 bg-black/30 overflow-hidden">
+              <div className="relative min-h-[520px] rounded-lg border border-border bg-black/30 overflow-hidden">
                 <div className="absolute inset-0 bg-grid-white opacity-60" />
                 <div className="absolute inset-8 rounded-lg border border-primary/20 bg-primary/[0.035]" />
                 <div className="absolute left-1/2 top-1/2 h-[380px] w-[240px] -translate-x-1/2 -translate-y-1/2 rounded-t-[80px] rounded-b-lg border-2 border-primary/60 bg-primary/10 shadow-[var(--elev-1)]" />
@@ -82,9 +82,9 @@ function CadPage() {
                   ].map((item) => (
                     <div
                       key={item.label}
-                      className="rounded-md border border-white/10 bg-black/50 p-3 backdrop-blur"
+                      className="rounded-md border border-border bg-black/50 p-3 backdrop-blur"
                     >
-                      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                         {item.label}
                       </p>
                       <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
@@ -96,33 +96,33 @@ function CadPage() {
           </Card>
 
           <Card className="glass-card rounded-lg overflow-hidden">
-            <CardHeader className="p-5 border-b border-white/5">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+            <CardHeader className="p-5 border-b border-border/60">
+              <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                 Arquivos técnicos versionados
               </CardTitle>
             </CardHeader>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-left">
-                <thead className="border-b border-white/5 bg-white/5">
+                <thead className="border-b border-border/60 bg-muted/50">
                   <tr>
                     {["Arquivo", "Formato", "Versão", "Status", "Ações"].map((heading) => (
                       <th
                         key={heading}
-                        className="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground"
+                        className="px-5 py-4 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground"
                       >
                         {heading}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border/70">
                   {files.map((file) => (
-                    <tr key={file.name} className="hover:bg-white/[0.025]">
+                    <tr key={file.name} className="hover:bg-accent/60">
                       <td className="px-5 py-4 text-sm font-bold text-white">{file.name}</td>
                       <td className="px-5 py-4 text-xs text-primary font-bold">{file.format}</td>
                       <td className="px-5 py-4 text-xs text-muted-foreground">{file.version}</td>
                       <td className="px-5 py-4">
-                        <span className="rounded-md bg-status-approved/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.04em] text-status-approved">
+                        <span className="rounded-md bg-status-approved/10 px-2.5 py-1 text-2xs font-semibold uppercase tracking-[0.04em] text-status-approved">
                           {file.status}
                         </span>
                       </td>
@@ -154,8 +154,8 @@ function CadPage() {
 
         <div className="space-y-6">
           <Card className="glass-card rounded-lg">
-            <CardHeader className="p-5 border-b border-white/5">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+            <CardHeader className="p-5 border-b border-border/60">
+              <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                 Integrações nativas
               </CardTitle>
             </CardHeader>
@@ -163,14 +163,14 @@ function CadPage() {
               {integrations.map((integration) => (
                 <div
                   key={integration.name}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-4"
+                  className="rounded-md border border-border bg-muted/60 p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+                      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-white">
                         {integration.name}
                       </p>
-                      <p className="mt-1 text-[11px] text-muted-foreground">{integration.mode}</p>
+                      <p className="mt-1 text-2xs text-muted-foreground">{integration.mode}</p>
                     </div>
                     <CheckCircle2
                       className={`h-4 w-4 ${integration.status === "Conectado" ? "text-status-approved" : "text-primary"}`}
@@ -183,7 +183,7 @@ function CadPage() {
 
           <Card className="glass-card rounded-lg border-primary/20 bg-primary/[0.025]">
             <CardContent className="p-5">
-              <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
+              <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
                 <PenTool className="h-4 w-4" />
                 Preview instantâneo
               </p>
@@ -198,11 +198,11 @@ function CadPage() {
                   { label: "Risco de divergência", value: 18 },
                 ].map((metric) => (
                   <div key={metric.label}>
-                    <div className="flex justify-between text-[11px] uppercase tracking-[0.04em] text-muted-foreground">
+                    <div className="flex justify-between text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                       <span>{metric.label}</span>
                       <span>{metric.value}%</span>
                     </div>
-                    <Progress value={metric.value} className="mt-2 h-1.5 bg-white/10" />
+                    <Progress value={metric.value} className="mt-2 h-1.5 bg-muted" />
                   </div>
                 ))}
               </div>
@@ -214,10 +214,10 @@ function CadPage() {
               {["DXF", "PLT", "PDF", "SVG", "AI", "CDR"].map((format) => (
                 <div
                   key={format}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-3 text-center"
+                  className="rounded-md border border-border bg-muted/60 p-3 text-center"
                 >
                   <FileCode2 className="mx-auto h-4 w-4 text-primary" />
-                  <p className="mt-2 text-[11px] font-bold text-white">{format}</p>
+                  <p className="mt-2 text-2xs font-bold text-white">{format}</p>
                 </div>
               ))}
             </CardContent>

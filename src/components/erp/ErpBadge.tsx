@@ -11,7 +11,7 @@ export function ErpBadge(props: Props) {
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] uppercase tracking-wider text-muted-foreground hover:border-primary/40 hover:text-white transition cursor-help">
+          <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/60 px-2 py-0.5 text-2xs uppercase tracking-wider text-muted-foreground hover:border-primary/40 hover:text-white transition cursor-help">
             <ExternalLink className="h-2.5 w-2.5" />
             {props.kind === "product" ? (
               <ProductLabel id={props.id} />
@@ -46,7 +46,7 @@ function ProductTip({ id }: { id: string }) {
       <p className="text-muted-foreground">
         SKU {data.sku} · {data.category ?? "—"}
       </p>
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+      <p className="text-2xs uppercase tracking-wider text-muted-foreground">
         Fonte: ERP (leitura)
       </p>
     </div>
@@ -71,7 +71,7 @@ function SupplierTip({ id }: { id: string }) {
       <p className="text-muted-foreground">
         {data.category ?? "—"} · lead {data.lead_time_days ?? "?"}d · {data.rating ?? "?"}/5
       </p>
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+      <p className="text-2xs uppercase tracking-wider text-muted-foreground">
         Fonte: ERP (leitura)
       </p>
     </div>

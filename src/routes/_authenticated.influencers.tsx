@@ -108,7 +108,7 @@ function InfluencersPage() {
                         <p className="text-sm font-bold text-white">{i.nome}</p>
                         <Badge
                           variant="outline"
-                          className="text-[11px] border-primary/40 text-primary"
+                          className="text-2xs border-primary/40 text-primary"
                         >
                           {i.perfil}
                         </Badge>
@@ -117,17 +117,17 @@ function InfluencersPage() {
                         <Instagram className="h-3 w-3" /> {i.handle} •
                         <MapPin className="h-3 w-3" /> {i.uf} • {i.segmento}
                       </p>
-                      <p className="text-[11px] text-muted-foreground mt-1">
+                      <p className="text-2xs text-muted-foreground mt-1">
                         {(i.seguidores / 1000).toFixed(0)}k seguidores • R${" "}
                         {i.custoMedio.toLocaleString("pt-BR")} médio/envio
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                      <p className="text-2xs uppercase tracking-wider text-muted-foreground">
                         Vendas geradas
                       </p>
                       <p className="text-2xl font-bold text-status-approved">{i.vendasGeradas}</p>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-2xs text-muted-foreground">
                         {i.envios.length} envios • {eng.toFixed(1)}% eng
                       </p>
                     </div>
@@ -141,7 +141,7 @@ function InfluencersPage() {
         <div className="space-y-3">
           <Card className="glass-card rounded-lg">
             <CardContent className="p-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-white mb-3 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-primary" />
                 Heat Map Brasil
               </h3>
@@ -152,18 +152,18 @@ function InfluencersPage() {
                   return (
                     <div key={r} className="flex items-center gap-3 text-xs">
                       <span className="w-24 truncate text-muted-foreground">{r}</span>
-                      <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+                      <div className="flex-1 h-2 rounded-full bg-muted/50 overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-primary/40 to-primary"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
-                      <span className="w-12 text-right font-bold text-white">{v}</span>
+                      <span className="w-12 text-right font-semibold text-white">{v}</span>
                     </div>
                   );
                 })}
               </div>
-              <p className="text-[11px] text-muted-foreground mt-3">
+              <p className="text-2xs text-muted-foreground mt-3">
                 Concentração de vendas atribuídas a creators por macro-região.
               </p>
             </CardContent>
@@ -171,7 +171,7 @@ function InfluencersPage() {
 
           <Card className="glass-card rounded-lg border-primary/20">
             <CardContent className="p-4">
-              <p className="text-[11px] uppercase tracking-wider text-primary mb-1 flex items-center gap-1">
+              <p className="text-2xs uppercase tracking-wider text-primary mb-1 flex items-center gap-1">
                 <Heart className="h-3 w-3" /> Investimento total
               </p>
               <p className="text-2xl font-bold text-white">
@@ -193,11 +193,11 @@ function InfluencersPage() {
 
       {/* Drawer influencer */}
       <Dialog open={!!sel} onOpenChange={(o) => !o && setSel(null)}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white max-w-2xl">
+        <DialogContent className="glass-card border-border bg-popover text-white max-w-2xl">
           {sel && (
             <>
               <DialogHeader>
-                <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+                <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
                   {sel.handle}
                 </p>
                 <DialogTitle className="text-xl">{sel.nome}</DialogTitle>
@@ -207,7 +207,7 @@ function InfluencersPage() {
               </DialogHeader>
 
               <div className="flex justify-between items-center mt-2">
-                <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <p className="text-2xs uppercase tracking-wider text-muted-foreground">
                   Histórico de envios ({sel.envios.length})
                 </p>
                 <Button
@@ -224,39 +224,37 @@ function InfluencersPage() {
                 {sel.envios.map((e) => (
                   <div
                     key={e.id}
-                    className="rounded-md border border-white/10 bg-white/[0.03] p-3 flex items-center justify-between gap-3"
+                    className="rounded-md border border-border bg-muted/50 p-3 flex items-center justify-between gap-3"
                   >
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+                      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
                         {e.ref}
                       </p>
                       <p className="text-sm font-bold text-white flex items-center gap-2">
                         <Package className="h-3 w-3 text-muted-foreground" />
                         {e.nome}
                       </p>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-2xs text-muted-foreground">
                         {new Date(e.data).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="text-right">
                       <Badge
                         variant="outline"
-                        className={`text-[11px] ${
+                        className={`text-2xs ${
                           e.status === "Engajou"
                             ? "border-status-approved/40 text-status-approved"
                             : e.status === "Postou"
                               ? "border-primary/40 text-primary"
                               : e.status === "Pendente"
                                 ? "border-status-progress/40 text-status-progress"
-                                : "border-white/20"
+                                : "border-border-strong/70"
                         }`}
                       >
                         {e.status}
                       </Badge>
                       {e.engajamento && (
-                        <p className="text-[11px] text-status-approved mt-1">
-                          {e.engajamento}% eng
-                        </p>
+                        <p className="text-2xs text-status-approved mt-1">{e.engajamento}% eng</p>
                       )}
                     </div>
                   </div>
@@ -264,22 +262,20 @@ function InfluencersPage() {
               </div>
 
               <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-                <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                    Vendas
-                  </p>
+                <div className="rounded-md bg-muted/50 p-2">
+                  <p className="text-2xs uppercase tracking-wider text-muted-foreground">Vendas</p>
                   <p className="text-lg font-bold text-status-approved">{sel.vendasGeradas}</p>
                 </div>
-                <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <div className="rounded-md bg-muted/50 p-2">
+                  <p className="text-2xs uppercase tracking-wider text-muted-foreground">
                     Custo médio
                   </p>
                   <p className="text-lg font-bold text-white">
                     R$ {sel.custoMedio.toLocaleString("pt-BR")}
                   </p>
                 </div>
-                <div className="rounded-md bg-white/[0.03] p-2">
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <div className="rounded-md bg-muted/50 p-2">
+                  <p className="text-2xs uppercase tracking-wider text-muted-foreground">
                     Conversão
                   </p>
                   <p className="text-lg font-bold text-primary">
@@ -294,16 +290,13 @@ function InfluencersPage() {
 
       {/* Modal envio */}
       <Dialog open={envioOpen} onOpenChange={setEnvioOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white max-w-md">
+        <DialogContent className="glass-card border-border bg-popover text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg">Registrar envio para {sel?.nome}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 mt-2">
             <div>
-              <Label
-                className="text-[11px] uppercase tracking-wider text-muted-foreground"
-                required
-              >
+              <Label className="text-2xs uppercase tracking-wider text-muted-foreground" required>
                 Referência
               </Label>
               <Input
@@ -313,16 +306,13 @@ function InfluencersPage() {
                   if (e.target.value.trim()) setEnvioErrors((p) => ({ ...p, ref: undefined }));
                 }}
                 placeholder="ex: VT302"
-                className="bg-white/[0.04] text-white"
+                className="bg-muted/60 text-white"
                 aria-invalid={!!envioErrors.ref}
               />
               {envioErrors.ref && <FieldMessage variant="error">{envioErrors.ref}</FieldMessage>}
             </div>
             <div>
-              <Label
-                className="text-[11px] uppercase tracking-wider text-muted-foreground"
-                required
-              >
+              <Label className="text-2xs uppercase tracking-wider text-muted-foreground" required>
                 Nome da peça
               </Label>
               <Input
@@ -332,7 +322,7 @@ function InfluencersPage() {
                   if (e.target.value.trim()) setEnvioErrors((p) => ({ ...p, nome: undefined }));
                 }}
                 placeholder="ex: Vestido Midi Toscana"
-                className="bg-white/[0.04] text-white"
+                className="bg-muted/60 text-white"
                 aria-invalid={!!envioErrors.nome}
               />
               {envioErrors.nome && <FieldMessage variant="error">{envioErrors.nome}</FieldMessage>}

@@ -173,14 +173,14 @@ function AIAgentsPage() {
                 className={`w-full text-left rounded-lg border p-3 transition ${
                   active
                     ? "border-primary/50 bg-primary/10"
-                    : "border-white/10 bg-white/[0.03] hover:border-white/25"
+                    : "border-border bg-muted/50 hover:border-border-strong/70"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <Ai className={`h-4 w-4 ${AGENTS[id].color}`} />
                   <p className="text-sm font-bold text-white">{AGENTS[id].label}</p>
                 </div>
-                <p className="text-[11px] text-muted-foreground mt-1">
+                <p className="text-2xs text-muted-foreground mt-1">
                   {id === "fashion"
                     ? "Coleção, tendência, mood."
                     : id === "pcp"
@@ -193,7 +193,7 @@ function AIAgentsPage() {
 
           <Card className="glass-card rounded-lg mt-4">
             <CardContent className="p-3">
-              <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
+              <p className="text-2xs uppercase tracking-wider text-muted-foreground mb-2">
                 Sugestões
               </p>
               <div className="space-y-1.5">
@@ -202,7 +202,7 @@ function AIAgentsPage() {
                     key={s}
                     onClick={() => enviar(s)}
                     disabled={loading}
-                    className="w-full text-left text-xs text-white/80 hover:text-white rounded-md border border-white/5 bg-white/[0.02] hover:border-primary/30 p-2 transition disabled:opacity-50"
+                    className="w-full text-left text-xs text-white/80 hover:text-white rounded-md border border-border/60 bg-muted/40 hover:border-primary/30 p-2 transition disabled:opacity-50"
                   >
                     {s}
                   </button>
@@ -215,10 +215,10 @@ function AIAgentsPage() {
         {/* Chat */}
         <Card className="glass-card rounded-lg lg:col-span-3 flex flex-col min-h-[560px]">
           <CardContent className="p-4 flex flex-col flex-1">
-            <div className="flex items-center gap-2 pb-3 border-b border-white/10">
+            <div className="flex items-center gap-2 pb-3 border-b border-border">
               <Icon className={`h-5 w-5 ${A.color}`} />
               <p className="text-sm font-bold text-white">{A.label}</p>
-              <Badge variant="outline" className="text-[11px] border-white/15 ml-auto">
+              <Badge variant="outline" className="text-2xs border-border-strong/70 ml-auto">
                 google/gemini-3-flash-preview
               </Badge>
             </div>
@@ -244,7 +244,7 @@ function AIAgentsPage() {
                     className={`max-w-[80%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
                       m.role === "user"
                         ? "bg-primary text-primary-foreground"
-                        : "bg-white/[0.05] border border-white/10 text-white"
+                        : "bg-muted/70 border border-border text-white"
                     }`}
                   >
                     {m.text}
@@ -253,7 +253,7 @@ function AIAgentsPage() {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white/[0.05] border border-white/10 rounded-lg px-3 py-2 text-sm text-muted-foreground flex items-center gap-2">
+                  <div className="bg-muted/70 border border-border rounded-lg px-3 py-2 text-sm text-muted-foreground flex items-center gap-2">
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     pensando...
                   </div>
@@ -261,7 +261,7 @@ function AIAgentsPage() {
               )}
             </div>
 
-            <div className="flex gap-2 pt-3 border-t border-white/10">
+            <div className="flex gap-2 pt-3 border-t border-border">
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -273,7 +273,7 @@ function AIAgentsPage() {
                 }}
                 placeholder={`Pergunte para ${A.label}...`}
                 rows={2}
-                className="resize-none bg-white/[0.04] text-white"
+                className="resize-none bg-muted/60 text-white"
                 disabled={loading}
               />
               <Button

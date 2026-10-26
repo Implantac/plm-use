@@ -197,7 +197,7 @@ function CollectionsPage() {
             roi: col.roi,
           }))}
         />
-        <Button asChild variant="ghost" className="border text-[11px] tracking-[0.04em]">
+        <Button asChild variant="ghost" className="border text-2xs tracking-[0.04em]">
           <Link to="/collections/compare">
             <ArrowLeftRight className="mr-2 h-3.5 w-3.5" /> Comparar coleções
           </Link>
@@ -219,7 +219,7 @@ function CollectionsPage() {
                       className="h-full w-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-                    <span className="absolute left-4 top-4 rounded-md bg-black/55 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.04em] text-white backdrop-blur">
+                    <span className="absolute left-4 top-4 rounded-md bg-black/55 px-2.5 py-1 text-2xs font-semibold uppercase tracking-[0.04em] text-white backdrop-blur">
                       {collection.status}
                     </span>
                   </div>
@@ -227,7 +227,7 @@ function CollectionsPage() {
                   <div className="p-5 space-y-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+                        <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
                           {collection.brand} - {collection.season} {collection.year}
                         </p>
                         <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">
@@ -258,11 +258,11 @@ function CollectionsPage() {
                       ].map((item) => (
                         <div
                           key={item.label}
-                          className="rounded-md border border-white/10 bg-white/[0.035] p-3"
+                          className="rounded-md border border-border bg-muted/60 p-3"
                         >
                           <div className="flex items-center gap-2 text-primary">
                             <item.icon className="h-3.5 w-3.5" />
-                            <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                            <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                               {item.label}
                             </span>
                           </div>
@@ -273,20 +273,20 @@ function CollectionsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-[1fr_180px_180px] gap-4 items-end">
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                        <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                           <span>Ciclo da coleção</span>
                           <span className="text-white">{collection.progress}%</span>
                         </div>
-                        <Progress value={collection.progress} className="h-2 bg-white/10" />
+                        <Progress value={collection.progress} className="h-2 bg-muted" />
                       </div>
-                      <div className="rounded-md border border-white/10 bg-black/25 p-3">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                      <div className="rounded-md border border-border bg-black/25 p-3">
+                        <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                           Curva ABC
                         </p>
                         <p className="mt-2 text-xs font-bold text-white">{collection.abc}</p>
                       </div>
                       <div className="rounded-md border border-status-approved/20 bg-status-approved/10 p-3">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-status-approved">
+                        <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-status-approved">
                           ROI coleção
                         </p>
                         <p className="mt-2 text-lg font-bold text-white">{collection.roi}</p>
@@ -303,7 +303,7 @@ function CollectionsPage() {
             <Button
               variant="outline"
               size="sm"
-              className="text-[11px] tracking-[0.04em]"
+              className="text-2xs tracking-[0.04em]"
               onClick={() => setMax((m) => m + COLLECTIONS_PAGE)}
             >
               Mostrar mais {page.remaining} coleção{page.remaining > 1 ? "ões" : ""}
@@ -314,8 +314,8 @@ function CollectionsPage() {
         <div className="space-y-6">
           <CollectionPerformance collections={collections} />
           <Card className="glass-card rounded-lg">
-            <CardHeader className="p-5 border-b border-white/5">
-              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+            <CardHeader className="p-5 border-b border-border/60">
+              <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                 Timeline visual
               </CardTitle>
             </CardHeader>
@@ -330,17 +330,17 @@ function CollectionsPage() {
                 <div key={step.label} className="grid grid-cols-[32px_1fr] gap-3">
                   <div className="flex flex-col items-center">
                     <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-md border ${step.done ? "border-primary/30 bg-primary/10 text-primary" : "border-white/10 bg-white/5 text-muted-foreground"}`}
+                      className={`flex h-8 w-8 items-center justify-center rounded-md border ${step.done ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-muted/50 text-muted-foreground"}`}
                     >
                       <step.icon className="h-4 w-4" />
                     </div>
-                    {index < arr.length - 1 && <div className="h-6 w-px bg-white/10" />}
+                    {index < arr.length - 1 && <div className="h-6 w-px bg-muted" />}
                   </div>
                   <div className="pt-1">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+                    <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-white">
                       {step.label}
                     </p>
-                    <p className="mt-1 text-[11px] text-muted-foreground">
+                    <p className="mt-1 text-2xs text-muted-foreground">
                       {step.done ? "concluído e versionado" : "aguardando aprovações"}
                     </p>
                   </div>
@@ -351,14 +351,14 @@ function CollectionsPage() {
 
           <Card className="glass-card rounded-lg border-primary/20 bg-primary/[0.025]">
             <CardContent className="p-5 space-y-4">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary">
+              <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary">
                 USE AI
               </p>
               <p className="text-sm leading-relaxed text-white/85">
                 A coleção Verão 25 tem melhor potencial em camisaria premium. A IA recomenda
                 realocar 12 refs da curva C para tops de linho.
               </p>
-              <Button asChild className="w-full text-[11px] tracking-[0.04em]">
+              <Button asChild className="w-full text-2xs tracking-[0.04em]">
                 <Link to="/ai-center">Simular novo mix</Link>
               </Button>
             </CardContent>
@@ -367,9 +367,9 @@ function CollectionsPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-lg p-6 max-w-2xl">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-lg p-6 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold uppercase tracking-tight">
+            <DialogTitle className="text-xl font-semibold uppercase tracking-tight">
               {editingCollection ? "Editar coleção" : "Nova coleção"}
             </DialogTitle>
           </DialogHeader>
@@ -384,7 +384,7 @@ function CollectionsPage() {
               ["plannedQty", "Quantidade planejada", "Ex: 120 refs"],
             ].map(([key, label, placeholder]) => (
               <div key={key} className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                   {label}
                 </Label>
                 <Input
@@ -397,10 +397,10 @@ function CollectionsPage() {
             ))}
           </div>
           <DialogFooter className="gap-3">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Salvar coleção
             </Button>
           </DialogFooter>

@@ -36,8 +36,8 @@ export function AbcCoveragePanel({ items, balances }: Props) {
   return (
     <>
       <Card className="glass-card rounded-lg">
-        <CardHeader className="p-5 border-b border-white/5">
-          <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
+        <CardHeader className="p-5 border-b border-border/60">
+          <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-primary" /> Curva ABC
           </CardTitle>
         </CardHeader>
@@ -49,30 +49,30 @@ export function AbcCoveragePanel({ items, balances }: Props) {
               <div key={cls} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span
-                    className={`inline-flex items-center gap-2 rounded-md border px-2 py-0.5 font-bold uppercase tracking-[0.04em] ${classColors[cls]}`}
+                    className={`inline-flex items-center gap-2 rounded-md border px-2 py-0.5 font-semibold uppercase tracking-[0.04em] ${classColors[cls]}`}
                   >
                     Classe {cls}
                   </span>
                   <span className="text-white font-bold">{bucket.count} itens</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                <div className="flex items-center justify-between text-2xs text-muted-foreground">
                   <span>{fmtBRL(bucket.revenue)}</span>
                   <span>{pct}%</span>
                 </div>
-                <Progress value={pct} className="h-1.5 bg-white/10" />
+                <Progress value={pct} className="h-1.5 bg-muted" />
               </div>
             );
           })}
           {summary.unclassified.count > 0 && (
-            <div className="pt-2 border-t border-white/5">
-              <p className="text-[11px] text-muted-foreground">
+            <div className="pt-2 border-t border-border/60">
+              <p className="text-2xs text-muted-foreground">
                 {summary.unclassified.count} itens sem classificação — rode &quot;Classificar
                 ABC&quot;
               </p>
             </div>
           )}
-          <div className="pt-3 border-t border-white/5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+          <div className="pt-3 border-t border-border/60">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               Faturamento anual total
             </p>
             <p className="text-lg font-bold text-white mt-1">{fmtBRL(total)}</p>
@@ -82,8 +82,8 @@ export function AbcCoveragePanel({ items, balances }: Props) {
 
       {belowReorder.length > 0 && (
         <Card className="glass-card rounded-lg border-status-progress/20 bg-status-progress/[0.035]">
-          <CardHeader className="p-5 border-b border-white/5">
-            <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+          <CardHeader className="p-5 border-b border-border/60">
+            <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
               Reposição sugerida ({belowReorder.length})
             </CardTitle>
           </CardHeader>
@@ -92,18 +92,18 @@ export function AbcCoveragePanel({ items, balances }: Props) {
               const bal = balances[it.id];
               const onHand = Number(bal?.qty_on_hand ?? 0);
               return (
-                <div key={it.id} className="rounded-md border border-white/10 bg-black/20 p-3">
+                <div key={it.id} className="rounded-md border border-border bg-black/20 p-3">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs font-bold text-white truncate">{it.name}</p>
                     {it.abc_class && (
                       <span
-                        className={`inline-flex items-center rounded-md border px-1.5 py-0 text-[11px] font-bold ${classColors[it.abc_class]}`}
+                        className={`inline-flex items-center rounded-md border px-1.5 py-0 text-2xs font-bold ${classColors[it.abc_class]}`}
                       >
                         {it.abc_class}
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.04em] text-status-progress">
+                  <p className="mt-1 text-2xs uppercase tracking-[0.04em] text-status-progress">
                     saldo {onHand.toFixed(0)}
                     {it.unit} · PP {Number(it.reorder_point).toFixed(0)}
                     {it.unit} · LEC {Number(it.eoq).toFixed(0)}

@@ -61,16 +61,16 @@ export function CollectionROI() {
   return (
     <Card className="glass-card rounded-lg p-6 space-y-5 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Target className="w-4 h-4 text-primary" /> ROI por Coleção · valeu a pena investir?
         </h3>
-        <span className="text-[11px] text-muted-foreground uppercase tracking-widest">
+        <span className="text-2xs text-muted-foreground uppercase tracking-widest">
           Cruza PCP × Marketing × Influencers
         </span>
       </div>
-      <div className="rounded-lg border border-white/5 overflow-hidden">
+      <div className="rounded-lg border border-border/60 overflow-hidden">
         <table className="w-full text-left">
-          <thead className="border-b border-white/5 bg-white/5 text-[11px] uppercase tracking-widest text-muted-foreground">
+          <thead className="border-b border-border/60 bg-muted/50 text-2xs uppercase tracking-widest text-muted-foreground">
             <tr>
               <th className="px-4 py-3">Coleção</th>
               <th className="px-4 py-3">Refs</th>
@@ -82,10 +82,10 @@ export function CollectionROI() {
               <th className="px-4 py-3">ROAS</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5 text-xs text-white">
+          <tbody className="divide-y divide-border/70 text-xs text-white">
             {rows.map((r) => (
-              <tr key={r.colecao} className="hover:bg-white/[0.02]">
-                <td className="px-4 py-3 font-bold">{r.colecao}</td>
+              <tr key={r.colecao} className="hover:bg-accent/50">
+                <td className="px-4 py-3 font-semibold">{r.colecao}</td>
                 <td className="px-4 py-3 text-muted-foreground">{r.refs.size}</td>
                 <td className="px-4 py-3">{r.produzidas.toLocaleString("pt-BR")}</td>
                 <td className="px-4 py-3 text-status-approved">{brl(r.receita)}</td>
@@ -96,12 +96,12 @@ export function CollectionROI() {
                   {brl(r.investTotal)}
                 </td>
                 <td
-                  className={`px-4 py-3 font-bold ${r.lucro >= 0 ? "text-status-approved" : "text-status-rejected"}`}
+                  className={`px-4 py-3 font-semibold ${r.lucro >= 0 ? "text-status-approved" : "text-status-rejected"}`}
                 >
                   {brl(r.lucro)}
                 </td>
                 <td
-                  className={`px-4 py-3 font-bold ${r.roi >= 0 ? "text-status-approved" : "text-status-rejected"}`}
+                  className={`px-4 py-3 font-semibold ${r.roi >= 0 ? "text-status-approved" : "text-status-rejected"}`}
                 >
                   {r.roi.toFixed(0)}%
                 </td>
@@ -111,7 +111,7 @@ export function CollectionROI() {
           </tbody>
         </table>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-white/5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-border/60">
         <KpiTile
           icon={<DollarSign />}
           label="Receita total"
@@ -149,7 +149,7 @@ function KpiTile({
 }) {
   return (
     <div
-      className={`flex items-center gap-3 rounded-md border p-3 ${accent ? "border-status-progress/30 bg-status-progress/5" : positive ? "border-status-approved/30 bg-status-approved/5" : "border-white/10 bg-white/[0.02]"}`}
+      className={`flex items-center gap-3 rounded-md border p-3 ${accent ? "border-status-progress/30 bg-status-progress/5" : positive ? "border-status-approved/30 bg-status-approved/5" : "border-border bg-muted/40"}`}
     >
       <div
         className={`w-9 h-9 rounded-md flex items-center justify-center ${accent ? "bg-status-progress/10 text-status-progress" : positive ? "bg-status-approved/10 text-status-approved" : "bg-primary/10 text-primary"}`}
@@ -157,7 +157,7 @@ function KpiTile({
         {icon}
       </div>
       <div>
-        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{label}</p>
+        <p className="text-2xs uppercase tracking-widest text-muted-foreground">{label}</p>
         <p className="text-lg font-bold text-white">{value}</p>
       </div>
     </div>

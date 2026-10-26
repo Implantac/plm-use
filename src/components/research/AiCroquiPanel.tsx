@@ -47,10 +47,10 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
   return (
     <Card className="glass-card rounded-lg p-6 space-y-4 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
           <Wand2 className="w-4 h-4 text-primary" /> IA Criativa · Moodboard → Croqui → Foto
         </h3>
-        <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold uppercase">
+        <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-2xs font-semibold uppercase">
           <Sparkles className="w-3 h-3 inline mr-1" /> AI Gateway
         </span>
       </div>
@@ -60,10 +60,10 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
           <button
             key={p}
             onClick={() => setPreset(p)}
-            className={`text-[11px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-md border transition ${
+            className={`text-2xs uppercase tracking-widest font-bold px-3 py-1.5 rounded-md border transition ${
               preset === p
                 ? "bg-primary/20 border-primary/40 text-primary"
-                : "bg-white/[0.02] border-white/10 text-muted-foreground hover:text-white"
+                : "bg-muted/40 border-border text-muted-foreground hover:text-white"
             }`}
           >
             {p === "croqui" ? "Croqui" : p === "foto" ? "Foto realista" : "Variação"}
@@ -98,7 +98,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
 
       {src && (
         <div className="grid gap-2">
-          <div className="aspect-[3/4] max-w-sm rounded-md overflow-hidden border border-white/10 bg-white/5">
+          <div className="aspect-[3/4] max-w-sm rounded-md overflow-hidden border border-border bg-muted/50">
             <img
               src={src}
               alt="AI gerado"
@@ -109,13 +109,13 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
           </div>
           {isFinal && (
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="text-[11px] gap-1" asChild>
+              <Button size="sm" variant="outline" className="text-2xs gap-1" asChild>
                 <a href={src} download={`ai-${preset}-${Date.now()}.png`}>
                   <Download className="w-3 h-3" /> Baixar
                 </a>
               </Button>
               {onSave && (
-                <Button size="sm" className="text-[11px]" onClick={() => onSave(src)}>
+                <Button size="sm" className="text-2xs" onClick={() => onSave(src)}>
                   Salvar no moodboard
                 </Button>
               )}

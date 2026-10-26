@@ -50,8 +50,8 @@ export function CollectionPerformance({
 
   return (
     <Card className="glass-card rounded-lg">
-      <CardHeader className="p-5 border-b border-white/5">
-        <CardTitle className="text-[11px] font-bold uppercase tracking-[0.05em] text-white flex items-center gap-2">
+      <CardHeader className="p-5 border-b border-border/60">
+        <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
           <BarChart3 className="h-3.5 w-3.5 text-primary" /> Meta × Realizado
         </CardTitle>
       </CardHeader>
@@ -69,13 +69,13 @@ export function CollectionPerformance({
               st >= 85 ? "bg-status-approved" : st >= 60 ? "bg-primary" : "bg-status-progress";
             return (
               <div key={c.id} className="space-y-1.5">
-                <div className="flex items-center justify-between text-[11px]">
+                <div className="flex items-center justify-between text-2xs">
                   <span className="text-white/85 truncate pr-2">{c.name}</span>
                   <span className="font-bold text-white tabular-nums">
                     {c.realizedMix}/{c.plannedMix} · {st.toFixed(0)}%
                   </span>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                   <div className={`h-full ${tone}`} style={{ width: `${Math.min(st, 100)}%` }} />
                 </div>
               </div>
@@ -83,8 +83,8 @@ export function CollectionPerformance({
           })}
         </div>
 
-        <div className="space-y-2 pt-2 border-t border-white/5">
-          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+        <div className="space-y-2 pt-2 border-t border-border/60">
+          <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Activity className="h-3 w-3 text-primary" /> Curva ABC (média)
             </span>
@@ -92,7 +92,7 @@ export function CollectionPerformance({
               {totals.a.toFixed(0)} / {totals.b.toFixed(0)} / {totals.c.toFixed(0)}
             </span>
           </div>
-          <div className="flex h-2 w-full overflow-hidden rounded-full bg-white/10">
+          <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className="bg-status-approved"
               style={{ width: `${totals.a}%` }}
@@ -109,7 +109,7 @@ export function CollectionPerformance({
               title={`C ${totals.c.toFixed(0)}%`}
             />
           </div>
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-between text-2xs text-muted-foreground">
             <span>A · top giro</span>
             <span>B · médio</span>
             <span>C · cauda</span>
@@ -118,7 +118,7 @@ export function CollectionPerformance({
 
         <div className="rounded-md border border-status-approved/20 bg-status-approved/[0.06] p-3 flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-status-approved" />
-          <p className="text-[11px] text-white/85 leading-snug">
+          <p className="text-2xs text-white/85 leading-snug">
             Sell-through combinado de{" "}
             <span className="font-bold text-status-approved">{totals.sellThrough.toFixed(0)}%</span>{" "}
             sobre o mix planejado.
@@ -145,8 +145,8 @@ function Metric({
         ? "text-primary"
         : "text-white";
   return (
-    <div className="rounded-md border border-white/10 bg-white/[0.035] p-2.5 text-center">
-      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+    <div className="rounded-md border border-border bg-muted/60 p-2.5 text-center">
+      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
         {label}
       </p>
       <p className={`mt-1 text-base font-bold ${color} tabular-nums`}>{value}</p>

@@ -222,7 +222,7 @@ function AuthenticatedLayout() {
             </div>
             <div className="min-w-0">
               <p className="font-heading text-lg leading-none text-foreground truncate">USE MODA</p>
-              <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-glow">
+              <p className="mt-1 text-2xs font-semibold uppercase tracking-[0.28em] text-glow">
                 PLM · AI
               </p>
             </div>
@@ -241,7 +241,7 @@ function AuthenticatedLayout() {
           <nav className="space-y-1 py-1">
             {favoriteItems.length > 0 && (
               <div>
-                <div className="px-2 py-1 text-2xs font-bold uppercase tracking-[0.04em] text-primary/70 flex items-center gap-1.5">
+                <div className="px-2 py-1 text-2xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
                   <Star className="w-3 h-3 fill-primary/40" />
                   Favoritos
                 </div>
@@ -252,7 +252,7 @@ function AuthenticatedLayout() {
                       <Link
                         key={`fav-${item.href}`}
                         to={item.href}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${active ? "bg-primary/10 text-primary font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
                       >
                         <span>{item.icon}</span>
                         <span className="flex-1 truncate">{item.label}</span>
@@ -271,7 +271,7 @@ function AuthenticatedLayout() {
                     type="button"
                     onClick={() => toggleSection(section.id)}
                     aria-expanded={open}
-                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-bold uppercase tracking-[0.04em] transition-colors ${sectionActive ? "text-primary" : "text-muted-foreground/70 hover:text-foreground"}`}
+                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-semibold uppercase tracking-wide transition-colors ${sectionActive ? "text-foreground" : "text-muted-foreground/70 hover:text-foreground"}`}
                   >
                     <span>{section.label}</span>
                     <ChevronDown
@@ -288,7 +288,7 @@ function AuthenticatedLayout() {
                             <Link
                               to={item.href}
                               aria-current={active ? "page" : undefined}
-                              className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md uppercase-label transition-colors ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
+                              className={`flex-1 flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${active ? "bg-primary/10 text-primary font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-accent"}`}
                             >
                               <span>{item.icon}</span>
                               <span className="flex-1 truncate">{item.label}</span>

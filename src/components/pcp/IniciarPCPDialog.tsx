@@ -64,7 +64,7 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-sm font-bold uppercase tracking-[0.04em]">
+          <DialogTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.04em]">
             <Workflow className="h-4 w-4 text-primary" />
             Iniciar fluxo PCP
           </DialogTitle>
@@ -78,7 +78,7 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
         <div className="space-y-3">
           <Badge
             variant="outline"
-            className="border-primary/40 text-primary text-[11px] uppercase tracking-widest"
+            className="border-primary/40 text-primary text-2xs uppercase tracking-widest"
           >
             Ref · {referenciaRef}
           </Badge>
@@ -95,15 +95,15 @@ export function IniciarPCPDialog({ open, onOpenChange, referenciaRef, referencia
                 className={`flex items-start gap-3 rounded-md border p-3 cursor-pointer transition ${
                   step === s.id
                     ? "border-primary/60 bg-primary/[0.06]"
-                    : "border-white/10 bg-white/[0.02] hover:border-primary/30"
+                    : "border-border bg-muted/40 hover:border-primary/30"
                 }`}
               >
                 <RadioGroupItem id={`pcp-start-${s.id}`} value={s.id} className="mt-0.5" />
                 <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-[0.04em] text-white">
+                  <p className="text-xs font-semibold uppercase tracking-[0.04em] text-white">
                     {s.label}
                   </p>
-                  <p className="mt-0.5 text-[11px] text-white/70">{s.detail}</p>
+                  <p className="mt-0.5 text-2xs text-white/70">{s.detail}</p>
                 </div>
               </Label>
             ))}

@@ -160,10 +160,10 @@ function ResearchHub() {
       ]}
     >
       <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
+        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
           <ImagePlus className="w-4 h-4" /> Importar Inspiração
         </Button>
-        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
+        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
           <Sparkles className="w-4 h-4" /> Gerar Moodboard AI
         </Button>
       </div>
@@ -177,9 +177,9 @@ function ResearchHub() {
               { label: "Cores", value: "off-white, navy, pastel", icon: Palette },
               { label: "Categorias", value: "top, bottom, outerwear", icon: Tags },
             ].map((item) => (
-              <div key={item.label} className="rounded-md border border-white/10 bg-black/20 p-4">
+              <div key={item.label} className="rounded-md border border-border bg-black/20 p-4">
                 <item.icon className="h-4 w-4 text-primary" />
-                <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                   {item.label}
                 </p>
                 <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
@@ -188,7 +188,7 @@ function ResearchHub() {
           </div>
         </Card>
         <Card className="glass-card rounded-lg p-5">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-4 flex items-center gap-2">
+          <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-4 flex items-center gap-2">
             <BarChart3 className="h-4 w-4 text-primary" /> Benchmark
           </h3>
           {[
@@ -196,25 +196,22 @@ function ResearchHub() {
             "Concorrente B: alfaiataria leve",
             "Histórico: Verão 24 ROI 3.1x",
           ].map((item) => (
-            <div key={item} className="border-b border-white/5 py-3 last:border-0">
+            <div key={item} className="border-b border-border/60 py-3 last:border-0">
               <p className="text-sm text-white/85">{item}</p>
             </div>
           ))}
         </Card>
       </div>
 
-      <div className="flex items-center gap-4 border-b border-white/5 pb-6 mb-8 overflow-x-auto no-scrollbar">
-        <Button
-          variant="ghost"
-          className="text-primary text-[11px] tracking-[0.05em] bg-primary/10"
-        >
+      <div className="flex items-center gap-4 border-b border-border/60 pb-6 mb-8 overflow-x-auto no-scrollbar">
+        <Button variant="ghost" className="text-primary text-2xs tracking-[0.05em] bg-primary/10">
           Todos
         </Button>
         {categories.map((cat) => (
           <Button
             key={cat}
             variant="ghost"
-            className="text-muted-foreground hover:text-white text-[11px] tracking-[0.05em] transition-colors"
+            className="text-muted-foreground hover:text-white text-2xs tracking-[0.05em] transition-colors"
           >
             {cat}
           </Button>
@@ -249,14 +246,14 @@ function ResearchHub() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="bg-white/10 backdrop-blur-md text-white"
+                      className="bg-muted backdrop-blur-md text-white"
                     >
                       <Palette className="w-4 h-4" />
                     </Button>
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="bg-white/10 backdrop-blur-md text-white"
+                      className="bg-muted backdrop-blur-md text-white"
                     >
                       <Sparkles className="w-4 h-4" />
                     </Button>
@@ -274,14 +271,11 @@ function ResearchHub() {
                     ["Categoria", item.category],
                     ["Confiança", item.confidence],
                   ].map(([label, value]) => (
-                    <div
-                      key={label}
-                      className="rounded-md bg-white/[0.035] border border-white/5 p-2"
-                    >
-                      <p className="text-[10px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                    <div key={label} className="rounded-md bg-muted/60 border border-border/60 p-2">
+                      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                         {label}
                       </p>
-                      <p className="mt-1 text-[11px] font-bold text-white">{value}</p>
+                      <p className="mt-1 text-2xs font-bold text-white">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -289,7 +283,7 @@ function ResearchHub() {
                   {item.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 flex items-center gap-1"
+                      className="text-2xs font-semibold uppercase tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 flex items-center gap-1"
                     >
                       <Hash className="w-3 h-3" /> {tag.replace("#", "")}
                     </span>
@@ -302,41 +296,41 @@ function ResearchHub() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingItem ? "Editar Inspiração" : "Nova Inspiração"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Título do Insight
               </Label>
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Texturas Urbanas"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Tags (separadas por vírgula)
               </Label>
               <Input
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: linho, verão, chic"
               />
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Fixar no Board
             </Button>
           </DialogFooter>

@@ -217,7 +217,7 @@ function SuppliersPage() {
 
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-primary/5 transition-colors">
+                <div className="w-14 h-14 rounded-lg bg-muted/50 border border-border/60 flex items-center justify-center group-hover:bg-primary/5 transition-colors">
                   <Users className="w-6 h-6 text-white/20 group-hover:text-primary transition-colors" />
                 </div>
                 <div className="space-y-1">
@@ -225,7 +225,7 @@ function SuppliersPage() {
                     <h3 className="text-xl font-bold text-white tracking-tight">{sup.name}</h3>
                     {sup.status === "Premium" && <ShieldCheck className="w-5 h-5 text-primary" />}
                   </div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
                     {sup.type}
                   </p>
                 </div>
@@ -235,24 +235,24 @@ function SuppliersPage() {
                   <Star className="w-3.5 h-3.5 fill-current" />
                   <span className="text-sm font-bold text-white">{sup.rating}</span>
                 </div>
-                <p className="text-[11px] text-muted-foreground uppercase tracking-widest">
+                <p className="text-2xs text-muted-foreground uppercase tracking-widest">
                   {sup.status}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5 border-y border-white/5 py-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5 border-y border-border/60 py-5">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="w-3.5 h-3.5" />
-                  <span className="text-[11px] font-bold uppercase tracking-widest">Local</span>
+                  <span className="text-2xs font-semibold uppercase tracking-widest">Local</span>
                 </div>
                 <p className="text-sm font-medium text-white">{sup.location}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span className="text-[11px] font-bold uppercase tracking-widest">
+                  <span className="text-2xs font-semibold uppercase tracking-widest">
                     Compliance
                   </span>
                 </div>
@@ -261,14 +261,14 @@ function SuppliersPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <TrendingUp className="w-3.5 h-3.5" />
-                  <span className="text-[11px] font-bold uppercase tracking-widest">OTIF</span>
+                  <span className="text-2xs font-semibold uppercase tracking-widest">OTIF</span>
                 </div>
                 <p className="text-sm font-medium text-status-approved">{sup.delivery}</p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="w-3.5 h-3.5" />
-                  <span className="text-[11px] font-bold uppercase tracking-widest">Canal</span>
+                  <span className="text-2xs font-semibold uppercase tracking-widest">Canal</span>
                 </div>
                 <p className="text-sm font-medium text-white">comercial@...</p>
               </div>
@@ -280,12 +280,9 @@ function SuppliersPage() {
                 { label: "Aprovações", value: sup.approvals, icon: FileCheck2 },
                 { label: "Próxima entrega", value: sup.eta, icon: Clock },
               ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-md border border-white/10 bg-white/[0.035] p-3"
-                >
+                <div key={item.label} className="rounded-md border border-border bg-muted/60 p-3">
                   <item.icon className="h-4 w-4 text-primary" />
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                  <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                     {item.label}
                   </p>
                   <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
@@ -296,14 +293,14 @@ function SuppliersPage() {
             <div className="flex gap-4">
               <Button
                 variant="ghost"
-                className="flex-1 border bg-white/5 hover:bg-white/10 text-[11px] tracking-[0.04em] text-white"
+                className="flex-1 border bg-muted/50 hover:bg-accent text-2xs tracking-[0.04em] text-white"
               >
                 Portal do fornecedor
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="w-11 border bg-white/5 hover:bg-primary/10 hover:text-primary"
+                className="w-11 border bg-muted/50 hover:bg-primary/10 hover:text-primary"
                 onClick={() =>
                   openEntity({
                     type: "supplier",
@@ -319,7 +316,7 @@ function SuppliersPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="w-11 border bg-white/5 hover:bg-primary/10 hover:text-primary"
+                className="w-11 border bg-muted/50 hover:bg-primary/10 hover:text-primary"
               >
                 <ChevronRight className="w-5 h-5" />
               </Button>
@@ -329,54 +326,54 @@ function SuppliersPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingSupplier ? "Editar Fornecedor" : "Novo Fornecedor"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Nome da Empresa
               </Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Têxtil Brasil S.A."
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Tipo de Insumo
                 </Label>
                 <Input
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: Tecidos"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Localização
                 </Label>
                 <Input
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: SP, Brasil"
                 />
               </div>
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Salvar Fornecedor
             </Button>
           </DialogFooter>

@@ -178,14 +178,14 @@ const GATE_TONE: Record<GateStatus, string> = {
   pendente: "border-status-progress/40 text-status-progress",
   aprovado: "border-status-approved/40 text-status-approved",
   reprovado: "border-destructive/40 text-destructive",
-  dispensado: "border-white/15 text-muted-foreground",
+  dispensado: "border-border-strong/70 text-muted-foreground",
 };
 
 const PRIORITY_TONE: Record<string, string> = {
   URGENTE: "border-destructive/40 text-destructive",
   ALTA: "border-status-progress/40 text-status-progress",
   MEDIA: "border-primary/30 text-primary",
-  BAIXA: "border-white/15 text-muted-foreground",
+  BAIXA: "border-border-strong/70 text-muted-foreground",
 };
 
 function FlowPage() {
@@ -280,7 +280,7 @@ function FlowPage() {
         </div>
       )}
       {!loading && !error && items.length === 0 && (
-        <div className="flex flex-col gap-3 rounded-md border border-dashed border-white/15 bg-white/[0.02] p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-md border border-dashed border-border-strong/70 bg-muted/40 p-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted-foreground">
             Sem referências disponíveis. Crie um produto para iniciar o ciclo.
           </p>
@@ -289,16 +289,14 @@ function FlowPage() {
           </Button>
         </div>
       )}
-      <header className="rounded-lg border border-white/10 bg-white/[0.025] p-5 md:p-6">
+      <header className="rounded-lg border border-border bg-muted/50 p-5 md:p-6">
         <div className="flex items-center gap-2 text-primary">
           <Workflow className="h-4 w-4" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.05em]">
+          <span className="text-2xs font-semibold uppercase tracking-[0.05em]">
             Fluxo guiado · ciclo de vida
           </span>
         </div>
-        <h1 className="mt-3 text-3xl font-bold uppercase leading-none tracking-tight md:text-4xl">
-          Fluxo do Produto
-        </h1>
+        <h1 className="mt-3 text-xl font-semibold tracking-tight">Fluxo do Produto</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Acompanhe o produto da criação ao aprendizado. Cada etapa mostra o que está em andamento e
           a próxima ação disponível.
@@ -345,7 +343,7 @@ function FlowPage() {
         {(Object.keys(PHASES) as PhaseId[]).map((phase) => (
           <div key={phase}>
             <div className="mb-2 flex items-baseline gap-3">
-              <h2 className="text-xs font-bold uppercase tracking-[0.05em] text-foreground">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.05em] text-foreground">
                 {PHASES[phase].label}
               </h2>
               <span className="text-2xs text-muted-foreground">{PHASES[phase].hint}</span>
@@ -363,7 +361,7 @@ function FlowPage() {
                     className={`rounded-lg border p-4 text-left transition-colors ${
                       isSelected
                         ? "border-primary/50 bg-primary/10"
-                        : "border-white/10 bg-white/[0.02] hover:border-primary/30 hover:bg-white/[0.04]"
+                        : "border-border bg-muted/40 hover:border-primary/30 hover:bg-accent/70"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -382,7 +380,7 @@ function FlowPage() {
                 );
               })}
               {phase === "aprender" && (
-                <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.02] p-4 sm:col-span-2 lg:col-span-4">
+                <div className="rounded-lg border border-dashed border-border-strong/70 bg-muted/40 p-4 sm:col-span-2 lg:col-span-4">
                   <p className="text-sm font-medium">Desempenho de mercado</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Vendas, margem, giro e feedback serão exibidos quando houver dados confiáveis
@@ -444,7 +442,7 @@ function FlowPage() {
             return (
               <div
                 key={ref.id}
-                className="flex flex-col gap-3 rounded-md border border-white/10 bg-white/[0.02] p-3 md:flex-row md:items-center"
+                className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3 md:flex-row md:items-center"
               >
                 <button
                   type="button"
@@ -543,7 +541,7 @@ function FlowPage() {
                 key={ref.id}
                 type="button"
                 onClick={() => setSelected(ref.status)}
-                className="flex w-full items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.02] p-3 text-left hover:border-primary/30"
+                className="flex w-full items-center justify-between gap-3 rounded-md border border-border bg-muted/40 p-3 text-left hover:border-primary/30"
               >
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-semibold">
@@ -586,10 +584,10 @@ function Metric({
   tone?: string;
 }) {
   return (
-    <div className="rounded-md border border-white/10 bg-white/[0.02] p-4">
+    <div className="rounded-md border border-border bg-muted/40 p-4">
       <div className={`flex items-center gap-2 ${tone}`}>
         <Icon className="h-4 w-4" />
-        <span className="text-2xs font-bold uppercase tracking-[0.04em]">{label}</span>
+        <span className="text-2xs font-semibold uppercase tracking-[0.04em]">{label}</span>
       </div>
       <p className="mt-2 text-2xl font-bold tabular-nums">{value}</p>
     </div>

@@ -24,11 +24,11 @@ function DigitalTwinPage() {
       <div className="flex items-end justify-between mb-8 shrink-0">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <div className="flex items-center gap-3 mb-4">
-            <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold uppercase tracking-[0.05em]">
+            <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-2xs font-semibold uppercase tracking-[0.05em]">
               Next-Gen v5.0
             </span>
           </div>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase text-white mb-2 leading-none">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground mb-2">
             Digital Twin
           </h1>
           <p className="text-muted-foreground text-sm font-light italic lowercase">
@@ -36,7 +36,7 @@ function DigitalTwinPage() {
           </p>
         </motion.div>
         <div className="flex gap-4">
-          <Button className="text-[11px] tracking-[0.05em] gap-2">
+          <Button className="text-2xs tracking-[0.05em] gap-2">
             <Globe className="w-4 h-4" /> Live Sync
           </Button>
         </div>
@@ -52,7 +52,7 @@ function DigitalTwinPage() {
         ].map((item) => (
           <Card key={item.label} className="glass-card rounded-lg p-4">
             <item.icon className="h-4 w-4 text-primary" />
-            <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+            <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               {item.label}
             </p>
             <p className="mt-1 text-lg font-bold text-white">{item.value}</p>
@@ -74,7 +74,7 @@ function DigitalTwinPage() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              className="w-72 h-[480px] bg-white/5 border border-white/10 rounded-lg relative shadow-[var(--elev-2)] overflow-hidden"
+              className="w-72 h-[480px] bg-muted/50 border border-border rounded-lg relative shadow-[var(--elev-2)] overflow-hidden"
             >
               <img
                 src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=600"
@@ -83,7 +83,7 @@ function DigitalTwinPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <Layers className="w-20 h-20 text-primary opacity-40 animate-pulse" />
-                <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.5em] text-white/40">
+                <p className="mt-8 text-2xs font-semibold uppercase tracking-[0.5em] text-white/40">
                   Gêmeo Digital Ativo
                 </p>
               </div>
@@ -99,11 +99,11 @@ function DigitalTwinPage() {
                 },
               ].map((s, i) => (
                 <div key={i} className="flex flex-col items-center gap-2">
-                  <div className="p-3 rounded-md bg-white/5 border border-white/5 text-muted-foreground">
+                  <div className="p-3 rounded-md bg-muted/50 border border-border/60 text-muted-foreground">
                     {s.icon}
                   </div>
-                  <p className="text-[11px] font-bold text-white tracking-widest">{s.val}</p>
-                  <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
+                  <p className="text-2xs font-bold text-white tracking-widest">{s.val}</p>
+                  <p className="text-2xs font-semibold uppercase text-muted-foreground tracking-widest">
                     {s.label}
                   </p>
                 </div>
@@ -120,7 +120,7 @@ function DigitalTwinPage() {
               <Button
                 key={i}
                 variant="ghost"
-                className={`w-28 text-[11px] border ${btn.active ? "bg-primary text-primary-foreground" : "bg-white/5 text-muted-foreground"}`}
+                className={`w-28 text-2xs border ${btn.active ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`}
               >
                 {btn.label}
               </Button>
@@ -130,7 +130,7 @@ function DigitalTwinPage() {
 
         <div className="space-y-8">
           <Card className="glass-card rounded-lg p-6 space-y-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-white">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-white">
               Live Operations
             </h3>
             <div className="space-y-4">
@@ -139,14 +139,17 @@ function DigitalTwinPage() {
                 { factory: "Unidade SP", load: 65, status: "Média" },
                 { factory: "Parceiro SC", load: 45, status: "Ideal" },
               ].map((f, i) => (
-                <div key={i} className="space-y-2 p-4 rounded-md bg-white/5 border border-white/5">
-                  <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest">
+                <div
+                  key={i}
+                  className="space-y-2 p-4 rounded-md bg-muted/50 border border-border/60"
+                >
+                  <div className="flex justify-between items-center text-2xs font-semibold uppercase tracking-widest">
                     <span className="text-white">{f.factory}</span>
                     <span className={f.status === "Alta" ? "text-primary" : "text-status-approved"}>
                       {f.load}%
                     </span>
                   </div>
-                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-1 bg-muted/50 rounded-full overflow-hidden">
                     <div className="h-full bg-primary" style={{ width: `${f.load}%` }} />
                   </div>
                 </div>
@@ -155,18 +158,18 @@ function DigitalTwinPage() {
           </Card>
 
           <Card className="glass-card rounded-lg p-6 bg-primary/[0.02] border-primary/20">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-primary mb-4">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary mb-4">
               Simulação AI
             </h3>
-            <p className="text-[11px] text-muted-foreground font-light leading-relaxed italic lowercase mb-6">
+            <p className="text-2xs text-muted-foreground font-light leading-relaxed italic lowercase mb-6">
               se aumentarmos a produção da blusa amalfi em 20%, o tempo de entrega das calças urban
               será impactado em +5 dias úteis.
             </p>
-            <Button className="w-full text-[11px] tracking-[0.04em]">Testar Cenário</Button>
+            <Button className="w-full text-2xs tracking-[0.04em]">Testar Cenário</Button>
           </Card>
 
           <Card className="glass-card rounded-lg p-6">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-5">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-5">
               Produtos críticos
             </h3>
             <div className="space-y-3">
@@ -177,14 +180,14 @@ function DigitalTwinPage() {
               ].map((product) => (
                 <div
                   key={product.name}
-                  className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.035] p-3"
+                  className="flex items-center gap-3 rounded-md border border-border bg-muted/60 p-3"
                 >
                   <product.icon className="h-4 w-4 text-primary" />
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+                    <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-white">
                       {product.name}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">{product.status}</p>
+                    <p className="text-2xs text-muted-foreground">{product.status}</p>
                   </div>
                 </div>
               ))}

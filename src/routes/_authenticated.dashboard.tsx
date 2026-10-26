@@ -96,11 +96,15 @@ function Dashboard() {
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between"
+        className="flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between"
       >
         <div className="max-w-2xl space-y-2">
-          <p className="text-xs font-semibold uppercase text-primary">USE MODA PLM</p>
-          <h1 className="text-3xl font-semibold text-white">Da ideia ao produto industrial.</h1>
+          <p className="text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
+            USE MODA PLM
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            Da ideia ao produto industrial.
+          </h1>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Acompanhe o desenvolvimento, identifique o próximo passo e abra o produto que precisa de
             atenção.
@@ -109,13 +113,13 @@ function Dashboard() {
         <div className="flex flex-wrap gap-2">
           <Button asChild>
             <Link to="/references">
-              <PackageOpen className="mr-2 h-4 w-4" />
+              <PackageOpen className="h-4 w-4" />
               Abrir referências
             </Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/flow">
-              Ver fluxo do produto <ArrowRight className="ml-2 h-4 w-4" />
+              Ver fluxo do produto <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -129,7 +133,7 @@ function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
         aria-label="Fluxo operacional do pedido"
-        className="glass-card rounded-xl p-4"
+        className="glass-card rounded-lg p-4"
       >
         <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="text-sm font-semibold">Fluxo operacional — do pedido à OP</h2>
@@ -146,7 +150,7 @@ function Dashboard() {
                 to={step.status === "liberado_pcp" ? "/production" : "/orders"}
                 className="group flex h-full items-start gap-2.5 rounded-lg border border-border/60 px-3 py-2.5 transition-colors hover:border-primary/40 hover:bg-primary/5"
               >
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold tabular-nums text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-2xs font-semibold tabular-nums text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground">
                   {i + 1}
                 </span>
                 <span className="min-w-0">
@@ -163,7 +167,7 @@ function Dashboard() {
                     )}
                     {ORDER_STATUS[step.status].label}
                   </span>
-                  <span className="block text-[11px] leading-snug text-muted-foreground">
+                  <span className="block text-2xs leading-snug text-muted-foreground">
                     {step.who} · {step.action}
                   </span>
                 </span>
@@ -216,7 +220,7 @@ function Dashboard() {
 
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <Card className="glass-card rounded-lg">
-          <CardHeader className="border-b border-white/5 p-5">
+          <CardHeader className="border-b border-border/60 p-5">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="text-sm font-semibold text-white">Ciclo do produto</CardTitle>
               <span className="text-xs text-muted-foreground">
@@ -246,10 +250,7 @@ function Dashboard() {
             ) : (
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {PIPELINE_STAGES.map(({ status, color }) => (
-                  <div
-                    key={status}
-                    className="rounded-md border border-white/10 bg-white/[0.025] p-3"
-                  >
+                  <div key={status} className="rounded-md border border-border bg-muted/50 p-3">
                     <div className="flex items-center justify-between gap-2">
                       <span className={`h-2.5 w-2.5 rounded-full ${color}`} />
                       <span className="text-xl font-semibold text-white">
@@ -267,7 +268,7 @@ function Dashboard() {
         </Card>
 
         <Card className="glass-card rounded-lg">
-          <CardHeader className="border-b border-white/5 p-5">
+          <CardHeader className="border-b border-border/60 p-5">
             <CardTitle className="text-sm font-semibold text-white">Próximas decisões</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 p-5">
@@ -299,23 +300,17 @@ function Dashboard() {
               }
               to="/prototypes"
             />
-            <div className="rounded-md border border-white/10 bg-white/[0.025] p-4">
-              <p className="text-xs font-medium text-white">Indicadores de ERP</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Aguardando dados sincronizados de produção, custos e mercado.
-              </p>
-            </div>
           </CardContent>
         </Card>
       </section>
 
       <section className="grid grid-cols-1 gap-5 xl:grid-cols-[1.2fr_0.8fr]">
         <Card className="glass-card rounded-lg">
-          <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 p-5">
+          <CardHeader className="flex flex-row items-center justify-between border-b border-border/60 p-5">
             <CardTitle className="text-sm font-semibold text-white">Referências recentes</CardTitle>
             <Button asChild variant="ghost" size="sm">
               <Link to="/references">
-                Ver todas <ArrowRight className="ml-2 h-4 w-4" />
+                Ver todas <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
           </CardHeader>
@@ -329,7 +324,7 @@ function Dashboard() {
             ) : recentReferences.length === 0 ? (
               <p className="p-5 text-sm text-muted-foreground">Sem referências recentes.</p>
             ) : (
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-border/70">
                 {recentReferences.map((reference) => (
                   <button
                     key={reference.id}
@@ -342,9 +337,9 @@ function Dashboard() {
                         subtitle: reference.code,
                       })
                     }
-                    className="flex w-full items-center gap-3 rounded-sm p-3 text-left transition-colors hover:bg-white/[0.04]"
+                    className="flex w-full items-center gap-3 rounded-sm p-3 text-left transition-colors hover:bg-accent/70"
                   >
-                    <div className="h-12 w-10 shrink-0 overflow-hidden rounded border border-white/10 bg-white/[0.04]">
+                    <div className="h-12 w-10 shrink-0 overflow-hidden rounded border border-border bg-muted/60">
                       {reference.image_url ? (
                         <OptimizedImage
                           src={reference.image_url}
@@ -376,7 +371,7 @@ function Dashboard() {
         </Card>
 
         <Card className="glass-card rounded-lg">
-          <CardHeader className="border-b border-white/5 p-5">
+          <CardHeader className="border-b border-border/60 p-5">
             <CardTitle className="text-sm font-semibold text-white">
               Próximo passo do produto
             </CardTitle>
@@ -416,7 +411,7 @@ function ActionRow({
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 rounded-md border border-white/10 p-3 transition-colors hover:border-primary/30 hover:bg-white/[0.03]"
+      className="flex items-center gap-3 rounded-md border border-border p-3 transition-colors hover:border-primary/30 hover:bg-accent/60"
     >
       <span className="text-primary">{icon}</span>
       <span className="min-w-0 flex-1">

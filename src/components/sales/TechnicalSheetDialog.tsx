@@ -101,13 +101,13 @@ export function TechnicalSheetDialog({
           <DialogTitle className="flex items-center justify-between gap-3">
             <span>
               Ficha técnica · {order.number ?? "pedido"}{" "}
-              <span className="text-[11px] font-normal uppercase tracking-[0.04em] text-muted-foreground">
+              <span className="text-2xs font-normal uppercase tracking-[0.04em] text-muted-foreground">
                 sem custo
               </span>
             </span>
             <Button
               variant="ghost"
-              className="text-[11px] gap-2 text-muted-foreground"
+              className="text-2xs gap-2 text-muted-foreground"
               onClick={() => window.print()}
             >
               <Printer className="w-3.5 h-3.5" /> Imprimir
@@ -154,7 +154,7 @@ export function TechnicalSheetDialog({
                     {Object.entries(item.grade ?? {}).map(([size, qty]) => (
                       <span
                         key={size}
-                        className="px-1.5 py-0.5 rounded border border-border text-[11px]"
+                        className="px-1.5 py-0.5 rounded border border-border text-2xs"
                       >
                         {size} × {qty}
                       </span>
@@ -163,7 +163,7 @@ export function TechnicalSheetDialog({
                 </div>
 
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary mb-1">
+                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
                     Operações por setor
                   </p>
                   <table className="w-full text-xs">
@@ -208,7 +208,7 @@ export function TechnicalSheetDialog({
                 </div>
 
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary mb-1">
+                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
                     Materiais
                   </p>
                   <table className="w-full text-xs">
@@ -250,7 +250,7 @@ export function TechnicalSheetDialog({
               </div>
             ))}
 
-            <p className="text-[11px] text-muted-foreground border-t border-border pt-2">
+            <p className="text-2xs text-muted-foreground border-t border-border pt-2">
               Esta ficha não carrega custo, preço nem margem — é a versão que circula em produção.
             </p>
           </div>
@@ -263,7 +263,7 @@ export function TechnicalSheetDialog({
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[11px] uppercase tracking-[0.04em] text-muted-foreground">{label}</p>
+      <p className="text-2xs uppercase tracking-[0.04em] text-muted-foreground">{label}</p>
       <p className="font-semibold text-white">{value}</p>
     </div>
   );

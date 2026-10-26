@@ -105,10 +105,10 @@ function ProductionTodayPage() {
               <button
                 key={s}
                 onClick={() => setSetor(s)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition border ${
+                className={`px-3 py-1.5 rounded-full text-2xs font-semibold uppercase tracking-wider transition border ${
                   setor === s
                     ? "border-primary/60 bg-primary/15 text-primary"
-                    : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/25 hover:text-white"
+                    : "border-border bg-muted/50 text-muted-foreground hover:border-border-strong/70 hover:text-white"
                 }`}
               >
                 {s}
@@ -148,23 +148,23 @@ function ProductionTodayPage() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-3 flex-wrap">
                         <div>
-                          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+                          <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
                             {i.loteNumero} • {i.ref}
                           </p>
                           <p className="text-sm font-bold text-white">{i.nome}</p>
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="text-2xs text-muted-foreground">
                             {i.grupo} • {i.colecao} • {i.responsavel}
                           </p>
                         </div>
                         <div className="text-right space-y-1">
                           <Badge
                             variant="outline"
-                            className={`text-[11px] ${
+                            className={`text-2xs ${
                               i.diasPrazo < 0
                                 ? "border-status-rejected/40 text-status-rejected"
                                 : i.diasPrazo <= 3
                                   ? "border-status-progress/40 text-status-progress"
-                                  : "border-white/20"
+                                  : "border-border-strong/70"
                             }`}
                           >
                             <Calendar className="h-3 w-3 mr-1" />
@@ -173,14 +173,13 @@ function ProductionTodayPage() {
                               : `${i.diasPrazo}d`}
                           </Badge>
                           <p className="text-lg font-bold text-white">
-                            {i.pendente}{" "}
-                            <span className="text-[11px] text-muted-foreground">pç</span>
+                            {i.pendente} <span className="text-2xs text-muted-foreground">pç</span>
                           </p>
                         </div>
                       </div>
                       <div className="mt-2 flex items-center gap-2">
-                        <Progress value={i.progresso} className="h-1 bg-white/5 flex-1" />
-                        <span className="text-[11px] text-muted-foreground w-10 text-right">
+                        <Progress value={i.progresso} className="h-1 bg-muted/50 flex-1" />
+                        <span className="text-2xs text-muted-foreground w-10 text-right">
                           {i.progresso}%
                         </span>
                       </div>

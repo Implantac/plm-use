@@ -109,7 +109,7 @@ function CommercialPage() {
           >
             <Card className="glass-card rounded-lg p-5 group hover:border-primary/40 transition-all duration-500">
               <CardHeader className="p-0 mb-4 flex flex-row items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground group-hover:text-primary transition-colors">
+                <p className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground group-hover:text-primary transition-colors">
                   {stat.label}
                 </p>
                 <div
@@ -123,9 +123,11 @@ function CommercialPage() {
                 </div>
               </CardHeader>
               <div className="space-y-2">
-                <p className="text-3xl font-bold text-white tracking-tighter">{stat.value}</p>
+                <p className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">
+                  {stat.value}
+                </p>
                 <p
-                  className={`text-[11px] font-bold uppercase tracking-widest ${stat.trend === "up" ? "text-status-approved" : "text-status-rejected"}`}
+                  className={`text-2xs font-semibold uppercase tracking-widest ${stat.trend === "up" ? "text-status-approved" : "text-status-rejected"}`}
                 >
                   {stat.change}{" "}
                   <span className="text-muted-foreground font-light lowercase">vs planejado</span>
@@ -138,7 +140,7 @@ function CommercialPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card className="glass-card rounded-lg p-6 space-y-8">
-          <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+          <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
             <TrendingUp className="w-5 h-5 text-primary" /> Vendas por Canal
           </h3>
           <div className="space-y-6">
@@ -150,12 +152,12 @@ function CommercialPage() {
             ].map((c, i) => (
               <div key={i} className="space-y-3 group cursor-pointer">
                 <div className="flex justify-between items-end">
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-white group-hover:text-primary transition-colors">
+                  <p className="text-2xs font-semibold uppercase tracking-widest text-white group-hover:text-primary transition-colors">
                     {c.channel}
                   </p>
                   <p className="text-sm font-bold text-white">{c.val}</p>
                 </div>
-                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-muted/50 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary transition-all duration-1000"
                     style={{ width: `${c.perc}%` }}
@@ -168,10 +170,10 @@ function CommercialPage() {
 
         <Card className="glass-card rounded-lg p-6 space-y-8">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <Users className="w-5 h-5 text-primary" /> Principais Clientes B2B
             </h3>
-            <Button variant="ghost" className="text-[11px] tracking-[0.05em] text-primary">
+            <Button variant="ghost" className="text-2xs tracking-[0.05em] text-primary">
               Ver Todos
             </Button>
           </div>
@@ -179,7 +181,7 @@ function CommercialPage() {
             {clients.map((client) => (
               <div
                 key={client.id}
-                className="flex items-center justify-between p-4 rounded-md bg-white/5 border border-white/5 hover:border-primary/40 transition-all group cursor-pointer relative"
+                className="flex items-center justify-between p-4 rounded-md bg-muted/50 border border-border/60 hover:border-primary/40 transition-all group cursor-pointer relative"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold">
@@ -187,7 +189,7 @@ function CommercialPage() {
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-bold text-white tracking-tight">{client.name}</p>
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-widest">
+                    <p className="text-2xs text-muted-foreground uppercase tracking-widest">
                       {client.orders} pedidos este ano
                     </p>
                   </div>
@@ -195,7 +197,7 @@ function CommercialPage() {
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <p className="text-sm font-bold text-white tracking-tighter">{client.total}</p>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-status-approved">
+                    <p className="text-2xs font-semibold uppercase tracking-widest text-status-approved">
                       Regular
                     </p>
                   </div>
@@ -213,7 +215,7 @@ function CommercialPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
         <Card className="glass-card rounded-lg p-6">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
+          <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
             <PlugZap className="h-4 w-4 text-primary" /> Integrações
           </h3>
           <div className="space-y-3">
@@ -225,12 +227,12 @@ function CommercialPage() {
             ].map((item) => (
               <div
                 key={item}
-                className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.035] p-3"
+                className="flex items-center justify-between rounded-md border border-border bg-muted/60 p-3"
               >
-                <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+                <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-white">
                   {item}
                 </span>
-                <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-status-approved">
+                <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-status-approved">
                   Sync
                 </span>
               </div>
@@ -239,7 +241,7 @@ function CommercialPage() {
         </Card>
 
         <Card className="glass-card rounded-lg p-6">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
+          <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
             <RefreshCcw className="h-4 w-4 text-primary" /> Trocas e devoluções
           </h3>
           <div className="grid grid-cols-2 gap-3">
@@ -249,12 +251,9 @@ function CommercialPage() {
               { label: "Motivo fit", value: "41%", icon: Users },
               { label: "Lojas", value: "18", icon: Store },
             ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-md border border-white/10 bg-white/[0.035] p-4"
-              >
+              <div key={item.label} className="rounded-md border border-border bg-muted/60 p-4">
                 <item.icon className="h-4 w-4 text-primary" />
-                <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                   {item.label}
                 </p>
                 <p className="mt-1 text-lg font-bold text-white">{item.value}</p>
@@ -264,67 +263,67 @@ function CommercialPage() {
         </Card>
 
         <Card className="glass-card rounded-lg p-6 border-primary/20 bg-primary/[0.025]">
-          <h3 className="text-[11px] font-bold uppercase tracking-[0.05em] text-primary mb-4">
+          <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-primary mb-4">
             USE AI Comercial
           </h3>
           <p className="text-sm leading-relaxed text-white/85">
             A maior devolução vem de modelagem em pantalonas tamanho M. Recomendação: revisar tabela
             de medidas e pausar reposição em 2 marketplaces.
           </p>
-          <Button className="mt-5 w-full text-[11px] tracking-[0.04em]">Gerar plano de ação</Button>
+          <Button className="mt-5 w-full text-2xs tracking-[0.04em]">Gerar plano de ação</Button>
         </Card>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingClient ? "Editar Cliente B2B" : "Prospecção de Novo Cliente"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Razão Social / Nome Fantasia
               </Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Luxury Boutique LTDA"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Pedidos (Total)
                 </Label>
                 <Input
                   type="number"
                   value={formData.orders}
                   onChange={(e) => setFormData({ ...formData, orders: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 10"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Volume de Venda
                 </Label>
                 <Input
                   value={formData.total}
                   onChange={(e) => setFormData({ ...formData, total: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: R$ 50k"
                 />
               </div>
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Salvar na Carteira
             </Button>
           </DialogFooter>

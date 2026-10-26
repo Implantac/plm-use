@@ -330,11 +330,11 @@ export function GlobalSearch() {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/5 text-muted-foreground hover:text-white cursor-pointer transition-all hover:bg-white/10 group shadow-sm"
+        className="flex items-center gap-3 px-4 py-3 rounded-lg bg-muted/50 border border-border/60 text-muted-foreground hover:text-white cursor-pointer transition-all hover:bg-accent group shadow-sm"
       >
         <Search className="w-4 h-4" />
-        <span className="text-[11px] font-bold uppercase tracking-[0.05em] flex-1">Comandos</span>
-        <span className="text-[11px] font-black border border-white/10 rounded-md px-1.5 py-0.5 bg-black/20 group-hover:border-primary/40 transition-colors">
+        <span className="text-2xs font-semibold uppercase tracking-[0.05em] flex-1">Comandos</span>
+        <span className="text-2xs font-black border border-border rounded-md px-1.5 py-0.5 bg-black/20 group-hover:border-primary/40 transition-colors">
           ⌘K
         </span>
       </div>
@@ -349,7 +349,7 @@ export function GlobalSearch() {
             <CommandEmpty className="py-12 text-center">
               <div className="flex flex-col items-center gap-4">
                 <Search className="w-10 h-10 text-white/10" />
-                <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                <p className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
                   Nenhum registro encontrado
                 </p>
               </div>
@@ -362,16 +362,16 @@ export function GlobalSearch() {
                     <CommandItem
                       key={qa.id}
                       onSelect={() => runCommand(() => dispatchQuickAction(qa.event))}
-                      className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+                      className="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-accent/60 group"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                         <ZapAction className="w-4 h-4" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+                        <p className="text-2xs font-semibold uppercase tracking-widest text-white">
                           {qa.label}
                         </p>
-                        <p className="text-[11px] text-muted-foreground uppercase italic tracking-tighter">
+                        <p className="text-2xs text-muted-foreground uppercase italic tracking-tighter">
                           Aqui no {currentMeta.label}
                         </p>
                       </div>
@@ -379,23 +379,23 @@ export function GlobalSearch() {
                     </CommandItem>
                   ))}
                 </CommandGroup>
-                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandSeparator className="bg-muted/50 my-2" />
               </>
             )}
 
             <CommandGroup heading="Ações globais">
               <CommandItem
                 onSelect={() => runCommand(() => navigate({ to: "/ai-center" }))}
-                className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+                className="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-accent/60 group"
               >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                   <CommandIcon className="w-4 h-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+                  <p className="text-2xs font-semibold uppercase tracking-widest text-white">
                     AI Product Studio
                   </p>
-                  <p className="text-[11px] text-muted-foreground uppercase italic tracking-tighter">
+                  <p className="text-2xs text-muted-foreground uppercase italic tracking-tighter">
                     Consultar inteligência aplicada
                   </p>
                 </div>
@@ -404,20 +404,20 @@ export function GlobalSearch() {
               {currentMeta && (
                 <CommandItem
                   onSelect={() => runCommand(() => toggleFavorite(currentMeta.path))}
-                  className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+                  className="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-accent/60 group"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <div className="w-10 h-10 rounded-lg bg-muted/50 border border-border/60 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                     <Star
                       className={`w-4 h-4 ${isFavorite(currentMeta.path) ? "fill-primary" : ""}`}
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+                    <p className="text-2xs font-semibold uppercase tracking-widest text-white">
                       {isFavorite(currentMeta.path)
                         ? "Remover dos favoritos"
                         : "Adicionar aos favoritos"}
                     </p>
-                    <p className="text-[11px] text-muted-foreground uppercase italic tracking-tighter">
+                    <p className="text-2xs text-muted-foreground uppercase italic tracking-tighter">
                       {currentMeta.label}
                     </p>
                   </div>
@@ -427,7 +427,7 @@ export function GlobalSearch() {
 
             {favoriteEntries.length > 0 && (
               <>
-                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandSeparator className="bg-muted/50 my-2" />
                 <CommandGroup heading="Favoritos">
                   {favoriteEntries.map((e) => (
                     <EntryRow
@@ -442,7 +442,7 @@ export function GlobalSearch() {
 
             {recentEntries.length > 0 && (
               <>
-                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandSeparator className="bg-muted/50 my-2" />
                 <CommandGroup heading="Recentes">
                   {recentEntries.map((e) => (
                     <EntryRow
@@ -455,7 +455,7 @@ export function GlobalSearch() {
               </>
             )}
 
-            <CommandSeparator className="bg-white/5 my-2" />
+            <CommandSeparator className="bg-muted/50 my-2" />
 
             <CommandGroup heading="Módulos">
               {MODULES.map((m) => (
@@ -469,7 +469,7 @@ export function GlobalSearch() {
 
             {pcpEntries.length > 0 && (
               <>
-                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandSeparator className="bg-muted/50 my-2" />
                 <CommandGroup heading="PCP · Lotes & Referências">
                   {pcpEntries.map((e) => (
                     <EntryRow
@@ -484,7 +484,7 @@ export function GlobalSearch() {
 
             {capaEntries.length > 0 && (
               <>
-                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandSeparator className="bg-muted/50 my-2" />
                 <CommandGroup heading="Qualidade · CAPAs">
                   {capaEntries.map((e) => (
                     <EntryRow
@@ -499,7 +499,7 @@ export function GlobalSearch() {
 
             {infEntries.length > 0 && (
               <>
-                <CommandSeparator className="bg-white/5 my-2" />
+                <CommandSeparator className="bg-muted/50 my-2" />
                 <CommandGroup heading="Influencers">
                   {infEntries.map((e) => (
                     <EntryRow
@@ -513,31 +513,31 @@ export function GlobalSearch() {
             )}
           </CommandList>
 
-          <div className="p-4 border-t border-white/5 flex justify-between items-center bg-black/40">
+          <div className="p-4 border-t border-border/60 flex justify-between items-center bg-black/40">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest">
                   Navegar
                 </span>
                 <div className="flex gap-1">
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[8px] text-white font-black">
+                  <span className="px-1.5 py-0.5 rounded border border-border bg-muted/50 text-2xs text-white font-black">
                     ↑
                   </span>
-                  <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[8px] text-white font-black">
+                  <span className="px-1.5 py-0.5 rounded border border-border bg-muted/50 text-2xs text-white font-black">
                     ↓
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest">
                   Abrir
                 </span>
-                <span className="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-[8px] text-white font-black">
+                <span className="px-1.5 py-0.5 rounded border border-border bg-muted/50 text-2xs text-white font-black">
                   ENTER
                 </span>
               </div>
             </div>
-            <p className="text-[10px] font-bold text-primary/40 uppercase tracking-[0.06em]">
+            <p className="text-2xs font-bold text-primary/40 uppercase tracking-[0.06em]">
               USE MODA Neural Search · live
             </p>
           </div>
@@ -552,9 +552,9 @@ function EntryRow({ entry, onSelect }: { entry: Entry; onSelect: () => void }) {
     <CommandItem
       onSelect={onSelect}
       value={`${entry.title} ${entry.subtitle ?? ""} ${entry.module}`}
-      className="flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/5 group"
+      className="flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-accent/60 group"
     >
-      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/20 transition-all">
+      <div className="w-10 h-10 rounded-lg bg-muted/50 border border-border/60 flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/20 transition-all">
         {entry.icon}
       </div>
       <div className="flex-1 min-w-0">
@@ -562,13 +562,13 @@ function EntryRow({ entry, onSelect }: { entry: Entry; onSelect: () => void }) {
           {entry.title}
         </p>
         <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-muted-foreground/60">
+          <span className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground/60">
             {entry.module}
           </span>
           {entry.subtitle && (
             <>
-              <span className="w-1 h-1 rounded-full bg-white/10" />
-              <span className="text-[10px] font-medium text-muted-foreground/50 italic truncate">
+              <span className="w-1 h-1 rounded-full bg-muted" />
+              <span className="text-2xs font-medium text-muted-foreground/50 italic truncate">
                 {entry.subtitle}
               </span>
             </>

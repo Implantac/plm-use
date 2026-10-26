@@ -141,7 +141,9 @@ function FinancialPage() {
     >
       {receber && receber.count > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-3 rounded-md border border-primary/30 bg-primary/[0.06] p-3 text-xs">
-          <span className="font-bold uppercase tracking-[0.04em] text-primary">Dados reais</span>
+          <span className="font-semibold uppercase tracking-[0.04em] text-primary">
+            Dados reais
+          </span>
           <span className="text-muted-foreground">
             A receber nos pedidos do PLM (aprovados + liberados): {receber.count} pedido(s), total
             R${" "}
@@ -153,10 +155,10 @@ function FinancialPage() {
         </div>
       )}
       <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
+        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
           <FileText className="w-4 h-4" /> DRE Gerencial
         </Button>
-        <Button variant="outline" className="text-[11px] tracking-[0.04em] gap-2">
+        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
           <Wallet className="w-4 h-4" /> Conciliação
         </Button>
       </div>
@@ -169,17 +171,19 @@ function FinancialPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
           >
-            <Card className="glass-card rounded-[2rem] p-8 group hover:border-primary/40 transition-all duration-500">
+            <Card className="glass-card rounded-full p-8 group hover:border-primary/40 transition-all duration-500">
               <CardHeader className="p-0 mb-4 flex flex-row items-center justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground group-hover:text-primary transition-colors">
+                <p className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground group-hover:text-primary transition-colors">
                   {stat.label}
                 </p>
-                <div className="p-2 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-primary/10 group-hover:text-primary transition-all">
+                <div className="p-2 rounded-lg bg-muted/50 border border-border/60 group-hover:bg-primary/10 group-hover:text-primary transition-all">
                   <DollarSign className="w-4 h-4" />
                 </div>
               </CardHeader>
               <div className="space-y-2">
-                <p className="text-3xl font-bold text-white tracking-tighter">{stat.value}</p>
+                <p className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">
+                  {stat.value}
+                </p>
                 <div className="flex items-center gap-2">
                   <div
                     className={`p-1 rounded-full ${stat.trend === "up" ? "bg-status-approved/10 text-status-approved" : "bg-status-rejected/10 text-status-rejected"}`}
@@ -191,7 +195,7 @@ function FinancialPage() {
                     )}
                   </div>
                   <span
-                    className={`text-[11px] font-bold uppercase tracking-widest ${stat.trend === "up" ? "text-status-approved" : "text-status-rejected"}`}
+                    className={`text-2xs font-semibold uppercase tracking-widest ${stat.trend === "up" ? "text-status-approved" : "text-status-rejected"}`}
                   >
                     {stat.change}
                   </span>
@@ -203,16 +207,16 @@ function FinancialPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 glass-card rounded-[2.5rem] p-10 space-y-8">
+        <Card className="lg:col-span-2 glass-card rounded-full p-10 space-y-8">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <BarChart3 className="w-5 h-5 text-primary" /> Distribuição de Custos por Unidade
             </h3>
             <div className="flex gap-4">
-              <span className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase">
+              <span className="flex items-center gap-2 text-2xs font-bold text-muted-foreground uppercase">
                 <span className="w-2 h-2 rounded-full bg-primary" /> Matéria-Prima
               </span>
-              <span className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground uppercase">
+              <span className="flex items-center gap-2 text-2xs font-bold text-muted-foreground uppercase">
                 <span className="w-2 h-2 rounded-full bg-status-approved" /> Mão de Obra
               </span>
             </div>
@@ -221,7 +225,7 @@ function FinancialPage() {
             <div className="absolute inset-0 bg-linear-to-t from-primary/5 to-transparent pointer-events-none" />
             {[45, 65, 35, 85, 55, 75, 95].map((h, i) => (
               <div key={i} className="flex-1 space-y-2 group cursor-pointer">
-                <div className="relative w-full bg-white/5 rounded-t-xl overflow-hidden h-full flex flex-col justify-end">
+                <div className="relative w-full bg-muted/50 rounded-t-xl overflow-hidden h-full flex flex-col justify-end">
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${h}%` }}
@@ -229,7 +233,7 @@ function FinancialPage() {
                     className="w-full bg-primary group-hover:bg-primary/80 transition-colors"
                   />
                 </div>
-                <p className="text-[10px] font-bold text-center text-muted-foreground uppercase tracking-widest">
+                <p className="text-2xs font-bold text-center text-muted-foreground uppercase tracking-widest">
                   Col {i + 1}
                 </p>
               </div>
@@ -238,15 +242,15 @@ function FinancialPage() {
         </Card>
 
         <div className="space-y-8">
-          <Card className="glass-card rounded-[2.5rem] p-10 space-y-8">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.06em] text-white mb-6">
+          <Card className="glass-card rounded-full p-10 space-y-8">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-white mb-6">
               Ativos em Transação
             </h3>
             <div className="space-y-4">
               {transactions.map((item) => (
                 <div
                   key={item.id}
-                  className="p-6 rounded-2xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all group relative"
+                  className="p-6 rounded-lg bg-muted/50 border border-border/60 hover:border-primary/30 transition-all group relative"
                 >
                   <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <ModuleActionMenu
@@ -256,13 +260,13 @@ function FinancialPage() {
                     />
                   </div>
                   <div className="flex justify-between items-center mb-2">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-white">
+                    <p className="text-2xs font-semibold uppercase tracking-widest text-white">
                       {item.label}
                     </p>
                     <p className="text-sm font-bold text-white">{item.val}</p>
                   </div>
                   <div className="flex justify-between items-center">
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-widest">
+                    <p className="text-2xs text-muted-foreground uppercase tracking-widest">
                       Vencimento em {item.due}
                     </p>
                     <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
@@ -272,21 +276,21 @@ function FinancialPage() {
             </div>
           </Card>
 
-          <Card className="glass-card rounded-[2.5rem] p-10 bg-linear-to-br from-status-approved/10 to-transparent border-status-approved/20">
+          <Card className="glass-card rounded-full p-10 bg-linear-to-br from-status-approved/10 to-transparent border-status-approved/20">
             <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-2xl bg-status-approved/20 text-status-approved">
+              <div className="p-3 rounded-lg bg-status-approved/20 text-status-approved">
                 <Landmark className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-tight">
                   Saúde Financeira
                 </h3>
-                <p className="text-[11px] text-status-approved font-bold uppercase tracking-widest">
+                <p className="text-2xs text-status-approved font-semibold uppercase tracking-widest">
                   Excelente
                 </p>
               </div>
             </div>
-            <p className="text-[11px] text-muted-foreground font-light leading-relaxed italic lowercase">
+            <p className="text-2xs text-muted-foreground font-light leading-relaxed italic lowercase">
               o fluxo de caixa projetado para o próximo trimestre indica uma reserva de capital 24%
               superior ao planejado.
             </p>
@@ -295,27 +299,27 @@ function FinancialPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-[2.5rem] p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold uppercase tracking-tighter italic">
+            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingTransaction ? "Editar Lançamento" : "Novo Lançamento Financeiro"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-8">
             <div className="space-y-2">
-              <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                 Título / Categoria
               </Label>
               <Input
                 value={formData.label}
                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                 placeholder="Ex: Contas a Pagar Fornecedor"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Fonte
                 </Label>
                 <Input
@@ -326,39 +330,39 @@ function FinancialPage() {
                       source: e.target.value as typeof formData.source,
                     })
                   }
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="marketing"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Valor
                 </Label>
                 <Input
                   value={formData.val}
                   onChange={(e) => setFormData({ ...formData, val: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: R$ 15.000"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                   Vencimento
                 </Label>
                 <Input
                   value={formData.due}
                   onChange={(e) => setFormData({ ...formData, due: e.target.value })}
-                  className="rounded-xl h-12 focus:border-primary/40 focus:ring-0"
+                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: 10 dias"
                 />
               </div>
             </div>
           </div>
           <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-[11px]">
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-[11px]">
+            <Button onClick={handleSave} className="text-2xs">
               Efetivar Lançamento
             </Button>
           </DialogFooter>

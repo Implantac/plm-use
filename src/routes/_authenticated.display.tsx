@@ -119,9 +119,7 @@ function DisplayRoute() {
       <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)_240px]">
         {/* Lista de painéis */}
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground px-1">
-            Painéis
-          </p>
+          <p className="text-2xs uppercase tracking-widest text-muted-foreground px-1">Painéis</p>
           {boards.map((b) => {
             const active = b.id === selected?.id;
             return (
@@ -132,7 +130,7 @@ function DisplayRoute() {
                 className={`w-full text-left rounded-lg border overflow-hidden transition-all ${
                   active
                     ? "border-primary/60 bg-primary/5"
-                    : "border-white/10 hover:border-white/20"
+                    : "border-border hover:border-border-strong/70"
                 }`}
               >
                 <div className="relative h-16">
@@ -144,17 +142,17 @@ function DisplayRoute() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                   <Badge
                     variant="outline"
-                    className={`absolute top-1.5 right-1.5 text-[11px] uppercase tracking-widest ${STATUS_CLASS[b.status]}`}
+                    className={`absolute top-1.5 right-1.5 text-2xs uppercase tracking-widest ${STATUS_CLASS[b.status]}`}
                   >
                     {STATUS_LABEL[b.status]}
                   </Badge>
                 </div>
                 <div className="p-2">
                   <p className="text-xs font-semibold text-white truncate">{b.name}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">
+                  <p className="text-2xs text-muted-foreground truncate">
                     {b.season} · {b.target}
                   </p>
-                  <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1">
+                  <p className="text-2xs text-muted-foreground flex items-center gap-1 mt-1">
                     <Clock className="h-2.5 w-2.5" /> {b.updatedAt} · {b.items.length} peças
                   </p>
                 </div>
@@ -230,7 +228,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <LayoutTemplate className="h-4 w-4 text-primary" />
-            <span className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+            <span className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
               Canvas · {board.season}
             </span>
           </div>
@@ -241,13 +239,13 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
           </p>
         </div>
         <div className="flex gap-2 items-center">
-          <label className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+          <label className="flex items-center gap-1.5 text-2xs uppercase tracking-widest text-muted-foreground">
             Fundo
             <input
               type="color"
               value={board.bgColor}
               onChange={(e) => upsertBoard({ ...board, bgColor: e.target.value })}
-              className="h-7 w-9 rounded border border-white/10 bg-transparent cursor-pointer"
+              className="h-7 w-9 rounded border border-border bg-transparent cursor-pointer"
               aria-label="Cor de fundo"
             />
           </label>
@@ -290,7 +288,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerUp}
-        className="relative w-full aspect-[4/5] rounded-xl border-2 border-dashed border-white/10 overflow-hidden touch-none"
+        className="relative w-full aspect-[4/5] rounded-lg border-2 border-dashed border-border overflow-hidden touch-none"
         style={{ background: board.bgColor }}
       >
         {board.items.length === 0 && (
@@ -329,7 +327,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
                   type="button"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={() => resizeItem(board.id, item.id, Math.min(item.w + 3, 45))}
-                  className="h-5 w-5 rounded bg-black/60 text-white text-[11px] flex items-center justify-center"
+                  className="h-5 w-5 rounded bg-black/60 text-white text-2xs flex items-center justify-center"
                   aria-label="Aumentar"
                 >
                   <Plus className="h-2.5 w-2.5" />
@@ -338,7 +336,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
                   type="button"
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={() => resizeItem(board.id, item.id, Math.max(item.w - 3, 8))}
-                  className="h-5 w-5 rounded bg-black/60 text-white text-[11px] flex items-center justify-center"
+                  className="h-5 w-5 rounded bg-black/60 text-white text-2xs flex items-center justify-center"
                   aria-label="Diminuir"
                 >
                   <Minus className="h-2.5 w-2.5" />
@@ -357,7 +355,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
                 </button>
               </div>
             </div>
-            <div className="px-1.5 py-1 bg-[#fff] text-[11px] leading-tight">
+            <div className="px-1.5 py-1 bg-[#fff] text-2xs leading-tight">
               <p className="font-mono text-black/60">{item.refCode}</p>
               <p className="font-semibold text-black truncate">{item.refName}</p>
             </div>
@@ -377,10 +375,10 @@ function RefPalette({ boardId }: { boardId: string }) {
       r.category.toLowerCase().includes(q.toLowerCase()),
   );
   return (
-    <Card className="border-white/10 bg-white/[0.03] h-fit sticky top-4">
+    <Card className="border-border bg-muted/50 h-fit sticky top-4">
       <CardContent className="p-3 space-y-2">
         <div>
-          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-1.5 px-0.5">
+          <p className="text-2xs uppercase tracking-widest text-muted-foreground mb-1.5 px-0.5">
             Biblioteca de referências
           </p>
           <Input
@@ -411,7 +409,7 @@ function RefPalette({ boardId }: { boardId: string }) {
                 });
                 toast.success(`${r.code} adicionada`);
               }}
-              className="rounded-md overflow-hidden border border-white/10 bg-white/[0.02] cursor-grab hover:border-primary/40 transition-colors"
+              className="rounded-md overflow-hidden border border-border bg-muted/40 cursor-grab hover:border-primary/40 transition-colors"
               title="Arraste para o canvas ou dê duplo clique"
             >
               <div className="aspect-square relative">
@@ -421,23 +419,21 @@ function RefPalette({ boardId }: { boardId: string }) {
                   className="h-full w-full object-cover pointer-events-none"
                 />
                 <span
-                  className="absolute bottom-1 right-1 h-3 w-3 rounded-full border border-white/60"
+                  className="absolute bottom-1 right-1 h-3 w-3 rounded-full border border-border-strong"
                   style={{ background: r.colorHex }}
                 />
               </div>
               <div className="p-1.5">
-                <p className="text-[11px] font-mono text-muted-foreground">{r.code}</p>
-                <p className="text-[11px] font-semibold text-white truncate leading-tight">
-                  {r.name}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-2xs font-mono text-muted-foreground">{r.code}</p>
+                <p className="text-2xs font-semibold text-white truncate leading-tight">{r.name}</p>
+                <p className="text-2xs text-muted-foreground">
                   {r.category} · R$ {r.price}
                 </p>
               </div>
             </div>
           ))}
         </div>
-        <p className="text-[11px] text-muted-foreground text-center pt-1 border-t border-white/5">
+        <p className="text-2xs text-muted-foreground text-center pt-1 border-t border-border/60">
           Arraste ou dê duplo clique
         </p>
       </CardContent>

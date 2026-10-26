@@ -45,7 +45,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+          <p className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
             Identificação
           </p>
           <p className="text-sm font-bold text-white">
@@ -56,21 +56,21 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
             {colecao ? ` • ${colecao}` : ""}
           </p>
           <p
-            className={`mt-1 text-[11px] font-bold uppercase tracking-wider ${
+            className={`mt-1 text-2xs font-semibold uppercase tracking-wider ${
               summary.exists ? "text-status-approved/90" : "text-status-progress/90"
             }`}
           >
             {formatSheetSummary(summary)}
           </p>
         </div>
-        <Button asChild size="sm" variant="outline" className="text-[11px] tracking-[0.04em] gap-1">
+        <Button asChild size="sm" variant="outline" className="text-2xs tracking-[0.04em] gap-1">
           <Link to="/tech-sheet" search={{ ref: referencia.ref }}>
             Abrir ficha completa <ExternalLink className="h-3 w-3" />
           </Link>
         </Button>
       </div>
 
-      <div className="aspect-video rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center text-muted-foreground">
+      <div className="aspect-video rounded-lg border border-border bg-muted/50 flex items-center justify-center text-muted-foreground">
         {(() => {
           const fotoUrl =
             referencia.imagem ??
@@ -93,8 +93,8 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
         ) : (
           <div className="grid grid-cols-5 gap-2">
             {grade.map(([tam, qtd]) => (
-              <div key={tam} className="rounded border border-white/10 bg-white/5 py-2 text-center">
-                <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{tam}</p>
+              <div key={tam} className="rounded border border-border bg-muted/50 py-2 text-center">
+                <p className="text-2xs uppercase tracking-wider text-muted-foreground">{tam}</p>
                 <p className="text-sm font-bold text-white">{qtd}</p>
               </div>
             ))}
@@ -108,20 +108,20 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
             icon={<Layers className="h-3 w-3" />}
             title={`Materiais · ${doc.bom.length} itens`}
           >
-            <div className="rounded-md border border-white/10 overflow-hidden">
+            <div className="rounded-md border border-border overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-white/5">
-                  <tr className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <thead className="bg-muted/50">
+                  <tr className="text-2xs uppercase tracking-wider text-muted-foreground">
                     <th className="px-3 py-2">Tipo</th>
                     <th className="px-3 py-2">Material</th>
                     <th className="px-3 py-2 text-right">Consumo</th>
                     <th className="px-3 py-2 text-right">Custo</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border/70">
                   {doc.bom.map((m) => (
                     <tr key={m.id}>
-                      <td className="px-3 py-2 text-primary/80 text-[11px] uppercase">{m.tipo}</td>
+                      <td className="px-3 py-2 text-primary/80 text-2xs uppercase">{m.tipo}</td>
                       <td className="px-3 py-2 text-white">{m.material}</td>
                       <td className="px-3 py-2 text-right text-muted-foreground">
                         {m.consumo} {m.unidade}
@@ -133,7 +133,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                     <tr>
                       <td
                         colSpan={4}
-                        className="px-3 py-3 text-center text-[11px] text-muted-foreground"
+                        className="px-3 py-3 text-center text-2xs text-muted-foreground"
                       >
                         Ficha criada, BOM ainda vazio — preencha na ficha completa.
                       </td>
@@ -142,14 +142,14 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                 </tbody>
                 {doc.bom.length > 0 && (
                   <tfoot>
-                    <tr className="bg-white/5 text-[11px]">
+                    <tr className="bg-muted/50 text-2xs">
                       <td
                         colSpan={3}
                         className="px-3 py-2 uppercase tracking-wider text-muted-foreground"
                       >
                         Custo de materiais
                       </td>
-                      <td className="px-3 py-2 text-right font-bold text-white">
+                      <td className="px-3 py-2 text-right font-semibold text-white">
                         {brl(custoTotalBOM(doc.bom))}
                       </td>
                     </tr>
@@ -168,10 +168,10 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                 {doc.aplicacoes.map((a) => (
                   <div
                     key={a.id}
-                    className="flex items-center justify-between rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-xs"
+                    className="flex items-center justify-between rounded border border-border bg-muted/50 px-3 py-2 text-xs"
                   >
                     <span className="text-white">
-                      <span className="text-[11px] uppercase tracking-wider text-primary mr-2">
+                      <span className="text-2xs uppercase tracking-wider text-primary mr-2">
                         {a.tipo}
                       </span>
                       {a.posicao}{" "}
@@ -184,7 +184,7 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                     </span>
                   </div>
                 ))}
-                <p className="pt-1 text-right text-[11px] uppercase tracking-wider text-muted-foreground">
+                <p className="pt-1 text-right text-2xs uppercase tracking-wider text-muted-foreground">
                   Aplicações/peça:{" "}
                   <strong className="text-white normal-case tracking-normal">
                     {brl(custoAplicacoesPecasTotal(doc.aplicacoes))}
@@ -211,12 +211,12 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
               {bopOrdem.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between rounded border border-white/10 bg-white/[0.03] px-3 py-2 text-xs"
+                  className="flex items-center justify-between rounded border border-border bg-muted/50 px-3 py-2 text-xs"
                 >
                   <span className="flex items-center gap-2 text-white">
-                    <span className="text-[11px] text-muted-foreground">{p.seq}.</span>
+                    <span className="text-2xs text-muted-foreground">{p.seq}.</span>
                     {p.etapa}
-                    <span className="text-[11px] text-muted-foreground">· {p.setor}</span>
+                    <span className="text-2xs text-muted-foreground">· {p.setor}</span>
                   </span>
                   <span className="text-muted-foreground">
                     {p.tempoMin} min · <span className="text-white">{brl(p.custo)}</span>
@@ -224,12 +224,12 @@ export function FichaTecnicaResumo({ referencia, grupo, colecao }: Props) {
                 </div>
               ))}
               {doc.bop.length === 0 && (
-                <p className="rounded-md border border-dashed border-white/10 p-3 text-center text-[11px] text-muted-foreground">
+                <p className="rounded-md border border-dashed border-border p-3 text-center text-2xs text-muted-foreground">
                   Nenhuma etapa de operação na ficha ainda.
                 </p>
               )}
               {doc.bom.length + doc.bop.length > 0 && (
-                <p className="pt-1 text-right text-[11px] uppercase tracking-wider text-muted-foreground">
+                <p className="pt-1 text-right text-2xs uppercase tracking-wider text-muted-foreground">
                   Custo industrial (BOM+BOP):{" "}
                   <strong className="text-white normal-case tracking-normal">
                     {brl(custoIndustrial)}
@@ -261,7 +261,7 @@ function Section({
 }) {
   return (
     <div className="space-y-2">
-      <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.05em] text-primary">
+      <p className="flex items-center gap-2 text-2xs uppercase tracking-[0.05em] text-primary">
         {icon} {title}
       </p>
       {children}

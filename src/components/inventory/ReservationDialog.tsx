@@ -136,9 +136,9 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass-card border-white/10 bg-popover text-white rounded-lg p-6 max-w-lg">
+      <DialogContent className="glass-card border-border bg-popover text-white rounded-lg p-6 max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold uppercase tracking-tight">
+          <DialogTitle className="text-xl font-semibold uppercase tracking-tight">
             Nova reserva
           </DialogTitle>
         </DialogHeader>
@@ -149,7 +149,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
               <SelectTrigger aria-invalid={!!errors.itemId}>
                 <SelectValue placeholder="Selecione o insumo" />
               </SelectTrigger>
-              <SelectContent className="bg-popover border-white/10 text-white max-h-72">
+              <SelectContent className="bg-popover border-border text-white max-h-72">
                 {items.map((it) => (
                   <SelectItem key={it.id} value={it.id}>
                     {it.code} — {it.name}
@@ -167,7 +167,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
                 <SelectTrigger aria-invalid={!!errors.warehouseId}>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-white/10 text-white">
+                <SelectContent className="bg-popover border-border text-white">
                   {warehouses.map((w) => (
                     <SelectItem key={w.id} value={w.id}>
                       {w.code}
@@ -200,7 +200,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-white/10 text-white">
+                <SelectContent className="bg-popover border-border text-white">
                   <SelectItem value="pcp_lot">Lote PCP</SelectItem>
                   <SelectItem value="piloto">Piloto</SelectItem>
                   <SelectItem value="op">OP livre</SelectItem>
@@ -221,7 +221,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
                   <SelectTrigger aria-invalid={!!errors.refId}>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-white/10 text-white max-h-72">
+                  <SelectContent className="bg-popover border-border text-white max-h-72">
                     {refs.map((r) => (
                       <SelectItem key={r.id} value={r.id}>
                         {r.label}
@@ -240,7 +240,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+            <Label className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
               Observações
             </Label>
             <Textarea
@@ -252,10 +252,10 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
           </div>
         </div>
         <DialogFooter className="gap-3">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-[11px]">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-2xs">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} disabled={busy} className="text-[11px]">
+          <Button onClick={handleSubmit} disabled={busy} className="text-2xs">
             Reservar
           </Button>
         </DialogFooter>

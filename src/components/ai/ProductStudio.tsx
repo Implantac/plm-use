@@ -561,7 +561,7 @@ export function ProductStudio() {
 
   return (
     <div className="space-y-5 pb-8">
-      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-5">
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
         <div>
           <p className="text-xs font-semibold uppercase text-primary">USE MODA PLM</p>
           <h1 className="mt-1 text-2xl font-semibold text-white">AI Product Studio</h1>
@@ -572,7 +572,7 @@ export function ProductStudio() {
         </div>
         <Button asChild variant="outline" size="sm">
           <Link to="/ai-agents">
-            <Bot className="mr-2 h-4 w-4" /> Conversar com agentes
+            <Bot className="h-4 w-4" /> Conversar com agentes
           </Link>
         </Button>
       </header>
@@ -765,9 +765,9 @@ export function ProductStudio() {
             disabled={generating || !briefing.description.trim()}
           >
             {generating ? (
-              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+              <LoaderCircle className="h-4 w-4 animate-spin" />
             ) : (
-              <Sparkles className="mr-2 h-4 w-4" />
+              <Sparkles className="h-4 w-4" />
             )}
             {generating ? "Criando conceito…" : "Gerar proposta"}
           </Button>
@@ -787,7 +787,7 @@ export function ProductStudio() {
         </section>
 
         <section
-          className="min-h-[360px] border-y border-white/10 py-4 xl:border-x xl:border-y-0 xl:px-5"
+          className="min-h-[360px] border-y border-border py-4 xl:border-x xl:border-y-0 xl:px-5"
           aria-labelledby="studio-concept-title"
         >
           <div className="flex items-center justify-between gap-3">
@@ -806,7 +806,7 @@ export function ProductStudio() {
             )}
           </div>
           {!proposalText ? (
-            <div className="mt-5 flex min-h-64 flex-col items-center justify-center gap-3 border border-dashed border-white/15 px-5 text-center">
+            <div className="mt-5 flex min-h-64 flex-col items-center justify-center gap-3 border border-dashed border-border-strong/70 px-5 text-center">
               <Sparkles className="h-6 w-6 text-muted-foreground" />
               <p className="max-w-sm text-sm text-muted-foreground">
                 Preencha o briefing e gere uma proposta para começar a revisão.
@@ -871,9 +871,9 @@ export function ProductStudio() {
                 <ConceptList label="Pontos para revisão humana" values={proposal.validationNotes} />
               </div>
 
-              <div className="rounded-md border border-white/10 bg-white/[0.025] p-3">
+              <div className="rounded-md border border-border bg-muted/50 p-3">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-white">
+                  <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
                     Geração visual
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -884,7 +884,7 @@ export function ProductStudio() {
                         size="xs"
                         variant={visualView === view ? "secondary" : "ghost"}
                         onClick={() => setVisualView(view)}
-                        className="h-6 rounded-full px-2 text-[11px] uppercase"
+                        className="h-6 rounded-full px-2 text-2xs uppercase"
                       >
                         {view}
                       </Button>
@@ -919,16 +919,16 @@ export function ProductStudio() {
                     className="w-full"
                   >
                     {imageBusy ? (
-                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                      <LoaderCircle className="h-4 w-4 animate-spin" />
                     ) : (
-                      <Sparkles className="mr-2 h-4 w-4" />
+                      <Sparkles className="h-4 w-4" />
                     )}
                     Gerar visual {visualView}
                   </Button>
                 </div>
 
                 <div className="mt-3 space-y-2">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-muted-foreground">
+                  <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                     Variações de cor
                   </p>
                   <Input
@@ -958,9 +958,9 @@ export function ProductStudio() {
                   </div>
                 </div>
 
-                <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
+                <div className="mt-4 space-y-3 border-t border-border pt-4">
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-foreground">
+                    <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-foreground">
                       Aplicar logo ou estampa
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -983,7 +983,7 @@ export function ProductStudio() {
                   </Field>
 
                   {artwork && (
-                    <div className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.025] p-2">
+                    <div className="flex items-center gap-3 rounded-md border border-border bg-muted/50 p-2">
                       <img
                         src={artwork.dataUrl}
                         alt="Prévia da arte enviada"
@@ -1058,7 +1058,7 @@ export function ProductStudio() {
                 </div>
                 {imageBusy && !imageSource && (
                   <div
-                    className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-white/15 bg-black/10 text-sm text-muted-foreground"
+                    className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border-strong/70 bg-black/10 text-sm text-muted-foreground"
                     role="status"
                   >
                     <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
@@ -1066,7 +1066,7 @@ export function ProductStudio() {
                   </div>
                 )}
                 {imageSource && (
-                  <div className="mt-3 overflow-hidden rounded-md border border-white/10 bg-black/20">
+                  <div className="mt-3 overflow-hidden rounded-md border border-border bg-black/20">
                     <img
                       src={imageSource}
                       alt={`Conceito visual de ${proposal.name}, ${visualView}`}
@@ -1095,15 +1095,15 @@ export function ProductStudio() {
                           setImageSource(image.src);
                           if (!image.application) setVisualView(image.view);
                         }}
-                        className="h-auto min-w-0 flex-col items-stretch overflow-hidden rounded border border-white/10 p-0 text-left"
+                        className="h-auto min-w-0 flex-col items-stretch overflow-hidden rounded border border-border p-0 text-left"
                         aria-label={`Visual ${image.view} para ${image.conceptName}`}
                       >
                         <img src={image.src} alt="" className="aspect-square w-full object-cover" />
-                        <span className="block truncate px-1 pt-1 text-[11px] text-muted-foreground">
+                        <span className="block truncate px-1 pt-1 text-2xs text-muted-foreground">
                           {image.view}
                         </span>
                         {image.conceptName !== proposal?.name && (
-                          <span className="block truncate px-1 pb-1 text-[11px] text-muted-foreground">
+                          <span className="block truncate px-1 pb-1 text-2xs text-muted-foreground">
                             {image.conceptName}
                           </span>
                         )}
@@ -1129,7 +1129,7 @@ export function ProductStudio() {
               />
             </div>
           ) : (
-            <div className="mt-5 rounded-md border border-white/10 bg-white/[0.025] p-4">
+            <div className="mt-5 rounded-md border border-border bg-muted/50 p-4">
               <p className="mb-2 text-xs font-medium text-status-progress">
                 Resposta em formato livre
               </p>
@@ -1138,7 +1138,7 @@ export function ProductStudio() {
               </pre>
             </div>
           )}
-          <div className="mt-5 flex items-start gap-2 border-t border-white/10 pt-4 text-xs text-muted-foreground">
+          <div className="mt-5 flex items-start gap-2 border-t border-border pt-4 text-xs text-muted-foreground">
             <ImageOff className="mt-0.5 h-4 w-4 shrink-0" />A geração usa o provedor de imagens
             configurado no servidor. Cada ângulo é gerado como uma imagem independente: a ferramenta
             tenta seguir a identidade descrita, mas não garante consistência entre vistas. Use os
@@ -1177,7 +1177,7 @@ export function ProductStudio() {
               />
             </div>
           </div>
-          <div className="rounded-md border border-white/10 bg-white/[0.025] p-4 text-xs text-muted-foreground">
+          <div className="rounded-md border border-border bg-muted/50 p-4 text-xs text-muted-foreground">
             <p className="font-medium text-white">Ao salvar</p>
             <p className="mt-1">
               Será criada uma referência em Ideia com a proposta anexada ao histórico de metadados.
@@ -1196,15 +1196,15 @@ export function ProductStudio() {
             }
           >
             {saving ? (
-              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+              <LoaderCircle className="h-4 w-4 animate-spin" />
             ) : (
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="h-4 w-4" />
             )}
             Salvar rascunho para revisão
           </Button>
           <Button asChild variant="outline" className="w-full">
             <Link to="/references">
-              Ver referências <ArrowRight className="ml-2 h-4 w-4" />
+              Ver referências <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </section>
@@ -1215,8 +1215,8 @@ export function ProductStudio() {
 
 function ConceptField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 border-b border-white/10 pb-3">
-      <p className="text-[11px] uppercase text-muted-foreground">{label}</p>
+    <div className="min-w-0 border-b border-border pb-3">
+      <p className="text-2xs uppercase text-muted-foreground">{label}</p>
       <p className="mt-1 break-words text-sm text-white">{value || "Não informado"}</p>
     </div>
   );
@@ -1224,8 +1224,8 @@ function ConceptField({ label, value }: { label: string; value: string }) {
 
 function ConceptList({ label, values }: { label: string; values: string[] }) {
   return (
-    <div className="min-w-0 border-b border-white/10 pb-3">
-      <p className="text-[11px] uppercase text-muted-foreground">{label}</p>
+    <div className="min-w-0 border-b border-border pb-3">
+      <p className="text-2xs uppercase text-muted-foreground">{label}</p>
       <p className="mt-1 text-sm text-white">
         {values.length ? values.join(" · ") : "Não informado"}
       </p>

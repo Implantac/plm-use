@@ -70,7 +70,7 @@ export const OptimizedImage = ({
 
   return (
     <div
-      className={cn("relative overflow-hidden bg-white/5", aspectRatioClass, containerClassName)}
+      className={cn("relative overflow-hidden bg-muted/50", aspectRatioClass, containerClassName)}
     >
       {resolvedSrc && (
         <img

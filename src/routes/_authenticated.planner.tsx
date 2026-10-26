@@ -119,7 +119,7 @@ function PlannerPage() {
         <div className="flex items-center justify-between flex-wrap gap-3">
           <p className="text-xs text-muted-foreground flex items-center gap-2">
             <CalendarRange className="w-3.5 h-3.5" />
-            Programação grava em <code className="text-[11px]">production_orders</code> — a mesma OP
+            Programação grava em <code className="text-2xs">production_orders</code> — a mesma OP
             que o Kanban e as passagens usam.
           </p>
           <ExportMenu
@@ -147,7 +147,7 @@ function PlannerPage() {
         </div>
 
         {!canPlan && (
-          <div className="rounded-md border border-white/10 bg-white/[0.03] px-4 py-2 text-xs text-muted-foreground">
+          <div className="rounded-md border border-border bg-muted/50 px-4 py-2 text-xs text-muted-foreground">
             Você está em modo leitura: só PCP, gestor e admin alteram a programação.
           </div>
         )}
@@ -183,16 +183,16 @@ function PlannerPage() {
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-bold text-white">{r.number}</p>
-                  <Badge variant="outline" className="text-[11px]">
+                  <Badge variant="outline" className="text-2xs">
                     {STATUS_LABEL[r.status] ?? r.status}
                   </Badge>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-2xs text-muted-foreground">
                     {r.items} item(ns) · {r.pieces} pç
                   </span>
                   {late && (
                     <Badge
                       variant="outline"
-                      className="text-[11px] border-status-rejected/40 text-status-rejected gap-1"
+                      className="text-2xs border-status-rejected/40 text-status-rejected gap-1"
                     >
                       <AlertTriangle className="w-3 h-3" /> atrasada
                     </Badge>
@@ -200,7 +200,7 @@ function PlannerPage() {
                   {(!r.plannedStart || !r.plannedEnd) && !late && (
                     <Badge
                       variant="outline"
-                      className="text-[11px] border-status-progress/40 text-status-progress"
+                      className="text-2xs border-status-progress/40 text-status-progress"
                     >
                       sem janela
                     </Badge>
@@ -209,7 +209,7 @@ function PlannerPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
                   <label className="space-y-1 block">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                    <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                       Início
                     </span>
                     <Input
@@ -221,7 +221,7 @@ function PlannerPage() {
                     />
                   </label>
                   <label className="space-y-1 block">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                    <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                       Fim
                     </span>
                     <Input
@@ -233,7 +233,7 @@ function PlannerPage() {
                     />
                   </label>
                   <label className="space-y-1 block">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+                    <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                       Prioridade
                     </span>
                     <select
@@ -248,7 +248,7 @@ function PlannerPage() {
                     </select>
                   </label>
                   <Button
-                    className="h-8 text-[11px] tracking-[0.04em] gap-2"
+                    className="h-8 text-2xs tracking-[0.04em] gap-2"
                     disabled={!canPlan || save.isPending || invalid}
                     onClick={() => void saveRow(r)}
                   >

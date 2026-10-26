@@ -116,10 +116,10 @@ function PiecesReportPage() {
             <button
               key={opt.id}
               onClick={() => setSort(opt.id)}
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.04em] transition ${
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-2xs uppercase tracking-[0.04em] transition ${
                 active
                   ? "border-primary/60 bg-primary/15 text-white"
-                  : "border-white/10 bg-white/[0.03] text-muted-foreground hover:border-white/20 hover:text-white"
+                  : "border-border bg-muted/50 text-muted-foreground hover:border-border-strong/70 hover:text-white"
               }`}
             >
               <Icon className="h-3 w-3" />
@@ -129,10 +129,10 @@ function PiecesReportPage() {
         })}
       </div>
 
-      <Card className="glass-card border-white/10 rounded-2xl">
+      <Card className="glass-card border-border rounded-lg">
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-white/[0.03] uppercase tracking-widest text-[11px] text-muted-foreground">
+            <thead className="bg-muted/50 uppercase tracking-widest text-2xs text-muted-foreground">
               <tr>
                 <th className="p-3 text-left">Referência</th>
                 <th className="p-3 text-left">Coleção · Designer</th>
@@ -152,14 +152,14 @@ function PiecesReportPage() {
                 </tr>
               ) : (
                 sorted.map(({ lc, pct, stage, dias, rep, atrasada }) => (
-                  <tr key={lc.ref} className="border-t border-white/5 hover:bg-white/[0.02]">
+                  <tr key={lc.ref} className="border-t border-border/60 hover:bg-accent/50">
                     <td className="p-3">
                       <Link
                         to="/tech-sheet"
                         search={{ ref: lc.ref }}
                         className="block hover:text-primary transition"
                       >
-                        <span className="text-[11px] uppercase tracking-[0.05em] text-primary">
+                        <span className="text-2xs uppercase tracking-[0.05em] text-primary">
                           {lc.ref}
                         </span>
                         <p className="text-sm font-bold text-white">{lc.nome}</p>
@@ -167,14 +167,14 @@ function PiecesReportPage() {
                     </td>
                     <td className="p-3 text-muted-foreground">
                       {lc.colecao ?? "—"}
-                      <div className="text-[11px] uppercase tracking-wider opacity-70">
+                      <div className="text-2xs uppercase tracking-wider opacity-70">
                         {lc.designer ?? "—"}
                       </div>
                     </td>
                     <td className="p-3">
                       <Badge
                         variant="outline"
-                        className="border-white/15 text-[11px] uppercase text-white"
+                        className="border-border-strong/70 text-2xs uppercase text-white"
                       >
                         {stage?.label ?? "—"}
                       </Badge>
@@ -203,7 +203,7 @@ function PiecesReportPage() {
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="w-20 h-1 rounded-full bg-white/10 overflow-hidden">
+                        <div className="w-20 h-1 rounded-full bg-muted overflow-hidden">
                           <div
                             className={`h-full ${
                               pct >= 100
@@ -219,7 +219,7 @@ function PiecesReportPage() {
                         )}
                       </div>
                     </td>
-                    <td className="p-3 text-right text-[11px]">
+                    <td className="p-3 text-right text-2xs">
                       {lc.prazo ? (
                         <span
                           className={
@@ -241,7 +241,7 @@ function PiecesReportPage() {
         </CardContent>
       </Card>
 
-      <p className="mt-4 text-[11px] uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+      <p className="mt-4 text-2xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
         <BarChart3 className="w-3 h-3" />
         {sorted.length} peças · ordenadas por {SORT_OPTIONS.find((o) => o.id === sort)?.label}
       </p>

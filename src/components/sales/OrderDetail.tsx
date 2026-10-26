@@ -226,7 +226,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={onClose} className="text-[11px] tracking-[0.04em] gap-2">
+        <Button variant="outline" onClick={onClose} className="text-2xs tracking-[0.04em] gap-2">
           <ArrowLeft className="w-4 h-4" /> Voltar para a lista
         </Button>
       </Card>
@@ -242,19 +242,19 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
           <Button
             variant="ghost"
             onClick={onClose}
-            className="text-[11px] tracking-[0.04em] gap-2 -ml-2 text-muted-foreground"
+            className="text-2xs tracking-[0.04em] gap-2 -ml-2 text-muted-foreground"
           >
             <ArrowLeft className="w-4 h-4" /> Pedidos
           </Button>
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-2xl font-bold text-white tracking-tight">{order.number}</h2>
             <span
-              className={`px-2.5 py-1 rounded-md border text-[11px] font-bold uppercase tracking-[0.04em] ${status.cls}`}
+              className={`px-2.5 py-1 rounded-md border text-2xs font-semibold uppercase tracking-[0.04em] ${status.cls}`}
             >
               {status.label}
             </span>
             {order.isQuote && (
-              <span className="px-2.5 py-1 rounded-md border border-status-review/30 bg-status-review/10 text-status-review text-[11px] font-bold uppercase tracking-[0.04em]">
+              <span className="px-2.5 py-1 rounded-md border border-status-review/30 bg-status-review/10 text-status-review text-2xs font-semibold uppercase tracking-[0.04em]">
                 Orçamento
               </span>
             )}
@@ -266,7 +266,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
         <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
-            className="text-[11px] tracking-[0.04em] gap-2"
+            className="text-2xs tracking-[0.04em] gap-2"
             onClick={() => setSheetOpen(true)}
           >
             <FileText className="w-4 h-4" /> Ficha técnica
@@ -277,7 +277,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
                 run("submit", () => submitOrder(order.id), "Pedido enviado para o custo.")
               }
               disabled={busy === "submit" || items.length === 0}
-              className="text-[11px] tracking-[0.04em] gap-2"
+              className="text-2xs tracking-[0.04em] gap-2"
             >
               <Send className="w-4 h-4" /> Enviar para custo
             </Button>
@@ -290,7 +290,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
                 )
               }
               disabled={busy === "release"}
-              className="text-[11px] tracking-[0.04em] gap-2"
+              className="text-2xs tracking-[0.04em] gap-2"
             >
               <Factory className="w-4 h-4" /> Liberar para PCP
             </Button>
@@ -299,7 +299,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
             <Link
               to="/production"
               search={{ pcpOp: opLink.id }}
-              className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-[11px] uppercase tracking-[0.04em] hover:bg-accent hover:text-accent-foreground"
+              className="inline-flex items-center gap-2 rounded-md border border-input px-4 py-2 text-2xs uppercase tracking-[0.04em] hover:bg-accent hover:text-accent-foreground"
             >
               <Factory className="w-4 h-4" /> Ver OP no PCP
             </Link>
@@ -330,14 +330,14 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
       </div>
 
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-2">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-2">
           <Layers className="w-4 h-4 text-primary" /> Itens do pedido
         </h3>
         {editable && (
           <Button
             variant="outline"
             onClick={() => setAddOpen(true)}
-            className="text-[11px] tracking-[0.04em] gap-2"
+            className="text-2xs tracking-[0.04em] gap-2"
           >
             <Plus className="w-4 h-4" /> Adicionar item
           </Button>
@@ -352,10 +352,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
             personalização e preço. As operações (bordado, silk, costura) entram sozinhas na ficha.
           </p>
           {editable && (
-            <Button
-              onClick={() => setAddOpen(true)}
-              className="text-[11px] tracking-[0.04em] gap-2"
-            >
+            <Button onClick={() => setAddOpen(true)} className="text-2xs tracking-[0.04em] gap-2">
               <Plus className="w-4 h-4" /> Adicionar o primeiro item
             </Button>
           )}
@@ -453,7 +450,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
       )}
 
       <Card className="glass-card rounded-lg p-5">
-        <h3 className="text-xs font-bold uppercase tracking-[0.06em] text-white flex items-center gap-2 mb-4">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-2 mb-4">
           <Clock className="w-4 h-4 text-primary" /> Timeline
         </h3>
         {events.length === 0 ? (
@@ -477,7 +474,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
 
       {order.notes && (
         <Card className="glass-card rounded-lg p-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground mb-2">
+          <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-2">
             Observações
           </p>
           <p className="text-sm text-white whitespace-pre-wrap">{order.notes}</p>
@@ -506,13 +503,13 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
 
 function Metric({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return (
-    <div className="rounded-md border border-white/10 bg-black/20 p-3">
-      <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+    <div className="rounded-md border border-border bg-black/20 p-3">
+      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
         {label}
       </p>
       <p className="text-lg font-bold text-white tracking-tight mt-1">{value}</p>
       {detail && (
-        <p className="text-[11px] text-muted-foreground uppercase tracking-widest">{detail}</p>
+        <p className="text-2xs text-muted-foreground uppercase tracking-widest">{detail}</p>
       )}
     </div>
   );
@@ -651,16 +648,16 @@ function ItemCard({
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+            <span className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
               Item {item.lineNo}
             </span>
             <span
-              className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-[0.04em] ${costStatus.cls}`}
+              className={`px-2 py-0.5 rounded border text-2xs font-semibold uppercase tracking-[0.04em] ${costStatus.cls}`}
             >
               {costStatus.label}
             </span>
             {item.referenceCode && (
-              <span className="text-[11px] text-muted-foreground uppercase tracking-widest">
+              <span className="text-2xs text-muted-foreground uppercase tracking-widest">
                 ref {item.referenceCode}
               </span>
             )}
@@ -679,7 +676,7 @@ function ItemCard({
                 variant="outline"
                 onClick={onRecalc}
                 disabled={busy === `recalc-${item.id}`}
-                className="text-[11px] tracking-[0.04em] gap-1.5"
+                className="text-2xs tracking-[0.04em] gap-1.5"
               >
                 <Calculator className="w-3.5 h-3.5" /> Recalcular
               </Button>
@@ -687,7 +684,7 @@ function ItemCard({
                 variant="outline"
                 onClick={onApprove}
                 disabled={busy === `approve-${item.id}` || item.costStatus !== "custo_concluido"}
-                className="text-[11px] tracking-[0.04em] gap-1.5"
+                className="text-2xs tracking-[0.04em] gap-1.5"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" /> Aprovar
               </Button>
@@ -698,7 +695,7 @@ function ItemCard({
               variant="ghost"
               onClick={onDelete}
               disabled={busy === `del-${item.id}`}
-              className="text-[11px] tracking-[0.04em] gap-1.5 text-status-rejected"
+              className="text-2xs tracking-[0.04em] gap-1.5 text-status-rejected"
             >
               <Trash2 className="w-3.5 h-3.5" /> Remover
             </Button>
@@ -707,8 +704,8 @@ function ItemCard({
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">
-        <div className="rounded-md border border-white/10 bg-black/20 p-3">
-          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground mb-2 flex items-center gap-1.5">
+        <div className="rounded-md border border-border bg-black/20 p-3">
+          <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-2 flex items-center gap-1.5">
             <Ruler className="w-3 h-3" /> Grade
           </p>
           {item.sizes.length === 0 ? (
@@ -720,19 +717,19 @@ function ItemCard({
               {item.sizes.map((s) => (
                 <span
                   key={s.size}
-                  className="px-2 py-1 rounded border border-white/10 bg-white/5 text-[11px] text-white"
+                  className="px-2 py-1 rounded border border-border bg-muted/50 text-2xs text-white"
                 >
                   {s.size} <span className="text-muted-foreground">×{s.quantity}</span>
                 </span>
               ))}
-              <span className="text-[11px] text-muted-foreground self-center ml-1">
+              <span className="text-2xs text-muted-foreground self-center ml-1">
                 = {sumSizes(item.sizes)} peças
               </span>
             </div>
           )}
         </div>
-        <div className="rounded-md border border-white/10 bg-black/20 p-3">
-          <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-muted-foreground mb-2 flex items-center gap-1.5">
+        <div className="rounded-md border border-border bg-black/20 p-3">
+          <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-2 flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" /> Personalização
           </p>
           {item.options.length === 0 ? (
@@ -742,7 +739,7 @@ function ItemCard({
               {item.options.map((o) => (
                 <span
                   key={o.optionId}
-                  className="px-2 py-1 rounded border border-primary/20 bg-primary/10 text-[11px] text-primary"
+                  className="px-2 py-1 rounded border border-primary/20 bg-primary/10 text-2xs text-primary"
                 >
                   {o.name}
                   {o.quantity > 1 ? ` ×${o.quantity}` : ""}
@@ -757,12 +754,12 @@ function ItemCard({
       {canCost && (
         <div className="rounded-md border border-primary/20 bg-primary/[0.04] p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-primary">
+            <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
               Ficha do pedido · custo
             </p>
             {margin !== null && (
               <span
-                className={`text-[11px] font-bold uppercase tracking-[0.04em] px-2 py-0.5 rounded border ${
+                className={`text-2xs font-semibold uppercase tracking-[0.04em] px-2 py-0.5 rounded border ${
                   margin >= 25
                     ? "border-status-approved/30 text-status-approved"
                     : "border-status-progress/30 text-status-progress"
@@ -793,13 +790,13 @@ function ItemCard({
                         setForm({ opSector: setor, opName: "" });
                         setAddKind("op");
                       }}
-                      className="rounded-md border border-primary/25 bg-primary/[0.06] px-2.5 py-1 text-[11px] font-semibold text-primary transition-colors hover:bg-primary/15"
+                      className="rounded-md border border-primary/25 bg-primary/[0.06] px-2.5 py-1 text-2xs font-semibold text-primary transition-colors hover:bg-primary/15"
                     >
                       + {setor}
                     </button>
                   ))}
                 </div>
-                <p className="mt-2 text-[11px] leading-snug text-muted-foreground">
+                <p className="mt-2 text-2xs leading-snug text-muted-foreground">
                   Uma linha por operação (ex.: Costura · Overloque · por peça). O recálculo entra no
                   custo do item na hora.
                 </p>
@@ -826,7 +823,7 @@ function ItemCard({
                 <tbody>
                   {sheet.operations.map((op) => (
                     <Fragment key={op.id ?? op.seq}>
-                      <tr className="border-t border-white/5">
+                      <tr className="border-t border-border/60">
                         <td className="py-1 text-white">{op.operation}</td>
                         <td className="py-1 text-muted-foreground">{op.sector}</td>
                         <td className="py-1 text-muted-foreground">{op.driver}</td>
@@ -866,7 +863,7 @@ function ItemCard({
                         <tr className="border-t border-primary/10">
                           <td colSpan={8} className="py-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                              <span className="text-2xs uppercase tracking-widest text-muted-foreground">
                                 {op.operation}
                               </span>
                               <Input
@@ -909,7 +906,7 @@ function ItemCard({
                                   disabled={!!busy}
                                   onClick={() => removeOp(op.id!)}
                                 >
-                                  <Trash2 className="w-3 h-3 mr-1" /> Remover linha
+                                  <Trash2 className="w-3 h-3" /> Remover linha
                                 </Button>
                               )}
                               <Button size="sm" variant="ghost" onClick={() => setEditOpId(null)}>
@@ -923,11 +920,11 @@ function ItemCard({
                   ))}
                   {sheet.materials.map((m) => (
                     <Fragment key={m.id ?? m.material}>
-                      <tr className="border-t border-white/5 text-muted-foreground">
+                      <tr className="border-t border-border/60 text-muted-foreground">
                         <td className="py-1">
                           {m.material}
                           {m.stockItemCode && (
-                            <span className="ml-1 text-[11px] text-primary">{m.stockItemCode}</span>
+                            <span className="ml-1 text-2xs text-primary">{m.stockItemCode}</span>
                           )}
                         </td>
                         <td className="py-1">material</td>
@@ -969,7 +966,7 @@ function ItemCard({
                         <tr className="border-t border-primary/10">
                           <td colSpan={8} className="py-2">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                              <span className="text-2xs uppercase tracking-widest text-muted-foreground">
                                 {m.material}
                               </span>
                               <Input
@@ -1016,7 +1013,7 @@ function ItemCard({
                                   disabled={!!busy}
                                   onClick={() => removeMat(m.id!)}
                                 >
-                                  <Trash2 className="w-3 h-3 mr-1" /> Remover material
+                                  <Trash2 className="w-3 h-3" /> Remover material
                                 </Button>
                               )}
                               <Button size="sm" variant="ghost" onClick={() => setEditMatId(null)}>
@@ -1044,7 +1041,7 @@ function ItemCard({
                     setForm({});
                   }}
                 >
-                  <Plus className="w-3 h-3 mr-1" /> Nova operação
+                  <Plus className="w-3 h-3" /> Nova operação
                 </Button>
                 <Button
                   size="sm"
@@ -1054,7 +1051,7 @@ function ItemCard({
                     setForm({});
                   }}
                 >
-                  <Plus className="w-3 h-3 mr-1" /> Novo material
+                  <Plus className="w-3 h-3" /> Novo material
                 </Button>
               </div>
               {addKind === "op" && (
@@ -1104,7 +1101,7 @@ function ItemCard({
                     placeholder="Setup"
                     onChange={setF("opSetup")}
                   />
-                  <label className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                  <label className="flex items-center gap-1 text-2xs text-muted-foreground">
                     <input
                       type="checkbox"
                       aria-label="Terceirizada"
@@ -1192,7 +1189,7 @@ function ItemCard({
             </div>
           )}
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-white/5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-border/60">
             <CostCell
               label="Materiais"
               value={cost ? brl(cost.materialsTotal) : preview ? brl(preview.materialsTotal) : "—"}
@@ -1221,7 +1218,7 @@ function ItemCard({
             />
           </div>
           {preview && cost && round2(preview.unitCost) !== round2(cost.unitCost) && (
-            <p className="text-[11px] text-status-progress">
+            <p className="text-2xs text-status-progress">
               Prévia pela ficha ({brl(preview.unitCost)}) difere do custo gravado (
               {brl(cost.unitCost)}) — recalcule para alinhar.
             </p>
@@ -1245,11 +1242,11 @@ function CostCell({
 }) {
   return (
     <div>
-      <p className="text-[10px] font-bold uppercase tracking-[0.04em] text-muted-foreground">
+      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
         {label}
       </p>
       <p className={`text-sm font-semibold ${accent ? "text-primary" : "text-white"}`}>{value}</p>
-      {detail && <p className="text-[11px] text-muted-foreground">{detail}</p>}
+      {detail && <p className="text-2xs text-muted-foreground">{detail}</p>}
     </div>
   );
 }
@@ -1377,7 +1374,7 @@ function AddItemDialog({
             <select
               value={productId}
               onChange={(e) => pickProduct(e.target.value)}
-              className="h-10 w-full rounded-md border border-white/10 bg-black/30 px-3 text-sm text-white"
+              className="h-10 w-full rounded-md border border-border bg-black/30 px-3 text-sm text-white"
             >
               <option value="">Selecione…</option>
               {catalog.map((p) => (
@@ -1387,7 +1384,7 @@ function AddItemDialog({
               ))}
             </select>
             {product && (
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-2xs text-muted-foreground">
                 mínimo {product.minQty} peças · grade {product.grade.join(" · ")} · base{" "}
                 {brl(product.basePrice)}
               </p>
@@ -1433,7 +1430,7 @@ function AddItemDialog({
               <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                 {product.grade.map((size) => (
                   <div key={size} className="space-y-1">
-                    <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                    <p className="text-2xs uppercase tracking-widest text-muted-foreground">
                       {size}
                     </p>
                     <Input
@@ -1446,7 +1443,7 @@ function AddItemDialog({
                   </div>
                 ))}
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-2xs text-muted-foreground">
                 Soma da grade: {sizeSum} de {qty || 0} peças
                 {sizeSum > 0 && sizeSum !== qty ? " — precisa bater com a quantidade." : ""}
               </p>
@@ -1463,7 +1460,7 @@ function AddItemDialog({
                   return (
                     <div
                       key={o.id}
-                      className="flex flex-col md:flex-row md:items-center gap-2 rounded-md border border-white/10 bg-black/20 p-2.5"
+                      className="flex flex-col md:flex-row md:items-center gap-2 rounded-md border border-border bg-black/20 p-2.5"
                     >
                       <label className="flex items-center gap-2 flex-1 cursor-pointer">
                         <input
@@ -1475,12 +1472,12 @@ function AddItemDialog({
                         />
                         <span className="text-xs text-white">{o.name}</span>
                         {o.groupName && (
-                          <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                          <span className="text-2xs uppercase tracking-widest text-muted-foreground">
                             {o.groupName}
                           </span>
                         )}
                         {o.operationName && (
-                          <span className="text-[11px] text-primary">
+                          <span className="text-2xs text-primary">
                             {o.sector ?? "produção"} · {o.driver}
                           </span>
                         )}

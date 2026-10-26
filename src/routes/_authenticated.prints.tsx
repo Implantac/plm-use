@@ -83,7 +83,7 @@ const STATUS_CLASS: Record<PrintAsset["status"], string> = {
   rascunho: "bg-muted/40 text-muted-foreground",
   em_prova: "bg-status-progress/15 text-status-progress border-status-progress/30",
   aprovada: "bg-status-approved/15 text-status-approved border-status-approved/30",
-  arquivada: "bg-white/5 text-muted-foreground",
+  arquivada: "bg-muted/50 text-muted-foreground",
 };
 
 const TECNICA_LABEL: Record<PrintAsset["tecnica"], string> = {
@@ -184,10 +184,10 @@ function PrintsRoute() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`px-3 py-1 rounded-full text-[11px] uppercase tracking-widest border transition-colors ${
+            className={`px-3 py-1 rounded-full text-2xs uppercase tracking-widest border transition-colors ${
               filter === f
                 ? "border-primary/60 bg-primary/10 text-primary"
-                : "border-white/10 text-muted-foreground hover:border-white/20"
+                : "border-border text-muted-foreground hover:border-border-strong/70"
             }`}
           >
             {f === "todas" ? "Todas" : STATUS_LABEL[f]}
@@ -208,7 +208,7 @@ function PrintsRoute() {
                 className={`text-left rounded-lg overflow-hidden border transition-all ${
                   active
                     ? "border-primary/60 ring-2 ring-primary/30"
-                    : "border-white/10 hover:border-white/20"
+                    : "border-border hover:border-border-strong/70"
                 }`}
               >
                 <div className="relative aspect-square bg-black/40">
@@ -221,7 +221,7 @@ function PrintsRoute() {
                   <div className="absolute top-2 left-2 flex gap-1">
                     <Badge
                       variant="outline"
-                      className={`text-[11px] uppercase tracking-widest ${STATUS_CLASS[p.status]}`}
+                      className={`text-2xs uppercase tracking-widest ${STATUS_CLASS[p.status]}`}
                     >
                       {STATUS_LABEL[p.status]}
                     </Badge>
@@ -230,13 +230,13 @@ function PrintsRoute() {
                     {p.colors.slice(0, 5).map((c, i) => (
                       <div
                         key={i}
-                        className="h-3 w-3 rounded-full border border-white/40"
+                        className="h-3 w-3 rounded-full border border-border-strong"
                         style={{ background: c }}
                       />
                     ))}
                     {p.colors.length > 5 && (
                       <span
-                        className="text-[11px] text-white/80 ml-0.5 self-center"
+                        className="text-2xs text-white/80 ml-0.5 self-center"
                         title={`${p.colors.length} variações de cor da estampa`}
                       >
                         +{p.colors.length - 5}
@@ -244,10 +244,10 @@ function PrintsRoute() {
                     )}
                   </div>
                 </div>
-                <div className="p-2.5 bg-white/[0.02]">
-                  <p className="text-[11px] font-mono text-muted-foreground">{p.code}</p>
+                <div className="p-2.5 bg-muted/40">
+                  <p className="text-2xs font-mono text-muted-foreground">{p.code}</p>
                   <p className="text-xs font-semibold text-white truncate">{p.name}</p>
-                  <div className="flex items-center justify-between mt-1 text-[11px] text-muted-foreground">
+                  <div className="flex items-center justify-between mt-1 text-2xs text-muted-foreground">
                     <span>{TECNICA_LABEL[p.tecnica]}</span>
                     <span className="flex items-center gap-1">
                       <Link2 className="h-2.5 w-2.5" /> {p.linkedRefs}
@@ -258,7 +258,7 @@ function PrintsRoute() {
             );
           })}
           {filtered.length === 0 && (
-            <div className="col-span-2 rounded-lg border border-dashed border-white/10 p-8 text-center text-xs text-muted-foreground">
+            <div className="col-span-2 rounded-lg border border-dashed border-border p-8 text-center text-xs text-muted-foreground">
               Nenhuma estampa com esse filtro
             </div>
           )}
@@ -274,7 +274,7 @@ function PrintsRoute() {
 function PrintDetail({ print }: { print: PrintAsset }) {
   return (
     <div className="space-y-4">
-      <Card className="border-white/10 bg-white/[0.03] overflow-hidden">
+      <Card className="border-border bg-muted/50 overflow-hidden">
         <div className="relative aspect-[16/9] bg-black/40">
           <OptimizedImage
             src={print.cover}
@@ -284,7 +284,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[11px] font-mono text-white/60 uppercase tracking-widest">
+              <p className="text-2xs font-mono text-white/60 uppercase tracking-widest">
                 {print.code}
               </p>
               <h2 className="text-2xl font-bold text-white leading-tight">{print.name}</h2>
@@ -299,11 +299,11 @@ function PrintDetail({ print }: { print: PrintAsset }) {
                 entityLabel={`${print.code} · ${print.name}`}
                 variant="outline"
                 size="sm"
-                className="gap-1.5 border-white/20 bg-black/40 text-white hover:bg-black/60"
+                className="gap-1.5 border-border-strong/70 bg-black/40 text-white hover:bg-black/60"
               />
               <Badge
                 variant="outline"
-                className={`${STATUS_CLASS[print.status]} text-[11px] uppercase tracking-widest`}
+                className={`${STATUS_CLASS[print.status]} text-2xs uppercase tracking-widest`}
               >
                 {STATUS_LABEL[print.status]}
               </Badge>
@@ -355,7 +355,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
               {print.tags.map((t) => (
                 <span
                   key={t}
-                  className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-[11px] text-muted-foreground"
+                  className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2 py-0.5 text-2xs text-muted-foreground"
                 >
                   <Tag className="h-2.5 w-2.5" />
                   {t}
@@ -364,7 +364,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
             </div>
           )}
 
-          <div className="flex gap-2 pt-2 border-t border-white/5">
+          <div className="flex gap-2 pt-2 border-t border-border/60">
             <NewVersionDialog printId={print.id} />
             {print.status !== "aprovada" && (
               <Button
@@ -391,11 +391,11 @@ function PrintDetail({ print }: { print: PrintAsset }) {
       </Card>
 
       {/* Timeline de versões */}
-      <Card className="border-white/10 bg-white/[0.03]">
+      <Card className="border-border bg-muted/50">
         <CardContent className="p-5">
           <div className="flex items-center gap-2 mb-3">
             <History className="h-4 w-4 text-primary" />
-            <span className="text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+            <span className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
               Histórico de versões
             </span>
           </div>
@@ -403,9 +403,9 @@ function PrintDetail({ print }: { print: PrintAsset }) {
             {print.versions.map((v) => (
               <div
                 key={v.id}
-                className="flex items-center gap-3 rounded-md border border-white/5 bg-white/[0.02] p-2"
+                className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/40 p-2"
               >
-                <div className="h-12 w-12 rounded overflow-hidden border border-white/10 flex-shrink-0">
+                <div className="h-12 w-12 rounded overflow-hidden border border-border flex-shrink-0">
                   <OptimizedImage
                     src={v.image}
                     alt={v.label}
@@ -414,7 +414,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white">{v.label}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">
+                  <p className="text-2xs text-muted-foreground truncate">
                     {v.createdAt} · {v.createdBy}
                     {v.note ? ` · ${v.note}` : ""}
                   </p>
@@ -430,8 +430,8 @@ function PrintDetail({ print }: { print: PrintAsset }) {
 
 function MetaCell({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="rounded-md border border-white/5 bg-white/[0.02] p-2.5">
-      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+    <div className="rounded-md border border-border/60 bg-muted/40 p-2.5">
+      <div className="flex items-center gap-1.5 text-2xs uppercase tracking-widest text-muted-foreground">
         {icon}
         {label}
       </div>
@@ -464,7 +464,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[11px] uppercase tracking-widest" required>
+              <Label className="text-2xs uppercase tracking-widest" required>
                 Rótulo
               </Label>
               <Input
@@ -479,7 +479,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
               {labelError && <FieldMessage variant="error">{labelError}</FieldMessage>}
             </div>
             <div>
-              <Label className="text-[11px] uppercase tracking-widest">Formato</Label>
+              <Label className="text-2xs uppercase tracking-widest">Formato</Label>
               <Select
                 value={format}
                 onValueChange={(v) => setFormat(v as PrintAsset["fileFormat"])}
@@ -498,13 +498,13 @@ function NewVersionDialog({ printId }: { printId: string }) {
             </div>
           </div>
           <div>
-            <Label className="text-[11px] uppercase tracking-widest">
+            <Label className="text-2xs uppercase tracking-widest">
               URL da prévia (upload em breve)
             </Label>
             <Input value={image} onChange={(e) => setImage(e.target.value)} />
           </div>
           <div>
-            <Label className="text-[11px] uppercase tracking-widest">Nota</Label>
+            <Label className="text-2xs uppercase tracking-widest">Nota</Label>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}

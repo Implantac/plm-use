@@ -24,7 +24,7 @@ export function ModuleTabs({ group }: { group: keyof typeof GROUPS }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const tabs = GROUPS[group];
   return (
-    <div className="flex flex-wrap gap-1.5 rounded-lg border border-white/10 bg-white/[0.02] p-1.5">
+    <div className="flex flex-wrap gap-1.5 rounded-lg border border-border bg-muted/40 p-1.5">
       {tabs.map((t) => {
         const active = pathname === t.to;
         return (
@@ -32,10 +32,10 @@ export function ModuleTabs({ group }: { group: keyof typeof GROUPS }) {
             key={t.to}
             to={t.to}
             className={cn(
-              "px-3.5 py-2 rounded-md text-[11px] font-bold uppercase tracking-[0.04em] transition-colors",
+              "px-3.5 py-2 rounded-md text-2xs font-semibold uppercase tracking-[0.04em] transition-colors",
               active
                 ? "bg-primary/15 text-primary border border-primary/30"
-                : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent",
+                : "text-muted-foreground hover:text-white hover:bg-accent/60 border border-transparent",
             )}
           >
             {t.label}

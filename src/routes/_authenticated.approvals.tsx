@@ -45,7 +45,7 @@ const STATUS_TONE: Record<GateStatus, string> = {
   pendente: "border-status-progress/40 text-status-progress",
   aprovado: "border-status-approved/40 text-status-approved",
   reprovado: "border-destructive/40 text-destructive",
-  dispensado: "border-white/15 text-muted-foreground",
+  dispensado: "border-border-strong/70 text-muted-foreground",
 };
 
 const fmt = (iso: string | null) =>
@@ -107,16 +107,14 @@ function ApprovalsPage() {
 
   return (
     <div className="space-y-6 pb-12">
-      <header className="rounded-lg border border-white/10 bg-white/[0.025] p-5 md:p-6">
+      <header className="rounded-lg border border-border bg-muted/50 p-5 md:p-6">
         <div className="flex items-center gap-2 text-primary">
           <ShieldCheck className="h-4 w-4" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.05em]">
+          <span className="text-2xs font-semibold uppercase tracking-[0.05em]">
             Governança · gates do ciclo de vida
           </span>
         </div>
-        <h1 className="mt-3 text-3xl font-bold uppercase leading-none tracking-tight md:text-4xl">
-          Gates do Produto
-        </h1>
+        <h1 className="mt-3 text-xl font-semibold tracking-tight">Gates do Produto</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Cada portão do Fluxo do Produto com status, parecer e data da decisão. Toda aprovação vira
           evento na linha do tempo da referência.
@@ -169,7 +167,7 @@ function ApprovalsPage() {
           {pendingToOpen.map(({ ref, gate }) => (
             <div
               key={`${ref.id}:${gate.id}`}
-              className="flex flex-col gap-3 rounded-md border border-white/10 bg-white/[0.02] p-3 md:flex-row md:items-center"
+              className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3 md:flex-row md:items-center"
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">
@@ -213,7 +211,7 @@ function ApprovalsPage() {
             const def = gateById(g.gate);
             const status = g.status as GateStatus;
             return (
-              <div key={g.id} className="rounded-md border border-white/10 bg-white/[0.02] p-3">
+              <div key={g.id} className="rounded-md border border-border bg-muted/40 p-3">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <button
                     type="button"
@@ -317,10 +315,10 @@ function Metric({
   tone: string;
 }) {
   return (
-    <div className="rounded-md border border-white/10 bg-white/[0.02] p-4">
+    <div className="rounded-md border border-border bg-muted/40 p-4">
       <div className={`flex items-center gap-2 ${tone}`}>
         <Icon className="h-4 w-4" />
-        <span className="text-2xs font-bold uppercase tracking-[0.04em]">{label}</span>
+        <span className="text-2xs font-semibold uppercase tracking-[0.04em]">{label}</span>
       </div>
       <p className="mt-2 text-2xl font-bold tabular-nums">{value}</p>
     </div>
