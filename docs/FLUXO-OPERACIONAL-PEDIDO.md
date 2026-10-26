@@ -51,9 +51,9 @@ mil·pts = 3,25/peça), número das costas (1.080 = 18/peça, chapa própria 55)
 overloque 900 min, acabamento etiqueta+hangtag+PP; malha UV 1,05 m/peça perda
 7%, linha, etiquetas, embalagem. Custos finais (tabela `sales_order_item_costs`):
 
-| materiais | operações | setups | overhead | custo industrial | custo/peça | margem | preço sugerido |
-|---:|---:|---:|---:|---:|---:|---:|---:|
-| R$ 2.303,18 | R$ 1.173,15 | R$ 131,00 | 8% | R$ 3.895,92 | **R$ 64,93** | 56,68% | R$ 86,57 |
+|   materiais |   operações |    setups | overhead | custo industrial |   custo/peça | margem | preço sugerido |
+| ----------: | ----------: | --------: | -------: | ---------------: | -----------: | -----: | -------------: |
+| R$ 2.303,18 | R$ 1.173,15 | R$ 131,00 |       8% |      R$ 3.895,92 | **R$ 64,93** | 56,68% |       R$ 86,57 |
 
 Timeline gravada por trigger (`entity_events`): created → enviado → em_custo →
 aprovado → liberado_pcp. OP gerada: `OP-PED-2026-0001` ('planejada'), item com
