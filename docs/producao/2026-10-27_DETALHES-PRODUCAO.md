@@ -1,34 +1,29 @@
-# Detalhes de produção por item — ativação e uso
+# Detalhes e consumo por item — ativação e uso
 
-## O que muda
+## Fluxo
 
-O comercial envia o pedido para custo como antes. No cartão de cada item, o custo abre **Detalhar produção**, seleciona um grupo e registra as instruções. Há grupos iniciais para Detalhes, Tecido, Bordado, Costura, Acabamento, Expedição, Estampa, Lavanderia e Corte; outros podem ser criados ou excluídos. Cada grupo deve ser salvo explicitamente. O texto mantém as quebras de linha; não há editor de formatação rica ou cópia entre pedidos nesta versão.
+1. **Comercial:** crie o pedido e cada item com descrição, cor, quantidade, grade, personalizações e observações gerais, se necessário. Ainda no rascunho, abra **Detalhes comerciais** no cartão de cada item. Escolha os grupos à esquerda, escreva a orientação do cliente e clique em **Salvar detalhes** em cada grupo. Depois envie o pedido para custo.
+2. **Custo:** abra **Detalhar produção** no item enviado. Os dados comerciais e as orientações do mesmo grupo ficam visíveis; escreva e salve seu **complemento técnico**, separado do texto comercial. Um grupo com texto comercial não pode ser excluído pelo custo. Também é possível criar grupos adicionais.
+3. Ainda no detalhamento, em **Consumo dos materiais deste item**, ajuste as linhas existentes ou adicione uma linha: tipo, material, unidade, consumo por peça, perda (%) e custo unitário. A ficha padrão oferece sugestões técnicas, mas selecionar uma sugestão não grava nem define custo: informe o valor e confirme a inclusão. Não adicione a mesma linha duas vezes.
+4. Cada gravação ou remoção de consumo recalcula o custo do item na mesma transação. O recálculo pode avançar o pedido para **em custo** e marcar o custo do item como concluído; revise operações, materiais e resultado antes de **Aprovar**. A aprovação e a liberação ao PCP continuam obrigatórias.
+5. Confira a **Ficha técnica** do pedido e, após liberação, a aba **Ficha técnica** da OP. Elas mostram os textos comercial e técnico, dados básicos e consumo por peça, perda e total, sem valores financeiros estruturados. O total é `consumo por peça × (1 + perda/100) × quantidade`, arredondado a três casas.
 
-Na primeira abertura, o sistema tira uma **cópia técnica específica do item** da ficha padrão localizada pela referência do item ou, se ela estiver vazia, pela referência do produto no catálogo. A referência precisa corresponder exatamente ao campo `tech_sheets.ref`. Essa cópia não altera a ficha padrão, não cria operações ou materiais de custo e não inclui os campos financeiros da ficha padrão. Ela preserva os dados técnicos de materiais, operações e aplicações e, quando houver, o endereço HTTPS da foto de referência. A foto é acessada por esse endereço e pode deixar de estar disponível se o arquivo original mudar ou for removido. Se não houver ficha correspondente, o editor informa isso e permite registrar os grupos manualmente. A cópia não é atualizada automaticamente se a ficha padrão mudar depois.
+A primeira abertura fotografa uma cópia técnica da ficha padrão pela referência do item ou do produto. Essa base é apenas referência: o consumo válido para o pedido é o das linhas do item. A ficha padrão e os demais pedidos não são alterados. Uma base já encontrada não é atualizada automaticamente; se não foi encontrada, reabrir antes da aprovação permite nova tentativa. A foto é uma URL HTTPS, que pode deixar de funcionar se a original mudar.
 
-As instruções salvas aparecem no botão **Ficha técnica** do pedido e na aba **Ficha técnica** da OP gerada desse pedido. A versão de produção não recebe os campos estruturados de custo/preço/margem. Textos livres da ficha padrão e dos grupos, assim como fotos, não são filtrados quanto ao conteúdo: não inclua neles valores confidenciais que não possam ser mostrados à produção.
-
-As operações e materiais de custo continuam no painel de custo e são calculados separadamente. O pedido continua sujeito à aprovação do custo e à liberação pelo PCP. Após aprovação do item ou saída do pedido da etapa de custo, os detalhes ficam somente para consulta, inclusive no banco.
+Os textos são simples, com quebras de linha; cada grupo deve ser salvo. Edições concorrentes são verificadas por revisão e um conflito preserva a digitação na tela. Copie o texto ou consumo antes de fechar e reabrir para conciliar. Após envio, o comercial não edita; após aprovação do item ou saída da etapa de custo, as novas RPCs de detalhamento e consumo ficam bloqueadas para edição. Pedidos antigos aprovados não são iniciados retroativamente.
 
 ## Ativação pelo responsável do banco
 
-1. Confirme que está no **projeto/banco correto** do Lovable e faça o backup previsto para produção.
-2. Em **More → Database → Manage → SQL editor**, cole e execute o arquivo `docs/producao/2026-10-27_DETALHES-PRODUCAO.sql` completo. O script valida os pré-requisitos, roda em uma transação e é reexecutável. Não foi executado em produção pelo agente.
-3. Confira a linha final: `sales_order_item_detail_sheets`, `sales_order_item_detail_groups` e `start_order_item_details(uuid)` devem aparecer. Se houver erro, não publique a interface como se estivesse ativa; guarde a mensagem completa para análise.
-4. Depois que o commit estiver na `main` e a CI estiver verde, faça **Publish** no Lovable. A aplicação publicada só passa a usar a funcionalidade após essas duas etapas.
-5. Com uma conta autorizada, abra um pedido enviado/em custo, clique em **Detalhar produção** em um item, escolha **Costura**, escreva uma instrução e clique em **Salvar detalhes**. Feche e reabra para verificar persistência. Verifique a **Ficha técnica** do pedido; após aprovação e liberação ao PCP, confirme a aba **Ficha técnica** da OP.
+1. Confirme o projeto/banco correto e faça o backup previsto para produção. O arquivo anterior `docs/producao/2026-10-27_DETALHES-PRODUCAO.sql` deve já ter sido aplicado com sucesso. O usuário informou sua execução; isso não foi verificado diretamente pelo agente.
+2. Em **More → Database → Manage → SQL editor**, execute o arquivo completo `docs/producao/2026-10-27_DETALHES-COMERCIAL-CONSUMO.sql`. Ele verifica pré-requisitos, usa transação e é reexecutável. **Não reaplique o SQL anterior depois deste**, pois ele redefine funções compartilhadas; caso isso aconteça, execute novamente o SQL comercial/consumo em seguida.
+3. Confira a linha final: as funções `start_order_item_commercial_details`, `list_order_item_material_consumption` e `save_order_item_material_consumption` devem aparecer, com `coluna_texto_comercial` e `coluna_revisao_consumo` verdadeiras. Se houver erro, guarde a mensagem completa e não considere o recurso ativo.
+4. Após o commit estar na `main` e a CI passar, faça **Publish** no Lovable. Banco, push e publicação são ações separadas; testes descartáveis não alteram nem validam produção.
+5. Com contas autorizadas e um pedido de teste, salve Costura e Bordado no comercial; envie para custo; confira os textos, acrescente complemento e cadastre consumo, perda e custo. Feche e reabra, confira recálculo e fiche técnica. Aprove e libere ao PCP; confirme textos e consumo na ficha da OP, sem valores financeiros estruturados.
 
-## Permissões e segurança
+## Permissões e limites importantes
 
-- A gravação exige `can_cost`: `admin`, `manager`, `engenharia_custo` ou `coordenador_produto`; a RPC também valida o estado do pedido e do item no banco.
-- A leitura técnica é para membros, conforme a política existente da ficha técnica do pedido. Nessa ficha e na nova aba da OP, a produção recebe texto e dados técnicos, não as colunas financeiras. Textos livres ou fotos podem, contudo, conter informações que um usuário tenha incluído neles.
-- **Limite importante:** isso não corrige a confidencialidade global do sistema. O resumo antigo da ficha no PCP mostra custos e as políticas legadas permitem, entre outros acessos, que PCP leia `tech_sheets` e valores de `catalog_options` diretamente. Esses acessos foram reproduzidos no banco de teste; a configuração de produção não foi verificada. Uma revisão separada de telas, papéis, tabelas e integrações é necessária para garantir sigilo global sem quebrar fluxos existentes.
-- Na saída da ficha do pedido, `options.spec` agora preserva apenas `driver_qty` numérico; o JSON original da tabela não é modificado.
-- Cada gravação usa revisão otimista: se outro usuário alterou o grupo desde a leitura, o sistema recusa a sobrescrita e preserva o texto que está na tela. Copie o texto antes de fechar/reabrir para conciliar a alteração.
-- Dados de teste e SQL foram exercitados em um PostgreSQL isolado; isso não comprova que o SQL foi aplicado ou que permissões reais estão corretas no banco publicado.
-
-## Limitações operacionais
-
-- Se a referência não estiver vinculada a uma ficha padrão na primeira abertura, o editor informa que não encontrou a base e permite preencher os detalhes manualmente. Se a referência ou a ficha for cadastrada depois, reabra o editor antes da aprovação: a base ainda ausente será buscada novamente sem sobrescrever os detalhes. Uma cópia já encontrada não muda automaticamente.
-- Pedidos antigos já aprovados não são retroativamente iniciados nem alterados por este script.
-- Esta alteração não modifica `tech_sheets`, os valores de custo, as rotas do PCP ou a regra de aprovação.
+- Comercial precisa de `can_sell` e edita apenas rascunhos do vendedor responsável; usuários que também têm `can_cost` podem editar rascunhos de outros vendedores. O custo precisa de `can_cost` e de item não aprovado nas etapas permitidas. A leitura técnica é para membros; a RPC nova que retorna custos de consumo exige `can_cost`.
+- Textos livres, nomes e fotos podem conter informações sensíveis: não digite valores confidenciais neles. A projeção da ficha/OP não inclui campos estruturados de custo, preço ou margem; isso **não garante sigilo global**.
+- As telas e permissões legadas do PCP ainda podem expor custos, inclusive no resumo antigo e em acessos a `tech_sheets` e `catalog_options`. Esses acessos foram reproduzidos em banco descartável, não verificados em produção. É necessária uma revisão separada de telas, papéis e integrações.
+- O painel de custo anterior continua existindo. O trigger incrementa a revisão quando ele altera uma linha de material, mas suas políticas legadas não foram endurecidas por esta entrega; não trate as novas RPCs como bloqueio global de todas as APIs antigas.
+- Falha ao carregar materiais bloqueia a inclusão no novo editor, evitando trabalhar sobre uma lista incompleta. A sugestão da ficha padrão não cria vínculo de estoque; essa integração depende do recurso e das migrações de estoque disponíveis no projeto.

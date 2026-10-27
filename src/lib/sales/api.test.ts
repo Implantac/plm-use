@@ -10,7 +10,8 @@ vi.mock("@/integrations/supabase/client", () => ({
   supabase: { from: vi.fn(), rpc: vi.fn() },
 }));
 
-const { mapItem } = await import("./api");
+const { mapItem, listMaterials } = await import("./api");
+const { supabase } = await import("@/integrations/supabase/client");
 
 const base = {
   id: "i1",
@@ -81,9 +82,71 @@ describe("mapItem deduplica grades e opções", () => {
     expect(item.options[0]).toMatchObject({ optionId: "bordado", driverQty: 6.5 });
   });
 
+  it("preserva observações comerciais do item", () => {
+    expect(mapItem({ ...base, notes: "Solicitação do cliente" }).notes).toBe(
+      "Solicitação do cliente",
+    );
+  });
+
   it("item sem grade nem opções não quebra", () => {
     const item = mapItem({ ...base });
     expect(item.sizes).toEqual([]);
     expect(item.options).toEqual([]);
+  });
+});
+
+describe("listMaterials com estoque opcional", () => {
+  beforeEach(() => vi.clearAllMocks());
+  it("recupera linhas de consumo quando o vínculo de estoque não existe", async () => {
+    const chain = (result: unknown) => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue(result),
+    });
+    const first = chain({
+      data: null,
+      error: { code: "PGRST200", message: "Relationship stock_item_id not found" },
+    });
+    const second = chain({
+      data: [
+        {
+          id: "m1",
+          kind: "tecido",
+          material: "Malha",
+          unit: "m",
+          consumption: 1.5,
+          waste_pct: 5,
+          unit_cost: 12,
+          source: "custo",
+        },
+      ],
+      error: null,
+    });
+    vi.mocked(supabase.from)
+      .mockReturnValueOnce(first as never)
+      .mockReturnValueOnce(second as never);
+    const result = await listMaterials("i1");
+    expect(result.error).toBeNull();
+    expect(result.data?.[0]).toMatchObject({
+      material: "Malha",
+      consumption: 1.5,
+      wastePct: 5,
+      unitCost: 12,
+    });
+    expect(first.select).toHaveBeenCalledWith("*, stock_item:stock_item_id(code)");
+    expect(second.select).toHaveBeenCalledWith("*");
+  });
+
+  it("não esconde outros erros de leitura", async () => {
+    const q = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi
+        .fn()
+        .mockResolvedValue({ data: null, error: { code: "42501", message: "Sem permissao" } }),
+    };
+    vi.mocked(supabase.from).mockReturnValueOnce(q as never);
+    expect((await listMaterials("i1")).error?.message).toBe("Sem permissao");
+    expect(supabase.from).toHaveBeenCalledTimes(1);
   });
 });

@@ -4,7 +4,7 @@
 // O botão "Enviar para custo" chama submit_sales_order() — as validações
 // (produto validado, mínimo, grade = quantidade, preço) rodam no Postgres e a
 // mensagem de erro dele é o que o usuário lê.
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -368,6 +369,8 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
               sheet={sheets[item.id]}
               canCost={canCost}
               editable={editable}
+              commercialEditable={canSell && order.status === "rascunho"}
+              onConsumptionChanged={() => void load()}
               busy={busy}
               onDelete={() =>
                 run(`del-${item.id}`, () => deleteItem(item.id, order.id), "Item removido.").catch(
@@ -522,6 +525,8 @@ function ItemCard({
   sheet,
   canCost,
   editable,
+  commercialEditable,
+  onConsumptionChanged,
   busy,
   onDelete,
   onRecalc,
@@ -539,6 +544,8 @@ function ItemCard({
   sheet?: ItemSheet;
   canCost: boolean;
   editable: boolean;
+  commercialEditable: boolean;
+  onConsumptionChanged: () => void;
   busy: string | null;
   onDelete: () => void;
   onRecalc: () => void;
@@ -568,6 +575,8 @@ function ItemCard({
   });
   const [addKind, setAddKind] = useState<null | "op" | "mat">(null);
   const [productionDetailsOpen, setProductionDetailsOpen] = useState(false);
+  const [detailMode, setDetailMode] = useState<"commercial" | "cost">("cost");
+  const consumptionChanged = useRef(false);
   const [form, setForm] = useState<Record<string, string>>({});
   const setF = (key: string) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -672,15 +681,32 @@ function ItemCard({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {commercialEditable && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDetailMode("commercial");
+                setProductionDetailsOpen(true);
+              }}
+              className="text-2xs tracking-[0.04em] gap-1.5"
+            >
+              <FileText className="w-3.5 h-3.5" /> Detalhes comerciais
+            </Button>
+          )}
           {canCost && (
             <>
-              <Button
-                onClick={() => setProductionDetailsOpen(true)}
-                className="text-2xs tracking-[0.04em] gap-1.5"
-              >
-                <FileText className="w-3.5 h-3.5" />{" "}
-                {costEditable ? "Detalhar produção" : "Ver detalhes"}
-              </Button>
+              {(costEditable || !commercialEditable) && (
+                <Button
+                  onClick={() => {
+                    setDetailMode("cost");
+                    setProductionDetailsOpen(true);
+                  }}
+                  className="text-2xs tracking-[0.04em] gap-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5" />{" "}
+                  {costEditable ? "Detalhar produção" : "Ver detalhes"}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 onClick={onRecalc}
@@ -1234,13 +1260,24 @@ function ItemCard({
           )}
         </div>
       )}
-      {canCost && (
+      {(canCost || commercialEditable) && (
         <ItemTechnicalDetailsDialog
           itemId={item.id}
           itemLabel={`Item ${item.lineNo} · ${item.description}`}
+          item={item}
+          mode={detailMode}
           open={productionDetailsOpen}
-          editable={costEditable}
-          onClose={() => setProductionDetailsOpen(false)}
+          editable={detailMode === "commercial" ? commercialEditable : costEditable}
+          onConsumptionChanged={() => {
+            consumptionChanged.current = true;
+          }}
+          onClose={() => {
+            setProductionDetailsOpen(false);
+            if (consumptionChanged.current) {
+              consumptionChanged.current = false;
+              onConsumptionChanged();
+            }
+          }}
         />
       )}
     </Card>
@@ -1289,6 +1326,7 @@ function AddItemDialog({
   const [productId, setProductId] = useState("");
   const [description, setDescription] = useState("");
   const [color, setColor] = useState("");
+  const [itemNotes, setItemNotes] = useState("");
   const [quantity, setQuantity] = useState("10");
   const [price, setPrice] = useState("");
   const [sizes, setSizes] = useState<Record<string, string>>({});
@@ -1351,6 +1389,7 @@ function AddItemDialog({
       catalogProductId: product.id,
       description,
       color,
+      notes: itemNotes,
       quantity: qty,
       unitPrice: Number(String(price).replace(",", ".")) || 0,
       sizes: Object.entries(sizes)
@@ -1369,6 +1408,7 @@ function AddItemDialog({
     }
     toast.success("Item adicionado.");
     setProductId("");
+    setItemNotes("");
     onSaved();
   }
 
@@ -1377,6 +1417,7 @@ function AddItemDialog({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Adicionar item ao pedido</DialogTitle>
+          <DialogDescription>Informe os dados iniciais para este item do pedido.</DialogDescription>
         </DialogHeader>
 
         {hint && (
@@ -1440,6 +1481,17 @@ function AddItemDialog({
                 placeholder="0,00"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="item-commercial-notes">Observações gerais deste item</Label>
+            <Textarea
+              id="item-commercial-notes"
+              value={itemNotes}
+              onChange={(e) => setItemNotes(e.target.value)}
+              maxLength={15000}
+              placeholder="Orientações gerais que devem acompanhar este item"
+            />
           </div>
 
           {product && product.grade.length > 0 && (
@@ -1543,6 +1595,10 @@ function AddItemDialog({
           )}
         </div>
 
+        <p className="text-xs text-muted-foreground">
+          Depois de adicionar, use <strong>Detalhes comerciais</strong> no cartão do item para
+          registrar as orientações por grupo antes de enviar para custo.
+        </p>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar

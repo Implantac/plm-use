@@ -11,25 +11,41 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  deleteCommercialItemDetailGroup,
   deleteItemDetailGroup,
   getItemTechnicalDetails,
+  saveCommercialItemDetailGroup,
   saveItemDetailGroup,
+  startCommercialItemDetails,
   startItemTechnicalDetails,
   type ItemTechnicalDetails,
+  type TechnicalDetailGroup,
 } from "@/lib/sales/technical-details-api";
+import type { SalesOrderItem } from "@/lib/sales/types";
 import { BaseSnapshotPanel } from "./ProductionDetails";
+import { ItemConsumptionEditor } from "./ItemConsumptionEditor";
+
+type DetailMode = "commercial" | "cost";
+const groupText = (group: TechnicalDetailGroup, mode: DetailMode) =>
+  mode === "commercial" ? (group.commercial_detail ?? "") : group.detail;
 
 export function ItemTechnicalDetailsDialog({
   itemId,
   itemLabel,
   open,
   editable,
+  mode = "cost",
+  item,
+  onConsumptionChanged,
   onClose,
 }: {
   itemId: string;
   itemLabel: string;
   open: boolean;
   editable: boolean;
+  mode?: DetailMode;
+  item?: SalesOrderItem;
+  onConsumptionChanged?: () => void;
   onClose: () => void;
 }) {
   const [sheet, setSheet] = useState<ItemTechnicalDetails | null>(null);
@@ -37,6 +53,8 @@ export function ItemTechnicalDetailsDialog({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [consumptionDirty, setConsumptionDirty] = useState(false);
+  const [consumptionSaving, setConsumptionSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [addingGroup, setAddingGroup] = useState(false);
@@ -53,48 +71,58 @@ export function ItemTechnicalDetailsDialog({
     setLoading(true);
     setError(null);
     setMessage(null);
-    // Abrir "Detalhar" cria a foto uma só vez; a visualização não cria dados.
-    void (editable ? startItemTechnicalDetails(itemId) : getItemTechnicalDetails(itemId)).then(
-      (res) => {
-        if (!alive) return;
-        setLoading(false);
-        if (res.error || !res.data) {
-          setError(res.error?.message ?? "Não foi possível carregar os detalhes.");
-          return;
-        }
-        const groups = Array.isArray(res.data.groups) ? res.data.groups : [];
-        setSheet({ ...res.data, groups });
-        setDrafts(Object.fromEntries(groups.map((group) => [group.id, group.detail])));
-        setSelectedId(groups[0]?.id ?? null);
-      },
-    );
+    setConsumptionDirty(false);
+    setConsumptionSaving(false);
+    // Comercial inicia no rascunho; custo inicia após envio; consulta não cria dados.
+    const request = !editable
+      ? getItemTechnicalDetails(itemId)
+      : mode === "commercial"
+        ? startCommercialItemDetails(itemId)
+        : startItemTechnicalDetails(itemId);
+    void request.then((res) => {
+      if (!alive) return;
+      setLoading(false);
+      if (res.error || !res.data) {
+        setError(res.error?.message ?? "Não foi possível carregar os detalhes.");
+        return;
+      }
+      const groups = Array.isArray(res.data.groups) ? res.data.groups : [];
+      setSheet({ ...res.data, groups });
+      setDrafts(Object.fromEntries(groups.map((group) => [group.id, groupText(group, mode)])));
+      setSelectedId(groups[0]?.id ?? null);
+    });
     return () => {
       alive = false;
     };
-  }, [itemId, open, editable]);
+  }, [itemId, open, editable, mode]);
 
   const groups = useMemo(() => sheet?.groups ?? [], [sheet]);
   const selected = groups.find((group) => group.id === selectedId);
   const changed = (id: string, original: string) => (drafts[id] ?? original) !== original;
-  const hasUnsaved = groups.some((group) => changed(group.id, group.detail)) || !!newGroup.trim();
+  const hasUnsaved =
+    groups.some((group) => changed(group.id, groupText(group, mode))) ||
+    !!newGroup.trim() ||
+    consumptionDirty;
+  const blocking = saving || consumptionSaving;
 
   function close() {
-    if (saving) return;
+    if (blocking) return;
     if (hasUnsaved && !window.confirm("Existem alterações não salvas. Deseja fechar mesmo assim?"))
       return;
     onClose();
   }
 
   async function saveSelected() {
-    if (!selected || !editable || saving) return;
+    if (!selected || !editable || blocking) return;
     setSaving(true);
     setError(null);
     setMessage(null);
-    const res = await saveItemDetailGroup({
+    const save = mode === "commercial" ? saveCommercialItemDetailGroup : saveItemDetailGroup;
+    const res = await save({
       itemId,
       groupId: selected.id,
       name: null,
-      detail: drafts[selected.id] ?? selected.detail,
+      detail: drafts[selected.id] ?? groupText(selected, mode),
       revision: selected.revision,
     });
     setSaving(false);
@@ -108,12 +136,12 @@ export function ItemTechnicalDetailsDialog({
         ? { ...current, groups: current.groups.map((g) => (g.id === saved.id ? saved : g)) }
         : current,
     );
-    setDrafts((current) => ({ ...current, [saved.id]: saved.detail }));
+    setDrafts((current) => ({ ...current, [saved.id]: groupText(saved, mode) }));
     setMessage(`Detalhes de ${saved.name} salvos para este item.`);
   }
 
   async function addGroup() {
-    if (!editable || saving) return;
+    if (!editable || blocking) return;
     const name = newGroup.trim();
     if (!name) {
       setError("Informe o nome do grupo.");
@@ -130,7 +158,8 @@ export function ItemTechnicalDetailsDialog({
     setSaving(true);
     setError(null);
     setMessage(null);
-    const res = await saveItemDetailGroup({ itemId, groupId: null, name, detail: "", revision: 0 });
+    const save = mode === "commercial" ? saveCommercialItemDetailGroup : saveItemDetailGroup;
+    const res = await save({ itemId, groupId: null, name, detail: "", revision: 0 });
     setSaving(false);
     if (res.error || !res.data) {
       setError(res.error?.message ?? "Não foi possível criar o grupo.");
@@ -140,7 +169,7 @@ export function ItemTechnicalDetailsDialog({
     setSheet((current) =>
       current ? { ...current, groups: [...current.groups, created] } : current,
     );
-    setDrafts((current) => ({ ...current, [created.id]: created.detail }));
+    setDrafts((current) => ({ ...current, [created.id]: groupText(created, mode) }));
     setSelectedId(created.id);
     setNewGroup("");
     setAddingGroup(false);
@@ -148,12 +177,18 @@ export function ItemTechnicalDetailsDialog({
   }
 
   async function removeGroup() {
-    if (!selected || !editable || saving) return;
+    if (!selected || !editable || blocking) return;
+    if (
+      (mode === "cost" && selected.commercial_detail?.trim()) ||
+      (mode === "commercial" && selected.detail.trim())
+    )
+      return;
     if (!window.confirm(`Excluir o grupo ${selected.name} e suas instruções deste item?`)) return;
     setSaving(true);
     setError(null);
     setMessage(null);
-    const res = await deleteItemDetailGroup({
+    const remove = mode === "commercial" ? deleteCommercialItemDetailGroup : deleteItemDetailGroup;
+    const res = await remove({
       itemId,
       groupId: selected.id,
       revision: selected.revision,
@@ -179,7 +214,8 @@ export function ItemTechnicalDetailsDialog({
       <DialogContent className="max-h-[92dvh] max-w-6xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 pr-6">
-            <FileText className="h-5 w-5 text-primary" /> Detalhes de produção
+            <FileText className="h-5 w-5 text-primary" />{" "}
+            {mode === "commercial" ? "Detalhes do comercial" : "Detalhes de produção"}
           </DialogTitle>
           <DialogDescription>
             {itemLabel} · ficha específica deste item, sem alterar a ficha padrão do produto.
@@ -214,6 +250,7 @@ export function ItemTechnicalDetailsDialog({
         )}
         {!loading && sheet?.initialized && (
           <>
+            {item && <CommercialItemSummary item={item} />}
             <BaseSnapshotPanel
               snapshot={{
                 ref: sheet.base_ref ?? null,
@@ -243,7 +280,7 @@ export function ItemTechnicalDetailsDialog({
                         setError(null);
                         setMessage(null);
                       }}
-                      disabled={saving}
+                      disabled={blocking}
                       className={`flex items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors ${
                         selectedId === group.id
                           ? "bg-primary/15 font-semibold text-primary"
@@ -251,9 +288,9 @@ export function ItemTechnicalDetailsDialog({
                       }`}
                     >
                       <span>{group.name}</span>
-                      {changed(group.id, group.detail) ? (
+                      {changed(group.id, groupText(group, mode)) ? (
                         <span className="text-2xs text-status-progress">Não salvo</span>
-                      ) : group.detail.trim() ? (
+                      ) : group.detail.trim() || group.commercial_detail?.trim() ? (
                         <span
                           className="h-2 w-2 rounded-full bg-status-approved"
                           aria-label="Preenchido"
@@ -272,14 +309,14 @@ export function ItemTechnicalDetailsDialog({
                           value={newGroup}
                           maxLength={60}
                           onChange={(e) => setNewGroup(e.target.value)}
-                          disabled={saving}
+                          disabled={blocking}
                         />
                         <div className="flex gap-2">
                           <Button
                             type="button"
                             size="sm"
                             onClick={() => void addGroup()}
-                            disabled={saving}
+                            disabled={blocking}
                           >
                             Criar grupo
                           </Button>
@@ -291,7 +328,7 @@ export function ItemTechnicalDetailsDialog({
                               setAddingGroup(false);
                               setNewGroup("");
                             }}
-                            disabled={saving}
+                            disabled={blocking}
                           >
                             Cancelar
                           </Button>
@@ -303,7 +340,7 @@ export function ItemTechnicalDetailsDialog({
                         variant="outline"
                         size="sm"
                         onClick={() => setAddingGroup(true)}
-                        disabled={saving}
+                        disabled={blocking}
                       >
                         <Plus className="h-3.5 w-3.5" /> Novo grupo
                       </Button>
@@ -319,28 +356,64 @@ export function ItemTechnicalDetailsDialog({
                       <div>
                         <h3 className="text-base font-semibold text-foreground">{selected.name}</h3>
                         <p className="text-xs text-muted-foreground">
-                          Instruções que a produção deve seguir neste item.
+                          {mode === "commercial"
+                            ? "Informe o pedido do cliente para este grupo. O custo complementará depois."
+                            : "Confira o que o comercial informou e acrescente o detalhamento técnico."}
                         </p>
                       </div>
                       <span className="text-2xs text-muted-foreground">
-                        {changed(selected.id, selected.detail) ? "Alterações não salvas" : "Salvo"}
+                        {changed(selected.id, groupText(selected, mode))
+                          ? "Alterações não salvas"
+                          : "Salvo"}
                       </span>
                     </div>
+                    {mode === "cost" && (
+                      <div className="mb-3 rounded-md border border-border bg-muted/30 p-3">
+                        <p className="text-xs font-semibold text-foreground">
+                          Informado pelo comercial
+                        </p>
+                        <p className="mt-1 whitespace-pre-wrap break-words text-sm text-foreground">
+                          {selected.commercial_detail?.trim()
+                            ? selected.commercial_detail
+                            : "Nenhuma informação neste grupo."}
+                        </p>
+                      </div>
+                    )}
+                    {mode === "commercial" && !!selected.detail.trim() && (
+                      <div className="mb-3 rounded-md border border-border bg-muted/30 p-3">
+                        <p className="text-xs font-semibold text-foreground">
+                          Complemento do custo
+                        </p>
+                        <p className="mt-1 whitespace-pre-wrap break-words text-sm text-foreground">
+                          {selected.detail}
+                        </p>
+                      </div>
+                    )}
+                    <label
+                      htmlFor={`detail-${selected.id}`}
+                      className="mb-1 text-xs font-semibold text-foreground"
+                    >
+                      {mode === "commercial"
+                        ? "Detalhes do comercial"
+                        : "Complemento técnico do custo"}
+                    </label>
                     <Textarea
+                      id={`detail-${selected.id}`}
                       aria-label={`Detalhes de ${selected.name}`}
                       className="min-h-[260px] flex-1 resize-y text-sm leading-relaxed"
                       placeholder={`Descreva os detalhes de ${selected.name.toLowerCase()} para a produção…`}
-                      value={drafts[selected.id] ?? selected.detail}
+                      value={drafts[selected.id] ?? groupText(selected, mode)}
                       maxLength={15000}
-                      disabled={!editable || saving}
+                      disabled={!editable || blocking}
                       onChange={(e) => {
                         setDrafts((current) => ({ ...current, [selected.id]: e.target.value }));
                         setMessage(null);
                       }}
                     />
                     <p className="mt-2 text-2xs text-muted-foreground">
-                      As instruções aparecem na ficha e na OP. Para calcular valores, use as
-                      operações e materiais do custo.
+                      {mode === "commercial"
+                        ? "O custo verá estas informações e poderá complementar sem alterar o texto do comercial."
+                        : "O complemento não altera o texto do comercial. Ambos aparecem na ficha e na OP."}
                     </p>
                     {editable && (
                       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
@@ -349,14 +422,24 @@ export function ItemTechnicalDetailsDialog({
                           variant="ghost"
                           size="sm"
                           onClick={() => void removeGroup()}
-                          disabled={saving}
+                          disabled={
+                            blocking ||
+                            (mode === "cost"
+                              ? !!selected.commercial_detail?.trim()
+                              : !!selected.detail.trim())
+                          }
+                          title={
+                            mode === "cost" && selected.commercial_detail?.trim()
+                              ? "O grupo contém dados do comercial e não pode ser excluído pelo custo."
+                              : undefined
+                          }
                         >
                           <Trash2 className="h-3.5 w-3.5" /> Excluir grupo
                         </Button>
                         <Button
                           type="button"
                           onClick={() => void saveSelected()}
-                          disabled={saving || !changed(selected.id, selected.detail)}
+                          disabled={blocking || !changed(selected.id, groupText(selected, mode))}
                         >
                           <Save className="h-4 w-4" /> {saving ? "Salvando…" : "Salvar detalhes"}
                         </Button>
@@ -370,14 +453,65 @@ export function ItemTechnicalDetailsDialog({
                 )}
               </section>
             </div>
+            {mode === "cost" && item && (
+              <ItemConsumptionEditor
+                itemId={itemId}
+                quantity={item.quantity}
+                baseMaterials={sheet.base?.materiais ?? []}
+                editable={editable}
+                disabled={saving}
+                onDirtyChange={setConsumptionDirty}
+                onSavingChange={setConsumptionSaving}
+                onChanged={() => onConsumptionChanged?.()}
+              />
+            )}
             {!editable && (
               <p className="text-xs text-muted-foreground">
-                Item aprovado ou fora do custo: detalhes somente para consulta.
+                Os detalhes deste item estão disponíveis somente para consulta.
               </p>
             )}
           </>
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function CommercialItemSummary({ item }: { item: SalesOrderItem }) {
+  return (
+    <section
+      className="space-y-2 rounded-md border border-border bg-muted/20 p-3 text-sm"
+      aria-label="Dados informados pelo comercial"
+    >
+      <h3 className="text-xs font-semibold uppercase tracking-[0.04em] text-primary">
+        Dados informados pelo comercial
+      </h3>
+      <p className="text-foreground">
+        {item.description} · {item.color || "sem cor informada"} · {item.quantity} peças
+        {item.referenceCode ? ` · ref. ${item.referenceCode}` : ""}
+      </p>
+      <p className="text-xs text-muted-foreground">
+        Grade:{" "}
+        {item.sizes.length
+          ? item.sizes.map((s) => `${s.size} × ${s.quantity}`).join(" · ")
+          : "não informada"}
+      </p>
+      <p className="text-xs text-muted-foreground">
+        Personalizações:{" "}
+        {item.options.length
+          ? item.options
+              .map(
+                (o) =>
+                  `${o.name} × ${o.quantity}${o.driverQty != null ? ` (detalhe ${o.driverQty})` : ""}`,
+              )
+              .join(" · ")
+          : "nenhuma"}
+      </p>
+      {item.notes && (
+        <p className="whitespace-pre-wrap break-words text-xs text-foreground">
+          Observações: {item.notes}
+        </p>
+      )}
+    </section>
   );
 }

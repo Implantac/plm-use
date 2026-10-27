@@ -37,9 +37,15 @@ vi.mock("@/lib/sales/api", () => api);
 
 const detailsApi = vi.hoisted(() => ({
   startItemTechnicalDetails: vi.fn(),
+  startCommercialItemDetails: vi.fn(),
   getItemTechnicalDetails: vi.fn(),
   saveItemDetailGroup: vi.fn(),
+  saveCommercialItemDetailGroup: vi.fn(),
   deleteItemDetailGroup: vi.fn(),
+  deleteCommercialItemDetailGroup: vi.fn(),
+  listItemConsumption: vi.fn(),
+  saveItemConsumption: vi.fn(),
+  deleteItemConsumption: vi.fn(),
 }));
 vi.mock("@/lib/sales/technical-details-api", () => detailsApi);
 
@@ -259,10 +265,49 @@ beforeEach(() => {
       base_ref: null,
       base_found: false,
       base: {},
-      groups: [{ id: "g1", name: "Costura", detail: "", revision: 1, sort_order: 10 }],
+      groups: [
+        {
+          id: "g1",
+          name: "Costura",
+          commercial_detail: "Gola azul solicitada",
+          detail: "",
+          revision: 2,
+          sort_order: 10,
+        },
+      ],
     },
     error: null,
   });
+  detailsApi.startCommercialItemDetails.mockResolvedValue({
+    data: {
+      initialized: true,
+      base_found: false,
+      base: {},
+      groups: [
+        {
+          id: "g1",
+          name: "Costura",
+          commercial_detail: "",
+          detail: "",
+          revision: 1,
+          sort_order: 10,
+        },
+      ],
+    },
+    error: null,
+  });
+  detailsApi.saveCommercialItemDetailGroup.mockResolvedValue({
+    data: {
+      id: "g1",
+      name: "Costura",
+      commercial_detail: "Pedido do cliente",
+      detail: "",
+      revision: 2,
+      sort_order: 10,
+    },
+    error: null,
+  });
+  detailsApi.listItemConsumption.mockResolvedValue({ data: [], error: null });
 });
 
 describe("OrderDetail", () => {
@@ -299,6 +344,117 @@ describe("OrderDetail", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Detalhar produção" }));
     expect(await screen.findByLabelText("Detalhes de Costura")).toBeTruthy();
     expect(detailsApi.startItemTechnicalDetails).toHaveBeenCalledWith("i1");
+    expect(screen.getByText("Gola azul solicitada")).toBeTruthy();
+    expect(screen.getAllByText(/Laranja\/Preto · 10 peças/).length).toBeGreaterThan(0);
+    expect(await screen.findByText("Consumo dos materiais deste item")).toBeTruthy();
+  });
+
+  it("atualiza pedido e totais ao fechar o editor depois de recalcular consumo", async () => {
+    const row = {
+      id: "m1",
+      kind: "tecido",
+      material: "Malha",
+      unit: "m",
+      consumption: 1,
+      waste_pct: 0,
+      unit_cost: 10,
+      total_cost: 100,
+      source: "custo",
+      revision: 1,
+    };
+    detailsApi.listItemConsumption.mockResolvedValue({ data: [row], error: null });
+    detailsApi.saveItemConsumption.mockResolvedValue({
+      data: { ...row, consumption: 2, revision: 2 },
+      error: null,
+    });
+    render(
+      <OrderDetail
+        orderId="o1"
+        canSell={false}
+        canCost
+        canPlan={false}
+        onClose={() => undefined}
+      />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Detalhar produção" }));
+    fireEvent.change(await screen.findByLabelText("Consumo por peça de Malha"), {
+      target: { value: "2" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar consumo de Malha" }));
+    await waitFor(() => expect(detailsApi.saveItemConsumption).toHaveBeenCalled());
+    await screen.findByText("Consumo de Malha salvo e custo recalculado.");
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    await waitFor(() => expect(api.getOrder).toHaveBeenCalledTimes(2));
+    expect(api.listCosts).toHaveBeenCalledTimes(2);
+  });
+
+  it("comercial registra observações gerais ao adicionar o item", async () => {
+    api.getOrder.mockResolvedValue({ data: { ...order, status: "rascunho" }, error: null });
+    api.listCatalog.mockResolvedValue({
+      data: [
+        {
+          id: "p1",
+          code: "CAM",
+          name: "Camisa",
+          status: "validado",
+          minQty: 10,
+          basePrice: 100,
+          grade: [],
+          options: [],
+        },
+      ],
+      error: null,
+    });
+    api.addItem.mockResolvedValue({ data: {}, error: null });
+    render(
+      <OrderDetail
+        orderId="o1"
+        canSell
+        canCost={false}
+        canPlan={false}
+        onClose={() => undefined}
+      />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Adicionar item" }));
+    await screen.findByRole("option", { name: "CAM — Camisa" });
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "p1" } });
+    fireEvent.change(screen.getByLabelText("Observações gerais deste item"), {
+      target: { value: "Entrega com embalagem especial" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar" }));
+    await waitFor(() =>
+      expect(api.addItem).toHaveBeenCalledWith(
+        expect.objectContaining({ notes: "Entrega com embalagem especial" }),
+      ),
+    );
+  });
+
+  it("comercial registra detalhes por grupo no rascunho sem acessar o custo", async () => {
+    api.getOrder.mockResolvedValue({ data: { ...order, status: "rascunho" }, error: null });
+    render(
+      <OrderDetail
+        orderId="o1"
+        canSell
+        canCost={false}
+        canPlan={false}
+        onClose={() => undefined}
+      />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Detalhes comerciais" }));
+    const textarea = await screen.findByLabelText("Detalhes de Costura");
+    fireEvent.change(textarea, { target: { value: "Pedido do cliente" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar detalhes" }));
+    await waitFor(() =>
+      expect(detailsApi.saveCommercialItemDetailGroup).toHaveBeenCalledWith({
+        itemId: "i1",
+        groupId: "g1",
+        name: null,
+        detail: "Pedido do cliente",
+        revision: 1,
+      }),
+    );
+    expect(detailsApi.startCommercialItemDetails).toHaveBeenCalledWith("i1");
+    expect(detailsApi.listItemConsumption).not.toHaveBeenCalled();
   });
 
   it("esconde o painel de custo de quem não é de custo", async () => {

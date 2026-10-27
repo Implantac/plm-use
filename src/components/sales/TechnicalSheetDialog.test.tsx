@@ -24,10 +24,15 @@ const sheet = {
       color: "Laranja/Preto",
       quantity: 10,
       reference_code: null,
+      commercial_notes: "Cliente pediu gola azul",
       tech_status: "em_detalhamento",
       grade: { M: 6, G: 4 },
       detail_groups: [
-        { name: "Costura", detail: "Seguir piloto aprovado\nAplicar etiqueta na gola" },
+        {
+          name: "Costura",
+          commercial_detail: "Costura reforçada conforme cliente",
+          detail: "Seguir piloto aprovado\nAplicar etiqueta na gola",
+        },
         { name: "Bordado", detail: "Logo no peito esquerdo" },
       ],
       base_snapshot: {
@@ -105,6 +110,9 @@ describe("TechnicalSheetDialog", () => {
     expect(text).toContain("10 pç");
     expect(text).toContain("M × 6");
     expect(text).toContain("Seguir piloto aprovado\nAplicar etiqueta na gola");
+    expect(text).toContain("Costura reforçada conforme cliente");
+    expect(text).toContain("Cliente pediu gola azul");
+    expect(text).toContain("Materiais e consumo do item");
     expect(text).toContain("Logo no peito esquerdo");
     expect(text).toContain("Malha base");
     expect(text).toContain("Gola V");

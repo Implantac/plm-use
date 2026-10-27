@@ -5,16 +5,29 @@ import { ItemTechnicalDetailsDialog } from "./ItemTechnicalDetailsDialog";
 
 const api = vi.hoisted(() => ({
   startItemTechnicalDetails: vi.fn(),
+  startCommercialItemDetails: vi.fn(),
   getItemTechnicalDetails: vi.fn(),
   saveItemDetailGroup: vi.fn(),
+  saveCommercialItemDetailGroup: vi.fn(),
   deleteItemDetailGroup: vi.fn(),
+  deleteCommercialItemDetailGroup: vi.fn(),
+  listItemConsumption: vi.fn(),
+  saveItemConsumption: vi.fn(),
+  deleteItemConsumption: vi.fn(),
 }));
 vi.mock("@/lib/sales/technical-details-api", () => api);
 
 const groups = [
-  { id: "det", name: "Detalhes", detail: "", revision: 1, sort_order: 10 },
-  { id: "cos", name: "Costura", detail: "", revision: 1, sort_order: 40 },
-  { id: "bor", name: "Bordado", detail: "", revision: 1, sort_order: 30 },
+  { id: "det", name: "Detalhes", commercial_detail: "", detail: "", revision: 1, sort_order: 10 },
+  {
+    id: "cos",
+    name: "Costura",
+    commercial_detail: "Gola solicitada pelo cliente",
+    detail: "",
+    revision: 1,
+    sort_order: 40,
+  },
+  { id: "bor", name: "Bordado", commercial_detail: "", detail: "", revision: 1, sort_order: 30 },
 ];
 const sheet = {
   initialized: true,
@@ -27,12 +40,14 @@ const sheet = {
 beforeEach(() => {
   vi.clearAllMocks();
   api.startItemTechnicalDetails.mockResolvedValue({ data: sheet, error: null });
+  api.startCommercialItemDetails.mockResolvedValue({ data: sheet, error: null });
   api.getItemTechnicalDetails.mockResolvedValue({ data: sheet, error: null });
   api.saveItemDetailGroup.mockImplementation(async (input) => ({
     data: {
       id: input.groupId ?? "new-group",
       name: input.name ?? groups.find((g) => g.id === input.groupId)?.name ?? "",
       detail: input.detail,
+      commercial_detail: groups.find((g) => g.id === input.groupId)?.commercial_detail ?? "",
       revision: input.revision + 1,
       sort_order: 100,
     },
@@ -61,10 +76,10 @@ function editor(editable = true, onClose = vi.fn()) {
 describe("detalhamento por grupo do item", () => {
   it("troca de grupo sem perder rascunhos e grava somente o item selecionado", async () => {
     editor();
-    await screen.findByRole("button", { name: "Costura" });
+    await screen.findByRole("button", { name: /Costura/ });
     expect(api.startItemTechnicalDetails).toHaveBeenCalledWith("item-1");
     expect(screen.getByText(/Base da ficha padrão · REF-01/)).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Costura" }));
+    fireEvent.click(screen.getByRole("button", { name: /Costura/ }));
     fireEvent.change(screen.getByLabelText("Detalhes de Costura"), {
       target: { value: "Seguir peça piloto\nEtiqueta na gola" },
     });
@@ -91,6 +106,61 @@ describe("detalhamento por grupo do item", () => {
     expect((screen.getByLabelText("Detalhes de Bordado") as HTMLTextAreaElement).value).toBe(
       "Logo no peito",
     );
+  });
+
+  it("mostra o texto comercial ao custo e não permite excluir o grupo dele", async () => {
+    editor();
+    fireEvent.click(await screen.findByRole("button", { name: /Costura/ }));
+    expect(screen.getByText("Gola solicitada pelo cliente")).toBeTruthy();
+    expect(
+      (screen.getByRole("button", { name: "Excluir grupo" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    fireEvent.change(screen.getByLabelText("Detalhes de Costura"), {
+      target: { value: "Reforçar a costura" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar detalhes" }));
+    await screen.findByRole("status");
+    expect(screen.getByText("Gola solicitada pelo cliente")).toBeTruthy();
+  });
+
+  it("comercial escreve somente sua parte no mesmo grupo", async () => {
+    api.saveCommercialItemDetailGroup.mockImplementation(async (input) => ({
+      data: {
+        id: input.groupId,
+        name: "Costura",
+        commercial_detail: input.detail,
+        detail: "",
+        revision: 2,
+        sort_order: 40,
+      },
+      error: null,
+    }));
+    render(
+      <ItemTechnicalDetailsDialog
+        itemId="item-1"
+        itemLabel="Item 1"
+        open
+        editable
+        mode="commercial"
+        onClose={() => {}}
+      />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: /Costura/ }));
+    const text = screen.getByLabelText("Detalhes de Costura") as HTMLTextAreaElement;
+    expect(text.value).toBe("Gola solicitada pelo cliente");
+    fireEvent.change(text, { target: { value: "Gola e punho azul" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar detalhes" }));
+    await waitFor(() =>
+      expect(api.saveCommercialItemDetailGroup).toHaveBeenCalledWith({
+        itemId: "item-1",
+        groupId: "cos",
+        name: null,
+        detail: "Gola e punho azul",
+        revision: 1,
+      }),
+    );
+    expect(api.startCommercialItemDetails).toHaveBeenCalledWith("item-1");
+    expect(api.saveItemDetailGroup).not.toHaveBeenCalled();
   });
 
   it("oferece criar e excluir grupo, preservando confirmação e revisão", async () => {
@@ -127,8 +197,8 @@ describe("detalhamento por grupo do item", () => {
       error: { message: "Grupo alterado por outro usuario." },
     });
     editor();
-    await screen.findByRole("button", { name: "Costura" });
-    fireEvent.click(screen.getByRole("button", { name: "Costura" }));
+    await screen.findByRole("button", { name: /Costura/ });
+    fireEvent.click(screen.getByRole("button", { name: /Costura/ }));
     fireEvent.change(screen.getByLabelText("Detalhes de Costura"), {
       target: { value: "Minha orientação" },
     });
@@ -149,6 +219,58 @@ describe("detalhamento por grupo do item", () => {
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(window.confirm).toHaveBeenCalled();
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("pede confirmação antes de descartar consumo não salvo", async () => {
+    api.listItemConsumption.mockResolvedValue({
+      data: [
+        {
+          id: "m1",
+          kind: "tecido",
+          material: "Malha",
+          unit: "m",
+          consumption: 1,
+          waste_pct: 0,
+          unit_cost: 10,
+          total_cost: 100,
+          source: "custo",
+          revision: 1,
+        },
+      ],
+      error: null,
+    });
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    const close = vi.fn();
+    render(
+      <ItemTechnicalDetailsDialog
+        itemId="item-1"
+        itemLabel="Item 1"
+        open
+        editable
+        onClose={close}
+        item={{
+          id: "item-1",
+          orderId: "o1",
+          lineNo: 1,
+          catalogProductId: "p1",
+          description: "Camisa",
+          quantity: 10,
+          unitPrice: 0,
+          priceLocked: false,
+          techStatus: "em_detalhamento",
+          costStatus: "em_custo",
+          sizes: [],
+          options: [],
+        }}
+      />,
+    );
+    const consumption = await screen.findByLabelText("Consumo por peça de Malha");
+    fireEvent.change(consumption, { target: { value: "2" } });
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(confirm).toHaveBeenCalled();
+    expect(close).not.toHaveBeenCalled();
+    expect((consumption as HTMLInputElement).value).toBe("2");
+    confirm.mockRestore();
   });
 
   it("item bloqueado apenas consulta, sem iniciar ou permitir edição", async () => {

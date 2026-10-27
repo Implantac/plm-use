@@ -43,8 +43,23 @@ describe("ficha técnica dentro da OP", () => {
             description: "Camisa teste",
             color: "Azul",
             quantity: 20,
+            commercial_notes: "Entrega em azul",
             detail_groups: [
-              { name: "Costura", detail: "Seguir piloto aprovado\nEtiqueta na gola" },
+              {
+                name: "Costura",
+                commercial_detail: "Cliente pediu gola reforçada",
+                detail: "Seguir piloto aprovado\nEtiqueta na gola",
+              },
+            ],
+            materials: [
+              {
+                kind: "tecido",
+                material: "Malha do item",
+                unit: "m",
+                consumption: 1.5,
+                waste_pct: 5,
+                consumption_total: 31.5,
+              },
             ],
             base_snapshot: {
               ref: "R1",
@@ -81,6 +96,10 @@ describe("ficha técnica dentro da OP", () => {
     await waitFor(() => expect(mocks.getTechnicalSheet).toHaveBeenCalledWith("pedido-1"));
     expect(await screen.findByText("Camisa teste")).toBeTruthy();
     expect(document.body.textContent).toContain("Seguir piloto aprovado\nEtiqueta na gola");
+    expect(document.body.textContent).toContain("Cliente pediu gola reforçada");
+    expect(document.body.textContent).toContain("Entrega em azul");
+    expect(document.body.textContent).toContain("Malha do item");
+    expect(document.body.textContent).toContain("31,5");
     expect(document.body.textContent).not.toContain("9876");
   });
 });

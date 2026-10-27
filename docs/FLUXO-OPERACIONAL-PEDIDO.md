@@ -1,6 +1,6 @@
 # Fluxo operacional do Pedido — revisão executada (26/out/2026)
 
-> Atualização de 27/out: foi acrescentado o detalhamento técnico por grupo e por item.
+> Atualização de 27/out: comercial preenche detalhes por grupo; custo complementa e registra consumo por item.
 > Veja a seção correspondente abaixo e `docs/producao/2026-10-27_DETALHES-PRODUCAO.md`
 > para ativação manual, limites e verificação. As evidências históricas desta revisão
 > continuam registradas abaixo; não são uma verificação do banco de produção.
@@ -19,6 +19,7 @@ VENDEDOR (can_sell: admin, manager, comercial, diretor_produto)
      addItem: produto do catálogo (só validado), descrição, cor, qtde, preço,
      grade P–3G, opções (Bordado escudo etc.) com "detalhe" = driver_qty/peça
      ← estes são os DADOS INICIAIS da ficha
+     Detalhes comerciais: salvar as orientações em grupos por item no rascunho
   2. [Enviar para custo] submit_sales_order (RPC única, transacional):
      guardas: ≥1 item · produto validado · qtde ≥ min · Σgrade = qtde · preço > 0
      · grupos de opção obrigatórios preenchidos
@@ -115,29 +116,23 @@ papéis atribuídos"), em vez de uma tela muda. Atribuição de papel é SQL no
 editor do Lovable (More → Database → Manage → SQL editor), padrão
 `docs/sql/2026-10-26_grant-admin-etcsuporte889.sql`.
 
-## Detalhes de produção por item (27/out)
+## Detalhes comerciais, complemento e consumo por item (27/out)
 
-No cartão de cada item enviado para custo, **Detalhar produção** abre grupos e
-texto livre. A primeira abertura busca pela referência do item ou do produto uma
-cópia técnica da ficha padrão; a cópia e os grupos pertencem apenas àquele item,
-sem modificar a ficha padrão nem outros pedidos. Se a base não for encontrada,
-ela pode ser buscada novamente ao reabrir antes da aprovação. Uma base já
-capturada não é atualizada automaticamente.
+No rascunho, **Detalhes comerciais** permite registrar e salvar instruções por
+grupo em cada item. Depois do envio, **Detalhar produção** mostra os dados do
+comercial e recebe um complemento separado, sem apagar o original. A cópia
+isolada usa a ficha padrão como referência e não altera outros pedidos.
 
-Salvar cada grupo faz as instruções aparecerem na **Ficha técnica** do pedido e
-na aba **Ficha técnica** da OP vinculada. Os campos financeiros estruturados não
-são enviados à produção; textos livres e fotos não têm filtragem de conteúdo,
-portanto não inclua neles valores confidenciais. Os detalhes são orientações e
-não substituem as linhas de custo abaixo. A RPC
-protege edição por papel, status do pedido, aprovação do item e revisão do grupo.
+O custo edita ou inclui materiais com unidade, consumo por peça, perda e custo
+unitário; a gravação e o recálculo são transacionais. Isso pode marcar custo
+concluído, mas **não dispensa aprovação e liberação ao PCP**. Sugestões da base
+não criam linhas ou valores automaticamente. Ficha e OP mostram os dois textos e
+o consumo, sem valores financeiros estruturados. Campos livres e imagens não
+são filtrados; outras telas e permissões legadas ainda podem expor custos.
 
-O SQL `docs/producao/2026-10-27_DETALHES-PRODUCAO.sql` deve ser executado pelo
-responsável no editor do Lovable antes do Publish. A certificação com PostgreSQL
-isolado não substitui a ativação e verificação no projeto publicado.
-
-**Limite de segurança:** a ficha e a aba novas não exibem custos estruturados,
-mas há acessos legados em outras áreas do PCP que ainda expõem custos. As regras
-globais de acesso não foram alteradas nesta entrega e precisam de revisão própria.
+Para ativar, veja `docs/producao/2026-10-27_DETALHES-PRODUCAO.md` e execute,
+no Lovable e após o SQL anterior, `2026-10-27_DETALHES-COMERCIAL-CONSUMO.sql`.
+A certificação em banco descartável não ativa nem comprova produção.
 
 ## Detalhar custo manualmente quando a explosão não gera linhas
 
@@ -153,9 +148,10 @@ lote`; o recálculo entra no custo do item na hora — mesmo caminho do botão
 ## Como reproduzir no sistema publicado (após ativação)
 
 `/orders` → **Novo pedido** (vendedor) → produto validado + grade + opções
-(detalhe do bordado = mil pontos/peça) → **Enviar para custo** → papel de custo:
-**Detalhar produção** em cada item, escrever e salvar as instruções por grupo;
-adicionar operações/materiais (cada gravação recalcula) → **Recalcular** →
+(detalhe do bordado = mil pontos/peça) → **Detalhes comerciais** por grupo em
+cada item → **Enviar para custo** → papel de custo: **Detalhar produção**, ler o
+comercial, salvar complemento e informar consumos por material → conferir
+operações e materiais (cada gravação recalcula) → **Recalcular** →
 **Aprovar** (gestor se margem < 25%) → gestor PCP: **Liberar para PCP** →
 OP aparece na Torre de Controle. A ficha do pedido e a aba da OP mostram as
 instruções e os dados técnicos sem colunas financeiras.

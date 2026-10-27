@@ -170,6 +170,7 @@ export type SalesOrderItem = {
   referenceCode?: string;
   description: string;
   color?: string;
+  notes?: string;
   quantity: number;
   unitPrice: number;
   priceLocked: boolean;

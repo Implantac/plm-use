@@ -468,6 +468,7 @@ export function mapItem(r: Row): SalesOrderItem {
     referenceCode: optStr(r.reference_code),
     description: str(r.description),
     color: optStr(r.color),
+    notes: optStr(r.notes),
     quantity: num(r.quantity),
     unitPrice: num(r.unit_price),
     priceLocked: r.price_locked === true,
@@ -568,11 +569,25 @@ export async function deleteItem(itemId: string, orderId: string): Promise<Res<n
 // Ficha do pedido (materiais, operações) e custo — só papéis de custo leem
 // ---------------------------------------------------------------------------
 export async function listMaterials(itemId: string): Promise<Res<MaterialLine[]>> {
-  const res = await db
+  let res = await db
     .from("sales_order_item_materials")
     .select("*, stock_item:stock_item_id(code)")
     .eq("item_id", itemId)
     .order("created_at");
+  // O vínculo de estoque vem de uma migration opcional. Sem ele, os materiais
+  // e consumos ainda devem aparecer, em vez de sumirem do painel de custo.
+  if (
+    res.error &&
+    (res.error.code === "PGRST200" ||
+      res.error.code === "42703" ||
+      /stock_item_id/i.test(res.error.message))
+  ) {
+    res = await db
+      .from("sales_order_item_materials")
+      .select("*")
+      .eq("item_id", itemId)
+      .order("created_at");
+  }
   if (res.error) return { data: null, error: res.error };
   return {
     data: (res.data ?? []).map((r) => ({

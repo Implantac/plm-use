@@ -6,6 +6,7 @@ import type { Res } from "./api";
 export type TechnicalDetailGroup = {
   id: string;
   name: string;
+  commercial_detail?: string;
   detail: string;
   revision: number;
   sort_order: number;
@@ -58,7 +59,32 @@ export type TechnicalBaseSnapshot = {
   captured_at?: string | null;
   data: TechnicalBase;
 };
-export type ProductionDetail = { name: string; detail: string };
+export type ProductionDetail = { name: string; commercial_detail?: string; detail: string };
+
+/** Linha de consumo acessível apenas ao papel de custo. */
+export type ItemMaterialConsumption = {
+  id: string;
+  kind: string;
+  material: string;
+  unit: string;
+  consumption: number;
+  waste_pct: number;
+  unit_cost: number;
+  total_cost: number | null;
+  source: "catalogo" | "custo";
+  revision: number;
+};
+export type SaveItemConsumption = {
+  itemId: string;
+  materialId: string | null;
+  kind: string | null;
+  material: string | null;
+  unit: string | null;
+  consumption: number;
+  wastePct: number;
+  unitCost: number;
+  revision: number;
+};
 
 // As funções são novas e o types.ts do Lovable é gerado, não deve ser editado.
 type RpcClient = {
@@ -82,7 +108,7 @@ async function callRpc<T>(name: string, args: Record<string, unknown>): Promise<
         error: missing
           ? {
               message:
-                "O detalhamento ainda não foi ativado no banco. Peça ao administrador para aplicar o SQL da ficha de produção no Lovable.",
+                "Este recurso ainda não foi ativado no banco. Peça ao administrador para aplicar os SQLs da ficha de produção e do fluxo comercial/consumo no Lovable.",
               code: result.error.code,
             }
           : result.error,
@@ -105,6 +131,10 @@ export function startItemTechnicalDetails(itemId: string): Promise<Res<ItemTechn
   return callRpc("start_order_item_details", { _item_id: itemId });
 }
 
+export function startCommercialItemDetails(itemId: string): Promise<Res<ItemTechnicalDetails>> {
+  return callRpc("start_order_item_commercial_details", { _item_id: itemId });
+}
+
 export function saveItemDetailGroup(input: {
   itemId: string;
   groupId: string | null;
@@ -121,6 +151,22 @@ export function saveItemDetailGroup(input: {
   });
 }
 
+export function saveCommercialItemDetailGroup(input: {
+  itemId: string;
+  groupId: string | null;
+  name: string | null;
+  detail: string;
+  revision: number;
+}): Promise<Res<TechnicalDetailGroup>> {
+  return callRpc("save_order_item_commercial_group", {
+    _item_id: input.itemId,
+    _group_id: input.groupId,
+    _name: input.name,
+    _detail: input.detail,
+    _expected_revision: input.revision,
+  });
+}
+
 export function deleteItemDetailGroup(input: {
   itemId: string;
   groupId: string;
@@ -129,6 +175,50 @@ export function deleteItemDetailGroup(input: {
   return callRpc("delete_order_item_detail_group", {
     _item_id: input.itemId,
     _group_id: input.groupId,
+    _expected_revision: input.revision,
+  });
+}
+
+export function deleteCommercialItemDetailGroup(input: {
+  itemId: string;
+  groupId: string;
+  revision: number;
+}): Promise<Res<null>> {
+  return callRpc("delete_order_item_commercial_group", {
+    _item_id: input.itemId,
+    _group_id: input.groupId,
+    _expected_revision: input.revision,
+  });
+}
+
+export function listItemConsumption(itemId: string): Promise<Res<ItemMaterialConsumption[]>> {
+  return callRpc("list_order_item_material_consumption", { _item_id: itemId });
+}
+
+export function saveItemConsumption(
+  input: SaveItemConsumption,
+): Promise<Res<ItemMaterialConsumption>> {
+  return callRpc("save_order_item_material_consumption", {
+    _item_id: input.itemId,
+    _material_id: input.materialId,
+    _kind: input.kind,
+    _material: input.material,
+    _unit: input.unit,
+    _consumption: input.consumption,
+    _waste_pct: input.wastePct,
+    _unit_cost: input.unitCost,
+    _expected_revision: input.revision,
+  });
+}
+
+export function deleteItemConsumption(input: {
+  itemId: string;
+  materialId: string;
+  revision: number;
+}): Promise<Res<null>> {
+  return callRpc("delete_order_item_material_consumption", {
+    _item_id: input.itemId,
+    _material_id: input.materialId,
     _expected_revision: input.revision,
   });
 }

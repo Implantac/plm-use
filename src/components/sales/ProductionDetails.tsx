@@ -110,7 +110,11 @@ export function BaseSnapshotPanel({ snapshot }: { snapshot?: TechnicalBaseSnapsh
       <summary className="cursor-pointer text-xs font-semibold text-foreground">
         Base da ficha padrão{snapshot.ref ? ` · ${snapshot.ref}` : ""} (cópia deste item)
       </summary>
-      <div className="mt-3">
+      <div className="mt-3 space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Esta é a referência da ficha padrão; o consumo válido para o pedido é o registrado nos
+          materiais do item.
+        </p>
         <TechnicalBaseView base={snapshot.data} />
       </div>
     </details>
@@ -125,7 +129,9 @@ export function ProductionDetails({
   details?: ProductionDetail[] | null;
   snapshot?: TechnicalBaseSnapshot | null;
 }) {
-  const rows = (Array.isArray(details) ? details : []).filter((d) => safe(d.detail));
+  const rows = (Array.isArray(details) ? details : []).filter(
+    (d) => safe(d.commercial_detail) || safe(d.detail),
+  );
   return (
     <div className="space-y-3">
       <p className="flex items-center gap-1.5 text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
@@ -145,9 +151,26 @@ export function ProductionDetails({
               <h4 className="text-xs font-semibold text-foreground">
                 {safe(row.name) || "Detalhes"}
               </h4>
-              <p className="mt-1 whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground/90">
-                {safe(row.detail)}
-              </p>
+              {safe(row.commercial_detail) && (
+                <div className="mt-2">
+                  <p className="text-2xs font-semibold uppercase text-muted-foreground">
+                    Comercial
+                  </p>
+                  <p className="whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground/90">
+                    {safe(row.commercial_detail)}
+                  </p>
+                </div>
+              )}
+              {safe(row.detail) && (
+                <div className="mt-2">
+                  <p className="text-2xs font-semibold uppercase text-muted-foreground">
+                    Complemento técnico
+                  </p>
+                  <p className="whitespace-pre-wrap break-words text-xs leading-relaxed text-foreground/90">
+                    {safe(row.detail)}
+                  </p>
+                </div>
+              )}
             </section>
           ))}
         </div>

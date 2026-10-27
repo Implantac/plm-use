@@ -33,6 +33,7 @@ export type SheetItem = {
   color: string | null;
   quantity: number;
   reference_code: string | null;
+  commercial_notes?: string | null;
   grade: Record<string, number>;
   detail_groups?: ProductionDetail[];
   base_snapshot?: TechnicalBaseSnapshot | null;
@@ -191,6 +192,16 @@ export function TechnicalSheetItemView({ item }: { item: SheetItem }) {
         </span>
       </div>
 
+      {item.commercial_notes && (
+        <div className="text-xs">
+          <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
+            Observações do item
+          </p>
+          <p className="mt-1 whitespace-pre-wrap break-words text-foreground">
+            {item.commercial_notes}
+          </p>
+        </div>
+      )}
       <ProductionDetails details={item.detail_groups} snapshot={item.base_snapshot} />
 
       {!!item.options?.length && (
@@ -262,7 +273,7 @@ export function TechnicalSheetItemView({ item }: { item: SheetItem }) {
 
       <div>
         <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
-          Materiais
+          Materiais e consumo do item
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
