@@ -6,10 +6,18 @@
 // testada justamente por NÃO conter `unit_cost`/`materials_total` — faltava a
 // tela. Esta é ela.
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Loader2, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTechnicalSheet, type Row } from "@/lib/sales/api";
+import type { ProductionDetail, TechnicalBaseSnapshot } from "@/lib/sales/technical-details-api";
+import { ProductionDetails } from "./ProductionDetails";
 
 type SheetOrder = {
   number?: string;
@@ -19,13 +27,21 @@ type SheetOrder = {
   released_at?: string | null;
 };
 
-type SheetItem = {
+export type SheetItem = {
   item_id: string;
   description: string;
   color: string | null;
   quantity: number;
   reference_code: string | null;
   grade: Record<string, number>;
+  detail_groups?: ProductionDetail[];
+  base_snapshot?: TechnicalBaseSnapshot | null;
+  options?: Array<{
+    name: string;
+    sector?: string | null;
+    quantity?: number;
+    spec?: { driver_qty?: number | string };
+  }>;
   operations: Array<{
     seq?: number;
     sector: string;
@@ -113,6 +129,9 @@ export function TechnicalSheetDialog({
               <Printer className="w-3.5 h-3.5" /> Imprimir
             </Button>
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Ficha técnica do pedido para a produção, sem os valores de custo.
+          </DialogDescription>
         </DialogHeader>
 
         {loading && (
@@ -140,114 +159,7 @@ export function TechnicalSheetDialog({
             )}
 
             {items.map((item) => (
-              <div
-                key={item.item_id}
-                className="rounded-md border border-border bg-card/40 p-4 space-y-3"
-              >
-                <div className="flex flex-wrap items-baseline gap-2">
-                  <p className="font-semibold text-white">{item.description}</p>
-                  <span className="text-xs text-muted-foreground">
-                    {item.color ?? "sem cor"} · {num(item.quantity)} pç
-                    {item.reference_code ? ` · ref. ${item.reference_code}` : ""}
-                  </span>
-                  <span className="ml-auto flex gap-1">
-                    {Object.entries(item.grade ?? {}).map(([size, qty]) => (
-                      <span
-                        key={size}
-                        className="px-1.5 py-0.5 rounded border border-border text-2xs"
-                      >
-                        {size} × {qty}
-                      </span>
-                    ))}
-                  </span>
-                </div>
-
-                <div>
-                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
-                    Operações por setor
-                  </p>
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="text-muted-foreground text-left">
-                        <th className="py-1">Setor</th>
-                        <th className="py-1">Operação</th>
-                        <th className="py-1">Driver</th>
-                        <th className="py-1 text-right">Por peça</th>
-                        <th className="py-1 pr-2 text-right">Total do pedido</th>
-                        <th className="py-1 pl-3">Tipo</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(item.operations ?? []).map((op, idx) => (
-                        <tr key={`${op.operation}-${idx}`} className="border-t border-border/50">
-                          <td className="py-1">{op.sector}</td>
-                          <td className="py-1">{op.operation}</td>
-                          <td className="py-1 text-muted-foreground">
-                            {DRIVER_LABEL[op.driver ?? ""] ?? op.driver ?? "—"}
-                          </td>
-                          <td className="py-1 text-right tabular-nums">
-                            {op.per_piece == null ? "—" : fmt(num(op.per_piece))}
-                          </td>
-                          <td className="py-1 text-right tabular-nums font-semibold">
-                            {fmt(num(op.driver_qty))}
-                          </td>
-                          <td className="py-1 pl-3 text-muted-foreground">
-                            {op.outsourced ? "terceirizado" : "interno"}
-                          </td>
-                        </tr>
-                      ))}
-                      {(item.operations ?? []).length === 0 && (
-                        <tr>
-                          <td colSpan={6} className="py-2 text-muted-foreground">
-                            Sem operações — item não passou pela explosão do catálogo.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div>
-                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
-                    Materiais
-                  </p>
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="text-muted-foreground text-left">
-                        <th className="py-1">Material</th>
-                        <th className="py-1 pl-3">Tipo</th>
-                        <th className="py-1 text-right">Por peça</th>
-                        <th className="py-1 text-right">Perda</th>
-                        <th className="py-1 pr-2 text-right">Total do pedido</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(item.materials ?? []).map((m, idx) => (
-                        <tr key={`${m.material}-${idx}`} className="border-t border-border/50">
-                          <td className="py-1">{m.material}</td>
-                          <td className="py-1 text-muted-foreground">{m.kind}</td>
-                          <td className="py-1 text-right tabular-nums">
-                            {fmt(num(m.consumption))} {m.unit}
-                          </td>
-                          <td className="py-1 text-right tabular-nums">
-                            {num(m.waste_pct) > 0 ? `${fmt(num(m.waste_pct))}%` : "—"}
-                          </td>
-                          <td className="py-1 text-right tabular-nums font-semibold">
-                            {fmt(num(m.consumption_total))} {m.unit}
-                          </td>
-                        </tr>
-                      ))}
-                      {(item.materials ?? []).length === 0 && (
-                        <tr>
-                          <td colSpan={5} className="py-2 text-muted-foreground">
-                            Sem materiais lançados.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <TechnicalSheetItemView key={item.item_id} item={item} />
             ))}
 
             <p className="text-2xs text-muted-foreground border-t border-border pt-2">
@@ -260,11 +172,145 @@ export function TechnicalSheetDialog({
   );
 }
 
+/** Mesmo conteúdo técnico por item exibido no pedido e na OP. */
+export function TechnicalSheetItemView({ item }: { item: SheetItem }) {
+  return (
+    <div className="rounded-md border border-border bg-card/40 p-4 space-y-3">
+      <div className="flex flex-wrap items-baseline gap-2">
+        <p className="font-semibold text-foreground">{item.description}</p>
+        <span className="text-xs text-muted-foreground">
+          {item.color ?? "sem cor"} · {num(item.quantity)} pç
+          {item.reference_code ? ` · ref. ${item.reference_code}` : ""}
+        </span>
+        <span className="ml-auto flex gap-1">
+          {Object.entries(item.grade ?? {}).map(([size, qty]) => (
+            <span key={size} className="px-1.5 py-0.5 rounded border border-border text-2xs">
+              {size} × {qty}
+            </span>
+          ))}
+        </span>
+      </div>
+
+      <ProductionDetails details={item.detail_groups} snapshot={item.base_snapshot} />
+
+      {!!item.options?.length && (
+        <div>
+          <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
+            Opções do item
+          </p>
+          <ul className="space-y-1 text-xs text-foreground">
+            {item.options.map((option, idx) => (
+              <li key={`${option.name}-${idx}`}>
+                {option.name}
+                {option.sector ? ` · ${option.sector}` : ""}
+                {option.quantity != null ? ` · quantidade ${fmt(num(option.quantity))}` : ""}
+                {option.spec?.driver_qty != null
+                  ? ` · detalhe ${fmt(num(option.spec.driver_qty))}`
+                  : ""}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div>
+        <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
+          Operações por setor
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-muted-foreground text-left">
+                <th className="py-1">Setor</th>
+                <th className="py-1">Operação</th>
+                <th className="py-1">Driver</th>
+                <th className="py-1 text-right">Por peça</th>
+                <th className="py-1 pr-2 text-right">Total do pedido</th>
+                <th className="py-1 pl-3">Tipo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(item.operations ?? []).map((op, idx) => (
+                <tr key={`${op.operation}-${idx}`} className="border-t border-border/50">
+                  <td className="py-1">{op.sector}</td>
+                  <td className="py-1">{op.operation}</td>
+                  <td className="py-1 text-muted-foreground">
+                    {DRIVER_LABEL[op.driver ?? ""] ?? op.driver ?? "—"}
+                  </td>
+                  <td className="py-1 text-right tabular-nums">
+                    {op.per_piece == null ? "—" : fmt(num(op.per_piece))}
+                  </td>
+                  <td className="py-1 text-right tabular-nums font-semibold">
+                    {fmt(num(op.driver_qty))}
+                  </td>
+                  <td className="py-1 pl-3 text-muted-foreground">
+                    {op.outsourced ? "terceirizado" : "interno"}
+                  </td>
+                </tr>
+              ))}
+              {(item.operations ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-2 text-muted-foreground">
+                    Sem operações — item não passou pela explosão do catálogo.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary mb-1">
+          Materiais
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-muted-foreground text-left">
+                <th className="py-1">Material</th>
+                <th className="py-1 pl-3">Tipo</th>
+                <th className="py-1 text-right">Por peça</th>
+                <th className="py-1 text-right">Perda</th>
+                <th className="py-1 pr-2 text-right">Total do pedido</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(item.materials ?? []).map((m, idx) => (
+                <tr key={`${m.material}-${idx}`} className="border-t border-border/50">
+                  <td className="py-1">{m.material}</td>
+                  <td className="py-1 text-muted-foreground">{m.kind}</td>
+                  <td className="py-1 text-right tabular-nums">
+                    {fmt(num(m.consumption))} {m.unit}
+                  </td>
+                  <td className="py-1 text-right tabular-nums">
+                    {num(m.waste_pct) > 0 ? `${fmt(num(m.waste_pct))}%` : "—"}
+                  </td>
+                  <td className="py-1 text-right tabular-nums font-semibold">
+                    {fmt(num(m.consumption_total))} {m.unit}
+                  </td>
+                </tr>
+              ))}
+              {(item.materials ?? []).length === 0 && (
+                <tr>
+                  <td colSpan={5} className="py-2 text-muted-foreground">
+                    Sem materiais lançados.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-2xs uppercase tracking-[0.04em] text-muted-foreground">{label}</p>
-      <p className="font-semibold text-white">{value}</p>
+      <p className="font-semibold text-foreground">{value}</p>
     </div>
   );
 }

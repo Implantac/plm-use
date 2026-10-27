@@ -25,6 +25,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { TechnicalSheetDialog } from "./TechnicalSheetDialog";
+import { ItemTechnicalDetailsDialog } from "./ItemTechnicalDetailsDialog";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -566,6 +567,7 @@ function ItemCard({
     stockItemId: "",
   });
   const [addKind, setAddKind] = useState<null | "op" | "mat">(null);
+  const [productionDetailsOpen, setProductionDetailsOpen] = useState(false);
   const [form, setForm] = useState<Record<string, string>>({});
   const setF = (key: string) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -669,9 +671,16 @@ function ItemCard({
             <span className="text-white">{brl(item.quantity * item.unitPrice)}</span>
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {canCost && (
             <>
+              <Button
+                onClick={() => setProductionDetailsOpen(true)}
+                className="text-2xs tracking-[0.04em] gap-1.5"
+              >
+                <FileText className="w-3.5 h-3.5" />{" "}
+                {costEditable ? "Detalhar produção" : "Ver detalhes"}
+              </Button>
               <Button
                 variant="outline"
                 onClick={onRecalc}
@@ -1224,6 +1233,15 @@ function ItemCard({
             </p>
           )}
         </div>
+      )}
+      {canCost && (
+        <ItemTechnicalDetailsDialog
+          itemId={item.id}
+          itemLabel={`Item ${item.lineNo} · ${item.description}`}
+          open={productionDetailsOpen}
+          editable={costEditable}
+          onClose={() => setProductionDetailsOpen(false)}
+        />
       )}
     </Card>
   );

@@ -3,7 +3,13 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FieldMessage } from "@/components/ui/field-message";
 import { EntityTimeline } from "@/components/entity/EntityTimeline";
+import { OrderProductionDetails } from "@/components/sales/OrderProductionDetails";
 import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import { opPermissions } from "@/lib/pcp/op-permissions";
 import {
@@ -61,8 +68,10 @@ export function OpWorkspace({
   // pedido de origem (OP manual) ou sem match, nada é exibido.
   const pedidoNumber = order?.number?.startsWith("OP-") ? order.number.slice(3) : null;
   const [originOrderId, setOriginOrderId] = useState<string | null>(null);
+  const [originLookupFinished, setOriginLookupFinished] = useState(false);
   useEffect(() => {
     setOriginOrderId(null);
+    setOriginLookupFinished(false);
     if (!order || !pedidoNumber) return;
     let alive = true;
     void supabase
@@ -72,7 +81,10 @@ export function OpWorkspace({
       .maybeSingle()
       .then((r) => {
         const id = (r.data as { id: string } | null)?.id ?? null;
-        if (alive) setOriginOrderId(id);
+        if (alive) {
+          setOriginOrderId(id);
+          setOriginLookupFinished(true);
+        }
       });
     return () => {
       alive = false;
@@ -177,10 +189,14 @@ export function OpWorkspace({
                     </span>
                   ))}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                Itens, ficha técnica e andamento da ordem de produção.
+              </DialogDescription>
             </DialogHeader>
             <Tabs defaultValue="itens">
-              <TabsList>
+              <TabsList className="h-auto flex-wrap justify-start">
                 <TabsTrigger value="itens">Itens e passagem</TabsTrigger>
+                {pedidoNumber && <TabsTrigger value="detalhes">Ficha técnica</TabsTrigger>}
                 <TabsTrigger value="programacao">Programação</TabsTrigger>
                 <TabsTrigger value="rotas">Rotas</TabsTrigger>
                 <TabsTrigger value="historico">Histórico</TabsTrigger>
@@ -318,6 +334,20 @@ export function OpWorkspace({
                   </FieldMessage>
                 )}
               </TabsContent>
+
+              {pedidoNumber && (
+                <TabsContent value="detalhes" className="space-y-4">
+                  {originOrderId ? (
+                    <OrderProductionDetails orderId={originOrderId} />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      {originLookupFinished
+                        ? "Não foi possível localizar o pedido de origem desta OP."
+                        : "Localizando pedido de origem…"}
+                    </p>
+                  )}
+                </TabsContent>
+              )}
 
               <TabsContent value="programacao" className="space-y-4">
                 <ScheduleTab

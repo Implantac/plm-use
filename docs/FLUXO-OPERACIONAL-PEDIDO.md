@@ -1,5 +1,10 @@
 # Fluxo operacional do Pedido — revisão executada (26/out/2026)
 
+> Atualização de 27/out: foi acrescentado o detalhamento técnico por grupo e por item.
+> Veja a seção correspondente abaixo e `docs/producao/2026-10-27_DETALHES-PRODUCAO.md`
+> para ativação manual, limites e verificação. As evidências históricas desta revisão
+> continuam registradas abaixo; não são uma verificação do banco de produção.
+
 Revisão feita **rodando o fluxo de verdade**: Postgres 17 no sandbox com as 82
 migrations canônicas (`supabase/migrations` + `drizzle/migrations`) reaplicadas,
 RLS ativa, papéis simulados por `auth.uid()` (claim `sub`) e as RPCs reais —
@@ -37,7 +42,8 @@ GESTOR PCP (can_plan_pcp)
      rota (trigger exige rota com etapas: "A rota escolhida não tem etapas.") +
      reserva de estoque p/ materiais vinculados a stock_item (0014).
 Saída para o chão: RPC order_item_technical_sheet — quantidade por peça e
-consumo total SEM nenhum valor de custo (teste garante).
+consumo total sem colunas de valores de custo. Como instruções são texto livre,
+não se deve digitar valores confidenciais nelas.
 ```
 
 ## O pedido executado (evidência)
@@ -109,7 +115,31 @@ papéis atribuídos"), em vez de uma tela muda. Atribuição de papel é SQL no
 editor do Lovable (More → Database → Manage → SQL editor), padrão
 `docs/sql/2026-10-26_grant-admin-etcsuporte889.sql`.
 
-## Detalhar custo manualmente quando a explosão não gera ficha
+## Detalhes de produção por item (27/out)
+
+No cartão de cada item enviado para custo, **Detalhar produção** abre grupos e
+texto livre. A primeira abertura busca pela referência do item ou do produto uma
+cópia técnica da ficha padrão; a cópia e os grupos pertencem apenas àquele item,
+sem modificar a ficha padrão nem outros pedidos. Se a base não for encontrada,
+ela pode ser buscada novamente ao reabrir antes da aprovação. Uma base já
+capturada não é atualizada automaticamente.
+
+Salvar cada grupo faz as instruções aparecerem na **Ficha técnica** do pedido e
+na aba **Ficha técnica** da OP vinculada. Os campos financeiros estruturados não
+são enviados à produção; textos livres e fotos não têm filtragem de conteúdo,
+portanto não inclua neles valores confidenciais. Os detalhes são orientações e
+não substituem as linhas de custo abaixo. A RPC
+protege edição por papel, status do pedido, aprovação do item e revisão do grupo.
+
+O SQL `docs/producao/2026-10-27_DETALHES-PRODUCAO.sql` deve ser executado pelo
+responsável no editor do Lovable antes do Publish. A certificação com PostgreSQL
+isolado não substitui a ativação e verificação no projeto publicado.
+
+**Limite de segurança:** a ficha e a aba novas não exibem custos estruturados,
+mas há acessos legados em outras áreas do PCP que ainda expõem custos. As regras
+globais de acesso não foram alteradas nesta entrega e precisam de revisão própria.
+
+## Detalhar custo manualmente quando a explosão não gera linhas
 
 A explosão do catálogo pode vir sem linhas (achado F2: `material_consumption
 = '[]'` por design no BASE). Nesse caso o painel "Ficha do pedido · custo"
@@ -120,11 +150,12 @@ editável). O nome da operação é livre; driver `peça/minuto/mil pontos/m²/c
 lote`; o recálculo entra no custo do item na hora — mesmo caminho do botão
 "Nova operação", coberto por teste de regressão (`OrderDetail.test.tsx`).
 
-## Como reproduzir no sistema publicado (sem SQL)
+## Como reproduzir no sistema publicado (após ativação)
 
 `/orders` → **Novo pedido** (vendedor) → produto validado + grade + opções
-(detalle bordado = mil pontos/peça) → **Enviar para custo** → papel de custo:
+(detalhe do bordado = mil pontos/peça) → **Enviar para custo** → papel de custo:
+**Detalhar produção** em cada item, escrever e salvar as instruções por grupo;
 adicionar operações/materiais (cada gravação recalcula) → **Recalcular** →
 **Aprovar** (gestor se margem < 25%) → gestor PCP: **Liberar para PCP** →
-OP aparece no Torre de Controle com o saldo de etapas. Ficha técnica no botão
-do pedido é a saída para a fábrica (sem valores).
+OP aparece na Torre de Controle. A ficha do pedido e a aba da OP mostram as
+instruções e os dados técnicos sem colunas financeiras.

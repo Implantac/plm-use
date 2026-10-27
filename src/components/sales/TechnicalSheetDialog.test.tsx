@@ -7,6 +7,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { TechnicalSheetDialog } from "./TechnicalSheetDialog";
+import { TechnicalBaseView } from "./ProductionDetails";
 
 const sheet = {
   order: {
@@ -25,6 +26,31 @@ const sheet = {
       reference_code: null,
       tech_status: "em_detalhamento",
       grade: { M: 6, G: 4 },
+      detail_groups: [
+        { name: "Costura", detail: "Seguir piloto aprovado\nAplicar etiqueta na gola" },
+        { name: "Bordado", detail: "Logo no peito esquerdo" },
+      ],
+      base_snapshot: {
+        ref: "REF-01",
+        found: true,
+        data: {
+          materiais: [
+            {
+              tipo: "Tecido",
+              material: "Malha base",
+              consumo: "1",
+              unidade: "m",
+              custo: 9876.5,
+              fornecedor: "Fornecedor base",
+              lote: "L01",
+            },
+          ],
+          operacoes: [{ setor: "Costura", etapa: "Fechar gola", responsavel: "Equipe base" }],
+          aplicacoes: [],
+          foto: "https://example.com/referencia.jpg",
+        },
+      },
+      options: [{ name: "Gola V", sector: "Acabamento", quantity: 1, spec: {} }],
       operations: [
         {
           seq: 1,
@@ -78,6 +104,16 @@ describe("TechnicalSheetDialog", () => {
     expect(text).toContain("14,175"); // consumo total do tecido com perda
     expect(text).toContain("10 pç");
     expect(text).toContain("M × 6");
+    expect(text).toContain("Seguir piloto aprovado\nAplicar etiqueta na gola");
+    expect(text).toContain("Logo no peito esquerdo");
+    expect(text).toContain("Malha base");
+    expect(text).toContain("Gola V");
+    expect(text).toContain("Fornecedor base");
+    expect(text).toContain("L01");
+    expect(text).toContain("Equipe base");
+    expect(screen.getByAltText("Foto de referência da ficha padrão").getAttribute("src")).toBe(
+      "https://example.com/referencia.jpg",
+    );
   });
 
   it("não vaza custo, preço nem margem", async () => {
@@ -85,9 +121,14 @@ describe("TechnicalSheetDialog", () => {
     await waitFor(() => expect(screen.getByText("Bordado escudo")).toBeTruthy());
     const text = document.body.textContent ?? "";
 
-    for (const forbidden of ["R$", "68,44", "Custo/peça"]) {
+    for (const forbidden of ["R$", "68,44", "Custo/peça", "9876.5"]) {
       expect(text).not.toContain(forbidden);
     }
+  });
+
+  it("ignora endereço de foto que não seja HTTPS", () => {
+    render(<TechnicalBaseView base={{ foto: "javascript:alert(1)" }} />);
+    expect(screen.queryByRole("img")).toBeNull();
   });
 
   it("operação de lote não inventa valor por peça", async () => {

@@ -35,6 +35,14 @@ const api = vi.hoisted(() => ({
 
 vi.mock("@/lib/sales/api", () => api);
 
+const detailsApi = vi.hoisted(() => ({
+  startItemTechnicalDetails: vi.fn(),
+  getItemTechnicalDetails: vi.fn(),
+  saveItemDetailGroup: vi.fn(),
+  deleteItemDetailGroup: vi.fn(),
+}));
+vi.mock("@/lib/sales/technical-details-api", () => detailsApi);
+
 // O projeto não roda com globals do vitest: sem cleanup explícito, cada render
 // acumula no document e os queries passam a achar múltiplos elementos.
 afterEach(cleanup);
@@ -245,6 +253,16 @@ beforeEach(() => {
   api.deleteOperation.mockResolvedValue({ data: "ok", error: null });
   api.deleteMaterial.mockResolvedValue({ data: "ok", error: null });
   api.recalcItem.mockResolvedValue({ data: 68.44, error: null });
+  detailsApi.startItemTechnicalDetails.mockResolvedValue({
+    data: {
+      initialized: true,
+      base_ref: null,
+      base_found: false,
+      base: {},
+      groups: [{ id: "g1", name: "Costura", detail: "", revision: 1, sort_order: 10 }],
+    },
+    error: null,
+  });
 });
 
 describe("OrderDetail", () => {
@@ -268,6 +286,21 @@ describe("OrderDetail", () => {
     expect(screen.getByText("R$ 83,00")).toBeTruthy();
   });
 
+  it("abre a tela de detalhes de produção para o item em custo", async () => {
+    render(
+      <OrderDetail
+        orderId="o1"
+        canSell={false}
+        canCost
+        canPlan={false}
+        onClose={() => undefined}
+      />,
+    );
+    fireEvent.click(await screen.findByRole("button", { name: "Detalhar produção" }));
+    expect(await screen.findByLabelText("Detalhes de Costura")).toBeTruthy();
+    expect(detailsApi.startItemTechnicalDetails).toHaveBeenCalledWith("i1");
+  });
+
   it("esconde o painel de custo de quem não é de custo", async () => {
     render(
       <OrderDetail
@@ -280,6 +313,7 @@ describe("OrderDetail", () => {
     );
     await screen.findByText("PED-2026-0001");
     expect(screen.queryByText("Ficha do pedido · custo")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Detalhar produção" })).toBeNull();
     expect(api.listMaterials).not.toHaveBeenCalled();
   });
 
