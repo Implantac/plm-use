@@ -22,7 +22,16 @@ import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { PresenceBar } from "@/components/presence/PresenceBar";
 import { ActivityFeedButton } from "@/components/activity/ActivityFeedButton";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, Moon, ShieldCheck, Sparkles, Star, Sun } from "lucide-react";
+import {
+  ChevronDown,
+  Menu,
+  Moon,
+  PanelLeftClose,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Sun,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -91,6 +100,21 @@ function AuthenticatedLayout() {
     await signOut();
     toast.success("Sessão encerrada.");
     navigate({ to: "/login" });
+  };
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("use-moda-sidebar-collapsed") === "true";
+  });
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("use-moda-sidebar-collapsed", String(next));
+      }
+      return next;
+    });
   };
 
   const [showLabs, setShowLabs] = useState<boolean>(() => {
@@ -210,7 +234,9 @@ function AuthenticatedLayout() {
 
   return (
     <div className="flex h-dvh bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
-      <aside className="w-[276px] glass-sidebar flex flex-col z-30 relative">
+      <aside
+        className={`${sidebarCollapsed ? "hidden" : "w-[276px] flex"} glass-sidebar flex-col z-30 relative shrink-0 transition-all`}
+      >
         {/* Ambient ember glow no topo da sidebar */}
         <div
           aria-hidden
@@ -369,10 +395,34 @@ function AuthenticatedLayout() {
       <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
         {/* Ambient forge glow — halo ember discreto que amarra o tema */}
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-90 bg-forge" />
-        <header className="relative h-14 border-b border-border flex items-center justify-between px-6 bg-background/70 backdrop-blur-xl z-20">
-          <AppBreadcrumb />
+        <header className="relative h-14 border-b border-border flex items-center justify-between gap-4 px-4 lg:px-6 bg-background/70 backdrop-blur-xl z-20">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              title={
+                sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral (Modo Cockpit)"
+              }
+              aria-label={sidebarCollapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
+              className="w-8 h-8 shrink-0 text-muted-foreground hover:text-foreground"
+            >
+              {sidebarCollapsed ? (
+                <Menu className="w-4 h-4" />
+              ) : (
+                <PanelLeftClose className="w-4 h-4" />
+              )}
+            </Button>
+            <AppBreadcrumb />
+          </div>
 
-          <div className="flex items-center gap-2">
+          {sidebarCollapsed && (
+            <div className="hidden md:block w-full max-w-xs">
+              <GlobalSearch />
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 shrink-0">
             <PresenceBar />
             <ActivityFeedButton />
             <AlertsBell />

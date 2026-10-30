@@ -315,3 +315,59 @@ export function parseExcelBomPaste(rawText: string): ParsedExcelBomRow[] {
   }
   return out;
 }
+
+export type GarmentSilhouette = "camiseta_v" | "camisa_polo" | "moletom_raglan" | "calca_jogger";
+
+export type GarmentCalloutPin = {
+  id: string;
+  num: number;
+  label: string;
+  view: "frente" | "costas";
+  /** Coordenadas relativas dentro do viewBox 0..100 do lado correspondente */
+  x: number;
+  y: number;
+};
+
+/**
+ * Lê cotas de medidas coladas do Excel/Audaces:
+ * Formato aceito (TSV ou `;`):
+ *   CodigoPOM | NomeMedida | ValorBaseCm | SaltoGraduacaoCm | ToleranciaCm | ComoMedir(opcional)
+ */
+export function parseExcelMeasurementsPaste(rawText: string): MeasurementPomRow[] {
+  const lines = rawText
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+  const out: MeasurementPomRow[] = [];
+
+  lines.forEach((line, idx) => {
+    const cols = line.includes("\t") ? line.split("\t") : line.split(";");
+    if (cols.length < 3) return;
+    const c0 = cols[0].trim();
+    const c1 = (cols[1] ?? "").trim();
+    if (
+      (c0.toLowerCase() === "pom" ||
+        c0.toLowerCase() === "código" ||
+        c0.toLowerCase() === "codigo") &&
+      c1.toLowerCase().includes("medida")
+    ) {
+      return;
+    }
+    const valorBase = parseDecimalPtBr(cols[2] ?? "0");
+    if (valorBase <= 0 && !c1) return;
+    const salto = parseDecimalPtBr(cols[3] ?? "1.5");
+    const tol = Math.abs(parseDecimalPtBr(cols[4] ?? "0.5")) || 0.5;
+    const comoMedir = (cols[5] ?? "").trim() || undefined;
+    out.push({
+      id: `pom-xl-${Date.now().toString(36)}-${idx}`,
+      codigo: c0 || String.fromCharCode(65 + (idx % 26)),
+      nome: c1 || `Medida ${idx + 1}`,
+      comoMedir,
+      valorBase: round2(valorBase),
+      regraGraduacaoCm: round2(salto),
+      toleranciaCm: round2(tol),
+    });
+  });
+
+  return out;
+}

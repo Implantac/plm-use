@@ -6,6 +6,7 @@ import {
   converterKgParaMetro,
   converterMetroParaKg,
   parseExcelBomPaste,
+  parseExcelMeasurementsPaste,
   validateComposicaoAbnt,
 } from "./textile";
 import { computeFullTechSheetPricing, TAX_REGIME_PRESETS } from "./pricing";
@@ -177,5 +178,34 @@ describe("envelope v3 + PDF Facção Cego + Ponte Ficha → Catálogo", () => {
     const appGroup = plan.groups.find((g) => g.code === "aplicacoes-plm")!;
     expect(appGroup.options[0].driver).toBe("m2"); // Transfer → m2
     expect(appGroup.options[0].setup_cost).toBe(90);
+  });
+
+  it("parseExcelMeasurementsPaste importa cotas POM e preserva silhueta/callouts no envelope v3", () => {
+    const poms = parseExcelMeasurementsPaste(
+      "E\tLargura Barra\t52\t+2,0 cm\t± 1,0 cm\nF;Cava Retilínea;23;1,0;0,5",
+    );
+    expect(poms).toHaveLength(2);
+    expect(poms[0]).toMatchObject({
+      codigo: "E",
+      nome: "Largura Barra",
+      valorBase: 52,
+      regraGraduacaoCm: 2,
+      toleranciaCm: 1,
+    });
+    expect(poms[1]).toMatchObject({
+      codigo: "F",
+      nome: "Cava Retilínea",
+      valorBase: 23,
+      regraGraduacaoCm: 1,
+      toleranciaCm: 0.5,
+    });
+
+    const doc = seedFor("DEV000006");
+    expect(doc.meta?.silhouette).toBe("camiseta_v");
+    expect(doc.meta?.callouts).toHaveLength(3);
+    const payload = serializeTechSheetDoc("DEV000006", doc, "u-1");
+    const restored = deserializeTechSheetRow(payload);
+    expect(restored.meta?.silhouette).toBe("camiseta_v");
+    expect(restored.meta?.callouts?.[0]?.label).toContain("Gola V");
   });
 });

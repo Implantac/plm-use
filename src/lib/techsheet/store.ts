@@ -7,6 +7,8 @@ import {
   bomItemCustoEfetivo,
   type CadMarkerSpec,
   type CareLabelSpec,
+  type GarmentCalloutPin,
+  type GarmentSilhouette,
   type TechSheetColorway,
   type TechSheetMeasurementSpec,
 } from "./textile";
@@ -84,6 +86,8 @@ export type TechSheetMeta = {
   collection: string;
   statusLabel: string;
   stage: TechSheetLifecycleStage;
+  silhouette?: GarmentSilhouette;
+  callouts?: GarmentCalloutPin[];
 };
 
 export type TechSheetData = {
@@ -119,6 +123,33 @@ export const LIFECYCLE_STAGES: Array<{
   { stage: 5, label: "5. Corte", short: "Corte" },
   { stage: 6, label: "6. Piloto & Prova", short: "Piloto & Prova" },
   { stage: 7, label: "7. Custo & Preço", short: "Custo & Preço" },
+];
+
+export const defaultCalloutsFor = (): GarmentCalloutPin[] => [
+  {
+    id: "pin-1",
+    num: 1,
+    label: "Gola V Ribana Listrada Bicolor",
+    view: "frente",
+    x: 50,
+    y: 12,
+  },
+  {
+    id: "pin-2",
+    num: 2,
+    label: "Recorte Lateral Esportivo Contrastante",
+    view: "costas",
+    x: 28,
+    y: 58,
+  },
+  {
+    id: "pin-6",
+    num: 6,
+    label: "Transfer Alto Relevo Silicone Peito",
+    view: "frente",
+    x: 71,
+    y: 23,
+  },
 ];
 
 export const defaultColorwaysFor = (): TechSheetColorway[] => [
@@ -231,6 +262,8 @@ export const seedFor = (ref: string): TechSheetData => ({
     collection: "Verão 2027",
     statusLabel: "Engenharia Ativa",
     stage: 3,
+    silhouette: "camiseta_v",
+    callouts: defaultCalloutsFor(),
   },
   colorways: defaultColorwaysFor(),
   medidas: defaultMedidasFor(),
