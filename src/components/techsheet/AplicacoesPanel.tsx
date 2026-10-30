@@ -4,7 +4,7 @@
 // Edita o MESMO doc do store da ficha (envelope v2 no tech_sheets) — nada aqui
 // é planilha paralela.
 import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, Layers } from "lucide-react";
+import { Plus, Pencil, Trash2, Layers, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,12 +62,18 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
   const add = useTechSheetStore((s) => s.addAplicacao);
   const update = useTechSheetStore((s) => s.updateAplicacao);
   const remove = useTechSheetStore((s) => s.removeAplicacao);
+  const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
   const apps = doc?.aplicacoes ?? [];
 
   const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(apps.length > 0);
   const [draft, setDraft] = useState<DraftState>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [tiragem, setTiragem] = useState<number>(250);
+
+  const tiragem = Math.max(1, doc?.preCost.tiragemPlanejada ?? 600);
+  const setTiragem = (next: number) => {
+    updatePreCost(refAtual, { tiragemPlanejada: Math.max(1, Math.round(next) || 1) });
+  };
 
   const artes = useMemo(() => listPrints(), []);
   const pecasTotal = custoAplicacoesPecasTotal(apps);
@@ -98,147 +104,172 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
   const num = (v: string) => (v === "" ? undefined : Number(v));
 
   return (
-    <div className="glass-card rounded-lg p-6 space-y-5">
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
-          <Layers className="w-4 h-4 text-primary" /> Aplicações · {apps.length} posições
-        </h3>
+    <section className="rounded-lg border border-border bg-card overflow-hidden shadow-sm">
+      <div className="flex items-center justify-between flex-wrap gap-3 px-4 py-2.5 border-b border-border bg-muted/30">
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2 text-left"
+        >
+          <Layers className="w-4 h-4 text-[#2A6F7D] dark:text-[#6AD8FA]" />
+          <span>
+            Aplicações, Bordado & Serigrafia · {apps.length}{" "}
+            {apps.length === 1 ? "posição" : "posições"}
+          </span>
+          {apps.length > 0 && (
+            <span className="rounded border border-border bg-background px-1.5 py-0.5 font-mono text-2xs text-foreground">
+              {brl(comSetup)}/pç (lote {tiragem})
+            </span>
+          )}
+          {expanded ? (
+            <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+          )}
+        </button>
         <Button
           size="sm"
           variant="outline"
-          className="text-2xs tracking-[0.04em] gap-2"
-          onClick={() => abrir()}
+          className="h-7 text-2xs tracking-[0.04em] gap-1.5"
+          onClick={() => {
+            setExpanded(true);
+            abrir();
+          }}
         >
           <Plus className="w-3.5 h-3.5" /> Nova aplicação
         </Button>
       </div>
 
-      {apps.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border p-4 text-xs leading-relaxed text-muted-foreground">
-          Nenhuma aplicação nesta ficha. Em uniforme, cada escudo/número/patrocinador entra AQUI —
-          não como linha genérica de BOM — para o custo por posição e o setup (telas/chapas) serem
-          amortizados pela tiragem real do pedido.
-        </p>
-      ) : (
-        <>
-          <div className="overflow-x-auto rounded-md border border-border">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/50">
-                <tr className="text-2xs uppercase tracking-wider text-muted-foreground">
-                  <th className="px-3 py-2">Técnica · Posição</th>
-                  <th className="px-3 py-2">Arte</th>
-                  <th className="px-3 py-2 text-right">L×A (área)</th>
-                  <th className="px-3 py-2 text-right">Cores/Pontos</th>
-                  <th className="px-3 py-2 text-right">×/peça</th>
-                  <th className="px-3 py-2 text-right">Unit.</th>
-                  <th className="px-3 py-2 text-right">Setup</th>
-                  <th className="px-3 py-2 text-right">Custo/peça</th>
-                  <th className="px-3 py-2" aria-label="ações" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/70">
-                {apps.map((a) => (
-                  <tr key={a.id} className="hover:bg-accent/60">
-                    <td className="px-3 py-2">
-                      <p className="text-white font-bold text-2xs uppercase tracking-wider">
-                        {a.tipo}
-                      </p>
-                      <p className="text-muted-foreground">{a.posicao}</p>
-                      {a.obs && <p className="text-2xs text-muted-foreground/70">{a.obs}</p>}
-                    </td>
-                    <td className="px-3 py-2 text-muted-foreground">{a.arte || "—"}</td>
-                    <td className="px-3 py-2 text-right text-white whitespace-nowrap">
-                      {a.larguraCm}×{a.alturaCm}{" "}
-                      <span className="text-muted-foreground">({areaCm2(a)} cm²)</span>
-                    </td>
-                    <td className="px-3 py-2 text-right text-white">
-                      {a.tipo === "Bordado" && a.pontos ? `${a.pontos}k pts` : `${a.cores}`}
-                    </td>
-                    <td className="px-3 py-2 text-right text-white">{a.qtdPorPeca}</td>
-                    <td className="px-3 py-2 text-right text-white">{brl(a.custoUnitario)}</td>
-                    <td className="px-3 py-2 text-right text-muted-foreground">
-                      {a.custoSetup ? brl(a.custoSetup) : "—"}
-                    </td>
-                    <td className="px-3 py-2 text-right font-semibold text-white">
-                      {brl(custoPeca(a))}
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => abrir(a)}
-                          className="p-1.5 rounded text-muted-foreground hover:bg-accent/60 hover:text-white"
-                          title="Editar"
-                        >
-                          <Pencil className="h-3 w-3" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            remove(refAtual, a.id);
-                            toast.info("Aplicação removida.");
-                          }}
-                          className="p-1.5 rounded text-muted-foreground hover:bg-status-rejected/10 hover:text-status-rejected"
-                          title="Remover"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot className="bg-muted/50 text-2xs">
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-3 py-2 uppercase tracking-wider text-muted-foreground"
-                  >
-                    Aplicações por peça
-                  </td>
-                  <td className="px-3 py-2 text-right font-semibold text-white">
-                    {brl(pecasTotal)}
-                  </td>
-                  <td />
-                </tr>
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-3 py-2 uppercase tracking-wider text-muted-foreground"
-                  >
-                    Setup total (
-                    {setup > 0
-                      ? `amortizado em ${tiragem} pçs → +${brl(setup / tiragem)}/peça`
-                      : "sem telas/chapas"}
-                    )
+      {expanded && (
+        <div className="p-4 space-y-4">
+          {apps.length === 0 ? (
+            <p className="rounded-md border border-dashed border-border p-4 text-xs leading-relaxed text-muted-foreground">
+              Nenhuma aplicação nesta ficha. Em uniforme ou estamparia localizada, cada
+              escudo/número/silk entra aqui para que o custo por posição e o setup (telas/chapas)
+              sejam amortizados automaticamente pela tiragem planejada da ficha ({tiragem} pçs).
+            </p>
+          ) : (
+            <>
+              <div className="overflow-x-auto rounded-md border border-border">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/50">
+                    <tr className="text-2xs uppercase tracking-wider text-muted-foreground">
+                      <th className="px-3 py-2">Técnica · Posição</th>
+                      <th className="px-3 py-2">Arte</th>
+                      <th className="px-3 py-2 text-right">L×A (área)</th>
+                      <th className="px-3 py-2 text-right">Cores/Pontos</th>
+                      <th className="px-3 py-2 text-right">×/peça</th>
+                      <th className="px-3 py-2 text-right">Unit.</th>
+                      <th className="px-3 py-2 text-right">Setup</th>
+                      <th className="px-3 py-2 text-right">Custo/peça</th>
+                      <th className="px-3 py-2" aria-label="ações" />
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/70">
+                    {apps.map((a) => (
+                      <tr key={a.id} className="hover:bg-accent/60">
+                        <td className="px-3 py-2">
+                          <p className="text-white font-bold text-2xs uppercase tracking-wider">
+                            {a.tipo}
+                          </p>
+                          <p className="text-muted-foreground">{a.posicao}</p>
+                          {a.obs && <p className="text-2xs text-muted-foreground/70">{a.obs}</p>}
+                        </td>
+                        <td className="px-3 py-2 text-muted-foreground">{a.arte || "—"}</td>
+                        <td className="px-3 py-2 text-right text-white whitespace-nowrap">
+                          {a.larguraCm}×{a.alturaCm}{" "}
+                          <span className="text-muted-foreground">({areaCm2(a)} cm²)</span>
+                        </td>
+                        <td className="px-3 py-2 text-right text-white">
+                          {a.tipo === "Bordado" && a.pontos ? `${a.pontos}k pts` : `${a.cores}`}
+                        </td>
+                        <td className="px-3 py-2 text-right text-white">{a.qtdPorPeca}</td>
+                        <td className="px-3 py-2 text-right text-white">{brl(a.custoUnitario)}</td>
+                        <td className="px-3 py-2 text-right text-muted-foreground">
+                          {a.custoSetup ? brl(a.custoSetup) : "—"}
+                        </td>
+                        <td className="px-3 py-2 text-right font-semibold text-white">
+                          {brl(custoPeca(a))}
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex justify-end gap-1">
+                            <button
+                              onClick={() => abrir(a)}
+                              className="p-1.5 rounded text-muted-foreground hover:bg-accent/60 hover:text-white"
+                              title="Editar"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                remove(refAtual, a.id);
+                                toast.info("Aplicação removida.");
+                              }}
+                              className="p-1.5 rounded text-muted-foreground hover:bg-status-rejected/10 hover:text-status-rejected"
+                              title="Remover"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-muted/50 text-2xs">
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-3 py-2 uppercase tracking-wider text-muted-foreground"
+                      >
+                        Aplicações por peça
+                      </td>
+                      <td className="px-3 py-2 text-right font-semibold text-white">
+                        {brl(pecasTotal)}
+                      </td>
+                      <td />
+                    </tr>
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-3 py-2 uppercase tracking-wider text-muted-foreground"
+                      >
+                        Setup total (
+                        {setup > 0
+                          ? `amortizado em ${tiragem} pçs → +${brl(setup / tiragem)}/peça`
+                          : "sem telas/chapas"}
+                        )
+                        {setup > 0 && (
+                          <Input
+                            type="number"
+                            min={1}
+                            value={tiragem}
+                            onChange={(e) => setTiragem(num(e.target.value) ?? 1)}
+                            className="ml-2 inline-block h-6 w-20 bg-background text-2xs"
+                            title="Tiragem planejada sincronizada com o Pré-Custo da ficha"
+                          />
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-right text-white">{brl(setup)}</td>
+                      <td />
+                    </tr>
                     {setup > 0 && (
-                      <Input
-                        type="number"
-                        min={1}
-                        value={tiragem}
-                        onChange={(e) => setTiragem(num(e.target.value) ?? 0)}
-                        className="ml-2 inline-block h-6 w-20 bg-black/30 text-2xs"
-                        title="Tiragem do lote para amortização"
-                      />
+                      <tr>
+                        <td colSpan={7} className="px-3 py-2 uppercase tracking-wider text-primary">
+                          Custo de aplicações / peça com setup diluído
+                        </td>
+                        <td className="px-3 py-2 text-right font-semibold text-primary">
+                          {brl(comSetup)}
+                        </td>
+                        <td />
+                      </tr>
                     )}
-                  </td>
-                  <td className="px-3 py-2 text-right text-white">{brl(setup)}</td>
-                  <td />
-                </tr>
-                {setup > 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-3 py-2 uppercase tracking-wider text-primary">
-                      Custo de aplicações / peça com setup diluído
-                    </td>
-                    <td className="px-3 py-2 text-right font-semibold text-primary">
-                      {brl(comSetup)}
-                    </td>
-                    <td />
-                  </tr>
-                )}
-              </tfoot>
-            </table>
-          </div>
-          <p className="sr-only">{apps.map(resumoAplicacao).join("; ")}</p>
-        </>
+                  </tfoot>
+                </table>
+              </div>
+              <p className="sr-only">{apps.map(resumoAplicacao).join("; ")}</p>
+            </>
+          )}
+        </div>
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -256,7 +287,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                 onChange={(e) =>
                   setDraft((d) => ({ ...d, tipo: e.target.value as Aplicacao["tipo"] }))
                 }
-                className="w-full rounded-md border border-border bg-black/30 px-2 py-1.5 text-white"
+                className="w-full rounded-md border border-border bg-background px-2 py-1.5 text-foreground"
               >
                 {APLICACAO_TIPOS.map((t) => (
                   <option key={t} value={t}>
@@ -404,6 +435,6 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </section>
   );
 }

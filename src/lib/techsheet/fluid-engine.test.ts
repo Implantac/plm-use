@@ -23,6 +23,8 @@ import {
   computeMrpCutPlan,
   findMaterialWhereUsed,
 } from "./mrp";
+import { computeLineBalancing } from "./line-balancing";
+import { computeAqlInspectionPlan } from "../quality/aql";
 import { deserializeTechSheetRow, serializeTechSheetDoc } from "./server";
 import { seedFor } from "./store";
 
@@ -316,5 +318,52 @@ describe("envelope v3 + PDF Facção Cego + Ponte Ficha → Catálogo", () => {
     // +R$ 5,00/kg * 0.26 kg * 1.07 = +R$ 1,39/peça
     expect(hits[0].deltaCustoPeca).toBeCloseTo(1.39, 1);
     expect(hits[0].margemNovaPct).toBeLessThan(hits[0].margemAtualPct);
+  });
+
+  it("computeLineBalancing calcula SAM, Pitch Time, gargalo e decisão Make-or-Buy", () => {
+    const doc = seedFor("DEV000006");
+    const internalWins = computeLineBalancing(doc.bop, {
+      costureiras: 8,
+      jornadaMin: 480,
+      eficienciaPct: 80,
+      lotePlanejado: 600,
+      cotacaoFaccaoPeca: doc.bop.reduce((a, b) => a + b.custo, 0) + 2.5,
+    });
+    expect(internalWins.samTotal).toBeGreaterThan(0);
+    expect(internalWins.capacidadePecasDia).toBeGreaterThan(0);
+    expect(internalWins.gargalo).not.toBeNull();
+    expect(internalWins.eficienciaBalanceamentoPct).toBeGreaterThan(0);
+    expect(internalWins.eficienciaBalanceamentoPct).toBeLessThanOrEqual(100);
+    expect(internalWins.makeOrBuy.recomendacao).toBe("interno");
+    expect(internalWins.makeOrBuy.diferencaNoLote).toBeCloseTo(2.5 * 600, 1);
+
+    const faccaoWins = computeLineBalancing(doc.bop, {
+      costureiras: 8,
+      jornadaMin: 480,
+      eficienciaPct: 80,
+      lotePlanejado: 600,
+      cotacaoFaccaoPeca: Math.max(0.5, internalWins.custoInternoPeca - 1.8),
+    });
+    expect(faccaoWins.makeOrBuy.recomendacao).toBe("faccao");
+  });
+
+  it("computeAqlInspectionPlan aplica tabela oficial ISO 2859-1 Nível II (AQL 0 / 2.5 / 4.0)", () => {
+    // Lote de 600 peças -> Letra J, amostra n = 80, Ac = 5 / Re = 6 p/ AQL 2,5
+    const okBatch = computeAqlInspectionPlan(600, { criticos: 0, maiores: 5, menores: 7 });
+    expect(okBatch.codeLetter).toBe("J");
+    expect(okBatch.sampleSize).toBe(80);
+    expect(okBatch.limits.maior25).toEqual({ ac: 5, re: 6 });
+    expect(okBatch.limits.menor40).toEqual({ ac: 7, re: 8 });
+    expect(okBatch.aprovado).toBe(true);
+
+    // 6 defeitos maiores -> Reprovado
+    const failMajor = computeAqlInspectionPlan(600, { criticos: 0, maiores: 6, menores: 2 });
+    expect(failMajor.aprovado).toBe(false);
+    expect(failMajor.motivosReprovacao[0]).toContain("AQL 2,5");
+
+    // 1 defeito crítico -> Reprovado imediatamente
+    const failCritical = computeAqlInspectionPlan(600, { criticos: 1, maiores: 0, menores: 0 });
+    expect(failCritical.aprovado).toBe(false);
+    expect(failCritical.motivosReprovacao[0]).toContain("crítico");
   });
 });

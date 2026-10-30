@@ -35,6 +35,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { listPalettes } from "@/lib/colors/store";
 import {
   defaultCalloutsFor,
   defaultColorwaysFor,
@@ -794,6 +795,41 @@ export function GarmentSketchStudio({
             <DialogTitle>Nova Variante na Cartela ({refAtual})</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
+            {/* Atalho: Cartela Pantone TCX (/colors) */}
+            <div className="rounded-md border border-border bg-muted/30 p-2.5 space-y-1.5">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                Atalho · Cartela Pantone TCX (/colors)
+              </p>
+              <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                {listPalettes()
+                  .flatMap((p) => p.colors)
+                  .slice(0, 12)
+                  .map((c) => (
+                    <button
+                      key={`${c.id}-${c.hex}`}
+                      type="button"
+                      onClick={() =>
+                        setNewCw((s) => ({
+                          ...s,
+                          code:
+                            c.pantone?.replace(/\s*TCX$/i, "").trim() ||
+                            c.name.slice(0, 6).toUpperCase(),
+                          name: c.pantone ? `${c.name} (${c.pantone})` : c.name,
+                          hex: c.hex,
+                        }))
+                      }
+                      className="inline-flex items-center gap-1 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] hover:border-teal-500 transition"
+                    >
+                      <span
+                        className="h-2.5 w-2.5 rounded-full border border-border"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                      <span className="truncate max-w-[115px]">{c.name}</span>
+                    </button>
+                  ))}
+              </div>
+            </div>
+
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <Label className="text-xs">Código Cor</Label>

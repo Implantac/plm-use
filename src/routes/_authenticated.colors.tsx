@@ -2,8 +2,19 @@
 // Biblioteca de paletas reutilizáveis com Pantone, fornecedor e uso por coleção.
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
-import { createFileRoute } from "@tanstack/react-router";
-import { Palette, Plus, Trash2, Copy, Sparkles, Link2, CheckCircle2, Clock } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  Palette,
+  Plus,
+  Trash2,
+  Copy,
+  Sparkles,
+  Link2,
+  CheckCircle2,
+  Clock,
+  Send,
+  ArrowUpRight,
+} from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +44,8 @@ import {
   type ColorPalette,
   type ColorRef,
 } from "@/lib/colors/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import type { TechSheetColorway } from "@/lib/techsheet/textile";
 
 export const Route = createFileRoute("/_authenticated/colors")({
   head: () => ({
@@ -80,10 +93,28 @@ function ColorPaletteRoute() {
     () => listPalettes(),
   );
 
+  const [query, setQuery] = useState("");
+  const filteredPalettes = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return palettes;
+    return palettes.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.season.toLowerCase().includes(q) ||
+        p.brand.toLowerCase().includes(q) ||
+        p.colors.some(
+          (c) =>
+            c.name.toLowerCase().includes(q) ||
+            c.hex.toLowerCase().includes(q) ||
+            (c.pantone ?? "").toLowerCase().includes(q),
+        ),
+    );
+  }, [palettes, query]);
+
   const [selectedId, setSelectedId] = useState<string>(palettes[0]?.id ?? "");
   const selected = useMemo(
-    () => palettes.find((p) => p.id === selectedId) ?? palettes[0],
-    [palettes, selectedId],
+    () => filteredPalettes.find((p) => p.id === selectedId) ?? filteredPalettes[0] ?? palettes[0],
+    [filteredPalettes, palettes, selectedId],
   );
 
   const metrics = useMemo(() => {
@@ -131,13 +162,14 @@ function ColorPaletteRoute() {
       subtitle="Paletas Pantone reutilizáveis, vinculadas a fornecedor de tingimento e a coleções. Base para cartela de estampas e painel de displayagem."
       version="H1-03 · V4"
       searchPlaceholder="Buscar paleta ou Pantone"
+      onSearch={setQuery}
       metrics={metrics}
       onAdd={handleAddPalette}
     >
       <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
         {/* Lista de paletas */}
         <div className="space-y-3">
-          {palettes.map((p) => {
+          {filteredPalettes.map((p) => {
             const isActive = p.id === selected?.id;
             return (
               <button
@@ -150,7 +182,7 @@ function ColorPaletteRoute() {
                     : "border-border bg-muted/40 hover:border-border-strong/70"
                 }`}
               >
-                <div className="relative h-24 w-full">
+                <div className="relative h-24 w-full overflow-hidden">
                   <OptimizedImage
                     src={p.cover}
                     alt={p.name}
@@ -208,11 +240,80 @@ function ColorPaletteRoute() {
 }
 
 function PaletteDetail({ palette }: { palette: ColorPalette }) {
+  const navigate = useNavigate();
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensureSheet = useTechSheetStore((s) => s.ensure);
+  const setColorways = useTechSheetStore((s) => s.setColorways);
+
+  const [syncOpen, setSyncOpen] = useState(false);
+  const [targetRef, setTargetRef] = useState("DEV000006");
+  const [syncMode, setSyncMode] = useState<"replace" | "append">("replace");
+
+  const refOptions = useMemo(() => {
+    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
+    for (const k of Object.keys(sheetsMap)) {
+      if (!base.includes(k)) base.push(k);
+    }
+    return base;
+  }, [sheetsMap]);
+
+  const handlePushToTechSheet = () => {
+    if (palette.colors.length === 0) {
+      toast.error("Adicione ao menos uma cor Pantone antes de enviar para a ficha.");
+      return;
+    }
+    const curDoc = sheetsMap[targetRef] ?? ensureSheet(targetRef);
+    const existing = syncMode === "append" ? (curDoc.colorways ?? []) : [];
+    const totalColors = existing.length + palette.colors.length;
+    const basePct = Math.floor(100 / Math.max(1, totalColors));
+    let remainder = 100 - basePct * totalColors;
+
+    const mappedNew: TechSheetColorway[] = palette.colors.map((c, idx) => {
+      const code =
+        c.pantone?.replace(/\s*TCX$/i, "").trim() ||
+        c.name
+          .split(/\s+/)
+          .map((w) => w[0] ?? "")
+          .join("")
+          .toUpperCase()
+          .slice(0, 6) ||
+        `COR-${idx + 1}`;
+      const extra = remainder > 0 ? 1 : 0;
+      if (remainder > 0) remainder -= 1;
+      return {
+        id: `cw-pal-${palette.id}-${c.id}`,
+        code,
+        name: c.pantone ? `${c.name} (${c.pantone})` : c.name,
+        hex: c.hex,
+        status: "Ativa",
+        mixPct: basePct + extra,
+      };
+    });
+
+    const rebalancedExisting: TechSheetColorway[] = existing.map((cw) => {
+      const extra = remainder > 0 ? 1 : 0;
+      if (remainder > 0) remainder -= 1;
+      return { ...cw, mixPct: basePct + extra };
+    });
+
+    const nextColorways = [...rebalancedExisting, ...mappedNew];
+    setColorways(targetRef, nextColorways);
+    upsertPalette({
+      ...palette,
+      linkedRefs: palette.linkedRefs + 1,
+      updatedAt: new Date().toISOString().slice(0, 10),
+    });
+    toast.success(
+      `${palette.colors.length} cores Pantone sincronizadas nas variantes da ficha ${targetRef}!`,
+    );
+    setSyncOpen(false);
+  };
+
   return (
     <div className="space-y-5">
       <Card className="border-border bg-muted/50">
         <CardContent className="p-6 space-y-4">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <Palette className="h-4 w-4 text-primary" />
@@ -223,7 +324,106 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
               <h2 className="text-2xl font-bold text-white leading-tight">{palette.name}</h2>
               <p className="text-sm text-muted-foreground mt-1">{palette.mood}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <Dialog open={syncOpen} onOpenChange={setSyncOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 border-[#2C6478]/50 bg-[#2C6478]/15 text-[#1E5568] dark:text-[#7AD4F0] hover:bg-[#2C6478]/25"
+                  >
+                    <Send className="h-3.5 w-3.5" /> Enviar p/ Ficha Técnica
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Sincronizar Cartela Pantone com Ficha Técnica</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3 text-xs">
+                    <p className="text-muted-foreground">
+                      Envia as <strong>{palette.colors.length} cores</strong> da cartela{" "}
+                      <strong>{palette.name}</strong> diretamente para as variantes de cor e mix de
+                      corte da Ficha Técnica selecionada.
+                    </p>
+                    <div className="space-y-1">
+                      <Label className="text-2xs uppercase tracking-wider">
+                        Referência da Ficha Técnica
+                      </Label>
+                      <select
+                        aria-label="Referência da Ficha Técnica"
+                        value={targetRef}
+                        onChange={(e) => setTargetRef(e.target.value)}
+                        className="w-full h-9 rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
+                      >
+                        {refOptions.map((r) => (
+                          <option key={r} value={r}>
+                            {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-2xs uppercase tracking-wider">Modo de aplicação</Label>
+                      <select
+                        aria-label="Modo de aplicação na ficha"
+                        value={syncMode}
+                        onChange={(e) => setSyncMode(e.target.value as "replace" | "append")}
+                        className="w-full h-9 rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
+                      >
+                        <option value="replace">
+                          Substituir variantes atuais pela cartela (mix 100% distribuído)
+                        </option>
+                        <option value="append">Mesclar com variantes atuais da ficha</option>
+                      </select>
+                    </div>
+                    <div className="rounded-md border border-border bg-muted/30 p-2.5 space-y-1.5">
+                      <p className="text-2xs uppercase tracking-wider text-muted-foreground font-semibold">
+                        Prévia das Variantes Pantone ({palette.colors.length})
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {palette.colors.map((c) => (
+                          <span
+                            key={c.id}
+                            className="inline-flex items-center gap-1.5 rounded border border-border bg-background px-2 py-1 text-2xs"
+                          >
+                            <span
+                              className="h-3 w-3 rounded-full border border-border"
+                              style={{ backgroundColor: c.hex }}
+                            />
+                            <span className="font-medium text-foreground">{c.name}</span>
+                            {c.pantone && (
+                              <span className="font-mono text-muted-foreground">{c.pantone}</span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <DialogFooter className="gap-2 sm:justify-between">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1 text-xs"
+                      onClick={() => {
+                        setSyncOpen(false);
+                        navigate({ to: "/tech-sheet", search: { ref: targetRef } });
+                      }}
+                    >
+                      Abrir {targetRef} <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => setSyncOpen(false)}>
+                        Cancelar
+                      </Button>
+                      <Button size="sm" onClick={handlePushToTechSheet}>
+                        Aplicar na Ficha
+                      </Button>
+                    </div>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
               <LocalHistoryButton
                 entityType="color_palette"
                 entityId={palette.id}
