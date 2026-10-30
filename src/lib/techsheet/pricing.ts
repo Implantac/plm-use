@@ -237,3 +237,99 @@ export function computeFullTechSheetPricing(input: PricingInput): PricingBreakdo
     precoAcimaAlvo,
   };
 }
+
+export interface ReverseTargetCostResult {
+  precoAlvo: number;
+  divisorUtilizado: number;
+  custoFinalMaximo: number;
+  custoIndustrialMaximo: number;
+  custoIndustrialAtual: number;
+  /** Positivo = folga por peça; Negativo = estouro de custo a enxugar na engenharia. */
+  folgaCustoIndustrial: number;
+  viavel: boolean;
+}
+
+/**
+ * Engenharia Reversa (Target Costing de Confecção):
+ * Dado o Preço de Venda que o mercado aceita pagar (`targetPv`) e a estrutura
+ * tributária/comercial + margem líquida alvo, devolve o teto máximo de Custo
+ * Industrial que a peça pode ter antes do corte.
+ */
+export function computeReverseTargetCost(
+  input: PricingInput,
+  targetPvOverride?: number,
+): ReverseTargetCostResult {
+  const base = computeFullTechSheetPricing(input);
+  const precoAlvo = round2(
+    targetPvOverride != null && targetPvOverride > 0
+      ? targetPvOverride
+      : input.preCost.targetPreco && input.preCost.targetPreco > 0
+        ? input.preCost.targetPreco
+        : base.precoSugerido,
+  );
+  if (base.divisorInvalido || base.markupDivisor <= 0 || precoAlvo <= 0) {
+    return {
+      precoAlvo,
+      divisorUtilizado: base.markupDivisor,
+      custoFinalMaximo: 0,
+      custoIndustrialMaximo: 0,
+      custoIndustrialAtual: base.industrial,
+      folgaCustoIndustrial: round2(-base.industrial),
+      viavel: false,
+    };
+  }
+  const overheadFactor = 1 + Math.max(0, Number(input.preCost.overheadPct) || 0) / 100;
+  const custoFinalMaximo = round2(precoAlvo * base.markupDivisor);
+  const custoIndustrialMaximo = round2(custoFinalMaximo / overheadFactor);
+  const folgaCustoIndustrial = round2(custoIndustrialMaximo - base.industrial);
+  return {
+    precoAlvo,
+    divisorUtilizado: base.markupDivisor,
+    custoFinalMaximo,
+    custoIndustrialMaximo,
+    custoIndustrialAtual: base.industrial,
+    folgaCustoIndustrial,
+    viavel: folgaCustoIndustrial >= -0.01,
+  };
+}
+
+export interface TaxRegimeComparisonItem {
+  regime: Exclude<TaxRegimePresetId, "PERSONALIZADO">;
+  label: string;
+  impostosPct: number;
+  deducoesSemLucroPct: number;
+  divisor: number;
+  precoSugerido: number;
+  lucroLiquidoPeca: number;
+}
+
+/** Compara instantaneamente o mesmo produto nos 3 regimes tributários brasileiros. */
+export function compareTaxRegimes(input: PricingInput): TaxRegimeComparisonItem[] {
+  const keys = Object.keys(TAX_REGIME_PRESETS) as Array<
+    Exclude<TaxRegimePresetId, "PERSONALIZADO">
+  >;
+  return keys.map((regime) => {
+    const preset = TAX_REGIME_PRESETS[regime];
+    const sim = computeFullTechSheetPricing({
+      ...input,
+      preCost: {
+        ...input.preCost,
+        pricingMode: "divisor",
+        targetPreco: undefined,
+        divisor: {
+          regime,
+          ...preset.values,
+        },
+      },
+    });
+    return {
+      regime,
+      label: preset.label,
+      impostosPct: preset.values.impostosPct,
+      deducoesSemLucroPct: sim.deducoesSemLucroPct,
+      divisor: sim.markupDivisor,
+      precoSugerido: sim.precoSugerido,
+      lucroLiquidoPeca: sim.lucroLiquidoPeca,
+    };
+  });
+}

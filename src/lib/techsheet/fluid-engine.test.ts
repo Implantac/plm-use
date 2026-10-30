@@ -9,7 +9,12 @@ import {
   parseExcelMeasurementsPaste,
   validateComposicaoAbnt,
 } from "./textile";
-import { computeFullTechSheetPricing, TAX_REGIME_PRESETS } from "./pricing";
+import {
+  compareTaxRegimes,
+  computeFullTechSheetPricing,
+  computeReverseTargetCost,
+  TAX_REGIME_PRESETS,
+} from "./pricing";
 import { buildCatalogPublicationPlan } from "./publish-catalog";
 import { buildTechSheetPrintHtml } from "./print";
 import { deserializeTechSheetRow, serializeTechSheetDoc } from "./server";
@@ -207,5 +212,48 @@ describe("envelope v3 + PDF Facção Cego + Ponte Ficha → Catálogo", () => {
     const restored = deserializeTechSheetRow(payload);
     expect(restored.meta?.silhouette).toBe("camiseta_v");
     expect(restored.meta?.callouts?.[0]?.label).toContain("Gola V");
+  });
+
+  it("Target Costing reverso e comparativo tributário (Simples x Presumido x Real) são coerentes", () => {
+    const doc = seedFor("DEV000006");
+    // Com PV teto alto (R$ 149,90), a referência tem folga positiva de custo industrial
+    const okTarget = computeReverseTargetCost(doc, 149.9);
+    expect(okTarget.viavel).toBe(true);
+    expect(okTarget.custoIndustrialMaximo).toBeGreaterThan(29);
+    expect(okTarget.folgaCustoIndustrial).toBeGreaterThan(0);
+
+    // Com PV teto espremido (R$ 49,90), o custo industrial estoura o teto reverso
+    const tightTarget = computeReverseTargetCost(doc, 49.9);
+    expect(tightTarget.viavel).toBe(false);
+    expect(tightTarget.folgaCustoIndustrial).toBeLessThan(0);
+
+    // Comparativo entre os regimes tributários brasileiros mantém ordem crescente de carga
+    const regimes = compareTaxRegimes(doc);
+    expect(regimes).toHaveLength(4);
+    const simples = regimes.find((r) => r.regime === "SIMPLES_CONFECCAO")!;
+    const presumido = regimes.find((r) => r.regime === "LUCRO_PRESUMIDO")!;
+    const real = regimes.find((r) => r.regime === "LUCRO_REAL")!;
+    expect(simples.precoSugerido).toBeLessThan(presumido.precoSugerido);
+    expect(presumido.precoSugerido).toBeLessThan(real.precoSugerido);
+  });
+
+  it("PDF A4 Cego de Facção embute Croqui SVG Frente+Costas, Callouts e Matriz Cor sem R$", () => {
+    const doc = seedFor("DEV000006");
+    const blindHtml = buildTechSheetPrintHtml(
+      {
+        ref: "DEV000006",
+        name: "Camiseta Esportiva Dry Pro",
+        category: "Esportivo",
+        season: "Verão 2027",
+      },
+      doc,
+      new Date("2026-10-30T12:00:00Z"),
+      { omitCosts: true },
+    );
+    expect(blindHtml).toContain('class="croqui-svg"');
+    expect(blindHtml).toContain("Gola V Ribana Listrada");
+    expect(blindHtml).toContain("Var VD-OURO");
+    expect(blindHtml).toContain("Símbolos ISO 3758");
+    expect(blindHtml).not.toContain("R$");
   });
 });
