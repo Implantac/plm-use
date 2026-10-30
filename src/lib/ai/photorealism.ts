@@ -23,6 +23,7 @@ export interface PhotoPresetConfig {
   defaultBackground: ImageBackgroundOption;
   cameraSpec: string;
   compositionSpec: string;
+  transparentCompositionSpec: string;
 }
 
 export const PHOTO_STUDIO_PRESETS: Record<PhotoStudioPresetId, PhotoPresetConfig> = {
@@ -30,58 +31,69 @@ export const PHOTO_STUDIO_PRESETS: Record<PhotoStudioPresetId, PhotoPresetConfig
     id: "ghost_mannequin",
     label: "Ghost Mannequin 3D (E-commerce)",
     shortDesc:
-      "Peça vestida em manequim invisível 3D, caimento real por gravidade e foco 100% têxtil",
+      "Peça vestida em manequim invisível 3D com recorte PNG transparente e foco 100% têxtil",
     defaultSize: "1024x1536",
-    defaultBackground: "opaque",
+    defaultBackground: "transparent",
     cameraSpec:
       "Shot on Phase One XF IQ4 150MP medium-format digital back, Schneider Kreuznach 90mm LS f/8 lens, ISO 50, razor-sharp edge-to-edge focus across every seam and yarn",
     compositionSpec:
       "3D invisible ghost-mannequin hollow-neck commercial packshot, authentic three-dimensional volume filled as if worn by a real torso, natural gravity hem hang, visible interior back-neck facing depth, centered full-garment framing",
+    transparentCompositionSpec:
+      "3D invisible ghost-mannequin hollow-neck commercial packshot, authentic three-dimensional volume filled as if worn by a real torso, natural gravity hem hang, visible interior back-neck facing depth, centered full-garment framing cleanly isolated on a 100% pure alpha-channel transparent PNG background",
   },
   editorial_model: {
     id: "editorial_model",
     label: "Modelo Real · Lookbook 85mm",
     shortDesc:
-      "Modelo humano realista, pele com textura natural, estúdio editorial tipo Zara/Vogue",
+      "Modelo humano realista iluminado em estúdio, textura natural de pele e fundo PNG transparente",
     defaultSize: "1024x1536",
-    defaultBackground: "opaque",
+    defaultBackground: "transparent",
     cameraSpec:
       "Shot on Hasselblad X2D 100C medium-format camera, XCD 85mm f/2.8 portrait prime lens at f/4, ISO 64, natural filmic tonal roll-off and true skin/fabric color science",
     compositionSpec:
       "High-end commercial fashion lookbook photograph worn by a charismatic real adult model with natural posture, authentic skin micro-texture (visible pores, natural complexion, zero airbrushing), organic tension folds at elbows, shoulders and waist, clean warm architectural cyclorama studio backdrop with soft floor shadow",
+    transparentCompositionSpec:
+      "High-end commercial fashion lookbook studio photograph worn by a charismatic real adult model with natural posture, authentic skin micro-texture (visible pores, natural complexion, zero airbrushing), organic tension folds at elbows, shoulders and waist, cleanly isolated on a 100% pure alpha-channel transparent PNG background with crisp hair and garment edge separation",
   },
   campaign_lifestyle: {
     id: "campaign_lifestyle",
-    label: "Campanha Lifestyle (Luz Natural)",
-    shortDesc: "Cena externa/arquitetônica em golden hour, lente 50mm f/2 com bokeh orgânico",
+    label: "Campanha Lifestyle (50mm Editorial)",
+    shortDesc: "Pose editorial dinâmica com luz natural na peça e fundo PNG transparente",
     defaultSize: "1536x1024",
-    defaultBackground: "opaque",
+    defaultBackground: "transparent",
     cameraSpec:
-      "Shot on Leica SL3 full-frame camera, APO-Summicron-SL 50mm f/2 ASPH lens at f/2.8, natural optical depth-of-field bokeh, subtle Kodak Portra 160 color rendition",
+      "Shot on Leica SL3 full-frame camera, APO-Summicron-SL 50mm f/2 ASPH lens at f/2.8, natural optical depth-of-field, subtle Kodak Portra 160 color rendition",
     compositionSpec:
       "Luxury fashion campaign editorial on location in contemporary Brazilian minimalist architecture, real human model in relaxed candid movement, natural wind and motion interaction on garment hem, authentic environmental bounce light",
+    transparentCompositionSpec:
+      "Luxury fashion campaign editorial studio shot featuring a real human model in relaxed candid movement, natural wind and motion interaction on garment hem and sleeves, cleanly isolated on a 100% pure alpha-channel transparent PNG background with zero scenery or floor",
   },
   macro_textile: {
     id: "macro_textile",
     label: "Macro Textura & Costura (100mm)",
-    shortDesc: "Close-up extremo da trama do fio, pespontos, ribana e acabamento industrial",
+    shortDesc:
+      "Close-up extremo da trama do fio, pespontos, ribana e acabamento em PNG transparente",
     defaultSize: "1024x1024",
-    defaultBackground: "opaque",
+    defaultBackground: "transparent",
     cameraSpec:
       "Shot on Canon EOS R5 with RF 100mm f/2.8L Macro IS USM lens at f/8, focus-stacked studio macro photography, extreme micro-contrast",
     compositionSpec:
       "Detailed close-up macro study of the garment's collar, shoulder seam, hem stitching and primary fabric surface, showcasing individual yarn twist, needle perforations, thread tension and trim craftsmanship",
+    transparentCompositionSpec:
+      "Detailed close-up macro study of the garment's collar, shoulder seam, hem stitching and primary fabric surface, showcasing individual yarn twist, needle perforations, thread tension and trim craftsmanship, cleanly isolated on a 100% pure alpha-channel transparent PNG background",
   },
   flat_lay: {
     id: "flat_lay",
-    label: "Flat Lay Zenital (Mesa Estúdio)",
-    shortDesc: "Fotografia aérea sobre bancada de pedra/linho com dobras orgânicas reais",
+    label: "Flat Lay Zenital (90° Aéreo)",
+    shortDesc: "Fotografia aérea a 90° com dobras orgânicas reais e fundo PNG transparente",
     defaultSize: "1024x1024",
-    defaultBackground: "opaque",
+    defaultBackground: "transparent",
     cameraSpec:
       "Overhead tether shot on Phase One IQ4 150MP, 55mm lens at f/9, zero barrel distortion, crisp fabric topography",
     compositionSpec:
       "Styled commercial overhead flat-lay garment photography resting naturally on a matte warm limestone studio table, subtle hand-styled organic fabric folds and contact shadows, one single garment only",
+    transparentCompositionSpec:
+      "Styled commercial overhead 90-degree flat-lay garment photography with subtle hand-styled organic fabric folds and realistic hem thickness, one single garment cleanly isolated on a 100% pure alpha-channel transparent PNG background with zero table surface",
   },
 };
 
@@ -248,13 +260,12 @@ const VIEW_ANGLE_DIRECTION: Record<string, string> = {
     "Three-quarter / 90-degree side profile highlighting sleeve pitch, side seam / lateral panel and drape silhouette",
   detalhe:
     "Macro close-up framing the collar, shoulder topstitching, fabric weave and chest finish",
-  still: "Overhead curated studio tabletop flat-lay composition",
+  still: "Overhead curated 90-degree studio flat-lay composition",
   modelo: "Three-quarter length editorial portrait worn on a real adult fashion model",
   editorial: "Full-to-medium length high-fashion editorial lookbook frame on a real model",
-  catálogo:
-    "Clean commercial e-commerce catalog front-three-quarter presentation on seamless warm studio paper",
-  campanha: "Wide cinematic luxury brand campaign frame in architectural daylight",
-  lifestyle: "Natural candid lifestyle moment worn in a sunlit contemporary environment",
+  catálogo: "Clean commercial e-commerce catalog front-three-quarter presentation",
+  campanha: "Dynamic luxury brand campaign frame showcasing natural movement",
+  lifestyle: "Natural candid lifestyle pose showcasing fluid garment drape",
 };
 
 export function buildPhotorealisticGarmentPrompt(
@@ -265,13 +276,14 @@ export function buildPhotorealisticGarmentPrompt(
   const preset = PHOTO_STUDIO_PRESETS[presetId];
   const lighting = LIGHTING_PRESETS[input.lighting ?? "softbox_neutro"];
 
-  // Regra crítica anti-contradição: modelos humanos, campanhas, flat-lay e macro NUNCA usam
-  // fundo transparente recortado, pois isso destrói sombras de contato, pele e iluminação real.
-  const canUseTransparent = presetId === "ghost_mannequin";
-  const useTransparent = Boolean(input.transparentCutout && canUseTransparent);
-  const background: ImageBackgroundOption = useTransparent
-    ? "transparent"
-    : preset.defaultBackground;
+  // Padrão industrial PLM: todas as imagens geradas usam canal alpha PNG transparente
+  // (a menos que transparentCutout === false seja explicitamente informado), mantendo
+  // iluminação real de estúdio D55 e microfísica têxtil diretamente sobre a peça/modelo.
+  const useTransparent = input.transparentCutout ?? true;
+  const background: ImageBackgroundOption = useTransparent ? "transparent" : "opaque";
+  const activeComposition = useTransparent
+    ? preset.transparentCompositionSpec
+    : preset.compositionSpec;
 
   const materialsJoined = (input.materials ?? []).filter(Boolean).join(", ");
   const textilePhysics = describeTextileMicroPhysics(
@@ -303,7 +315,7 @@ export function buildPhotorealisticGarmentPrompt(
     : "";
 
   const backdropClause = useTransparent
-    ? "Isolated cleanly on a 100% pure alpha transparent background with crisp natural fabric-edge anti-aliasing, no studio floor or external backdrop."
+    ? "100% pure alpha-channel transparent PNG background: crisp natural anti-aliased garment/subject edges, zero studio backdrop, zero floor, zero external cast shadow outside the silhouette."
     : presetId === "ghost_mannequin"
       ? "Set against a seamless matte warm light-gray commercial studio cyclorama (#F1F2F4) with a subtle, physically accurate soft contact shadow beneath the garment."
       : "";
@@ -316,7 +328,7 @@ export function buildPhotorealisticGarmentPrompt(
       "STRICT GARMENT IDENTITY LOCK: Reference image shows the exact physical garment prototype. Preserve 100% of its silhouette, cut lines, collar construction, sleeve length, seam placement, fabric weave and trims.",
       input.variationColorOnly
         ? `Re-dye ONLY the garment colorway to: ${colorCalibration}, maintaining identical yarn micro-texture, seam shadows and studio lighting.`
-        : `Photograph this exact garment in ${angleInstruction}. ${preset.compositionSpec}.`,
+        : `Photograph this exact garment in ${angleInstruction}. ${activeComposition}.`,
       `Textile micro-physics: ${textilePhysics}.`,
       preset.cameraSpec + ".",
       lighting.promptSpec + ".",
@@ -340,7 +352,7 @@ export function buildPhotorealisticGarmentPrompt(
     `Ultra-realistic commercial fashion photography of "${input.productName}" (${input.category || "apparel"}).`,
     `Garment silhouette: ${cleanSentence(input.silhouette) || "commercial tailored fit"}.`,
     `${cleanSentence(angleInstruction)}.`,
-    `${cleanSentence(preset.compositionSpec)}.`,
+    `${cleanSentence(activeComposition)}.`,
     `${cleanSentence(colorCalibration)}.`,
     `Textile micro-physics: ${cleanSentence(textilePhysics)}.`,
     constructionBlock,

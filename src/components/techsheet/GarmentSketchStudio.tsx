@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ExpandImageBadge, ImageLightbox } from "@/components/ui/image-lightbox";
 import {
   Dialog,
   DialogContent,
@@ -141,6 +142,7 @@ export function GarmentSketchStudio({
   const [aiPreset, setAiPreset] = useState<PhotoStudioPresetId>("ghost_mannequin");
   const [aiPhotoSrc, setAiPhotoSrc] = useState<string | null>(null);
   const [aiPhotoBusy, setAiPhotoBusy] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   async function renderRealisticFromSheet() {
     if (aiPhotoBusy) return;
@@ -161,6 +163,7 @@ export function GarmentSketchStudio({
         applications: payload.applications,
         preset: aiPreset,
         lighting: "softbox_neutro",
+        transparentCutout: true,
       });
       let finalDataUrl = "";
       await streamImage(
@@ -171,7 +174,7 @@ export function GarmentSketchStudio({
           setAiPhotoSrc(dataUrl);
         },
         undefined,
-        { background: plan.background, size: plan.size, inputFidelity: "high" },
+        { background: "transparent", size: plan.size, inputFidelity: "high" },
       );
       if (finalDataUrl) {
         const storagePath = await uploadGeneratedImage(finalDataUrl);
@@ -465,16 +468,31 @@ export function GarmentSketchStudio({
         {viewMode === "previa3d" && (
           <div className="py-2 space-y-2">
             {aiPhotoSrc ? (
-              <div className="relative flex items-center justify-center rounded-md overflow-hidden bg-slate-100 border border-slate-200 min-h-[210px]">
-                <img
-                  src={aiPhotoSrc}
-                  alt={`Render realista ${refAtual}`}
-                  className="max-h-[240px] w-auto object-contain"
-                />
+              <div className="relative flex items-center justify-center rounded-md overflow-hidden border border-slate-200 min-h-[210px]">
+                <button
+                  type="button"
+                  onClick={() => setLightboxSrc(aiPhotoSrc)}
+                  aria-label={`Ampliar render realista ${refAtual} em tela cheia`}
+                  style={{
+                    backgroundColor: "#141D2E",
+                    backgroundImage:
+                      "linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%)",
+                    backgroundSize: "18px 18px",
+                    backgroundPosition: "0 0, 0 9px, 9px -9px, -9px 0px",
+                  }}
+                  className="group relative flex w-full min-h-[210px] cursor-zoom-in items-center justify-center p-2"
+                >
+                  <ExpandImageBadge label="Ampliar" />
+                  <img
+                    src={aiPhotoSrc}
+                    alt={`Render realista ${refAtual}`}
+                    className="max-h-[240px] w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+                  />
+                </button>
                 <button
                   type="button"
                   onClick={() => setAiPhotoSrc(null)}
-                  className="absolute top-1.5 right-1.5 rounded bg-slate-900/75 px-1.5 py-0.5 text-[10px] text-slate-100 hover:bg-slate-900"
+                  className="absolute bottom-1.5 left-1.5 z-10 rounded bg-slate-900/80 px-1.5 py-0.5 text-[10px] text-slate-100 hover:bg-slate-900"
                 >
                   Voltar Drape 3D
                 </button>
@@ -529,11 +547,19 @@ export function GarmentSketchStudio({
         {viewMode === "foto" && (
           <div className="flex flex-col items-center justify-center min-h-[210px] gap-2">
             {doc.image ? (
-              <img
-                src={doc.image}
-                alt={refAtual}
-                className="max-h-[225px] rounded-md object-contain"
-              />
+              <button
+                type="button"
+                onClick={() => setLightboxSrc(doc.image ?? null)}
+                aria-label={`Ampliar foto da peça ${refAtual} em tela cheia`}
+                className="group relative flex w-full cursor-zoom-in items-center justify-center rounded-md p-1"
+              >
+                <ExpandImageBadge label="Ampliar" />
+                <img
+                  src={doc.image}
+                  alt={refAtual}
+                  className="max-h-[225px] rounded-md object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+                />
+              </button>
             ) : (
               <p className="text-xs text-slate-500">Nenhuma foto vinculada.</p>
             )}
@@ -1192,6 +1218,24 @@ export function GarmentSketchStudio({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {lightboxSrc && (
+        <ImageLightbox
+          open={Boolean(lightboxSrc)}
+          onOpenChange={(next) => {
+            if (!next) setLightboxSrc(null);
+          }}
+          items={[
+            {
+              src: lightboxSrc,
+              alt: `${productTitle} (${refAtual})`,
+              title: `${productTitle} · ${refAtual}`,
+              subtitle: `Variante ${activeCw?.name ?? "Principal"} · Inspeção em tela cheia`,
+              exportBaseName: `${refAtual.toLowerCase()}-render`,
+            },
+          ]}
+        />
+      )}
     </Card>
   );
 }

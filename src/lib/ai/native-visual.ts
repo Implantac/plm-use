@@ -154,7 +154,8 @@ export function nativeVisualSvg(input: Input) {
   const collarDark = adjustHex(fill, 0.48);
   const back = /costas|traseir|back/i.test(input.view ?? "");
   const printed = /estamp/i.test(input.color ?? "");
-  const studioBackdrop = input.transparent
+  const isTransparent = input.transparent ?? true;
+  const studioBackdrop = isTransparent
     ? ""
     : `<rect width="800" height="760" fill="url(#studioCyclorama)"/><ellipse cx="400" cy="708" rx="195" ry="22" fill="rgba(15,23,42,0.16)" filter="url(#floorBlur)"/>`;
 

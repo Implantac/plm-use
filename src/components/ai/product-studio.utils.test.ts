@@ -83,37 +83,43 @@ describe("product-studio utils", () => {
     expect(linho).toContain("185 gsm");
   });
 
-  it("constrói plano fotográfico médio-formato sem contradição de fundo transparente em modelo real", () => {
+  it("gera imagens com fundo PNG transparente por padrão em todos os modos preservando óptica médio-formato", () => {
     expect(inferPresetFromView("modelo")).toBe("editorial_model");
     expect(inferPresetFromView("campanha")).toBe("campaign_lifestyle");
     expect(inferPresetFromView("detalhe")).toBe("macro_textile");
 
-    // Mesmo se transparentCutout=true vier marcado, foto em modelo humano NUNCA usa fundo transparente
-    const editorial = buildPhotorealisticGarmentPrompt({
+    const editorialDefault = buildPhotorealisticGarmentPrompt({
       productName: "Camisa Linho Amalfi",
       materials: ["Linho Puro 180 g/m²"],
       view: "modelo",
-      transparentCutout: true,
       primaryHex: "#C86B4A",
     });
-    expect(editorial.preset.id).toBe("editorial_model");
-    expect(editorial.background).toBe("opaque");
-    expect(editorial.size).toBe("1024x1536");
-    expect(editorial.prompt).toContain("Hasselblad X2D 100C");
-    expect(editorial.prompt).toContain("#C86B4A");
-    expect(editorial.prompt).toContain("NO plastic or waxy sheen");
+    expect(editorialDefault.preset.id).toBe("editorial_model");
+    expect(editorialDefault.background).toBe("transparent");
+    expect(editorialDefault.size).toBe("1024x1536");
+    expect(editorialDefault.prompt).toContain("Hasselblad X2D 100C");
+    expect(editorialDefault.prompt).toContain("#C86B4A");
+    expect(editorialDefault.prompt).toContain("100% pure alpha-channel transparent PNG background");
+    expect(editorialDefault.prompt).not.toContain("cyclorama studio backdrop");
 
-    // Ghost mannequin permite recorte PNG transparente quando solicitado explicitamente
-    const ghostCutout = buildPhotorealisticGarmentPrompt({
+    const ghostDefault = buildPhotorealisticGarmentPrompt({
       productName: "Camiseta Dry Pro",
       preset: "ghost_mannequin",
-      transparentCutout: true,
     });
-    expect(ghostCutout.background).toBe("transparent");
-    expect(ghostCutout.size).toBe("1024x1536");
+    expect(ghostDefault.background).toBe("transparent");
+    expect(ghostDefault.size).toBe("1024x1536");
+
+    // Continua permitindo fundo opaco apenas se o usuário desmarcar explicitamente
+    const studioOpaque = buildPhotorealisticGarmentPrompt({
+      productName: "Camisa Linho Amalfi",
+      preset: "editorial_model",
+      transparentCutout: false,
+    });
+    expect(studioOpaque.background).toBe("opaque");
+    expect(studioOpaque.prompt).toContain("cyclorama studio backdrop");
   });
 
-  it("hidrata o AI Product Studio diretamente a partir da Ficha Técnica e gera SVG volumétrico 3D", () => {
+  it("hidrata o AI Product Studio a partir da Ficha Técnica e gera SVG volumétrico 3D com fundo transparente por padrão", () => {
     const doc = seedFor("DEV000006");
     const payload = buildStudioPayloadFromTechSheet("DEV000006", doc);
     expect(payload.gramaturaGm2).toBe(135);
@@ -121,13 +127,22 @@ describe("product-studio utils", () => {
     expect(payload.primaryHex).toBe("#1D6B47");
     expect(payload.proposal.details.join(" ")).toContain("Gola V Ribana");
 
-    const svgOpaque = nativeVisualSvg({
+    const svgDefaultTransparent = nativeVisualSvg({
       family: "Camisetas",
       name: payload.proposal.name,
       color: payload.primaryHex,
       view: "frente",
     });
-    expect(svgOpaque).toContain("studioCyclorama");
-    expect(svgOpaque).toContain("torsoVolume");
+    expect(svgDefaultTransparent).not.toContain('fill="url(#studioCyclorama)"');
+    expect(svgDefaultTransparent).toContain("torsoVolume");
+
+    const svgOpaque = nativeVisualSvg({
+      family: "Camisetas",
+      name: payload.proposal.name,
+      color: payload.primaryHex,
+      view: "frente",
+      transparent: false,
+    });
+    expect(svgOpaque).toContain('fill="url(#studioCyclorama)"');
   });
 });

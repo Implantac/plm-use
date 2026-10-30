@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FieldMessage } from "@/components/ui/field-message";
+import { ExpandImageBadge, ImageLightbox } from "@/components/ui/image-lightbox";
 import { Sparkles, Loader2, Wand2, Download, Camera } from "lucide-react";
 import { streamImage } from "@/lib/streamImage";
 import {
@@ -19,6 +20,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
   const [src, setSrc] = useState<string | null>(null);
   const [isFinal, setIsFinal] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [promptError, setPromptError] = useState<string | null>(null);
 
   async function generate() {
@@ -32,7 +34,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
     setIsFinal(false);
     try {
       if (preset === "croqui") {
-        const sketchPrompt = `Industrial technical fashion flat sketch (desenho técnico de engenharia do vestuário) of: ${prompt}. Clean black vector-precision ink lines on pure matte paper (#F8F9FA), front and back orthographic views side by side, crisp topstitching, overlock/coverstitch seam lines, accurate collar stand and hem proportions, zero human model, zero text or watermarks.`;
+        const sketchPrompt = `Industrial technical fashion flat sketch (desenho técnico de engenharia do vestuário) of: ${prompt}. Clean black vector-precision ink lines on a 100% pure alpha-channel transparent PNG background, front and back orthographic views side by side, crisp topstitching, overlock/coverstitch seam lines, accurate collar stand and hem proportions, zero human model, zero backdrop, zero text or watermarks.`;
         await streamImage(
           "/api/generate-image",
           sketchPrompt,
@@ -41,7 +43,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
             if (final) setIsFinal(true);
           },
           undefined,
-          { background: "opaque", size: "1536x1024" },
+          { background: "transparent", size: "1536x1024", inputFidelity: "high" },
         );
       } else {
         const plan = buildPhotorealisticGarmentPrompt({
@@ -49,6 +51,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
           materials: [prompt],
           preset: preset === "foto" ? "editorial_model" : "ghost_mannequin",
           lighting,
+          transparentCutout: true,
           view: preset === "foto" ? "editorial" : "frente",
         });
         await streamImage(
@@ -59,7 +62,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
             if (final) setIsFinal(true);
           },
           undefined,
-          { background: plan.background, size: plan.size },
+          { background: "transparent", size: plan.size, inputFidelity: "high" },
         );
       }
     } catch (e) {
@@ -77,7 +80,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
           Médio-Formato
         </h3>
         <span className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-primary text-2xs font-semibold uppercase">
-          <Sparkles className="w-3 h-3 inline mr-1" /> Motor Fotorrealista HD
+          <Sparkles className="w-3 h-3 inline mr-1" /> Motor Fotorrealista HD · PNG Transparente
         </span>
       </div>
 
@@ -149,20 +152,33 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
 
       {src && (
         <div className="grid gap-2">
-          <div className="aspect-[2/3] max-w-sm rounded-md overflow-hidden border border-border bg-muted/50">
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            aria-label="Ampliar imagem gerada em tela cheia"
+            style={{
+              backgroundColor: "#141D2E",
+              backgroundImage:
+                "linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%)",
+              backgroundSize: "20px 20px",
+              backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+            }}
+            className="group relative aspect-[2/3] max-w-sm cursor-zoom-in rounded-md overflow-hidden border border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <ExpandImageBadge />
             <img
               src={src}
               alt="AI gerado"
-              className={`w-full h-full object-cover transition-[filter] duration-500 ${
+              className={`w-full h-full object-contain transition-[filter,transform] duration-500 group-hover:scale-[1.02] ${
                 isFinal ? "blur-0" : "blur-lg"
               }`}
             />
-          </div>
+          </button>
           {isFinal && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button size="sm" variant="outline" className="text-2xs gap-1" asChild>
                 <a href={src} download={`ai-${preset}-${Date.now()}.png`}>
-                  <Download className="w-3 h-3" /> Baixar PNG HD
+                  <Download className="w-3 h-3" /> Baixar PNG Transparente
                 </a>
               </Button>
               {onSave && (
@@ -173,6 +189,27 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
             </div>
           )}
         </div>
+      )}
+
+      {src && (
+        <ImageLightbox
+          open={lightboxOpen}
+          onOpenChange={setLightboxOpen}
+          items={[
+            {
+              src,
+              alt: prompt || "Conceito visual IA",
+              title:
+                preset === "croqui"
+                  ? "Croqui Técnico IA"
+                  : preset === "foto"
+                    ? "Foto Editorial 85mm IA"
+                    : "Ghost Mannequin 3D IA",
+              subtitle: `${prompt} · Fundo PNG transparente`,
+              exportBaseName: `ai-${preset}`,
+            },
+          ]}
+        />
       )}
     </Card>
   );

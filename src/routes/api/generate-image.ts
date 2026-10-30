@@ -60,7 +60,7 @@ export const Route = createFileRoute("/api/generate-image")({
         if (!key) return jsonError("O provedor de imagens não está configurado.", 503);
 
         const model = "openai/gpt-image-2.5-sunburst";
-        const background = parsed.data.background ?? "opaque";
+        const background = parsed.data.background ?? "transparent";
         const size = parsed.data.size ?? "1024x1024";
         const inputFidelity = parsed.data.inputFidelity ?? "high";
         const references =

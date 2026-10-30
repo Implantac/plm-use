@@ -1,4 +1,5 @@
 import { ImageExportMenu } from "@/components/export/ImageExportMenu";
+import { ExpandImageBadge, ImageLightbox } from "@/components/ui/image-lightbox";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
@@ -58,6 +59,7 @@ export function TechSketchPanel({
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [isFinal, setIsFinal] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [spec, setSpec] = useState<SketchSpec | null>(null);
   const official = models.find((m) => m.id === modelId);
   const shownSize = official ? official.tamanho_base : size;
@@ -170,17 +172,42 @@ export function TechSketchPanel({
 
       {image && (
         <div className="overflow-hidden rounded-md border border-border bg-background">
-          <img
-            src={image}
-            alt={`Desenho técnico de ${productName}`}
-            className={`h-72 w-full object-contain transition-[filter] duration-500 ${isFinal ? "" : "blur-md"}`}
-          />
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            aria-label={`Ampliar desenho técnico de ${productName} em tela cheia`}
+            className="group relative block w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <ExpandImageBadge />
+            <img
+              src={image}
+              alt={`Desenho técnico de ${productName}`}
+              className={`h-72 w-full object-contain transition-[filter,transform] duration-500 group-hover:scale-[1.02] ${isFinal ? "" : "blur-md"}`}
+            />
+          </button>
           {isFinal && (
-            <div className="flex justify-end p-2 text-xs">
+            <div className="flex items-center justify-between border-t border-border/60 p-2 text-xs text-muted-foreground">
+              <span>PNG transparente · clique no desenho para ampliar</span>
               <ImageExportMenu src={image} baseName={`desenho-tecnico-${Date.now()}`} />
             </div>
           )}
         </div>
+      )}
+
+      {image && (
+        <ImageLightbox
+          open={lightboxOpen}
+          onOpenChange={setLightboxOpen}
+          items={[
+            {
+              src: image,
+              alt: `Desenho técnico de ${productName}`,
+              title: `Desenho Técnico · ${productName}`,
+              subtitle: "Frente e costas em linha técnica · Fundo PNG transparente",
+              exportBaseName: `desenho-tecnico-${productName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+            },
+          ]}
+        />
       )}
 
       {spec && (

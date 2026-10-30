@@ -1,4 +1,9 @@
 import { ImageExportMenu } from "@/components/export/ImageExportMenu";
+import {
+  ExpandImageBadge,
+  ImageLightbox,
+  type LightboxImageItem,
+} from "@/components/ui/image-lightbox";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -258,7 +263,9 @@ export function ProductStudio() {
   const [nativeVisual, setNativeVisual] = useState(false);
   const [photoPreset, setPhotoPreset] = useState<PhotoStudioPresetId>("ghost_mannequin");
   const [lightingPreset, setLightingPreset] = useState<LightingPresetId>("softbox_neutro");
-  const [transparentCutout, setTransparentCutout] = useState(false);
+  const [transparentCutout, setTransparentCutout] = useState(true);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [customPromptOverride, setCustomPromptOverride] = useState("");
   const [techSheetCtx, setTechSheetCtx] = useState<{
     ref: string;
@@ -373,6 +380,57 @@ export function ProductStudio() {
     lightingPreset,
     transparentCutout,
   ]);
+
+  const lightboxItems = useMemo<LightboxImageItem[]>(() => {
+    const slug = (proposal?.name || productName || "peca")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+    if (generatedImages.length > 0) {
+      const list = generatedImages.map((img) => ({
+        src: img.src,
+        alt: `Visual ${img.view} de ${img.conceptName}`,
+        title: `${img.conceptName} · ${img.view}`,
+        subtitle: `Inspeção HD · ${PHOTO_STUDIO_PRESETS[photoPreset].defaultSize} · ${transparentCutout ? "Fundo PNG Transparente" : "Estúdio Opaco"}`,
+        exportBaseName: `${slug}-${img.view}`,
+      }));
+      if (imageSource && !list.some((it) => it.src === imageSource)) {
+        list.unshift({
+          src: imageSource,
+          alt: `Conceito visual de ${proposal?.name || "peça"}, ${visualView}`,
+          title: `${proposal?.name || "Peça"} · ${visualView}`,
+          subtitle: `Inspeção HD · ${PHOTO_STUDIO_PRESETS[photoPreset].defaultSize}`,
+          exportBaseName: `${slug}-${visualView}`,
+        });
+      }
+      return list;
+    }
+    if (imageSource) {
+      return [
+        {
+          src: imageSource,
+          alt: `Conceito visual de ${proposal?.name || "peça"}, ${visualView}`,
+          title: `${proposal?.name || "Peça"} · ${visualView}`,
+          subtitle: `Inspeção HD · ${PHOTO_STUDIO_PRESETS[photoPreset].defaultSize}`,
+          exportBaseName: `${slug}-${visualView}`,
+        },
+      ];
+    }
+    return [];
+  }, [
+    generatedImages,
+    imageSource,
+    photoPreset,
+    productName,
+    proposal?.name,
+    transparentCutout,
+    visualView,
+  ]);
+
+  function openLightboxForSrc(src: string) {
+    const idx = lightboxItems.findIndex((item) => item.src === src);
+    setLightboxIndex(idx >= 0 ? idx : 0);
+    setLightboxOpen(true);
+  }
 
   function applyProposal(nextProposal: Proposal) {
     setImageSource(null);
@@ -546,9 +604,9 @@ export function ProductStudio() {
       ARTWORK_TECHNIQUES.find((item) => item.value === artworkTechnique)?.label ?? artworkTechnique;
     const sourceGarment = imageSource;
     const viewLabel = `${visualView} · ${technique} · ${placement}`;
-    const useTransparent = photoPreset === "ghost_mannequin" && transparentCutout;
+    const useTransparent = transparentCutout;
     const prompt = [
-      "STRICT PHOTOGRAPHIC COMPOSITING: Reference image 1 is the exact physical garment photograph. Preserve 100% of its silhouette, proportions, stitching, fabric weave, color, camera perspective, studio lighting and background exactly.",
+      "STRICT PHOTOGRAPHIC COMPOSITING: Reference image 1 is the exact physical garment photograph. Preserve 100% of its silhouette, proportions, stitching, fabric weave, color, camera perspective, studio lighting and alpha-transparent background.",
       "Reference image 2 is the exact artwork/emblem to apply. Preserve its geometry, typography, colors and proportions without redesigning it.",
       `Apply the artwork naturally onto the garment at: ${placement}. Industrial technique: ${technique}.`,
       artworkTechnique === "bordado"
@@ -1130,25 +1188,16 @@ export function ProductStudio() {
                     Trava de identidade (input_fidelity: high)
                   </label>
                   <label
-                    className={`flex items-center gap-2 text-xs ${
-                      photoPreset === "ghost_mannequin"
-                        ? "text-muted-foreground"
-                        : "text-muted-foreground/50"
-                    }`}
-                    title={
-                      photoPreset === "ghost_mannequin"
-                        ? "Gera PNG sem fundo para montagem em vitrine"
-                        : "Fotos em modelo, campanha, macro e flat-lay usam fundo real de estúdio para preservar iluminação e sombra natural"
-                    }
+                    className="flex items-center gap-2 text-xs text-muted-foreground"
+                    title="Gera PNG com canal alpha transparente para vitrine, catálogo e prancheta"
                   >
                     <input
                       type="checkbox"
-                      checked={photoPreset === "ghost_mannequin" && transparentCutout}
-                      disabled={photoPreset !== "ghost_mannequin"}
+                      checked={transparentCutout}
                       onChange={(e) => setTransparentCutout(e.target.checked)}
                       className="accent-primary"
                     />
-                    Recorte PNG transparente (só Ghost Mannequin)
+                    Fundo PNG transparente (canal alpha)
                   </label>
                   <label className="flex items-center gap-2 text-xs text-muted-foreground sm:col-span-2">
                     <input
@@ -1225,15 +1274,35 @@ export function ProductStudio() {
                 )}
                 {imageSource && (
                   <div className="overflow-hidden rounded-md border border-border bg-background/70">
-                    <img
-                      src={imageSource}
-                      alt={`Conceito visual de ${proposal.name}, ${visualView}`}
-                      className="h-80 w-full object-contain"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => openLightboxForSrc(imageSource)}
+                      aria-label={`Ampliar visual ${visualView} de ${proposal.name} em tela cheia`}
+                      style={
+                        transparentCutout
+                          ? {
+                              backgroundColor: "#141D2E",
+                              backgroundImage:
+                                "linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%)",
+                              backgroundSize: "20px 20px",
+                              backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+                            }
+                          : undefined
+                      }
+                      className="group relative block w-full cursor-zoom-in overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    >
+                      <ExpandImageBadge />
+                      <img
+                        src={imageSource}
+                        alt={`Conceito visual de ${proposal.name}, ${visualView}`}
+                        className="h-80 w-full object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+                      />
+                    </button>
                     <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2 text-xs text-muted-foreground">
                       <span>
-                        Visual {visualView} · {PHOTO_STUDIO_PRESETS[photoPreset].defaultSize} ·
-                        requer validação humana
+                        Visual {visualView} · {PHOTO_STUDIO_PRESETS[photoPreset].defaultSize} ·{" "}
+                        {transparentCutout ? "PNG transparente" : "estúdio"} · clique na imagem para
+                        ampliar
                       </span>
                       <ImageExportMenu
                         src={imageSource}
@@ -1500,6 +1569,13 @@ export function ProductStudio() {
           </Button>
         </section>
       </div>
+
+      <ImageLightbox
+        open={lightboxOpen}
+        onOpenChange={setLightboxOpen}
+        items={lightboxItems}
+        initialIndex={lightboxIndex}
+      />
     </div>
   );
 }
