@@ -97,6 +97,7 @@ type Builder = {
     opts?: { onConflict: string },
   ): Promise<{ error: { message: string } | null }>;
   delete(): {
+    in(col: string, vals: string[]): Promise<{ error: { message: string } | null }>;
     not(col: string, op: "in", vals: string[]): Promise<{ error: { message: string } | null }>;
     neq(col: string, val: string): Promise<{ error: { message: string } | null }>;
   };
@@ -625,6 +626,7 @@ const MODULES: ModuleSpec[] = [
 // ---------- Estado de hidratação ----------
 const hydrated: Record<string, boolean> = {};
 const fromDb: Record<string, boolean> = {};
+const knownKeys: Record<string, Set<string>> = {};
 const pendingRehydrate = new Set<string>();
 
 const debouncers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -642,18 +644,19 @@ function debounce(key: string, fn: () => void, ms = 800) {
 
 async function refreshModule(spec: ModuleSpec, force: boolean) {
   if (!force && hydrated[spec.key]) return;
-  hydrated[spec.key] = true;
   const { data, error } = await db
     .from(spec.table)
     .select("*")
     .order("created_at", { ascending: true });
   if (error) {
-    // sem tabela aplicada (migration pendente) ou rede fora: o store segue na
-    // memória exatamente como era antes do P0-1 — nada quebra, só nada persiste.
+    // Nunca marcar hydrated=true se a leitura falhou: evita empurrar seeds locais
+    // por cima do banco real quando a rede/token se recuperar.
     console.warn(`[creative-sync] hidratação de ${spec.table} indisponível:`, error.message);
     return;
   }
+  hydrated[spec.key] = true;
   const rows = data ?? [];
+  knownKeys[spec.key] = new Set(rows.map((r) => String(r.external_key)));
   if (rows.length === 0 && !fromDb[spec.key]) return; // projeto novo: mantém seeds; a 1ª edição cria as linhas
   fromDb[spec.key] = true;
   spec.apply(rows);
@@ -662,26 +665,28 @@ async function refreshModule(spec: ModuleSpec, force: boolean) {
 async function pushModule(spec: ModuleSpec, uid: string) {
   if (!hydrated[spec.key]) return; // nunca escrever antes de conhecer o estado do servidor
   const rows = dedupeRows(spec.list().map((e) => spec.toRow(e, uid)));
-  const { error } = await db.from(spec.table).upsert(rows, { onConflict: "external_key" });
-  if (error) {
-    console.error(`[creative-sync] falha ao salvar ${spec.label}:`, error.message);
-    toast.error(`Não foi possível salvar ${spec.label} na nuvem. Tente novamente.`);
-    return;
+  const currentKeys = new Set(rows.map((r) => String(r.external_key)));
+  if (rows.length > 0) {
+    const { error } = await db.from(spec.table).upsert(rows, { onConflict: "external_key" });
+    if (error) {
+      console.error(`[creative-sync] falha ao salvar ${spec.label}:`, error.message);
+      toast.error(`Não foi possível salvar ${spec.label} na nuvem. Tente novamente.`);
+      return;
+    }
   }
-  // Poda: linhas que sumiram do snapshot local saem do banco (lista local é a
-  // autoridade da tela, igual ao resto do padrão; `neq ''` = apagar todas).
-  const del = db.from(spec.table).delete();
-  const prune = rows.length
-    ? await del.not(
-        "external_key",
-        "in",
-        rows.map((r) => String(r.external_key)),
-      )
-    : await del.neq("external_key", "");
-  if (prune.error) {
-    console.error(`[creative-sync] falha ao podar ${spec.table}:`, prune.error.message);
-    toast.error(`Salvo, mas não foi possível remover itens excluídos de ${spec.label}.`);
+  // Poda segura por diff das chaves conhecidas nesta sessão: remove SOMENTE os
+  // itens que esta aba conhecia e excluiu, preservando cadastros concorrentes.
+  const prevKnown = knownKeys[spec.key] ?? new Set<string>();
+  const removedKeys = [...prevKnown].filter((k) => !currentKeys.has(k));
+  if (removedKeys.length > 0) {
+    const del = db.from(spec.table).delete();
+    const prune = await del.in("external_key", removedKeys);
+    if (prune.error) {
+      console.error(`[creative-sync] falha ao podar ${spec.table}:`, prune.error.message);
+      toast.error(`Salvo, mas não foi possível remover itens excluídos de ${spec.label}.`);
+    }
   }
+  knownKeys[spec.key] = currentKeys;
   if (pendingRehydrate.delete(spec.key)) void refreshModule(spec, true);
 }
 
@@ -703,6 +708,7 @@ export const __internals = {
   resetSyncState() {
     for (const k of Object.keys(hydrated)) delete hydrated[k];
     for (const k of Object.keys(fromDb)) delete fromDb[k];
+    for (const k of Object.keys(knownKeys)) delete knownKeys[k];
     pendingRehydrate.clear();
     for (const t of debouncers.values()) clearTimeout(t);
     debouncers.clear();

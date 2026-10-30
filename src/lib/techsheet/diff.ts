@@ -1,9 +1,10 @@
-// Diff estrutural entre instantâneos de ficha (BOM/BOP/pré-custo).
+// Diff estrutural entre instantâneos de ficha (BOM/BOP/aplicações/pré-custo).
 // Puro por contrato: recebe dois snapshots (ou nada) e devolve o que mudou —
 // a UI só pinta. Versões antigas (pré-15/10) não têm snapshot; o diff devolve
 // null e a tela degrada para o diff textual sem fingir que há dados.
 import type { BomItem, BopStep, PreCost, TechSheetSnapshot } from "./store";
 import { custoTotalBOM, custoTotalBOP, tempoTotalBOP } from "./store";
+import { custoAplicacoesPecasTotal, type Aplicacao } from "./aplicacoes";
 
 export type FieldChange = { field: string; from: string; to: string };
 export type DiffRow = { label: string; kind: "add" | "rem" | "chg"; changes: FieldChange[] };
@@ -11,8 +12,9 @@ export type TableDiff = { added: DiffRow[]; removed: DiffRow[]; changed: DiffRow
 export type SheetDiff = {
   bom: TableDiff;
   bop: TableDiff;
+  aplicacoes?: TableDiff;
   preCost: FieldChange[];
-  /** custo industrial (BOM+BOP) de B menos o de A, em R$ */
+  /** custo industrial (BOM+BOP+Aplicações) de B menos o de A, em R$ */
   custoIndustrialDelta: number;
   /** tempo total de operação de B menos o de A, em minutos */
   tempoBopDelta: number;
@@ -24,6 +26,7 @@ const BOM_FIELDS: Array<[keyof BomItem, string]> = [
   ["fornecedor", "Fornecedor"],
   ["consumo", "Consumo"],
   ["unidade", "Unidade"],
+  ["perdaPct", "Perda %"],
   ["custo", "Custo"],
 ];
 const BOP_FIELDS: Array<[keyof BopStep, string]> = [
@@ -32,6 +35,15 @@ const BOP_FIELDS: Array<[keyof BopStep, string]> = [
   ["setor", "Setor"],
   ["tempoMin", "Tempo (min)"],
   ["custo", "Custo"],
+];
+const APP_FIELDS: Array<[keyof Aplicacao, string]> = [
+  ["tipo", "Técnica"],
+  ["posicao", "Posição"],
+  ["larguraCm", "Largura (cm)"],
+  ["alturaCm", "Altura (cm)"],
+  ["cores", "Cores"],
+  ["qtdPorPeca", "Qtd/peça"],
+  ["custoUnitario", "Custo unit."],
 ];
 const PRE_FIELDS: Array<[keyof PreCost, string]> = [
   ["targetCusto", "Meta de custo"],
@@ -90,12 +102,21 @@ export function diffSnapshots(a?: TechSheetSnapshot, b?: TechSheetSnapshot): She
     if (!sameVal(a.preCost[key], b.preCost[key]))
       preCost.push({ field: name, from: fmtValue(a.preCost[key]), to: fmtValue(b.preCost[key]) });
   }
+  const appsA = a.aplicacoes ?? [];
+  const appsB = b.aplicacoes ?? [];
+  const indA = custoTotalBOM(a.bom) + custoTotalBOP(a.bop) + custoAplicacoesPecasTotal(appsA);
+  const indB = custoTotalBOM(b.bom) + custoTotalBOP(b.bop) + custoAplicacoesPecasTotal(appsB);
+
   return {
     bom: diffTable(a.bom, b.bom, BOM_FIELDS, (r) => `${r.tipo} · ${r.material}`),
     bop: diffTable(a.bop, b.bop, BOP_FIELDS, (r) => `#${r.seq} ${r.etapa}`),
+    ...(appsA.length || appsB.length
+      ? {
+          aplicacoes: diffTable(appsA, appsB, APP_FIELDS, (r) => `${r.tipo} · ${r.posicao}`),
+        }
+      : {}),
     preCost,
-    custoIndustrialDelta:
-      custoTotalBOM(b.bom) + custoTotalBOP(b.bop) - (custoTotalBOM(a.bom) + custoTotalBOP(a.bop)),
+    custoIndustrialDelta: indB - indA,
     tempoBopDelta: tempoTotalBOP(b.bop) - tempoTotalBOP(a.bop),
   };
 }

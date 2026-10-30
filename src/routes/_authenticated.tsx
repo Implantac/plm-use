@@ -93,24 +93,37 @@ function AuthenticatedLayout() {
     navigate({ to: "/login" });
   };
 
-  // Fonte única: a sidebar É a registry (src/lib/nav/routes.ts). Antes
-  // existia uma navSections hardcoded aqui com 28 dos 34+ caminhos — a
-  // divergência sidebar×rotas que o review apontou. Ordem dos itens = ordem
-  // na registry; rotas-vista (compare, today) ficam de fora por decisão,
-  // documentada em src/lib/nav/routes.test.ts.
+  const [showLabs, setShowLabs] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("use-moda-show-labs") === "true";
+  });
+
+  const toggleLabs = () => {
+    setShowLabs((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("use-moda-show-labs", String(next));
+      }
+      return next;
+    });
+  };
+
+  // Fonte única: a sidebar É a registry (src/lib/nav/routes.ts). Rotas marcadas
+  // como `vitrine` ficam ocultas por padrão para enxugar a operação de fábrica,
+  // podendo ser exibidas com 1 clique via "Modo Labs".
   const navSections = useMemo(() => {
     const groups = Object.keys(NAV_GROUPS) as Array<keyof typeof NAV_GROUPS>;
     return groups
       .map((g) => ({
         id: g as string,
         label: NAV_GROUPS[g].label,
-        items: ROUTE_REGISTRY.filter((r) => r.group === g).map((r) => {
+        items: ROUTE_REGISTRY.filter((r) => r.group === g && (showLabs || !r.vitrine)).map((r) => {
           const Icon = NAV_ICON_COMPONENTS[r.icon];
           return { href: r.path, label: r.label, icon: <Icon className="w-4 h-4" /> };
         }),
       }))
       .filter((s) => s.items.length > 0);
-  }, []);
+  }, [showLabs]);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -316,7 +329,18 @@ function AuthenticatedLayout() {
           </nav>
         </ScrollArea>
 
-        <div className="p-4 mt-auto border-t border-sidebar-border">
+        <div className="p-4 mt-auto border-t border-sidebar-border space-y-2.5">
+          <button
+            type="button"
+            onClick={toggleLabs}
+            className="w-full flex items-center justify-between px-3 py-1.5 rounded-md border border-border/70 bg-muted/30 hover:bg-muted text-2xs text-muted-foreground hover:text-foreground transition-colors"
+            title="Alterna a exibição das telas demonstrativas/vitrines no menu lateral"
+          >
+            <span>Modo Labs / Vitrines</span>
+            <span className={showLabs ? "text-primary font-semibold" : ""}>
+              {showLabs ? "Visível" : "Oculto"}
+            </span>
+          </button>
           <div className="flex items-center gap-3 p-3 rounded-md bg-accent border border-border hover:bg-muted transition-colors group">
             <Avatar className="w-9 h-9 border border-border">
               <AvatarImage src={user?.user_metadata?.avatar_url} />

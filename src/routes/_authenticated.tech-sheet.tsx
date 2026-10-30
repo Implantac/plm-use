@@ -1,40 +1,53 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+// Cockpit Fluido de Engenharia do Produto (PLM 2.0):
+// Elimina o cabeçalho estático legado ("Blusa Linho Amalfi") e a tabela local
+// duplicada, unificando Croqui Técnico + Colorways + Etiquetagem ABNT/INMETRO +
+// BOM × Matriz de Cores + Medidas com Graduação Automática + Aplicações +
+// Mark-up Divisor + PDF Cego p/ Facção + Publicação direta no Catálogo Técnico.
+import { useEffect, useMemo, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  FileDown,
-  GitCompare,
-  History,
-  Layers,
-  Link2,
-  Scissors,
-  Ruler,
-  Paintbrush,
-  Sparkles,
-} from "lucide-react";
-import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  CheckCircle2,
+  CloudUpload,
+  Copy,
+  FileDown,
+  FileSpreadsheet,
+  GitCompare,
+  Layers,
+  Link2,
+  Plus,
+  Send,
+} from "lucide-react";
 import { toast } from "sonner";
-import { useTechSheetStore } from "@/lib/techsheet/store";
+import {
+  defaultColorwaysFor,
+  LIFECYCLE_STAGES,
+  useTechSheetStore,
+  type TechSheetLifecycleStage,
+} from "@/lib/techsheet/store";
 import { buildTechSheetPrintHtml, openPrintWindow } from "@/lib/techsheet/print";
-import { ReferenceTimeline } from "@/components/reference/ReferenceTimeline";
-import { useReferenceStore } from "@/lib/reference/store";
-import { emptyLifecycle } from "@/types/reference";
+import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
+import { publishTechSheetToCatalog } from "@/lib/techsheet/publish-catalog";
+import { useReferences } from "@/hooks/use-references";
+import { GarmentSketchStudio } from "@/components/techsheet/GarmentSketchStudio";
 import { BomBopPanel } from "@/components/techsheet/BomBopPanel";
 import { AplicacoesPanel } from "@/components/techsheet/AplicacoesPanel";
-import { TechSheetVersions } from "@/components/techsheet/TechSheetVersions";
+import { GradedMeasurementsPanel } from "@/components/techsheet/GradedMeasurementsPanel";
 import { PreCostPanel } from "@/components/techsheet/PreCostPanel";
 import { OperationSequencePanel } from "@/components/techsheet/OperationSequencePanel";
+import { TechSheetVersions } from "@/components/techsheet/TechSheetVersions";
 
 const techSheetSearchSchema = z.object({
   ref: z.string().optional(),
@@ -42,48 +55,90 @@ const techSheetSearchSchema = z.object({
 
 export const Route = createFileRoute("/_authenticated/tech-sheet")({
   validateSearch: techSheetSearchSchema,
+  head: () => ({
+    meta: [
+      { title: "Ficha Técnica Fluida · USE MODA PLM" },
+      {
+        name: "description",
+        content:
+          "Cockpit unificado de engenharia têxtil: BOM × Matriz de Cores, Graduação Automática, Etiquetagem ABNT, Mark-up Divisor, PDF Facção e publicação no Catálogo Técnico.",
+      },
+    ],
+  }),
   component: TechSheetPage,
 });
 
+type WorkspaceTab = "fluido" | "bom" | "medidas" | "aplicacoes" | "custo" | "versoes";
+
 function TechSheetPage() {
-  const { ref: refFromPcp } = Route.useSearch();
-  const [productInfo] = useState({
-    ref: refFromPcp ?? "V24-001",
-    name: "Blusa Linho Amalfi",
-    category: "Feminino / Top",
-    status: "Protótipo Aprovado",
-    cost: "R$ 84,20",
-  });
+  const { ref: refParam } = Route.useSearch();
+  const navigate = useNavigate();
+  const { items: dbRefs } = useReferences();
 
-  const [materials, setMaterials] = useState([
-    { id: 1, type: "Tecido", name: "Linho Puro Off-White", qty: "1.2m", cost: "R$ 42,00" },
-    { id: 2, type: "Aviamento", name: "Botão Madre Pérola", qty: "4 un", cost: "R$ 12,00" },
-    { id: 3, type: "Linha", name: "Linha Poliéster 120", qty: "200m", cost: "R$ 2,50" },
-    { id: 4, type: "Embalagem", name: "Tag Luxury + Polybag", qty: "1 un", cost: "R$ 4,50" },
-  ]);
+  const ensure = useTechSheetStore((s) => s.ensure);
+  const allDocs = useTechSheetStore((s) => s.data);
+  const dirtyMap = useTechSheetStore((s) => s.dirty);
+  const updateMeta = useTechSheetStore((s) => s.updateMeta);
+  const duplicateTechSheet = useTechSheetStore((s) => s.duplicateTechSheet);
 
-  // Foto real vem da ficha (campo image do envelope); sem foto, o fundo
-  // histórico de estoque permanece — a moldura não quebra em produto sem mídia.
-  const fichaImagem = useTechSheetStore((s) => s.data[productInfo.ref]?.image);
-  const fichaFoto =
-    fichaImagem && /^https:\/\//.test(fichaImagem)
-      ? fichaImagem
-      : "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=600";
+  const activeRef = (refParam?.trim() || "DEV000006").toUpperCase();
+  const doc = useTechSheetStore((s) => s.data[activeRef] ?? ensure(activeRef));
 
-  // "Exportar PDF" deixou de ser botão decorativo: monta o doc A4 (função pura
-  // testada) e abre a impressão do navegador — Imprimir → Salvar como PDF.
-  const exportPdf = () => {
-    const st = useTechSheetStore.getState();
-    const doc = st.data[productInfo.ref] ?? st.ensure(productInfo.ref);
+  useEffect(() => {
+    ensure(activeRef);
+  }, [activeRef, ensure]);
+
+  const linkedDbRef = useMemo(
+    () => dbRefs.find((r) => r.code.toUpperCase() === activeRef),
+    [dbRefs, activeRef],
+  );
+
+  const productName =
+    linkedDbRef?.name ?? doc.meta?.name ?? `Camiseta Esportiva Dry Pro (${activeRef})`;
+  const productCategory = doc.meta?.category ?? "Esportivo / Malharia";
+  const productCollection = linkedDbRef?.collection_id ?? doc.meta?.collection ?? "Verão 2027";
+  const currentStage: TechSheetLifecycleStage = doc.meta?.stage ?? 3;
+
+  const colorways = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
+  const [activeCwId, setActiveCwId] = useState<string>(colorways[0]?.id ?? "cw-1");
+  const [tab, setTab] = useState<WorkspaceTab>("fluido");
+
+  const [dupOpen, setDupOpen] = useState(false);
+  const [dupCode, setDupCode] = useState("");
+  const [dupName, setDupName] = useState("");
+
+  const [pubOpen, setPubOpen] = useState(false);
+  const [pubAutoValidate, setPubAutoValidate] = useState(true);
+  const [publishing, setPublishing] = useState(false);
+
+  const pricing = useMemo(() => computeFullTechSheetPricing(doc), [doc]);
+
+  const availableRefs = useMemo(() => {
+    const set = new Set<string>(["DEV000006", activeRef]);
+    Object.keys(allDocs).forEach((k) => set.add(k.toUpperCase()));
+    dbRefs.forEach((r) => set.add(r.code.toUpperCase()));
+    return Array.from(set).sort();
+  }, [allDocs, dbRefs, activeRef]);
+
+  const switchRef = (nextRef: string) => {
+    const clean = nextRef.trim().toUpperCase();
+    if (!clean) return;
+    ensure(clean);
+    void navigate({ to: "/tech-sheet", search: { ref: clean } });
+  };
+
+  const exportPdf = (omitCosts: boolean) => {
     const html = buildTechSheetPrintHtml(
       {
-        ref: productInfo.ref,
-        name: productInfo.name,
-        category: productInfo.category,
-        season: productInfo.status,
+        ref: activeRef,
+        name: productName,
+        category: productCategory,
+        season: `${productCollection} · ${LIFECYCLE_STAGES.find((s) => s.stage === currentStage)?.short ?? "Ficha"}`,
         foto: doc.image,
       },
       doc,
+      new Date(),
+      { omitCosts },
     );
     if (!openPrintWindow(html)) {
       toast.warning(
@@ -92,399 +147,364 @@ function TechSheetPage() {
     }
   };
 
-  const scrollToDiff = () => {
-    const el = document.getElementById("ts-diff");
-    if (!el) return toast.info("O comparador ainda está montando — role até o painel de versões.");
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  const handleDuplicate = () => {
+    const code = dupCode.trim().toUpperCase();
+    if (!code) {
+      toast.error("Informe o novo código da referência (ex.: DEV000007).");
+      return;
+    }
+    duplicateTechSheet(activeRef, code, dupName);
+    setDupOpen(false);
+    setDupCode("");
+    setDupName("");
+    toast.success(`Base ${activeRef} duplicada com sucesso para ${code}!`);
+    switchRef(code);
   };
 
-  const scrollToVersions = () => {
-    const el = document.getElementById("ts-versoes");
-    if (!el) return toast.info("O painel de versões ainda não terminou de montar.");
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-  type Material = (typeof materials)[number];
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
-  const [formData, setFormData] = useState({ name: "", type: "", qty: "", cost: "" });
-
-  const handleOpenDialog = (material?: Material) => {
-    if (material) {
-      setEditingMaterial(material);
-      setFormData({
-        name: material.name,
-        type: material.type,
-        qty: material.qty,
-        cost: material.cost,
+  const handlePublishCatalog = async () => {
+    setPublishing(true);
+    try {
+      const res = await publishTechSheetToCatalog(doc, {
+        code: activeRef,
+        name: productName,
+        family: productCategory,
+        autoValidate: pubAutoValidate,
       });
-    } else {
-      setEditingMaterial(null);
-      setFormData({ name: "", type: "", qty: "", cost: "" });
+      if (res.error) {
+        toast.error(res.error);
+        return;
+      }
+      toast.success(
+        `Publicado no Catálogo Técnico (${res.code}) com ${res.optionsSynced ?? 0} opção(ões) de engenharia!`,
+      );
+      setPubOpen(false);
+    } finally {
+      setPublishing(false);
     }
-    setIsDialogOpen(true);
   };
 
-  const handleSave = () => {
-    if (editingMaterial) {
-      setMaterials(materials.map((m) => (m.id === editingMaterial.id ? { ...m, ...formData } : m)));
-      toast.success("Item da ficha técnica atualizado");
-    } else {
-      const newItem = {
-        id: Date.now(),
-        ...formData,
-      };
-      setMaterials([...materials, newItem]);
-      toast.success("Novo material adicionado à ficha");
-    }
-    setIsDialogOpen(false);
+  const focusSection = (id: string) => {
+    setTab("fluido");
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
   };
 
-  const handleDelete = (id: number) => {
-    setMaterials(materials.filter((m) => m.id !== id));
-    toast.error("Material removido da ficha");
-  };
+  const isDirty = !!dirtyMap[activeRef];
 
   return (
-    <ModuleLayout
-      title="Ficha Técnica"
-      subtitle="Engenharia de produto com materiais, processos, custos, arquivos CAD, versões e inteligência de viabilidade."
-      version="Documentation v4.2"
-      onAdd={() => handleOpenDialog()}
-      searchPlaceholder="Buscar ficha, material, processo ou arquivo"
-      metrics={[
-        { label: "Versão ativa", value: "v4.2", detail: "3 revisões" },
-        { label: "Custo industrial", value: productInfo.cost, detail: "por peça" },
-        { label: "Materiais", value: String(materials.length), detail: "sincronizados" },
-        { label: "Fit comercial", value: "87%", detail: "previsão IA" },
-      ]}
-    >
-      {refFromPcp && (
-        <div className="mb-6 rounded-md border border-primary/30 bg-primary/10 px-4 py-3 flex items-center justify-between">
-          <p className="text-xs uppercase tracking-[0.04em] text-primary flex items-center gap-2">
-            <Link2 className="h-3.5 w-3.5" /> Aberto a partir do PCP · referência{" "}
-            <span className="font-bold text-white">{refFromPcp}</span>
-          </p>
-        </div>
-      )}
+    <div className="space-y-5 pb-12">
+      {/* Top Action Cockpit Header (inspirado diretamente em 2_tela_ideal_plm_fluido.png) */}
+      <Card className="glass-card rounded-xl p-4 border-border/70 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          {/* Identidade + Seletor Rápido de Referência */}
+          <div className="flex items-center gap-3 flex-wrap min-w-0">
+            <select
+              aria-label="Selecionar referência da ficha técnica"
+              value={activeRef}
+              onChange={(e) => switchRef(e.target.value)}
+              className="h-9 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-mono font-bold text-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              {availableRefs.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
 
-      <div className="flex justify-end gap-4 mb-8">
-        <Button
-          variant="outline"
-          className="text-2xs tracking-[0.04em] gap-2"
-          onClick={scrollToVersions}
-        >
-          <History className="w-4 h-4" /> Histórico
-        </Button>
-        <Button
-          variant="outline"
-          className="text-2xs tracking-[0.04em] gap-2"
-          onClick={scrollToDiff}
-          title="Leva ao comparador A → B do painel de versões (diff textual + estrutural por instantâneo)."
-        >
-          <GitCompare className="w-4 h-4" /> Comparar Versões
-        </Button>
-        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2" onClick={exportPdf}>
-          <FileDown className="w-4 h-4" /> Exportar PDF
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 glass-card rounded-lg p-6 space-y-8">
-          <div className="flex justify-between items-start border-b border-border/60 pb-8">
-            <div className="flex gap-8">
-              <div className="w-48 h-64 rounded-lg bg-muted/50 border border-border/60 overflow-hidden relative group">
-                <img
-                  src={fichaFoto}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                  alt={productInfo.name}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <input
+                  value={productName}
+                  onChange={(e) => updateMeta(activeRef, { name: e.target.value })}
+                  aria-label="Nome do produto"
+                  className="bg-transparent text-base md:text-lg font-semibold text-foreground border-b border-transparent hover:border-border focus:border-primary focus:outline-none px-0.5"
                 />
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div className="space-y-4 pt-2">
-                <span className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary">
-                  {productInfo.ref}
-                </span>
-                <h2 className="text-lg font-semibold text-foreground tracking-tight">
-                  {productInfo.name}
-                </h2>
-                <p className="text-xs text-muted-foreground uppercase tracking-widest">
-                  {productInfo.category}
-                </p>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-status-approved" />
-                  <span className="text-2xs font-bold text-white uppercase tracking-widest">
-                    {productInfo.status}
+                <Badge variant="outline" className="text-2xs">
+                  {doc.versoes[0]?.versao ?? "v1.0"}
+                </Badge>
+                {refParam && (
+                  <span className="inline-flex items-center gap-1 text-2xs text-primary">
+                    <Link2 className="w-3 h-3" /> Link direto
                   </span>
-                </div>
+                )}
               </div>
-            </div>
-            <div className="text-right space-y-2">
-              <p className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-                Custo Industrial
-              </p>
-              <p className="text-xl font-semibold text-foreground tabular-nums">
-                {productInfo.cost}
-              </p>
+              <div className="flex items-center gap-2 text-2xs text-muted-foreground mt-0.5">
+                <input
+                  value={productCategory}
+                  onChange={(e) => updateMeta(activeRef, { category: e.target.value })}
+                  className="bg-transparent border-b border-transparent hover:border-border focus:border-primary focus:outline-none w-36"
+                />
+                <span>·</span>
+                <span>Coleção</span>
+                <input
+                  value={productCollection}
+                  onChange={(e) => updateMeta(activeRef, { collection: e.target.value })}
+                  className="bg-transparent font-medium text-foreground border-b border-transparent hover:border-border focus:border-primary focus:outline-none w-28"
+                />
+              </div>
             </div>
           </div>
 
-          <div className="space-y-8">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
-                <Layers className="w-4 h-4 text-primary" /> Materiais e Insumos (Integração Estoque)
-              </h3>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-status-approved" />
-                <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest">
-                  Sincronizado com ERP
-                </span>
-              </div>
-            </div>
-            <div className="rounded-lg border border-border/60 bg-muted/40 overflow-hidden">
-              <table className="w-full text-left">
-                <thead className="border-b border-border/60 bg-muted/50">
-                  <tr>
-                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Tipo
-                    </th>
-                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Material
-                    </th>
-                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Consumo
-                    </th>
-                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Custo Unit.
-                    </th>
-                    <th className="px-6 py-4 text-2xs font-semibold uppercase tracking-widest text-muted-foreground text-right">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/70">
-                  {materials.map((m) => (
-                    <tr key={m.id} className="hover:bg-accent/50 transition-colors group">
-                      <td className="px-6 py-4 text-2xs font-semibold uppercase text-primary/70">
-                        {m.type}
-                      </td>
-                      <td className="px-6 py-4 text-xs font-medium text-white">{m.name}</td>
-                      <td className="px-6 py-4 text-xs text-muted-foreground">{m.qty}</td>
-                      <td className="px-6 py-4 text-xs text-muted-foreground">{m.cost}</td>
-                      <td className="px-6 py-4 text-right">
-                        <ModuleActionMenu
-                          onEdit={() => handleOpenDialog(m)}
-                          onDelete={() => handleDelete(m.id)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          {/* Ações Executivas do Cockpit */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-2xs ${
+                isDirty
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                  : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+              }`}
+            >
+              {isDirty ? (
+                <>
+                  <CloudUpload className="w-3 h-3" /> Salvo local · sincronizando
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-3 h-3" /> Salvo automaticamente
+                </>
+              )}
+            </span>
 
-            <div className="p-5 rounded-lg bg-primary/5 border border-primary/20 space-y-4">
-              <div className="flex justify-between items-center">
-                <h4 className="text-2xs font-semibold uppercase tracking-widest text-primary">
-                  Inteligência Comercial (Previsão de Viabilidade)
-                </h4>
-                <span className="px-3 py-1 rounded-full bg-status-approved/10 text-status-approved text-2xs font-semibold uppercase">
-                  Probabilidade de Sucesso: 87%
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed italic">
-                Baseado no histórico de vendas da categoria "Feminino / Top" e na curva ABC da
-                última coleção, este produto apresenta alto fit comercial.
-                <span className="text-white font-bold ml-1">
-                  Sugestão: Produzir 1.200 peças para o lançamento inicial.
-                </span>
-              </p>
-            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-2xs gap-1.5"
+              onClick={() => {
+                setDupCode(`${activeRef}-B`);
+                setDupName(`${productName} (Variante)`);
+                setDupOpen(true);
+              }}
+            >
+              <Copy className="w-3.5 h-3.5" /> Duplicar Base
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-2xs gap-1.5"
+              onClick={() => exportPdf(true)}
+              title="Gera A4 limpo para oficina/facção omitindo 100% de custos, margens e valores R$"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" /> PDF Facção (Sem Custo)
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-2xs gap-1.5"
+              onClick={() => exportPdf(false)}
+            >
+              <FileDown className="w-3.5 h-3.5" /> PDF Engenharia
+            </Button>
+
+            <Button size="sm" className="h-8 text-2xs gap-1.5" onClick={() => setPubOpen(true)}>
+              <Send className="w-3.5 h-3.5" /> Publicar no Catálogo
+            </Button>
           </div>
-        </Card>
+        </div>
 
-        <div className="space-y-8">
-          <Card className="glass-card rounded-lg p-6">
-            <CardHeader className="p-0 mb-6">
-              <CardTitle className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
-                <History className="w-4 h-4 text-primary" /> Linha do Tempo do Produto
-              </CardTitle>
-            </CardHeader>
-            <div className="space-y-4">
-              <TimelineDoProduto refAtual={productInfo.ref} nome={productInfo.name} />
-            </div>
-          </Card>
+        {/* Esteira Horizontal de 7 Etapas (Proposta → Custo & Preço) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-border/50 pb-1">
+          {LIFECYCLE_STAGES.map((st) => {
+            const active = st.stage === currentStage;
+            const done = st.stage < currentStage;
+            return (
+              <button
+                key={st.stage}
+                type="button"
+                onClick={() => {
+                  updateMeta(activeRef, { stage: st.stage });
+                  if (st.stage === 4) focusSection("sec-medidas");
+                  if (st.stage === 7) focusSection("sec-custo");
+                }}
+                className={`px-3 py-1.5 rounded-md text-2xs font-medium whitespace-nowrap border transition ${
+                  active
+                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                    : done
+                      ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20"
+                      : "bg-muted/30 text-muted-foreground border-border/60 hover:text-foreground"
+                }`}
+              >
+                {st.label}
+              </button>
+            );
+          })}
+        </div>
+      </Card>
 
-          <Card className="glass-card rounded-lg p-6">
-            <CardHeader className="p-0 mb-6">
-              <CardTitle className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
-                <Scissors className="w-4 h-4 text-primary" /> Processos Operacionais
-              </CardTitle>
-            </CardHeader>
-            <div className="space-y-4">
-              {[
-                { label: "Corte Industrial", time: "12 min", cost: "R$ 4,50" },
-                { label: "Costura Reta/Overloque", time: "45 min", cost: "R$ 18,00" },
-                { label: "Passadoria", time: "08 min", cost: "R$ 3,20" },
-                { label: "Expedição/QC", time: "05 min", cost: "R$ 2,00" },
-              ].map((proc, i) => (
-                <div
-                  key={i}
-                  className="flex justify-between items-center p-4 rounded-md bg-muted/50 border border-border/60 hover:border-primary/30 transition-all cursor-pointer group"
+      {/* Split-Pane Fluido: Esquerda Visual/Financeiro/ABNT (4 cols) × Direita Engenharia (8 cols) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+        <div className="xl:col-span-4 xl:sticky xl:top-4 space-y-4">
+          <GarmentSketchStudio
+            refAtual={activeRef}
+            activeColorwayId={activeCwId}
+            onSelectColorway={setActiveCwId}
+            onFocusSection={focusSection}
+          />
+        </div>
+
+        <div className="xl:col-span-8 space-y-5">
+          {/* Sub-abas rápidas da bancada direita (Visão Fluida contínua por padrão) */}
+          <div className="flex items-center justify-between flex-wrap gap-2 rounded-lg border border-border/70 bg-muted/20 p-1.5">
+            <div className="flex items-center gap-1 flex-wrap">
+              {(
+                [
+                  { id: "fluido", label: "Visão Fluida Completa", icon: Layers },
+                  { id: "bom", label: `BOM × Matriz (${doc.bom.length})` },
+                  {
+                    id: "medidas",
+                    label: `Medidas & Graduação (${doc.medidas?.pontos.length ?? 4})`,
+                  },
+                  { id: "aplicacoes", label: `Aplicações (${doc.aplicacoes.length})` },
+                  { id: "custo", label: "Mark-up Divisor & CAD" },
+                  { id: "versoes", label: `Versões (${doc.versoes.length})`, icon: GitCompare },
+                ] as const
+              ).map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTab(t.id)}
+                  className={`px-2.5 py-1.5 rounded text-2xs font-medium transition ${
+                    tab === t.id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
                 >
-                  <div className="space-y-1">
-                    <p className="text-2xs font-semibold uppercase tracking-widest text-white">
-                      {proc.label}
-                    </p>
-                    <p className="text-2xs text-muted-foreground uppercase">{proc.time}</p>
-                  </div>
-                  <p className="text-xs font-bold text-primary group-hover:scale-110 transition-transform">
-                    {proc.cost}
-                  </p>
-                </div>
+                  {t.label}
+                </button>
               ))}
             </div>
-          </Card>
+          </div>
 
-          <Card className="glass-card rounded-lg p-6 border-primary/20 bg-primary/[0.02]">
-            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary mb-6">
-              Ações Rápidas
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                variant="ghost"
-                className="h-20 flex flex-col gap-2 border bg-muted/50 hover:bg-accent text-2xs tracking-[0.04em] text-white"
-              >
-                <Ruler className="w-5 h-5" /> Tabela Medidas
-              </Button>
-              <Button
-                variant="ghost"
-                className="h-20 flex flex-col gap-2 border bg-muted/50 hover:bg-accent text-2xs tracking-[0.04em] text-white"
-              >
-                <Paintbrush className="w-5 h-5" /> Variantes
-              </Button>
-            </div>
-          </Card>
+          {(tab === "fluido" || tab === "bom") && <BomBopPanel refAtual={activeRef} />}
 
-          <Card className="glass-card rounded-lg p-6">
-            <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-5 flex items-center gap-3">
-              <FileDown className="w-4 h-4 text-primary" /> Arquivos técnicos
-            </h3>
-            <div className="grid grid-cols-3 gap-2">
-              {["PDF", "AI", "CDR", "DXF", "PLT", "SVG"].map((format) =>
-                format === "PDF" ? (
-                  <button
-                    key={format}
-                    onClick={exportPdf}
-                    title="Gera a ficha A4 e abre a impressão do navegador (Salvar como PDF)."
-                    className="rounded-md border border-primary/40 bg-primary/10 p-3 text-center text-2xs font-semibold uppercase tracking-[0.04em] text-white hover:bg-primary/20"
-                  >
-                    {format}
-                  </button>
-                ) : (
-                  <div
-                    key={format}
-                    title={`${format} ainda não é exportável daqui — a geração nativa deste formato está no roadmap (nenhuma conexão CAD foi assinada).`}
-                    className="rounded-md border border-border bg-muted/40 p-3 text-center text-2xs font-semibold uppercase tracking-[0.04em] text-white/30"
-                  >
-                    {format}
-                  </div>
-                ),
-              )}
+          {(tab === "fluido" || tab === "medidas") && (
+            <GradedMeasurementsPanel refAtual={activeRef} />
+          )}
+
+          {(tab === "fluido" || tab === "aplicacoes") && (
+            <div className="space-y-5">
+              <AplicacoesPanel refAtual={activeRef} />
+              <OperationSequencePanel refAtual={activeRef} />
             </div>
-            <div className="mt-4 rounded-md border border-primary/20 bg-primary/10 p-4">
-              <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5" /> IA de ficha técnica
-              </p>
-              <p className="mt-2 text-sm text-white/80">
-                Gerar ficha inicial, validar consumo e apontar divergências entre versões.
-              </p>
+          )}
+
+          {(tab === "fluido" || tab === "custo") && <PreCostPanel refAtual={activeRef} />}
+
+          {(tab === "fluido" || tab === "versoes") && (
+            <div id="ts-versoes">
+              <TechSheetVersions refAtual={activeRef} />
             </div>
-          </Card>
+          )}
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-6">
-        <BomBopPanel refAtual={productInfo.ref} />
-        <AplicacoesPanel refAtual={productInfo.ref} />
-        <PreCostPanel refAtual={productInfo.ref} />
-        <OperationSequencePanel refAtual={productInfo.ref} />
-        <div id="ts-versoes">
-          <TechSheetVersions refAtual={productInfo.ref} />
-        </div>
-      </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-border bg-popover text-white rounded-lg p-6 max-w-lg">
+      {/* Dialog: Duplicar Base */}
+      <Dialog open={dupOpen} onOpenChange={setDupOpen}>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
-              {editingMaterial ? "Editar Item" : "Adicionar Material"}
-            </DialogTitle>
+            <DialogTitle>Duplicar Engenharia Base ({activeRef})</DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 py-8">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                  Tipo
-                </Label>
-                <Input
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                  placeholder="Ex: Tecido"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                  Consumo
-                </Label>
-                <Input
-                  value={formData.qty}
-                  onChange={(e) => setFormData({ ...formData, qty: e.target.value })}
-                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                  placeholder="Ex: 1.5m"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Nome do Material
-              </Label>
+          <div className="space-y-3 py-2">
+            <p className="text-xs text-muted-foreground">
+              Clona integralmente BOM, Matriz de Cores, Tabela de Medidas Graduada, Roteiro de
+              Costura, Aplicações e parâmetros fiscais para uma nova referência.
+            </p>
+            <div>
+              <Label className="text-xs">Novo Código de Referência</Label>
               <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: Algodão Pima"
+                value={dupCode}
+                onChange={(e) => setDupCode(e.target.value.toUpperCase())}
+                placeholder="Ex.: DEV000007"
+                className="font-mono"
               />
             </div>
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Custo Unitário
-              </Label>
+            <div>
+              <Label className="text-xs">Nome do Novo Produto</Label>
               <Input
-                value={formData.cost}
-                onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: R$ 35,00"
+                value={dupName}
+                onChange={(e) => setDupName(e.target.value)}
+                placeholder="Ex.: Camiseta Dry Pro Manga Longa"
               />
             </div>
           </div>
-          <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDupOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-2xs">
-              Salvar na Ficha
+            <Button onClick={handleDuplicate}>
+              <Plus className="w-3.5 h-3.5 mr-1" /> Criar Ficha Clonada
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </ModuleLayout>
-  );
-}
 
-function TimelineDoProduto({ refAtual, nome }: { refAtual: string; nome: string }) {
-  const lifecycles = useReferenceStore((s) => s.lifecycles);
-  const lc = lifecycles.find((l) => l.ref === refAtual) ?? emptyLifecycle(refAtual, nome);
-  return <ReferenceTimeline lifecycle={lc} compact />;
+      {/* Dialog: Publicar / Sincronizar no Catálogo Técnico */}
+      <Dialog open={pubOpen} onOpenChange={setPubOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Publicar Ficha no Catálogo Técnico ({activeRef})</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2 text-xs">
+            <p className="text-muted-foreground">
+              Sincroniza esta Ficha Técnica diretamente com <code>catalog_products</code>,{" "}
+              <code>catalog_option_groups</code> e <code>catalog_options</code> para emissão de
+              pedidos em <strong>/orders</strong> sem recadastro manual:
+            </p>
+            <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Código / Referência:</span>
+                <strong className="font-mono">{activeRef}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Grade publicada:</span>
+                <strong className="font-mono">
+                  {(doc.medidas?.tamanhos ?? ["P", "M", "G", "GG"]).join(" · ")}
+                </strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Itens de BOM explodidos:</span>
+                <strong>{doc.bom.length} insumo(s)</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Aplicações por driver:</span>
+                <strong>{doc.aplicacoes.length} posição(ões)</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Preço Base sugerido:</span>
+                <strong className="text-primary">
+                  {(doc.preCost.targetPreco && doc.preCost.targetPreco > 0
+                    ? doc.preCost.targetPreco
+                    : pricing.precoSugerido
+                  ).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </strong>
+              </div>
+            </div>
+
+            <label className="flex items-center gap-2 pt-1 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={pubAutoValidate}
+                onChange={(e) => setPubAutoValidate(e.target.checked)}
+                className="rounded border-border"
+              />
+              <span>
+                Marcar como <strong>Validado</strong> no catálogo (já liberado para entrar em
+                pedidos comerciais)
+              </span>
+            </label>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPubOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handlePublishCatalog} disabled={publishing}>
+              {publishing ? "Sincronizando..." : "Publicar no Catálogo"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }

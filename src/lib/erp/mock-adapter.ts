@@ -106,19 +106,26 @@ const SUPPLIERS: ErpSupplier[] = [
   },
 ];
 
+const DETERMINISTIC_STOCK: Record<string, { on: number; rsv: number }> = {
+  "MAL-VIS-BR-001": { on: 1420, rsv: 180 },
+  "MAL-ALG-PT-002": { on: 860, rsv: 95 },
+  "AVI-ZP-METAL-15": { on: 2310, rsv: 210 },
+  "AVI-BT-4F-11": { on: 7300, rsv: 400 },
+  "TEC-JEANS-14OZ": { on: 540, rsv: 60 },
+};
+
 const STOCK: Record<string, ErpStockLevel> = Object.fromEntries(
   PRODUCTS.map((p) => {
-    const on = Math.round(Math.random() * 500);
-    const rsv = Math.round(Math.random() * 80);
+    const base = DETERMINISTIC_STOCK[p.sku] ?? { on: 250, rsv: 20 };
     return [
       p.sku,
       {
         sku: p.sku,
-        on_hand: on,
-        reserved: rsv,
-        available: Math.max(0, on - rsv),
+        on_hand: base.on,
+        reserved: base.rsv,
+        available: Math.max(0, base.on - base.rsv),
         unit: p.unit ?? "un",
-        updated_at: new Date().toISOString(),
+        updated_at: "2026-10-30T12:00:00.000Z",
       },
     ];
   }),

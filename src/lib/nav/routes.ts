@@ -62,6 +62,8 @@ export type RouteMeta = {
     | "admin";
   crumbs?: string[]; // trilha adicional ex.: ["PLM", "Coleção"]
   quickActions?: QuickAction[];
+  /** Rotas demonstrativas/estáticas ocultas por padrão na operação de fábrica (ativáveis via Modo Labs). */
+  vitrine?: boolean;
 };
 
 export const NAV_GROUPS: Record<
@@ -99,6 +101,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Pesquisa",
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
+    vitrine: true,
   },
   {
     path: "/colors",
@@ -200,6 +203,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Relatório de Peças",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
+    vitrine: true,
   },
   {
     path: "/official-models",
@@ -237,12 +241,26 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     group: "pcp",
     crumbs: ["PCP"],
   },
-  { path: "/planner", icon: "calendar", label: "Planner", group: "pcp", crumbs: ["PCP"] },
+  {
+    path: "/planner",
+    icon: "calendar",
+    label: "Planner",
+    group: "pcp",
+    crumbs: ["PCP"],
+    vitrine: true,
+  },
   { path: "/quality", icon: "shield-check", label: "Qualidade", group: "pcp", crumbs: ["PCP"] },
 
   // Supply
   { path: "/inventory", icon: "box", label: "Almoxarifado", group: "supply", crumbs: ["Supply"] },
-  { path: "/suppliers", icon: "truck", label: "Fornecedores", group: "supply", crumbs: ["Supply"] },
+  {
+    path: "/suppliers",
+    icon: "truck",
+    label: "Fornecedores",
+    group: "supply",
+    crumbs: ["Supply"],
+    vitrine: true,
+  },
   {
     path: "/supplier-portal",
     icon: "store",
@@ -252,9 +270,23 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
   },
 
   // GTM
-  { path: "/launch", label: "Lançamento", group: "gtm", icon: "rocket", crumbs: ["GTM"] },
+  {
+    path: "/launch",
+    label: "Lançamento",
+    group: "gtm",
+    icon: "rocket",
+    crumbs: ["GTM"],
+    vitrine: true,
+  },
   { path: "/showroom", label: "Showroom", group: "gtm", icon: "store", crumbs: ["GTM"] },
-  { path: "/marketing", icon: "megaphone", label: "Marketing", group: "gtm", crumbs: ["GTM"] },
+  {
+    path: "/marketing",
+    icon: "megaphone",
+    label: "Marketing",
+    group: "gtm",
+    crumbs: ["GTM"],
+    vitrine: true,
+  },
   {
     path: "/orders",
     icon: "shopping",
@@ -263,7 +295,14 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     crumbs: ["GTM"],
     quickActions: [{ id: "new-order", label: "Novo pedido", event: "quick:new-order" }],
   },
-  { path: "/commercial", icon: "store", label: "Comercial", group: "gtm", crumbs: ["GTM"] },
+  {
+    path: "/commercial",
+    icon: "store",
+    label: "Comercial",
+    group: "gtm",
+    crumbs: ["GTM"],
+    vitrine: true,
+  },
   { path: "/influencers", icon: "users", label: "Influencers", group: "gtm", crumbs: ["GTM"] },
 
   // Insights & IA
@@ -280,6 +319,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Financeiro",
     group: "insights",
     crumbs: ["Insights"],
+    vitrine: true,
   },
   {
     path: "/ai-center",
@@ -288,13 +328,21 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
   },
-  { path: "/ai-agents", icon: "bot", label: "AI Agents", group: "insights", crumbs: ["Insights"] },
+  {
+    path: "/ai-agents",
+    icon: "bot",
+    label: "AI Agents",
+    group: "insights",
+    crumbs: ["Insights"],
+    vitrine: true,
+  },
   {
     path: "/digital-twin",
     icon: "globe",
     label: "Digital Twin",
     group: "insights",
     crumbs: ["Insights"],
+    vitrine: true,
   },
 
   // Admin
@@ -304,6 +352,7 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Segurança",
     group: "admin",
     crumbs: ["Administração"],
+    vitrine: true,
   },
 
   {

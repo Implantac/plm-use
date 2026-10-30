@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 type FakeTable = {
   rows: Record<string, unknown>[];
   calls: { kind: string; rows?: number; onConflict?: string; vals?: string[] }[];
+  failSelect?: boolean;
 };
 const tables = new Map<string, FakeTable>();
 function ft(name: string): FakeTable {
@@ -14,7 +15,13 @@ vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
     from: (t: string) => ({
       select: () => ({
-        order: () => Promise.resolve({ data: ft(t).rows.map((r) => ({ ...r })), error: null }),
+        order: () => {
+          const tab = ft(t);
+          if (tab.failSelect) {
+            return Promise.resolve({ data: null, error: { message: "network down" } });
+          }
+          return Promise.resolve({ data: tab.rows.map((r) => ({ ...r })), error: null });
+        },
       }),
       upsert: (rows: Record<string, unknown>[], opts?: { onConflict?: string }) => {
         const tab = ft(t);
@@ -27,6 +34,13 @@ vi.mock("@/integrations/supabase/client", () => ({
         return Promise.resolve({ error: null });
       },
       delete: () => ({
+        in: (_c: string, vals: string[]) => {
+          const tab = ft(t);
+          tab.calls.push({ kind: "prune-in", vals });
+          const drop = new Set(vals);
+          tab.rows = tab.rows.filter((r) => !drop.has(String(r.external_key)));
+          return Promise.resolve({ error: null });
+        },
         not: (_c: string, _op: string, vals: string[]) => {
           const tab = ft(t);
           tab.calls.push({ kind: "prune-not", vals });
@@ -301,6 +315,45 @@ describe("creative-sync engine", () => {
     await __internals.pushByKey("collections", UID);
     await __internals.pushByKey("collections", UID);
     expect(ft("collections").rows).toHaveLength(collectionsSeed.length);
+  });
+
+  it("falha transitória no select NÃO marca hidratado nem apaga dados reais depois", async () => {
+    const tab = ft("collections");
+    tab.rows.push({
+      external_key: "real-prod-1",
+      name: "Coleção Real Karilu",
+      status: "Em produção",
+      created_at: new Date().toISOString(),
+    });
+    tab.failSelect = true;
+    await __internals.refreshByKey("collections");
+
+    // Rede voltou, usuário editou localmente antes de conseguir hidratar:
+    tab.failSelect = false;
+    upsertCollection({ ...collectionsSeed[0], id: 4444, name: "Edição offline" });
+    await __internals.pushByKey("collections", UID);
+
+    expect(tab.calls).toEqual([]);
+    expect(tab.rows.some((r) => r.external_key === "real-prod-1")).toBe(true);
+  });
+
+  it("concorrência: item criado em paralelo por outra aba NÃO é podado pelo push local", async () => {
+    await __internals.refreshByKey("collections");
+    await __internals.pushByKey("collections", UID);
+
+    // Outra aba inseriu "99999" no banco antes do Realtime avisar esta aba:
+    ft("collections").rows.push({
+      external_key: "99999",
+      name: "Coleção da Estilista B",
+      status: "Planejamento",
+      created_at: new Date().toISOString(),
+    });
+
+    // Esta aba edita um item próprio e faz push:
+    upsertCollection({ ...collectionsSeed[0], name: "Coleção Editada A" });
+    await __internals.pushByKey("collections", UID);
+
+    expect(ft("collections").rows.some((r) => r.external_key === "99999")).toBe(true);
   });
 });
 

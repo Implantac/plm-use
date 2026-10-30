@@ -1,24 +1,20 @@
+// Pilotagem, Prova de Caimento & Lacre de Peça Piloto — persistente e integrado à Ficha Técnica.
 import { useEffect, useState } from "react";
-import { onQuickAction } from "@/lib/nav/routes";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
+  ArrowRight,
   CheckCircle2,
-  Clock,
-  GitBranch,
+  ExternalLink,
   Image,
   MessageSquare,
-  Play,
   Scissors,
-  Shirt,
-  Sparkles,
   UserCheck,
   Video,
 } from "lucide-react";
-import { useEntityDrawer } from "@/components/entity/EntityContext";
-
+import { onQuickAction } from "@/lib/nav/routes";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -31,96 +27,40 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { PROTOTYPE_STAGES, usePrototypeStore, type PrototypeItem } from "@/lib/prototypes/store";
+import { useCreatePiloto } from "@/hooks/use-pilotos";
+import { useReferences } from "@/hooks/use-references";
 
 export const Route = createFileRoute("/_authenticated/prototypes")({
   component: PrototypesPage,
 });
 
-type Prototype = {
-  id: string;
-  name: string;
-  version: string;
-  stage: string;
-  requester: string;
-  owner: string;
-  adjustments: number;
-  progress: number;
-  photos: number;
-  videos: number;
-  status: "Em progresso" | "Ajuste" | "Aprovado" | "Pausado";
-  image: string;
-};
-
-const initialPrototypes: Prototype[] = [
-  {
-    id: "PR-2501",
-    name: "Blusa Linho Amalfi",
-    version: "V2 - ajuste de gola",
-    stage: "Costura",
-    requester: "Julia Designer",
-    owner: "Sandra Pilotagem",
-    adjustments: 3,
-    progress: 64,
-    photos: 12,
-    videos: 2,
-    status: "Ajuste",
-    image:
-      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: "PR-2502",
-    name: "Pantalona Riviera",
-    version: "V1 - primeiro corte",
-    stage: "Modelagem",
-    requester: "Livia Produto",
-    owner: "Marcio Modelagem",
-    adjustments: 1,
-    progress: 38,
-    photos: 6,
-    videos: 1,
-    status: "Em progresso",
-    image:
-      "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: "PR-2503",
-    name: "Vestido Gala Resort",
-    version: "V3 - aprovado final",
-    stage: "Aprovação",
-    requester: "Diretoria Criativa",
-    owner: "Ana Qualidade",
-    adjustments: 0,
-    progress: 100,
-    photos: 18,
-    videos: 4,
-    status: "Aprovado",
-    image:
-      "https://images.unsplash.com/photo-1566206091558-7f218b696731?auto=format&fit=crop&q=80&w=800",
-  },
-];
-
-const prototypeStages = [
-  "Modelagem",
-  "Corte",
-  "Costura",
-  "Silk",
-  "Bordado",
-  "Lavanderia",
-  "Acabamento",
-  "Aprovação",
-];
-
 function PrototypesPage() {
-  const [prototypes, setPrototypes] = useState(initialPrototypes);
-  const { openEntity } = useEntityDrawer();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingPrototype, setEditingPrototype] = useState<Prototype | null>(null);
-  const [formData, setFormData] = useState({ name: "", version: "", requester: "", owner: "" });
+  const navigate = useNavigate();
+  const prototypes = usePrototypeStore((s) => s.items);
+  const upsert = usePrototypeStore((s) => s.upsert);
+  const createLocal = usePrototypeStore((s) => s.create);
+  const advanceStage = usePrototypeStore((s) => s.advanceStage);
+  const remove = usePrototypeStore((s) => s.remove);
 
-  const handleOpenDialog = (prototype?: Prototype) => {
+  const { items: dbRefs } = useReferences();
+  const { create: createDbPiloto } = useCreatePiloto();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingPrototype, setEditingPrototype] = useState<PrototypeItem | null>(null);
+  const [formData, setFormData] = useState({
+    refCode: "DEV000006",
+    name: "",
+    version: "",
+    requester: "",
+    owner: "",
+  });
+
+  const handleOpenDialog = (prototype?: PrototypeItem) => {
     if (prototype) {
       setEditingPrototype(prototype);
       setFormData({
+        refCode: prototype.refCode,
         name: prototype.name,
         version: prototype.version,
         requester: prototype.requester,
@@ -128,243 +68,235 @@ function PrototypesPage() {
       });
     } else {
       setEditingPrototype(null);
-      setFormData({ name: "", version: "", requester: "", owner: "" });
+      setFormData({
+        refCode: "DEV000006",
+        name: "",
+        version: "1ª Prova — corte piloto",
+        requester: "",
+        owner: "",
+      });
     }
     setIsDialogOpen(true);
   };
 
   useEffect(() => onQuickAction("quick:new-piloto", () => handleOpenDialog()), []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!formData.name.trim()) {
+      toast.error("Informe o nome da peça piloto.");
+      return;
+    }
     if (editingPrototype) {
-      setPrototypes(
-        prototypes.map((prototype) =>
-          prototype.id === editingPrototype.id ? { ...prototype, ...formData } : prototype,
-        ),
-      );
-      toast.success("Protótipo atualizado");
+      upsert({
+        ...editingPrototype,
+        ...formData,
+        refCode: formData.refCode.trim().toUpperCase(),
+      });
+      toast.success("Peça piloto atualizada.");
     } else {
-      setPrototypes([
-        {
-          id: `PR-${Math.floor(Math.random() * 9000) + 1000}`,
-          ...formData,
-          stage: "Modelagem",
-          adjustments: 0,
-          progress: 0,
-          photos: 0,
-          videos: 0,
-          status: "Em progresso",
-          image:
-            "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&q=80&w=800",
-        },
-        ...prototypes,
-      ]);
-      toast.success("Novo protótipo criado");
+      const created = createLocal(formData);
+      // Se a referência já existir na tabela `references`, registra também em `pilotos`:
+      const matchedRef = dbRefs.find((r) => r.code.toUpperCase() === created.refCode.toUpperCase());
+      if (matchedRef) {
+        await createDbPiloto({
+          reference_id: matchedRef.id,
+          tipo: "prova",
+          observacoes: `${created.version} · Resp.: ${created.owner}`,
+        });
+      }
+      toast.success(`Piloto ${created.id} (${created.refCode}) registrado com persistência.`);
     }
     setIsDialogOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    setPrototypes(prototypes.filter((prototype) => prototype.id !== id));
-    toast.error("Protótipo removido");
-  };
-
   return (
     <ModuleLayout
-      title="Protótipos"
-      subtitle="Controle de modelagem, corte, costura, silk, bordado, lavanderia, acabamento e aprovação. Dados de demonstração — a edição não persiste."
-      version="Craft v3.0"
-      searchPlaceholder="Buscar protótipo, etapa, ajuste ou responsável"
+      title="Pilotagem & Prova de Caimento"
+      subtitle="Controle persistente de peças piloto, rodadas de prova, ajustes de modelagem e lacre de aprovação conectado à Ficha Técnica."
+      version="Craft v4.0"
+      searchPlaceholder="Buscar piloto por referência, etapa ou pilotista"
       onAdd={() => handleOpenDialog()}
       metrics={[
-        { label: "Protótipos", value: String(prototypes.length), detail: "em ciclo" },
+        { label: "Pilotos ativos", value: String(prototypes.length), detail: "persistidos" },
         {
-          label: "Ajustes",
+          label: "Ajustes abertos",
           value: String(prototypes.reduce((sum, item) => sum + item.adjustments, 0)),
-          detail: "pendentes/históricos",
+          detail: "modelagem/costura",
         },
         {
-          label: "Mídias",
+          label: "Evidências",
           value: String(prototypes.reduce((sum, item) => sum + item.photos + item.videos, 0)),
           detail: "fotos e vídeos",
         },
         {
-          label: "Aprovados",
+          label: "Lacrados",
           value: String(prototypes.filter((item) => item.status === "Aprovado").length),
-          detail: "prontos para produção",
+          detail: "aptos para OP",
         },
       ]}
     >
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {prototypes.map((prototype) => (
-            <Card
-              key={prototype.id}
-              className="glass-card rounded-lg overflow-hidden hover:border-primary/30 transition-colors"
-            >
-              <div className="relative h-56">
-                <OptimizedImage
-                  src={prototype.image}
-                  alt={prototype.name}
-                  className="h-full w-full object-cover"
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+        {prototypes.map((prototype) => (
+          <Card
+            key={prototype.id}
+            className="glass-card rounded-lg overflow-hidden hover:border-primary/30 transition-colors"
+          >
+            <div className="relative h-52">
+              <OptimizedImage
+                src={prototype.image}
+                alt={prototype.name}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/95 to-transparent" />
+              <div className="absolute left-4 bottom-4 right-4 flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-2xs font-mono font-bold uppercase tracking-wider text-primary">
+                    {prototype.id} · REF {prototype.refCode}
+                  </p>
+                  <h3 className="mt-1 text-lg font-bold text-white">{prototype.name}</h3>
+                  <p className="mt-0.5 text-2xs text-muted-foreground">{prototype.version}</p>
+                </div>
+                <ModuleActionMenu
+                  onEdit={() => handleOpenDialog(prototype)}
+                  onDelete={() => {
+                    remove(prototype.id);
+                    toast.info("Piloto removido.");
+                  }}
+                  onView={() =>
+                    void navigate({ to: "/tech-sheet", search: { ref: prototype.refCode } })
+                  }
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
-                <div className="absolute left-4 bottom-4 right-4 flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
-                      {prototype.id}
-                    </p>
-                    <h3 className="mt-1 text-xl font-bold text-white">{prototype.name}</h3>
-                    <p className="mt-1 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
-                      {prototype.version}
-                    </p>
-                  </div>
-                  <ModuleActionMenu
-                    onEdit={() => handleOpenDialog(prototype)}
-                    onDelete={() => handleDelete(prototype.id)}
-                    onView={() => toast.info(`Abrindo histórico de ${prototype.name}`)}
-                  />
-                </div>
               </div>
-              <CardContent className="p-5 space-y-5">
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { label: "Etapa", value: prototype.stage, icon: Scissors },
-                    { label: "Status", value: prototype.status, icon: CheckCircle2 },
-                    { label: "Solicitante", value: prototype.requester, icon: MessageSquare },
-                    { label: "Responsável", value: prototype.owner, icon: UserCheck },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-md border border-border bg-muted/60 p-3"
-                    >
-                      <item.icon className="h-4 w-4 text-primary" />
-                      <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-                        {item.label}
-                      </p>
-                      <p className="mt-1 text-xs font-bold text-white">{item.value}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-                    <span>Progresso do piloto</span>
-                    <span className="text-white">{prototype.progress}%</span>
+            </div>
+
+            <CardContent className="p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-2.5">
+                {[
+                  { label: "Etapa", value: prototype.stage, icon: Scissors },
+                  { label: "Status", value: prototype.status, icon: CheckCircle2 },
+                  { label: "Solicitante", value: prototype.requester, icon: MessageSquare },
+                  { label: "Pilotista", value: prototype.owner, icon: UserCheck },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-md border border-border bg-muted/50 p-2.5"
+                  >
+                    <item.icon className="h-3.5 w-3.5 text-primary" />
+                    <p className="mt-1.5 text-2xs uppercase text-muted-foreground">{item.label}</p>
+                    <p className="mt-0.5 text-xs font-semibold text-foreground truncate">
+                      {item.value}
+                    </p>
                   </div>
-                  <Progress value={prototype.progress} className="h-2 bg-muted" />
+                ))}
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-2xs font-semibold uppercase text-muted-foreground">
+                  <span>Evolução até o lacre ({PROTOTYPE_STAGES.length} etapas)</span>
+                  <span className="text-foreground">{prototype.progress}%</span>
                 </div>
-                <div className="flex items-center justify-between border-t border-border/60 pt-4">
-                  <div className="flex gap-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Image className="h-3.5 w-3.5" /> {prototype.photos}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Video className="h-3.5 w-3.5" /> {prototype.videos}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Sparkles className="h-3.5 w-3.5" /> {prototype.adjustments} ajustes
-                    </span>
-                  </div>
+                <Progress value={prototype.progress} className="h-2 bg-muted" />
+              </div>
+
+              <div className="flex items-center justify-between border-t border-border/60 pt-3 gap-2">
+                <div className="flex gap-3 text-2xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Image className="h-3.5 w-3.5" /> {prototype.photos}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Video className="h-3.5 w-3.5" /> {prototype.videos}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
                   <Button
-                    variant="ghost"
                     size="sm"
-                    className="gap-1.5 text-2xs tracking-[0.04em] text-primary hover:bg-primary/10"
+                    variant="outline"
+                    className="h-7 text-2xs gap-1"
                     onClick={() =>
-                      openEntity({
-                        type: "piloto",
-                        id: prototype.id,
-                        title: `${prototype.id} · ${prototype.name}`,
-                        subtitle: `${prototype.version} · ${prototype.stage}`,
-                      })
+                      void navigate({ to: "/tech-sheet", search: { ref: prototype.refCode } })
                     }
                   >
-                    <GitBranch className="h-3.5 w-3.5" /> Trilha
+                    <ExternalLink className="w-3 h-3" /> Ficha
                   </Button>
+                  {prototype.status !== "Aprovado" && (
+                    <Button
+                      size="sm"
+                      className="h-7 text-2xs gap-1"
+                      onClick={() => {
+                        advanceStage(prototype.id);
+                        toast.success(`Piloto ${prototype.id} avançado de etapa.`);
+                      }}
+                    >
+                      Avançar <ArrowRight className="w-3 h-3" />
+                    </Button>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <div className="space-y-6">
-          <Card className="glass-card rounded-lg">
-            <CardHeader className="p-5 border-b border-border/60">
-              <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
-                Fluxo do protótipo
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-5 space-y-3">
-              {prototypeStages.map((stage, index) => (
-                <div key={stage} className="flex items-center gap-3">
-                  <div
-                    className={`h-7 w-7 rounded-md border flex items-center justify-center ${index < 3 ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-muted/50 text-muted-foreground"}`}
-                  >
-                    {index < 3 ? (
-                      <CheckCircle2 className="h-4 w-4" />
-                    ) : (
-                      <Clock className="h-4 w-4" />
-                    )}
-                  </div>
-                  <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-white">
-                    {stage}
-                  </p>
-                </div>
-              ))}
+              </div>
             </CardContent>
           </Card>
-
-          <Card className="glass-card rounded-lg border-primary/20 bg-primary/[0.025]">
-            <CardContent className="p-5">
-              <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary flex items-center gap-2">
-                <Shirt className="h-4 w-4" />
-                Próxima aprovação
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-white/85">
-                Blusa Linho Amalfi precisa de validação de gola e vídeo de caimento antes de liberar
-                OP piloto.
-              </p>
-              <Button className="mt-5 w-full text-2xs tracking-[0.04em]">
-                Solicitar aprovação
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        ))}
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-border bg-popover text-white rounded-lg p-6 max-w-lg">
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold uppercase tracking-tight">
-              {editingPrototype ? "Editar protótipo" : "Novo protótipo"}
+            <DialogTitle>
+              {editingPrototype ? "Editar Peça Piloto" : "Nova Solicitação de Peça Piloto"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-5">
-            {[
-              ["name", "Produto", "Ex: Blusa Linho Amalfi"],
-              ["version", "Versão / ajuste", "Ex: V2 - ajuste gola"],
-              ["requester", "Solicitante", "Ex: Julia Designer"],
-              ["owner", "Responsável", "Ex: Sandra Pilotagem"],
-            ].map(([key, label, placeholder]) => (
-              <div key={key} className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-                  {label}
-                </Label>
+          <div className="space-y-3 py-2">
+            <div>
+              <Label className="text-xs">Código da Referência</Label>
+              <Input
+                value={formData.refCode}
+                onChange={(e) =>
+                  setFormData({ ...formData, refCode: e.target.value.toUpperCase() })
+                }
+                placeholder="DEV000006"
+                className="font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Nome da Peça</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Camiseta Esportiva Dry Pro"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Rodada / Objetivo da Prova</Label>
+              <Input
+                value={formData.version}
+                onChange={(e) => setFormData({ ...formData, version: e.target.value })}
+                placeholder="1ª Prova — validar caimento M"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Solicitante</Label>
                 <Input
-                  value={formData[key as keyof typeof formData]}
-                  onChange={(event) => setFormData({ ...formData, [key]: event.target.value })}
-                  className="focus:border-primary/40 focus:ring-0"
-                  placeholder={placeholder}
+                  value={formData.requester}
+                  onChange={(e) => setFormData({ ...formData, requester: e.target.value })}
+                  placeholder="Estilo"
                 />
               </div>
-            ))}
+              <div>
+                <Label className="text-xs">Pilotista / Responsável</Label>
+                <Input
+                  value={formData.owner}
+                  onChange={(e) => setFormData({ ...formData, owner: e.target.value })}
+                  placeholder="Sandra Pilotagem"
+                />
+              </div>
+            </div>
           </div>
-          <DialogFooter className="gap-3">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-2xs">
-              Salvar protótipo
-            </Button>
+            <Button onClick={() => void handleSave()}>Salvar Piloto</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

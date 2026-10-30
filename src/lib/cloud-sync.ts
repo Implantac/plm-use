@@ -63,12 +63,13 @@ async function pushInfluencer(i: Influencer, uid: string) {
 
 async function hydrateInfluencers() {
   if (hydrated.inf) return;
-  hydrated.inf = true;
   const { data, error } = await supabase
     .from("influencers")
     .select("*")
     .order("created_at", { ascending: true });
-  if (error || !data || data.length === 0) return;
+  if (error) return;
+  hydrated.inf = true;
+  if (!data || data.length === 0) return;
   const mapped: Influencer[] = data.map((r) => ({
     id: r.id,
     nome: r.nome,
@@ -108,12 +109,13 @@ async function pushCapaAll(uid: string) {
 
 async function hydrateCapa() {
   if (hydrated.capa) return;
-  hydrated.capa = true;
   const { data, error } = await supabase
     .from("quality_capa")
     .select("*")
     .order("created_at", { ascending: true });
-  if (error || !data || data.length === 0) return;
+  if (error) return;
+  hydrated.capa = true;
+  if (!data || data.length === 0) return;
   const mapped: CapaAction[] = data.map((r) => ({
     id: r.id,
     ref: r.ref ?? undefined,
@@ -149,9 +151,10 @@ async function pushTechSheetsAll(uid: string) {
 
 async function hydrateTechSheets() {
   if (hydrated.ts) return;
-  hydrated.ts = true;
   const { data, error } = await supabase.from("tech_sheets").select("*");
-  if (error || !data || data.length === 0) return;
+  if (error) return;
+  hydrated.ts = true;
+  if (!data || data.length === 0) return;
   // merge, não substituição: refs com edição local pendente (dirty) mantêm o
   // autor da tela; os demais recebem o estado do servidor com preCost garantido.
   const { data: cur, dirty } = useTechSheetStore.getState();

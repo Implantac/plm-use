@@ -38,6 +38,14 @@ de cada commit; mudanças de banco como ficheiros SQL reexecutáveis em
 literais vs DDL original, checagem de triggers); push só com token do dono na
 mensagem; claims de terceiros = verificar diff bruto.
 
+## Evolução 2026-10-30 — Cockpit Fluido PLM 2.0 + Ponte Ficha → Catálogo (decisão do dono)
+
+- Por decisão explícita do dono em 30/10/2026:
+  1. **Direção Ficha → Catálogo (`ficha_alimenta_catalogo`)**: `/tech-sheet` permanece o berço reutilizável da engenharia no envelope JSONB `bom = {v:3, items, preCost, aplicacoes, image, meta, colorways, medidas, etiquetagem, encaixeCad}` (100% compatível com `v:1`/`v:2`) e publica de forma idempotente em `catalog_products` + `catalog_option_groups` + `catalog_options` via `src/lib/techsheet/publish-catalog.ts`.
+  2. **Custeio e Precificação**: o custo industrial da ficha soma obrigatoriamente `BOM + BOP + Aplicações + Setup diluído`, com suporte ao **Mark-up Divisor brasileiro** (`src/lib/techsheet/pricing.ts`) e exportação A4 dupla (Engenharia Completa vs. **PDF Facção Cego / Sem Custo**).
+  3. **Segurança de Sync (`creative-sync.ts`)**: proibido marcar `hydrated=true` antes do `SELECT` retornar sem erro e proibido `DELETE ... NOT IN` global; apenas chaves conhecidas e removidas na sessão sofrem `DELETE ... IN`.
+  4. **Banco Vivo Retrocompatível + SQL Separado**: scripts novos de fundação Multi-Tenant (`tenants`, `current_tenant_id()`), `cad_markers` e `erp_sync_outbox` vivem em `supabase/migrations/20261030160000_plm_fluido_multitenant_cad.sql` e `docs/producao/2026-10-30_PLM-FLUIDO-MULTITENANT.sql`, sem quebrar o banco em produção antes da execução.
+
 ## GitHub ↔ Lovable (contrato da plataforma — não negociável)
 
 - Este repo é o lado GitHub do sync bidirecional do projeto na branch `main`; o app que os usuários veem é o deploy do Lovable, alimentado por push na `main`. Ver `docs/github-lovable-sync.md`.

@@ -1,14 +1,17 @@
 // Serialização store ↔ tech_sheets (colunas jsonb bom/bop/versoes).
-// O preCost mora dentro do envelope `bom = {v:1, items, preCost}` porque a
-// tabela não tem coluna própria e o ambiente Lovable não aceita migration por
-// nossa conta — um envelope versionado evita DDL novo e sobrevive a leitura de
-// linhas legadas (bom como array puro, sem preCost).
-import type { PreCost, TechSheetData } from "./store";
+// O preCost e as extensões v3 (meta, colorways, medidas, etiquetagem,
+// encaixeCad) moram dentro do envelope `bom = {v:3, items, preCost, ...}`
+// porque a tabela não exige coluna nova no banco vivo e sobrevive à leitura
+// de linhas v1, v2 e arrays legados.
+import type { PreCost, TechSheetData, TechSheetMeta } from "./store";
+import type {
+  CadMarkerSpec,
+  CareLabelSpec,
+  TechSheetColorway,
+  TechSheetMeasurementSpec,
+} from "./textile";
 
-// v2: o envelope do `bom` passa a carregar também `aplicacoes` (posições de
-// bordado/silk/...). v1 e legado continuam legíveis — o loader só observa
-// chaves ausentes, nunca rejeita versão antiga.
-export const BOM_ENVELOPE_V = 2;
+export const BOM_ENVELOPE_V = 3;
 
 export const DEFAULT_PRE_COST: PreCost = {
   targetCusto: 0,
@@ -37,6 +40,11 @@ export function serializeTechSheetDoc(
       preCost: doc.preCost,
       aplicacoes: doc.aplicacoes,
       image: doc.image,
+      ...(doc.meta ? { meta: doc.meta } : {}),
+      ...(doc.colorways ? { colorways: doc.colorways } : {}),
+      ...(doc.medidas ? { medidas: doc.medidas } : {}),
+      ...(doc.etiquetagem ? { etiquetagem: doc.etiquetagem } : {}),
+      ...(doc.encaixeCad ? { encaixeCad: doc.encaixeCad } : {}),
     },
     bop: doc.bop,
     versoes: doc.versoes,
@@ -57,6 +65,12 @@ export function deserializeTechSheetRow(row: LooseRow): Omit<TechSheetData, neve
   let preCost: PreCost = DEFAULT_PRE_COST;
   let aplicacoes: TechSheetData["aplicacoes"] = [];
   let image: string | undefined;
+  let meta: TechSheetMeta | undefined;
+  let colorways: TechSheetColorway[] | undefined;
+  let medidas: TechSheetMeasurementSpec | undefined;
+  let etiquetagem: CareLabelSpec | undefined;
+  let encaixeCad: CadMarkerSpec | undefined;
+
   if (row.bom && typeof row.bom === "object" && !Array.isArray(row.bom)) {
     const env = row.bom as {
       v?: number;
@@ -64,6 +78,11 @@ export function deserializeTechSheetRow(row: LooseRow): Omit<TechSheetData, neve
       preCost?: Partial<PreCost>;
       aplicacoes?: unknown;
       image?: unknown;
+      meta?: unknown;
+      colorways?: unknown;
+      medidas?: unknown;
+      etiquetagem?: unknown;
+      encaixeCad?: unknown;
     };
     items = env.items;
     if (env.preCost && typeof env.preCost === "object") {
@@ -71,6 +90,17 @@ export function deserializeTechSheetRow(row: LooseRow): Omit<TechSheetData, neve
     }
     if (Array.isArray(env.aplicacoes)) aplicacoes = env.aplicacoes as TechSheetData["aplicacoes"];
     if (typeof env.image === "string" && env.image.startsWith("https://")) image = env.image;
+    if (env.meta && typeof env.meta === "object") meta = env.meta as TechSheetMeta;
+    if (Array.isArray(env.colorways)) colorways = env.colorways as TechSheetColorway[];
+    if (env.medidas && typeof env.medidas === "object") {
+      medidas = env.medidas as TechSheetMeasurementSpec;
+    }
+    if (env.etiquetagem && typeof env.etiquetagem === "object") {
+      etiquetagem = env.etiquetagem as CareLabelSpec;
+    }
+    if (env.encaixeCad && typeof env.encaixeCad === "object") {
+      encaixeCad = env.encaixeCad as CadMarkerSpec;
+    }
   }
   return {
     ref: row.ref,
@@ -80,6 +110,11 @@ export function deserializeTechSheetRow(row: LooseRow): Omit<TechSheetData, neve
     preCost,
     aplicacoes,
     ...(image ? { image } : {}),
+    ...(meta ? { meta } : {}),
+    ...(colorways ? { colorways } : {}),
+    ...(medidas ? { medidas } : {}),
+    ...(etiquetagem ? { etiquetagem } : {}),
+    ...(encaixeCad ? { encaixeCad } : {}),
   };
 }
 
@@ -87,14 +122,20 @@ export function deserializeTechSheetRow(row: LooseRow): Omit<TechSheetData, neve
 export function normalizeTechSheetDoc(
   doc: Partial<TechSheetData> & { ref: string },
 ): TechSheetData {
+  const cleanImg =
+    typeof doc.image === "string" && doc.image.startsWith("https://") ? doc.image : undefined;
   return {
     ref: doc.ref,
     bom: Array.isArray(doc.bom) ? doc.bom : [],
     bop: Array.isArray(doc.bop) ? doc.bop : [],
     aplicacoes: Array.isArray(doc.aplicacoes) ? doc.aplicacoes : [],
-    image:
-      typeof doc.image === "string" && doc.image.startsWith("https://") ? doc.image : undefined,
+    ...(cleanImg ? { image: cleanImg } : { image: undefined }),
     versoes: Array.isArray(doc.versoes) ? doc.versoes : [],
     preCost: doc.preCost ?? DEFAULT_PRE_COST,
+    ...(doc.meta ? { meta: doc.meta } : {}),
+    ...(Array.isArray(doc.colorways) ? { colorways: doc.colorways } : {}),
+    ...(doc.medidas ? { medidas: doc.medidas } : {}),
+    ...(doc.etiquetagem ? { etiquetagem: doc.etiquetagem } : {}),
+    ...(doc.encaixeCad ? { encaixeCad: doc.encaixeCad } : {}),
   };
 }
