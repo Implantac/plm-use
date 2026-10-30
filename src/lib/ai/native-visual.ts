@@ -1,67 +1,49 @@
-// Visual nativo do AI Product Studio: desenha a peça localmente (SVG → PNG
-// transparente) a partir da proposta, sem chamar o provedor de IA.
-type Input = { family?: string; category?: string; name?: string; color?: string; view?: string };
+// Visual nativo 3D Volumétrico do AI Product Studio: renderiza a peça localmente
+// com iluminação de estúdio, sombreamento cilíndrico, textura de trama têxtil,
+// profundidade de gola interna, dobras orgânicas e pespontos duplos (SVG → PNG HD),
+// sem consumir créditos do provedor quando em modo local/offline.
 
-const COLORS: Record<string, string> = {
-  preto: "#1f1b18",
-  branco: "#f7f5f0",
-  "off-white": "#efe9dc",
-  areia: "#d8c6a5",
-  bege: "#d9c4a3",
-  azul: "#3e5f8a",
-  marinho: "#1f2e4a",
-  verde: "#4f7a55",
-  oliva: "#6b6b3a",
-  vermelho: "#a83232",
-  rosa: "#d99aa5",
-  cinza: "#8a8a8a",
-  caramelo: "#b07a45",
-  laranja: "#d9823b",
-  terracota: "#b5603e",
+type Input = {
+  family?: string;
+  category?: string;
+  name?: string;
+  color?: string;
+  view?: string;
+  transparent?: boolean;
 };
 
-function hex(color = "") {
+const COLORS: Record<string, string> = {
+  preto: "#1c1d21",
+  branco: "#f5f4f0",
+  "off-white": "#ede7da",
+  areia: "#d5c2a1",
+  bege: "#d8c3a2",
+  azul: "#2e547d",
+  marinho: "#1b2b48",
+  verde: "#2e684e",
+  oliva: "#666b3c",
+  vermelho: "#9e2d2d",
+  rosa: "#d48f9c",
+  cinza: "#7f848c",
+  caramelo: "#a9713f",
+  laranja: "#d47935",
+  terracota: "#c26444",
+};
+
+function resolveHex(color = ""): string {
+  const hexMatch = color.match(/#[0-9a-fA-F]{6}/);
+  if (hexMatch) return hexMatch[0];
   const c = color.toLowerCase();
   const key = Object.keys(COLORS).find((k) => c.includes(k));
-  return key ? COLORS[key] : "#c9b8a0";
+  return key ? COLORS[key] : "#c8b79e";
 }
 
-function shade(h: string, f: number) {
-  const n = parseInt(h.slice(1), 16);
-  const ch = (s: number) => Math.max(0, Math.min(255, Math.round(((n >> s) & 255) * f)));
+function adjustHex(h: string, factor: number): string {
+  const clean = h.replace("#", "");
+  const n = parseInt(clean.length === 6 ? clean : "c8b79e", 16);
+  const ch = (shift: number) =>
+    Math.max(0, Math.min(255, Math.round(((n >> shift) & 255) * factor)));
   return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
-}
-
-function shape(kind: string, back: boolean, fill: string, dark: string, printed: boolean) {
-  const s = `fill="${printed ? "url(#print)" : fill}" stroke="${dark}" stroke-width="4" stroke-linejoin="round"`;
-  const seam = `fill="none" stroke="${dark}" stroke-width="2" stroke-dasharray="6 5"`;
-  switch (kind) {
-    case "cap":
-      return back
-        ? `<path ${s} d="M150 420 Q150 200 400 190 Q650 200 650 420 Z"/><path fill="none" stroke="${dark}" stroke-width="4" d="M340 420 Q400 360 460 420"/><path ${seam} d="M400 195 L400 360"/>`
-        : `<path ${s} d="M150 420 Q150 200 400 190 Q650 200 650 420 Z"/><path ${s} d="M130 420 Q400 380 670 420 Q620 520 400 520 Q180 520 130 420 Z" fill="${shade(fill, 0.85)}"/><path ${seam} d="M400 195 L400 410 M270 215 Q260 320 250 410 M530 215 Q540 320 550 410"/><circle cx="400" cy="195" r="10" fill="${dark}"/>`;
-    case "pants":
-      return `<path ${s} d="M250 120 L550 120 L590 680 L440 680 L400 300 L360 680 L210 680 Z"/><path ${seam} d="M250 160 L550 160 ${back ? "M300 210 L360 210 L360 260 L300 260 Z M440 210 L500 210 L500 260 L440 260 Z" : "M400 160 L400 290 M260 170 Q300 230 330 170 M540 170 Q500 230 470 170"}"/>`;
-    case "skirt":
-      return `<path ${s} d="M280 160 L520 160 L620 640 L180 640 Z"/><path ${seam} d="M280 200 L520 200 ${back ? "M400 200 L400 380" : ""}"/>`;
-    case "dress":
-      return `<path ${s} d="M320 110 Q400 ${back ? 120 : 170} 480 110 L520 140 L500 330 L640 680 L160 680 L300 330 L280 140 Z"/><path ${seam} d="M300 330 Q400 350 500 330 ${back ? "M400 120 L400 330" : ""}"/>`;
-    case "hoodie":
-      return `<path ${s} d="M300 140 L210 170 L110 470 L180 500 L250 330 L260 660 L540 660 L550 330 L620 500 L690 470 L590 170 L500 140 Q400 ${back ? 60 : 230} 300 140 Z"/><path ${s} d="M300 140 Q400 20 500 140 Q400 ${back ? 120 : 200} 300 140 Z" fill="${shade(fill, 0.85)}"/>${back ? "" : `<path ${seam} d="M310 480 L490 480 L520 600 L280 600 Z"/>`}<path ${seam} d="M260 630 L540 630"/>`;
-    case "shirt":
-    case "tshirt":
-    default: {
-      const long = kind === "shirt";
-      const sleeve = long ? "L110 560 L180 580 L260 300" : "L170 360 L250 390 L260 300";
-      const sleeveR = long ? "L540 300 L620 580 L690 560" : "L540 300 L550 390 L630 360";
-      let d = `<path ${s} d="M310 130 L200 170 ${sleeve} L260 660 L540 660 ${sleeveR} L600 170 L490 130 Q400 ${back ? 150 : 200} 310 130 Z"/>`;
-      if (long && !back)
-        d += `<path fill="${shade(fill, 0.9)}" stroke="${dark}" stroke-width="3" d="M310 130 L360 200 L400 180 L440 200 L490 130 Q400 150 310 130 Z"/><path ${seam} d="M400 185 L400 660"/>${[250, 340, 430, 520, 610].map((y) => `<circle cx="412" cy="${y}" r="7" fill="${shade(fill, 0.6)}"/>`).join("")}`;
-      if (!long)
-        d += `<path fill="none" stroke="${dark}" stroke-width="3" d="M320 140 Q400 ${back ? 160 : 210} 480 140"/>`;
-      return d + `<path ${seam} d="M265 630 L535 630"/>`;
-    }
-  }
 }
 
 function kindOf(text: string) {
@@ -70,20 +52,152 @@ function kindOf(text: string) {
   if (/vestido|dress/i.test(text)) return "dress";
   if (/saia|skirt/i.test(text)) return "skirt";
   if (/cal[çc]a|pants|jeans/i.test(text)) return "pants";
-  if (/camiseta|t-?shirt|malha/i.test(text)) return "tshirt";
+  if (/camiseta|t-?shirt|malha|dry/i.test(text)) return "tshirt";
   return "shirt";
+}
+
+function renderVolumetricGarment(
+  kind: string,
+  back: boolean,
+  printed: boolean,
+  strokeDark: string,
+  collarDark: string,
+): string {
+  const baseFill = printed ? "url(#fabricPrint)" : "url(#torsoVolume)";
+  const stitch = `fill="none" stroke="${strokeDark}" stroke-opacity="0.55" stroke-width="1.6" stroke-dasharray="4 3"`;
+  const drapeCrease = `fill="none" stroke="url(#creaseGrad)" stroke-width="6" stroke-linecap="round" opacity="0.38"`;
+
+  switch (kind) {
+    case "cap":
+      return `
+        <g filter="url(#dropShadow)">
+          <path fill="${baseFill}" stroke="${strokeDark}" stroke-width="2" d="M180 430 C180 220 270 175 400 175 C530 175 620 220 620 430 Z"/>
+          ${
+            back
+              ? `<path fill="${collarDark}" d="M335 430 Q400 365 465 430 Z"/><rect x="355" y="416" width="90" height="14" rx="5" fill="${strokeDark}"/>`
+              : `<path fill="url(#visorGrad)" stroke="${strokeDark}" stroke-width="2" d="M150 425 Q400 378 650 425 Q605 535 400 538 Q195 535 150 425 Z"/>`
+          }
+          <path ${stitch} d="M400 178 L400 418 M285 200 Q268 315 255 422 M515 200 Q532 315 545 422"/>
+          <circle cx="400" cy="177" r="9" fill="${strokeDark}"/>
+        </g>`;
+    case "pants":
+      return `
+        <g filter="url(#dropShadow)">
+          <path fill="${baseFill}" stroke="${strokeDark}" stroke-width="2" d="M258 115 L542 115 L580 685 L446 685 L400 305 L354 685 L220 685 Z"/>
+          <path fill="url(#fabricGrainOverlay)" opacity="0.22" d="M258 115 L542 115 L580 685 L446 685 L400 305 L354 685 L220 685 Z"/>
+          <path ${drapeCrease} d="M300 260 Q292 460 285 660 M500 260 Q508 460 515 660"/>
+          <path ${stitch} d="M258 156 L542 156 ${
+            back
+              ? "M295 205 L362 205 L356 276 L328 292 L301 276 Z M438 205 L505 205 L499 276 L472 292 L444 276 Z"
+              : "M400 156 L400 292 M262 168 Q304 232 332 164 M538 168 Q496 232 468 164"
+          } M222 668 L352 668 M448 668 L578 668"/>
+        </g>`;
+    case "dress":
+      return `
+        <g filter="url(#dropShadow)">
+          <path fill="${baseFill}" stroke="${strokeDark}" stroke-width="2" d="M318 112 Q400 ${back ? 124 : 176} 482 112 L532 142 L498 320 C556 435 608 555 636 685 L164 685 C192 555 244 435 302 320 L268 142 Z"/>
+          <path ${drapeCrease} d="M350 340 Q325 510 295 670 M400 345 L400 675 M450 340 Q475 510 505 670"/>
+          <path ${stitch} d="M302 320 Q400 340 498 320 M170 668 L630 668"/>
+        </g>`;
+    case "skirt":
+      return `
+        <g filter="url(#dropShadow)">
+          <path fill="${baseFill}" stroke="${strokeDark}" stroke-width="2" d="M282 155 L518 155 L618 650 L182 650 Z"/>
+          <path ${drapeCrease} d="M340 220 Q315 430 288 635 M400 220 L400 640 M460 220 Q485 430 512 635"/>
+          <path ${stitch} d="M285 194 L515 194 M188 632 L612 632"/>
+        </g>`;
+    case "hoodie":
+      return `
+        <g filter="url(#dropShadow)">
+          <path fill="${collarDark}" stroke="${strokeDark}" stroke-width="2" d="M292 145 C295 36 505 36 508 145 Q400 185 292 145 Z"/>
+          <path fill="${baseFill}" stroke="${strokeDark}" stroke-width="2" d="M300 138 L202 174 L112 482 L182 508 L254 320 L262 664 L538 664 L546 320 L618 508 L688 482 L598 174 L500 138 Q400 ${back ? 152 : 210} 300 138 Z"/>
+          <path ${drapeCrease} d="M295 250 Q306 430 295 615 M505 250 Q494 430 505 615"/>
+          ${!back ? `<path fill="rgba(0,0,0,0.06)" stroke="${strokeDark}" stroke-opacity="0.5" stroke-width="1.8" d="M308 475 L492 475 L518 608 L282 608 Z"/>` : ""}
+          <rect x="262" y="628" width="276" height="36" rx="4" fill="rgba(0,0,0,0.09)"/>
+          <path ${stitch} d="M262 628 L538 628"/>
+        </g>`;
+    case "shirt":
+    case "tshirt":
+    default: {
+      const isShirt = kind === "shirt";
+      const leftArm = isShirt ? "L114 555 L182 578 L262 296" : "L162 355 L242 388 L262 294";
+      const rightArm = isShirt ? "L538 296 L618 578 L686 555" : "L538 294 L558 388 L638 355";
+      return `
+        <g filter="url(#dropShadow)">
+          ${
+            !back
+              ? `<ellipse cx="400" cy="144" rx="84" ry="26" fill="${collarDark}" stroke="${strokeDark}" stroke-width="1.8"/>`
+              : ""
+          }
+          <path fill="${baseFill}" stroke="${strokeDark}" stroke-width="2" d="M312 128 L200 170 ${leftArm} C266 425 260 545 258 662 Q400 672 542 662 C540 545 534 425 538 294 ${rightArm} L600 170 L488 128 Q400 ${back ? 150 : 196} 312 128 Z"/>
+          <path fill="url(#fabricGrainOverlay)" opacity="0.2" d="M312 128 L200 170 ${leftArm} C266 425 260 545 258 662 Q400 672 542 662 C540 545 534 425 538 294 ${rightArm} L600 170 L488 128 Q400 ${back ? 150 : 196} 312 128 Z"/>
+          <path ${drapeCrease} d="M306 235 Q318 420 296 632 M494 235 Q482 420 504 632 M375 310 Q382 480 370 645"/>
+          ${
+            isShirt && !back
+              ? `<path fill="rgba(255,255,255,0.08)" stroke="${strokeDark}" stroke-width="2" d="M312 128 L358 198 L400 174 L442 198 L488 128 Q400 150 312 128 Z"/>
+                 <rect x="391" y="174" width="18" height="492" fill="rgba(0,0,0,0.05)" stroke="${strokeDark}" stroke-opacity="0.35" stroke-width="1"/>
+                 ${[235, 315, 395, 475, 555].map((y) => `<circle cx="400" cy="${y}" r="5.5" fill="#f8fafc" stroke="${strokeDark}" stroke-width="1.2"/>`).join("")}`
+              : `<path fill="none" stroke="${strokeDark}" stroke-opacity="0.65" stroke-width="7" d="M315 133 Q400 ${back ? 154 : 200} 485 133"/>`
+          }
+          <path ${stitch} d="M262 642 Q400 652 538 642 M262 647 Q400 657 538 647 M202 172 Q242 232 262 294 M598 172 Q558 232 538 294"/>
+        </g>`;
+    }
+  }
 }
 
 export function nativeVisualSvg(input: Input) {
   const kind = kindOf([input.family, input.category, input.name].join(" "));
-  const fill = hex(input.color);
-  const dark = shade(fill, 0.45);
+  const fill = resolveHex(input.color);
+  const highlight = adjustHex(fill, 1.14);
+  const midShadow = adjustHex(fill, 0.86);
+  const deepShadow = adjustHex(fill, 0.62);
+  const collarDark = adjustHex(fill, 0.48);
   const back = /costas|traseir|back/i.test(input.view ?? "");
   const printed = /estamp/i.test(input.color ?? "");
+  const studioBackdrop = input.transparent
+    ? ""
+    : `<rect width="800" height="760" fill="url(#studioCyclorama)"/><ellipse cx="400" cy="708" rx="195" ry="22" fill="rgba(15,23,42,0.16)" filter="url(#floorBlur)"/>`;
+
   return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="760" viewBox="0 0 800 760">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>
-<pattern id="print" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="${fill}"/><circle cx="10" cy="10" r="6" fill="${shade(fill, 0.6)}"/><circle cx="30" cy="30" r="6" fill="${shade(fill, 1.3)}"/></pattern></defs>
-<g>${shape(kind, back, fill, dark, printed)}</g>
+  <defs>
+    <radialGradient id="studioCyclorama" cx="50%" cy="38%" r="68%">
+      <stop offset="0%" stop-color="#f8f9fb"/>
+      <stop offset="70%" stop-color="#eceff3"/>
+      <stop offset="100%" stop-color="#dde2ea"/>
+    </radialGradient>
+    <linearGradient id="torsoVolume" x1="0%" y1="15%" x2="100%" y2="22%">
+      <stop offset="0%" stop-color="${midShadow}"/>
+      <stop offset="24%" stop-color="${highlight}"/>
+      <stop offset="52%" stop-color="${fill}"/>
+      <stop offset="78%" stop-color="${highlight}"/>
+      <stop offset="100%" stop-color="${deepShadow}"/>
+    </linearGradient>
+    <linearGradient id="visorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="${midShadow}"/>
+      <stop offset="100%" stop-color="${deepShadow}"/>
+    </linearGradient>
+    <linearGradient id="creaseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.1"/>
+    </linearGradient>
+    <pattern id="fabricGrainOverlay" width="6" height="6" patternUnits="userSpaceOnUse">
+      <path d="M0 3 H6 M3 0 V6" stroke="#000" stroke-opacity="0.14" stroke-width="0.6"/>
+    </pattern>
+    <pattern id="fabricPrint" width="36" height="36" patternUnits="userSpaceOnUse">
+      <rect width="36" height="36" fill="${fill}"/>
+      <circle cx="9" cy="9" r="5" fill="${deepShadow}" opacity="0.55"/>
+      <circle cx="27" cy="27" r="5" fill="${highlight}" opacity="0.65"/>
+    </pattern>
+    <filter id="dropShadow" x="-12%" y="-8%" width="124%" height="124%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#0f172a" flood-opacity="0.22"/>
+    </filter>
+    <filter id="floorBlur" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+  </defs>
+  ${studioBackdrop}
+  ${renderVolumetricGarment(kind, back, printed, deepShadow, collarDark)}
 </svg>`;
 }
 

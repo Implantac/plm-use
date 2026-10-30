@@ -87,6 +87,7 @@ export function TechSketchPanel({
           if (final) setIsFinal(true);
         },
         reference ?? undefined,
+        { background: "transparent", size: "1536x1024", inputFidelity: "high" },
       ).then(() => setIsFinal(true));
       const [specResult] = await Promise.allSettled([specPromise, imagePromise]).then((r) => {
         if (r[1].status === "rejected")

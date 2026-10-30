@@ -21,11 +21,13 @@ import {
 } from "@/components/ui/dialog";
 import {
   AlertTriangle,
+  Camera,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
   Image as ImageIcon,
   Layers,
+  Loader2,
   MapPin,
   Palette,
   Plus,
@@ -36,6 +38,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { listPalettes } from "@/lib/colors/store";
+import {
+  buildPhotorealisticGarmentPrompt,
+  buildStudioPayloadFromTechSheet,
+  type PhotoStudioPresetId,
+} from "@/lib/ai/photorealism";
+import { streamImage } from "@/lib/streamImage";
+import { storageAssetSource, uploadGeneratedImage } from "@/lib/storage/assets";
 import {
   defaultCalloutsFor,
   defaultColorwaysFor,
@@ -127,6 +136,59 @@ export function GarmentSketchStudio({
   const primaryHex = activeCw?.hex || "#1D6B47";
   const accentHex = activeCw?.secondaryHex || "#EAB308";
   const productTitle = doc.meta?.name || `Camiseta Esportiva Dry Pro`;
+  const setSheetImage = useTechSheetStore((s) => s.setImage);
+
+  const [aiPreset, setAiPreset] = useState<PhotoStudioPresetId>("ghost_mannequin");
+  const [aiPhotoSrc, setAiPhotoSrc] = useState<string | null>(null);
+  const [aiPhotoBusy, setAiPhotoBusy] = useState(false);
+
+  async function renderRealisticFromSheet() {
+    if (aiPhotoBusy) return;
+    setAiPhotoBusy(true);
+    try {
+      const payload = buildStudioPayloadFromTechSheet(refAtual, doc, activeCw?.id);
+      const plan = buildPhotorealisticGarmentPrompt({
+        productName: payload.proposal.name,
+        category: payload.proposal.category,
+        silhouette: payload.proposal.silhouette,
+        materials: payload.proposal.suggestedMaterials,
+        gramaturaGm2: payload.gramaturaGm2,
+        composicao: payload.composicao,
+        colorDescription: activeCw?.name ?? payload.proposal.colors[0],
+        primaryHex: activeCw?.hex,
+        secondaryHex: activeCw?.secondaryHex,
+        constructionDetails: payload.proposal.details,
+        applications: payload.applications,
+        preset: aiPreset,
+        lighting: "softbox_neutro",
+      });
+      let finalDataUrl = "";
+      await streamImage(
+        "/api/generate-image",
+        plan.prompt,
+        (dataUrl) => {
+          finalDataUrl = dataUrl;
+          setAiPhotoSrc(dataUrl);
+        },
+        undefined,
+        { background: plan.background, size: plan.size, inputFidelity: "high" },
+      );
+      if (finalDataUrl) {
+        const storagePath = await uploadGeneratedImage(finalDataUrl);
+        if (storagePath) {
+          const publicUrl = storageAssetSource(storagePath);
+          if (publicUrl.startsWith("https://")) {
+            setSheetImage(refAtual, publicUrl);
+          }
+        }
+        toast.success("Foto realista HD gerada a partir da engenharia da ficha!");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Falha ao renderizar foto realista.");
+    } finally {
+      setAiPhotoBusy(false);
+    }
+  }
 
   const cycleSilhouette = () => {
     const idx = SILHOUETTES.findIndex((s) => s.id === silhouette);
@@ -402,18 +464,63 @@ export function GarmentSketchStudio({
 
         {viewMode === "previa3d" && (
           <div className="py-2 space-y-2">
-            <Volumetric3dPreviewSvg
-              primaryHex={primaryHex}
-              accentHex={accentHex}
-              colorName={activeCw?.name ?? "Variante"}
-            />
-            <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-[11px] text-slate-600">
-              <span>Simulação volumétrica Drape 3D · {activeCw?.code}</span>
+            {aiPhotoSrc ? (
+              <div className="relative flex items-center justify-center rounded-md overflow-hidden bg-slate-100 border border-slate-200 min-h-[210px]">
+                <img
+                  src={aiPhotoSrc}
+                  alt={`Render realista ${refAtual}`}
+                  className="max-h-[240px] w-auto object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={() => setAiPhotoSrc(null)}
+                  className="absolute top-1.5 right-1.5 rounded bg-slate-900/75 px-1.5 py-0.5 text-[10px] text-slate-100 hover:bg-slate-900"
+                >
+                  Voltar Drape 3D
+                </button>
+              </div>
+            ) : (
+              <Volumetric3dPreviewSvg
+                primaryHex={primaryHex}
+                accentHex={accentHex}
+                colorName={activeCw?.name ?? "Variante"}
+              />
+            )}
+
+            <div className="flex flex-wrap items-center justify-between gap-1.5 pt-1.5 border-t border-slate-200 text-[11px] text-slate-700">
+              <div className="flex items-center gap-1">
+                <select
+                  aria-label="Modo fotográfico IA"
+                  value={aiPreset}
+                  onChange={(e) => setAiPreset(e.target.value as PhotoStudioPresetId)}
+                  style={{ backgroundColor: "#FFFFFF", color: "#0F172A" }}
+                  className="h-6 rounded border border-slate-300 px-1.5 text-[10px] font-medium"
+                >
+                  <option value="ghost_mannequin">Ghost Mannequin 3D</option>
+                  <option value="editorial_model">Modelo Real 85mm</option>
+                  <option value="macro_textile">Macro Trama 100mm</option>
+                </select>
+                <button
+                  type="button"
+                  disabled={aiPhotoBusy}
+                  onClick={() => void renderRealisticFromSheet()}
+                  style={{ backgroundColor: "#0F172A", color: "#F8FAFC" }}
+                  className="inline-flex h-6 items-center gap-1 rounded px-2 text-[10px] font-semibold hover:opacity-90 disabled:opacity-50"
+                >
+                  {aiPhotoBusy ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Camera className="h-3 w-3" />
+                  )}
+                  Renderizar Foto IA
+                </button>
+              </div>
               <Link
                 to="/ai-center"
-                className="font-semibold text-teal-700 hover:underline inline-flex items-center gap-1"
+                search={{ ref: refAtual } as never}
+                className="font-semibold text-teal-700 hover:underline inline-flex items-center gap-1 text-[10px]"
               >
-                <Sparkles className="w-3 h-3" /> Gerar no AI Studio
+                <Sparkles className="w-3 h-3" /> Estúdio HD
               </Link>
             </div>
           </div>

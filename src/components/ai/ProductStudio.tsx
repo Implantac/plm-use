@@ -6,10 +6,13 @@ import { z } from "zod";
 import {
   ArrowRight,
   Bot,
+  Camera,
+  FileSpreadsheet,
   ImageOff,
   ImagePlus,
   LoaderCircle,
   Save,
+  Sliders,
   Sparkles,
   Trash2,
 } from "lucide-react";
@@ -17,6 +20,16 @@ import { toast } from "sonner";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { nativeProposal } from "@/lib/ai/native-agent";
 import { nativeVisualPng } from "@/lib/ai/native-visual";
+import {
+  buildPhotorealisticGarmentPrompt,
+  buildStudioPayloadFromTechSheet,
+  inferPresetFromView,
+  LIGHTING_PRESETS,
+  PHOTO_STUDIO_PRESETS,
+  type LightingPresetId,
+  type PhotoStudioPresetId,
+} from "@/lib/ai/photorealism";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 import { streamImage } from "@/lib/streamImage";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -242,7 +255,22 @@ export function ProductStudio() {
   const [saving, setSaving] = useState(false);
   const [imageBusy, setImageBusy] = useState(false);
   const [keepIdentity, setKeepIdentity] = useState(true);
-  const [nativeVisual, setNativeVisual] = useState(true);
+  const [nativeVisual, setNativeVisual] = useState(false);
+  const [photoPreset, setPhotoPreset] = useState<PhotoStudioPresetId>("ghost_mannequin");
+  const [lightingPreset, setLightingPreset] = useState<LightingPresetId>("softbox_neutro");
+  const [transparentCutout, setTransparentCutout] = useState(false);
+  const [customPromptOverride, setCustomPromptOverride] = useState("");
+  const [techSheetCtx, setTechSheetCtx] = useState<{
+    ref: string;
+    gramaturaGm2?: number;
+    composicao?: string;
+    primaryHex?: string;
+    secondaryHex?: string;
+    applications: string[];
+  } | null>(null);
+  const [selectedTechRef, setSelectedTechRef] = useState("DEV000006");
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensureTechSheet = useTechSheetStore((s) => s.ensure);
   const [variationColors, setVariationColors] = useState("areia, azul, verde, preto, estampada");
   const [artwork, setArtwork] = useState<{ name: string; dataUrl: string } | null>(null);
   const [artworkError, setArtworkError] = useState("");
@@ -265,6 +293,86 @@ export function ProductStudio() {
     () => (proposal ? buildVariationIdeas(proposal, briefing) : []),
     [proposal, briefing],
   );
+
+  const techSheetRefOptions = useMemo(() => {
+    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
+    for (const k of Object.keys(sheetsMap)) {
+      if (!base.includes(k)) base.push(k);
+    }
+    return base;
+  }, [sheetsMap]);
+
+  function importFromTechSheet(refCode: string) {
+    const doc = sheetsMap[refCode] ?? ensureTechSheet(refCode);
+    const payload = buildStudioPayloadFromTechSheet(refCode, doc);
+    setBriefing(payload.briefing);
+    setTechSheetCtx({
+      ref: refCode,
+      gramaturaGm2: payload.gramaturaGm2,
+      composicao: payload.composicao,
+      primaryHex: payload.primaryHex,
+      secondaryHex: payload.secondaryHex,
+      applications: payload.applications,
+    });
+    setVariationColors(
+      (doc.colorways ?? []).map((c) => `${c.name} ${c.hex}`).join(", ") ||
+        "areia, azul, verde, preto",
+    );
+    applyProposal(payload.proposal as Proposal);
+    setCustomPromptOverride("");
+    toast.success(
+      `Engenharia da ficha ${refCode} importada (tecidos, gramatura, cartela e costuras).`,
+    );
+  }
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const refParam = new URLSearchParams(window.location.search).get("ref")?.trim();
+    if (refParam) {
+      setSelectedTechRef(refParam);
+      importFromTechSheet(refParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const liveRenderPlan = useMemo(() => {
+    if (!proposal) return null;
+    const anchor = keepIdentity
+      ? [...generatedImages]
+          .reverse()
+          .find((img) => img.conceptName === proposal.name && !img.view.startsWith("variação"))
+      : undefined;
+    return buildPhotorealisticGarmentPrompt({
+      productName: proposal.name,
+      category: proposal.category,
+      silhouette: proposal.silhouette,
+      materials: proposal.suggestedMaterials,
+      gramaturaGm2: techSheetCtx?.gramaturaGm2,
+      composicao: techSheetCtx?.composicao,
+      colorDescription: proposal.colors.join(", ") || briefing.colors,
+      primaryHex: techSheetCtx?.primaryHex,
+      secondaryHex: techSheetCtx?.secondaryHex,
+      constructionDetails: proposal.details,
+      applications: techSheetCtx?.applications,
+      visualMood: proposal.visualIdentity?.join(", ") || briefing.mood,
+      view: visualView,
+      preset: photoPreset,
+      lighting: lightingPreset,
+      transparentCutout,
+      keepReferenceIdentity: Boolean(anchor),
+    });
+  }, [
+    proposal,
+    keepIdentity,
+    generatedImages,
+    techSheetCtx,
+    briefing.colors,
+    briefing.mood,
+    visualView,
+    photoPreset,
+    lightingPreset,
+    transparentCutout,
+  ]);
 
   function applyProposal(nextProposal: Proposal) {
     setImageSource(null);
@@ -335,26 +443,31 @@ export function ProductStudio() {
     setImageSource(null);
     let latestImage = "";
 
-    const prompt = anchor
-      ? [
-          `This is the exact same garment shown in the reference image. Preserve its silhouette, proportions, fabric, color, collar, sleeves, trims, prints and construction exactly.`,
-          variationColor
-            ? `Change ONLY the color/print to ${variationColor}; keep the same view and composition.`
-            : `Show it as: ${visualView} view, premium fashion product shot.`,
-          "Garment isolated on a fully transparent background, no floor, no shadow, no backdrop. One garment only. No text, labels or logos.",
-        ].join(" ")
-      : [
-          `Fashion product photography for ${proposal.name}`,
-          `category ${proposal.category || "moda"}`,
-          `silhouette ${proposal.silhouette || "clean"}`,
-          `materials ${proposal.suggestedMaterials.join(", ") || "tecido"}`,
-          `colors ${variationColor || proposal.colors.join(", ") || "neutros"}`,
-          `garment details ${proposal.details.join(", ") || "preserve the described construction"}`,
-          `visual identity ${proposal.visualIdentity?.join(", ") || briefing.mood || "as described"}`,
-          `view ${visualView}`,
-          "premium fashion product shot, garment isolated on a fully transparent background, no floor, no shadow, no backdrop, one garment only, clean composition",
-          "Concept image for design exploration only. Do not add text, labels, logos, technical specifications, or claims about real materials.",
-        ].join(", ");
+    const renderPlan = buildPhotorealisticGarmentPrompt({
+      productName: proposal.name,
+      category: proposal.category,
+      silhouette: proposal.silhouette,
+      materials: proposal.suggestedMaterials,
+      gramaturaGm2: techSheetCtx?.gramaturaGm2,
+      composicao: techSheetCtx?.composicao,
+      colorDescription: variationColor || proposal.colors.join(", ") || briefing.colors,
+      primaryHex: variationColor ? undefined : techSheetCtx?.primaryHex,
+      secondaryHex: variationColor ? undefined : techSheetCtx?.secondaryHex,
+      constructionDetails: proposal.details,
+      applications: techSheetCtx?.applications,
+      visualMood: proposal.visualIdentity?.join(", ") || briefing.mood,
+      view: visualView,
+      preset: photoPreset,
+      lighting: lightingPreset,
+      transparentCutout,
+      keepReferenceIdentity: Boolean(anchor),
+      variationColorOnly: variationColor,
+    });
+
+    const finalPrompt =
+      !variationColor && customPromptOverride.trim()
+        ? customPromptOverride.trim()
+        : renderPlan.prompt;
 
     try {
       if (nativeVisual) {
@@ -362,19 +475,25 @@ export function ProductStudio() {
           family: proposal.family,
           category: proposal.category,
           name: proposal.name,
-          color: variationColor || proposal.colors[0],
+          color: variationColor || techSheetCtx?.primaryHex || proposal.colors[0],
           view: visualView,
+          transparent: renderPlan.background === "transparent",
         });
         setImageSource(latestImage);
       } else {
         await streamImage(
           "/api/generate-image",
-          prompt,
+          finalPrompt,
           (dataUrl) => {
             latestImage = dataUrl;
             setImageSource(dataUrl);
           },
           anchor?.src,
+          {
+            background: renderPlan.background,
+            size: renderPlan.size,
+            inputFidelity: "high",
+          },
         );
       }
       const storagePath = await uploadGeneratedImage(latestImage);
@@ -427,18 +546,19 @@ export function ProductStudio() {
       ARTWORK_TECHNIQUES.find((item) => item.value === artworkTechnique)?.label ?? artworkTechnique;
     const sourceGarment = imageSource;
     const viewLabel = `${visualView} · ${technique} · ${placement}`;
+    const useTransparent = photoPreset === "ghost_mannequin" && transparentCutout;
     const prompt = [
-      "Reference image 1 is the exact garment base. Preserve its silhouette, proportions, construction, fabric, color, camera angle, lighting and transparent background exactly.",
-      "Reference image 2 is the exact artwork/logo to apply. Preserve its shapes, spelling, colors, proportions and visual identity without redesigning it.",
-      `Apply the artwork at: ${placement}. Application technique: ${technique}.`,
+      "STRICT PHOTOGRAPHIC COMPOSITING: Reference image 1 is the exact physical garment photograph. Preserve 100% of its silhouette, proportions, stitching, fabric weave, color, camera perspective, studio lighting and background exactly.",
+      "Reference image 2 is the exact artwork/emblem to apply. Preserve its geometry, typography, colors and proportions without redesigning it.",
+      `Apply the artwork naturally onto the garment at: ${placement}. Industrial technique: ${technique}.`,
       artworkTechnique === "bordado"
-        ? "Render realistic embroidery thread, stitch direction and subtle raised texture."
+        ? "Render realistic 3D satin/tatami embroidery threads with individual stitch direction, subtle fabric puckering at the border and physical thread luster."
         : artworkTechnique === "silk"
-          ? "Render clean screen-print ink integrated with the textile surface."
+          ? "Render authentic plastisol/water-based screen-print ink following the underlying fabric folds, micro-weave texture and studio light falloff."
           : artworkTechnique === "sublimacao"
-            ? "Render dye-sublimation integrated into the fabric fibers with no raised edge."
-            : "Render a clean DTF transfer with accurate color and a subtle film finish.",
-      "Keep the artwork readable and naturally scaled for the selected placement. Do not add any other text, logo, label or decoration. Return one isolated garment on a fully transparent background, with no floor or shadow.",
+            ? "Render dye-sublimation infused directly into the yarn fibers so the knit/weave grain remains 100% visible with zero raised film edge."
+            : "Render a precision DTF / silicone heat-transfer with crisp edges, accurate colors and subtle matte-satin film relief.",
+      "Warp and shade the artwork naturally along the three-dimensional contour and creases of the garment. Do not add any extra text, watermark or decoration.",
     ].join(" ");
 
     setImageBusy(true);
@@ -453,6 +573,11 @@ export function ProductStudio() {
           setImageSource(dataUrl);
         },
         [sourceGarment, artwork.dataUrl],
+        {
+          background: useTransparent ? "transparent" : "opaque",
+          size: PHOTO_STUDIO_PRESETS[photoPreset].defaultSize,
+          inputFidelity: "high",
+        },
       );
       const storagePath = await uploadGeneratedImage(latestImage);
       const createdAt = new Date().toISOString();
@@ -593,8 +718,55 @@ export function ProductStudio() {
             <h2 id="studio-briefing-title" className="text-sm font-semibold text-white">
               Briefing
             </h2>
-            <p className="mt-1 text-xs text-muted-foreground">Contexto fornecido por você</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Contexto criativo ou sincronizado direto da Ficha Técnica
+            </p>
           </div>
+
+          {/* Ponte direta com a Ficha Técnica do PLM */}
+          <div className="rounded-md border border-[#2C6478]/45 bg-[#2C6478]/10 p-3 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 text-2xs font-bold uppercase tracking-wider text-[#1E5568] dark:text-[#7AD4F0]">
+                <FileSpreadsheet className="h-3.5 w-3.5" /> Importar Ficha Técnica
+              </span>
+              {techSheetCtx && (
+                <Badge
+                  variant="outline"
+                  className="text-[10px] font-mono border-emerald-500/40 text-emerald-700 dark:text-emerald-300"
+                >
+                  {techSheetCtx.ref} sincronizada
+                </Badge>
+              )}
+            </div>
+            <div className="flex gap-1.5">
+              <select
+                aria-label="Selecionar Ficha Técnica para renderização realista"
+                value={selectedTechRef}
+                onChange={(e) => setSelectedTechRef(e.target.value)}
+                className="h-8 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground"
+              >
+                {techSheetRefOptions.map((r) => (
+                  <option key={r} value={r}>
+                    {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+                  </option>
+                ))}
+              </select>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-8 text-xs shrink-0"
+                onClick={() => importFromTechSheet(selectedTechRef)}
+              >
+                Carregar Ficha
+              </Button>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Injeta gramatura (g/m²), composição ABNT, hexadecimais Pantone e costuras reais no
+              motor fotográfico.
+            </p>
+          </div>
+
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label htmlFor="studio-official">Modelo oficial (medidas reais)</Label>
@@ -871,19 +1043,23 @@ export function ProductStudio() {
                 <ConceptList label="Pontos para revisão humana" values={proposal.validationNotes} />
               </div>
 
-              <div className="rounded-md border border-border bg-muted/50 p-3">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
-                    Geração visual
+              <div className="rounded-md border border-border bg-muted/50 p-3.5 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="inline-flex items-center gap-1.5 text-2xs font-bold uppercase tracking-[0.05em] text-foreground">
+                    <Camera className="h-3.5 w-3.5 text-[#2A6F7D] dark:text-[#6AD8FA]" /> Diretor de
+                    Fotografia IA · Médio-Formato HD
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {IMAGE_VIEWS.map((view) => (
                       <Button
                         key={view}
                         type="button"
                         size="xs"
                         variant={visualView === view ? "secondary" : "ghost"}
-                        onClick={() => setVisualView(view)}
+                        onClick={() => {
+                          setVisualView(view);
+                          setPhotoPreset(inferPresetFromView(view));
+                        }}
                         className="h-6 rounded-full px-2 text-2xs uppercase"
                       >
                         {view}
@@ -892,28 +1068,136 @@ export function ProductStudio() {
                   </div>
                 </div>
 
-                <label className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    checked={keepIdentity}
-                    onChange={(e) => setKeepIdentity(e.target.checked)}
-                    className="accent-primary"
-                  />
-                  Manter identidade do produto (usa o primeiro visual como referência)
-                </label>
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    checked={nativeVisual}
-                    onChange={(e) => setNativeVisual(e.target.checked)}
-                    className="accent-primary"
-                  />
-                  Agente nativo (desenho local, sem consumir créditos)
-                </label>
+                {/* Controles de Câmera, Estúdio e Microfísica Têxtil */}
+                <div className="grid gap-2.5 sm:grid-cols-2 rounded-md border border-border bg-background/60 p-2.5">
+                  <div className="space-y-1">
+                    <Label
+                      htmlFor="studio-photo-preset"
+                      className="text-2xs uppercase tracking-wider text-muted-foreground"
+                    >
+                      Set Fotográfico & Lente
+                    </Label>
+                    <select
+                      id="studio-photo-preset"
+                      value={photoPreset}
+                      onChange={(e) => setPhotoPreset(e.target.value as PhotoStudioPresetId)}
+                      className="h-8 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                    >
+                      {Object.values(PHOTO_STUDIO_PRESETS).map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.label} ({p.defaultSize})
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[10px] text-muted-foreground leading-snug">
+                      {PHOTO_STUDIO_PRESETS[photoPreset].shortDesc}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label
+                      htmlFor="studio-lighting-preset"
+                      className="text-2xs uppercase tracking-wider text-muted-foreground"
+                    >
+                      Iluminação & Fidelidade de Cor
+                    </Label>
+                    <select
+                      id="studio-lighting-preset"
+                      value={lightingPreset}
+                      onChange={(e) => setLightingPreset(e.target.value as LightingPresetId)}
+                      className="h-8 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                    >
+                      {Object.values(LIGHTING_PRESETS).map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.label}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[10px] text-muted-foreground leading-snug">
+                      Microfísica têxtil ativa (trama, torção de fio, pesponto e caimento real).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-1.5 sm:grid-cols-2">
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <input
+                      type="checkbox"
+                      checked={keepIdentity}
+                      onChange={(e) => setKeepIdentity(e.target.checked)}
+                      className="accent-primary"
+                    />
+                    Trava de identidade (input_fidelity: high)
+                  </label>
+                  <label
+                    className={`flex items-center gap-2 text-xs ${
+                      photoPreset === "ghost_mannequin"
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground/50"
+                    }`}
+                    title={
+                      photoPreset === "ghost_mannequin"
+                        ? "Gera PNG sem fundo para montagem em vitrine"
+                        : "Fotos em modelo, campanha, macro e flat-lay usam fundo real de estúdio para preservar iluminação e sombra natural"
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      checked={photoPreset === "ghost_mannequin" && transparentCutout}
+                      disabled={photoPreset !== "ghost_mannequin"}
+                      onChange={(e) => setTransparentCutout(e.target.checked)}
+                      className="accent-primary"
+                    />
+                    Recorte PNG transparente (só Ghost Mannequin)
+                  </label>
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground sm:col-span-2">
+                    <input
+                      type="checkbox"
+                      checked={nativeVisual}
+                      onChange={(e) => setNativeVisual(e.target.checked)}
+                      className="accent-primary"
+                    />
+                    Prévia local 3D volumétrica (instantânea, sem consumir créditos de IA)
+                  </label>
+                </div>
+
+                {liveRenderPlan && !nativeVisual && (
+                  <details className="rounded border border-border/80 bg-background/50 px-2.5 py-1.5 text-xs">
+                    <summary className="cursor-pointer select-none font-medium text-2xs uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Sliders className="h-3 w-3 text-[#2A6F7D] dark:text-[#6AD8FA]" /> Prompt
+                        Óptico & Microfísica Têxtil ({liveRenderPlan.size} ·{" "}
+                        {liveRenderPlan.background === "transparent"
+                          ? "PNG Alpha"
+                          : "Estúdio Realista"}
+                        )
+                      </span>
+                      <span className="text-[10px] font-mono text-primary">ver / editar</span>
+                    </summary>
+                    <div className="mt-2 space-y-1.5">
+                      <Textarea
+                        aria-label="Prompt fotográfico detalhado"
+                        value={customPromptOverride || liveRenderPlan.prompt}
+                        onChange={(e) => setCustomPromptOverride(e.target.value)}
+                        className="min-h-24 font-mono text-[11px] leading-relaxed"
+                      />
+                      {customPromptOverride && (
+                        <Button
+                          type="button"
+                          size="xs"
+                          variant="ghost"
+                          onClick={() => setCustomPromptOverride("")}
+                        >
+                          Restaurar prompt calibrado automático
+                        </Button>
+                      )}
+                    </div>
+                  </details>
+                )}
+
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
-                    variant="outline"
                     onClick={() => void generateVisual()}
                     disabled={imageBusy}
                     className="w-full"
@@ -923,9 +1207,71 @@ export function ProductStudio() {
                     ) : (
                       <Sparkles className="h-4 w-4" />
                     )}
-                    Gerar visual {visualView}
+                    {nativeVisual
+                      ? `Gerar prévia volumétrica (${visualView})`
+                      : `Renderizar foto realista HD (${visualView})`}
                   </Button>
                 </div>
+
+                {imageBusy && !imageSource && (
+                  <div
+                    className="flex h-72 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border-strong/70 bg-background/50 text-sm text-muted-foreground"
+                    role="status"
+                  >
+                    <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
+                    Renderizando fotografia {visualView} ({PHOTO_STUDIO_PRESETS[photoPreset].label}
+                    )…
+                  </div>
+                )}
+                {imageSource && (
+                  <div className="overflow-hidden rounded-md border border-border bg-background/70">
+                    <img
+                      src={imageSource}
+                      alt={`Conceito visual de ${proposal.name}, ${visualView}`}
+                      className="h-80 w-full object-contain"
+                    />
+                    <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2 text-xs text-muted-foreground">
+                      <span>
+                        Visual {visualView} · {PHOTO_STUDIO_PRESETS[photoPreset].defaultSize} ·
+                        requer validação humana
+                      </span>
+                      <ImageExportMenu
+                        src={imageSource}
+                        baseName={`${proposal.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${visualView}`}
+                      />
+                    </div>
+                  </div>
+                )}
+                {generatedImages.length > 0 && (
+                  <div
+                    className="grid grid-cols-3 gap-2 sm:grid-cols-4"
+                    aria-label="Histórico desta sessão"
+                  >
+                    {generatedImages.map((image) => (
+                      <Button
+                        key={`${image.view}-${image.createdAt}`}
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setImageSource(image.src);
+                          if (!image.application) setVisualView(image.view);
+                        }}
+                        className="h-auto min-w-0 flex-col items-stretch overflow-hidden rounded border border-border p-0 text-left"
+                        aria-label={`Visual ${image.view} para ${image.conceptName}`}
+                      >
+                        <img src={image.src} alt="" className="aspect-square w-full object-cover" />
+                        <span className="block truncate px-1 pt-1 text-2xs text-muted-foreground">
+                          {image.view}
+                        </span>
+                        {image.conceptName !== proposal?.name && (
+                          <span className="block truncate px-1 pb-1 text-2xs text-muted-foreground">
+                            {image.conceptName}
+                          </span>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="mt-3 space-y-2">
                   <p className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
@@ -1056,61 +1402,6 @@ export function ProductStudio() {
                     </FieldMessage>
                   )}
                 </div>
-                {imageBusy && !imageSource && (
-                  <div
-                    className="mt-3 flex h-64 flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border-strong/70 bg-black/10 text-sm text-muted-foreground"
-                    role="status"
-                  >
-                    <LoaderCircle className="h-6 w-6 animate-spin text-primary" />
-                    Criando visual conceitual de {visualView}…
-                  </div>
-                )}
-                {imageSource && (
-                  <div className="mt-3 overflow-hidden rounded-md border border-border bg-black/20">
-                    <img
-                      src={imageSource}
-                      alt={`Conceito visual de ${proposal.name}, ${visualView}`}
-                      className="h-64 w-full object-contain"
-                    />
-                    <div className="flex items-center justify-between gap-3 p-2 text-xs text-muted-foreground">
-                      <span>Conceito visual · requer validação humana</span>
-                      <ImageExportMenu
-                        src={imageSource}
-                        baseName={`${proposal.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${visualView}`}
-                      />
-                    </div>
-                  </div>
-                )}
-                {generatedImages.length > 0 && (
-                  <div
-                    className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4"
-                    aria-label="Histórico desta sessão"
-                  >
-                    {generatedImages.map((image) => (
-                      <Button
-                        key={`${image.view}-${image.createdAt}`}
-                        type="button"
-                        variant="ghost"
-                        onClick={() => {
-                          setImageSource(image.src);
-                          if (!image.application) setVisualView(image.view);
-                        }}
-                        className="h-auto min-w-0 flex-col items-stretch overflow-hidden rounded border border-border p-0 text-left"
-                        aria-label={`Visual ${image.view} para ${image.conceptName}`}
-                      >
-                        <img src={image.src} alt="" className="aspect-square w-full object-cover" />
-                        <span className="block truncate px-1 pt-1 text-2xs text-muted-foreground">
-                          {image.view}
-                        </span>
-                        {image.conceptName !== proposal?.name && (
-                          <span className="block truncate px-1 pb-1 text-2xs text-muted-foreground">
-                            {image.conceptName}
-                          </span>
-                        )}
-                      </Button>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <TechSketchPanel

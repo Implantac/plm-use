@@ -3,9 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 const ImageRequest = z.object({
-  prompt: z.string().trim().min(1).max(4000),
+  prompt: z.string().trim().min(1).max(8000),
   referenceImage: z.string().max(15_000_000).optional(),
   referenceImages: z.array(z.string().max(15_000_000)).min(1).max(2).optional(),
+  background: z.enum(["transparent", "opaque", "auto"]).optional(),
+  size: z.enum(["1024x1024", "1024x1536", "1536x1024", "auto"]).optional(),
+  inputFidelity: z.enum(["high", "low"]).optional(),
 });
 
 function jsonError(message: string, status: number) {
@@ -50,13 +53,16 @@ export const Route = createFileRoute("/api/generate-image")({
         }
         const parsed = ImageRequest.safeParse(payload);
         if (!parsed.success) {
-          return jsonError("Descreva a imagem em até 4.000 caracteres.", 400);
+          return jsonError("Descreva a imagem em até 8.000 caracteres.", 400);
         }
 
         const key = process.env.LOVABLE_API_KEY;
         if (!key) return jsonError("O provedor de imagens não está configurado.", 503);
 
         const model = "openai/gpt-image-2.5-sunburst";
+        const background = parsed.data.background ?? "opaque";
+        const size = parsed.data.size ?? "1024x1024";
+        const inputFidelity = parsed.data.inputFidelity ?? "high";
         const references =
           parsed.data.referenceImages ??
           (parsed.data.referenceImage ? [parsed.data.referenceImage] : []);
@@ -67,7 +73,9 @@ export const Route = createFileRoute("/api/generate-image")({
             form.append("model", model);
             form.append("prompt", parsed.data.prompt);
             form.append("quality", "high");
-            form.append("background", "transparent");
+            form.append("background", background);
+            if (size !== "auto") form.append("size", size);
+            form.append("input_fidelity", inputFidelity);
             form.append("output_format", "png");
             form.append("stream", "true");
             form.append("partial_images", "2");
@@ -105,7 +113,8 @@ export const Route = createFileRoute("/api/generate-image")({
                 model,
                 prompt: parsed.data.prompt,
                 quality: "high",
-                background: "transparent",
+                background,
+                ...(size !== "auto" ? { size } : {}),
                 output_format: "png",
                 stream: true,
                 partial_images: 2,

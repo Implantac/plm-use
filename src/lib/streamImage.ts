@@ -9,6 +9,12 @@ type ImageEvent = {
   message?: string;
 };
 
+export type StreamImageOptions = {
+  background?: "transparent" | "opaque" | "auto";
+  size?: "1024x1024" | "1024x1536" | "1536x1024" | "auto";
+  inputFidelity?: "high" | "low";
+};
+
 function readError(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== "object") return fallback;
   const error = (payload as { error?: unknown }).error;
@@ -25,10 +31,17 @@ export async function streamImage(
   prompt: string,
   onFrame: (dataUrl: string, final: boolean) => void,
   referenceImage?: string | string[],
+  options?: StreamImageOptions,
 ): Promise<void> {
   const { data, error: sessionError } = await supabase.auth.getSession();
   const accessToken = data.session?.access_token;
   if (sessionError || !accessToken) throw new Error("Entre na sua conta para gerar imagens.");
+
+  const baseBody = Array.isArray(referenceImage)
+    ? { prompt, referenceImages: referenceImage }
+    : referenceImage
+      ? { prompt, referenceImage }
+      : { prompt };
 
   const res = await fetch(endpoint, {
     method: "POST",
@@ -36,13 +49,12 @@ export async function streamImage(
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify(
-      Array.isArray(referenceImage)
-        ? { prompt, referenceImages: referenceImage }
-        : referenceImage
-          ? { prompt, referenceImage }
-          : { prompt },
-    ),
+    body: JSON.stringify({
+      ...baseBody,
+      ...(options?.background ? { background: options.background } : {}),
+      ...(options?.size ? { size: options.size } : {}),
+      ...(options?.inputFidelity ? { inputFidelity: options.inputFidelity } : {}),
+    }),
   });
 
   if (!res.ok || !res.body) {
