@@ -159,6 +159,8 @@ export function ItemConsumptionEditor({
     const saved = res.data;
     setRows((current) => current.map((r) => (r.id === saved.id ? saved : r)));
     setDrafts((current) => ({ ...current, [saved.id]: valuesFor(saved) }));
+    onSavingChange(false);
+    onDirtyChange(false);
     setMessage(`Consumo de ${saved.material} salvo e custo recalculado.`);
     onChanged();
   }
