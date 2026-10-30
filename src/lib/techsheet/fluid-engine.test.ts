@@ -17,6 +17,12 @@ import {
 } from "./pricing";
 import { buildCatalogPublicationPlan } from "./publish-catalog";
 import { buildTechSheetPrintHtml } from "./print";
+import {
+  buildCutOrderPrintHtml,
+  buildMrpCsvPtBr,
+  computeMrpCutPlan,
+  findMaterialWhereUsed,
+} from "./mrp";
 import { deserializeTechSheetRow, serializeTechSheetDoc } from "./server";
 import { seedFor } from "./store";
 
@@ -255,5 +261,60 @@ describe("envelope v3 + PDF Facção Cego + Ponte Ficha → Catálogo", () => {
     expect(blindHtml).toContain("Var VD-OURO");
     expect(blindHtml).toContain("Símbolos ISO 3758");
     expect(blindHtml).not.toContain("R$");
+  });
+
+  it("computeMrpCutPlan reconcilia 100% do lote na matriz Cor×Tamanho e calcula compra líquida sobre saldo", () => {
+    const doc = seedFor("DEV000006");
+    // Lote 1000 peças: Malha Dry Fit pede 1000 * 0.26 * 1.07 = 278.2 kg (coberto pelos 1420 kg)
+    // Lote 6000 peças: Malha Dry Fit pede 6000 * 0.26 * 1.07 = 1669.2 kg -> falta comprar 249.2 kg!
+    const plan = computeMrpCutPlan("DEV000006", doc, {
+      totalPieces: 6000,
+      sizeWeights: { PP: 1, P: 2, M: 3, G: 2, GG: 1 },
+    });
+
+    const sumMatrix = plan.matrix.reduce((acc, r) => acc + r.totalColor, 0);
+    expect(sumMatrix).toBe(6000);
+    const sumSizes = Object.values(plan.totalsBySize).reduce((a, b) => a + b, 0);
+    expect(sumSizes).toBe(6000);
+    expect(plan.totalsBySize.M).toBeGreaterThan(plan.totalsBySize.PP);
+
+    const malha = plan.materials[0];
+    expect(malha.necessidadeBruta).toBeCloseTo(1669.2, 1);
+    expect(malha.saldoAlmoxarifado).toBe(1420);
+    expect(malha.faltaComprar).toBeCloseTo(249.2, 1);
+    expect(malha.statusEstoque).toBe("parcial");
+
+    const csv = buildMrpCsvPtBr(plan);
+    expect(csv.startsWith("\uFEFFReferencia;")).toBe(true);
+    expect(csv).toContain("DEV000006;Tecido;");
+
+    const cutHtml = buildCutOrderPrintHtml(
+      { ref: "DEV000006", name: "Camiseta Esportiva Dry Pro", collection: "Verão 2027" },
+      doc,
+      plan,
+      new Date("2026-10-30T12:00:00Z"),
+    );
+    expect(cutHtml).toContain("Ordem de Corte &amp; Separação de Almoxarifado");
+    expect(cutHtml).not.toContain("R$");
+  });
+
+  it("findMaterialWhereUsed identifica vínculo BOM sem confundir lote com SKU e simula reajuste", () => {
+    const doc = seedFor("DEV000006");
+    // Linho Puro com SKU TC-220 NÃO pode casar com lote TC-220 da Malha Dry Fit
+    const falsePositive = findMaterialWhereUsed(
+      { name: "Linho Puro Off-White", sku: "TC-220", unitCost: 42 },
+      { DEV000006: doc },
+    );
+    expect(falsePositive).toHaveLength(0);
+
+    const hits = findMaterialWhereUsed(
+      { name: "Malha Dry Fit UV50+ Microperfurada", sku: "DF-UV50", unitCost: 44.8 },
+      { DEV000006: doc },
+    );
+    expect(hits).toHaveLength(1);
+    expect(hits[0].ref).toBe("DEV000006");
+    // +R$ 5,00/kg * 0.26 kg * 1.07 = +R$ 1,39/peça
+    expect(hits[0].deltaCustoPeca).toBeCloseTo(1.39, 1);
+    expect(hits[0].margemNovaPct).toBeLessThan(hits[0].margemAtualPct);
   });
 });

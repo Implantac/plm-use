@@ -46,6 +46,12 @@ import {
   type TechSheetLifecycleStage,
 } from "@/lib/techsheet/store";
 import { buildTechSheetPrintHtml, openPrintWindow } from "@/lib/techsheet/print";
+import {
+  buildCutOrderPrintHtml,
+  buildMrpCsvPtBr,
+  computeMrpCutPlan,
+  DEFAULT_SIZE_WEIGHTS,
+} from "@/lib/techsheet/mrp";
 import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
 import { publishTechSheetToCatalog } from "@/lib/techsheet/publish-catalog";
 import {
@@ -135,22 +141,59 @@ function TechSheetPage() {
 
   const [erpOpen, setErpOpen] = useState(false);
   const [opCustomer, setOpCustomer] = useState("");
-  const [opQtyPerSize, setOpQtyPerSize] = useState(40);
+  const [opTotalPieces, setOpTotalPieces] = useState(300);
+  const [sizeWeights, setSizeWeights] = useState<Record<string, number>>(() => ({
+    ...DEFAULT_SIZE_WEIGHTS,
+  }));
 
   const pricing = useMemo(() => computeFullTechSheetPricing(doc), [doc]);
   const skuExplosion = useMemo(() => buildUseCloudSkuExplosion(doc), [doc]);
+  const mrpPlan = useMemo(
+    () =>
+      computeMrpCutPlan(activeRef, doc, {
+        totalPieces: opTotalPieces,
+        sizeWeights,
+      }),
+    [activeRef, doc, opTotalPieces, sizeWeights],
+  );
   const opPreview = useMemo(() => {
-    const sizes = doc.medidas?.tamanhos ?? defaultMedidasFor().tamanhos;
-    const activeCw = colorways.find((c) => c.id === activeCwId) ?? colorways[0];
+    const gradeCells: Array<{ colorCode: string; size: string; quantity: number }> = [];
+    for (const row of mrpPlan.matrix) {
+      for (const s of mrpPlan.sizes) {
+        const qty = row.bySize[s] ?? 0;
+        if (qty > 0) gradeCells.push({ colorCode: row.colorCode, size: s, quantity: qty });
+      }
+    }
     return buildUseCloudProductionOrderPayload(doc, {
       customerCode: opCustomer,
-      grade: sizes.map((size) => ({
-        colorCode: activeCw?.code ?? "UN",
-        size,
-        quantity: Math.max(0, opQtyPerSize),
-      })),
+      grade: gradeCells,
     });
-  }, [doc, colorways, activeCwId, opCustomer, opQtyPerSize]);
+  }, [doc, opCustomer, mrpPlan]);
+
+  const downloadMrpCsv = () => {
+    if (typeof window === "undefined") return;
+    const csv = buildMrpCsvPtBr(mrpPlan);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `MRP_COMPRAS_${activeRef}_${mrpPlan.totalPieces}pcs.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Planilha MRP (${activeRef}) exportada em CSV PT-BR!`);
+  };
+
+  const printCutOrder = () => {
+    const html = buildCutOrderPrintHtml(
+      { ref: activeRef, name: productName, collection: productCollection },
+      doc,
+      mrpPlan,
+      new Date(),
+    );
+    if (!openPrintWindow(html)) {
+      toast.warning("Libere pop-ups para imprimir a Ordem de Corte A4.");
+    }
+  };
 
   const availableRefs = useMemo(() => {
     const set = new Set<string>(["DEV000006", activeRef]);
@@ -680,71 +723,198 @@ function TechSheetPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog: Explosão de SKUs & Ordem de Produção UseCloud (sem cliente obrigatório) */}
+      {/* Dialog: Ordem de Corte Proporcional, Explosão MRP Líquida & SKUs UseCloud */}
       <Dialog open={erpOpen} onOpenChange={setErpOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              Explosão de SKUs ({skuExplosion.length}) &amp; Simulador OP UseCloud ({activeRef})
+              Ordem de Corte, Explosão MRP Líquida &amp; SKUs UseCloud ({activeRef})
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 py-1 text-xs max-h-[68vh] overflow-y-auto">
-            <div className="rounded-lg border border-teal-500/35 bg-teal-500/10 p-3 flex items-center justify-between flex-wrap gap-2">
-              <div>
-                <p className="font-semibold text-foreground">
-                  Modalidade OP:{" "}
-                  <span className="font-mono text-teal-700 dark:text-teal-300">
-                    {opPreview.tipoOp}
-                  </span>
-                </p>
-                <p className="text-2xs text-muted-foreground">
-                  Permite emitir OP para Estoque Próprio de coleção sem obrigar vínculo de cliente.
-                </p>
+          <div className="space-y-4 py-1 text-xs max-h-[72vh] overflow-y-auto">
+            {/* Cabeçalho do Lote + Curva de Grade Comercial */}
+            <div className="rounded-lg border border-teal-500/35 bg-teal-500/10 p-3 space-y-2.5">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <p className="font-semibold text-foreground">
+                    Modalidade OP:{" "}
+                    <span className="font-mono text-teal-700 dark:text-teal-300">
+                      {opPreview.tipoOp}
+                    </span>{" "}
+                    · Compra Sugerida:{" "}
+                    <strong className="font-mono">{brl(mrpPlan.custoCompraTotal)}</strong>
+                  </p>
+                  <p className="text-2xs text-muted-foreground">
+                    Distribui o lote pela curva da grade e mix das variantes, descontando o saldo
+                    atual do almoxarifado.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div>
+                    <Label className="text-[10px]">Lote Total (pçs)</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={opTotalPieces}
+                      onChange={(e) =>
+                        setOpTotalPieces(Math.max(1, Math.round(Number(e.target.value) || 1)))
+                      }
+                      className="h-7 w-24 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[10px]">Cliente (opcional)</Label>
+                    <Input
+                      placeholder="Estoque Próprio"
+                      value={opCustomer}
+                      onChange={(e) => setOpCustomer(e.target.value)}
+                      className="h-7 w-36 text-xs"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div>
-                  <Label className="text-[10px]">Qtd/Tam</Label>
-                  <Input
-                    type="number"
-                    value={opQtyPerSize}
-                    onChange={(e) => setOpQtyPerSize(Math.max(1, Number(e.target.value) || 1))}
-                    className="h-7 w-20 font-mono text-xs"
-                  />
-                </div>
-                <div>
-                  <Label className="text-[10px]">Cliente (opcional)</Label>
-                  <Input
-                    placeholder="Estoque Próprio"
-                    value={opCustomer}
-                    onChange={(e) => setOpCustomer(e.target.value)}
-                    className="h-7 w-36 text-xs"
-                  />
-                </div>
+
+              {/* Pesos Proporcionais da Curva de Grade (ex.: 1-2-3-2-1) */}
+              <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-border/50">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Curva de Grade:
+                </span>
+                {mrpPlan.sizes.map((s) => (
+                  <label key={s} className="inline-flex items-center gap-1 text-2xs font-mono">
+                    <span className="font-bold text-foreground">{s}:</span>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={mrpPlan.sizeWeights[s] ?? 1}
+                      onChange={(e) =>
+                        setSizeWeights({
+                          ...sizeWeights,
+                          [s]: Math.max(0, Number(e.target.value) || 0),
+                        })
+                      }
+                      className="h-6 w-12 text-center font-mono text-2xs px-1"
+                    />
+                  </label>
+                ))}
               </div>
             </div>
 
+            {/* 1. Matriz de Corte Proporcional (Cor × Tamanho = Peças) */}
             <div>
               <h4 className="text-2xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
-                Necessidade Explosão de MP p/ Lote ({opPreview.totalQuantity} peças)
+                1. Grade Proporcional de Corte ({mrpPlan.totalPieces} peças ·{" "}
+                {mrpPlan.enfestoFolhasEstimadas} folhas no enfesto)
               </h4>
-              <div className="rounded border border-border overflow-hidden">
+              <div className="rounded border border-border overflow-x-auto">
                 <table className="w-full text-2xs">
                   <thead className="bg-muted/50 text-muted-foreground">
                     <tr>
-                      <th className="py-1.5 px-2 text-left">Material</th>
-                      <th className="py-1.5 px-2 text-right">Qtd c/ Quebra</th>
-                      <th className="py-1.5 px-2 text-right">Custo Previsto</th>
+                      <th className="py-1.5 px-2 text-left">Variante de Cor</th>
+                      <th className="py-1.5 px-2 text-right">Mix</th>
+                      {mrpPlan.sizes.map((s) => (
+                        <th key={s} className="py-1.5 px-2 text-right font-mono">
+                          {s}
+                        </th>
+                      ))}
+                      <th className="py-1.5 px-2 text-right">Total Cor</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50 font-mono">
+                    {mrpPlan.matrix.map((row) => (
+                      <tr key={row.colorwayId}>
+                        <td className="py-1.5 px-2 font-sans">
+                          <span className="inline-flex items-center gap-1.5 font-medium">
+                            <span
+                              className="w-2.5 h-2.5 rounded-full border border-border"
+                              style={{ backgroundColor: row.hex }}
+                            />
+                            <strong className="font-mono">{row.colorCode}</strong> · {row.colorName}
+                          </span>
+                        </td>
+                        <td className="py-1.5 px-2 text-right text-muted-foreground">
+                          {row.mixPct}%
+                        </td>
+                        {mrpPlan.sizes.map((s) => (
+                          <td key={s} className="py-1.5 px-2 text-right">
+                            {row.bySize[s] ?? 0}
+                          </td>
+                        ))}
+                        <td className="py-1.5 px-2 text-right font-bold">{row.totalColor}</td>
+                      </tr>
+                    ))}
+                    <tr className="bg-muted/30 font-bold">
+                      <td className="py-1.5 px-2 font-sans">Total por Tamanho</td>
+                      <td className="py-1.5 px-2 text-right">100%</td>
+                      {mrpPlan.sizes.map((s) => (
+                        <td key={s} className="py-1.5 px-2 text-right">
+                          {mrpPlan.totalsBySize[s] ?? 0}
+                        </td>
+                      ))}
+                      <td className="py-1.5 px-2 text-right text-teal-600 dark:text-teal-300">
+                        {mrpPlan.totalPieces}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 2. Explosão MRP Líquida (Bruto c/ Quebra vs Saldo Almoxarifado = Falta Comprar) */}
+            <div>
+              <h4 className="text-2xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+                2. Explosão MRP Líquida ({mrpPlan.itensComFalta} item(ns) com necessidade de compra)
+              </h4>
+              <div className="rounded border border-border overflow-x-auto">
+                <table className="w-full text-2xs">
+                  <thead className="bg-muted/50 text-muted-foreground">
+                    <tr>
+                      <th className="py-1.5 px-2 text-left">Material &amp; Explosão por Cor</th>
+                      <th className="py-1.5 px-2 text-right">Bruto c/ Quebra</th>
+                      <th className="py-1.5 px-2 text-right">Saldo Almox.</th>
+                      <th className="py-1.5 px-2 text-right">Falta Comprar</th>
+                      <th className="py-1.5 px-2 text-right">Compra R$</th>
+                      <th className="py-1.5 px-2 text-center">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/50">
-                    {opPreview.materiaisNecessarios.map((m, idx) => (
-                      <tr key={idx}>
-                        <td className="py-1.5 px-2 font-medium">{m.material}</td>
-                        <td className="py-1.5 px-2 text-right font-mono">
-                          {m.consumoTotalComPerda} {m.unidade}
+                    {mrpPlan.materials.map((m) => (
+                      <tr key={m.bomId}>
+                        <td className="py-1.5 px-2">
+                          <div className="font-medium text-foreground">{m.material}</div>
+                          <div className="text-[10px] text-muted-foreground">
+                            {m.porVariante
+                              .map((v) => `${v.colorCode}: ${v.qtdBruta} ${m.unidade}`)
+                              .join(" · ")}
+                          </div>
                         </td>
                         <td className="py-1.5 px-2 text-right font-mono">
-                          {brl(m.custoPrevistoTotal)}
+                          {m.necessidadeBruta} {m.unidade}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
+                          {m.saldoAlmoxarifado} {m.unidade}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-mono font-bold">
+                          {m.faltaComprar} {m.unidade}
+                        </td>
+                        <td className="py-1.5 px-2 text-right font-mono">
+                          {brl(m.custoCompraSugerida)}
+                        </td>
+                        <td className="py-1.5 px-2 text-center">
+                          <span
+                            className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold ${
+                              m.statusEstoque === "coberto"
+                                ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                                : m.statusEstoque === "parcial"
+                                  ? "bg-amber-500/18 text-amber-800 dark:text-amber-300"
+                                  : "bg-destructive/15 text-destructive"
+                            }`}
+                          >
+                            {m.statusEstoque === "coberto"
+                              ? "Coberto"
+                              : m.statusEstoque === "parcial"
+                                ? "Parcial"
+                                : "Comprar"}
+                          </span>
                         </td>
                       </tr>
                     ))}
@@ -753,11 +923,12 @@ function TechSheetPage() {
               </div>
             </div>
 
+            {/* 3. Grade de SKUs Gerada */}
             <div>
               <h4 className="text-2xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
-                Grade de SKUs Gerada ({skuExplosion.length} SKUs: Cor × Tamanho)
+                3. Grade de SKUs UseCloud ({skuExplosion.length} SKUs: Cor × Tamanho)
               </h4>
-              <div className="rounded border border-border max-h-44 overflow-y-auto">
+              <div className="rounded border border-border max-h-36 overflow-y-auto">
                 <table className="w-full text-2xs">
                   <thead className="bg-muted/50 text-muted-foreground sticky top-0">
                     <tr>
@@ -787,21 +958,29 @@ function TechSheetPage() {
               </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (typeof navigator !== "undefined" && navigator.clipboard) {
-                  void navigator.clipboard.writeText(
-                    JSON.stringify({ skus: skuExplosion, op: opPreview }, null, 2),
-                  );
-                  toast.success("Payload JSON UseCloud (SKUs + OP) copiado!");
-                }
-              }}
-            >
-              <GitCompare className="w-3.5 h-3.5 mr-1" /> Copiar Payload JSON
-            </Button>
+          <DialogFooter className="flex items-center justify-between sm:justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Button variant="outline" size="sm" onClick={printCutOrder}>
+                <Scissors className="w-3.5 h-3.5 mr-1 text-teal-500" /> Ordem de Corte A4
+              </Button>
+              <Button variant="outline" size="sm" onClick={downloadMrpCsv}>
+                <FileSpreadsheet className="w-3.5 h-3.5 mr-1 text-teal-500" /> CSV Compras/MRP
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && navigator.clipboard) {
+                    void navigator.clipboard.writeText(
+                      JSON.stringify({ skus: skuExplosion, op: opPreview, mrp: mrpPlan }, null, 2),
+                    );
+                    toast.success("Payload JSON UseCloud (SKUs + OP + MRP) copiado!");
+                  }
+                }}
+              >
+                <GitCompare className="w-3.5 h-3.5 mr-1" /> Copiar JSON
+              </Button>
+            </div>
             <Button size="sm" onClick={() => setErpOpen(false)}>
               Fechar
             </Button>

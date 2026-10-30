@@ -71,6 +71,26 @@ export const materialsSeed: MaterialItem[] = [
     sku: "EP-LUX",
     notes: "",
   },
+  {
+    id: "mat-05",
+    name: "Malha Dry Fit UV50+ Microperfurada",
+    tipo: "Tecido",
+    supplier: "Têxtil Camargo",
+    unit: "kg",
+    unitCost: 39.8,
+    sku: "DF-UV50",
+    notes: "Largura útil 1,80 m · Gramatura 135 g/m² · Rendimento 4,12 m/kg.",
+  },
+  {
+    id: "mat-06",
+    name: "Ribana Gola V Listrada Poliéster",
+    tipo: "Tecido",
+    supplier: "Malharia Sul",
+    unit: "kg",
+    unitCost: 48.5,
+    sku: "RB-105",
+    notes: "Punho/gola retilínea bicolor de alta recuperação elástica.",
+  },
 ];
 
 let items: MaterialItem[] = [...materialsSeed];

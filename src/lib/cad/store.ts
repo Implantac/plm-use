@@ -18,6 +18,8 @@ export type CadMarkerItem = {
   eficienciaPct: number;
   larguraEnfestoM: number;
   comprimentoRiscoM: number;
+  pecasNoRisco?: number;
+  gramaturaGm2?: number;
   encolhimentoUrdumePct: number;
   encolhimentoTramaPct: number;
   status: CadStatus;
@@ -35,12 +37,14 @@ export const initialCadMarkers: CadMarkerItem[] = [
     version: "v4.2",
     eficienciaPct: 88.3,
     larguraEnfestoM: 1.8,
-    comprimentoRiscoM: 4.65,
+    comprimentoRiscoM: 5.35,
+    pecasNoRisco: 5,
+    gramaturaGm2: 135,
     encolhimentoUrdumePct: 2.0,
     encolhimentoTramaPct: 1.5,
     status: "Aprovado",
     updatedAt: "2026-10-30",
-    notes: "Grade PP ao GG casada para malha tubular/aberta 1,80 m.",
+    notes: "Grade PP ao GG (5 peças no risco) casada para malha 1,80 m · 135 g/m².",
   },
   {
     id: "cad-2",
@@ -52,6 +56,8 @@ export const initialCadMarkers: CadMarkerItem[] = [
     eficienciaPct: 84.5,
     larguraEnfestoM: 1.48,
     comprimentoRiscoM: 5.1,
+    pecasNoRisco: 4,
+    gramaturaGm2: 185,
     encolhimentoUrdumePct: 3.5,
     encolhimentoTramaPct: 2.0,
     status: "Produção",
