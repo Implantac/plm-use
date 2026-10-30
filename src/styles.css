@@ -22,54 +22,50 @@
  * Neutros de grafite, verde-jade de marca e acentos de status distintos.
  * ------------------------------------------------------------------------ */
 :root {
-  /* Ink neutral: grafite levemente frio (redesign 26/out — o "quente" casava com
-     o cobre; com marca azul-aço o neutro tende ao slate, como em ERP comercial). */
-  --ink-0: 210 17% 98%;
-  --ink-50: 210 12% 94.5%;
-  --ink-200: 210 9% 78%;
-  --ink-400: 211 8% 59%;
-  --ink-600: 212 8% 41%;
-  --ink-800: 213 9% 17%;
-  --ink-900: 214 10% 13%;
-  --ink-950: 215 11% 9%;
-  --ink-1000: 216 12% 6%;
+  /* Ink neutral: azul-marinho ardósia oceânico (fiel à referência PLM Fluido 2.0:
+     topo #10162B, canvas #192236, cards #222C42, bordas #32405B). */
+  --ink-0: 216 33% 98%;
+  --ink-50: 216 26% 94.5%;
+  --ink-200: 218 20% 79%;
+  --ink-400: 218 22% 65%;
+  --ink-600: 220 22% 43%;
+  --ink-800: 222 30% 22.5%;
+  --ink-900: 222 33% 19%;
+  --ink-950: 221 37% 15.2%;
+  --ink-1000: 226 45% 11.5%;
 
-  /* Brand: DESIGN 05 era cobre saturado (72%). Redesign 26/out: azul-aço calmo
-     (42% de saturação) — a mesma confiança da marca, sem "cores fortes".
-     L*38% no claro entrega 7:1 de contraste com branco em botões. */
-  --brand-50: 210 42% 96%;
-  --brand-200: 212 30% 78%;
-  --brand-500: 212 42% 38%;
-  --brand-700: 212 48% 26%;
-  --brand-900: 212 52% 16%;
+  /* Brand: Azul-Petróleo / Ciano Oceânico (fiel aos realces #3B6376 / #4097A1 / #48CAFA
+     da tela ideal do PLM Fluido). L*35% no claro garante contraste AA em botões. */
+  --brand-50: 194 46% 96%;
+  --brand-200: 193 38% 78%;
+  --brand-500: 194 48% 35%;
+  --brand-700: 197 54% 26%;
+  --brand-900: 202 58% 17%;
 
-  /* Accent: o âmbar 85% era o segundo grito. Vira areia quente discreta. */
-  --glow-500: 36 34% 52%;
-  --glow-700: 36 40% 36%;
+  /* Accent: Oliva-Areia dourado suave (fiel ao pill 'Custo Ind.' #A19B77 da imagem). */
+  --glow-500: 51 21% 52%;
+  --glow-700: 50 28% 36%;
 
-  /* Accent secundário: bronze -> slate profundo (série de gráfico/realce fino) */
-  --wine-500: 213 24% 42%;
-  --wine-700: 213 28% 28%;
+  /* Accent secundário: Petróleo ardósia (#3B6376) */
+  --wine-500: 199 34% 36%;
+  --wine-700: 201 38% 26%;
 
-  /* Status: mantidos semanticamente distintos, com saturação ~40-50% —
-     um sistema de gestão sinaliza por FORMA (badge/ícone) antes de gritar cor. */
-  --info-500: 205 42% 46%;
-  --info-700: 205 52% 33%;
-  --success-500: 152 34% 36%;
-  --success-700: 152 40% 25%;
-  --warning-500: 40 58% 48%;
-  --warning-700: 38 66% 32%;
-  --danger-500: 5 48% 47%;
-  --danger-700: 5 56% 34%;
-  /* Cor SEMÂNTICA para texto de erro (não é a cor de background).
-   * Motivo: usar --destructive (= danger-500, L* 52%) como texto rende
-   * ~3.7:1 sobre superfícies escuras — reprova WCAG AA em fontes pequenas.
-   * Valor do tema claro: vermelho escuro. Em .dark é clareado abaixo. */
-  --danger-text: 5 58% 35%;
-  --neutral-500: 212 8% 50%;
-  --neutral-700: 213 9% 37%;
-  --purple-500: 258 22% 55%;
-  --purple-700: 258 26% 42%;
+  /* Status: calibrados na mesma harmonia oceânica (ciano USECLOUD, jade-sálvia,
+     areia-dourado e coral contido). */
+  --info-500: 196 72% 46%;
+  --info-700: 198 76% 33%;
+  --success-500: 173 36% 37%;
+  --success-700: 174 42% 26%;
+  --warning-500: 48 34% 48%;
+  --warning-700: 45 42% 33%;
+  --danger-500: 4 52% 49%;
+  --danger-700: 4 58% 35%;
+  /* Cor SEMÂNTICA para texto de erro (não é a cor de background). */
+  --danger-text: 4 58% 35%;
+  --neutral-500: 218 16% 52%;
+  --neutral-700: 220 20% 37%;
+  --purple-500: 215 36% 54%;
+  --purple-700: 217 40% 40%;
 }
 
 /* ---------- Semantics — LIGHT (default when no .dark) ------------------- */
@@ -169,20 +165,20 @@
  * Superfícies de grafite com jade como cor de ação e coral só para destaque.
  * ------------------------------------------------------------------------ */
 .dark {
-  --brand-500: 212 50% 62%;
-  --brand-700: 212 46% 72%;
-  --brand-900: 212 40% 82%;
-  /* 23/out — menos contraste esmagador; 26/out — hue quente→slate (mesma
-     família da marca nova; o cobre no claro deixava o escuro "alaranjado"). */
-  --background: 214 17% 9.5%;
-  --foreground: 210 13% 89%;
-  --surface: 214 14% 12.5%;
-  --surface-elevated: 214 13% 16%;
-  --surface-sunken: 216 18% 6.5%;
-  --muted: 214 11% 17%;
-  --muted-foreground: var(--ink-400);
-  --border: 214 10% 21%;
-  --border-strong: 214 10% 30%;
+  --brand-500: 188 46% 48%;
+  --brand-700: 194 68% 62%;
+  --brand-900: 196 78% 78%;
+  /* Paleta Azul-Marinho Ardósia & Petróleo Oceânico (fiel 1:1 à referência visual:
+     Header/Sidebar #10162B, Canvas #192236, Cards #222C42, Elevated #28344E, Bordas #31405C). */
+  --background: 221 37% 15.2%;
+  --foreground: 216 38% 93%;
+  --surface: 222 32% 19.6%;
+  --surface-elevated: 222 30% 23.2%;
+  --surface-sunken: 226 45% 11.5%;
+  --muted: 221 31% 22%;
+  --muted-foreground: 218 22% 66%;
+  --border: 220 29% 27.8%;
+  --border-strong: 218 28% 36%;
   --ring: var(--brand-500);
 
   --card: var(--surface);
@@ -193,43 +189,40 @@
 
   --primary: var(--brand-500);
   --primary-foreground: var(--ink-0);
-  --primary-glow: var(--brand-500);
+  --primary-glow: var(--brand-700);
   --secondary: var(--surface-elevated);
   --secondary-foreground: var(--foreground);
   --accent: var(--muted);
   --accent-foreground: var(--foreground);
   --destructive: var(--danger-500);
   --destructive-foreground: var(--ink-0);
-  /* Sobre grafite, o texto de erro precisa CLAREAR para bater AA (≥4.5:1). */
-  --danger-text: 5 62% 70%;
+  /* Sobre marinho-ardósia, o texto de erro clareia para bater AA (≥4.5:1). */
+  --danger-text: 4 68% 72%;
 
-  /* Sidebar uses a subtle value shift, not a separate blue-black */
+  /* Sidebar e Topbar em marinho profundo #10162B */
   --sidebar: var(--ink-1000);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: 214 13% 14%;
+  --sidebar-accent: 222 34% 18%;
   --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: 214 12% 16%;
+  --sidebar-border: 223 32% 19.5%;
   --sidebar-ring: var(--brand-500);
 
-  /* Elevation dark: quiet neutral edges, minimal colored shadow */
+  /* Elevation dark: quiet oceanic slate edges */
   --elev-0: none;
-  --elev-1: inset 0 0 0 1px hsl(var(--border));
+  --elev-1: inset 0 0 0 1px hsl(var(--border)), 0 4px 14px -4px rgba(8, 12, 26, 0.42);
   --elev-2:
-    inset 0 0 0 1px hsl(var(--border)), 0 8px 24px -8px hsl(var(--brand-900) / 0.24),
-    0 2px 4px -2px rgba(0, 0, 0, 0.5);
+    inset 0 0 0 1px hsl(var(--border)), 0 8px 24px -8px rgba(8, 12, 26, 0.52),
+    0 2px 4px -2px rgba(8, 12, 26, 0.45);
   --elev-3:
-    inset 0 0 0 1px hsl(var(--border-strong)), 0 24px 60px -18px hsl(var(--brand-500) / 0.16),
-    0 10px 24px -8px rgba(0, 0, 0, 0.7);
+    inset 0 0 0 1px hsl(var(--border-strong)), 0 24px 60px -18px hsl(var(--brand-500) / 0.18),
+    0 10px 24px -8px rgba(8, 12, 26, 0.68);
 
-  /* Redesign 26/out: os "glows" viram sombras neutras curtas. Gradiente ember
-     encolhe p/ duas paradas da MESMA matiz (vida sem queima). Nomes preservados —
-     os usos herdam a calmaria sem tocar 100+ arquivos. */
   --gradient-ember: linear-gradient(135deg, hsl(var(--brand-500)) 0%, hsl(var(--brand-700)) 100%);
-  --gradient-forge: linear-gradient(180deg, hsl(var(--ink-950)) 0%, hsl(216 12% 6%) 100%);
-  --shadow-ember: 0 0 0 1px hsl(var(--border)), 0 12px 32px -14px rgba(0, 0, 0, 0.5);
-  --glow-ember: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --gradient-forge: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(223 39% 13.5%) 100%);
+  --shadow-ember: 0 0 0 1px hsl(var(--border)), 0 12px 32px -14px rgba(8, 12, 26, 0.5);
+  --glow-ember: 0 1px 2px rgba(8, 12, 26, 0.3);
   color-scheme: dark;
 }
 
@@ -319,6 +312,43 @@
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
   --font-mono: var(--font-mono);
+
+  /* Escalas harmônicas PLM Fluido 2.0 (fiel 1:1 à imagem de referência):
+     - teal -> Azul-Petróleo / Ciano Oceânico (#3B6376 / #4097A1 / #58B4C7)
+     - emerald -> Verde-Sálvia / Jade Calmo (#4D8F86 / #5F8480)
+     - amber -> Oliva-Areia Dourado Suave (#A19B77 de 'Custo Ind.') */
+  --color-teal-50: #eff9fb;
+  --color-teal-100: #d8f0f5;
+  --color-teal-200: #bce4ee;
+  --color-teal-300: #82cadb;
+  --color-teal-400: #58b4c7;
+  --color-teal-500: #4097a1;
+  --color-teal-600: #3b6376;
+  --color-teal-700: #2e5061;
+  --color-teal-800: #213b48;
+  --color-teal-900: #182b35;
+
+  --color-emerald-50: #eef7f5;
+  --color-emerald-100: #d5ebe7;
+  --color-emerald-200: #b6ddd7;
+  --color-emerald-300: #8ac4bc;
+  --color-emerald-400: #67ada3;
+  --color-emerald-500: #4d8f86;
+  --color-emerald-600: #3d756e;
+  --color-emerald-700: #2e5b55;
+  --color-emerald-800: #224440;
+  --color-emerald-900: #18312e;
+
+  --color-amber-50: #f8f6ec;
+  --color-amber-100: #f0ecd8;
+  --color-amber-200: #eae5c9;
+  --color-amber-300: #d4cca2;
+  --color-amber-400: #b9b184;
+  --color-amber-500: #a19b77;
+  --color-amber-600: #837d5b;
+  --color-amber-700: #656044;
+  --color-amber-800: #4a4631;
+  --color-amber-900: #333021;
 
   /* Compatibilidade (23/out): ~1.400 literais text-white / border-white/x /
      bg-white/x foram escritos antes de existir light mode. Em vez de reescrever
@@ -552,7 +582,11 @@
   background-color: hsl(var(--primary));
 }
 @utility bg-forge {
-  background-color: hsl(var(--ink-950));
+  background: radial-gradient(
+    90% 65% at 50% 0%,
+    hsl(var(--brand-500) / 0.08) 0%,
+    hsl(var(--background)) 72%
+  );
 }
 @utility ring-ember {
   box-shadow: 0 0 0 1px hsl(var(--ring) / 0.35);

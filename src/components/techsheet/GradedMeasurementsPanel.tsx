@@ -259,7 +259,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                       title="Clique no cabeçalho para definir este tamanho como Base da graduação"
                       className={`py-2 px-2 text-center w-16 cursor-pointer select-none transition ${
                         isBase
-                          ? "bg-teal-500/20 text-teal-700 dark:text-teal-300 font-extrabold border-x border-teal-500/45"
+                          ? "bg-[#4097A1]/28 text-teal-800 dark:text-[#DDF6F9] font-extrabold border-x border-[#59B5BF]/55"
                           : "hover:text-foreground"
                       }`}
                     >
@@ -341,7 +341,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                           key={tam}
                           className={`p-1.5 text-center ${
                             isBase
-                              ? "bg-teal-500/12 border-x border-teal-500/35"
+                              ? "bg-[#4097A1]/18 border-x border-[#59B5BF]/45"
                               : isOverridden
                                 ? "bg-amber-500/10"
                                 : ""
@@ -352,9 +352,18 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                             step="0.5"
                             value={val}
                             onChange={(e) => setCellOverride(row, tam, e.target.value)}
+                            style={
+                              isBase
+                                ? {
+                                    backgroundColor: "#4097A1",
+                                    color: "#F4FBFC",
+                                    borderColor: "#63BFC9",
+                                  }
+                                : undefined
+                            }
                             className={`h-7 text-xs text-center font-mono px-1 ${
                               isBase
-                                ? "border-teal-500/50 bg-teal-500/15 text-teal-800 dark:text-teal-200 font-extrabold"
+                                ? "font-extrabold shadow-2xs"
                                 : isOverridden
                                   ? "border-amber-500/50 font-semibold"
                                   : ""

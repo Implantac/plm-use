@@ -393,9 +393,9 @@ function AuthenticatedLayout() {
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
-        {/* Ambient forge glow — halo ember discreto que amarra o tema */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-90 bg-forge" />
-        <header className="relative h-14 border-b border-border flex items-center justify-between gap-4 px-4 lg:px-6 bg-background/70 backdrop-blur-xl z-20">
+        {/* Ambient oceanic slate wash — sutil halo petróleo sobre o canvas #192236 */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-95 bg-forge" />
+        <header className="relative h-14 border-b border-border flex items-center justify-between gap-4 px-4 lg:px-6 bg-surface-sunken/95 backdrop-blur-xl z-20">
           <div className="flex items-center gap-2.5 min-w-0">
             <Button
               variant="ghost"

@@ -303,7 +303,7 @@ function DevelopmentPage() {
           </div>
           <Button
             size="sm"
-            className="h-8 text-2xs gap-1.5 bg-teal-600 hover:bg-teal-500 text-white"
+            className="h-8 text-2xs gap-1.5 bg-teal-600 hover:bg-teal-500 text-[#EEF7FA]"
             onClick={openNewDialog}
           >
             <Plus className="w-3.5 h-3.5" /> Nova Referência PLM

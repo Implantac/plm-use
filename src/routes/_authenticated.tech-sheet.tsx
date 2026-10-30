@@ -236,19 +236,19 @@ function TechSheetPage() {
   return (
     <div className="space-y-4">
       {/* 1. BARRA OPERACIONAL SUPERIOR DO COCKPIT PLM 2.0 */}
-      <div className="rounded-xl border border-border/80 bg-card/70 backdrop-blur-md px-4 py-3 space-y-3">
+      <div className="rounded-xl border border-border/80 bg-card/80 backdrop-blur-md px-4 py-3 space-y-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          {/* Esquerda: Marca PLM + Seletor de Referência + Breadcrumb Rápido */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/15 border border-teal-500/35 px-2.5 py-1 text-2xs font-bold tracking-wider uppercase text-teal-700 dark:text-teal-300">
-              <Layers className="w-3.5 h-3.5" /> USECLOUD · PLM
+          {/* Esquerda: Marca USECLOUD + Seletor de Referência + Nova Ref */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-surface-sunken/80 border border-border px-2.5 py-1 text-2xs font-extrabold tracking-[0.12em] uppercase text-foreground">
+              <Layers className="w-3.5 h-3.5 text-[#48CAFA]" /> USECLOUD
             </span>
 
             <select
               aria-label="Selecionar referência da ficha técnica"
               value={activeRef}
               onChange={(e) => switchRef(e.target.value)}
-              className="h-8 rounded-md border border-border/80 bg-background px-2.5 text-xs font-mono font-bold text-foreground focus:outline-none focus:border-teal-500"
+              className="h-8 rounded-md border border-border/80 bg-surface-sunken/70 px-2.5 text-xs font-mono font-bold text-foreground focus:outline-none focus:border-teal-500"
             >
               {availableRefs.map((r) => (
                 <option key={r} value={r}>
@@ -335,10 +335,11 @@ function TechSheetPage() {
 
             <Button
               size="sm"
-              className="h-8 text-2xs gap-1.5 bg-teal-600 hover:bg-teal-500 text-white"
+              style={{ backgroundColor: "#3B6376", color: "#EEF7FA" }}
+              className="h-8 text-2xs gap-1.5 border border-[#5DAEC6]/50 hover:opacity-95"
               onClick={() => setPubOpen(true)}
             >
-              <Send className="w-3.5 h-3.5" /> Publicar Catálogo
+              <Send className="w-3.5 h-3.5 text-[#7FD4EB]" /> Publicar Catálogo
             </Button>
           </div>
         </div>
@@ -346,7 +347,7 @@ function TechSheetPage() {
         {/* Título Hero Editável Inline (DEV000006 · Camiseta Esportiva Dry Pro · Coleção Verão 2027) */}
         <div className="flex items-baseline justify-between gap-3 flex-wrap pt-0.5">
           <div className="flex items-baseline gap-2 flex-wrap min-w-0 flex-1">
-            <span className="text-lg lg:text-xl font-extrabold font-mono tracking-tight text-teal-600 dark:text-teal-400">
+            <span className="text-lg lg:text-xl font-extrabold font-mono tracking-tight text-foreground">
               {activeRef}
             </span>
             <span className="text-muted-foreground font-bold">·</span>
@@ -400,10 +401,10 @@ function TechSheetPage() {
                 }}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap border transition ${
                   active
-                    ? "bg-teal-500/20 border-teal-500/70 text-teal-800 dark:text-teal-200 font-bold shadow-xs"
+                    ? "bg-[#3B6376] border-[#62B3CB]/70 text-[#EEF7FA] font-bold shadow-xs"
                     : done
-                      ? "bg-emerald-500/8 border-emerald-500/30 text-emerald-700 dark:text-emerald-300"
-                      : "bg-muted/30 border-border/70 text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                      ? "bg-emerald-500/12 dark:bg-[#26364F] border-emerald-500/35 dark:border-[#3F597A]/70 text-emerald-800 dark:text-[#DCE8F8]"
+                      : "bg-surface-sunken/55 border-border/80 text-muted-foreground hover:text-foreground hover:bg-muted/60"
                 }`}
               >
                 {st.label}
@@ -448,7 +449,7 @@ function TechSheetPage() {
                     onClick={() => setTab(item.id)}
                     className={`px-2.5 py-1.5 rounded-md text-2xs font-semibold border transition ${
                       active
-                        ? "border-teal-500/70 bg-teal-500/15 text-teal-800 dark:text-teal-200"
+                        ? "border-[#5AB0C8]/65 bg-[#31556A] text-[#EEF7FA]"
                         : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                   >

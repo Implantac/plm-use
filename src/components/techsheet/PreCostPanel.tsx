@@ -134,7 +134,7 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
             size="sm"
             variant={totals.pricingMode === "divisor" ? "default" : "outline"}
             className={`h-7 text-2xs ${
-              totals.pricingMode === "divisor" ? "bg-teal-600 hover:bg-teal-500 text-white" : ""
+              totals.pricingMode === "divisor" ? "bg-teal-600 hover:bg-teal-500 text-[#EEF7FA]" : ""
             }`}
             onClick={() => updatePreCost(refAtual, { pricingMode: "divisor" })}
           >
@@ -378,7 +378,9 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
                       size="sm"
                       variant={divisorParams.regime === k ? "default" : "outline"}
                       className={`h-6 text-[11px] px-2 ${
-                        divisorParams.regime === k ? "bg-teal-600 hover:bg-teal-500 text-white" : ""
+                        divisorParams.regime === k
+                          ? "bg-teal-600 hover:bg-teal-500 text-[#EEF7FA]"
+                          : ""
                       }`}
                       title={TAX_REGIME_PRESETS[k].hint}
                       onClick={() => applyPreset(k)}

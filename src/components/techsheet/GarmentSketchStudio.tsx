@@ -320,9 +320,9 @@ export function GarmentSketchStudio({
         </div>
       </div>
 
-      {/* 2. Prancheta Branca de Estúdio (Frente + Costas lado a lado como no modelo ideal — imune à inversão light/dark de bg-white) */}
+      {/* 2. Prancheta Estúdio Off-White (#ECEDEE idêntico à referência visual) */}
       <div
-        style={{ backgroundColor: "#F8FAFC", color: "#0F172A", borderColor: "#CBD5E1" }}
+        style={{ backgroundColor: "#ECEDEE", color: "#0F172A", borderColor: "#CBD5E1" }}
         className="rounded-lg border p-2.5 relative shadow-inner overflow-hidden"
       >
         {/* Seletor rápido de vista no canto superior direito da prancheta */}
@@ -512,13 +512,13 @@ export function GarmentSketchStudio({
 
           <div
             onClick={() => onFocusSection?.("sec-roteiro")}
-            className="cursor-pointer rounded-md border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-1 hover:border-emerald-500/60 transition"
+            className="cursor-pointer rounded-md border border-[#5B9D94]/50 bg-[#3B6C66]/45 px-1.5 py-1 hover:border-[#72B9AF] transition"
             title="Mão de Obra Direta / Facção (BOP)"
           >
-            <span className="block text-[9px] uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+            <span className="block text-[9px] uppercase tracking-wider text-emerald-700 dark:text-[#B4E4DC]">
               MO
             </span>
-            <span className="font-mono text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">
+            <span className="font-mono text-[11px] font-semibold text-emerald-800 dark:text-[#DCF6F1]">
               {brl(pricing.bop)}
             </span>
           </div>
@@ -538,13 +538,17 @@ export function GarmentSketchStudio({
 
           <div
             onClick={() => onFocusSection?.("sec-custo")}
-            className="cursor-pointer rounded-md border border-amber-500/45 bg-amber-500/15 px-1.5 py-1 hover:border-amber-500/70 transition"
+            style={{
+              backgroundColor: "rgba(161, 155, 119, 0.34)",
+              borderColor: "rgba(186, 180, 140, 0.55)",
+            }}
+            className="cursor-pointer rounded-md border px-1.5 py-1 hover:opacity-95 transition"
             title="Custo Industrial Direto por peça (MP + MO + Aplicações + Setup/lote)"
           >
-            <span className="block text-[9px] uppercase tracking-wider text-amber-800 dark:text-amber-300 font-semibold">
+            <span className="block text-[9px] uppercase tracking-wider text-amber-800 dark:text-[#EAE4C5] font-semibold">
               Custo Ind.
             </span>
-            <span className="font-mono text-[11px] font-bold text-amber-900 dark:text-amber-200">
+            <span className="font-mono text-[11px] font-bold text-amber-900 dark:text-[#FAF6E4]">
               {brl(pricing.industrial)}
             </span>
           </div>

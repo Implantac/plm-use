@@ -357,7 +357,7 @@ function PrototypesPage() {
                   {prototype.status !== "Aprovado" && (
                     <Button
                       size="sm"
-                      className="h-7 text-2xs gap-1 bg-teal-600 hover:bg-teal-500 text-white"
+                      className="h-7 text-2xs gap-1 bg-teal-600 hover:bg-teal-500 text-[#EEF7FA]"
                       onClick={() => {
                         advanceStage(prototype.id);
                         toast.success(`Piloto ${prototype.id} avançado de etapa.`);
@@ -484,7 +484,7 @@ function PrototypesPage() {
               </Button>
               <Button
                 size="sm"
-                className="bg-teal-600 hover:bg-teal-500 text-white"
+                className="bg-teal-600 hover:bg-teal-500 text-[#EEF7FA]"
                 onClick={handleApproveAndSealPilot}
               >
                 Aprovar &amp; Lacrar Peça Piloto
