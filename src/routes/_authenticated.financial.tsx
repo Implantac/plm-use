@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { createFileRoute } from "@tanstack/react-router";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 import {
-  DollarSign,
-  ArrowUpRight,
   ArrowDownRight,
-  Wallet,
-  Landmark,
-  FileText,
-  ChevronRight,
+  ArrowUpRight,
   BarChart3,
+  ChevronRight,
+  DollarSign,
+  FileText,
+  Landmark,
+  Target,
+  Wallet,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
 import {
@@ -25,34 +26,82 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { buildDrePrintableHtml, computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/financial")({
   component: FinancialPage,
 });
 
+const STORAGE_KEY = "use-moda:financial-cfo-v2";
+
+type TransactionSource = "marketing" | "vendas" | "producao" | "estoque" | "outros";
+interface FinancialTransaction {
+  id: number;
+  label: string;
+  val: string;
+  due: string;
+  source: TransactionSource;
+}
+
+const DEFAULT_TRANSACTIONS: FinancialTransaction[] = [
+  { id: 1, label: "Contas a Receber (B2B)", val: "R$ 342k", due: "15 dias", source: "vendas" },
+  {
+    id: 2,
+    label: "Contas a Pagar (Suppliers)",
+    val: "R$ 124k",
+    due: "08 dias",
+    source: "producao",
+  },
+  { id: 3, label: "Impostos/Fiscal", val: "R$ 42k", due: "02 dias", source: "outros" },
+];
+
 function FinancialPage() {
-  const [financeStats] = useState([
-    { label: "Receita Líquida", value: "R$ 942.500", change: "+14.2%", trend: "up" },
-    { label: "Custo Mercadoria (CMV)", value: "R$ 342.100", change: "+2.4%", trend: "down" },
-    { label: "Margem de Contribuição", value: "62.4%", change: "+3.8%", trend: "up" },
-    { label: "EBITDA Projetado", value: "R$ 212k", change: "+8.5%", trend: "up" },
-  ]);
+  const sheetsMap = useTechSheetStore((s) => s.data);
 
-  const [transactions, setTransactions] = useState([
-    // Mock inicial com fonte (usado pelo BI de Marketing)
-    // Em produção, virá do ERP financeiro.
+  const [fixedOverheadBrl, setFixedOverheadBrl] = useState(85_000);
+  const [otbBudgetBrl, setOtbBudgetBrl] = useState(220_000);
+  const [otbPanelOpen, setOtbPanelOpen] = useState(true);
+  const [transactions, setTransactions] = useState<FinancialTransaction[]>(DEFAULT_TRANSACTIONS);
 
-    { id: 1, label: "Contas a Receber (B2B)", val: "R$ 342k", due: "15 dias", source: "vendas" },
-    {
-      id: 2,
-      label: "Contas a Pagar (Suppliers)",
-      val: "R$ 124k",
-      due: "08 dias",
-      source: "producao",
-    },
-    { id: 3, label: "Impostos/Fiscal", val: "R$ 42k", due: "02 dias", source: "outros" },
-  ]);
-  type Transaction = (typeof transactions)[number] & { source?: string };
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as {
+          fixedOverheadBrl?: number;
+          otbBudgetBrl?: number;
+          transactions?: FinancialTransaction[];
+        };
+        if (typeof parsed.fixedOverheadBrl === "number")
+          setFixedOverheadBrl(parsed.fixedOverheadBrl);
+        if (typeof parsed.otbBudgetBrl === "number") setOtbBudgetBrl(parsed.otbBudgetBrl);
+        if (Array.isArray(parsed.transactions) && parsed.transactions.length > 0)
+          setTransactions(parsed.transactions);
+      }
+    } catch {
+      // ignore corrupted storage
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ fixedOverheadBrl, otbBudgetBrl, transactions }),
+      );
+    } catch {
+      // ignore storage quota
+    }
+  }, [fixedOverheadBrl, otbBudgetBrl, transactions]);
+
+  const dre = useMemo(
+    () => computeCollectionDreSummary(sheetsMap, fixedOverheadBrl, otbBudgetBrl),
+    [sheetsMap, fixedOverheadBrl, otbBudgetBrl],
+  );
+
+  const fmtBrl = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
   const [receber, setReceber] = useState<{ count: number; total: number } | null>(null);
   useEffect(() => {
@@ -69,28 +118,27 @@ function FinancialPage() {
       });
     })();
   }, []);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<FinancialTransaction | null>(null);
   const [formData, setFormData] = useState({
     label: "",
     val: "",
     due: "",
-    source: "marketing" as "marketing" | "vendas" | "producao" | "estoque" | "outros",
+    source: "marketing" as TransactionSource,
   });
 
-  const handleOpenDialog = (transaction?: Transaction) => {
+  const handleOpenDialog = (transaction?: FinancialTransaction) => {
     if (transaction) {
       setEditingTransaction(transaction);
       setFormData({
         label: transaction.label,
         val: transaction.val,
         due: transaction.due,
-        // `source` chega como string do form; só as fontes conhecidas entram,
-        // senão cai no default — substitui o `as any` que mascará o cast.
         source: (["marketing", "vendas", "producao", "estoque", "outros"] as const).includes(
-          transaction.source as (typeof formData)["source"],
+          transaction.source,
         )
-          ? (transaction.source as (typeof formData)["source"])
+          ? transaction.source
           : "marketing",
       });
     } else {
@@ -101,21 +149,18 @@ function FinancialPage() {
   };
 
   const handleSave = () => {
+    if (!formData.label.trim()) {
+      toast.error("Informe o título do lançamento.");
+      return;
+    }
     if (editingTransaction) {
       setTransactions(
         transactions.map((t) => (t.id === editingTransaction.id ? { ...t, ...formData } : t)),
       );
-      toast.success("Lançamento financeiro atualizado");
+      toast.success("Lançamento financeiro atualizado e persistido");
     } else {
-      const newTrans: { id: number } & typeof formData = {
-        id: Date.now(),
-        ...formData,
-      };
-
-      // Normaliza payload legado caso o usuário não preencha fonte
-      if (!newTrans.source) newTrans.source = "marketing";
-      setTransactions([newTrans, ...transactions]);
-      toast.success("Nova transação registrada");
+      setTransactions([{ id: Date.now(), ...formData }, ...transactions]);
+      toast.success("Nova transação registrada e persistida");
     }
     setIsDialogOpen(false);
   };
@@ -125,246 +170,399 @@ function FinancialPage() {
     toast.error("Lançamento removido");
   };
 
+  function printDreReport() {
+    const html = buildDrePrintableHtml(dre);
+    const w = window.open("", "_blank");
+    if (!w) {
+      toast.error("Permita pop-ups para emitir a DRE Gerencial A4.");
+      return;
+    }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 250);
+  }
+
+  const financeStats = [
+    {
+      label: "Receita Líquida Projetada",
+      value: fmtBrl(dre.netRevenue),
+      change: `${dre.totalPieces.toLocaleString("pt-BR")} pçs`,
+      trend: "up" as const,
+    },
+    {
+      label: "Custo Mercadoria (CMV)",
+      value: fmtBrl(dre.cmvTotal),
+      change: `BOM ${fmtBrl(dre.cmvMaterial)}`,
+      trend: "down" as const,
+    },
+    {
+      label: "Margem de Contribuição",
+      value: `${dre.contributionMarginPct.toFixed(1)}%`,
+      change: fmtBrl(dre.contributionMarginBrl),
+      trend: "up" as const,
+    },
+    {
+      label: "EBITDA Projetado",
+      value: fmtBrl(dre.ebitdaBrl),
+      change: `${dre.ebitdaPct.toFixed(1)}% s/ Bruta`,
+      trend: dre.ebitdaBrl >= 0 ? ("up" as const) : ("down" as const),
+    },
+  ];
+
   return (
     <ModuleLayout
-      title="Financeiro"
-      subtitle="Apuração de custos, receitas, margens e rentabilidade por produto e coleção — o cálculo automático depende do ERP. Dados de demonstração — a edição não persiste."
-      version="CFO Dashboard v3.0"
+      title="Financeiro · DRE Têxtil & OTB"
+      subtitle="Apuração integrada às Fichas Técnicas (BOM, BOP e Mark-up Divisor), Ponto de Equilíbrio Operacional e Orçamento Open-To-Buy persistido."
+      version="CFO Dashboard v4.0"
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar lançamento, coleção ou centro de custo"
       metrics={[
-        { label: "Receitas", value: "R$ 942,5k", detail: "realizadas" },
-        { label: "Custos", value: "R$ 342,1k", detail: "produto + produção" },
-        { label: "Marketing", value: "R$ 84k", detail: "campanhas ativas" },
-        { label: "Margem", value: "62,4%", detail: "contribuição" },
+        { label: "Receita Bruta", value: fmtBrl(dre.grossRevenue), detail: "planejada" },
+        { label: "CMV Total", value: fmtBrl(dre.cmvTotal), detail: "BOM + BOP" },
+        {
+          label: "Break-Even",
+          value: `${dre.breakEvenPieces.toLocaleString("pt-BR")} pçs`,
+          detail: fmtBrl(dre.breakEvenRevenueBrl),
+        },
+        {
+          label: "Saldo OTB",
+          value: fmtBrl(dre.otbRemainingBrl),
+          detail: dre.otbRemainingBrl >= 0 ? "dentro do teto" : "estouro OTB",
+        },
       ]}
     >
       {receber && receber.count > 0 && (
-        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-md border border-primary/30 bg-primary/[0.06] p-3 text-xs">
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-md border border-primary/30 bg-primary/[0.06] p-3 text-xs">
           <span className="font-semibold uppercase tracking-[0.04em] text-primary">
-            Dados reais
+            Pedidos Reais Aprovados
           </span>
           <span className="text-muted-foreground">
-            A receber nos pedidos do PLM (aprovados + liberados): {receber.count} pedido(s), total
-            R${" "}
-            {receber.total.toLocaleString("pt-BR", {
-              minimumFractionDigits: 2,
-            })}
-            . Todo o restante desta tela é demonstração.
+            A receber nos pedidos do PLM: {receber.count} pedido(s), total {fmtBrl(receber.total)}.
           </span>
         </div>
       )}
-      <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
-          <FileText className="w-4 h-4" /> DRE Gerencial
+
+      <div className="flex flex-wrap justify-end gap-2.5 mb-5">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setOtbPanelOpen((v) => !v)}
+          className="text-xs gap-2"
+        >
+          <Wallet className="w-4 h-4 text-primary" /> Simulador OTB & Estrutura
         </Button>
-        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
-          <Wallet className="w-4 h-4" /> Conciliação
+        <Button type="button" size="sm" onClick={printDreReport} className="text-xs gap-2">
+          <FileText className="w-4 h-4" /> DRE Gerencial (A4)
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {financeStats.map((stat, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-          >
-            <Card className="glass-card rounded-full p-8 group hover:border-primary/40 transition-all duration-500">
-              <CardHeader className="p-0 mb-4 flex flex-row items-center justify-between">
-                <p className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground group-hover:text-primary transition-colors">
-                  {stat.label}
-                </p>
-                <div className="p-2 rounded-lg bg-muted/50 border border-border/60 group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                  <DollarSign className="w-4 h-4" />
-                </div>
-              </CardHeader>
-              <div className="space-y-2">
-                <p className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">
-                  {stat.value}
-                </p>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`p-1 rounded-full ${stat.trend === "up" ? "bg-status-approved/10 text-status-approved" : "bg-status-rejected/10 text-status-rejected"}`}
-                  >
-                    {stat.trend === "up" ? (
-                      <ArrowUpRight className="w-3 h-3" />
-                    ) : (
-                      <ArrowDownRight className="w-3 h-3" />
-                    )}
-                  </div>
-                  <span
-                    className={`text-2xs font-semibold uppercase tracking-widest ${stat.trend === "up" ? "text-status-approved" : "text-status-rejected"}`}
-                  >
-                    {stat.change}
-                  </span>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 glass-card rounded-full p-10 space-y-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
-              <BarChart3 className="w-5 h-5 text-primary" /> Distribuição de Custos por Unidade
-            </h3>
-            <div className="flex gap-4">
-              <span className="flex items-center gap-2 text-2xs font-bold text-muted-foreground uppercase">
-                <span className="w-2 h-2 rounded-full bg-primary" /> Matéria-Prima
+      {/* Painel Simulador OTB & Ponto de Equilíbrio */}
+      {otbPanelOpen && (
+        <Card className="rounded-xl border-border bg-card p-4 mb-6 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+                Parâmetros Estruturais CFO · Ponto de Equilíbrio & Orçamento de Compras (OTB)
+              </h3>
+            </div>
+            <Badge
+              variant="outline"
+              className={
+                dre.otbRemainingBrl >= 0
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 text-2xs"
+                  : "border-rose-500/40 bg-rose-500/10 text-rose-600 dark:text-rose-300 text-2xs"
+              }
+            >
+              OTB Comprometido:{" "}
+              {dre.otbBudgetBrl > 0
+                ? ((dre.otbCommittedBrl / dre.otbBudgetBrl) * 100).toFixed(1)
+                : 0}
+              % ({fmtBrl(dre.otbCommittedBrl)} de {fmtBrl(dre.otbBudgetBrl)})
+            </Badge>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground block mb-1">
+                Custo Fixo da Coleção (R$)
+              </Label>
+              <Input
+                type="number"
+                step="5000"
+                min="0"
+                value={fixedOverheadBrl}
+                onChange={(e) => setFixedOverheadBrl(Math.max(0, Number(e.target.value) || 0))}
+                className="h-9 font-mono text-xs"
+              />
+            </div>
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground block mb-1">
+                Teto OTB Matéria-Prima (R$)
+              </Label>
+              <Input
+                type="number"
+                step="10000"
+                min="10000"
+                value={otbBudgetBrl}
+                onChange={(e) => setOtbBudgetBrl(Math.max(0, Number(e.target.value) || 0))}
+                className="h-9 font-mono text-xs"
+              />
+            </div>
+            <div className="rounded-lg border border-border/70 bg-muted/30 p-2.5">
+              <span className="text-2xs uppercase text-muted-foreground block">
+                Ponto de Equilíbrio
               </span>
-              <span className="flex items-center gap-2 text-2xs font-bold text-muted-foreground uppercase">
-                <span className="w-2 h-2 rounded-full bg-status-approved" /> Mão de Obra
+              <strong className="font-mono text-sm text-foreground">
+                {dre.breakEvenPieces.toLocaleString("pt-BR")} peças
+              </strong>
+              <span className="text-2xs text-muted-foreground block">
+                {fmtBrl(dre.breakEvenRevenueBrl)}
+              </span>
+            </div>
+            <div className="rounded-lg border border-primary/30 bg-primary/10 p-2.5">
+              <span className="text-2xs uppercase text-primary block">Deduções + Comissões</span>
+              <strong className="font-mono text-sm text-primary">
+                {fmtBrl(dre.taxDeductions + dre.commercialExpenses)}
+              </strong>
+              <span className="text-2xs text-muted-foreground block">
+                Impostos {fmtBrl(dre.taxDeductions)}
               </span>
             </div>
           </div>
-          <div className="h-75 flex items-end gap-6 relative overflow-hidden pt-10">
-            <div className="absolute inset-0 bg-linear-to-t from-primary/5 to-transparent pointer-events-none" />
-            {[45, 65, 35, 85, 55, 75, 95].map((h, i) => (
-              <div key={i} className="flex-1 space-y-2 group cursor-pointer">
-                <div className="relative w-full bg-muted/50 rounded-t-xl overflow-hidden h-full flex flex-col justify-end">
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ delay: i * 0.1, duration: 1.5 }}
-                    className="w-full bg-primary group-hover:bg-primary/80 transition-colors"
-                  />
-                </div>
-                <p className="text-2xs font-bold text-center text-muted-foreground uppercase tracking-widest">
-                  Col {i + 1}
-                </p>
+        </Card>
+      )}
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {financeStats.map((stat) => (
+          <Card
+            key={stat.label}
+            className="glass-card rounded-xl p-5 group hover:border-primary/40 transition-all"
+          >
+            <CardHeader className="p-0 mb-3 flex flex-row items-center justify-between">
+              <p className="text-2xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+                {stat.label}
+              </p>
+              <div className="p-2 rounded-lg bg-muted/50 border border-border/60 text-primary">
+                <DollarSign className="w-4 h-4" />
               </div>
-            ))}
+            </CardHeader>
+            <div className="space-y-1.5">
+              <p className="text-xl font-bold text-foreground tabular-nums tracking-tight">
+                {stat.value}
+              </p>
+              <div className="flex items-center gap-1.5">
+                {stat.trend === "up" ? (
+                  <ArrowUpRight className="w-3.5 h-3.5 text-status-approved" />
+                ) : (
+                  <ArrowDownRight className="w-3.5 h-3.5 text-amber-500" />
+                )}
+                <span className="text-2xs font-mono text-muted-foreground">{stat.change}</span>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* DRE Analítica + Rentabilidade por SKU */}
+        <Card className="lg:col-span-2 glass-card rounded-xl p-5 space-y-5">
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-foreground flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-primary" /> DRE Gerencial da Coleção & Mix de Custo
+              por Referência
+            </h3>
+            <div className="flex gap-4">
+              <span className="flex items-center gap-1.5 text-2xs font-semibold text-muted-foreground uppercase">
+                <span className="w-2.5 h-2.5 rounded-full bg-primary" /> Matéria-Prima (BOM)
+              </span>
+              <span className="flex items-center gap-1.5 text-2xs font-semibold text-muted-foreground uppercase">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Mão de Obra (BOP)
+              </span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto rounded-lg border border-border">
+            <table className="w-full text-xs">
+              <thead className="bg-muted/50 text-2xs uppercase tracking-wider text-muted-foreground">
+                <tr>
+                  <th className="p-2.5 text-left">Referência</th>
+                  <th className="p-2.5 text-right">Tiragem</th>
+                  <th className="p-2.5 text-right">PV Unit.</th>
+                  <th className="p-2.5 text-right">Receita Bruta</th>
+                  <th className="p-2.5 text-right">CMV Total</th>
+                  <th className="p-2.5 text-right">MC (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dre.skus.map((sku) => (
+                  <tr key={sku.refCode} className="border-t border-border/60">
+                    <td className="p-2.5">
+                      <span className="font-mono text-primary mr-1.5">{sku.refCode}</span>
+                      <span className="font-medium text-foreground">{sku.refName}</span>
+                    </td>
+                    <td className="p-2.5 text-right font-mono">{sku.tiragem} pçs</td>
+                    <td className="p-2.5 text-right font-mono">{fmtBrl(sku.unitPrice)}</td>
+                    <td className="p-2.5 text-right font-mono">{fmtBrl(sku.grossRevenue)}</td>
+                    <td className="p-2.5 text-right font-mono">{fmtBrl(sku.cmvTotal)}</td>
+                    <td className="p-2.5 text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                      {sku.contributionMarginPct.toFixed(1)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            {dre.skus.slice(0, 4).map((sku) => {
+              const totalUnit = Math.max(0.01, sku.unitMaterialCost + sku.unitLaborCost);
+              const matPct = Math.round((sku.unitMaterialCost / totalUnit) * 100);
+              const labPct = 100 - matPct;
+              return (
+                <div
+                  key={sku.refCode}
+                  className="rounded-lg border border-border/70 bg-muted/30 p-3 space-y-2"
+                >
+                  <div className="flex justify-between text-2xs">
+                    <span className="font-mono font-semibold text-foreground">{sku.refCode}</span>
+                    <span className="font-mono text-muted-foreground">
+                      R$ {totalUnit.toFixed(2)}/pç
+                    </span>
+                  </div>
+                  <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden flex">
+                    <div className="bg-primary h-full" style={{ width: `${matPct}%` }} />
+                    <div className="bg-emerald-500 h-full" style={{ width: `${labPct}%` }} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">
+                    MP {matPct}% · MOD {labPct}%
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </Card>
 
-        <div className="space-y-8">
-          <Card className="glass-card rounded-full p-10 space-y-8">
-            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-white mb-6">
-              Ativos em Transação
+        <div className="space-y-4">
+          <Card className="glass-card rounded-xl p-5 space-y-4">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-foreground">
+              Títulos & Fluxo em Transação
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               {transactions.map((item) => (
                 <div
                   key={item.id}
-                  className="p-6 rounded-lg bg-muted/50 border border-border/60 hover:border-primary/30 transition-all group relative"
+                  className="p-3.5 rounded-lg bg-muted/40 border border-border/60 hover:border-primary/30 transition-all group relative"
                 >
-                  <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2.5 right-2.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <ModuleActionMenu
                       onEdit={() => handleOpenDialog(item)}
                       onDelete={() => handleDelete(item.id)}
-                      onView={() => toast.info(`Detalhes da transação ${item.label}`)}
+                      onView={() => toast.info(`${item.label} · ${item.val} (${item.due})`)}
                     />
                   </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-2xs font-semibold uppercase tracking-widest text-white">
-                      {item.label}
+                  <div className="flex justify-between items-center mb-1 pr-6">
+                    <p className="text-xs font-semibold text-foreground truncate">{item.label}</p>
+                    <p className="text-xs font-bold font-mono text-foreground shrink-0">
+                      {item.val}
                     </p>
-                    <p className="text-sm font-bold text-white">{item.val}</p>
                   </div>
                   <div className="flex justify-between items-center">
-                    <p className="text-2xs text-muted-foreground uppercase tracking-widest">
-                      Vencimento em {item.due}
+                    <p className="text-2xs text-muted-foreground uppercase tracking-wider">
+                      Vencimento em {item.due} · {item.source}
                     </p>
-                    <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
+                    <ChevronRight className="w-3.5 h-3.5 text-primary" />
                   </div>
                 </div>
               ))}
             </div>
           </Card>
 
-          <Card className="glass-card rounded-full p-10 bg-linear-to-br from-status-approved/10 to-transparent border-status-approved/20">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-status-approved/20 text-status-approved">
-                <Landmark className="w-6 h-6" />
+          <Card className="glass-card rounded-xl p-5 bg-gradient-to-br from-status-approved/10 to-transparent border-status-approved/25">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2.5 rounded-lg bg-status-approved/20 text-status-approved">
+                <Landmark className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-tight">
-                  Saúde Financeira
+                <h3 className="text-xs font-bold text-foreground uppercase tracking-tight">
+                  Saúde Operacional da Coleção
                 </h3>
                 <p className="text-2xs text-status-approved font-semibold uppercase tracking-widest">
-                  Excelente
+                  {dre.ebitdaBrl >= 0 ? "Superavitária" : "Atenção ao Custo Fixo"}
                 </p>
               </div>
             </div>
-            <p className="text-2xs text-muted-foreground font-light leading-relaxed italic lowercase">
-              o fluxo de caixa projetado para o próximo trimestre indica uma reserva de capital 24%
-              superior ao planejado.
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              O ponto de equilíbrio é atingido com{" "}
+              <strong className="text-foreground">
+                {dre.breakEvenPieces.toLocaleString("pt-BR")} peças
+              </strong>{" "}
+              ({((dre.breakEvenPieces / Math.max(1, dre.totalPieces)) * 100).toFixed(0)}% da tiragem
+              planejada).
             </p>
           </Card>
         </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
+            <DialogTitle>
               {editingTransaction ? "Editar Lançamento" : "Novo Lançamento Financeiro"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 py-8">
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Título / Categoria
-              </Label>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label className="text-2xs uppercase text-muted-foreground">Título / Categoria</Label>
               <Input
                 value={formData.label}
                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: Contas a Pagar Fornecedor"
+                placeholder="Ex: Contas a Pagar Tecelagem"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                  Fonte
-                </Label>
-                <Input
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-2xs uppercase text-muted-foreground">Fonte</Label>
+                <select
                   value={formData.source}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      source: e.target.value as typeof formData.source,
-                    })
+                    setFormData({ ...formData, source: e.target.value as TransactionSource })
                   }
-                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                  placeholder="marketing"
-                />
+                  className="h-9 w-full rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
+                >
+                  <option value="producao">Produção / Insumos</option>
+                  <option value="vendas">Vendas B2B</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="estoque">Estoque</option>
+                  <option value="outros">Impostos / Outros</option>
+                </select>
               </div>
-              <div className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                  Valor
-                </Label>
+              <div className="space-y-1.5">
+                <Label className="text-2xs uppercase text-muted-foreground">Valor</Label>
                 <Input
                   value={formData.val}
                   onChange={(e) => setFormData({ ...formData, val: e.target.value })}
-                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
                   placeholder="Ex: R$ 15.000"
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                  Vencimento
-                </Label>
+              <div className="space-y-1.5 col-span-2">
+                <Label className="text-2xs uppercase text-muted-foreground">Vencimento</Label>
                 <Input
                   value={formData.due}
                   onChange={(e) => setFormData({ ...formData, due: e.target.value })}
-                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                  placeholder="Ex: 10 dias"
+                  placeholder="Ex: 28 DDL"
                 />
               </div>
             </div>
           </div>
-          <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-2xs">
-              Efetivar Lançamento
-            </Button>
+            <Button onClick={handleSave}>Efetivar Lançamento</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
