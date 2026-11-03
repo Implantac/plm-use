@@ -1,7 +1,15 @@
 // Módulo de Aprovações — gates do Fluxo do Produto, com status, data e eventos.
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2, Clock, ShieldCheck, Workflow, XCircle } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  FileSpreadsheet,
+  ShieldCheck,
+  Workflow,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +18,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
+import { evaluateTechSheetGateReadiness } from "@/lib/techsheet/cut-order";
+import {
+  LIFECYCLE_STAGES,
+  seedFor,
+  useTechSheetStore,
+  type TechSheetLifecycleStage,
+} from "@/lib/techsheet/store";
 import {
   GATES,
   GATE_STATUS_LABEL,
@@ -58,6 +73,22 @@ const fmt = (iso: string | null) =>
     : "—";
 
 function ApprovalsPage() {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensure = useTechSheetStore((s) => s.ensure);
+  const updateMeta = useTechSheetStore((s) => s.updateMeta);
+  const createVersion = useTechSheetStore((s) => s.createVersion);
+
+  const techSheetGateItems = useMemo(() => {
+    const keys = Array.from(
+      new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
+    );
+    return keys.map((refCode) => {
+      const doc = sheetsMap[refCode] ?? seedFor(refCode);
+      const report = evaluateTechSheetGateReadiness(doc);
+      return { refCode, doc, report };
+    });
+  }, [sheetsMap]);
+
   const { items: refs, loading: loadingRefs } = useReferences();
   const { items: gates, loading, openGate, decide } = useReferenceGates();
   const { openEntity } = useEntityDrawer();
@@ -148,6 +179,107 @@ function ApprovalsPage() {
           </Link>
         </Button>
       </header>
+
+      {/* Governança Stage-Gate das Fichas Técnicas de Engenharia (PLM 2.0) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+            <span>Stage-Gate de Engenharia · Fichas Técnicas PLM (Ciclo 1–7)</span>
+            <Badge variant="outline" className="text-2xs">
+              Auditoria Automática BOM · BOP · POM · ABNT · CAD
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {techSheetGateItems.map(({ refCode, doc, report }) => (
+            <div
+              key={refCode}
+              className="rounded-lg border border-border bg-muted/30 p-3.5 space-y-2.5"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="font-mono text-2xs text-primary">{refCode}</span>
+                  <p className="text-sm font-semibold text-foreground">
+                    {doc.meta?.name || refCode}
+                  </p>
+                  <p className="text-2xs text-muted-foreground">
+                    Etapa atual: <strong>{report.stageLabel}</strong>
+                  </p>
+                </div>
+                <Badge
+                  variant="outline"
+                  className={
+                    report.scorePct >= 80
+                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 text-2xs"
+                      : "border-amber-500/40 bg-amber-500/10 text-amber-500 text-2xs"
+                  }
+                >
+                  Prontidão {report.scorePct}%
+                </Badge>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {report.checks.map((c) => (
+                  <span
+                    key={c.id}
+                    title={c.detail}
+                    className={`rounded px-2 py-0.5 text-[10px] font-medium border ${
+                      c.ok
+                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                        : "border-rose-500/30 bg-rose-500/10 text-rose-500"
+                    }`}
+                  >
+                    {c.ok ? "✓" : "✕"} {c.label}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/60">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  asChild
+                  className="h-7 text-xs gap-1"
+                >
+                  <Link to="/tech-sheet" search={{ ref: refCode } as never}>
+                    <FileSpreadsheet className="h-3.5 w-3.5 text-primary" /> Abrir Ficha
+                  </Link>
+                </Button>
+                {report.nextStageLabel ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={!report.readyToAdvance}
+                    onClick={() => {
+                      ensure(refCode);
+                      const nextStage = Math.min(
+                        7,
+                        report.stageCurrent + 1,
+                      ) as TechSheetLifecycleStage;
+                      const label =
+                        LIFECYCLE_STAGES.find((s) => s.stage === nextStage)?.label ??
+                        `Etapa ${nextStage}`;
+                      updateMeta(refCode, { stage: nextStage, statusLabel: label });
+                      createVersion(refCode, "Comitê Stage-Gate", `Gate aprovado → ${label}`, [
+                        `Prontidão técnica ${report.scorePct}% auditada`,
+                      ]);
+                      toast.success(`${refCode} aprovada para ${label}!`);
+                    }}
+                    className="h-7 text-xs gap-1"
+                  >
+                    Aprovar → {report.nextStageLabel}
+                  </Button>
+                ) : (
+                  <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border-emerald-500/30 text-2xs">
+                    Ciclo Industrial Lacrado (7/7)
+                  </Badge>
+                )}
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

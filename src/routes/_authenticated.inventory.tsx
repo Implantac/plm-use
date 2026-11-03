@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
+import { FabricRollsShadePanel } from "@/components/inventory/FabricRollsShadePanel";
 import { MovementDialog } from "@/components/inventory/MovementDialog";
 import { ReservationDialog } from "@/components/inventory/ReservationDialog";
 import { ReservationsPanel } from "@/components/inventory/ReservationsPanel";
@@ -211,6 +212,8 @@ function InventoryPage() {
           <History className="w-4 h-4" /> Reservar
         </Button>
       </div>
+
+      <FabricRollsShadePanel />
 
       {criticalItems.length > 0 && (
         <Card className="glass-card rounded-lg border border-status-rejected/30 bg-status-rejected/[0.06] mb-6">
