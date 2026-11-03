@@ -517,7 +517,7 @@ function AnalyticsPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
+        <DialogContent className="glass-card border-border bg-popover text-white rounded-xl p-10 max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
               {editingKpi ? "Editar Indicador" : "Adicionar KPI Estratégico"}

@@ -345,7 +345,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Segurança",
     group: "admin",
     crumbs: ["Administração"],
-    vitrine: true,
   },
 
   {

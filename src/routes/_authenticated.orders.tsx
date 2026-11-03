@@ -25,6 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { CostQueueNominalPanel } from "@/components/sales/CostQueueNominalPanel";
 import { OrderDetail } from "@/components/sales/OrderDetail";
 import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import {
@@ -230,6 +231,8 @@ function OrdersPage() {
           </div>
         </div>
       )}
+
+      <CostQueueNominalPanel />
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {FILTERS.map((f) => (

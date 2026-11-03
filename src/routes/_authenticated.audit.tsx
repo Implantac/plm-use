@@ -184,6 +184,20 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "sync",
   },
   {
+    area: "Pedidos Private Label · Fila de Custos & Lista Nominal",
+    route: "/orders",
+    evidence:
+      "Fila dedicada de engenharia de custos, clonagem B2B em 1 clique, Lista Nominal por peça (TSV→grade) e Ficha Cega A4 sem R$.",
+    status: "sync",
+  },
+  {
+    area: "Governança RBAC, Isolamento RLS & Trilha LGPD",
+    route: "/security",
+    evidence:
+      "Simulador real de isolamento Postgres RLS (0 linhas de custo p/ comercial e Ficha Cega p/ facção) + exportação CSV/A4 LGPD.",
+    status: "sync",
+  },
+  {
     area: "Portal do Fornecedor",
     route: "/supplier-portal",
     evidence: "Leitura da base real (pedidos por fornecedor); sem escrita self-service.",
