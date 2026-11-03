@@ -415,6 +415,12 @@ function TechSheetPage() {
 
           <div className="flex items-center gap-3 text-2xs text-muted-foreground">
             <Link
+              to="/prints"
+              className="hover:text-teal-500 transition inline-flex items-center gap-1"
+            >
+              <Layers className="w-3 h-3" /> Estampas
+            </Link>
+            <Link
               to="/cad"
               className="hover:text-teal-500 transition inline-flex items-center gap-1"
             >
@@ -425,6 +431,13 @@ function TechSheetPage() {
               className="hover:text-teal-500 transition inline-flex items-center gap-1"
             >
               <Ruler className="w-3 h-3" /> Pilotagem
+            </Link>
+            <Link
+              to="/digital-twin"
+              search={{ ref: activeRef } as never}
+              className="hover:text-teal-500 transition inline-flex items-center gap-1 font-medium text-teal-600 dark:text-teal-400"
+            >
+              <Boxes className="w-3 h-3" /> Gêmeo 3D
             </Link>
           </div>
         </div>

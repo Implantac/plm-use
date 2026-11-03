@@ -1,20 +1,26 @@
 // H1-03 · Cartela de Estampas (inspirado em Coleção.Moda / Kubix Link / NedGraphics).
-// Biblioteca versionada de estampas com metadados (repeat, cores, técnica, fornecedor).
+// Biblioteca versionada de estampas com metadados (repeat, cores, técnica, fornecedor),
+// diagnóstico químico/industrial IA, geração de arte em PNG transparente, upload real
+// de arquivo, vínculo direto com Aplicações da Ficha Técnica e expansão em tela cheia.
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  AlertTriangle,
   Sparkles,
   Plus,
   Upload,
   CheckCircle2,
   Clock,
+  FileSpreadsheet,
   Link2,
+  Loader2,
   Ruler,
   Layers as LayersIcon,
   History,
   Tag,
   FileImage,
+  Wand2,
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,6 +46,7 @@ import {
 } from "@/components/ui/select";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { ExpandImageBadge, ImageLightbox } from "@/components/ui/image-lightbox";
 import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
@@ -50,6 +57,13 @@ import {
   addVersion,
   type PrintAsset,
 } from "@/lib/prints/store";
+import { APLICACAO_POSICOES_SUGERIDAS } from "@/lib/techsheet/aplicacoes";
+import {
+  analyzePrintTechnicalViability,
+  buildAplicacaoFromPrint,
+} from "@/lib/techsheet/digital-twin";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import { streamImage } from "@/lib/streamImage";
 
 export const Route = createFileRoute("/_authenticated/prints")({
   head: () => ({
@@ -58,7 +72,7 @@ export const Route = createFileRoute("/_authenticated/prints")({
       {
         name: "description",
         content:
-          "Biblioteca versionada de estampas com rapport, técnica, cores, fornecedor de estamparia e uso por referência.",
+          "Biblioteca versionada de estampas com rapport, técnica, cores, fornecedor de estamparia e vínculo direto com a ficha técnica.",
       },
       { property: "og:title", content: "Cartela de Estampas · USE MODA PLM" },
       {
@@ -93,6 +107,18 @@ const TECNICA_LABEL: Record<PrintAsset["tecnica"], string> = {
   sublimacao: "Sublimação",
   silk: "Silk",
 };
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () =>
+      typeof reader.result === "string"
+        ? resolve(reader.result)
+        : reject(new Error("Arquivo inválido."));
+    reader.onerror = () => reject(new Error("Falha ao ler arquivo."));
+    reader.readAsDataURL(file);
+  });
+}
 
 function PrintsRoute() {
   const prints = useSyncExternalStore(
@@ -172,7 +198,7 @@ function PrintsRoute() {
     <ModuleLayout
       title="Cartela de Estampas"
       subtitle="Biblioteca versionada de estampas com técnica, rapport e fornecedor de estamparia. Vincula à ficha técnica e à cartela de cores."
-      version="H1-03 · V4"
+      version="H1-03 · V5"
       searchPlaceholder="Buscar estampa, código ou tag"
       metrics={metrics}
       onAdd={handleAddPrint}
@@ -272,23 +298,66 @@ function PrintsRoute() {
 }
 
 function PrintDetail({ print }: { print: PrintAsset }) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+
+  const lightboxItems = useMemo(() => {
+    const base = [
+      {
+        src: print.cover,
+        alt: print.name,
+        title: `${print.code} · ${print.name}`,
+        subtitle: `${TECNICA_LABEL[print.tecnica]} · ${print.colorCount} cor(es) · Inspeção em tela cheia`,
+        exportBaseName: print.code.toLowerCase(),
+      },
+    ];
+    for (const v of print.versions) {
+      if (!base.some((it) => it.src === v.image)) {
+        base.push({
+          src: v.image,
+          alt: `${print.name} (${v.label})`,
+          title: `${print.code} · ${v.label}`,
+          subtitle: v.note || `Criada em ${v.createdAt}`,
+          exportBaseName: `${print.code.toLowerCase()}-${v.label}`,
+        });
+      }
+    }
+    return base;
+  }, [print]);
+
+  function openLightboxAt(src: string) {
+    const idx = lightboxItems.findIndex((it) => it.src === src);
+    setLightboxIndex(idx >= 0 ? idx : 0);
+    setLightboxOpen(true);
+  }
+
   return (
     <div className="space-y-4">
       <Card className="border-border bg-muted/50 overflow-hidden">
-        <div className="relative aspect-[16/9] bg-black/40">
-          <OptimizedImage
-            src={print.cover}
-            alt={print.name}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+        <div className="group relative aspect-[16/9] bg-black/40 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => openLightboxAt(print.cover)}
+            aria-label={`Ampliar estampa ${print.name} em tela cheia`}
+            className="block h-full w-full cursor-zoom-in text-left"
+          >
+            <ExpandImageBadge />
+            <OptimizedImage
+              src={print.cover}
+              alt={print.name}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          </button>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-2xs font-mono text-white/60 uppercase tracking-widest">
+            <div className="pointer-events-none">
+              <p className="text-2xs font-mono text-slate-300 uppercase tracking-widest">
                 {print.code}
               </p>
-              <h2 className="text-2xl font-bold text-white leading-tight">{print.name}</h2>
-              <p className="text-xs text-white/70 mt-1">
+              <h2 className="text-2xl font-bold text-slate-100 leading-tight">{print.name}</h2>
+              <p className="text-xs text-slate-200 mt-1">
                 {TECNICA_LABEL[print.tecnica]} · {print.season ?? "—"} · {print.brand ?? "—"}
               </p>
             </div>
@@ -299,7 +368,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
                 entityLabel={`${print.code} · ${print.name}`}
                 variant="outline"
                 size="sm"
-                className="gap-1.5 border-border-strong/70 bg-black/40 text-white hover:bg-black/60"
+                className="gap-1.5 border-border-strong/70 bg-black/50 text-slate-100 hover:bg-black/70"
               />
               <Badge
                 variant="outline"
@@ -364,7 +433,7 @@ function PrintDetail({ print }: { print: PrintAsset }) {
             </div>
           )}
 
-          <div className="flex gap-2 pt-2 border-t border-border/60">
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/60">
             <NewVersionDialog printId={print.id} />
             {print.status !== "aprovada" && (
               <Button
@@ -382,22 +451,33 @@ function PrintDetail({ print }: { print: PrintAsset }) {
               variant="outline"
               size="sm"
               className="gap-2"
-              onClick={() => toast.info("Análise IA em breve")}
+              onClick={() => setLinkDialogOpen(true)}
             >
-              <Sparkles className="h-3.5 w-3.5" /> Análise IA
+              <FileSpreadsheet className="h-3.5 w-3.5 text-primary" /> Vincular à Ficha Técnica
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => setAiDialogOpen(true)}
+            >
+              <Sparkles className="h-3.5 w-3.5 text-primary" /> Análise & Variante IA
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Timeline de versões */}
+      {/* Timeline de versões (clicáveis para ampliar em tela cheia) */}
       <Card className="border-border bg-muted/50">
         <CardContent className="p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <History className="h-4 w-4 text-primary" />
-            <span className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
-              Histórico de versões
-            </span>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <History className="h-4 w-4 text-primary" />
+              <span className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
+                Histórico de versões
+              </span>
+            </div>
+            <span className="text-2xs text-muted-foreground">Clique na miniatura para ampliar</span>
           </div>
           <div className="space-y-2">
             {print.versions.map((v) => (
@@ -405,13 +485,18 @@ function PrintDetail({ print }: { print: PrintAsset }) {
                 key={v.id}
                 className="flex items-center gap-3 rounded-md border border-border/60 bg-muted/40 p-2"
               >
-                <div className="h-12 w-12 rounded overflow-hidden border border-border flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => openLightboxAt(v.image)}
+                  aria-label={`Ampliar versão ${v.label}`}
+                  className="h-12 w-12 rounded overflow-hidden border border-border flex-shrink-0 cursor-zoom-in"
+                >
                   <OptimizedImage
                     src={v.image}
                     alt={v.label}
                     className="h-full w-full object-cover"
                   />
-                </div>
+                </button>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white">{v.label}</p>
                   <p className="text-2xs text-muted-foreground truncate">
@@ -424,6 +509,20 @@ function PrintDetail({ print }: { print: PrintAsset }) {
           </div>
         </CardContent>
       </Card>
+
+      <ImageLightbox
+        open={lightboxOpen}
+        onOpenChange={setLightboxOpen}
+        items={lightboxItems}
+        initialIndex={lightboxIndex}
+      />
+
+      <PrintAiDialog print={print} open={aiDialogOpen} onOpenChange={setAiDialogOpen} />
+      <LinkPrintToTechSheetDialog
+        print={print}
+        open={linkDialogOpen}
+        onOpenChange={setLinkDialogOpen}
+      />
     </div>
   );
 }
@@ -440,6 +539,277 @@ function MetaCell({ icon, label, value }: { icon: React.ReactNode; label: string
   );
 }
 
+function PrintAiDialog({
+  print,
+  open,
+  onOpenChange,
+}: {
+  print: PrintAsset;
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+}) {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensure = useTechSheetStore((s) => s.ensure);
+  const [targetRef, setTargetRef] = useState("DEV000006");
+  const [promptExtra, setPromptExtra] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [generatedSrc, setGeneratedSrc] = useState<string | null>(null);
+
+  const targetDoc = useMemo(
+    () => sheetsMap[targetRef] ?? ensure(targetRef),
+    [sheetsMap, targetRef, ensure],
+  );
+  const viability = useMemo(
+    () => analyzePrintTechnicalViability(print, targetDoc),
+    [print, targetDoc],
+  );
+
+  const refOptions = useMemo(() => {
+    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
+    for (const k of Object.keys(sheetsMap)) {
+      if (!base.includes(k)) base.push(k);
+    }
+    return base;
+  }, [sheetsMap]);
+
+  async function generatePrintVariant() {
+    setBusy(true);
+    setGeneratedSrc(null);
+    let finalDataUrl = "";
+    try {
+      const prompt = [
+        `High-precision commercial textile print motif / graphic artwork for fashion apparel: "${print.name}" (${TECNICA_LABEL[print.tecnica]}).`,
+        promptExtra.trim() ? `Variation direction: ${promptExtra.trim()}.` : "",
+        `Color palette limited to ${Math.max(1, print.colorCount)} spot colors (${print.colors.join(", ")}).`,
+        "Clean production-ready graphic artwork isolated on a 100% pure alpha-channel transparent PNG background, crisp edges, zero garment mockup, zero backdrop, zero text watermark.",
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      await streamImage(
+        "/api/generate-image",
+        prompt,
+        (dataUrl) => {
+          finalDataUrl = dataUrl;
+          setGeneratedSrc(dataUrl);
+        },
+        undefined,
+        { background: "transparent", size: "1024x1024", inputFidelity: "high" },
+      );
+
+      if (finalDataUrl) {
+        const nextNum = print.versions.length + 1;
+        addVersion(print.id, {
+          id: `v-${Date.now()}`,
+          label: `v${nextNum} · IA PNG Alpha`,
+          createdAt: new Date().toISOString().slice(0, 10),
+          createdBy: "Agente Têxtil IA",
+          note: promptExtra.trim() || "Arte gerada em fundo PNG transparente",
+          image: finalDataUrl,
+        });
+        toast.success(`Nova versão v${nextNum} gerada em PNG transparente e salva no histórico!`);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Falha ao gerar variante IA.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>
+            Análise Industrial & Variante IA · {print.code} ({TECNICA_LABEL[print.tecnica]})
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 text-xs">
+          <div className="flex items-center justify-between gap-2">
+            <Label htmlFor="print-ai-ref">Validar compatibilidade química contra a Ficha:</Label>
+            <select
+              id="print-ai-ref"
+              value={targetRef}
+              onChange={(e) => setTargetRef(e.target.value)}
+              className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
+            >
+              {refOptions.map((r) => (
+                <option key={r} value={r}>
+                  {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded border border-border bg-muted/40 p-2.5">
+              <span className="text-2xs uppercase text-muted-foreground block">Score Técnico</span>
+              <strong className="font-mono text-sm text-foreground">{viability.score}/100</strong>
+            </div>
+            <div className="rounded border border-border bg-muted/40 p-2.5">
+              <span className="text-2xs uppercase text-muted-foreground block">Custo / Peça</span>
+              <strong className="font-mono text-sm text-foreground">
+                R$ {viability.estimatedUnitCostBrl.toFixed(2)}
+              </strong>
+            </div>
+            <div className="rounded border border-border bg-muted/40 p-2.5">
+              <span className="text-2xs uppercase text-muted-foreground block">Setup Estimado</span>
+              <strong className="font-mono text-sm text-foreground">
+                R$ {viability.estimatedSetupBrl.toFixed(2)}
+              </strong>
+            </div>
+          </div>
+
+          {viability.alerts.map((a, idx) => (
+            <div
+              key={idx}
+              className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300"
+            >
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{a}</span>
+            </div>
+          ))}
+
+          <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+            {viability.recommendations.map((rec, idx) => (
+              <li key={idx}>{rec}</li>
+            ))}
+          </ul>
+
+          <div className="border-t border-border pt-3 space-y-2">
+            <Label htmlFor="print-ai-prompt" className="text-2xs uppercase tracking-wider">
+              Gerar nova variante de estampa em PNG Transparente (IA)
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                id="print-ai-prompt"
+                value={promptExtra}
+                onChange={(e) => setPromptExtra(e.target.value)}
+                placeholder="Ex.: traço botânico minimalista em verde-esmeralda e dourado"
+                disabled={busy}
+              />
+              <Button
+                type="button"
+                size="sm"
+                disabled={busy}
+                onClick={() => void generatePrintVariant()}
+                className="gap-1.5 shrink-0"
+              >
+                {busy ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Wand2 className="h-3.5 w-3.5" />
+                )}
+                Gerar PNG
+              </Button>
+            </div>
+            {generatedSrc && (
+              <div className="rounded-md border border-border p-2 flex items-center justify-center bg-[#141D2E]">
+                <img src={generatedSrc} alt="Variante gerada" className="h-36 object-contain" />
+              </div>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Fechar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function LinkPrintToTechSheetDialog({
+  print,
+  open,
+  onOpenChange,
+}: {
+  print: PrintAsset;
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+}) {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensure = useTechSheetStore((s) => s.ensure);
+  const addAplicacao = useTechSheetStore((s) => s.addAplicacao);
+
+  const [targetRef, setTargetRef] = useState("DEV000006");
+  const [posicao, setPosicao] = useState<string>("Peito central");
+
+  const refOptions = useMemo(() => {
+    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
+    for (const k of Object.keys(sheetsMap)) {
+      if (!base.includes(k)) base.push(k);
+    }
+    return base;
+  }, [sheetsMap]);
+
+  function confirmLink() {
+    const doc = sheetsMap[targetRef] ?? ensure(targetRef);
+    const draft = buildAplicacaoFromPrint(print, posicao, doc);
+    addAplicacao(targetRef, draft);
+    upsertPrint({
+      ...print,
+      linkedRefs: (print.linkedRefs || 0) + 1,
+      updatedAt: new Date().toISOString().slice(0, 10),
+    });
+    toast.success(
+      `Estampa ${print.code} vinculada em Aplicações (${posicao}) da Ficha Técnica ${targetRef}!`,
+    );
+    onOpenChange(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Vincular {print.code} à Ficha Técnica</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3 text-xs">
+          <div className="space-y-1">
+            <Label htmlFor="link-print-ref">Ficha Técnica de destino</Label>
+            <select
+              id="link-print-ref"
+              value={targetRef}
+              onChange={(e) => setTargetRef(e.target.value)}
+              className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+            >
+              {refOptions.map((r) => (
+                <option key={r} value={r}>
+                  {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="link-print-pos">Posição na peça</Label>
+            <select
+              id="link-print-pos"
+              value={posicao}
+              onChange={(e) => setPosicao(e.target.value)}
+              className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+            >
+              {APLICACAO_POSICOES_SUGERIDAS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button onClick={confirmLink} className="gap-1.5">
+            <Link2 className="h-3.5 w-3.5" /> Inserir em Aplicações
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function NewVersionDialog({ printId }: { printId: string }) {
   const [open, setOpen] = useState(false);
   const [label, setLabel] = useState("");
@@ -449,6 +819,21 @@ function NewVersionDialog({ printId }: { printId: string }) {
     "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&q=80&w=600",
   );
   const [format, setFormat] = useState<PrintAsset["fileFormat"]>("AI");
+
+  async function handleFileUpload(file?: File) {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("O arquivo deve ter até 10 MB.");
+      return;
+    }
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      setImage(dataUrl);
+      toast.success(`Arquivo ${file.name} carregado na prévia.`);
+    } catch {
+      toast.error("Não foi possível ler o arquivo enviado.");
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -497,11 +882,21 @@ function NewVersionDialog({ printId }: { printId: string }) {
               </Select>
             </div>
           </div>
-          <div>
+          <div className="space-y-1.5">
             <Label className="text-2xs uppercase tracking-widest">
-              URL da prévia (upload em breve)
+              Enviar arquivo de arte (PNG, JPG, WEBP ou SVG) ou informar URL
             </Label>
-            <Input value={image} onChange={(e) => setImage(e.target.value)} />
+            <Input
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/svg+xml"
+              onChange={(e) => void handleFileUpload(e.target.files?.[0])}
+              className="text-xs"
+            />
+            <Input
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              placeholder="https://... ou Data URL carregada"
+            />
           </div>
           <div>
             <Label className="text-2xs uppercase tracking-widest">Nota</Label>
