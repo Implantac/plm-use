@@ -1,18 +1,19 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
-  Megaphone,
-  Camera,
-  TrendingUp,
-  Instagram,
-  PlayCircle,
   BarChart3,
+  Calendar,
+  CheckCircle2,
+  FileText,
+  Instagram,
+  Megaphone,
+  PlayCircle,
+  Sparkles,
+  TrendingUp,
   Users,
-  Image,
-  Video,
-  MousePointerClick,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
 import {
@@ -25,335 +26,506 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import {
+  buildDropMediaKitHtml,
+  computeCampaignRoas,
+  computeGtmPortfolioSummary,
+  useResearchGtmStore,
+  type DropCampaignStatus,
+  type GtmDropCampaign,
+} from "@/lib/techsheet/research-gtm";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/marketing")({
   component: MarketingPage,
 });
 
 function MarketingPage() {
-  const [campaigns, setCampaigns] = useState([
-    {
-      id: 1,
-      name: "Verão 25: Amalfi Launch",
-      product: "Coleção Verão 25",
-      channel: "Meta Ads",
-      reach: "1.2M",
-      spend: "R$ 45k",
-      sales: "R$ 210k",
-      roas: "4.6x",
-      status: "Ativa",
-      creative: "Fotos + Reels",
-      cost: "R$ 18k",
-    },
-    {
-      id: 2,
-      name: "Influencers: Camisa Premium",
-      product: "Ref. FT-V25-044",
-      channel: "Instagram",
-      reach: "850k",
-      spend: "R$ 12k",
-      sales: "R$ 98k",
-      roas: "8.1x",
-      status: "Ativa",
-      creative: "Influenciadores",
-      cost: "R$ 32k",
-    },
-    {
-      id: 3,
-      name: "Google: Blusa Linho",
-      product: "Ref. FT-V25-018",
-      channel: "Google Ads",
-      reach: "420k",
-      spend: "R$ 8k",
-      sales: "R$ 15k",
-      roas: "1.8x",
-      status: "Atenção",
-      creative: "Catálogo",
-      cost: "R$ 6k",
-    },
-  ]);
-  type Campaign = (typeof campaigns)[number];
+  const navigate = useNavigate();
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const campaigns = useResearchGtmStore((s) => s.campaigns);
+  const upsertCampaign = useResearchGtmStore((s) => s.upsertCampaign);
+  const deleteCampaign = useResearchGtmStore((s) => s.deleteCampaign);
 
+  const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
-  const [formData, setFormData] = useState({ name: "", channel: "", status: "Planejada" });
+  const [editingCampaign, setEditingCampaign] = useState<GtmDropCampaign | null>(null);
+  const [formData, setFormData] = useState<{
+    name: string;
+    collectionName: string;
+    channel: string;
+    dropDate: string;
+    status: DropCampaignStatus;
+    skuRefsText: string;
+    creativeFormat: string;
+    transparentStudioReady: boolean;
+    productionCostBrl: string;
+    mediaSpendBrl: string;
+    attributedSalesBrl: string;
+  }>({
+    name: "",
+    collectionName: "Alto Verão 2027",
+    channel: "Meta Ads + Reels",
+    dropDate: "2026-11-28",
+    status: "Planejada",
+    skuRefsText: "DEV000006, V24-001",
+    creativeFormat: "Pack PNG Transparente + Reels",
+    transparentStudioReady: true,
+    productionCostBrl: "12000",
+    mediaSpendBrl: "25000",
+    attributedSalesBrl: "115000",
+  });
 
-  const handleOpenDialog = (campaign?: Campaign) => {
-    if (campaign) {
-      setEditingCampaign(campaign);
-      setFormData({ name: campaign.name, channel: campaign.channel, status: campaign.status });
+  const filtered = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return campaigns;
+    return campaigns.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.collectionName.toLowerCase().includes(q) ||
+        c.channel.toLowerCase().includes(q) ||
+        c.skuRefs.some((r) => r.toLowerCase().includes(q)),
+    );
+  }, [campaigns, searchTerm]);
+
+  const summary = useMemo(() => computeGtmPortfolioSummary(campaigns), [campaigns]);
+
+  const fmtBrlCompact = (v: number) =>
+    v.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      maximumFractionDigits: 0,
+    });
+
+  function handleOpenDialog(c?: GtmDropCampaign) {
+    if (c) {
+      setEditingCampaign(c);
+      setFormData({
+        name: c.name,
+        collectionName: c.collectionName,
+        channel: c.channel,
+        dropDate: c.dropDate,
+        status: c.status,
+        skuRefsText: c.skuRefs.join(", "),
+        creativeFormat: c.creativeFormat,
+        transparentStudioReady: c.transparentStudioReady,
+        productionCostBrl: String(c.productionCostBrl),
+        mediaSpendBrl: String(c.mediaSpendBrl),
+        attributedSalesBrl: String(c.attributedSalesBrl),
+      });
     } else {
       setEditingCampaign(null);
-      setFormData({ name: "", channel: "", status: "Planejada" });
+      setFormData({
+        name: "",
+        collectionName: "Alto Verão 2027",
+        channel: "Meta Ads + Reels",
+        dropDate: "2026-11-28",
+        status: "Planejada",
+        skuRefsText: "DEV000006, V24-001",
+        creativeFormat: "Pack PNG Transparente + Reels",
+        transparentStudioReady: true,
+        productionCostBrl: "12000",
+        mediaSpendBrl: "25000",
+        attributedSalesBrl: "115000",
+      });
     }
     setIsDialogOpen(true);
-  };
+  }
 
-  const handleSave = () => {
-    if (editingCampaign) {
-      setCampaigns(campaigns.map((c) => (c.id === editingCampaign.id ? { ...c, ...formData } : c)));
-      toast.success("Campanha atualizada");
-    } else {
-      const newCamp = {
-        id: Date.now(),
-        ...formData,
-        product: "Ref. ---",
-        reach: "0",
-        spend: "R$ 0",
-        sales: "R$ 0",
-        roas: "0.0x",
-        creative: "A definir",
-        cost: "R$ 0",
-      };
-      setCampaigns([newCamp, ...campaigns]);
-      toast.success("Nova campanha planejada");
+  function handleSave() {
+    if (!formData.name.trim()) {
+      toast.error("Informe o nome da campanha ou drop.");
+      return;
     }
-    setIsDialogOpen(false);
-  };
+    const skuRefs = formData.skuRefsText
+      .split(",")
+      .map((s) => s.trim().toUpperCase())
+      .filter(Boolean);
 
-  const handleDelete = (id: number) => {
-    setCampaigns(campaigns.filter((c) => c.id !== id));
-    toast.error("Campanha removida");
-  };
+    const next: GtmDropCampaign = {
+      id: editingCampaign?.id ?? `gtm-${Date.now()}`,
+      name: formData.name.trim(),
+      collectionName: formData.collectionName.trim() || "Alto Verão 2027",
+      channel: formData.channel.trim() || "Omnichannel",
+      dropDate: formData.dropDate || "2026-11-28",
+      status: formData.status,
+      skuRefs: skuRefs.length > 0 ? skuRefs : ["DEV000006"],
+      creativeFormat: formData.creativeFormat.trim() || "Fotos + Catálogo",
+      transparentStudioReady: formData.transparentStudioReady,
+      productionCostBrl: Math.max(0, Number(formData.productionCostBrl) || 0),
+      mediaSpendBrl: Math.max(0, Number(formData.mediaSpendBrl) || 0),
+      attributedSalesBrl: Math.max(0, Number(formData.attributedSalesBrl) || 0),
+      clicksCount: editingCampaign?.clicksCount ?? 12_500,
+    };
+
+    upsertCampaign(next);
+    setIsDialogOpen(false);
+    toast.success(
+      editingCampaign ? "Drop GTM atualizado e persistido!" : "Novo Drop GTM planejado!",
+    );
+  }
+
+  function printMediaKit(camp: GtmDropCampaign) {
+    const html = buildDropMediaKitHtml(camp, sheetsMap);
+    const w = window.open("", "_blank");
+    if (!w) {
+      toast.error("Permita pop-ups para imprimir o Media Kit A4.");
+      return;
+    }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 250);
+  }
 
   return (
     <ModuleLayout
-      title="Marketing de Moda"
-      subtitle="Gestão por produto e coleção: fotos, vídeos, catálogos, influenciadores, mídia paga, custos e ROAS. Dados de demonstração — a edição não persiste."
-      version="Growth v3.0"
+      title="Marketing · Calendário de Drops & ROAS"
+      subtitle="Gestão persistida de lançamentos por coleção e SKU: investimento de mídia vs. produção criativa, prontidão de fotos PNG transparente e Media Kit A4."
+      version="GTM & Drops v3.0"
       onAdd={() => handleOpenDialog()}
-      searchPlaceholder="Buscar campanha, produto, coleção ou canal"
+      onSearch={setSearchTerm}
+      searchPlaceholder="Buscar drop, coleção, SKU ou canal"
       metrics={[
-        { label: "Campanhas", value: String(campaigns.length), detail: "ativas e planejadas" },
-        { label: "Investimento", value: "R$ 65k", detail: "mídia paga" },
-        { label: "Produção", value: "R$ 56k", detail: "foto, vídeo, modelos" },
-        { label: "ROAS médio", value: "4.8x", detail: "Meta + Google + TikTok" },
+        {
+          label: "Drops & Campanhas",
+          value: String(summary.totalCampaigns),
+          detail: "persistidos",
+        },
+        {
+          label: "Mídia + Produção",
+          value: fmtBrlCompact(summary.totalInvestmentBrl),
+          detail: "investimento total",
+        },
+        {
+          label: "Receita Atribuída",
+          value: fmtBrlCompact(summary.totalSalesBrl),
+          detail: "sell-out canais",
+        },
+        {
+          label: "ROAS Mídia / Full",
+          value: `${summary.blendedRoas.toFixed(1)}x / ${summary.netFullRoas.toFixed(1)}x`,
+          detail: "bruto vs. líquido prod.",
+        },
       ]}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex justify-between items-center mb-4 px-4">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
-              <TrendingUp className="w-5 h-5 text-primary" /> Performance por Produto e Coleção
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-4">
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-foreground flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" /> Performance por Drop, Coleção e SKUs
+              Vinculados
             </h3>
-            <Button variant="ghost" className="text-2xs text-primary hover:bg-primary/10">
-              Ver Relatório Completo
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => void navigate({ to: "/launch" })}
+              className="h-8 text-xs gap-1.5"
+            >
+              <Calendar className="h-3.5 w-3.5 text-primary" /> Ver Ondas de Lançamento
             </Button>
           </div>
 
           <div className="space-y-4">
-            {campaigns.map((camp) => (
-              <Card
-                key={camp.id}
-                className="glass-card rounded-lg p-5 hover:border-primary/40 transition-all group relative"
-              >
-                <div className="absolute top-5 right-5">
-                  <ModuleActionMenu
-                    onEdit={() => handleOpenDialog(camp)}
-                    onDelete={() => handleDelete(camp.id)}
-                    onView={() => toast.info(`Relatório de ${camp.name}`)}
-                  />
-                </div>
-
-                <div className="flex flex-col xl:flex-row xl:items-center gap-5">
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="p-3 rounded-md bg-primary/10 border border-primary/20 text-primary group-hover:scale-110 transition-transform">
-                      <Megaphone className="w-5 h-5" />
+            {filtered.map((camp) => {
+              const roas = computeCampaignRoas(camp);
+              return (
+                <Card
+                  key={camp.id}
+                  className="glass-card rounded-xl p-5 hover:border-primary/40 transition-all group relative space-y-4"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-3.5">
+                      <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+                        <Megaphone className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-base font-bold text-foreground tracking-tight">
+                            {camp.name}
+                          </h4>
+                          <Badge variant="outline" className="text-[10px]">
+                            {camp.status}
+                          </Badge>
+                          {camp.transparentStudioReady && (
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 gap-1"
+                            >
+                              <CheckCircle2 className="h-2.5 w-2.5" /> PNG Transparente OK
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-2xs text-muted-foreground mt-0.5">
+                          {camp.collectionName} · {camp.channel} · Drop {camp.dropDate} ·{" "}
+                          {camp.creativeFormat}
+                        </p>
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-lg font-bold text-white tracking-tight">{camp.name}</p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xs text-muted-foreground uppercase tracking-widest">
-                          {camp.channel}
+
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => printMediaKit(camp)}
+                        className="h-7 text-2xs gap-1"
+                      >
+                        <FileText className="h-3 w-3 text-primary" /> Media Kit A4
+                      </Button>
+                      <ModuleActionMenu
+                        onEdit={() => handleOpenDialog(camp)}
+                        onDelete={() => {
+                          deleteCampaign(camp.id);
+                          toast.error("Campanha removida.");
+                        }}
+                        onView={() => printMediaKit(camp)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-2xs uppercase text-muted-foreground mr-1">SKUs:</span>
+                      {camp.skuRefs.map((ref) => (
+                        <Link
+                          key={ref}
+                          to="/tech-sheet"
+                          search={{ ref } as never}
+                          className="rounded border border-border bg-muted/40 px-2 py-0.5 font-mono text-2xs text-primary hover:border-primary"
+                        >
+                          {ref}
+                        </Link>
+                      ))}
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-4 text-right text-xs">
+                      <div>
+                        <span className="text-[10px] uppercase text-muted-foreground block">
+                          Produção
                         </span>
-                        <span className="w-1 h-1 rounded-full bg-muted" />
-                        <span className="text-2xs text-primary font-semibold uppercase tracking-widest">
-                          {camp.product}
+                        <strong className="font-mono text-foreground">
+                          {fmtBrlCompact(camp.productionCostBrl)}
+                        </strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase text-muted-foreground block">
+                          Mídia Paga
                         </span>
+                        <strong className="font-mono text-foreground">
+                          {fmtBrlCompact(camp.mediaSpendBrl)}
+                        </strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase text-muted-foreground block">
+                          Vendas
+                        </span>
+                        <strong className="font-mono text-foreground">
+                          {fmtBrlCompact(camp.attributedSalesBrl)}
+                        </strong>
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase text-muted-foreground block">
+                          ROAS
+                        </span>
+                        <strong
+                          className={`font-mono ${roas >= 3 ? "text-status-approved" : "text-amber-500"}`}
+                        >
+                          {roas.toFixed(2)}x
+                        </strong>
                       </div>
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-6 gap-4 xl:pr-12">
-                    <div className="text-right">
-                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Criativo
-                      </p>
-                      <p className="text-sm font-bold text-white">{camp.creative}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Produção
-                      </p>
-                      <p className="text-sm font-bold text-white">{camp.cost}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Investimento
-                      </p>
-                      <p className="text-sm font-bold text-white">{camp.spend}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Vendas
-                      </p>
-                      <p className="text-sm font-bold text-white">{camp.sales}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        ROAS
-                      </p>
-                      <p
-                        className={`text-sm font-bold ${parseFloat(camp.roas) > 3 ? "text-status-approved" : "text-status-rejected"}`}
-                      >
-                        {camp.roas}
-                      </p>
-                    </div>
-                    <div className="text-right w-24">
-                      <p className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                        Status
-                      </p>
-                      <p className="text-sm font-bold text-primary">{camp.status}</p>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </div>
 
-        <div className="space-y-8">
-          <Card className="glass-card rounded-lg p-6 border-primary/20 bg-primary/[0.02]">
-            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary mb-8">
-              Ecosystem Sync
+        <div className="space-y-6">
+          <Card className="glass-card rounded-xl p-5 border-primary/20 bg-primary/[0.03] space-y-4">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-primary flex items-center gap-2">
+              <Sparkles className="h-4 w-4" /> Estúdio Criativo & Pack E-Commerce
             </h3>
-            <div className="space-y-6">
-              {[
-                {
-                  label: "Meta Business Hub",
-                  status: "Conectado",
-                  icon: <Instagram className="w-4 h-4" />,
-                },
-                {
-                  label: "TikTok Ads Manager",
-                  status: "Sync Pendente",
-                  icon: <PlayCircle className="w-4 h-4" />,
-                },
-                {
-                  label: "Google Analytics 4",
-                  status: "Conectado",
-                  icon: <BarChart3 className="w-4 h-4" />,
-                },
-              ].map((sync, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-4 rounded-md bg-black/20 border border-border/60"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="text-muted-foreground">{sync.icon}</div>
-                    <p className="text-2xs font-semibold uppercase tracking-widest text-white">
-                      {sync.label}
-                    </p>
-                  </div>
-                  <span
-                    className={`text-2xs font-semibold uppercase tracking-widest ${sync.status === "Conectado" ? "text-status-approved" : "text-status-progress"}`}
-                  >
-                    {sync.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <Button className="w-full mt-8 text-2xs tracking-[0.04em]">Gerenciar Conexões</Button>
-          </Card>
-
-          <Card className="glass-card rounded-lg p-6 overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-4">
-              <Users className="w-12 h-12 text-white/5" />
-            </div>
-            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-white mb-6">
-              Rede de Influenciadores
-            </h3>
-            <div className="flex -space-x-3 mb-6">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="w-12 h-12 rounded-full border-2 border-background bg-muted/50 overflow-hidden"
-                >
-                  <img src={`https://i.pravatar.cc/150?u=${i}`} alt="user" />
-                </div>
-              ))}
-              <div className="w-12 h-12 rounded-full border-2 border-background bg-primary/20 flex items-center justify-center text-2xs font-bold text-primary">
-                +12
-              </div>
-            </div>
-            <p className="text-2xs text-muted-foreground font-light leading-relaxed italic">
-              selecionamos 12 novos perfis com alto fit para a cápsula verão 24 baseados em
-              engajamento real.
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {summary.transparentReadyCount} de {summary.totalCampaigns} drops já contam com fotos
+              de produto em <strong>fundo 100% transparente (PNG alpha)</strong> prontas para
+              vitrine, marketplace e lookbook B2B.
             </p>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => void navigate({ to: "/ai-center" })}
+              className="w-full text-xs gap-1.5"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> Gerar Fotos no AI Product Studio
+            </Button>
           </Card>
 
-          <Card className="glass-card rounded-lg p-6">
-            <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-5">
-              Biblioteca de ativos
+          <Card className="glass-card rounded-xl p-5 space-y-3">
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-foreground">
+              Integrações de Mídia & Atribuição
             </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: "Fotos", value: "248", icon: Image },
-                { label: "Vídeos", value: "54", icon: Video },
-                { label: "Catálogos", value: "8", icon: Camera },
-                { label: "Cliques", value: "42k", icon: MousePointerClick },
-              ].map((asset) => (
-                <div key={asset.label} className="rounded-md border border-border bg-muted/60 p-4">
-                  <asset.icon className="h-4 w-4 text-primary" />
-                  <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-                    {asset.label}
-                  </p>
-                  <p className="mt-1 text-lg font-bold text-white">{asset.value}</p>
-                </div>
-              ))}
+            {[
+              { label: "Meta Ads & Catálogo Dinâmico", status: "Ativo", icon: Instagram },
+              { label: "TikTok Shop & Creators", status: "Ativo", icon: PlayCircle },
+              { label: "Google Analytics 4 / ROAS", status: "Ativo", icon: BarChart3 },
+            ].map((sync) => (
+              <div
+                key={sync.label}
+                className="flex items-center justify-between p-3 rounded-lg bg-muted/40 border border-border/60 text-xs"
+              >
+                <span className="flex items-center gap-2 font-medium text-foreground">
+                  <sync.icon className="w-3.5 h-3.5 text-primary" />
+                  {sync.label}
+                </span>
+                <span className="text-2xs font-semibold uppercase text-status-approved">
+                  {sync.status}
+                </span>
+              </div>
+            ))}
+          </Card>
+
+          <Card className="glass-card rounded-xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-foreground flex items-center gap-2">
+                <Users className="w-4 h-4 text-primary" /> Seeding & Influenciadores
+              </h3>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Gerencie envios de peças-piloto, cupons rastreáveis e entregas de seeding conectadas à
+              coleção.
+            </p>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => void navigate({ to: "/influencers" })}
+              className="w-full text-xs"
+            >
+              Abrir Gestão de Influenciadores
+            </Button>
           </Card>
         </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
+        <DialogContent className="max-w-lg rounded-xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
-              {editingCampaign ? "Editar Campanha" : "Nova Campanha"}
+            <DialogTitle>
+              {editingCampaign ? "Editar Drop / Campanha GTM" : "Planejar Novo Drop GTM"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 py-8">
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Nome da Campanha
-              </Label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: Lançamento Outono Chic"
-              />
+          <div className="space-y-3 py-2 text-xs">
+            <div className="grid grid-cols-[1fr_160px] gap-3">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Nome do Drop</Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Ex: Drop 03 · Cápsula Linho Resort"
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Data Lançamento</Label>
+                <Input
+                  type="date"
+                  value={formData.dropDate}
+                  onChange={(e) => setFormData({ ...formData, dropDate: e.target.value })}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Canal de Veiculação
-              </Label>
-              <Input
-                value={formData.channel}
-                onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: Meta Ads, Influencers..."
-              />
+
+            <div className="grid grid-cols-3 gap-2.5">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Coleção</Label>
+                <Input
+                  value={formData.collectionName}
+                  onChange={(e) => setFormData({ ...formData, collectionName: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Canal Principal</Label>
+                <Input
+                  value={formData.channel}
+                  onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Status</Label>
+                <select
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({ ...formData, status: e.target.value as DropCampaignStatus })
+                  }
+                  className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                >
+                  <option value="Planejada">Planejada</option>
+                  <option value="Em Produção Criativa">Em Produção Criativa</option>
+                  <option value="Ativa">Ativa</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">
+                  SKUs Vinculados (separados por vírgula)
+                </Label>
+                <Input
+                  value={formData.skuRefsText}
+                  onChange={(e) => setFormData({ ...formData, skuRefsText: e.target.value })}
+                  className="font-mono"
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Formato Criativo</Label>
+                <Input
+                  value={formData.creativeFormat}
+                  onChange={(e) => setFormData({ ...formData, creativeFormat: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2.5">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Produção (R$)</Label>
+                <Input
+                  type="number"
+                  value={formData.productionCostBrl}
+                  onChange={(e) => setFormData({ ...formData, productionCostBrl: e.target.value })}
+                  className="font-mono"
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Mídia Paga (R$)</Label>
+                <Input
+                  type="number"
+                  value={formData.mediaSpendBrl}
+                  onChange={(e) => setFormData({ ...formData, mediaSpendBrl: e.target.value })}
+                  className="font-mono"
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">
+                  Vendas Atribuídas (R$)
+                </Label>
+                <Input
+                  type="number"
+                  value={formData.attributedSalesBrl}
+                  onChange={(e) => setFormData({ ...formData, attributedSalesBrl: e.target.value })}
+                  className="font-mono"
+                />
+              </div>
             </div>
           </div>
-          <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-2xs">
-              Salvar Campanha
-            </Button>
+            <Button onClick={handleSave}>Salvar Drop GTM</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

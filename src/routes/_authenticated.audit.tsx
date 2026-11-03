@@ -177,11 +177,11 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "sync",
   },
   {
-    area: "Pesquisa & Marketing",
-    route: "/marketing",
+    area: "Pesquisa Criativa → Engenharia & Drops GTM",
+    route: "/research",
     evidence:
-      "Telas de portfólio com dados de exemplo — a edição local ainda aguarda persistência cloud.",
-    status: "vitrine",
+      "Briefings persistidos com conversão em 1 clique para Ficha Técnica (BOM, gramatura e ABNT) + calendário GTM/ROAS/Media Kit A4 em /marketing.",
+    status: "sync",
   },
   {
     area: "Portal do Fornecedor",

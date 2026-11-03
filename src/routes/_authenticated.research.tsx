@@ -1,16 +1,19 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
-  ImagePlus,
-  Palette,
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  FileSpreadsheet,
   Hash,
-  Sparkles,
+  Palette,
   Shirt,
+  Sparkles,
   SwatchBook,
   Tags,
-  BarChart3,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
 import {
@@ -20,274 +23,375 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { MoodBoard } from "@/components/research/MoodBoard";
 import { AiCroquiPanel } from "@/components/research/AiCroquiPanel";
+import {
+  convertBriefingToTechSheetStore,
+  useResearchGtmStore,
+  type BriefingInsight,
+} from "@/lib/techsheet/research-gtm";
+import type { GarmentSilhouette } from "@/lib/techsheet/textile";
 
 export const Route = createFileRoute("/_authenticated/research")({
   component: ResearchHub,
 });
 
+const CAPSULES: Array<"Todos" | BriefingInsight["capsule"]> = [
+  "Todos",
+  "Alto Verão 2027",
+  "Cápsula Resort",
+  "Alfaiataria Tech",
+  "Essenciais Pima",
+];
+
 function ResearchHub() {
-  const [categories] = useState(["Verão 24", "Cápsula Boho", "Alfaiataria", "Acessórios", "Cores"]);
-  const [moodboardItems, setMoodboardItems] = useState([
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e",
-      title: "Texturas Naturais",
-      tags: ["#linho", "#verao"],
-      fabric: "linho",
-      model: "top solto",
-      category: "feminino/top",
-      confidence: "94%",
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d",
-      title: "Minimalismo Urbano",
-      tags: ["#urbano", "#preto"],
-      fabric: "algodão",
-      model: "alfaiataria",
-      category: "feminino/work",
-      confidence: "89%",
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1445205170230-053b83016050",
-      title: "Cores Pastéis",
-      tags: ["#soft", "#paleta"],
-      fabric: "crepe",
-      model: "pantalona",
-      category: "bottom",
-      confidence: "91%",
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b",
-      title: "Alfaiataria Desconstruída",
-      tags: ["#chic", "#work"],
-      fabric: "lã fria",
-      model: "blazer",
-      category: "outerwear",
-      confidence: "88%",
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f",
-      title: "Streetwear Luxe",
-      tags: ["#hype", "#street"],
-      fabric: "nylon",
-      model: "oversized",
-      category: "street",
-      confidence: "86%",
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc",
-      title: "Acessórios Gold",
-      tags: ["#luxo", "#gold"],
-      fabric: "metal",
-      model: "acessório",
-      category: "acessórios",
-      confidence: "92%",
-    },
-  ]);
-  type MoodboardItem = (typeof moodboardItems)[number];
+  const navigate = useNavigate();
+  const briefings = useResearchGtmStore((s) => s.briefings);
+  const upsertBriefing = useResearchGtmStore((s) => s.upsertBriefing);
+  const deleteBriefing = useResearchGtmStore((s) => s.deleteBriefing);
+  const markBriefingConverted = useResearchGtmStore((s) => s.markBriefingConverted);
 
+  const [selectedCapsule, setSelectedCapsule] = useState<(typeof CAPSULES)[number]>("Todos");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [zoomItem, setZoomItem] = useState<BriefingInsight | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<MoodboardItem | null>(null);
-  const [formData, setFormData] = useState({ title: "", tags: "" });
+  const [editingItem, setEditingItem] = useState<BriefingInsight | null>(null);
 
-  const handleOpenDialog = (item?: MoodboardItem) => {
+  const [formData, setFormData] = useState<{
+    title: string;
+    capsule: BriefingInsight["capsule"];
+    imageUrl: string;
+    fabricSuggestion: string;
+    gramaturaGm2: string;
+    compositionFibra: string;
+    silhouette: GarmentSilhouette;
+    colorName: string;
+    colorHex: string;
+    targetPriceBrl: string;
+    tags: string;
+  }>({
+    title: "",
+    capsule: "Alto Verão 2027",
+    imageUrl:
+      "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800",
+    fabricSuggestion: "Meia Malha Pima 170 g/m²",
+    gramaturaGm2: "170",
+    compositionFibra: "Algodão Pima",
+    silhouette: "camiseta_v",
+    colorName: "Off-White",
+    colorHex: "#F5F2EB",
+    targetPriceBrl: "189.90",
+    tags: "verao, pima, essencial",
+  });
+
+  const filtered = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    return briefings.filter((b) => {
+      if (selectedCapsule !== "Todos" && b.capsule !== selectedCapsule) return false;
+      if (!q) return true;
+      return (
+        b.title.toLowerCase().includes(q) ||
+        b.fabricSuggestion.toLowerCase().includes(q) ||
+        b.colorName.toLowerCase().includes(q) ||
+        b.tags.some((t) => t.toLowerCase().includes(q))
+      );
+    });
+  }, [briefings, selectedCapsule, searchTerm]);
+
+  const convertedCount = useMemo(
+    () => briefings.filter((b) => Boolean(b.convertedRefCode)).length,
+    [briefings],
+  );
+
+  const avgConfidence = useMemo(() => {
+    if (briefings.length === 0) return 0;
+    return Math.round(briefings.reduce((a, b) => a + b.confidencePct, 0) / briefings.length);
+  }, [briefings]);
+
+  function handleOpenDialog(item?: BriefingInsight) {
     if (item) {
       setEditingItem(item);
-      setFormData({ title: item.title, tags: item.tags.join(", ") });
+      setFormData({
+        title: item.title,
+        capsule: item.capsule,
+        imageUrl: item.imageUrl,
+        fabricSuggestion: item.fabricSuggestion,
+        gramaturaGm2: String(item.gramaturaGm2),
+        compositionFibra: item.compositionFibra,
+        silhouette: item.silhouette,
+        colorName: item.colorName,
+        colorHex: item.colorHex,
+        targetPriceBrl: String(item.targetPriceBrl),
+        tags: item.tags.join(", "),
+      });
     } else {
       setEditingItem(null);
-      setFormData({ title: "", tags: "" });
+      setFormData({
+        title: "",
+        capsule: "Alto Verão 2027",
+        imageUrl:
+          "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800",
+        fabricSuggestion: "Meia Malha Pima 170 g/m²",
+        gramaturaGm2: "170",
+        compositionFibra: "Algodão Pima",
+        silhouette: "camiseta_v",
+        colorName: "Off-White",
+        colorHex: "#F5F2EB",
+        targetPriceBrl: "189.90",
+        tags: "verao, pima, essencial",
+      });
     }
     setIsDialogOpen(true);
-  };
+  }
 
-  const handleSave = () => {
+  function handleSave() {
+    if (!formData.title.trim()) {
+      toast.error("Informe o título do briefing criativo.");
+      return;
+    }
     const tagArray = formData.tags
       .split(",")
-      .map((t) => (t.trim().startsWith("#") ? t.trim() : `#${t.trim()}`));
-    if (editingItem) {
-      setMoodboardItems(
-        moodboardItems.map((m) =>
-          m.id === editingItem.id ? { ...m, title: formData.title, tags: tagArray } : m,
-        ),
-      );
-      toast.success("Inspiração atualizada");
-    } else {
-      const newItem = {
-        id: Date.now(),
-        title: formData.title,
-        tags: tagArray,
-        image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e",
-        fabric: "a classificar",
-        model: "a classificar",
-        category: "a classificar",
-        confidence: "novo",
-      };
-      setMoodboardItems([newItem, ...moodboardItems]);
-      toast.success("Nova inspiração adicionada ao Moodboard");
-    }
-    setIsDialogOpen(false);
-  };
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .map((t) => (t.startsWith("#") ? t : `#${t}`));
 
-  const handleDelete = (id: number) => {
-    setMoodboardItems(moodboardItems.filter((m) => m.id !== id));
-    toast.error("Removido do Hub");
-  };
+    const next: BriefingInsight = {
+      id: editingItem?.id ?? `br-${Date.now()}`,
+      title: formData.title.trim(),
+      capsule: formData.capsule,
+      imageUrl: formData.imageUrl.trim(),
+      fabricSuggestion: formData.fabricSuggestion.trim() || "Tecido Principal",
+      gramaturaGm2: Math.max(60, Number(formData.gramaturaGm2) || 165),
+      compositionFibra: formData.compositionFibra.trim() || "Algodão",
+      silhouette: formData.silhouette,
+      colorName: formData.colorName.trim() || "Cor Base",
+      colorHex: formData.colorHex.trim() || "#1D6B47",
+      targetPriceBrl: Math.max(29, Number(formData.targetPriceBrl) || 179.9),
+      confidencePct: editingItem?.confidencePct ?? 93,
+      tags: tagArray.length > 0 ? tagArray : ["#colecao"],
+      convertedRefCode: editingItem?.convertedRefCode,
+    };
+
+    upsertBriefing(next);
+    setIsDialogOpen(false);
+    toast.success(
+      editingItem ? "Briefing criativo atualizado!" : "Novo briefing fixado no hub persistido!",
+    );
+  }
+
+  function handleConvertBriefing(item: BriefingInsight, idx: number) {
+    const refCode = convertBriefingToTechSheetStore(item, idx + 1);
+    markBriefingConverted(item.id, refCode);
+    toast.success(
+      `Ficha Técnica ${refCode} gerada com tecido ${item.fabricSuggestion} (${item.gramaturaGm2} g/m²)!`,
+    );
+    void navigate({ to: "/tech-sheet", search: { ref: refCode } as never });
+  }
+
+  function handlePinAiRender(dataUrl: string) {
+    const newItem: BriefingInsight = {
+      id: `br-ai-${Date.now()}`,
+      title: `Criação Studio IA · ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`,
+      capsule: "Alto Verão 2027",
+      imageUrl: dataUrl,
+      fabricSuggestion: "Linho / Algodão Premium 180 g/m²",
+      gramaturaGm2: 180,
+      compositionFibra: "Linho",
+      silhouette: "camisa_polo",
+      colorName: "Cru Studio",
+      colorHex: "#E8E0D5",
+      targetPriceBrl: 249.9,
+      confidencePct: 96,
+      tags: ["#ia-studio", "#png-transparente"],
+    };
+    upsertBriefing(newItem);
+    toast.success("Arte IA (fundo transparente) fixada nos Briefings para virar Ficha Técnica!");
+  }
 
   return (
     <ModuleLayout
-      title="Research Hub"
-      subtitle="inspiração orientada por dados. capture o zeitgeist antes dele acontecer. Dados de demonstração — a edição não persiste."
-      version="Research v2.1"
+      title="Pesquisa Criativa & Conversor de Briefing"
+      subtitle="Briefings persistidos por cápsula, croquis/fotos IA em PNG transparente e conversão em 1 clique para Ficha Técnica Industrial (BOM, cor, gramatura e ABNT)."
+      version="Creative-to-Engineering v3.0"
       onAdd={() => handleOpenDialog()}
-      searchPlaceholder="Buscar tendência, tecido, cor ou concorrente"
+      onSearch={setSearchTerm}
+      searchPlaceholder="Buscar briefing, tecido, gramatura, cor ou tag"
       metrics={[
-        { label: "Inspirações", value: String(moodboardItems.length), detail: "mood board" },
-        { label: "Paletas", value: "12", detail: "em biblioteca" },
-        { label: "Concorrentes", value: "8", detail: "benchmark ativo" },
-        { label: "IA visual", value: "91%", detail: "confiança média" },
+        { label: "Briefings Ativos", value: String(briefings.length), detail: "persistidos" },
+        {
+          label: "Fichas Geradas",
+          value: String(convertedCount),
+          detail: "enviadas p/ engenharia",
+        },
+        { label: "Cápsulas", value: String(CAPSULES.length - 1), detail: "em planejamento" },
+        { label: "Aderência Comercial", value: `${avgConfidence}%`, detail: "score tendência" },
       ]}
     >
-      <div className="flex justify-end gap-4 mb-8">
-        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
-          <ImagePlus className="w-4 h-4" /> Importar Inspiração
-        </Button>
-        <Button variant="outline" className="text-2xs tracking-[0.04em] gap-2">
-          <Sparkles className="w-4 h-4" /> Gerar Moodboard AI
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6 mb-8">
-        <Card className="glass-card rounded-lg p-5 border-primary/20 bg-primary/[0.025]">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6 mb-6">
+        <Card className="glass-card rounded-xl p-5 border-primary/20 bg-primary/[0.03]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Modelagens", value: "top solto, blazer, pantalona", icon: Shirt },
-              { label: "Tecidos", value: "linho, crepe, algodão", icon: SwatchBook },
-              { label: "Cores", value: "off-white, navy, pastel", icon: Palette },
-              { label: "Categorias", value: "top, bottom, outerwear", icon: Tags },
+              { label: "Silhuetas Chave", value: "Polo Tricot, Jogger Tech, Raglan", icon: Shirt },
+              {
+                label: "Bases Homologadas",
+                value: "Linho 195g, Pima 165g, Bi-Stretch",
+                icon: SwatchBook,
+              },
+              {
+                label: "Cartela Direcional",
+                value: "Areia, Sálvia, Ônix, Atlântico",
+                icon: Palette,
+              },
+              { label: "Ponte PLM", value: "1-Clique → BOM + ABNT + Cor", icon: Tags },
             ].map((item) => (
-              <div key={item.label} className="rounded-md border border-border bg-black/20 p-4">
+              <div
+                key={item.label}
+                className="rounded-lg border border-border bg-background/60 p-3.5"
+              >
                 <item.icon className="h-4 w-4 text-primary" />
-                <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
+                <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                   {item.label}
                 </p>
-                <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
+                <p className="mt-1 text-xs font-bold text-foreground">{item.value}</p>
               </div>
             ))}
           </div>
         </Card>
-        <Card className="glass-card rounded-lg p-5">
-          <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white mb-4 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-primary" /> Benchmark
-          </h3>
-          {[
-            "Concorrente A: linho +24%",
-            "Concorrente B: alfaiataria leve",
-            "Histórico: Verão 24 ROI 3.1x",
-          ].map((item) => (
-            <div key={item} className="border-b border-border/60 py-3 last:border-0">
-              <p className="text-sm text-white/85">{item}</p>
+
+        <Card className="glass-card rounded-xl p-5 flex flex-col justify-between">
+          <div>
+            <h3 className="text-2xs font-semibold uppercase tracking-[0.05em] text-foreground mb-3 flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-primary" /> Termômetro Sell-Through & OTB
+            </h3>
+            <div className="space-y-2 text-xs text-muted-foreground">
+              <p>• Fibras naturais monomaterial (Linho/Pima) elevam nota ESG DPP para Classe A.</p>
+              <p>• Meta de preço-alvo calibrada direto no divisor Mark-up da Ficha Técnica.</p>
             </div>
-          ))}
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => void navigate({ to: "/ai-center" })}
+            className="mt-3 w-full gap-1.5 text-xs"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-primary" /> Abrir AI Product Studio Completo
+          </Button>
         </Card>
       </div>
 
-      <div className="flex items-center gap-4 border-b border-border/60 pb-6 mb-8 overflow-x-auto no-scrollbar">
-        <Button variant="ghost" className="text-primary text-2xs tracking-[0.05em] bg-primary/10">
-          Todos
-        </Button>
-        {categories.map((cat) => (
+      <div className="flex items-center gap-2 border-b border-border/60 pb-4 mb-6 overflow-x-auto">
+        {CAPSULES.map((cat) => (
           <Button
             key={cat}
-            variant="ghost"
-            className="text-muted-foreground hover:text-white text-2xs tracking-[0.05em] transition-colors"
+            type="button"
+            size="sm"
+            variant={selectedCapsule === cat ? "default" : "ghost"}
+            onClick={() => setSelectedCapsule(cat)}
+            className="text-2xs tracking-[0.04em]"
           >
             {cat}
           </Button>
         ))}
       </div>
 
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-        {moodboardItems.map((item, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        {filtered.map((item, i) => (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="break-inside-avoid relative group"
+            transition={{ delay: i * 0.05 }}
+            className="relative group"
           >
-            <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ModuleActionMenu
-                onEdit={() => handleOpenDialog(item)}
-                onDelete={() => handleDelete(item.id)}
-                onView={() => toast.info(`Visualizando mood de ${item.title}`)}
-              />
-            </div>
-            <Card className="glass-card rounded-lg overflow-hidden group hover:border-primary/40 transition-all duration-700">
-              <div className="relative overflow-hidden aspect-[4/5]">
-                <img
-                  src={item.image + "?auto=format&fit=crop&q=80&w=800"}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                  alt={item.title}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                  <div className="flex gap-2 mb-4">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="bg-muted backdrop-blur-md text-white"
-                    >
-                      <Palette className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="bg-muted backdrop-blur-md text-white"
-                    >
-                      <Sparkles className="w-4 h-4" />
-                    </Button>
-                  </div>
+            <Card className="glass-card rounded-xl overflow-hidden hover:border-primary/40 transition-all flex flex-col h-full">
+              <div className="relative aspect-[4/4] bg-muted/40 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setZoomItem(item)}
+                  title="Clique para expandir referência visual em tela cheia"
+                  className="w-full h-full block cursor-zoom-in"
+                >
+                  <img
+                    src={item.imageUrl}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    alt={item.title}
+                  />
+                </button>
+                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                  <Badge className="bg-background/90 text-foreground border-border text-[10px]">
+                    {item.capsule}
+                  </Badge>
+                </div>
+                <div className="absolute top-2.5 right-2.5 z-10">
+                  <ModuleActionMenu
+                    onEdit={() => handleOpenDialog(item)}
+                    onDelete={() => {
+                      deleteBriefing(item.id);
+                      toast.info("Briefing removido.");
+                    }}
+                    onView={() => setZoomItem(item)}
+                  />
                 </div>
               </div>
-              <CardContent className="p-6">
-                <h3 className="text-sm font-bold text-white uppercase tracking-tight mb-2">
-                  {item.title}
-                </h3>
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {[
-                    ["Tecido", item.fabric],
-                    ["Modelo", item.model],
-                    ["Categoria", item.category],
-                    ["Confiança", item.confidence],
-                  ].map(([label, value]) => (
-                    <div key={label} className="rounded-md bg-muted/60 border border-border/60 p-2">
-                      <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-                        {label}
-                      </p>
-                      <p className="mt-1 text-2xs font-bold text-white">{value}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {item.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-2xs font-semibold uppercase tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded border border-primary/10 flex items-center gap-1"
-                    >
-                      <Hash className="w-3 h-3" /> {tag.replace("#", "")}
+
+              <CardContent className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="inline-flex items-center gap-1.5 text-2xs font-mono text-muted-foreground">
+                      <span
+                        className="inline-block h-3 w-3 rounded-full border border-border"
+                        style={{ backgroundColor: item.colorHex }}
+                      />
+                      {item.colorName}
                     </span>
-                  ))}
+                    <span className="text-2xs font-mono font-bold text-primary">
+                      R$ {item.targetPriceBrl.toFixed(2)}
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-bold text-foreground leading-snug">{item.title}</h3>
+                  <p className="text-2xs text-muted-foreground mt-1">
+                    {item.fabricSuggestion} · 100% {item.compositionFibra}
+                  </p>
+                </div>
+
+                <div className="space-y-2.5">
+                  <div className="flex gap-1.5 flex-wrap">
+                    {item.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-1.5 py-0.5 rounded flex items-center gap-0.5"
+                      >
+                        <Hash className="w-2.5 h-2.5" /> {tag.replace("#", "")}
+                      </span>
+                    ))}
+                  </div>
+
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={item.convertedRefCode ? "outline" : "default"}
+                    onClick={() => handleConvertBriefing(item, i)}
+                    className="w-full h-8 text-xs gap-1.5"
+                  >
+                    {item.convertedRefCode ? (
+                      <>
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                        Abrir Ficha {item.convertedRefCode}
+                      </>
+                    ) : (
+                      <>
+                        <FileSpreadsheet className="h-3.5 w-3.5" />
+                        Converter em Ficha Técnica
+                        <ArrowRight className="h-3 w-3" />
+                      </>
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -296,48 +400,159 @@ function ResearchHub() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
+        <DialogContent className="max-w-lg rounded-xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
-              {editingItem ? "Editar Inspiração" : "Nova Inspiração"}
+            <DialogTitle>
+              {editingItem ? "Editar Briefing Criativo" : "Novo Briefing Criativo para Engenharia"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 py-8">
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Título do Insight
+          <div className="space-y-3 py-2 text-xs">
+            <div className="grid grid-cols-[1fr_170px] gap-3">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Nome da Peça</Label>
+                <Input
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Ex: Camisa Linho Resort Manga Curta"
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Cápsula</Label>
+                <select
+                  value={formData.capsule}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      capsule: e.target.value as BriefingInsight["capsule"],
+                    })
+                  }
+                  className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                >
+                  {CAPSULES.filter((c) => c !== "Todos").map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-[1fr_110px_130px] gap-2.5">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Tecido Sugerido</Label>
+                <Input
+                  value={formData.fabricSuggestion}
+                  onChange={(e) => setFormData({ ...formData, fabricSuggestion: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Gramatura g/m²</Label>
+                <Input
+                  type="number"
+                  value={formData.gramaturaGm2}
+                  onChange={(e) => setFormData({ ...formData, gramaturaGm2: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Fibra ABNT</Label>
+                <Input
+                  value={formData.compositionFibra}
+                  onChange={(e) => setFormData({ ...formData, compositionFibra: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2.5">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Silhueta CAD</Label>
+                <select
+                  value={formData.silhouette}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      silhouette: e.target.value as GarmentSilhouette,
+                    })
+                  }
+                  className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                >
+                  <option value="camiseta_v">Camiseta / Top</option>
+                  <option value="camisa_polo">Polo / Camisa</option>
+                  <option value="moletom_raglan">Moletom / Casaco</option>
+                  <option value="calca_jogger">Calça / Bottom</option>
+                </select>
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Nome Cor</Label>
+                <Input
+                  value={formData.colorName}
+                  onChange={(e) => setFormData({ ...formData, colorName: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">HEX</Label>
+                <Input
+                  value={formData.colorHex}
+                  onChange={(e) => setFormData({ ...formData, colorHex: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Preço Alvo R$</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={formData.targetPriceBrl}
+                  onChange={(e) => setFormData({ ...formData, targetPriceBrl: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground">
+                URL da Imagem / Render
               </Label>
               <Input
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: Texturas Urbanas"
+                value={formData.imageUrl}
+                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Tags (separadas por vírgula)
-              </Label>
+
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground">Tags</Label>
               <Input
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: linho, verão, chic"
               />
             </div>
           </div>
-          <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-2xs">
-              Fixar no Board
-            </Button>
+            <Button onClick={handleSave}>Salvar Briefing</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {zoomItem && (
+        <ImageLightbox
+          open={Boolean(zoomItem)}
+          onOpenChange={(next) => {
+            if (!next) setZoomItem(null);
+          }}
+          items={[
+            {
+              src: zoomItem.imageUrl,
+              alt: zoomItem.title,
+              title: `${zoomItem.title} · ${zoomItem.capsule}`,
+              subtitle: `${zoomItem.fabricSuggestion} · Cor ${zoomItem.colorName} (${zoomItem.colorHex})`,
+              exportBaseName: `briefing-${zoomItem.id}`,
+            },
+          ]}
+        />
+      )}
+
       <MoodBoard />
-      <AiCroquiPanel />
+      <AiCroquiPanel onSave={handlePinAiRender} />
     </ModuleLayout>
   );
 }

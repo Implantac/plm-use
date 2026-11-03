@@ -101,7 +101,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Pesquisa",
     group: "plm-criacao",
     crumbs: ["PLM", "Criação"],
-    vitrine: true,
   },
   {
     path: "/colors",
@@ -283,7 +282,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Marketing",
     group: "gtm",
     crumbs: ["GTM"],
-    vitrine: true,
   },
   {
     path: "/orders",
