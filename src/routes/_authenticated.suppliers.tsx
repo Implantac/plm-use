@@ -1,19 +1,20 @@
-import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Users,
   Star,
   MapPin,
   Mail,
-  ChevronRight,
   ShieldCheck,
   TrendingUp,
   PackageCheck,
   Clock,
-  FileCheck2,
+  Gauge,
   GitBranch,
+  ExternalLink,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
@@ -28,145 +29,174 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { OutsourcingServiceOrderPanel } from "@/components/pcp/OutsourcingServiceOrderPanel";
 import { SupplierScoreboard } from "@/components/suppliers/SupplierScoreboard";
+import {
+  computePartnerMetrics,
+  useOutsourcingStore,
+  type ComplianceBadge,
+  type IndustrialPartner,
+  type PartnerCategory,
+} from "@/lib/techsheet/outsourcing-os";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/suppliers")({
   component: SuppliersPage,
 });
 
 function SuppliersPage() {
+  const navigate = useNavigate();
   const { openEntity } = useEntityDrawer();
   const { emit } = useEventEmitter();
-  const [suppliers, setSuppliers] = useState([
-    {
-      id: "11111111-1111-4111-8111-111111111111",
-      name: "Têxtil Amalfi Ltda",
-      type: "Tecidos",
-      rating: 4.8,
-      location: "SC, Brasil",
-      status: "Premium",
-      compliance: "98%",
-      delivery: "95%",
-      openOrders: 8,
-      approvals: 3,
-      eta: "2 dias",
-    },
-    {
-      id: "22222222-2222-4222-8222-222222222222",
-      name: "Aviamentos Global",
-      type: "Insumos",
-      rating: 4.5,
-      location: "SP, Brasil",
-      status: "Homologado",
-      compliance: "92%",
-      delivery: "88%",
-      openOrders: 12,
-      approvals: 5,
-      eta: "5 dias",
-    },
-    {
-      id: "33333333-3333-4333-8333-333333333333",
-      name: "Seda & Cia",
-      type: "Tecidos Finos",
-      rating: 4.9,
-      location: "PR, Brasil",
-      status: "Premium",
-      compliance: "100%",
-      delivery: "97%",
-      openOrders: 4,
-      approvals: 1,
-      eta: "1 dia",
-    },
-    {
-      id: "44444444-4444-4444-8444-444444444444",
-      name: "Botões do Sul",
-      type: "Insumos",
-      rating: 4.2,
-      location: "RS, Brasil",
-      status: "Em Análise",
-      compliance: "85%",
-      delivery: "82%",
-      openOrders: 6,
-      approvals: 4,
-      eta: "8 dias",
-    },
-  ]);
-  type Supplier = (typeof suppliers)[number];
 
+  const partners = useOutsourcingStore((s) => s.partners);
+  const serviceOrders = useOutsourcingStore((s) => s.serviceOrders);
+  const upsertPartner = useOutsourcingStore((s) => s.upsertPartner);
+  const deletePartner = useOutsourcingStore((s) => s.deletePartner);
+  const sheetsMap = useTechSheetStore((s) => s.data);
+
+  const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
-  const [formData, setFormData] = useState({
+  const [editingPartner, setEditingPartner] = useState<IndustrialPartner | null>(null);
+  const [formData, setFormData] = useState<{
+    name: string;
+    cnpj: string;
+    city: string;
+    uf: string;
+    category: PartnerCategory;
+    compliance: ComplianceBadge;
+    machinesSummary: string;
+    capacityMinutesMonth: string;
+    leadTimeDays: string;
+    contactEmail: string;
+  }>({
     name: "",
-    type: "",
-    location: "",
-    status: "Homologado",
+    cnpj: "15.880.120/0001-40",
+    city: "Apucarana",
+    uf: "PR",
+    category: "Facção Costura",
+    compliance: "Certificado ABVTEX",
+    machinesSummary: "Retas Eletrônicas · Overloques 4F · Galoneiras",
+    capacityMinutesMonth: "75000",
+    leadTimeDays: "6",
+    contactEmail: "pcp@parceiro.ind.br",
   });
 
-  const handleOpenDialog = (supplier?: Supplier) => {
-    if (supplier) {
-      setEditingSupplier(supplier);
+  const enriched = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    return partners
+      .filter(
+        (p) =>
+          !q ||
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.city.toLowerCase().includes(q) ||
+          p.uf.toLowerCase().includes(q) ||
+          p.cnpj.includes(q),
+      )
+      .map((p) => ({
+        partner: p,
+        metrics: computePartnerMetrics(p, serviceOrders, sheetsMap),
+      }));
+  }, [partners, serviceOrders, sheetsMap, searchTerm]);
+
+  const avgOtif = useMemo(() => {
+    if (partners.length === 0) return 0;
+    return Math.round(partners.reduce((acc, p) => acc + p.otifScore, 0) / partners.length);
+  }, [partners]);
+
+  const totalOpenOs = useMemo(
+    () => enriched.reduce((acc, r) => acc + r.metrics.openOrdersCount, 0),
+    [enriched],
+  );
+
+  const totalPiecesExternal = useMemo(
+    () => enriched.reduce((acc, r) => acc + r.metrics.piecesInPossession, 0),
+    [enriched],
+  );
+
+  const handleOpenDialog = (p?: IndustrialPartner) => {
+    if (p) {
+      setEditingPartner(p);
       setFormData({
-        name: supplier.name,
-        type: supplier.type,
-        location: supplier.location,
-        status: supplier.status,
+        name: p.name,
+        cnpj: p.cnpj,
+        city: p.city,
+        uf: p.uf,
+        category: p.category,
+        compliance: p.compliance,
+        machinesSummary: p.machinesSummary,
+        capacityMinutesMonth: String(p.capacityMinutesMonth),
+        leadTimeDays: String(p.leadTimeDays),
+        contactEmail: p.contactEmail,
       });
     } else {
-      setEditingSupplier(null);
-      setFormData({ name: "", type: "", location: "", status: "Homologado" });
+      setEditingPartner(null);
+      setFormData({
+        name: "",
+        cnpj: "15.880.120/0001-40",
+        city: "Apucarana",
+        uf: "PR",
+        category: "Facção Costura",
+        compliance: "Certificado ABVTEX",
+        machinesSummary: "Retas Eletrônicas · Overloques 4F · Galoneiras",
+        capacityMinutesMonth: "75000",
+        leadTimeDays: "6",
+        contactEmail: "pcp@parceiro.ind.br",
+      });
     }
     setIsDialogOpen(true);
   };
 
   const handleSave = async () => {
-    if (editingSupplier) {
-      const prev = editingSupplier;
-      setSuppliers(suppliers.map((s) => (s.id === prev.id ? { ...s, ...formData } : s)));
-      toast.success("Fornecedor atualizado");
-      await emit({
-        entity_type: "supplier",
-        entity_id: prev.id,
-        event_type: "updated",
-        from_status: prev.status,
-        to_status: formData.status,
-        note: `Atualizado: ${formData.name}`,
-        payload: { before: prev, after: formData },
-      });
-    } else {
-      const newSup = {
-        id: crypto.randomUUID(),
-        ...formData,
-        rating: 5.0,
-        compliance: "100%",
-        delivery: "100%",
-        openOrders: 0,
-        approvals: 0,
-        eta: "novo",
-      };
-      setSuppliers([newSup, ...suppliers]);
-      toast.success("Novo fornecedor cadastrado");
-      await emit({
-        entity_type: "supplier",
-        entity_id: newSup.id,
-        event_type: "created",
-        to_status: newSup.status,
-        note: `Fornecedor cadastrado: ${newSup.name}`,
-        payload: { name: newSup.name, type: newSup.type, location: newSup.location },
-      });
+    if (!formData.name.trim()) {
+      toast.error("Informe a Razão Social da facção, lavanderia ou fornecedor.");
+      return;
     }
+    const next: IndustrialPartner = {
+      id: editingPartner?.id ?? crypto.randomUUID(),
+      name: formData.name.trim(),
+      cnpj: formData.cnpj.trim() || "00.000.000/0001-00",
+      city: formData.city.trim() || "Apucarana",
+      uf: (formData.uf.trim() || "PR").toUpperCase().slice(0, 2),
+      category: formData.category,
+      compliance: formData.compliance,
+      machinesSummary: formData.machinesSummary.trim() || "Parque industrial homologado",
+      capacityMinutesMonth: Math.max(1000, Number(formData.capacityMinutesMonth) || 60000),
+      qualityScore: editingPartner?.qualityScore ?? 92,
+      otifScore: editingPartner?.otifScore ?? 90,
+      costScore: editingPartner?.costScore ?? 86,
+      reliabilityScore: editingPartner?.reliabilityScore ?? 90,
+      leadTimeDays: Math.max(1, Number(formData.leadTimeDays) || 6),
+      contactEmail: formData.contactEmail.trim() || "contato@fornecedor.ind.br",
+    };
+
+    upsertPartner(next);
     setIsDialogOpen(false);
+    toast.success(
+      editingPartner ? "Parceiro industrial atualizado e persistido!" : "Novo parceiro homologado!",
+    );
+
+    await emit({
+      entity_type: "supplier",
+      entity_id: next.id,
+      event_type: editingPartner ? "updated" : "created",
+      to_status: next.compliance,
+      note: `${editingPartner ? "Atualizado" : "Homologado"}: ${next.name} (${next.category})`,
+      payload: { name: next.name, category: next.category, uf: next.uf },
+    });
   };
 
   const handleDelete = async (id: string) => {
-    const target = suppliers.find((s) => s.id === id);
-    setSuppliers(suppliers.filter((s) => s.id !== id));
-    toast.error("Fornecedor removido");
+    const target = partners.find((s) => s.id === id);
+    deletePartner(id);
+    toast.error("Parceiro removido da base homologada");
     if (target) {
       await emit({
         entity_type: "supplier",
         entity_id: id,
         event_type: "deleted",
-        from_status: target.status,
+        from_status: target.compliance,
         note: `Removido: ${target.name}`,
       });
     }
@@ -174,151 +204,161 @@ function SuppliersPage() {
 
   return (
     <ModuleLayout
-      title="Fornecedores"
-      subtitle="Portal de fornecedores com pedidos, materiais, aprovações, entregas e score de compliance. Cadastro de exemplo; o log de eventos por fornecedor persiste."
-      version="Procurement v2.0"
+      title="Fornecedores · Facções & Beneficiamento"
+      subtitle="Base persistida de tecelagens, facções de costura, estamparias e lavanderias homologadas ABVTEX, capacidade mensal SAM e remessa/retorno CFOP 5901/5902."
+      version="Supply & Facções v3.0"
       onAdd={() => handleOpenDialog()}
-      searchPlaceholder="Buscar fornecedor, pedido, material ou aprovação"
+      onSearch={setSearchTerm}
+      searchPlaceholder="Buscar facção, lavanderia, tecelagem, CNPJ ou UF"
       metrics={[
-        { label: "Fornecedores", value: String(suppliers.length), detail: "ativos" },
+        { label: "Parceiros Ativos", value: String(partners.length), detail: "homologados" },
+        { label: "OS em Aberto", value: String(totalOpenOs), detail: "industrialização" },
         {
-          label: "Pedidos abertos",
-          value: String(suppliers.reduce((sum, sup) => sum + sup.openOrders, 0)),
-          detail: "portal fornecedor",
+          label: "Peças em Terceiros",
+          value: totalPiecesExternal.toLocaleString("pt-BR"),
+          detail: "saldo remessa",
         },
-        {
-          label: "Aprovações",
-          value: String(suppliers.reduce((sum, sup) => sum + sup.approvals, 0)),
-          detail: "pendentes",
-        },
-        { label: "OTIF médio", value: "91%", detail: "entrega no prazo" },
+        { label: "OTIF Médio", value: `${avgOtif}%`, detail: "entrega no prazo" },
       ]}
     >
+      <OutsourcingServiceOrderPanel />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {suppliers.map((sup) => (
+        {enriched.map(({ partner: sup, metrics: m }) => (
           <Card
             key={sup.id}
-            className="glass-card rounded-lg p-6 hover:border-primary/40 transition-all duration-500 group relative"
+            className="glass-card rounded-xl p-6 hover:border-primary/40 transition-all group relative"
           >
             <div className="absolute top-5 right-5">
               <ModuleActionMenu
                 onEdit={() => handleOpenDialog(sup)}
-                onDelete={() => handleDelete(sup.id)}
+                onDelete={() => void handleDelete(sup.id)}
                 onView={() =>
                   openEntity({
                     type: "supplier",
                     id: String(sup.id),
                     title: sup.name,
-                    subtitle: `${sup.type} · ${sup.location}`,
+                    subtitle: `${sup.category} · ${sup.city}/${sup.uf}`,
                   })
                 }
               />
             </div>
 
-            <div className="flex justify-between items-start mb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-lg bg-muted/50 border border-border/60 flex items-center justify-center group-hover:bg-primary/5 transition-colors">
-                  <Users className="w-6 h-6 text-white/20 group-hover:text-primary transition-colors" />
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-lg bg-muted/50 border border-border/60 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                  <Users className="w-5 h-5 text-primary" />
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-xl font-bold text-white tracking-tight">{sup.name}</h3>
-                    {sup.status === "Premium" && <ShieldCheck className="w-5 h-5 text-primary" />}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base font-bold text-foreground tracking-tight">
+                      {sup.name}
+                    </h3>
+                    {sup.compliance === "Certificado ABVTEX" && (
+                      <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    )}
                   </div>
                   <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
-                    {sup.type}
+                    {sup.category} · CNPJ {sup.cnpj}
                   </p>
                 </div>
               </div>
-              <div className="text-right pr-12">
-                <div className="flex items-center gap-1 text-status-progress mb-1">
+              <div className="text-right pr-10">
+                <div className="flex items-center justify-end gap-1 text-amber-500 mb-0.5">
                   <Star className="w-3.5 h-3.5 fill-current" />
-                  <span className="text-sm font-bold text-white">{sup.rating}</span>
+                  <span className="text-sm font-bold text-foreground font-mono">
+                    {m.overallScore} ({m.tier})
+                  </span>
                 </div>
-                <p className="text-2xs text-muted-foreground uppercase tracking-widest">
-                  {sup.status}
+                <Badge variant="outline" className="text-[10px]">
+                  {sup.compliance}
+                </Badge>
+              </div>
+            </div>
+
+            <p className="text-2xs text-muted-foreground mb-4 truncate" title={sup.machinesSummary}>
+              Parque fabril: <strong className="text-foreground">{sup.machinesSummary}</strong>
+            </p>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4 border-y border-border/60 py-3.5 text-xs">
+              <div>
+                <span className="text-2xs uppercase text-muted-foreground flex items-center gap-1">
+                  <MapPin className="w-3 h-3" /> Origem
+                </span>
+                <strong className="text-foreground">
+                  {sup.city}/{sup.uf}
+                </strong>
+              </div>
+              <div>
+                <span className="text-2xs uppercase text-muted-foreground flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3" /> Qualidade AQL
+                </span>
+                <strong className="text-status-approved font-mono">{sup.qualityScore}%</strong>
+              </div>
+              <div>
+                <span className="text-2xs uppercase text-muted-foreground flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" /> OTIF
+                </span>
+                <strong className="text-status-approved font-mono">{sup.otifScore}%</strong>
+              </div>
+              <div>
+                <span className="text-2xs uppercase text-muted-foreground flex items-center gap-1">
+                  <Mail className="w-3 h-3" /> Contato
+                </span>
+                <strong className="text-foreground truncate block" title={sup.contactEmail}>
+                  {sup.contactEmail}
+                </strong>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2.5 mb-4">
+              <div className="rounded-md border border-border bg-muted/40 p-2.5">
+                <PackageCheck className="h-3.5 w-3.5 text-primary" />
+                <p className="mt-1 text-2xs uppercase text-muted-foreground">Saldo Remetido</p>
+                <p className="text-xs font-bold font-mono text-foreground">
+                  {m.piecesInPossession} pçs ({m.openOrdersCount} OS)
+                </p>
+              </div>
+              <div className="rounded-md border border-border bg-muted/40 p-2.5">
+                <Gauge className="h-3.5 w-3.5 text-primary" />
+                <p className="mt-1 text-2xs uppercase text-muted-foreground">Capacidade Mês</p>
+                <p className="text-xs font-bold font-mono text-foreground">
+                  {(sup.capacityMinutesMonth / 1000).toFixed(0)}k min ({m.capacityUtilizationPct}%)
+                </p>
+              </div>
+              <div className="rounded-md border border-border bg-muted/40 p-2.5">
+                <Clock className="h-3.5 w-3.5 text-primary" />
+                <p className="mt-1 text-2xs uppercase text-muted-foreground">Lead Time</p>
+                <p className="text-xs font-bold font-mono text-foreground">
+                  {sup.leadTimeDays} dias corridos
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5 border-y border-border/60 py-5">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span className="text-2xs font-semibold uppercase tracking-widest">Local</span>
-                </div>
-                <p className="text-sm font-medium text-white">{sup.location}</p>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span className="text-2xs font-semibold uppercase tracking-widest">
-                    Compliance
-                  </span>
-                </div>
-                <p className="text-sm font-medium text-status-approved">{sup.compliance}</p>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  <span className="text-2xs font-semibold uppercase tracking-widest">OTIF</span>
-                </div>
-                <p className="text-sm font-medium text-status-approved">{sup.delivery}</p>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Mail className="w-3.5 h-3.5" />
-                  <span className="text-2xs font-semibold uppercase tracking-widest">Canal</span>
-                </div>
-                <p className="text-sm font-medium text-white">comercial@...</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3 mb-5">
-              {[
-                { label: "Pedidos", value: sup.openOrders, icon: PackageCheck },
-                { label: "Aprovações", value: sup.approvals, icon: FileCheck2 },
-                { label: "Próxima entrega", value: sup.eta, icon: Clock },
-              ].map((item) => (
-                <div key={item.label} className="rounded-md border border-border bg-muted/60 p-3">
-                  <item.icon className="h-4 w-4 text-primary" />
-                  <p className="mt-2 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-                    {item.label}
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-white">{item.value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-4">
+            <div className="flex gap-2.5">
               <Button
-                variant="ghost"
-                className="flex-1 border bg-muted/50 hover:bg-accent text-2xs tracking-[0.04em] text-white"
+                type="button"
+                variant="outline"
+                onClick={() => void navigate({ to: "/supplier-portal" })}
+                className="flex-1 text-xs gap-1.5"
               >
-                Portal do fornecedor
+                <ExternalLink className="w-3.5 h-3.5 text-primary" /> Portal RFQ & Cotações
               </Button>
               <Button
-                variant="ghost"
-                size="icon"
-                className="w-11 border bg-muted/50 hover:bg-primary/10 hover:text-primary"
+                type="button"
+                variant="outline"
                 onClick={() =>
                   openEntity({
                     type: "supplier",
                     id: String(sup.id),
                     title: sup.name,
-                    subtitle: `${sup.type} · ${sup.location}`,
+                    subtitle: `${sup.category} · ${sup.city}/${sup.uf}`,
                   })
                 }
-                title="Abrir na trilha"
+                title="Abrir histórico de eventos e auditoria"
+                className="gap-1.5 text-xs"
               >
-                <GitBranch className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-11 border bg-muted/50 hover:bg-primary/10 hover:text-primary"
-              >
-                <ChevronRight className="w-5 h-5" />
+                <GitBranch className="w-3.5 h-3.5 text-primary" /> Trilha
               </Button>
             </div>
           </Card>
@@ -326,59 +366,132 @@ function SuppliersPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="glass-card border-border bg-popover text-white rounded-full p-10 max-w-lg">
+        <DialogContent className="max-w-lg rounded-xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold uppercase tracking-tighter italic">
-              {editingSupplier ? "Editar Fornecedor" : "Novo Fornecedor"}
+            <DialogTitle>
+              {editingPartner
+                ? "Editar Parceiro / Facção Homologada"
+                : "Homologar Novo Fornecedor / Facção / Lavanderia"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-6 py-8">
-            <div className="space-y-2">
-              <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                Nome da Empresa
-              </Label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                placeholder="Ex: Têxtil Brasil S.A."
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                  Tipo de Insumo
-                </Label>
+          <div className="space-y-3 py-2 text-xs">
+            <div className="grid grid-cols-[1fr_160px] gap-3">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Razão Social</Label>
                 <Input
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                  placeholder="Ex: Tecidos"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Ex: Facção Modelo Apucarana LTDA"
                 />
               </div>
-              <div className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-                  Localização
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">CNPJ</Label>
+                <Input
+                  value={formData.cnpj}
+                  onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Especialidade</Label>
+                <select
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value as PartnerCategory })
+                  }
+                  className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
+                >
+                  <option value="Facção Costura">Facção Costura</option>
+                  <option value="Lavanderia & Beneficiamento">Lavanderia & Beneficiamento</option>
+                  <option value="Estamparia & Bordado">Estamparia & Bordado</option>
+                  <option value="Tecelagem & Malharia">Tecelagem & Malharia</option>
+                  <option value="Aviamentos">Aviamentos</option>
+                </select>
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">
+                  Certificação Social/Fiscal
+                </Label>
+                <select
+                  value={formData.compliance}
+                  onChange={(e) =>
+                    setFormData({ ...formData, compliance: e.target.value as ComplianceBadge })
+                  }
+                  className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
+                >
+                  <option value="Certificado ABVTEX">Certificado ABVTEX</option>
+                  <option value="Homologado">Homologado</option>
+                  <option value="Em Auditoria">Em Auditoria</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-[1fr_70px_130px_90px] gap-2.5">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Cidade</Label>
+                <Input
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">UF</Label>
+                <Input
+                  maxLength={2}
+                  value={formData.uf}
+                  onChange={(e) => setFormData({ ...formData, uf: e.target.value.toUpperCase() })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Cap. (min/mês)</Label>
+                <Input
+                  type="number"
+                  value={formData.capacityMinutesMonth}
+                  onChange={(e) =>
+                    setFormData({ ...formData, capacityMinutesMonth: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">Prazo (d)</Label>
+                <Input
+                  type="number"
+                  value={formData.leadTimeDays}
+                  onChange={(e) => setFormData({ ...formData, leadTimeDays: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">
+                  Parque de Máquinas
                 </Label>
                 <Input
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
-                  placeholder="Ex: SP, Brasil"
+                  value={formData.machinesSummary}
+                  onChange={(e) => setFormData({ ...formData, machinesSummary: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-2xs uppercase text-muted-foreground">E-mail PCP/OS</Label>
+                <Input
+                  value={formData.contactEmail}
+                  onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
                 />
               </div>
             </div>
           </div>
-          <DialogFooter className="gap-4">
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-2xs">
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} className="text-2xs">
-              Salvar Fornecedor
-            </Button>
+            <Button onClick={() => void handleSave()}>Salvar Parceiro</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
       <SupplierScoreboard />
     </ModuleLayout>
   );

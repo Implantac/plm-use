@@ -6,10 +6,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { GanttChart, GitBranch, History, LayoutGrid, Radar, Scissors, Zap } from "lucide-react";
+import {
+  Factory,
+  GanttChart,
+  GitBranch,
+  History,
+  LayoutGrid,
+  Radar,
+  Scissors,
+  Zap,
+} from "lucide-react";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { CuttingRoomPlanPanel } from "@/components/pcp/CuttingRoomPlanPanel";
+import { OutsourcingServiceOrderPanel } from "@/components/pcp/OutsourcingServiceOrderPanel";
 import { KanbanColumn } from "@/components/pcp/KanbanColumn";
 import { ReferenciaDrawer } from "@/components/pcp/ReferenciaDrawer";
 import { TorreDeControle } from "@/components/pcp/TorreDeControle";
@@ -63,7 +73,7 @@ function ProductionPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const flowRef = useRef<HTMLDivElement>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [view, setView] = useState<"kanban" | "torre" | "gantt" | "op" | "corte">(
+  const [view, setView] = useState<"kanban" | "torre" | "gantt" | "op" | "corte" | "faccoes">(
     search.pcpOp ? "op" : "kanban",
   );
   const [selRef, setSelRef] = useState<{
@@ -199,6 +209,17 @@ function ProductionPage() {
               <Scissors className="h-3.5 w-3.5" />
               Corte & Enfesto
             </button>
+            <button
+              onClick={() => setView("faccoes")}
+              className={`px-3 py-1.5 rounded-full text-2xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition ${
+                view === "faccoes"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:text-white"
+              }`}
+            >
+              <Factory className="h-3.5 w-3.5" />
+              Facções & Lavanderia
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <ExportMenu
@@ -286,6 +307,8 @@ function ProductionPage() {
           </div>
         ) : view === "corte" ? (
           <CuttingRoomPlanPanel />
+        ) : view === "faccoes" ? (
+          <OutsourcingServiceOrderPanel />
         ) : (
           <LotesGantt
             lotes={lotes}

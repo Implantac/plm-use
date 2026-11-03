@@ -203,7 +203,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Relatório de Peças",
     group: "plm-engenharia",
     crumbs: ["PLM", "Engenharia"],
-    vitrine: true,
   },
   {
     path: "/official-models",
@@ -259,7 +258,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Fornecedores",
     group: "supply",
     crumbs: ["Supply"],
-    vitrine: true,
   },
   {
     path: "/supplier-portal",
@@ -301,7 +299,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Comercial",
     group: "gtm",
     crumbs: ["GTM"],
-    vitrine: true,
   },
   { path: "/influencers", icon: "users", label: "Influencers", group: "gtm", crumbs: ["GTM"] },
 
@@ -319,7 +316,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Financeiro",
     group: "insights",
     crumbs: ["Insights"],
-    vitrine: true,
   },
   {
     path: "/ai-center",
@@ -342,7 +338,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Digital Twin",
     group: "insights",
     crumbs: ["Insights"],
-    vitrine: true,
   },
 
   // Admin

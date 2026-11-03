@@ -156,17 +156,32 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "real",
   },
   {
-    area: "Pesquisa / Protótipos / Marketing / Comercial / Financeiro / CAD",
-    route: "/marketing",
+    area: "Comercial · Packing List & Pré-NFe 4.00",
+    route: "/commercial",
     evidence:
-      "Telas de portfólio com dados de exemplo — a edição não persiste e cada uma diz isso na própria tela.",
-    status: "vitrine",
+      "Carteira B2B persistida, cálculo de caixas master/cubagem, CFOP 5101/6101 e exportação Pré-XML SEFAZ NFe 4.00.",
+    status: "sync",
   },
   {
-    area: "Fornecedores",
+    area: "Financeiro CFO · DRE & OTB",
+    route: "/financial",
+    evidence:
+      "Apuração DRE gerencial têxtil, ponto de equilíbrio e orçamento Open-To-Buy (OTB) conectados às Fichas Técnicas.",
+    status: "sync",
+  },
+  {
+    area: "Fornecedores · Facções & Lavanderia",
     route: "/suppliers",
-    evidence: "Log de eventos por fornecedor é real; o cadastro da lista é de exemplo.",
-    status: "parcial",
+    evidence:
+      "Base homologada persistida + Kardex de Remessa/Retorno (CFOP 5901/5902/5124), Guia OS Cega A4 e entity_events.",
+    status: "sync",
+  },
+  {
+    area: "Pesquisa & Marketing",
+    route: "/marketing",
+    evidence:
+      "Telas de portfólio com dados de exemplo — a edição local ainda aguarda persistência cloud.",
+    status: "vitrine",
   },
   {
     area: "Portal do Fornecedor",
