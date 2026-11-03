@@ -4,6 +4,7 @@ import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Clock, AlertTriangle, Repeat, TrendingUp, CheckCircle2 } from "lucide-react";
+import { DppPassportPanel } from "@/components/techsheet/DppPassportPanel";
 import { useReferenceStore, filtrarLifecycles } from "@/lib/reference/store";
 import { percentualLifecycle, stageAtual, type ReferenceLifecycle } from "@/types/reference";
 
@@ -108,6 +109,8 @@ function PiecesReportPage() {
         },
       ]}
     >
+      <DppPassportPanel />
+
       <div className="flex flex-wrap gap-2 mb-6">
         {SORT_OPTIONS.map((opt) => {
           const Icon = opt.icon;

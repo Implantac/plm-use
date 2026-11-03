@@ -18,6 +18,9 @@ import {
 } from "lucide-react";
 
 import { ORDER_FLOW_STEPS, ORDER_STATUS } from "@/lib/sales/types";
+import { computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
+import { computeDigitalProductPassport } from "@/lib/techsheet/dpp-expedition";
+import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +49,13 @@ const PIPELINE_STAGES: { status: ReferenceStatus; color: string }[] = [
 ];
 
 function Dashboard() {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const dre = useMemo(() => computeCollectionDreSummary(sheetsMap), [sheetsMap]);
+  const dppHero = useMemo(
+    () =>
+      computeDigitalProductPassport("DEV000006", sheetsMap["DEV000006"] ?? seedFor("DEV000006")),
+    [sheetsMap],
+  );
   const { items, loading, error } = useReferences();
   const { openEntity } = useEntityDrawer();
 
@@ -176,6 +186,114 @@ function Dashboard() {
           ))}
         </ol>
       </motion.section>
+
+      {/* Torre Executiva 360° — Pulso Industrial PLM Fluido 2.0 */}
+      <section
+        aria-label="Pulso Industrial PLM 2.0"
+        className="rounded-xl border border-primary/25 bg-card p-4 space-y-3"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
+              Torre Executiva PLM 2.0 · Engenharia, Sourcing, Corte, ESG & CFO
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-1.5 text-2xs">
+            <Link
+              to="/tech-sheet"
+              className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
+            >
+              Ficha Técnica
+            </Link>
+            <Link
+              to="/digital-twin"
+              className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
+            >
+              Gêmeo 3D What-If
+            </Link>
+            <Link
+              to="/supplier-portal"
+              className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
+            >
+              Sourcing RFQ
+            </Link>
+            <Link
+              to="/route-engineering"
+              className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
+            >
+              Cronoanálise GSD
+            </Link>
+            <Link
+              to="/showroom"
+              className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
+            >
+              Showroom B2B
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <Link
+            to="/financial"
+            className="rounded-lg border border-border/70 bg-muted/30 p-3 hover:border-primary/40 transition"
+          >
+            <span className="text-2xs uppercase text-muted-foreground block">
+              EBITDA Projetado Coleção
+            </span>
+            <strong className="font-mono text-base text-primary">
+              {dre.ebitdaBrl.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+                maximumFractionDigits: 0,
+              })}
+            </strong>
+            <span className="text-2xs text-muted-foreground block">
+              Break-Even {dre.breakEvenPieces.toLocaleString("pt-BR")} pçs
+            </span>
+          </Link>
+          <Link
+            to="/production"
+            className="rounded-lg border border-border/70 bg-muted/30 p-3 hover:border-primary/40 transition"
+          >
+            <span className="text-2xs uppercase text-muted-foreground block">
+              Volume Industrial Planejado
+            </span>
+            <strong className="font-mono text-base text-foreground">
+              {dre.totalPieces.toLocaleString("pt-BR")} peças
+            </strong>
+            <span className="text-2xs text-muted-foreground block">
+              Corte, Enfesto & Fardos ativos
+            </span>
+          </Link>
+          <Link
+            to="/pieces-report"
+            className="rounded-lg border border-border/70 bg-muted/30 p-3 hover:border-primary/40 transition"
+          >
+            <span className="text-2xs uppercase text-muted-foreground block">
+              Passaporte Digital ESG (DPP)
+            </span>
+            <strong className="font-mono text-base text-emerald-600 dark:text-emerald-400">
+              Rating {dppHero.esgGrade} · {dppHero.carbonKgCo2e} kg CO₂e
+            </strong>
+            <span className="text-2xs text-muted-foreground block">
+              Circularidade {dppHero.circularityScore}/100
+            </span>
+          </Link>
+          <Link
+            to="/commercial"
+            className="rounded-lg border border-border/70 bg-muted/30 p-3 hover:border-primary/40 transition"
+          >
+            <span className="text-2xs uppercase text-muted-foreground block">
+              Expedição & Pré-NFe 4.00
+            </span>
+            <strong className="font-mono text-base text-foreground">CFOP 5101 / 6101</strong>
+            <span className="text-2xs text-muted-foreground block">
+              Packing List & XML SEFAZ prontos
+            </span>
+          </Link>
+        </div>
+      </section>
 
       {error && (
         <div
