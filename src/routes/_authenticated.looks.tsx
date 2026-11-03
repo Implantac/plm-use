@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
 import {
@@ -36,9 +36,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Copy, Trash2, Sparkles, Shirt, X } from "lucide-react";
+import { ExpandImageBadge, ImageLightbox } from "@/components/ui/image-lightbox";
+import {
+  Camera,
+  Copy,
+  FileSpreadsheet,
+  Loader2,
+  Plus,
+  Shirt,
+  Sparkles,
+  Trash2,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
+import { streamImage } from "@/lib/streamImage";
+import {
+  buildFullLookEditorialPrompt,
+  computeLookFinancialSummary,
+} from "@/lib/techsheet/linesheet";
+import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/looks")({
   component: LooksPage,
@@ -60,8 +77,17 @@ const STATUS_TONE: Record<LookStatus, string> = {
   arquivado: "bg-status-blocked/15 text-status-blocked",
 };
 
+const brl = (v: number) =>
+  (Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  });
+
 function LooksPage() {
   const looks = useLooks();
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensure = useTechSheetStore((s) => s.ensure);
   const [selectedId, setSelectedId] = useState<string | null>(looks[0]?.id ?? null);
   const [statusFilter, setStatusFilter] = useState<LookStatus | "all">("all");
   const [occasionFilter, setOccasionFilter] = useState<LookOccasion | "all">("all");
@@ -85,19 +111,62 @@ function LooksPage() {
 
   const selected = looks.find((l) => l.id === selectedId) ?? filtered[0] ?? null;
 
+  function suggestCoordinatedLookAi() {
+    const dev = sheetsMap["DEV000006"] ?? ensure("DEV000006");
+    const v24 = sheetsMap["V24-001"] ?? seedFor("V24-001");
+    const id = `look-ia-${Date.now().toString(36)}`;
+    const primaryHex = dev.colorways?.[0]?.hex ?? "#1D6B47";
+
+    upsertLook({
+      id,
+      name: `Coordenado IA · ${dev.meta?.collection || "Verão 2027"}`,
+      season: dev.meta?.collection || "Verão 2027",
+      occasion: "esporte",
+      status: "rascunho",
+      tags: ["ia-curadoria", "dry-fit", "coordenado-b2b"],
+      stylingNotes:
+        "Peça-chave técnica respirável coordenada com segunda pele/complemento neutro de contraste suave para vitrine e kit B2B.",
+      coverColor: primaryHex,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      items: [
+        {
+          refCode: "DEV000006",
+          refName: dev.meta?.name || "Camiseta Esportiva Dry Pro",
+          role: "peça-chave",
+          colorHex: primaryHex,
+        },
+        {
+          refCode: "V24-001",
+          refName: v24.meta?.name || "Complemento Coordenado",
+          role: "complemento",
+          colorHex: v24.colorways?.[0]?.hex ?? "#1E293B",
+        },
+      ],
+    });
+    setSelectedId(id);
+    toast.success("Coordenado sugerido a partir das Fichas Técnicas da coleção!");
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Coordenados · Looks</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Agrupe referências em looks reutilizáveis para displayagem, showroom e catálogo
-            comercial.
+            Agrupe referências e Fichas Técnicas em looks com custeio de kit B2B e renderização
+            editorial em PNG transparente.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2" disabled>
-            <Sparkles className="w-4 h-4" />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={suggestCoordinatedLookAi}
+          >
+            <Sparkles className="w-4 h-4 text-primary" />
             Sugerir com IA
           </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -170,59 +239,73 @@ function LooksPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filtered.map((look) => (
-            <button
-              key={look.id}
-              onClick={() => setSelectedId(look.id)}
-              className={`text-left rounded-lg border transition-all overflow-hidden ${
-                selected?.id === look.id
-                  ? "border-primary shadow-lg shadow-primary/10"
-                  : "border-border hover:border-primary/40"
-              }`}
-            >
-              <div
-                className="h-28 relative"
-                style={{
-                  background: `linear-gradient(135deg, ${look.coverColor} 0%, ${look.coverColor}88 100%)`,
-                }}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_410px] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 content-start">
+          {filtered.map((look) => {
+            const fin = computeLookFinancialSummary(look.items, sheetsMap);
+            return (
+              <button
+                key={look.id}
+                type="button"
+                onClick={() => setSelectedId(look.id)}
+                className={`text-left rounded-lg border transition-all overflow-hidden ${
+                  selected?.id === look.id
+                    ? "border-primary shadow-lg shadow-primary/10"
+                    : "border-border hover:border-primary/40"
+                }`}
               >
-                <div className="absolute inset-0 flex items-end p-3 gap-1">
-                  {look.items.slice(0, 5).map((it) => (
-                    <div
-                      key={it.refCode}
-                      className="h-6 w-6 rounded-full border-2 border-background"
-                      style={{ background: it.colorHex ?? "#999" }}
-                      title={it.refName}
-                    />
-                  ))}
-                  {look.items.length > 5 && (
-                    <div
-                      className="h-6 w-6 rounded-full border-2 border-background bg-black/45 text-white text-2xs font-semibold flex items-center justify-center"
-                      title={`${look.items.length} referências no look`}
-                    >
-                      +{look.items.length - 5}
+                <div
+                  className="h-28 relative"
+                  style={{
+                    background: `linear-gradient(135deg, ${look.coverColor} 0%, ${look.coverColor}88 100%)`,
+                  }}
+                >
+                  <div className="absolute inset-0 flex items-end justify-between p-3 gap-1">
+                    <div className="flex items-center gap-1">
+                      {look.items.slice(0, 5).map((it) => (
+                        <div
+                          key={it.refCode}
+                          className="h-6 w-6 rounded-full border-2 border-background"
+                          style={{ background: it.colorHex ?? "#999" }}
+                          title={it.refName}
+                        />
+                      ))}
+                      {look.items.length > 5 && (
+                        <div
+                          className="h-6 w-6 rounded-full border-2 border-background bg-black/45 text-white text-2xs font-semibold flex items-center justify-center"
+                          title={`${look.items.length} referências no look`}
+                        >
+                          +{look.items.length - 5}
+                        </div>
+                      )}
                     </div>
-                  )}
+                    {look.items.length > 0 && (
+                      <span className="rounded bg-black/55 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-100 backdrop-blur-sm">
+                        Kit {brl(fin.comboKitB2bPrice)}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="p-3 bg-card">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-semibold text-sm text-foreground truncate">{look.name}</p>
-                  <Badge className={`text-2xs ${STATUS_TONE[look.status]}`}>
-                    {STATUS_LABEL[look.status]}
-                  </Badge>
+                <div className="p-3 bg-card">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-semibold text-sm text-foreground truncate">{look.name}</p>
+                    <Badge className={`text-2xs ${STATUS_TONE[look.status]}`}>
+                      {STATUS_LABEL[look.status]}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {look.season} · {OCCASION_LABEL[look.occasion]}
+                  </p>
+                  <div className="flex items-center justify-between mt-2 text-2xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Shirt className="w-3 h-3" /> {look.items.length} peças
+                    </span>
+                    <span className="font-mono">Margem {fin.comboGrossMarginPct.toFixed(0)}%</span>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {look.season} · {OCCASION_LABEL[look.occasion]}
-                </p>
-                <div className="flex items-center gap-1 mt-2 text-2xs text-muted-foreground">
-                  <Shirt className="w-3 h-3" /> {look.items.length} peças
-                </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
           {filtered.length === 0 && (
             <div className="col-span-full text-center py-12 text-sm text-muted-foreground border border-dashed border-border rounded-lg">
               Nenhum look encontrado com os filtros atuais.
@@ -237,6 +320,42 @@ function LooksPage() {
 }
 
 function LookDetail({ look }: { look: Look }) {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const [renderedSrcByLook, setRenderedSrcByLook] = useState<Record<string, string>>({});
+  const [renderBusy, setRenderBusy] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const fin = useMemo(
+    () => computeLookFinancialSummary(look.items, sheetsMap),
+    [look.items, sheetsMap],
+  );
+  const activeRenderSrc = renderedSrcByLook[look.id] ?? null;
+
+  async function renderEditorialLook() {
+    if (look.items.length === 0) {
+      toast.error("Adicione ao menos 1 peça ao coordenado antes de renderizar.");
+      return;
+    }
+    setRenderBusy(true);
+    try {
+      const plan = buildFullLookEditorialPrompt(look, sheetsMap);
+      await streamImage(
+        "/api/generate-image",
+        plan.prompt,
+        (dataUrl) => {
+          setRenderedSrcByLook((prev) => ({ ...prev, [look.id]: dataUrl }));
+        },
+        undefined,
+        { background: "transparent", size: plan.size, inputFidelity: "high" },
+      );
+      toast.success("Coordenado completo renderizado em PNG transparente!");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Falha ao renderizar look.");
+    } finally {
+      setRenderBusy(false);
+    }
+  }
+
   return (
     <Card className="h-fit sticky top-4">
       <CardHeader>
@@ -263,6 +382,70 @@ function LookDetail({ look }: { look: Look }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Render Editorial do Look Completo em PNG Transparente */}
+        <div className="space-y-2 rounded-md border border-border/80 bg-muted/30 p-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Editorial IA · PNG Transparente
+            </span>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={renderBusy}
+              onClick={() => void renderEditorialLook()}
+              className="h-7 gap-1.5 text-xs"
+            >
+              {renderBusy ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Camera className="h-3.5 w-3.5 text-primary" />
+              )}
+              Renderizar Look IA
+            </Button>
+          </div>
+          {activeRenderSrc && (
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              aria-label={`Ampliar look ${look.name} em tela cheia`}
+              style={{
+                backgroundColor: "#141D2E",
+                backgroundImage:
+                  "linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%)",
+                backgroundSize: "18px 18px",
+                backgroundPosition: "0 0, 0 9px, 9px -9px, -9px 0px",
+              }}
+              className="group relative block h-64 w-full cursor-zoom-in overflow-hidden rounded border border-border"
+            >
+              <ExpandImageBadge />
+              <img
+                src={activeRenderSrc}
+                alt={`Look completo ${look.name}`}
+                className="h-full w-full object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+              />
+            </button>
+          )}
+        </div>
+
+        {/* Custeio Combinado & Kit B2B */}
+        {look.items.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="rounded border border-border/70 bg-muted/30 p-2">
+              <span className="text-[10px] uppercase text-muted-foreground block">Custo Ind.</span>
+              <strong className="font-mono text-foreground">{brl(fin.totalIndustrialCost)}</strong>
+            </div>
+            <div className="rounded border border-border/70 bg-muted/30 p-2">
+              <span className="text-[10px] uppercase text-muted-foreground block">PV Avulso</span>
+              <strong className="font-mono text-foreground">{brl(fin.totalSuggestedPrice)}</strong>
+            </div>
+            <div className="rounded border border-primary/30 bg-primary/10 p-2">
+              <span className="text-[10px] uppercase text-primary block">Kit B2B (-8%)</span>
+              <strong className="font-mono text-primary">{brl(fin.comboKitB2bPrice)}</strong>
+            </div>
+          </div>
+        )}
+
         <div>
           <p className="uppercase-label text-muted-foreground mb-1">Styling notes</p>
           <p className="text-sm text-foreground leading-relaxed">{look.stylingNotes}</p>
@@ -282,22 +465,33 @@ function LookDetail({ look }: { look: Look }) {
         <div>
           <p className="uppercase-label text-muted-foreground mb-2">Peças ({look.items.length})</p>
           <div className="space-y-1.5">
-            {look.items.map((item) => (
+            {fin.items.map((item) => (
               <div
                 key={item.refCode}
                 className="flex items-center gap-2 p-2 rounded-md border border-border bg-accent/30"
               >
                 <div
                   className="h-6 w-6 rounded-full border border-border shrink-0"
-                  style={{ background: item.colorHex ?? "#999" }}
+                  style={{ background: item.colorHex }}
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-foreground truncate">{item.refName}</p>
                   <p className="text-2xs text-muted-foreground">
-                    {item.refCode} · {item.role}
+                    {item.refCode} · {item.role} · {brl(item.unitSuggestedPrice)}
                   </p>
                 </div>
+                {item.linkedToTechSheet && (
+                  <Link
+                    to="/tech-sheet"
+                    search={{ ref: item.refCode } as never}
+                    title="Abrir Ficha Técnica"
+                    className="text-primary hover:underline p-1"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                  </Link>
+                )}
                 <button
+                  type="button"
                   onClick={() => removeItemFromLook(look.id, item.refCode)}
                   className="text-muted-foreground hover:text-status-blocked"
                   title="Remover"
@@ -359,15 +553,49 @@ function LookDetail({ look }: { look: Look }) {
           </div>
         </div>
       </CardContent>
+
+      {activeRenderSrc && (
+        <ImageLightbox
+          open={lightboxOpen}
+          onOpenChange={setLightboxOpen}
+          items={[
+            {
+              src: activeRenderSrc,
+              alt: `Coordenado ${look.name}`,
+              title: `${look.name} (${look.season})`,
+              subtitle: `${look.items.length} peças · Kit B2B ${brl(fin.comboKitB2bPrice)} · Fundo PNG Transparente`,
+              exportBaseName: `look-${look.id}`,
+            },
+          ]}
+        />
+      )}
     </Card>
   );
 }
 
 function AddItemForm({ lookId }: { lookId: string }) {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensure = useTechSheetStore((s) => s.ensure);
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
-  const [color, setColor] = useState("#888888");
+  const [color, setColor] = useState("#1D6B47");
   const [role, setRole] = useState<LookItem["role"]>("complemento");
+
+  const sheetRefs = useMemo(() => {
+    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
+    for (const k of Object.keys(sheetsMap)) {
+      if (!base.includes(k)) base.push(k);
+    }
+    return base;
+  }, [sheetsMap]);
+
+  function fillFromSheet(refCode: string) {
+    if (!refCode) return;
+    const doc = sheetsMap[refCode] ?? ensure(refCode);
+    setCode(refCode);
+    setName(doc.meta?.name || refCode);
+    setColor(doc.colorways?.[0]?.hex || "#1D6B47");
+  }
 
   return (
     <form
@@ -384,41 +612,56 @@ function AddItemForm({ lookId }: { lookId: string }) {
         setName("");
         toast.success("Peça adicionada.");
       }}
-      className="mt-3 grid grid-cols-2 gap-2"
+      className="mt-3 space-y-2"
     >
-      <Input
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder="REF-…"
-        className="text-xs col-span-1"
-      />
-      <Input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Nome da peça"
-        className="text-xs col-span-1"
-      />
-      <Select value={role} onValueChange={(v) => setRole(v as LookItem["role"])}>
-        <SelectTrigger className="text-xs col-span-1">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="peça-chave">Peça-chave</SelectItem>
-          <SelectItem value="complemento">Complemento</SelectItem>
-          <SelectItem value="acessório">Acessório</SelectItem>
-          <SelectItem value="calçado">Calçado</SelectItem>
-        </SelectContent>
-      </Select>
-      <div className="flex gap-1 col-span-1">
+      <select
+        aria-label="Preencher a partir de Ficha Técnica"
+        defaultValue=""
+        onChange={(e) => fillFromSheet(e.target.value)}
+        className="h-8 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+      >
+        <option value="">+ Importar rápido de Ficha Técnica…</option>
+        {sheetRefs.map((r) => (
+          <option key={r} value={r}>
+            {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+          </option>
+        ))}
+      </select>
+      <div className="grid grid-cols-2 gap-2">
         <Input
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          className="w-10 p-0.5 shrink-0"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="REF-…"
+          className="text-xs col-span-1"
         />
-        <Button type="submit" size="sm" className="flex-1 text-xs">
-          Adicionar
-        </Button>
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nome da peça"
+          className="text-xs col-span-1"
+        />
+        <Select value={role} onValueChange={(v) => setRole(v as LookItem["role"])}>
+          <SelectTrigger className="text-xs col-span-1">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="peça-chave">Peça-chave</SelectItem>
+            <SelectItem value="complemento">Complemento</SelectItem>
+            <SelectItem value="acessório">Acessório</SelectItem>
+            <SelectItem value="calçado">Calçado</SelectItem>
+          </SelectContent>
+        </Select>
+        <div className="flex gap-1.5">
+          <Input
+            type="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            className="w-10 p-0.5 shrink-0"
+          />
+          <Button type="submit" size="sm" className="flex-1 text-xs">
+            Adicionar
+          </Button>
+        </div>
       </div>
     </form>
   );
@@ -426,9 +669,9 @@ function AddItemForm({ lookId }: { lookId: string }) {
 
 function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
   const [name, setName] = useState("");
-  const [season, setSeason] = useState("Alto Verão 26");
+  const [season, setSeason] = useState("Verão 2027");
   const [occasion, setOccasion] = useState<LookOccasion>("casual");
-  const [color, setColor] = useState("#c8b6a0");
+  const [color, setColor] = useState("#1D6B47");
   const [notes, setNotes] = useState("");
   const [tags, setTags] = useState("");
 

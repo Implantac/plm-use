@@ -2,12 +2,23 @@
 // Visão matricial modelo × cor × grade com filtros salvos por usuário.
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Grid3x3, Save, Trash2, Bookmark, DollarSign, Package, Filter, X } from "lucide-react";
+import {
+  Grid3x3,
+  Save,
+  Bookmark,
+  DollarSign,
+  Download,
+  FileText,
+  Package,
+  Filter,
+  X,
+} from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +33,12 @@ import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
+import {
+  buildLineSheetCsvPtBr,
+  buildLineSheetPrintableHtml,
+  techSheetToMatrixRow,
+} from "@/lib/techsheet/linesheet";
+import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 import {
   collectionMap,
   listFilters,
@@ -70,10 +87,12 @@ const STATUS_DOT: Record<MatrixCell["status"], string> = {
 const ALL_STATUSES: MatrixCell["status"][] = ["planejado", "em_producao", "concluido", "cancelado"];
 
 function CollectionMapRoute() {
+  const sheetsMap = useTechSheetStore((s) => s.data);
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<MatrixCell["status"][]>([]);
   const [q, setQ] = useState("");
+  const [lightboxRow, setLightboxRow] = useState<MatrixRow | null>(null);
 
   const filters = useSyncExternalStore(
     (l) => {
@@ -84,18 +103,27 @@ function CollectionMapRoute() {
     () => listFilters(),
   );
 
+  const allSourceRows = useMemo<MatrixRow[]>(() => {
+    const existingCodes = new Set(collectionMap.rows.map((r) => r.refCode));
+    const plmKeys = Array.from(new Set(["DEV000006", ...Object.keys(sheetsMap)])).filter(
+      (k) => !existingCodes.has(k),
+    );
+    const plmRows = plmKeys.map((k) => techSheetToMatrixRow(k, sheetsMap[k] ?? seedFor(k)));
+    return [...plmRows, ...collectionMap.rows];
+  }, [sheetsMap]);
+
   const allCategories = useMemo(
-    () => Array.from(new Set(collectionMap.rows.map((r) => r.category))),
-    [],
+    () => Array.from(new Set(allSourceRows.map((r) => r.category))),
+    [allSourceRows],
   );
   const allColors = useMemo(() => {
     const map = new Map<string, string>();
-    collectionMap.rows.forEach((r) => r.cells.forEach((c) => map.set(c.colorHex, c.colorName)));
+    allSourceRows.forEach((r) => r.cells.forEach((c) => map.set(c.colorHex, c.colorName)));
     return Array.from(map.entries()); // [hex, name]
-  }, []);
+  }, [allSourceRows]);
 
   const filteredRows = useMemo(() => {
-    return collectionMap.rows
+    return allSourceRows
       .filter((r) => (selectedCats.length === 0 ? true : selectedCats.includes(r.category)))
       .filter((r) =>
         q
@@ -112,7 +140,38 @@ function CollectionMapRoute() {
           ),
       }))
       .filter((r) => r.cells.length > 0);
-  }, [selectedCats, selectedColors, selectedStatuses, q]);
+  }, [allSourceRows, selectedCats, selectedColors, selectedStatuses, q]);
+
+  function exportCsv() {
+    const csv = buildLineSheetCsvPtBr(filteredRows, sheetsMap);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `line-sheet-${collectionMap.season.toLowerCase().replace(/\s+/g, "-")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Line Sheet CSV (PT-BR) exportado com sucesso!");
+  }
+
+  function printLineSheetA4() {
+    const html = buildLineSheetPrintableHtml(
+      collectionMap.name,
+      collectionMap.season,
+      filteredRows,
+      sheetsMap,
+    );
+    const w = window.open("", "_blank");
+    if (!w) {
+      toast.error("Permita pop-ups para imprimir o Line Sheet A4.");
+      return;
+    }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 250);
+  }
 
   const metrics = useMemo(() => {
     const totalRows = filteredRows.length;
@@ -303,15 +362,32 @@ function CollectionMapRoute() {
         {/* Matriz */}
         <Card className="border-border bg-muted/50 overflow-hidden">
           <CardContent className="p-0">
-            <div className="p-4 border-b border-border/60 flex items-center gap-2">
+            <div className="p-4 border-b border-border/60 flex flex-wrap items-center gap-2">
               <Grid3x3 className="h-4 w-4 text-primary" />
               <h2 className="text-sm font-semibold text-white">{collectionMap.name}</h2>
               <Badge variant="outline" className="text-2xs uppercase tracking-widest">
                 {collectionMap.season}
               </Badge>
-              <span className="ml-auto text-2xs text-muted-foreground">
+              <span className="ml-auto text-2xs text-muted-foreground mr-2">
                 {filteredRows.length} modelos exibidos
               </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1.5 text-2xs"
+                onClick={exportCsv}
+              >
+                <Download className="h-3 w-3" /> CSV B2B
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                className="h-7 gap-1.5 text-2xs"
+                onClick={printLineSheetA4}
+              >
+                <FileText className="h-3 w-3" /> Line Sheet A4
+              </Button>
             </div>
 
             <div className="overflow-x-auto">
@@ -344,7 +420,7 @@ function CollectionMapRoute() {
                             rowSpan={row.cells.length}
                             className="p-3 sticky left-0 bg-background/90 backdrop-blur align-top border-r border-border/60"
                           >
-                            <RefCell row={row} />
+                            <RefCell row={row} onExpand={() => setLightboxRow(row)} />
                           </td>
                         )}
                         <td className="p-2">
@@ -402,16 +478,39 @@ function CollectionMapRoute() {
           </CardContent>
         </Card>
       </div>
+
+      {lightboxRow && (
+        <ImageLightbox
+          open={Boolean(lightboxRow)}
+          onOpenChange={(next) => {
+            if (!next) setLightboxRow(null);
+          }}
+          items={[
+            {
+              src: lightboxRow.image,
+              alt: lightboxRow.refName,
+              title: `${lightboxRow.refCode} · ${lightboxRow.refName}`,
+              subtitle: `${lightboxRow.category} · PVP R$ ${lightboxRow.price} · ${rowTotal(lightboxRow)} peças planejadas`,
+              exportBaseName: lightboxRow.refCode.toLowerCase(),
+            },
+          ]}
+        />
+      )}
     </ModuleLayout>
   );
 }
 
-function RefCell({ row }: { row: MatrixRow }) {
+function RefCell({ row, onExpand }: { row: MatrixRow; onExpand?: () => void }) {
   return (
     <div className="flex gap-2 items-start">
-      <div className="h-14 w-14 rounded overflow-hidden border border-border flex-shrink-0">
+      <button
+        type="button"
+        onClick={onExpand}
+        title="Clique para ampliar em tela cheia"
+        className="h-14 w-14 rounded overflow-hidden border border-border flex-shrink-0 cursor-zoom-in hover:border-primary transition"
+      >
         <OptimizedImage src={row.image} alt={row.refName} className="h-full w-full object-cover" />
-      </div>
+      </button>
       <div className="min-w-0">
         <p className="text-2xs font-mono text-muted-foreground">{row.refCode}</p>
         <p className="text-xs font-semibold text-white leading-tight">{row.refName}</p>

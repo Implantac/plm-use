@@ -1,5 +1,6 @@
 // H1-03 · Painel de Displayagem (inspirado em Coleção.Moda / Centric Visual Line Planner).
-// Canvas livre para montar looks/coordenados antes de publicar no showroom.
+// Canvas livre para montar looks/coordenados com recortes PNG/SVG transparentes das
+// Fichas Técnicas + referências de catálogo e lupa em tela cheia (ImageLightbox).
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -11,6 +12,7 @@ import {
   Clock,
   ImageUp,
   Grip,
+  Maximize2,
   Minus,
 } from "lucide-react";
 
@@ -20,7 +22,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { toast } from "sonner";
+import { nativeVisualSvg } from "@/lib/ai/native-visual";
+import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
+import { seedFor, useTechSheetStore, type TechSheetData } from "@/lib/techsheet/store";
 import {
   listBoards,
   subscribe,
@@ -41,7 +47,7 @@ export const Route = createFileRoute("/_authenticated/display")({
       {
         name: "description",
         content:
-          "Canvas livre para montar looks e coordenados antes do showroom. Arraste referências, agrupe por look e aprove para lookbook.",
+          "Canvas livre para montar looks e coordenados antes do showroom com peças recortadas em fundo transparente.",
       },
       { property: "og:title", content: "Painel de Displayagem · USE MODA PLM" },
       { property: "og:type", content: "website" },
@@ -62,6 +68,50 @@ const STATUS_CLASS: Record<DisplayBoard["status"], string> = {
   aprovada: "bg-status-approved/15 text-status-approved border-status-approved/30",
 };
 
+interface PaletteRefEntry {
+  code: string;
+  name: string;
+  image: string;
+  category: string;
+  colorHex: string;
+  price: number;
+  transparentCutout?: boolean;
+}
+
+function buildTechSheetPaletteItems(sheetsMap: Record<string, TechSheetData>): PaletteRefEntry[] {
+  const staticCodes = new Set(refCatalog.map((r) => r.code));
+  const keys = Array.from(new Set(["DEV000006", ...Object.keys(sheetsMap)])).filter(
+    (code) => code in sheetsMap || !staticCodes.has(code),
+  );
+  return keys.map((code) => {
+    const doc = sheetsMap[code] ?? seedFor(code);
+    const pricing = computeFullTechSheetPricing(doc);
+    const cw = doc.colorways?.[0];
+    const hex = cw?.hex || "#1D6B47";
+    const svg = nativeVisualSvg({
+      family: doc.meta?.category,
+      category: doc.meta?.category,
+      name: doc.meta?.name || code,
+      color: hex,
+      view: "frente",
+      transparent: true,
+    });
+    return {
+      code,
+      name: doc.meta?.name || code,
+      image: doc.image || `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
+      category: doc.meta?.category || "Ficha PLM",
+      colorHex: hex,
+      price: Math.round(pricing.precoReferenciaMargem || pricing.precoSugerido || 149),
+      transparentCutout: !doc.image,
+    };
+  });
+}
+
+function isCutoutImage(src: string): boolean {
+  return src.startsWith("data:image/svg+xml") || src.startsWith("data:image/png");
+}
+
 function DisplayRoute() {
   const boards = useSyncExternalStore(
     (l) => {
@@ -71,6 +121,16 @@ function DisplayRoute() {
     () => listBoards(),
     () => listBoards(),
   );
+  const sheetsMap = useTechSheetStore((s) => s.data);
+
+  const combinedCatalog = useMemo<PaletteRefEntry[]>(() => {
+    const plmItems = buildTechSheetPaletteItems(sheetsMap);
+    const existingCodes = new Set(plmItems.map((i) => i.code));
+    const rest = refCatalog
+      .filter((r) => !existingCodes.has(r.code))
+      .map((r) => ({ ...r, transparentCutout: isCutoutImage(r.image) }));
+    return [...plmItems, ...rest];
+  }, [sheetsMap]);
 
   const [selectedId, setSelectedId] = useState<string>(boards[0]?.id ?? "");
   const selected = boards.find((b) => b.id === selectedId) ?? boards[0];
@@ -94,8 +154,8 @@ function DisplayRoute() {
   return (
     <ModuleLayout
       title="Painel de Displayagem"
-      subtitle="Monte lookbooks arrastando referências no canvas. Aprovado, publica no showroom como coordenado."
-      version="H1-03 · V4"
+      subtitle="Monte lookbooks arrastando Fichas Técnicas recortadas em PNG/SVG transparente e referências no canvas."
+      version="H1-03 · V5"
       searchPlaceholder="Buscar painel"
       metrics={metrics}
       onAdd={() => {
@@ -103,7 +163,7 @@ function DisplayRoute() {
         upsertBoard({
           id,
           name: "Novo painel",
-          season: "Verão 26",
+          season: "Verão 2027",
           target: "—",
           status: "rascunho",
           cover:
@@ -116,7 +176,7 @@ function DisplayRoute() {
         toast.success("Painel criado");
       }}
     >
-      <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)_240px]">
+      <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)_250px]">
         {/* Lista de painéis */}
         <div className="space-y-2">
           <p className="text-2xs uppercase tracking-widest text-muted-foreground px-1">Painéis</p>
@@ -162,19 +222,20 @@ function DisplayRoute() {
         </div>
 
         {/* Canvas */}
-        {selected && <BoardCanvas board={selected} />}
+        {selected && <BoardCanvas board={selected} catalog={combinedCatalog} />}
 
-        {/* Palette de referências */}
-        {selected && <RefPalette boardId={selected.id} />}
+        {/* Palette de referências + Fichas Técnicas transparentes */}
+        {selected && <RefPalette boardId={selected.id} catalog={combinedCatalog} />}
       </div>
     </ModuleLayout>
   );
 }
 
-function BoardCanvas({ board }: { board: DisplayBoard }) {
+function BoardCanvas({ board, catalog }: { board: DisplayBoard; catalog: PaletteRefEntry[] }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [lightboxItem, setLightboxItem] = useState<BoardItem | null>(null);
 
   const onPointerDown = (e: React.PointerEvent, item: BoardItem) => {
     if (!canvasRef.current) return;
@@ -200,7 +261,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
   const onCanvasDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const code = e.dataTransfer.getData("text/plain");
-    const ref = refCatalog.find((r) => r.code === code);
+    const ref = catalog.find((r) => r.code === code);
     if (!ref || !canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
     const x = Math.max(0, Math.min(85, ((e.clientX - rect.left) / rect.width) * 100 - 10));
@@ -215,7 +276,7 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
       price: ref.price,
       x,
       y,
-      w: 20,
+      w: 22,
     });
     toast.success(`${ref.code} adicionada ao painel`);
   };
@@ -295,80 +356,131 @@ function BoardCanvas({ board }: { board: DisplayBoard }) {
           <div className="absolute inset-0 flex flex-col items-center justify-center text-black/40 pointer-events-none">
             <ImageUp className="h-8 w-8 mb-2" />
             <p className="text-xs uppercase tracking-widest">
-              Arraste referências da barra lateral →
+              Arraste referências ou Fichas Técnicas transparentes da barra lateral →
             </p>
           </div>
         )}
 
-        {board.items.map((item) => (
-          <div
-            key={item.id}
-            onPointerDown={(e) => onPointerDown(e, item)}
-            className={`absolute group cursor-grab active:cursor-grabbing select-none rounded-lg overflow-hidden shadow-2xl bg-[#fff] ring-1 ring-black/10 ${
-              dragId === item.id ? "z-20 scale-105" : "z-10"
-            } transition-transform`}
-            style={{
-              left: `${item.x}%`,
-              top: `${item.y}%`,
-              width: `${item.w}%`,
-            }}
-          >
-            <div className="relative aspect-[3/4]">
-              <OptimizedImage
-                src={item.image}
-                alt={item.refName}
-                className="h-full w-full object-cover pointer-events-none"
-              />
-              <div className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Grip className="h-3 w-3 text-white drop-shadow" />
+        {board.items.map((item) => {
+          const cutout = isCutoutImage(item.image);
+          return (
+            <div
+              key={item.id}
+              onPointerDown={(e) => onPointerDown(e, item)}
+              className={`absolute group cursor-grab active:cursor-grabbing select-none rounded-lg ${
+                cutout
+                  ? "bg-transparent"
+                  : "overflow-hidden shadow-2xl bg-[#fff] ring-1 ring-black/10"
+              } ${dragId === item.id ? "z-20 scale-105" : "z-10"} transition-transform`}
+              style={{
+                left: `${item.x}%`,
+                top: `${item.y}%`,
+                width: `${item.w}%`,
+              }}
+            >
+              <div className="relative aspect-[3/4]">
+                {cutout ? (
+                  <img
+                    src={item.image}
+                    alt={item.refName}
+                    className="h-full w-full object-contain pointer-events-none drop-shadow-[0_14px_22px_rgba(0,0,0,0.3)]"
+                  />
+                ) : (
+                  <OptimizedImage
+                    src={item.image}
+                    alt={item.refName}
+                    className="h-full w-full object-cover pointer-events-none"
+                  />
+                )}
+                <div className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Grip className="h-3 w-3 text-white drop-shadow" />
+                </div>
+                <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={() => setLightboxItem(item)}
+                    className="h-5 w-5 rounded bg-black/70 text-white text-2xs flex items-center justify-center"
+                    aria-label={`Ampliar ${item.refName}`}
+                    title="Ampliar em tela cheia"
+                  >
+                    <Maximize2 className="h-2.5 w-2.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={() => resizeItem(board.id, item.id, Math.min(item.w + 3, 45))}
+                    className="h-5 w-5 rounded bg-black/60 text-white text-2xs flex items-center justify-center"
+                    aria-label="Aumentar"
+                  >
+                    <Plus className="h-2.5 w-2.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={() => resizeItem(board.id, item.id, Math.max(item.w - 3, 8))}
+                    className="h-5 w-5 rounded bg-black/60 text-white text-2xs flex items-center justify-center"
+                    aria-label="Diminuir"
+                  >
+                    <Minus className="h-2.5 w-2.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={() => {
+                      removeItem(board.id, item.id);
+                      toast.success(`${item.refCode} removida`);
+                    }}
+                    className="h-5 w-5 rounded bg-status-rejected/80 text-white flex items-center justify-center"
+                    aria-label="Remover"
+                  >
+                    <Trash2 className="h-2.5 w-2.5" />
+                  </button>
+                </div>
               </div>
-              <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  type="button"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={() => resizeItem(board.id, item.id, Math.min(item.w + 3, 45))}
-                  className="h-5 w-5 rounded bg-black/60 text-white text-2xs flex items-center justify-center"
-                  aria-label="Aumentar"
-                >
-                  <Plus className="h-2.5 w-2.5" />
-                </button>
-                <button
-                  type="button"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={() => resizeItem(board.id, item.id, Math.max(item.w - 3, 8))}
-                  className="h-5 w-5 rounded bg-black/60 text-white text-2xs flex items-center justify-center"
-                  aria-label="Diminuir"
-                >
-                  <Minus className="h-2.5 w-2.5" />
-                </button>
-                <button
-                  type="button"
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={() => {
-                    removeItem(board.id, item.id);
-                    toast.success(`${item.refCode} removida`);
-                  }}
-                  className="h-5 w-5 rounded bg-status-rejected/80 text-white flex items-center justify-center"
-                  aria-label="Remover"
-                >
-                  <Trash2 className="h-2.5 w-2.5" />
-                </button>
+              <div
+                className={`px-1.5 py-1 text-2xs leading-tight ${
+                  cutout
+                    ? "rounded bg-slate-900/75 text-slate-100 backdrop-blur-xs mt-0.5 text-center"
+                    : "bg-[#fff]"
+                }`}
+              >
+                <p className={`font-mono ${cutout ? "text-teal-300" : "text-black/60"}`}>
+                  {item.refCode}
+                </p>
+                <p className={`font-semibold truncate ${cutout ? "text-white" : "text-black"}`}>
+                  {item.refName}
+                </p>
               </div>
             </div>
-            <div className="px-1.5 py-1 bg-[#fff] text-2xs leading-tight">
-              <p className="font-mono text-black/60">{item.refCode}</p>
-              <p className="font-semibold text-black truncate">{item.refName}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {lightboxItem && (
+        <ImageLightbox
+          open={Boolean(lightboxItem)}
+          onOpenChange={(next) => {
+            if (!next) setLightboxItem(null);
+          }}
+          items={[
+            {
+              src: lightboxItem.image,
+              alt: lightboxItem.refName,
+              title: `${lightboxItem.refCode} · ${lightboxItem.refName}`,
+              subtitle: `${lightboxItem.category} · R$ ${lightboxItem.price ?? 0} · Displayagem`,
+              exportBaseName: lightboxItem.refCode.toLowerCase(),
+            },
+          ]}
+        />
+      )}
     </div>
   );
 }
 
-function RefPalette({ boardId }: { boardId: string }) {
+function RefPalette({ boardId, catalog }: { boardId: string; catalog: PaletteRefEntry[] }) {
   const [q, setQ] = useState("");
-  const filtered = refCatalog.filter(
+  const filtered = catalog.filter(
     (r) =>
       r.code.toLowerCase().includes(q.toLowerCase()) ||
       r.name.toLowerCase().includes(q.toLowerCase()) ||
@@ -379,7 +491,7 @@ function RefPalette({ boardId }: { boardId: string }) {
       <CardContent className="p-3 space-y-2">
         <div>
           <p className="text-2xs uppercase tracking-widest text-muted-foreground mb-1.5 px-0.5">
-            Biblioteca de referências
+            Fichas PLM (PNG Alpha) & Referências
           </p>
           <Input
             value={q}
@@ -403,21 +515,42 @@ function RefPalette({ boardId }: { boardId: string }) {
                   category: r.category,
                   colorHex: r.colorHex,
                   price: r.price,
-                  x: 30,
-                  y: 30,
-                  w: 20,
+                  x: 28,
+                  y: 26,
+                  w: 22,
                 });
                 toast.success(`${r.code} adicionada`);
               }}
               className="rounded-md overflow-hidden border border-border bg-muted/40 cursor-grab hover:border-primary/40 transition-colors"
               title="Arraste para o canvas ou dê duplo clique"
             >
-              <div className="aspect-square relative">
-                <OptimizedImage
-                  src={r.image}
-                  alt={r.name}
-                  className="h-full w-full object-cover pointer-events-none"
-                />
+              <div
+                className="aspect-square relative flex items-center justify-center p-1"
+                style={
+                  r.transparentCutout
+                    ? {
+                        backgroundColor: "#141D2E",
+                        backgroundImage:
+                          "linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%)",
+                        backgroundSize: "14px 14px",
+                        backgroundPosition: "0 0, 0 7px, 7px -7px, -7px 0px",
+                      }
+                    : undefined
+                }
+              >
+                {r.transparentCutout ? (
+                  <img
+                    src={r.image}
+                    alt={r.name}
+                    className="h-full w-full object-contain pointer-events-none"
+                  />
+                ) : (
+                  <OptimizedImage
+                    src={r.image}
+                    alt={r.name}
+                    className="h-full w-full object-cover pointer-events-none"
+                  />
+                )}
                 <span
                   className="absolute bottom-1 right-1 h-3 w-3 rounded-full border border-border-strong"
                   style={{ background: r.colorHex }}
