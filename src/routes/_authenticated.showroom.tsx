@@ -6,8 +6,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { statusToast } from "@/components/ui/status-presets";
 import {
   CheckCircle2,
+  FileText,
   MessageSquarePlus,
   PackageOpen,
+  ShoppingBag,
   Sparkles,
   ThumbsDown,
   ThumbsUp,
@@ -16,10 +18,18 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExpandImageBadge, ImageLightbox } from "@/components/ui/image-lightbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldMessage } from "@/components/ui/field-message";
+import { nativeVisualSvg } from "@/lib/ai/native-visual";
+import {
+  buildShowroomCatalogItem,
+  buildShowroomOrderPrintableHtml,
+  type ShowroomPackLine,
+} from "@/lib/techsheet/sourcing-rfq";
+import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 import {
   Select,
   SelectContent,
@@ -110,13 +120,18 @@ function ShowroomPage() {
       version="H9-09 · v0.1"
       metrics={metrics}
     >
-      <Tabs defaultValue="samples" className="space-y-4">
+      <Tabs defaultValue="b2b-rack" className="space-y-4">
         <TabsList>
+          <TabsTrigger value="b2b-rack">Vitrine B2B & Pré-Pedido</TabsTrigger>
           <TabsTrigger value="samples">Peças-mãe</TabsTrigger>
           <TabsTrigger value="feedback">Feedback</TabsTrigger>
           <TabsTrigger value="decisions">Decisão de lançamento</TabsTrigger>
           <TabsTrigger value="publications">Publicações</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="b2b-rack" className="space-y-4">
+          <ShowroomB2bRackTab />
+        </TabsContent>
 
         <TabsContent value="samples" className="space-y-3">
           <RequestSampleCard
@@ -614,5 +629,315 @@ function DecisionCard({
         {submitError && <FieldMessage variant="error">{submitError}</FieldMessage>}
       </CardContent>
     </Card>
+  );
+}
+
+// -------- Vitrine Digital B2B & Sacola de Pré-Pedido (Showroom Comercial) --------
+function ShowroomB2bRackTab() {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const [selectedColorByRef, setSelectedColorByRef] = useState<Record<string, number>>({});
+  const [packsByKey, setPacksByKey] = useState<Record<string, number>>({ "DEV000006:0": 2 });
+  const [buyerName, setBuyerName] = useState("Boutique Multimarcas Jardins");
+  const [buyerCnpj, setBuyerCnpj] = useState("18.420.119/0001-44");
+  const [lightboxItem, setLightboxItem] = useState<{
+    src: string;
+    title: string;
+    subtitle: string;
+    baseName: string;
+  } | null>(null);
+
+  const catalogItems = useMemo(() => {
+    const keys = Array.from(
+      new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
+    );
+    return keys.map((refCode) => {
+      const isCustomized = refCode === "DEV000006" || refCode in sheetsMap;
+      const doc = sheetsMap[refCode] ?? seedFor(refCode);
+      const item = buildShowroomCatalogItem(refCode, doc, isCustomized);
+      return { doc, item };
+    });
+  }, [sheetsMap]);
+
+  const orderLines = useMemo<ShowroomPackLine[]>(() => {
+    const lines: ShowroomPackLine[] = [];
+    for (const { item } of catalogItems) {
+      item.colorways.forEach((cw, idx) => {
+        const packs = packsByKey[`${item.refCode}:${idx}`] ?? 0;
+        if (packs > 0) {
+          lines.push({
+            refCode: item.refCode,
+            refName: item.refName,
+            colorName: cw.name,
+            colorHex: cw.hex,
+            packs,
+            piecesPerPack: 12,
+            wholesaleUnitPrice: item.wholesaleUnitPrice,
+            suggestedRetailPrice: item.suggestedRetailPrice,
+            ncm: item.ncm,
+            abnt: item.abnt,
+          });
+        }
+      });
+    }
+    return lines;
+  }, [catalogItems, packsByKey]);
+
+  const totalPieces = orderLines.reduce((acc, l) => acc + l.packs * l.piecesPerPack, 0);
+  const totalWholesale = orderLines.reduce(
+    (acc, l) => acc + l.packs * l.piecesPerPack * l.wholesaleUnitPrice,
+    0,
+  );
+  const totalRetail = orderLines.reduce(
+    (acc, l) => acc + l.packs * l.piecesPerPack * l.suggestedRetailPrice,
+    0,
+  );
+
+  const fmtBrl = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
+
+  function printB2bOrder() {
+    if (orderLines.length === 0) {
+      statusToast.error("Adicione ao menos 1 pack na sacola B2B para emitir o espelho.");
+      return;
+    }
+    const html = buildShowroomOrderPrintableHtml(buyerName, buyerCnpj, orderLines);
+    const w = window.open("", "_blank");
+    if (!w) {
+      statusToast.error("Permita pop-ups para imprimir o Espelho B2B A4.");
+      return;
+    }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 250);
+  }
+
+  return (
+    <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
+        {catalogItems.map(({ doc, item }) => {
+          const activeIdx = selectedColorByRef[item.refCode] ?? 0;
+          const cw = item.colorways[activeIdx] ?? item.colorways[0]!;
+          const packKey = `${item.refCode}:${activeIdx}`;
+          const packs = packsByKey[packKey] ?? 0;
+          const svg = nativeVisualSvg({
+            family: item.category,
+            category: item.category,
+            name: item.refName,
+            color: cw.hex,
+            view: "frente",
+            transparent: true,
+          });
+          const cutoutSrc =
+            doc.image || `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+
+          return (
+            <Card key={item.refCode} className="border-border bg-card overflow-hidden">
+              <button
+                type="button"
+                onClick={() =>
+                  setLightboxItem({
+                    src: cutoutSrc,
+                    title: `${item.refCode} · ${item.refName} (${cw.name})`,
+                    subtitle: `${item.abnt} · NCM ${item.ncm} · Atacado ${fmtBrl(item.wholesaleUnitPrice)}`,
+                    baseName: `${item.refCode.toLowerCase()}-${cw.name.toLowerCase()}`,
+                  })
+                }
+                aria-label={`Ampliar ${item.refName} em tela cheia`}
+                style={{
+                  backgroundColor: "#141D2E",
+                  backgroundImage:
+                    "linear-gradient(45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(255,255,255,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.06) 75%)",
+                  backgroundSize: "18px 18px",
+                  backgroundPosition: "0 0, 0 9px, 9px -9px, -9px 0px",
+                }}
+                className="group relative block h-56 w-full cursor-zoom-in border-b border-border p-3"
+              >
+                <ExpandImageBadge />
+                <img
+                  src={cutoutSrc}
+                  alt={item.refName}
+                  className="h-full w-full object-contain drop-shadow-[0_14px_20px_rgba(0,0,0,0.35)] transition-transform duration-200 group-hover:scale-[1.03]"
+                />
+              </button>
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="font-mono text-2xs text-primary">{item.refCode}</span>
+                    <h3 className="text-sm font-semibold text-foreground">{item.refName}</h3>
+                    <p className="text-2xs text-muted-foreground">
+                      {item.abnt} · NCM {item.ncm}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] uppercase text-muted-foreground block">
+                      Atacado B2B
+                    </span>
+                    <strong className="font-mono text-sm text-primary">
+                      {fmtBrl(item.wholesaleUnitPrice)}
+                    </strong>
+                    <span className="text-[10px] text-muted-foreground block">
+                      PVP {fmtBrl(item.suggestedRetailPrice)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Seleção de variante de cor */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    {item.colorways.map((c, idx) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() =>
+                          setSelectedColorByRef((prev) => ({ ...prev, [item.refCode]: idx }))
+                        }
+                        title={c.name}
+                        className={`h-5 w-5 rounded-full border-2 transition ${
+                          idx === activeIdx
+                            ? "border-primary scale-110"
+                            : "border-border opacity-80"
+                        }`}
+                        style={{ backgroundColor: c.hex }}
+                      />
+                    ))}
+                    <span className="text-2xs text-muted-foreground ml-1">{cw.name}</span>
+                  </div>
+                  <span className="text-2xs font-mono text-muted-foreground">
+                    Pack 12 (2P·4M·4G·2GG)
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/60">
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-7 w-7 p-0"
+                      onClick={() =>
+                        setPacksByKey((prev) => ({ ...prev, [packKey]: Math.max(0, packs - 1) }))
+                      }
+                    >
+                      -
+                    </Button>
+                    <span className="w-16 text-center font-mono text-xs font-semibold">
+                      {packs} packs
+                    </span>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-7 w-7 p-0"
+                      onClick={() => setPacksByKey((prev) => ({ ...prev, [packKey]: packs + 1 }))}
+                    >
+                      +
+                    </Button>
+                  </div>
+                  <span className="font-mono text-xs text-foreground">
+                    {packs * 12} pçs · {fmtBrl(packs * 12 * item.wholesaleUnitPrice)}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Sacola Comercial B2B */}
+      <Card className="h-fit sticky top-4 border-border bg-card">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <ShoppingBag className="h-4 w-4 text-primary" />
+            Sacola de Pré-Pedido Showroom B2B
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 text-xs">
+          <div className="space-y-2">
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground">Lojista / Razão</Label>
+              <Input
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+                className="h-8 text-xs"
+              />
+            </div>
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground">CNPJ</Label>
+              <Input
+                value={buyerCnpj}
+                onChange={(e) => setBuyerCnpj(e.target.value)}
+                className="h-8 font-mono text-xs"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5 max-h-56 overflow-y-auto border-y border-border/60 py-2">
+            {orderLines.length === 0 ? (
+              <p className="text-muted-foreground text-center py-4">
+                Adicione packs nas referências ao lado.
+              </p>
+            ) : (
+              orderLines.map((l) => (
+                <div
+                  key={`${l.refCode}-${l.colorName}`}
+                  className="flex items-center justify-between gap-2 rounded bg-muted/40 p-2"
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground truncate">
+                      {l.refCode} · {l.colorName}
+                    </p>
+                    <p className="text-2xs text-muted-foreground">
+                      {l.packs} packs ({l.packs * 12} pçs)
+                    </p>
+                  </div>
+                  <strong className="font-mono text-foreground shrink-0">
+                    {fmtBrl(l.packs * 12 * l.wholesaleUnitPrice)}
+                  </strong>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="space-y-1 rounded-md border border-primary/30 bg-primary/5 p-2.5">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total Peças:</span>
+              <strong className="font-mono">{totalPieces} pçs</strong>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total Atacado B2B:</span>
+              <strong className="font-mono text-primary">{fmtBrl(totalWholesale)}</strong>
+            </div>
+            <div className="flex justify-between text-2xs">
+              <span className="text-muted-foreground">Faturamento Varejo Est. (2,35x):</span>
+              <span className="font-mono">{fmtBrl(totalRetail)}</span>
+            </div>
+          </div>
+
+          <Button type="button" onClick={printB2bOrder} className="w-full gap-1.5 text-xs">
+            <FileText className="h-3.5 w-3.5" /> Emitir Espelho B2B (A4)
+          </Button>
+        </CardContent>
+      </Card>
+
+      {lightboxItem && (
+        <ImageLightbox
+          open={Boolean(lightboxItem)}
+          onOpenChange={(next) => {
+            if (!next) setLightboxItem(null);
+          }}
+          items={[
+            {
+              src: lightboxItem.src,
+              alt: lightboxItem.title,
+              title: lightboxItem.title,
+              subtitle: lightboxItem.subtitle,
+              exportBaseName: lightboxItem.baseName,
+            },
+          ]}
+        />
+      )}
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
@@ -18,8 +18,26 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PackagePlus, Send, CheckCircle2, XCircle, Clock } from "lucide-react";
+import {
+  Award,
+  CheckCircle2,
+  Clock,
+  FileSpreadsheet,
+  FileText,
+  PackagePlus,
+  Scale,
+  Send,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
+import {
+  buildDefaultQuotesForItem,
+  buildPurchaseOrderPrintableHtml,
+  explodeBomRequirements,
+  scoreRfqProposals,
+  type RfqSupplierQuote,
+} from "@/lib/techsheet/sourcing-rfq";
+import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/supplier-portal")({
   component: SupplierPortalPage,
@@ -111,16 +129,20 @@ function useSamples() {
 function SupplierPortalPage() {
   return (
     <ModuleLayout
-      title="Portal do Fornecedor"
-      subtitle="Cadastro, ordens de produção e amostras — visão interna + espaço do fornecedor externo"
-      version="v1.0"
+      title="Portal do Fornecedor & Sourcing RFQ"
+      subtitle="Explosão MRP da BOM, mapa comparativo TCO de 3 cotações, adjudicação direta na Ficha Técnica e ordens/amostras."
+      version="Sourcing v2.0"
     >
-      <Tabs defaultValue="suppliers" className="w-full">
+      <Tabs defaultValue="rfq-bom" className="w-full">
         <TabsList className="bg-muted/50 border border-border">
+          <TabsTrigger value="rfq-bom">RFQ & Cotação BOM (PLM)</TabsTrigger>
           <TabsTrigger value="suppliers">Fornecedores</TabsTrigger>
           <TabsTrigger value="orders">Ordens de Produção</TabsTrigger>
           <TabsTrigger value="samples">Amostras</TabsTrigger>
         </TabsList>
+        <TabsContent value="rfq-bom" className="mt-4">
+          <RfqBomTab />
+        </TabsContent>
         <TabsContent value="suppliers" className="mt-4">
           <SuppliersTab />
         </TabsContent>
@@ -613,6 +635,355 @@ function SamplesTab() {
           </div>
         </Card>
       ))}
+    </div>
+  );
+}
+
+// -------- RFQ & Cotação Comparativa da BOM (Integrada à Ficha Técnica) --------
+function RfqBomTab() {
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensure = useTechSheetStore((s) => s.ensure);
+  const updateBomItem = useTechSheetStore((s) => s.updateBomItem);
+  const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
+
+  const availableRefs = useMemo(() => {
+    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
+    for (const k of Object.keys(sheetsMap)) {
+      if (!base.includes(k)) base.push(k);
+    }
+    return base;
+  }, [sheetsMap]);
+
+  const [selectedRef, setSelectedRef] = useState("DEV000006");
+  const doc = sheetsMap[selectedRef] ?? seedFor(selectedRef);
+  const requirements = useMemo(() => explodeBomRequirements(doc), [doc]);
+  const [selectedItemId, setSelectedItemId] = useState<string>("");
+
+  const activeReq =
+    requirements.find((r) => r.itemId === selectedItemId) ?? requirements[0] ?? null;
+
+  const [quotesByKey, setQuotesByKey] = useState<Record<string, RfqSupplierQuote[]>>({});
+  const quoteKey = activeReq ? `${selectedRef}:${activeReq.itemId}` : "";
+  const activeQuotes = useMemo(() => {
+    if (!activeReq) return [];
+    return quotesByKey[quoteKey] ?? buildDefaultQuotesForItem(activeReq);
+  }, [activeReq, quoteKey, quotesByKey]);
+
+  const scoredQuotes = useMemo(
+    () => (activeReq ? scoreRfqProposals(activeQuotes, activeReq) : []),
+    [activeQuotes, activeReq],
+  );
+  const winner = scoredQuotes.find((q) => q.winner) ?? null;
+
+  function patchQuote(quoteId: string, patch: Partial<RfqSupplierQuote>) {
+    if (!activeReq) return;
+    const next = activeQuotes.map((q) => (q.id === quoteId ? { ...q, ...patch } : q));
+    setQuotesByKey((prev) => ({ ...prev, [quoteKey]: next }));
+  }
+
+  function awardWinner(q: (typeof scoredQuotes)[number]) {
+    if (!activeReq) return;
+    ensure(selectedRef);
+    updateBomItem(selectedRef, activeReq.itemId, {
+      fornecedor: q.fornecedor,
+      custoUnitario: q.precoUnitario,
+      custo: Number((q.precoUnitario * activeReq.consumoBrutoUnit).toFixed(2)),
+    });
+    toast.success(
+      `Adjudicado para ${q.fornecedor} (R$ ${q.precoUnitario.toFixed(2)}/${activeReq.unidade}) — BOM de ${selectedRef} atualizada!`,
+    );
+  }
+
+  function printOc() {
+    if (!activeReq || !winner) return;
+    const html = buildPurchaseOrderPrintableHtml(selectedRef, activeReq, winner);
+    const w = window.open("", "_blank");
+    if (!w) {
+      toast.error("Permita pop-ups para emitir a Ordem de Compra A4.");
+      return;
+    }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 250);
+  }
+
+  const fmtBrl = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
+
+  return (
+    <div className="space-y-4">
+      <Card className="p-4 border-border bg-card space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground block mb-1">
+                Ficha Técnica (BOM)
+              </Label>
+              <select
+                aria-label="Selecionar Ficha Técnica para RFQ"
+                value={selectedRef}
+                onChange={(e) => {
+                  setSelectedRef(e.target.value);
+                  setSelectedItemId("");
+                }}
+                className="h-9 rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground"
+              >
+                {availableRefs.map((r) => (
+                  <option key={r} value={r}>
+                    {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label className="text-2xs uppercase text-muted-foreground block mb-1">
+                Tiragem Planejada (peças)
+              </Label>
+              <Input
+                type="number"
+                min={10}
+                step={50}
+                value={doc.preCost.tiragemPlanejada ?? 300}
+                onChange={(e) => {
+                  ensure(selectedRef);
+                  updatePreCost(selectedRef, {
+                    tiragemPlanejada: Math.max(10, Number(e.target.value) || 300),
+                  });
+                }}
+                className="h-9 w-36 font-mono text-xs"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" size="sm" asChild className="gap-1.5">
+              <Link to="/tech-sheet" search={{ ref: selectedRef } as never}>
+                <FileSpreadsheet className="h-3.5 w-3.5 text-primary" /> Abrir Ficha {selectedRef}
+              </Link>
+            </Button>
+            {winner && (
+              <Button type="button" size="sm" onClick={printOc} className="gap-1.5">
+                <FileText className="h-3.5 w-3.5" /> Emitir OC A4
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Explosão MRP da BOM */}
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <table className="w-full text-xs">
+            <thead className="bg-muted/50 text-2xs uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="p-2.5 text-left">Insumo / Material</th>
+                <th className="p-2.5 text-left">Fornecedor Atual</th>
+                <th className="p-2.5 text-right">Consumo Bruto/pç</th>
+                <th className="p-2.5 text-right">Necessidade Bruta</th>
+                <th className="p-2.5 text-right">Estoque ALM</th>
+                <th className="p-2.5 text-right">Compra Líquida</th>
+                <th className="p-2.5 text-right">Custo Unit. Atual</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requirements.map((r) => {
+                const isSelected = activeReq?.itemId === r.itemId;
+                return (
+                  <tr
+                    key={r.itemId}
+                    onClick={() => setSelectedItemId(r.itemId)}
+                    className={`cursor-pointer border-t border-border/60 transition-colors ${
+                      isSelected ? "bg-primary/10" : "hover:bg-muted/40"
+                    }`}
+                  >
+                    <td className="p-2.5 font-medium text-foreground">
+                      <span className="text-2xs uppercase text-primary font-mono mr-1.5">
+                        [{r.tipo}]
+                      </span>
+                      {r.material}
+                    </td>
+                    <td className="p-2.5 text-muted-foreground">{r.fornecedorAtual}</td>
+                    <td className="p-2.5 text-right font-mono">
+                      {r.consumoBrutoUnit.toFixed(2)} {r.unidade} (+{r.perdaPct}%)
+                    </td>
+                    <td className="p-2.5 text-right font-mono font-semibold text-foreground">
+                      {r.necessidadeBrutaLote.toFixed(1)} {r.unidade}
+                    </td>
+                    <td className="p-2.5 text-right font-mono text-muted-foreground">
+                      {r.estoqueDisponivel.toFixed(1)} {r.unidade}
+                    </td>
+                    <td className="p-2.5 text-right font-mono font-semibold">
+                      {r.compraLiquidaNecessaria > 0 ? (
+                        <span className="text-amber-500">
+                          {r.compraLiquidaNecessaria.toFixed(1)} {r.unidade}
+                        </span>
+                      ) : (
+                        <span className="text-emerald-500">Coberto ALM</span>
+                      )}
+                    </td>
+                    <td className="p-2.5 text-right font-mono">{fmtBrl(r.custoUnitarioAtual)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {/* Mapa Comparativo TCO (3 propostas) */}
+      {activeReq && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Scale className="h-4 w-4 text-primary" />
+              Mapa Comparativo TCO · {activeReq.material} (Lote{" "}
+              {(activeReq.compraLiquidaNecessaria > 0
+                ? activeReq.compraLiquidaNecessaria
+                : activeReq.necessidadeBrutaLote
+              ).toFixed(1)}{" "}
+              {activeReq.unidade})
+            </h3>
+            <span className="text-2xs text-muted-foreground">
+              Pesos TCO: 60% Preço Efetivo (c/ MOQ) · 25% Lead Time · 15% OTIF
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {scoredQuotes.map((q) => (
+              <Card
+                key={q.id}
+                className={`p-4 space-y-3 transition-all ${
+                  q.winner
+                    ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
+                    : "border-border bg-card"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <Input
+                      value={q.fornecedor}
+                      onChange={(e) => patchQuote(q.id, { fornecedor: e.target.value })}
+                      className="h-8 text-xs font-semibold"
+                    />
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={
+                      q.winner
+                        ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-2xs gap-1"
+                        : "text-2xs"
+                    }
+                  >
+                    {q.winner && <Award className="h-3 w-3" />} TCO {q.scoreTco.toFixed(1)}
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <Label className="text-2xs uppercase text-muted-foreground">
+                      Preço R$/{activeReq.unidade}
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="0.05"
+                      value={q.precoUnitario}
+                      onChange={(e) =>
+                        patchQuote(q.id, {
+                          precoUnitario: Math.max(0.05, Number(e.target.value) || 0),
+                        })
+                      }
+                      className="h-8 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-2xs uppercase text-muted-foreground">
+                      MOQ ({activeReq.unidade})
+                    </Label>
+                    <Input
+                      type="number"
+                      step="10"
+                      min="1"
+                      value={q.moq}
+                      onChange={(e) =>
+                        patchQuote(q.id, { moq: Math.max(1, Number(e.target.value) || 1) })
+                      }
+                      className="h-8 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-2xs uppercase text-muted-foreground">
+                      Lead Time (d)
+                    </Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={q.leadTimeDias}
+                      onChange={(e) =>
+                        patchQuote(q.id, { leadTimeDias: Math.max(1, Number(e.target.value) || 1) })
+                      }
+                      className="h-8 font-mono text-xs"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-2xs uppercase text-muted-foreground">OTIF (%)</Label>
+                    <Input
+                      type="number"
+                      min="50"
+                      max="100"
+                      value={q.otifPct}
+                      onChange={(e) =>
+                        patchQuote(q.id, {
+                          otifPct: Math.min(100, Math.max(0, Number(e.target.value) || 90)),
+                        })
+                      }
+                      className="h-8 font-mono text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-md border border-border/70 bg-muted/30 p-2.5 text-2xs space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total Pedido (c/ MOQ):</span>
+                    <strong className="font-mono text-foreground">
+                      {fmtBrl(q.valorTotalPedido)}
+                    </strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Excesso Lote Mínimo:</span>
+                    <span className="font-mono">
+                      {q.excessoMoq.toFixed(1)} {activeReq.unidade}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Saving no Lote:</span>
+                    <strong
+                      className={`font-mono ${
+                        q.savingLote >= 0
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-rose-500"
+                      }`}
+                    >
+                      {q.savingLote >= 0 ? "+" : ""}
+                      {fmtBrl(q.savingLote)} ({q.savingPct.toFixed(1)}%)
+                    </strong>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={q.winner ? "default" : "outline"}
+                  onClick={() => awardWinner(q)}
+                  className="w-full gap-1.5 text-xs"
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Adjudicar & Atualizar BOM
+                </Button>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

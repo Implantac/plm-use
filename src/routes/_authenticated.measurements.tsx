@@ -1,5 +1,5 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Ruler, Layers, CheckCircle2, Archive, Plus, Trash2 } from "lucide-react";
+import {
+  Archive,
+  CheckCircle2,
+  FileSpreadsheet,
+  Layers,
+  Link2,
+  Plus,
+  Ruler,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
+import { measurementChartToTechSheetSpec } from "@/lib/techsheet/sourcing-rfq";
+import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 import {
   listCharts,
   subscribe,
@@ -35,6 +46,10 @@ function useCharts() {
 
 function MeasurementsPage() {
   const charts = useCharts();
+  const sheetsMap = useTechSheetStore((s) => s.data);
+  const ensureSheet = useTechSheetStore((s) => s.ensure);
+  const setMedidas = useTechSheetStore((s) => s.setMedidas);
+  const [targetRef, setTargetRef] = useState("DEV000006");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"todos" | MeasurementChart["status"]>("todos");
   const [selectedId, setSelectedId] = useState<string | null>(charts[0]?.id ?? null);
@@ -268,15 +283,34 @@ function MeasurementsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {selected.grade.map((row) => (
+                    {selected.grade.map((row, rIdx) => (
                       <tr key={row.size} className="border-t border-border/60">
                         <td className="p-3 font-bold text-white">{row.size}</td>
                         {selected.points.map((p) => (
                           <td
                             key={p.id}
-                            className="p-3 text-right tabular-nums text-muted-foreground"
+                            className="p-2 text-right tabular-nums text-muted-foreground"
                           >
-                            {row.values[p.code] ?? "—"}{" "}
+                            <input
+                              type="number"
+                              step="0.5"
+                              aria-label={`${p.label} tamanho ${row.size}`}
+                              value={row.values[p.code] ?? 0}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                const nextGrade = selected.grade.map((g, idx) =>
+                                  idx === rIdx
+                                    ? { ...g, values: { ...g.values, [p.code]: val } }
+                                    : g,
+                                );
+                                upsertChart({
+                                  ...selected,
+                                  grade: nextGrade,
+                                  updatedAt: new Date().toISOString().slice(0, 10),
+                                });
+                              }}
+                              className="h-7 w-16 rounded border border-border/70 bg-background px-1.5 text-right font-mono text-xs text-foreground"
+                            />{" "}
                             <span className="text-2xs opacity-60">{selected.unit}</span>
                           </td>
                         ))}
@@ -284,6 +318,69 @@ function MeasurementsPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Ponte bidirecional: Aplicar Tabela na Ficha Técnica (POM) */}
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-primary/25 bg-primary/5 p-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Link2 className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-xs font-medium text-foreground">
+                    Vincular medidas POM na Ficha Técnica:
+                  </span>
+                  <select
+                    aria-label="Selecionar Ficha Técnica destino"
+                    value={targetRef}
+                    onChange={(e) => setTargetRef(e.target.value)}
+                    className="h-8 rounded border border-border bg-background px-2 text-xs text-foreground"
+                  >
+                    {Array.from(
+                      new Set([
+                        "DEV000006",
+                        "V24-001",
+                        "U25-014",
+                        "I25-088",
+                        ...Object.keys(sheetsMap),
+                      ]),
+                    ).map((r) => (
+                      <option key={r} value={r}>
+                        {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={() => {
+                      ensureSheet(targetRef);
+                      const spec = measurementChartToTechSheetSpec(selected);
+                      setMedidas(targetRef, spec);
+                      upsertChart({
+                        ...selected,
+                        linkedRefs: (selected.linkedRefs ?? 0) + 1,
+                        updatedAt: new Date().toISOString().slice(0, 10),
+                      });
+                      toast.success(
+                        `Grade ${selected.code} (${selected.points.length} POMs) vinculada à Ficha ${targetRef}!`,
+                      );
+                    }}
+                  >
+                    Aplicar na Ficha {targetRef}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    asChild
+                    className="h-8 gap-1 text-xs"
+                  >
+                    <Link to="/tech-sheet" search={{ ref: targetRef } as never}>
+                      <FileSpreadsheet className="h-3.5 w-3.5" /> Abrir Ficha
+                    </Link>
+                  </Button>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-2 pt-2 border-t border-border/60">
