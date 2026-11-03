@@ -2520,6 +2520,94 @@ export type Database = {
           },
         ]
       }
+      sales_order_item_detail_groups: {
+        Row: {
+          commercial_detail: string
+          created_at: string
+          detail: string
+          group_name: string
+          id: string
+          item_id: string
+          revision: number
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          commercial_detail?: string
+          created_at?: string
+          detail?: string
+          group_name: string
+          id?: string
+          item_id: string
+          revision?: number
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          commercial_detail?: string
+          created_at?: string
+          detail?: string
+          group_name?: string
+          id?: string
+          item_id?: string
+          revision?: number
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_order_item_detail_groups_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "sales_order_item_detail_sheets"
+            referencedColumns: ["item_id"]
+          },
+        ]
+      }
+      sales_order_item_detail_sheets: {
+        Row: {
+          base_captured_at: string | null
+          base_found: boolean
+          base_ref: string | null
+          base_technical: Json
+          base_updated_at: string | null
+          created_at: string
+          created_by: string | null
+          item_id: string
+        }
+        Insert: {
+          base_captured_at?: string | null
+          base_found?: boolean
+          base_ref?: string | null
+          base_technical?: Json
+          base_updated_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          item_id: string
+        }
+        Update: {
+          base_captured_at?: string | null
+          base_found?: boolean
+          base_ref?: string | null
+          base_technical?: Json
+          base_updated_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_order_item_detail_sheets_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: true
+            referencedRelation: "sales_order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales_order_item_materials: {
         Row: {
           consumption: number
@@ -2530,6 +2618,7 @@ export type Database = {
           material: string
           material_id: string | null
           notes: string | null
+          revision: number
           source: string
           stock_item_id: string | null
           total_cost: number | null
@@ -2546,6 +2635,7 @@ export type Database = {
           material: string
           material_id?: string | null
           notes?: string | null
+          revision?: number
           source?: string
           stock_item_id?: string | null
           total_cost?: number | null
@@ -2562,6 +2652,7 @@ export type Database = {
           material?: string
           material_id?: string | null
           notes?: string | null
+          revision?: number
           source?: string
           stock_item_id?: string | null
           total_cost?: number | null
@@ -3853,6 +3944,14 @@ export type Database = {
         Args: { _item_id: string; _note?: string }
         Returns: undefined
       }
+      assert_order_item_commercial_editable: {
+        Args: { _item_id: string }
+        Returns: undefined
+      }
+      assert_order_item_detail_editable: {
+        Args: { _item_id: string }
+        Returns: undefined
+      }
       calc_stock_params_row: {
         Args: { _row: Database["public"]["Tables"]["stock_item"]["Row"] }
         Returns: {
@@ -3926,6 +4025,40 @@ export type Database = {
           old_class: Database["public"]["Enums"]["abc_class"]
         }[]
       }
+      delete_order_detail_group_internal: {
+        Args: {
+          _commercial: boolean
+          _expected_revision: number
+          _group_id: string
+          _item_id: string
+        }
+        Returns: undefined
+      }
+      delete_order_item_commercial_group: {
+        Args: {
+          _expected_revision: number
+          _group_id: string
+          _item_id: string
+        }
+        Returns: undefined
+      }
+      delete_order_item_detail_group: {
+        Args: {
+          _expected_revision: number
+          _group_id: string
+          _item_id: string
+        }
+        Returns: undefined
+      }
+      delete_order_item_material_consumption: {
+        Args: {
+          _expected_revision: number
+          _item_id: string
+          _material_id: string
+        }
+        Returns: undefined
+      }
+      get_order_item_details: { Args: { _item_id: string }; Returns: Json }
       has_any_launch_role: { Args: { _uid: string }; Returns: boolean }
       has_any_showroom_role: { Args: { _uid: string }; Returns: boolean }
       has_any_stock_role: { Args: { _uid: string }; Returns: boolean }
@@ -3938,12 +4071,24 @@ export type Database = {
       }
       has_stock_write_role: { Args: { _uid: string }; Returns: boolean }
       has_supplier_mgmt_role: { Args: { _uid: string }; Returns: boolean }
+      initialize_order_item_detail_sheet: {
+        Args: { _item_id: string }
+        Returns: Json
+      }
       is_member: { Args: { _uid: string }; Returns: boolean }
       is_user_mentioned: {
         Args: { _mentions: string[]; _uid: string }
         Returns: boolean
       }
+      list_order_item_material_consumption: {
+        Args: { _item_id: string }
+        Returns: Json
+      }
       next_sales_order_number: { Args: never; Returns: string }
+      order_detail_scalar: {
+        Args: { _key: string; _object: Json }
+        Returns: string
+      }
       order_item_technical_sheet: { Args: { _order_id: string }; Returns: Json }
       recalc_sales_order_item: { Args: { _item_id: string }; Returns: number }
       register_passages: {
@@ -3955,6 +4100,56 @@ export type Database = {
         Returns: string
       }
       run_cloud_cron: { Args: { p_job: string }; Returns: undefined }
+      save_order_detail_group_internal: {
+        Args: {
+          _commercial: boolean
+          _detail: string
+          _expected_revision: number
+          _group_id: string
+          _item_id: string
+          _name: string
+        }
+        Returns: Json
+      }
+      save_order_item_commercial_group: {
+        Args: {
+          _detail: string
+          _expected_revision: number
+          _group_id: string
+          _item_id: string
+          _name: string
+        }
+        Returns: Json
+      }
+      save_order_item_detail_group: {
+        Args: {
+          _detail: string
+          _expected_revision: number
+          _group_id: string
+          _item_id: string
+          _name: string
+        }
+        Returns: Json
+      }
+      save_order_item_material_consumption: {
+        Args: {
+          _consumption: number
+          _expected_revision: number
+          _item_id: string
+          _kind: string
+          _material: string
+          _material_id: string
+          _unit: string
+          _unit_cost: number
+          _waste_pct: number
+        }
+        Returns: Json
+      }
+      start_order_item_commercial_details: {
+        Args: { _item_id: string }
+        Returns: Json
+      }
+      start_order_item_details: { Args: { _item_id: string }; Returns: Json }
       submit_sales_order: { Args: { _order_id: string }; Returns: undefined }
       user_belongs_to_supplier: {
         Args: { _supplier_id: string; _uid: string }
