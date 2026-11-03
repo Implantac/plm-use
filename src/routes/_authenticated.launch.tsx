@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { OmnichannelReadinessPanel } from "@/components/launch/OmnichannelReadinessPanel";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import {
   useLaunch,
@@ -146,11 +147,13 @@ function LaunchPage() {
 
   return (
     <ModuleLayout
-      title="Lançamento"
-      subtitle="Waves comerciais, handoff idempotente ao ERP e performance pós-lançamento"
-      version="v0.1 · H9-10"
+      title="Lançamento & Go-Live Omnichannel"
+      subtitle="Gate técnico Go/No-Go, exportação de catálogo GTIN/EAN-13, waves comerciais e handoff idempotente ao ERP."
+      version="Launch v2.17"
       metrics={metrics}
     >
+      <OmnichannelReadinessPanel />
+
       <Tabs defaultValue="waves">
         <TabsList>
           <TabsTrigger value="waves">Waves</TabsTrigger>

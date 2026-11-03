@@ -245,7 +245,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "Planner",
     group: "pcp",
     crumbs: ["PCP"],
-    vitrine: true,
   },
   { path: "/quality", icon: "shield-check", label: "Qualidade", group: "pcp", crumbs: ["PCP"] },
 
@@ -273,7 +272,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     group: "gtm",
     icon: "rocket",
     crumbs: ["GTM"],
-    vitrine: true,
   },
   { path: "/showroom", label: "Showroom", group: "gtm", icon: "store", crumbs: ["GTM"] },
   {
@@ -328,7 +326,6 @@ export const ROUTE_REGISTRY: RouteMeta[] = [
     label: "AI Agents",
     group: "insights",
     crumbs: ["Insights"],
-    vitrine: true,
   },
   {
     path: "/digital-twin",

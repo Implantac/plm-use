@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { CalendarRange, AlertTriangle, Save, Loader2 } from "lucide-react";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { ExportMenu } from "@/components/export/ExportMenu";
+import { FiniteCapacityPanel } from "@/components/pcp/FiniteCapacityPanel";
 import { useProductionOrders, useUpdateOrderSchedule } from "@/hooks/use-production-orders";
 import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import { opPermissions } from "@/lib/pcp/op-permissions";
@@ -115,6 +116,8 @@ function PlannerPage() {
         { label: "Atrasadas", value: String(atrasadas), detail: "fim já passou" },
       ]}
     >
+      <FiniteCapacityPanel cloudOrders={rows} />
+
       <div className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <p className="text-xs text-muted-foreground flex items-center gap-2">

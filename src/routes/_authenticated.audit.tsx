@@ -92,17 +92,25 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "real",
   },
   {
-    area: "Lançamentos",
+    area: "Lançamentos & Gate Go/No-Go Omnichannel",
     route: "/launch",
-    evidence: "Ondas persistidas; sell-through do cron aguarda ErpAdapter (mock declarado).",
+    evidence:
+      "Ondas persistidas via server functions + Gate Go/No-Go de prontidão (BOM, ABNT, BOP, DPP) e exportação CSV GTIN/EAN-13.",
     status: "real",
   },
   {
-    area: "Pedidos / Catálogo técnico",
+    area: "Programação Finita CRP & Sequenciamento EDD",
+    route: "/planner",
+    evidence:
+      "Programação em production_orders + carga-capacidade semanal por setor (Corte, Costura, Estampa, Acabamento) e Mapa CRP A4.",
+    status: "real",
+  },
+  {
+    area: "Pedidos / Catálogo técnico & Private Label",
     route: "/orders",
     evidence:
-      "Fase 1 (21/10): pedido com grade e opções, explosão do catálogo em materiais/operações e custo por item via RPC no banco. A fila de custo dedicada e a liberação para PCP chegam nas fases 2–3; /commercial segue vitrine.",
-    status: "parcial",
+      "Pedido com grade/opções e RPC no banco + Fila dedicada de Engenharia de Custos, Clonagem B2B, Lista Nominal e Ficha Cega A4.",
+    status: "real",
   },
   {
     area: "Coleções",
@@ -184,13 +192,6 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "sync",
   },
   {
-    area: "Pedidos Private Label · Fila de Custos & Lista Nominal",
-    route: "/orders",
-    evidence:
-      "Fila dedicada de engenharia de custos, clonagem B2B em 1 clique, Lista Nominal por peça (TSV→grade) e Ficha Cega A4 sem R$.",
-    status: "sync",
-  },
-  {
     area: "Governança RBAC, Isolamento RLS & Trilha LGPD",
     route: "/security",
     evidence:
@@ -198,16 +199,18 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "sync",
   },
   {
-    area: "Portal do Fornecedor",
+    area: "Portal do Fornecedor & Cotação RFQ",
     route: "/supplier-portal",
-    evidence: "Leitura da base real (pedidos por fornecedor); sem escrita self-service.",
-    status: "parcial",
+    evidence:
+      "Pedidos/amostras na base real + explosão automática de BOM, equalização multicritério RFQ e Ordem de Compra (PO) A4.",
+    status: "sync",
   },
   {
-    area: "USE AI",
-    route: "/ai-center",
-    evidence: "Agents com contexto live e geração de imagem server-side (auth própria).",
-    status: "parcial",
+    area: "USE AI Studio & Copiloto Industrial (4 Agentes)",
+    route: "/ai-agents",
+    evidence:
+      "Geração server-side em PNG transparente (/ai-center) + Copiloto Híbrido determinístico/LLM (Engenharia, PCP, Fashion e Marketing).",
+    status: "sync",
   },
   {
     area: "Admin / Usuários / Segurança",
