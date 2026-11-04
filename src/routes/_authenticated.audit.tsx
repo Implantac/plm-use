@@ -80,9 +80,10 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "real",
   },
   {
-    area: "Almoxarifado",
+    area: "Almoxarifado, Lotes de Rolo & MRP I Líquido",
     route: "/inventory",
-    evidence: "Server functions dedicadas (inventário, reserva por OP).",
+    evidence:
+      "Server functions (inventário, reserva por OP, ABC), controle de rolos/nuance + explosão líquida MRP I (CSV + Requisição A4).",
     status: "real",
   },
   {
@@ -139,16 +140,17 @@ const coverage: Array<{ area: string; route: string; evidence: string; status: C
     status: "sync",
   },
   {
-    area: "BI Executivo",
+    area: "BI Executivo & Torre S&OP Automática",
     route: "/analytics",
     evidence:
-      "KPIs editáveis persistidos (módulo 8) + export CSV; valores ainda manuais por definição.",
+      "Torre S&OP automática em tempo real (carteira B2B, margem ponderada, ROAS, ocupação costura/facção) + KPIs persistidos e Book A4.",
     status: "sync",
   },
   {
-    area: "Influenciadores / GTM",
+    area: "Influenciadores · Seeding ROI & CFOP 5910/6910",
     route: "/influencers",
-    evidence: "Cadastro + envios espelhados (módulo 10); métricas de engajamento são manuais.",
+    evidence:
+      "Cadastro + envios espelhados, cupom/UTM automático, ROAS líquido (fee + CMV) e Guia Fiscal de Bonificação CFOP 5910/6910 A4.",
     status: "sync",
   },
   {

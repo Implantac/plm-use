@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { parseQSearch, type QSearch } from "@/lib/url-search";
 import { ExportMenu } from "@/components/export/ExportMenu";
+import { LiveSopBoard } from "@/components/analytics/LiveSopBoard";
 import {
   useAnalyticsKpis,
   upsertAnalyticsKpi,
@@ -201,6 +202,8 @@ function AnalyticsPage() {
         { label: "Giro", value: "7.1x", detail: "estoque anualizado" },
       ]}
     >
+      <LiveSopBoard />
+
       <div className="flex justify-end gap-4 mb-8">
         <ExportMenu
           title="KPIs estratégicos — BI Executivo"

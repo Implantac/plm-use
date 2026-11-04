@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Heart, Instagram, MapPin, Package, Plus, Send, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
+import { SeedingAttributionPanel } from "@/components/influencers/SeedingAttributionPanel";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import {
   REGIOES_BR,
@@ -89,6 +90,8 @@ function InfluencersPage() {
         { label: "Eng. médio", value: `${totais.engMedio.toFixed(1)}%`, detail: "posts ativos" },
       ]}
     >
+      <SeedingAttributionPanel />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-3">
           {influencers.map((i) => {

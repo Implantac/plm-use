@@ -28,6 +28,7 @@ import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { AbcCoveragePanel } from "@/components/inventory/AbcCoveragePanel";
 import { FabricRollsShadePanel } from "@/components/inventory/FabricRollsShadePanel";
+import { MrpNetExplosionPanel } from "@/components/inventory/MrpNetExplosionPanel";
 import { MovementDialog } from "@/components/inventory/MovementDialog";
 import { ReservationDialog } from "@/components/inventory/ReservationDialog";
 import { ReservationsPanel } from "@/components/inventory/ReservationsPanel";
@@ -212,6 +213,8 @@ function InventoryPage() {
           <History className="w-4 h-4" /> Reservar
         </Button>
       </div>
+
+      <MrpNetExplosionPanel />
 
       <FabricRollsShadePanel />
 
