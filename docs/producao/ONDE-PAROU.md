@@ -156,7 +156,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 23 (04/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 24 (04/11/2026) — o que mudou depois deste documento
 
 Este arquivo foi escrito quando `main` era `693ec16` (Onda 18). De lá para cá:
 
@@ -166,6 +166,7 @@ Este arquivo foi escrito quando `main` era `693ec16` (Onda 18). De lá para cá:
 | 20 — Ficha confiável         | `29ff4c6` | provenance em `/route-engineering` e `CuttingRoomPlanPanel`; E2E autenticado na CI (dá SKIP sem credencial)                                           | ❌ não republicado      |
 | 22 — Ficha fora da decisão   | `be4456a` | `ensure()` parou de converter demonstração em "ficha salva"; comitê de gate, esteira, looks e copiloto só decidem sobre ficha editada                 | ❌ não republicado      |
 | 23 — Documento da ficha real | `9815e0c` | migração do store persistido (v0→v2) faz a correção chegar a quem já usava; as 5 telas que emitem documento deixam de nascer na ficha de demonstração | ❌ não republicado      |
+| 24 — Baixa de material da OP | `85b6820` | PCP registra o consumo dos insumos reservados pela OP (aba Material), com atribuição correta por OP; saída avulsa passa a vincular à OP               | ❌ não republicado      |
 | 21 — Ciclo da reserva        | `72247cd` | reserva de estoque deixou de ficar `ativa` para sempre: saída consome em FIFO, OP encerrada libera o resto, view de aging                             | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
@@ -207,7 +208,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 373 testes
+cd plm-use && npx vitest run            # 378 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -215,6 +216,6 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@9815e0c`, `docs/producao/ONDA-19..23-*.md` e os números das
-suítes rodadas em 04/11 (vitest 373/373, SQL 148/148, bundle relido com 215 chunks:
+Seção 7-A: `main@85b6820`, `docs/producao/ONDA-19..24-*.md` e os números das
+suítes rodadas em 04/11 (vitest 378/378, SQL 163/163, bundle relido com 215 chunks:
 `Ficha de referência` e `Consumo e liberação` = 0 ocorrências, logo o ar é a Onda 19).
