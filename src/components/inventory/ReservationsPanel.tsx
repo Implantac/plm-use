@@ -1,4 +1,10 @@
-// Doc 06.2 · Almoxarifado — painel de reservas ativas (consumir/cancelar).
+// Doc 06.2 · Almoxarifado — painel de reservas ativas.
+//
+// Desde a migration 20261104120000 a reserva tem ciclo de vida automático:
+// a saída física de estoque (stock_movement kind='out') consome em FIFO e a OP
+// concluída/cancelada libera o que sobrou. Os botões daqui continuam existindo
+// para o caso manual (ajuste de contagem, material devolvido), não como único
+// caminho — antes eram.
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -56,6 +62,11 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
 
   const nameOf = (id: string) => items.find((i) => i.id === id)?.name ?? id.slice(0, 8);
 
+  /** Dias desde a criação. Reserva antiga em 'ativa' é sinal de que a saída não
+   *  foi registrada — vale olhar antes de confiar no saldo disponível. */
+  const diasAtiva = (iso: string) =>
+    Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
+
   const act = async (id: string, status: "consumida" | "cancelada") => {
     setBusyId(id);
     const res = await updateReservationStatus({ data: { id, status } });
@@ -71,6 +82,10 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
         <CardTitle className="text-xs font-semibold uppercase tracking-[0.04em] text-primary">
           Reservas ativas ({rows.length})
         </CardTitle>
+        <p className="text-[10px] text-muted-foreground mt-1">
+          Consumo e liberação são automáticos: a saída de estoque consome a reserva e a OP concluída
+          ou cancelada libera o que sobrar. Os botões abaixo são para ajuste manual.
+        </p>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
         {rows.length === 0 && <p className="text-xs text-muted-foreground">Sem reservas ativas.</p>}
@@ -82,6 +97,11 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
             <div className="min-w-0">
               <p className="text-sm font-bold text-white truncate">{nameOf(r.item_id)}</p>
               <p className="text-2xs uppercase tracking-[0.04em] text-muted-foreground">
+                {diasAtiva(r.created_at) > 30 && (
+                  <span className="mr-1 rounded-sm bg-amber-500/20 px-1 text-amber-700 dark:text-amber-300">
+                    {diasAtiva(r.created_at)}d parada
+                  </span>
+                )}
                 {r.qty} · {r.ref_type} ·{" "}
                 {r.ref_type === "op" && opMeta[r.ref_id] ? (
                   <Link
