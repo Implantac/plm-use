@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveSheet, sheetProvenance, summarizeSheets } from "./provenance";
+import { operationalCodes, resolveSheet, sheetProvenance, summarizeSheets } from "./provenance";
 import { seedFor, type TechSheetData } from "./store";
 
 const salvo: TechSheetData = seedFor("V24-001");
@@ -37,7 +37,26 @@ describe("procedência da ficha técnica", () => {
       total: 3,
       salvas: 1,
       referencias: 2,
+      templates: 0,
       codesReferencia: ["DEV000006", "U25-014"],
     });
+  });
+});
+
+describe("operationalCodes — o que pode virar decisão", () => {
+  it("sem ficha salva, não oferece nenhuma referência de demonstração", () => {
+    expect(operationalCodes({})).toEqual([]);
+    expect(operationalCodes(undefined)).toEqual([]);
+  });
+
+  it("devolve só as fichas salvas, sem duplicar", () => {
+    expect(operationalCodes({ "V24-001": salvo, DEV000006: salvo })).toEqual([
+      "V24-001",
+      "DEV000006",
+    ]);
+  });
+
+  it("aceita referência explícita quando a tela é de vitrine", () => {
+    expect(operationalCodes({}, ["DEV000006"])).toEqual(["DEV000006"]);
   });
 });

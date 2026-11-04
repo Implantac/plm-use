@@ -137,6 +137,7 @@ function RouteEngineering() {
 
 function CellBalancingTab() {
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const ensure = useTechSheetStore((s) => s.ensure);
   const updateBopStep = useTechSheetStore((s) => s.updateBopStep);
 
@@ -154,7 +155,7 @@ function CellBalancingTab() {
   const [metaDia, setMetaDia] = useState(420);
   const [custoMinuto, setCustoMinuto] = useState(1.18);
 
-  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor);
+  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor, materializadas);
   const res = useMemo(
     () =>
       computeCellGsdBalancing(doc, {

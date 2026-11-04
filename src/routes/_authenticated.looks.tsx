@@ -55,6 +55,7 @@ import {
   buildFullLookEditorialPrompt,
   computeLookFinancialSummary,
 } from "@/lib/techsheet/linesheet";
+import { operationalCodes, resolveSheet } from "@/lib/techsheet/provenance";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/looks")({
@@ -87,6 +88,7 @@ const brl = (v: number) =>
 function LooksPage() {
   const looks = useLooks();
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const ensure = useTechSheetStore((s) => s.ensure);
   const [selectedId, setSelectedId] = useState<string | null>(looks[0]?.id ?? null);
   const [statusFilter, setStatusFilter] = useState<LookStatus | "all">("all");
@@ -112,14 +114,30 @@ function LooksPage() {
   const selected = looks.find((l) => l.id === selectedId) ?? filtered[0] ?? null;
 
   function suggestCoordinatedLookAi() {
-    const dev = sheetsMap["DEV000006"] ?? ensure("DEV000006");
-    const v24 = sheetsMap["V24-001"] ?? seedFor("V24-001");
+    // A sugestão tem que partir de produto real. Antes ela chamava ensure()
+    // sobre DEV000006 e plantava a ficha de demonstração no store como se fosse
+    // produto da empresa; e o "complemento" era sempre a referência V24-001.
+    const codigos = operationalCodes(sheetsMap, [], materializadas).filter(
+      (c) => c !== "DEV000006",
+    );
+    if (codigos.length === 0) {
+      toast.error(
+        "Nenhuma ficha salva para compor um look. Salve uma ficha técnica primeiro — o coordenado sugerido sairia de dados de demonstração.",
+      );
+      return;
+    }
+    const principal = sheetsMap["DEV000006"]?.meta?.name ? "DEV000006" : codigos[0]!;
+    const dev = resolveSheet(sheetsMap, principal, seedFor, materializadas).doc;
+    const complemento = codigos.find((c) => c !== principal);
+    const v24 = complemento
+      ? resolveSheet(sheetsMap, complemento, seedFor, materializadas).doc
+      : dev;
     const id = `look-ia-${Date.now().toString(36)}`;
     const primaryHex = dev.colorways?.[0]?.hex ?? "#1D6B47";
 
     upsertLook({
       id,
-      name: `Coordenado IA · ${dev.meta?.collection || "Verão 2027"}`,
+      name: `Coordenado IA · ${dev.meta?.collection || principal}`,
       season: dev.meta?.collection || "Verão 2027",
       occasion: "esporte",
       status: "rascunho",
@@ -131,14 +149,14 @@ function LooksPage() {
       updatedAt: new Date().toISOString(),
       items: [
         {
-          refCode: "DEV000006",
-          refName: dev.meta?.name || "Camiseta Esportiva Dry Pro",
+          refCode: principal,
+          refName: dev.meta?.name || principal,
           role: "peça-chave",
           colorHex: primaryHex,
         },
         {
-          refCode: "V24-001",
-          refName: v24.meta?.name || "Complemento Coordenado",
+          refCode: complemento ?? principal,
+          refName: v24.meta?.name || complemento || principal,
           role: "complemento",
           colorHex: v24.colorways?.[0]?.hex ?? "#1E293B",
         },

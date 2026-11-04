@@ -24,6 +24,28 @@ export function SheetProvenanceNote({
   compact?: boolean;
   "data-testid"?: string;
 }) {
+  if (provenance === "template") {
+    return (
+      <p
+        data-testid={testId}
+        data-provenance="template"
+        className={cn(
+          "flex items-start gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/5 px-2 py-1 text-[10px] leading-snug text-amber-800 dark:text-amber-300",
+          className,
+        )}
+      >
+        <AlertTriangle className="h-3 w-3 shrink-0 mt-px" />
+        <span>
+          <strong className="font-semibold">Ficha criada do modelo padrão</strong>
+          {code ? ` · ${code}` : ""}
+          {compact
+            ? " — ainda sem edição."
+            : " — a ficha existe no seu workspace, mas ninguém editou nada: BOM, tempos e custos ainda são os do exemplo. Edite para valer como engenharia da empresa."}
+        </span>
+      </p>
+    );
+  }
+
   if (provenance === "salva") {
     return (
       <p

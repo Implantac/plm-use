@@ -114,10 +114,13 @@ function AIAgentsPage() {
   const plOrders = usePrivateLabelQueueStore((s) => s.orders);
   const drops = useResearchGtmStore((s) => s.campaigns);
 
-  const sheets =
-    Object.keys(rawSheets).length > 0
-      ? rawSheets
-      : { "V24-001": seedFor("V24-001"), DEV000006: seedFor("DEV000006") };
+  // Sem ficha salva o copiloto ainda responde (é útil ver o formato), mas a tela
+  // não pode dizer que está "conectado aos seus números" — não está.
+  const temFichaSalva = Object.keys(rawSheets).length > 0;
+  const sheets = temFichaSalva
+    ? rawSheets
+    : { "V24-001": seedFor("V24-001"), DEV000006: seedFor("DEV000006") };
+  const origemAnalise = temFichaSalva ? ("salva" as const) : ("referencia" as const);
 
   function computeLocalDeterministic(question: string): string {
     return runDeterministicAgentAnalysis({
@@ -327,8 +330,22 @@ function AIAgentsPage() {
             <div className="flex items-center gap-2 pb-3 border-b border-border">
               <Icon className={`h-5 w-5 ${A.color}`} />
               <p className="text-sm font-bold text-foreground">{A.label}</p>
-              <Badge variant="outline" className="text-2xs ml-auto font-mono">
-                Copiloto Híbrido · Stores + Cloud
+              <Badge
+                variant="outline"
+                className={
+                  origemAnalise === "referencia"
+                    ? "text-2xs ml-auto font-mono border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                    : "text-2xs ml-auto font-mono"
+                }
+                title={
+                  origemAnalise === "referencia"
+                    ? "Não há ficha técnica salva: a análise usa a ficha de referência (demonstração)."
+                    : "A análise usa as fichas salvas no seu workspace."
+                }
+              >
+                {origemAnalise === "referencia"
+                  ? "Sem ficha salva · análise sobre referência"
+                  : "Copiloto Híbrido · Stores + Cloud"}
               </Badge>
             </div>
 
@@ -337,7 +354,9 @@ function AIAgentsPage() {
                 <div className="text-center text-muted-foreground py-12">
                   <Bot className={`h-10 w-10 mx-auto mb-2 ${A.color}`} />
                   <p className="text-sm font-medium text-foreground">
-                    {A.label} conectado aos seus números reais.
+                    {origemAnalise === "referencia"
+                      ? `${A.label} pronto — mas ainda sem ficha salva para analisar.`
+                      : `${A.label} conectado aos seus números reais.`}
                   </p>
                   <p className="text-xs mt-1">
                     Clique em uma pergunta ao lado ou em{" "}

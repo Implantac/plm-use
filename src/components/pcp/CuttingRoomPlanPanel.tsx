@@ -14,6 +14,7 @@ import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote"
 
 export function CuttingRoomPlanPanel() {
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const availableRefs = useMemo(() => {
     const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
     for (const k of Object.keys(sheetsMap)) {
@@ -23,7 +24,7 @@ export function CuttingRoomPlanPanel() {
   }, [sheetsMap]);
 
   const [selectedRef, setSelectedRef] = useState("DEV000006");
-  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor);
+  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor, materializadas);
   const cws = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
   const [colorName, setColorName] = useState(cws[0]?.name ?? "Verde Brasil");
   const [totalPlies, setTotalPlies] = useState(140);

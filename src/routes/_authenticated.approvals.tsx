@@ -19,6 +19,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { evaluateTechSheetGateReadiness } from "@/lib/techsheet/cut-order";
+import { operationalCodes, resolveSheet } from "@/lib/techsheet/provenance";
+import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
 import {
   LIFECYCLE_STAGES,
   seedFor,
@@ -74,20 +76,21 @@ const fmt = (iso: string | null) =>
 
 function ApprovalsPage() {
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const ensure = useTechSheetStore((s) => s.ensure);
   const updateMeta = useTechSheetStore((s) => s.updateMeta);
   const createVersion = useTechSheetStore((s) => s.createVersion);
 
+  // Gate é decisão de engenharia: só entra ficha salva. As quatro referências de
+  // demonstração (DEV000006 e cia) não aparecem mais aqui — antes o comitê podia
+  // aprovar etapa de um exemplo e o toast dizia "aprovada", o que era falso.
   const techSheetGateItems = useMemo(() => {
-    const keys = Array.from(
-      new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
-    );
-    return keys.map((refCode) => {
-      const doc = sheetsMap[refCode] ?? seedFor(refCode);
+    return operationalCodes(sheetsMap, [], materializadas).map((refCode) => {
+      const { doc, provenance } = resolveSheet(sheetsMap, refCode, seedFor, materializadas);
       const report = evaluateTechSheetGateReadiness(doc);
-      return { refCode, doc, report };
+      return { refCode, doc, report, provenance };
     });
-  }, [sheetsMap]);
+  }, [sheetsMap, materializadas]);
 
   const { items: refs, loading: loadingRefs } = useReferences();
   const { items: gates, loading, openGate, decide } = useReferenceGates();
@@ -191,7 +194,13 @@ function ApprovalsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-          {techSheetGateItems.map(({ refCode, doc, report }) => (
+          {techSheetGateItems.length === 0 && (
+            <p className="lg:col-span-2 py-6 text-center text-xs text-muted-foreground">
+              Nenhuma ficha salva ainda. Abra uma ficha em Desenvolvimento e salve para que ela
+              entre na auditoria de Stage-Gate — ficha de demonstração não passa por comitê.
+            </p>
+          )}
+          {techSheetGateItems.map(({ refCode, doc, report, provenance }) => (
             <div
               key={refCode}
               className="rounded-lg border border-border bg-muted/30 p-3.5 space-y-2.5"
@@ -205,6 +214,9 @@ function ApprovalsPage() {
                   <p className="text-2xs text-muted-foreground">
                     Etapa atual: <strong>{report.stageLabel}</strong>
                   </p>
+                  {provenance === "referencia" && (
+                    <SheetProvenanceNote provenance={provenance} code={refCode} compact />
+                  )}
                 </div>
                 <Badge
                   variant="outline"

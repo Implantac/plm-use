@@ -426,6 +426,13 @@ export const seedFor = (ref: string): TechSheetData => ({
 
 interface State {
   data: Record<string, TechSheetData>;
+  /**
+   * Refs que existem no store **só porque uma tela chamou `ensure()`** — nasceram
+   * do modelo de demonstração e ninguém editou ainda. Sem isso, abrir
+   * `/route-engineering` uma vez transformava o seed em "ficha salva" e o selo de
+   * procedência passava a mentir. Edição humana tira a ref daqui.
+   */
+  materializadas: Record<string, true>;
   /** refs com edição local ainda não confirmada pelo servidor (push seletivo). */
   dirty: Record<string, true>;
   clearDirty(refs: string[]): void;
@@ -467,285 +474,320 @@ function syncBomCusto(item: BomItem): BomItem {
 
 export const useTechSheetStore = create<State>()(
   persist(
-    (set, get) => ({
-      data: {},
-      dirty: {},
-      clearDirty(refs) {
+    (set, get) => {
+      /** Qualquer edição humana tira a ref de "materializada pelo ensure". */
+      const marcarEditada = (ref: string) =>
         set((s) => {
-          const next = { ...s.dirty };
-          for (const r of refs) delete next[r];
-          return { dirty: next };
+          if (!s.materializadas[ref]) return {};
+          const m = { ...s.materializadas };
+          delete m[ref];
+          return { materializadas: m };
         });
-      },
-      ensure(ref) {
-        const cur = get().data[ref];
-        if (cur) return cur;
-        const fresh = seedFor(ref);
-        set((s) => ({ data: { ...s.data, [ref]: fresh } }));
-        return fresh;
-      },
-      updateMeta(ref, patch) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          const baseMeta: TechSheetMeta = cur.meta ?? {
-            name: `Produto ${ref}`,
-            category: "Confecção",
-            collection: "Verão 2027",
-            statusLabel: "Em engenharia",
-            stage: 3,
+
+      return {
+        data: {},
+        materializadas: {},
+        dirty: {},
+        clearDirty(refs) {
+          set((s) => {
+            const next = { ...s.dirty };
+            for (const r of refs) delete next[r];
+            return { dirty: next };
+          });
+        },
+        ensure(ref) {
+          const cur = get().data[ref];
+          if (cur) return cur;
+          const fresh = seedFor(ref);
+          set((s) => ({
+            data: { ...s.data, [ref]: fresh },
+            materializadas: { ...s.materializadas, [ref]: true as const },
+          }));
+          return fresh;
+        },
+        updateMeta(ref, patch) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            const baseMeta: TechSheetMeta = cur.meta ?? {
+              name: `Produto ${ref}`,
+              category: "Confecção",
+              collection: "Verão 2027",
+              statusLabel: "Em engenharia",
+              stage: 3,
+            };
+            return {
+              data: { ...s.data, [ref]: { ...cur, meta: { ...baseMeta, ...patch } } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        setImage(ref, url) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            const clean = url && /^https:\/\//.test(url.trim()) ? url.trim() : undefined;
+            return {
+              data: { ...s.data, [ref]: { ...cur, image: clean } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        addBomItem(ref, item) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            const nextItem = syncBomCusto({ ...item, id: uid() });
+            return {
+              data: { ...s.data, [ref]: { ...cur, bom: [...cur.bom, nextItem] } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        bulkAddBomItems(ref, items) {
+          marcarEditada(ref);
+          if (!items.length) return;
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            const created = items.map((item) => syncBomCusto({ ...item, id: uid() }));
+            return {
+              data: { ...s.data, [ref]: { ...cur, bom: [...cur.bom, ...created] } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        updateBomItem(ref, id, patch) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: {
+                ...s.data,
+                [ref]: {
+                  ...cur,
+                  bom: cur.bom.map((b) => (b.id === id ? syncBomCusto({ ...b, ...patch, id }) : b)),
+                },
+              },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        removeBomItem(ref, id) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, bom: cur.bom.filter((b) => b.id !== id) } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        addBopStep(ref, step) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, bop: [...cur.bop, { ...step, id: uid() }] } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        updateBopStep(ref, id, patch) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: {
+                ...s.data,
+                [ref]: {
+                  ...cur,
+                  bop: cur.bop.map((p) => (p.id === id ? { ...p, ...patch, id } : p)),
+                },
+              },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        removeBopStep(ref, id) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, bop: cur.bop.filter((b) => b.id !== id) } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        updatePreCost(ref, patch) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+
+        addAplicacao(ref, item) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: {
+                ...s.data,
+                [ref]: { ...cur, aplicacoes: [...(cur.aplicacoes ?? []), { ...item, id: uid() }] },
+              },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        updateAplicacao(ref, id, patch) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: {
+                ...s.data,
+                [ref]: {
+                  ...cur,
+                  aplicacoes: (cur.aplicacoes ?? []).map((a) =>
+                    a.id === id ? { ...a, ...patch, id } : a,
+                  ),
+                },
+              },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        removeAplicacao(ref, id) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: {
+                ...s.data,
+                [ref]: { ...cur, aplicacoes: (cur.aplicacoes ?? []).filter((a) => a.id !== id) },
+              },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+
+        setColorways(ref, colorways) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, colorways } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        setMedidas(ref, medidas) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, medidas } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        setEtiquetagem(ref, etiquetagem) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, etiquetagem } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+        setEncaixeCad(ref, encaixeCad) {
+          marcarEditada(ref);
+          set((s) => {
+            const cur = s.data[ref] ?? seedFor(ref);
+            return {
+              data: { ...s.data, [ref]: { ...cur, encaixeCad } },
+              dirty: { ...s.dirty, [ref]: true },
+            };
+          });
+        },
+
+        duplicateTechSheet(sourceRef, targetRef, targetName) {
+          const cleanRef = targetRef.trim().toUpperCase();
+          const src = get().data[sourceRef] ?? seedFor(sourceRef);
+          const cloned: TechSheetData = {
+            ...structuredClone(src),
+            ref: cleanRef,
+            meta: {
+              name: targetName?.trim() || `${src.meta?.name ?? sourceRef} (Cópia)`,
+              category: src.meta?.category ?? "Confecção",
+              collection: src.meta?.collection ?? "Verão 2027",
+              statusLabel: "Clonada de " + sourceRef,
+              stage: 3,
+            },
+            versoes: [
+              {
+                id: uid(),
+                versao: "v1.0",
+                data: new Date().toISOString().slice(0, 10),
+                autor: "Engenharia",
+                status: "Rascunho",
+                resumo: `Base duplicada a partir de ${sourceRef}`,
+                alteracoes: [
+                  `Clonagem integral de BOM, roteiro, medidas e colorways (${sourceRef})`,
+                ],
+              },
+            ],
           };
-          return {
-            data: { ...s.data, [ref]: { ...cur, meta: { ...baseMeta, ...patch } } },
-            dirty: { ...s.dirty, [ref]: true },
+          set((s) => ({
+            data: { ...s.data, [cleanRef]: cloned },
+            dirty: { ...s.dirty, [cleanRef]: true },
+          }));
+          return cloned;
+        },
+
+        createVersion(ref, autor, resumo, alteracoes) {
+          marcarEditada(ref);
+          const cur = get().data[ref] ?? seedFor(ref);
+          const last = cur.versoes[0]?.versao ?? "v1.0";
+          const nova: TechSheetVersion = {
+            id: uid(),
+            versao: bumpVersion(last),
+            data: new Date().toISOString().slice(0, 10),
+            autor,
+            status: "Em revisão",
+            resumo,
+            alteracoes,
+            // clone explícito: a versão congela o estado (incluindo aplicações!), não aponta para ele.
+            snapshot: {
+              bom: structuredClone(cur.bom),
+              bop: structuredClone(cur.bop),
+              preCost: structuredClone(cur.preCost),
+              ...(cur.aplicacoes?.length ? { aplicacoes: structuredClone(cur.aplicacoes) } : {}),
+            },
           };
-        });
-      },
-      setImage(ref, url) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          const clean = url && /^https:\/\//.test(url.trim()) ? url.trim() : undefined;
-          return {
-            data: { ...s.data, [ref]: { ...cur, image: clean } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      addBomItem(ref, item) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          const nextItem = syncBomCusto({ ...item, id: uid() });
-          return {
-            data: { ...s.data, [ref]: { ...cur, bom: [...cur.bom, nextItem] } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      bulkAddBomItems(ref, items) {
-        if (!items.length) return;
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          const created = items.map((item) => syncBomCusto({ ...item, id: uid() }));
-          return {
-            data: { ...s.data, [ref]: { ...cur, bom: [...cur.bom, ...created] } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      updateBomItem(ref, id, patch) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
+          set((s) => ({
             data: {
               ...s.data,
               [ref]: {
                 ...cur,
-                bom: cur.bom.map((b) => (b.id === id ? syncBomCusto({ ...b, ...patch, id }) : b)),
+                versoes: [
+                  nova,
+                  ...cur.versoes.map((v) =>
+                    v.status === "Aprovada" ? { ...v, status: "Obsoleta" as const } : v,
+                  ),
+                ],
               },
             },
             dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      removeBomItem(ref, id) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, bom: cur.bom.filter((b) => b.id !== id) } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      addBopStep(ref, step) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, bop: [...cur.bop, { ...step, id: uid() }] } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      updateBopStep(ref, id, patch) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: {
-              ...s.data,
-              [ref]: {
-                ...cur,
-                bop: cur.bop.map((p) => (p.id === id ? { ...p, ...patch, id } : p)),
-              },
-            },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      removeBopStep(ref, id) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, bop: cur.bop.filter((b) => b.id !== id) } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      updatePreCost(ref, patch) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-
-      addAplicacao(ref, item) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: {
-              ...s.data,
-              [ref]: { ...cur, aplicacoes: [...(cur.aplicacoes ?? []), { ...item, id: uid() }] },
-            },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      updateAplicacao(ref, id, patch) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: {
-              ...s.data,
-              [ref]: {
-                ...cur,
-                aplicacoes: (cur.aplicacoes ?? []).map((a) =>
-                  a.id === id ? { ...a, ...patch, id } : a,
-                ),
-              },
-            },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      removeAplicacao(ref, id) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: {
-              ...s.data,
-              [ref]: { ...cur, aplicacoes: (cur.aplicacoes ?? []).filter((a) => a.id !== id) },
-            },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-
-      setColorways(ref, colorways) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, colorways } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      setMedidas(ref, medidas) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, medidas } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      setEtiquetagem(ref, etiquetagem) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, etiquetagem } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-      setEncaixeCad(ref, encaixeCad) {
-        set((s) => {
-          const cur = s.data[ref] ?? seedFor(ref);
-          return {
-            data: { ...s.data, [ref]: { ...cur, encaixeCad } },
-            dirty: { ...s.dirty, [ref]: true },
-          };
-        });
-      },
-
-      duplicateTechSheet(sourceRef, targetRef, targetName) {
-        const cleanRef = targetRef.trim().toUpperCase();
-        const src = get().data[sourceRef] ?? seedFor(sourceRef);
-        const cloned: TechSheetData = {
-          ...structuredClone(src),
-          ref: cleanRef,
-          meta: {
-            name: targetName?.trim() || `${src.meta?.name ?? sourceRef} (Cópia)`,
-            category: src.meta?.category ?? "Confecção",
-            collection: src.meta?.collection ?? "Verão 2027",
-            statusLabel: "Clonada de " + sourceRef,
-            stage: 3,
-          },
-          versoes: [
-            {
-              id: uid(),
-              versao: "v1.0",
-              data: new Date().toISOString().slice(0, 10),
-              autor: "Engenharia",
-              status: "Rascunho",
-              resumo: `Base duplicada a partir de ${sourceRef}`,
-              alteracoes: [`Clonagem integral de BOM, roteiro, medidas e colorways (${sourceRef})`],
-            },
-          ],
-        };
-        set((s) => ({
-          data: { ...s.data, [cleanRef]: cloned },
-          dirty: { ...s.dirty, [cleanRef]: true },
-        }));
-        return cloned;
-      },
-
-      createVersion(ref, autor, resumo, alteracoes) {
-        const cur = get().data[ref] ?? seedFor(ref);
-        const last = cur.versoes[0]?.versao ?? "v1.0";
-        const nova: TechSheetVersion = {
-          id: uid(),
-          versao: bumpVersion(last),
-          data: new Date().toISOString().slice(0, 10),
-          autor,
-          status: "Em revisão",
-          resumo,
-          alteracoes,
-          // clone explícito: a versão congela o estado (incluindo aplicações!), não aponta para ele.
-          snapshot: {
-            bom: structuredClone(cur.bom),
-            bop: structuredClone(cur.bop),
-            preCost: structuredClone(cur.preCost),
-            ...(cur.aplicacoes?.length ? { aplicacoes: structuredClone(cur.aplicacoes) } : {}),
-          },
-        };
-        set((s) => ({
-          data: {
-            ...s.data,
-            [ref]: {
-              ...cur,
-              versoes: [
-                nova,
-                ...cur.versoes.map((v) =>
-                  v.status === "Aprovada" ? { ...v, status: "Obsoleta" as const } : v,
-                ),
-              ],
-            },
-          },
-          dirty: { ...s.dirty, [ref]: true },
-        }));
-        return nova;
-      },
-    }),
+          }));
+          return nova;
+        },
+      };
+    },
     { name: "use-moda:techsheet" },
   ),
 );

@@ -101,23 +101,17 @@ function DevelopmentPage() {
     category: "Esportivo / Malharia",
     collection: "Verão 2027",
     stage: 1 as TechSheetLifecycleStage,
-    cloneFrom: "DEV000006",
+    cloneFrom: "",
   });
 
   // Consolida referências reais do store de Ficha Técnica + Ciclo de Vida + Supabase
   const items = useMemo<KanbanRefItem[]>(() => {
     const map = new Map<string, KanbanRefItem>();
 
-    // Garante DEV000006 sempre visível na esteira
-    const baseSix = techDocs["DEV000006"] ?? seedFor("DEV000006");
-    map.set("DEV000006", {
-      ref: "DEV000006",
-      name: baseSix.meta?.name ?? "Camiseta Esportiva Dry Pro",
-      category: baseSix.meta?.category ?? "Esportivo / Malharia",
-      collection: baseSix.meta?.collection ?? "Verão 2027",
-      stage: baseSix.meta?.stage ?? 3,
-      doc: baseSix,
-    });
+    // A esteira mostra o que a empresa está desenvolvendo. Existia aqui um
+    // "Garante DEV000006 sempre visível", que plantava a ficha de demonstração no
+    // quadro como se fosse referência em desenvolvimento — e o usuário podia
+    // arrastar de etapa um produto que não existe. Fora.
 
     // Todas as fichas salvas no store persistente
     for (const [key, doc] of Object.entries(techDocs)) {
@@ -215,7 +209,9 @@ function DevelopmentPage() {
       category: "Esportivo / Malharia",
       collection: "Verão 2027",
       stage: 1,
-      cloneFrom: "DEV000006",
+      // Não clona mais DEV000006 por padrão: clonar a ficha de demonstração
+      // copiava BOM e custos de exemplo para um produto real, sem avisar.
+      cloneFrom: "",
     });
     setDialogOpen(true);
   };
@@ -562,14 +558,28 @@ function DevelopmentPage() {
               </div>
             </div>
             {!editingRef && (
-              <div>
+              <div className="space-y-1">
                 <Label className="text-xs">Clonar Base de Engenharia (opcional)</Label>
-                <Input
+                <select
                   value={form.cloneFrom}
-                  onChange={(e) => setForm({ ...form, cloneFrom: e.target.value.toUpperCase() })}
-                  placeholder="DEV000006 (deixe em branco p/ ficha padrão)"
-                  className="font-mono text-xs"
-                />
+                  onChange={(e) => setForm({ ...form, cloneFrom: e.target.value })}
+                  aria-label="Clonar base de engenharia"
+                  className="h-9 w-full rounded-md border border-border bg-background px-3 font-mono text-xs text-foreground"
+                >
+                  <option value="">Ficha padrão em branco</option>
+                  {Object.keys(techDocs)
+                    .sort()
+                    .filter((c) => c.toUpperCase() !== form.refCode.trim().toUpperCase())
+                    .map((c) => (
+                      <option key={c} value={c}>
+                        {c} — {techDocs[c]?.meta?.name ?? "sem nome"}
+                      </option>
+                    ))}
+                </select>
+                <p className="text-[10px] text-muted-foreground">
+                  Só fichas salvas aparecem aqui. Clonar copia BOM, BOP, medidas e custos — o
+                  produto novo nasce com a engenharia do original já preenchida.
+                </p>
               </div>
             )}
           </div>

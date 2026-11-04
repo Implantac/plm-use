@@ -9,19 +9,33 @@
 
 import type { TechSheetData } from "@/lib/techsheet/store";
 
-export type SheetProvenance = "salva" | "referencia";
+/**
+ * - `salva`      → existe no store por trabalho do usuário (editada/clonada).
+ * - `template`   → existe no store só porque `ensure()` materializou o modelo de
+ *                  demonstração. Antes isso virava "salva" e o selo mentia.
+ * - `referencia` → nem está no store; a tela está caindo direto no `seedFor`.
+ */
+export type SheetProvenance = "salva" | "template" | "referencia";
 
 export interface SheetUsage {
   code: string;
   provenance: SheetProvenance;
 }
 
-/** A ficha existe no store (foi aberta/salva pelo usuário) ou é seed? */
+/**
+ * A ficha é trabalho do usuário, materialização do modelo, ou seed?
+ *
+ * `materializadas` é o mapa do store com as refs criadas por `ensure()` e ainda
+ * sem edição. Omitir o mapa mantém o comportamento antigo (presença = salva) —
+ * útil em testes e em chamadas antigas.
+ */
 export function sheetProvenance(
   sheets: Record<string, TechSheetData> | undefined,
   code: string,
+  materializadas?: Record<string, true> | undefined,
 ): SheetProvenance {
-  return sheets?.[code] ? "salva" : "referencia";
+  if (!sheets?.[code]) return "referencia";
+  return materializadas?.[code] ? "template" : "salva";
 }
 
 /**
@@ -32,23 +46,57 @@ export function resolveSheet(
   sheets: Record<string, TechSheetData> | undefined,
   code: string,
   fallback: (code: string) => TechSheetData,
+  materializadas?: Record<string, true> | undefined,
 ): { doc: TechSheetData; provenance: SheetProvenance } {
   const saved = sheets?.[code];
-  return saved
-    ? { doc: saved, provenance: "salva" }
-    : { doc: fallback(code), provenance: "referencia" };
+  if (!saved) return { doc: fallback(code), provenance: "referencia" };
+  return { doc: saved, provenance: sheetProvenance(sheets, code, materializadas) };
+}
+
+/**
+ * Referências que a tela pode oferecer **como decisão operacional**.
+ *
+ * Várias telas montam a lista assim:
+ *
+ *     new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheets)])
+ *
+ * Isso oferece quatro fichas de demonstração como se fossem produto da empresa —
+ * o usuário aprova um gate, libera corte ou manda cotação em cima de um exemplo.
+ * Só a ficha salva é operação; a referência é vitrine.
+ *
+ * `incluirReferencias` existe para as telas em que mostrar o exemplo é didático
+ * (vitrine, paleta de referência), nunca para as que decidem.
+ */
+export function operationalCodes(
+  sheets: Record<string, TechSheetData> | undefined,
+  incluirReferencias: string[] = [],
+  materializadas?: Record<string, true> | undefined,
+): string[] {
+  const salvas = Object.keys(sheets ?? {}).filter((c) => !materializadas?.[c]);
+  return Array.from(new Set([...salvas, ...incluirReferencias]));
 }
 
 /** Resumo para o cabeçalho da tela quando ela mostra várias fichas. */
 export function summarizeSheets(
   sheets: Record<string, TechSheetData> | undefined,
   codes: string[],
-): { total: number; salvas: number; referencias: number; codesReferencia: string[] } {
-  const referencias = codes.filter((c) => sheetProvenance(sheets, c) === "referencia");
+  materializadas?: Record<string, true> | undefined,
+): {
+  total: number;
+  salvas: number;
+  referencias: number;
+  templates: number;
+  codesReferencia: string[];
+} {
+  const referencias = codes.filter(
+    (c) => sheetProvenance(sheets, c, materializadas) === "referencia",
+  );
+  const templates = codes.filter((c) => sheetProvenance(sheets, c, materializadas) === "template");
   return {
     total: codes.length,
-    salvas: codes.length - referencias.length,
+    salvas: codes.length - referencias.length - templates.length,
     referencias: referencias.length,
-    codesReferencia: referencias,
+    templates: templates.length,
+    codesReferencia: [...referencias, ...templates],
   };
 }
