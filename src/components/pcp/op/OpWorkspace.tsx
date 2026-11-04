@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FieldMessage } from "@/components/ui/field-message";
 import { EntityTimeline } from "@/components/entity/EntityTimeline";
 import { OrderProductionDetails } from "@/components/sales/OrderProductionDetails";
+import { OpMaterialsTab } from "@/components/pcp/op/OpMaterialsTab";
 import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import { opPermissions } from "@/lib/pcp/op-permissions";
 import {
@@ -197,6 +198,7 @@ export function OpWorkspace({
               <TabsList className="h-auto flex-wrap justify-start">
                 <TabsTrigger value="itens">Itens e passagem</TabsTrigger>
                 {pedidoNumber && <TabsTrigger value="detalhes">Ficha técnica</TabsTrigger>}
+                <TabsTrigger value="material">Material</TabsTrigger>
                 <TabsTrigger value="programacao">Programação</TabsTrigger>
                 <TabsTrigger value="rotas">Rotas</TabsTrigger>
                 <TabsTrigger value="historico">Histórico</TabsTrigger>
@@ -348,6 +350,10 @@ export function OpWorkspace({
                   )}
                 </TabsContent>
               )}
+
+              <TabsContent value="material" className="space-y-4">
+                {order && <OpMaterialsTab orderId={order.id} orderNumber={order.number} />}
+              </TabsContent>
 
               <TabsContent value="programacao" className="space-y-4">
                 <ScheduleTab

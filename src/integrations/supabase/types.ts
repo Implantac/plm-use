@@ -3946,6 +3946,23 @@ export type Database = {
       next_sales_order_number: { Args: never; Returns: string }
       order_item_technical_sheet: { Args: { _order_id: string }; Returns: Json }
       recalc_sales_order_item: { Args: { _item_id: string }; Returns: number }
+      op_reserved_materials: {
+        Args: { _order_id: string }
+        Returns: {
+          reservation_id: string
+          item_id: string
+          item_code: string
+          item_name: string
+          unit: string
+          qty: number
+          qty_on_hand: number
+          dias_ativa: number
+        }[]
+      }
+      record_op_material_consumption: {
+        Args: { _order_id: string; _justification?: string }
+        Returns: Json
+      }
       register_passages: {
         Args: { _moves: Json; _observation?: string }
         Returns: string

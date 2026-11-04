@@ -30,6 +30,12 @@ interface Warehouse {
   name: string;
 }
 
+interface OpenOrder {
+  id: string;
+  number: string;
+  status: string;
+}
+
 type Kind = "in" | "out" | "adjust" | "transfer_in" | "transfer_out" | "count";
 
 interface Props {
@@ -48,6 +54,12 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
   const [qty, setQty] = useState("0");
   const [lotCode, setLotCode] = useState("");
   const [justification, setJustification] = useState("");
+  // Saída avulsa continua existindo (perda, transferência, ajuste), mas quando a
+  // saída é para uma OP o vínculo tem que ficar registrado — antes o formulário
+  // nem enviava ref_type/ref_id, então a movimentação não aparecia na OP e o
+  // consumo não era atribuído a ninguém.
+  const [orders, setOrders] = useState<OpenOrder[]>([]);
+  const [refId, setRefId] = useState("");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<{
     itemId?: string;
@@ -69,6 +81,16 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
         setWarehouses(list);
         if (list.length > 0) setWarehouseId((prev) => prev || list[0].id);
       });
+    supabase
+      .from("production_orders" as never)
+      .select("id, number, status")
+      .in("status", ["planejada", "em_producao"])
+      .order("number", { ascending: false })
+      .limit(50)
+      .then(({ data }) => {
+        setOrders((data ?? []) as unknown as OpenOrder[]);
+      });
+    setRefId("");
   }, [open, preselectItemId]);
 
   const handleSubmit = async () => {
@@ -107,6 +129,8 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
         qty: q,
         lot_code: lotCode.trim() || undefined,
         justification: justification.trim() || undefined,
+        ref_type: refId && kind === "out" ? "op" : undefined,
+        ref_id: refId && kind === "out" ? refId : undefined,
       },
     });
     setBusy(false);
@@ -231,6 +255,32 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
               />
             </div>
           </div>
+
+          {kind === "out" && orders.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="movement-order">Vincular a uma OP (opcional)</Label>
+              <Select
+                value={refId || "none"}
+                onValueChange={(v) => setRefId(v === "none" ? "" : v)}
+              >
+                <SelectTrigger id="movement-order">
+                  <SelectValue placeholder="Saída avulsa (sem OP)" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border text-white">
+                  <SelectItem value="none">Saída avulsa (sem OP)</SelectItem>
+                  {orders.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>
+                      {o.number} · {o.status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FieldMessage variant="helper">
+                Vincular registra a saída no histórico da OP. Para baixar tudo o que a OP reservou
+                de uma vez, use a aba Material do workspace da OP.
+              </FieldMessage>
+            </div>
+          )}
 
           {kind === "adjust" && (
             <div className="space-y-2">
