@@ -122,3 +122,28 @@ view de aging, visível para quem opera).
    isso: ordenar por `dias_ativa` e cancelar o que já foi consumido na prática.
 3. **Republicar o app.** O bundle em `plmuse.lovable.app` ainda é o da Onda 19
    (Ondas 20 e 21 não estão no ar).
+
+## 8. CI do commit `72247cd`
+
+| Check                                                          | Resultado                                   |
+| -------------------------------------------------------------- | ------------------------------------------- |
+| `quality` (tsc + eslint + prettier + vitest)                   | ✅ success                                  |
+| `db-certification` (migrations + suíte SQL, já com o teste 60) | ✅ success                                  |
+| `smoke-publico`                                                | ✅ success                                  |
+| `e2e-autenticado`                                              | ⏭️ skipped (só roda em `workflow_dispatch`) |
+| `e2e-staging`                                                  | ⏭️ skipped (sem staging configurado)        |
+
+## 9. O app publicado continua na Onda 19 — medido, não suposto
+
+Raspagem do bundle em 04/11/2026 (215 chunks, incluindo os importados de forma
+relativa a partir do entry `index-s84f6ian.js`):
+
+| Marcador                                         | Ocorrências |
+| ------------------------------------------------ | ----------- |
+| `Demonstração — não usar para decidir` (Onda 19) | 1           |
+| `Reservas ativas` (painel existente)             | 1           |
+| `Ficha de referência` (Onda 20)                  | **0**       |
+| `Consumo e liberação` (Onda 21, este painel)     | **0**       |
+
+Ou seja: o repositório está três ondas à frente do que o navegador do usuário
+recebe. Republicar no Lovable é pré-requisito para qualquer validação visual.
