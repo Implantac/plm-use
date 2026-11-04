@@ -39,6 +39,51 @@ export interface StockBalance {
   qty_reserved: number;
 }
 
+/**
+ * Saldo disponível por nome de item, para consumo de motores que casam material
+ * por nome (MRP). Chave = nome normalizado; valor = on_hand − reservado.
+ *
+ * `stock_balance` já expõe `qty_on_hand` e `qty_reserved` por item/armazém.
+ * Somamos entre armazéns porque o MRP pergunta "quanto existe na empresa", não
+ * "quanto existe no depósito X".
+ */
+export function useStockBalancesByName() {
+  const [balances, setBalances] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    const { data, error: err } = await supabase.from("stock_balance" as never).select("*");
+    if (err) {
+      setError(err.message);
+      setBalances({});
+      setLoading(false);
+      return;
+    }
+    const map: Record<string, number> = {};
+    for (const raw of (data ?? []) as unknown as StockBalance[]) {
+      const key = raw.item_name
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+      const disponivel = Math.max(0, (raw.qty_on_hand ?? 0) - (raw.qty_reserved ?? 0));
+      map[key] = (map[key] ?? 0) + disponivel;
+    }
+    setError(null);
+    setBalances(map);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
+  return { balances, loading, error, refetch };
+}
+
 export function useStockItems() {
   const [items, setItems] = useState<StockItem[]>([]);
   const [balances, setBalances] = useState<Record<string, StockBalance>>({});

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import {
   buildSeedingBonusDispatchHtml,
   evaluateCreatorAttribution,
@@ -43,9 +44,16 @@ export function SeedingAttributionPanel() {
             Atribuição de Seeding (Cupom / UTM), ROAS Líquido & Remessa Bonificação CFOP 5910/6910
           </h3>
           <p className="text-2xs text-muted-foreground mt-0.5">
-            Apura ROAS real descontando cachê + CMV industrial das peças enviadas e emite guia
-            fiscal de bonificação/mostruário A4.
+            Apura ROAS descontando cachê + CMV industrial das peças enviadas e emite guia fiscal de
+            bonificação/mostruário A4.
           </p>
+          <div className="mt-1.5">
+            <DataProvenanceBadge
+              source="local"
+              detail="cachê e CMV vêm de campos do creator"
+              data-testid="seeding-provenance"
+            />
+          </div>
         </div>
 
         <div className="overflow-x-auto rounded-lg border border-border/80 bg-background/60">

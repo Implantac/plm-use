@@ -65,6 +65,22 @@ jobs:
       - name: Build (vite + nitro, preset cloudflare-module)
         run: npm run build
 
+  # Smoke do app publicado: sem credenciais, sem secrets. Garante que o que está
+  # no ar contém todas as rotas do repositório e aponta para o projeto Supabase
+  # certo. Pega "subiu código novo mas não publicou" e "domínio apontando para
+  # outro produto". Não exercita o fluxo autenticado (ver docs/smoke-fluxo.md).
+  smoke-publico:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true # o alvo é externo; indisponibilidade não deve mascarar o código
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Smoke do app publicado
+        run: node scripts/smoke-publico.mjs
+
   # Aplicar as migrations num Postgres limpo e rodar o fluxo de pedido de ponta
   # a ponta. Existe porque em 21/10/2026 a revisao achou uma migration que so
   # quebrava em projeto novo (dependia de tabelas da trilha Drizzle). Nenhum

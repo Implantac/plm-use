@@ -19,6 +19,13 @@ export interface MrpNetRequirementRow {
   purchaseBudgetBrl: number;
   status: "RUPTURA_COMPRA" | "COBERTO_ESTOQUE";
   sourceRefs: string[];
+  /**
+   * De onde veio o saldo desta linha. `almoxarifado` = veio de
+   * `stock_balance` (saldo real, já líquido de reservas ativas).
+   * `bom_referencia` = não há material correspondente no almoxarifado; o número
+   * é a referência do BOM/ficha e NÃO é saldo físico. A tela precisa dizer isso.
+   */
+  stockSource: "almoxarifado" | "bom_referencia";
 }
 
 export interface MrpSummary {
@@ -26,6 +33,27 @@ export interface MrpSummary {
   totalGrossItems: number;
   shortageCount: number;
   totalPurchaseBudgetBrl: number;
+  /** Quantas linhas têm saldo real de almoxarifado, e quantas são referência. */
+  provenance: {
+    realStockLines: number;
+    referenceLines: number;
+    /** true quando ao menos uma linha usou saldo real do almoxarifado. */
+    hasRealStock: boolean;
+  };
+}
+
+/**
+ * Chave de casamento entre o nome do material na ficha e o nome do item no
+ * almoxarifado. Minúsculas, sem acento, espaços colapsados — o suficiente para
+ * "Malha Piquet Pima" casar com "malha piquet pima".
+ */
+export function normalizeMaterialName(raw: string): string {
+  return raw
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function round2(v: number): number {
@@ -111,10 +139,12 @@ export function computeMrpNetExplosion(params: {
 
   const rows: MrpNetRequirementRow[] = [...agg.entries()]
     .map(([materialKey, v]) => {
-      const cloudStock = params.cloudBalancesByName?.[v.materialName.toLowerCase()];
-      const availableStock = round2(
-        cloudStock !== undefined ? Math.max(0, cloudStock) : v.bomFallbackStock,
-      );
+      // Match por nome do material, normalizado. O saldo real (stock_balance)
+      // tem precedência; sem correspondência, usamos a referência do BOM e
+      // marcamos a linha — nunca apresentar referência como saldo físico.
+      const cloudStock = params.cloudBalancesByName?.[normalizeMaterialName(v.materialName)];
+      const temSaldoReal = cloudStock !== undefined;
+      const availableStock = round2(temSaldoReal ? Math.max(0, cloudStock) : v.bomFallbackStock);
       const grossRequirement = round2(v.grossRequirement);
       const netPurchaseQty = round2(Math.max(0, grossRequirement - availableStock));
       const purchaseBudgetBrl = round2(netPurchaseQty * v.unitCostBrl);
@@ -133,21 +163,30 @@ export function computeMrpNetExplosion(params: {
         status: (netPurchaseQty > 0 ? "RUPTURA_COMPRA" : "COBERTO_ESTOQUE") as
           "RUPTURA_COMPRA" | "COBERTO_ESTOQUE",
         sourceRefs: [...v.refs],
+        stockSource: (temSaldoReal ? "almoxarifado" : "bom_referencia") as
+          "almoxarifado" | "bom_referencia",
       };
     })
     .sort((a, b) => b.purchaseBudgetBrl - a.purchaseBudgetBrl);
+
+  const realStockLines = rows.filter((r) => r.stockSource === "almoxarifado").length;
 
   return {
     rows,
     totalGrossItems: rows.length,
     shortageCount: rows.filter((r) => r.status === "RUPTURA_COMPRA").length,
     totalPurchaseBudgetBrl: round2(rows.reduce((a, r) => a + r.purchaseBudgetBrl, 0)),
+    provenance: {
+      realStockLines,
+      referenceLines: rows.length - realStockLines,
+      hasRealStock: realStockLines > 0,
+    },
   };
 }
 
 export function buildMrpCsv(summary: MrpSummary): string {
   const header =
-    "insumo;tipo;fornecedor;unidade;necessidade_bruta;saldo_almoxarifado;compra_liquida;custo_unit_brl;orcamento_compra_brl;referencias_origem";
+    "insumo;tipo;fornecedor;unidade;necessidade_bruta;saldo_almoxarifado;origem_saldo;compra_liquida;custo_unit_brl;orcamento_compra_brl;referencias_origem";
   const lines = summary.rows.map((r) =>
     [
       r.materialName.replace(/;/g, ","),
@@ -156,6 +195,7 @@ export function buildMrpCsv(summary: MrpSummary): string {
       r.unit,
       r.grossRequirement.toFixed(2),
       r.availableStock.toFixed(2),
+      r.stockSource,
       r.netPurchaseQty.toFixed(2),
       r.unitCostBrl.toFixed(2),
       r.purchaseBudgetBrl.toFixed(2),

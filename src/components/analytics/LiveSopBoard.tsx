@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { buildExecutiveSopReportHtml, computeLiveSopSnapshot } from "@/lib/analytics/live-sop";
 import { usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
 import { brl } from "@/lib/sales/types";
@@ -48,6 +49,9 @@ export function LiveSopBoard() {
                 Derivado ao vivo da Fila B2B (/orders), Drops GTM (/marketing), CRP (/planner) e
                 Facções (/suppliers).
               </p>
+              <div className="mt-1.5">
+                <DataProvenanceBadge source="local" data-testid="sop-provenance" />
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">

@@ -9,6 +9,7 @@ import {
   buildMrpPurchaseRequisitionHtml,
   computeMrpNetExplosion,
 } from "@/lib/inventory/mrp-explosion";
+import { useStockBalancesByName } from "@/hooks/use-stock";
 import { usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
 import { brl } from "@/lib/sales/types";
 import { useTechSheetStore } from "@/lib/techsheet/store";
@@ -20,11 +21,19 @@ interface MrpNetExplosionPanelProps {
 export function MrpNetExplosionPanel({ cloudBalancesByName }: MrpNetExplosionPanelProps) {
   const orders = usePrivateLabelQueueStore((s) => s.orders);
   const sheets = useTechSheetStore((s) => s.data);
+  // Saldo real do almoxarifado (`stock_balance`, já líquido de reservas ativas).
+  // Sem isso o motor caía em saldos de referência do BOM e o painel apresentava
+  // números de ficha como se fossem estoque físico.
+  const { balances: saldoAlmoxarifado, loading: carregandoSaldo } = useStockBalancesByName();
+
+  const mergedBalances = cloudBalancesByName ?? saldoAlmoxarifado;
 
   const summary = useMemo(
-    () => computeMrpNetExplosion({ orders, sheets, cloudBalancesByName }),
-    [orders, sheets, cloudBalancesByName],
+    () => computeMrpNetExplosion({ orders, sheets, cloudBalancesByName: mergedBalances }),
+    [orders, sheets, mergedBalances],
   );
+
+  const semSaldoReal = summary.provenance.realStockLines === 0;
 
   function handleExportCsv() {
     const csv = buildMrpCsv(summary);
@@ -89,6 +98,48 @@ export function MrpNetExplosionPanel({ cloudBalancesByName }: MrpNetExplosionPan
           </div>
         </div>
 
+        <div
+          data-testid="mrp-provenance"
+          className={
+            semSaldoReal
+              ? "flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3"
+              : "flex items-start gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3"
+          }
+        >
+          {semSaldoReal ? (
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+          ) : (
+            <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+          )}
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            {carregandoSaldo ? (
+              "Lendo o saldo do almoxarifado…"
+            ) : semSaldoReal ? (
+              <>
+                <strong className="text-foreground">
+                  Sem saldo de almoxarifado para estes insumos.
+                </strong>{" "}
+                A coluna “Saldo Livre” mostra a <em>referência do BOM/ficha</em>, não estoque físico
+                — trate os números como estimativa até cadastrar os itens em Almoxarifado.
+              </>
+            ) : (
+              <>
+                <strong className="text-foreground">
+                  {summary.provenance.realStockLines} de {summary.totalGrossItems} insumos com saldo
+                  real do almoxarifado
+                </strong>
+                {summary.provenance.referenceLines > 0 && (
+                  <>
+                    ; os outros {summary.provenance.referenceLines} usam referência do BOM (marcados
+                    na linha)
+                  </>
+                )}
+                . O saldo já desconta reservas ativas.
+              </>
+            )}
+          </p>
+        </div>
+
         <div className="overflow-x-auto rounded-lg border border-border/80 bg-background/60">
           <table className="w-full text-xs">
             <thead className="bg-muted/40 text-2xs uppercase text-muted-foreground">
@@ -115,6 +166,14 @@ export function MrpNetExplosionPanel({ cloudBalancesByName }: MrpNetExplosionPan
                   </td>
                   <td className="p-2.5 text-right font-mono text-muted-foreground">
                     {r.availableStock.toFixed(2)} {r.unit}
+                    {r.stockSource === "bom_referencia" && (
+                      <span
+                        className="block text-[9px] uppercase tracking-wide text-amber-600 dark:text-amber-400"
+                        title="Não há item correspondente no almoxarifado: valor de referência do BOM, não estoque físico."
+                      >
+                        referência BOM
+                      </span>
+                    )}
                   </td>
                   <td className="p-2.5 text-right font-mono font-bold text-primary">
                     {r.netPurchaseQty.toFixed(2)} {r.unit}

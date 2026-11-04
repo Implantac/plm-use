@@ -221,3 +221,19 @@ CREATE TRIGGER trg_upd_erp_sync_outbox
 -- Grants explicitos para o papel authenticated (as policies RLS acima decidem o acesso por tenant)
 GRANT SELECT ON public.tenants, public.tenant_memberships TO authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.cad_markers, public.erp_sync_outbox TO authenticated;
+
+-- ===========================================================================
+-- VERIFICACAO — rode depois, numa execucao separada. Esperado: 4 de 4, 1 tenant.
+-- ===========================================================================
+-- SELECT 'tabelas do multitenant' AS checagem,
+--        count(*) FILTER (WHERE to_regclass('public.' || nome) IS NOT NULL) || ' de 4' AS resultado
+--   FROM unnest(ARRAY['tenants','tenant_memberships','cad_markers','erp_sync_outbox']) AS t(nome);
+--
+-- SELECT 'tenant padrao' AS checagem,
+--        CASE WHEN EXISTS (SELECT 1 FROM public.tenants WHERE slug = 'default')
+--             THEN 'criado' ELSE 'FALTANDO' END AS resultado;
+--
+-- SELECT 'tenant_id nas tabelas de dominio' AS checagem,
+--        count(*) || ' tabelas com a coluna' AS resultado
+--   FROM information_schema.columns
+--  WHERE table_schema = 'public' AND column_name = 'tenant_id';

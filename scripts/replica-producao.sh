@@ -1,5 +1,9 @@
 #!/bin/bash
-# Reconstrói uma réplica fiel do banco de produção (estado SEM o fluxo de pedido).
+# Reconstrói uma réplica fiel do banco de produção: todas as migrations do
+# repositório, na ordem, exceto as que dependem de infraestrutura do Supabase
+# hospedado (pg_cron). Serve para testar SQL novo contra um banco igual ao de
+# produção antes de colar no SQL editor do Lovable.
+#
 # Uso: ./scripts/replica-producao.sh [nome_do_banco]
 #
 # Requisitos: um cluster PostgreSQL 18 escutando em :5433 e um Postgres local
@@ -20,13 +24,14 @@ n=0
 for f in $(ls "$REPO"/supabase/migrations/*.sql | sort); do
   b=$(basename "$f")
   case "$b" in
-    *persist_materials*|2026102108*|2026102109*|*schedule_cloud_crons*) continue ;;
+    *schedule_cloud_crons*) continue ;;                # pg_cron: só no Supabase hospedado
+    *plm_fluido_multitenant*) continue ;;              # opcional: alvo de teste, não do baseline
   esac
   "$PG_BIN/psql" -h localhost -p 5433 -U postgres -q -d "$DB" -v ON_ERROR_STOP=1 -f "$f" >/dev/null
   n=$((n + 1))
 done
 
-for m in 0000 0001 0002 0003 0004 0005 0011; do
+for m in 0000 0001; do # 0002+ já cobertos pelo baseline supabase
   f=$(ls "$REPO"/drizzle/migrations/${m}_*.sql | head -1)
   "$PG_BIN/psql" -h localhost -p 5433 -U postgres -q -d "$DB" -v ON_ERROR_STOP=1 -f "$f" >/dev/null
 done
