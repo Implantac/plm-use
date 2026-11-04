@@ -81,6 +81,30 @@ jobs:
       - name: Smoke do app publicado
         run: node scripts/smoke-publico.mjs
 
+  # E2E autenticado: login real e navegação pelo fluxo de pedido. Só roda em
+  # workflow_dispatch, e só executa de fato se os segredos existirem — sem eles
+  # o spec imprime SKIP e sai com 0 (não pinta a CI de vermelho por falta de
+  # ambiente). Configure PLM_E2E_EMAIL / PLM_E2E_PASSWORD nos secrets do repo.
+  e2e-autenticado:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Playwright
+        run: |
+          python -m pip install -q playwright
+          python -m playwright install --with-deps chromium
+      - name: Fluxo de pedido (autenticado, somente leitura)
+        env:
+          PLM_E2E_BASE: ${{ inputs.base_url || 'https://plmuse.lovable.app' }}
+          PLM_E2E_EMAIL: ${{ secrets.PLM_E2E_EMAIL }}
+          PLM_E2E_PASSWORD: ${{ secrets.PLM_E2E_PASSWORD }}
+        run: python tests/e2e/fluxo-pedido.spec.py
+
   # Aplicar as migrations num Postgres limpo e rodar o fluxo de pedido de ponta
   # a ponta. Existe porque em 21/10/2026 a revisao achou uma migration que so
   # quebrava em projeto novo (dependia de tabelas da trilha Drizzle). Nenhum

@@ -10,20 +10,24 @@ import {
   evaluateOmnichannelReadiness,
 } from "@/lib/launch/omnichannel-readiness";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
+import type { SheetProvenance } from "@/lib/techsheet/provenance";
 
 export function OmnichannelReadinessPanel() {
   const sheets = useTechSheetStore((s) => s.data);
 
+  const usouSeed = Object.keys(sheets).length === 0;
+  const provenance: SheetProvenance = usouSeed ? "referencia" : "salva";
+
   const items = useMemo(() => {
-    const merged =
-      Object.keys(sheets).length > 0
-        ? sheets
-        : {
-            "V24-001": seedFor("V24-001"),
-            DEV000006: seedFor("DEV000006"),
-          };
+    const merged = usouSeed
+      ? {
+          "V24-001": seedFor("V24-001"),
+          DEV000006: seedFor("DEV000006"),
+        }
+      : sheets;
     return evaluateOmnichannelReadiness(merged);
-  }, [sheets]);
+  }, [sheets, usouSeed]);
 
   const readyCount = items.filter((i) => i.goNoGoStatus === "APTO_GO_LIVE").length;
 
@@ -66,6 +70,14 @@ export function OmnichannelReadinessPanel() {
               Audita BOM, medidas ABNT, etiquetagem INMETRO, roteiro BOP e preço-alvo das fichas
               reais ({readyCount}/{items.length} aptas p/ Go-Live).
             </p>
+            {usouSeed && (
+              <SheetProvenanceNote
+                provenance={provenance}
+                compact
+                className="mt-1.5"
+                data-testid="omnichannel-provenance"
+              />
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button

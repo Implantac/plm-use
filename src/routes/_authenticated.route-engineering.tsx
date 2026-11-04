@@ -28,6 +28,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProductionRoutes, type ProdRoute } from "@/hooks/use-production-orders";
 import { buildLineBalancingPrintableHtml, computeCellGsdBalancing } from "@/lib/techsheet/cfo-dre";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { resolveSheet } from "@/lib/techsheet/provenance";
+import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
 import { SETORES_PCP } from "@/types/pcp";
 
 export const Route = createFileRoute("/_authenticated/route-engineering")({
@@ -152,7 +154,7 @@ function CellBalancingTab() {
   const [metaDia, setMetaDia] = useState(420);
   const [custoMinuto, setCustoMinuto] = useState(1.18);
 
-  const doc = sheetsMap[selectedRef] ?? seedFor(selectedRef);
+  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor);
   const res = useMemo(
     () =>
       computeCellGsdBalancing(doc, {
@@ -195,6 +197,9 @@ function CellBalancingTab() {
 
   return (
     <div className="space-y-4">
+      {provenance === "referencia" && (
+        <SheetProvenanceNote provenance={provenance} code={selectedRef} compact />
+      )}
       <Card className="p-4 border-border bg-card space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-wrap items-end gap-3">

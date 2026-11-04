@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { buildCutOrderPrintableHtml, computeLayAndCutPlan } from "@/lib/techsheet/cut-order";
 import { defaultColorwaysFor, seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { resolveSheet } from "@/lib/techsheet/provenance";
+import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
 
 export function CuttingRoomPlanPanel() {
   const sheetsMap = useTechSheetStore((s) => s.data);
@@ -21,7 +23,7 @@ export function CuttingRoomPlanPanel() {
   }, [sheetsMap]);
 
   const [selectedRef, setSelectedRef] = useState("DEV000006");
-  const doc = sheetsMap[selectedRef] ?? seedFor(selectedRef);
+  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor);
   const cws = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
   const [colorName, setColorName] = useState(cws[0]?.name ?? "Verde Brasil");
   const [totalPlies, setTotalPlies] = useState(140);
@@ -231,6 +233,10 @@ export function CuttingRoomPlanPanel() {
           </div>
         </CardContent>
       </Card>
+
+      {provenance === "referencia" && (
+        <SheetProvenanceNote provenance={provenance} code={selectedRef} compact />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-4">
         <Card className="border-border bg-card p-4 space-y-3 h-fit">
