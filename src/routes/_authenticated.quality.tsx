@@ -93,12 +93,14 @@ function QualityPage() {
 
   // Inspeção Amostral AQL 2.5 / 4.0 (NBR 5426 / ISO 2859-1 Nível II)
   const sheetsMap = useTechSheetStore((s) => s.data);
-  const [aqlRef, setAqlRef] = useState("DEV000006");
-  const [aqlLoteCode, setAqlLoteCode] = useState("OP-2026-084");
-  const [aqlFaccao, setAqlFaccao] = useState("Facção Vale Têxtil");
-  const [aqlLotSize, setAqlLotSize] = useState<number>(
-    () => sheetsMap["DEV000006"]?.preCost?.tiragemPlanejada ?? 600,
-  );
+  // O laudo AQL abre CAPA de quarentena com a referência digitada. Vinha
+  // pré-preenchido com "DEV000006" (produto de demonstração) e com o lote
+  // "OP-2026-084", que não existe: dava para gerar documento formal de qualidade
+  // para um par produto/lote fictício sem perceber.
+  const [aqlRef, setAqlRef] = useState("");
+  const [aqlLoteCode, setAqlLoteCode] = useState("");
+  const [aqlFaccao, setAqlFaccao] = useState("");
+  const [aqlLotSize, setAqlLotSize] = useState<number>(600);
   const [aqlCriticos, setAqlCriticos] = useState(0);
   const [aqlMaiores, setAqlMaiores] = useState(2);
   const [aqlMenores, setAqlMenores] = useState(3);
@@ -114,6 +116,12 @@ function QualityPage() {
   );
 
   async function gerarCapaDoLaudoAql() {
+    // Documento formal exige produto e lote identificados: sem eles a CAPA abre
+    // contra o vazio e o rastro de qualidade fica sem dono.
+    if (!aqlRef.trim() || !aqlLoteCode.trim()) {
+      statusToast.error("Informe a referência e o lote/OP antes de gerar o laudo AQL.");
+      return;
+    }
     const severidade: CapaSeveridade =
       aqlPlan.found.criticos > 0 ? "Crítica" : aqlPlan.aprovado ? "Média" : "Alta";
     const motivoTexto =

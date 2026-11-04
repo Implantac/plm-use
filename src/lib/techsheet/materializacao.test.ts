@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useTechSheetStore } from "./store";
+import { migrateTechSheetStorage, useTechSheetStore } from "./store";
 import { operationalCodes, resolveSheet, sheetProvenance } from "./provenance";
 import { seedFor } from "./store";
 
@@ -79,5 +79,54 @@ describe("operationalCodes ignora o que só foi materializado", () => {
     st().ensure("U25-014");
     st().updateMeta("U25-014", { name: "Moletom Real" });
     expect(operationalCodes(st().data, [], st().materializadas)).toEqual(["U25-014"]);
+  });
+});
+
+describe("migração do storage antigo (v0/v1 → v2)", () => {
+  it("cópia intacta do modelo vira template ao migrar", () => {
+    const antigo = { data: { "V24-001": seedFor("V24-001"), DEV000006: seedFor("DEV000006") } };
+    const migrado = migrateTechSheetStorage(antigo, 0);
+    expect(migrado.materializadas["V24-001"]).toBe(true);
+    expect(migrado.materializadas["DEV000006"]).toBe(true);
+    expect(sheetProvenance(migrado.data, "V24-001", migrado.materializadas)).toBe("template");
+  });
+
+  it("ficha editada sobrevive como 'salva'", () => {
+    const editada = seedFor("V24-001");
+    editada.meta = { ...editada.meta!, name: "Camisa Polo da empresa" };
+    const migrado = migrateTechSheetStorage({ data: { "V24-001": editada } }, 0);
+    expect(migrado.materializadas["V24-001"]).toBeUndefined();
+    expect(sheetProvenance(migrado.data, "V24-001", migrado.materializadas)).toBe("salva");
+  });
+
+  it("edição de uma linha de BOM já basta para não ser template", () => {
+    const doc = seedFor("U25-014");
+    doc.bom = doc.bom.map((b, i) => (i === 0 ? { ...b, custo: b.custo + 0.01 } : b));
+    const migrado = migrateTechSheetStorage({ data: { "U25-014": doc } }, 1);
+    expect(migrado.materializadas["U25-014"]).toBeUndefined();
+  });
+
+  it("roda mais de uma vez sem mudar o resultado (idempotente)", () => {
+    const antigo = { data: { "V24-001": seedFor("V24-001") } };
+    const uma = migrateTechSheetStorage(antigo, 0);
+    const duas = migrateTechSheetStorage(uma, 0);
+    expect(duas.materializadas).toEqual(uma.materializadas);
+  });
+
+  it("não marca nada quando a versão já é 2", () => {
+    const atual = { data: { "V24-001": seedFor("V24-001") }, materializadas: {} };
+    const migrado = migrateTechSheetStorage(atual, 2);
+    expect(migrado.materializadas).toEqual({});
+  });
+
+  it("preserva o mapa existente em vez de recriar", () => {
+    const atual = { data: {}, materializadas: { "X-1": true as const } };
+    const migrado = migrateTechSheetStorage(atual, 1);
+    expect(migrado.materializadas["X-1"]).toBe(true);
+  });
+
+  it("storage vazio não explode", () => {
+    expect(migrateTechSheetStorage(undefined, 0)).toEqual({ data: {}, materializadas: {} });
+    expect(migrateTechSheetStorage({}, 0)).toEqual({ data: {}, materializadas: {} });
   });
 });

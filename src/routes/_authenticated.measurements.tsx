@@ -28,6 +28,7 @@ import { FieldMessage } from "@/components/ui/field-message";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import { measurementChartToTechSheetSpec } from "@/lib/techsheet/sourcing-rfq";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import {
   listCharts,
   subscribe,
@@ -46,10 +47,10 @@ function useCharts() {
 
 function MeasurementsPage() {
   const charts = useCharts();
-  const sheetsMap = useTechSheetStore((s) => s.data);
+  const { sheetsMap, codes: refOptions } = useOperationalRefs();
   const ensureSheet = useTechSheetStore((s) => s.ensure);
   const setMedidas = useTechSheetStore((s) => s.setMedidas);
-  const [targetRef, setTargetRef] = useState("DEV000006");
+  const [targetRef, setTargetRef] = useSelectedRef(refOptions);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"todos" | MeasurementChart["status"]>("todos");
   const [selectedId, setSelectedId] = useState<string | null>(charts[0]?.id ?? null);
@@ -333,15 +334,8 @@ function MeasurementsPage() {
                     onChange={(e) => setTargetRef(e.target.value)}
                     className="h-8 rounded border border-border bg-background px-2 text-xs text-foreground"
                   >
-                    {Array.from(
-                      new Set([
-                        "DEV000006",
-                        "V24-001",
-                        "U25-014",
-                        "I25-088",
-                        ...Object.keys(sheetsMap),
-                      ]),
-                    ).map((r) => (
+                    {refOptions.length === 0 && <option value="">Nenhuma ficha salva</option>}
+                    {refOptions.map((r) => (
                       <option key={r} value={r}>
                         {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
                       </option>
@@ -353,7 +347,9 @@ function MeasurementsPage() {
                     type="button"
                     size="sm"
                     className="h-8 gap-1.5 text-xs"
+                    disabled={!targetRef}
                     onClick={() => {
+                      if (!targetRef) return;
                       ensureSheet(targetRef);
                       const spec = measurementChartToTechSheetSpec(selected);
                       setMedidas(targetRef, spec);

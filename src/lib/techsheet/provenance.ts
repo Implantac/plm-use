@@ -7,7 +7,7 @@
 //
 // Este módulo centraliza essa decisão para que a tela não invente a sua.
 
-import type { TechSheetData } from "@/lib/techsheet/store";
+import { seedFor, type TechSheetData } from "@/lib/techsheet/store";
 
 /**
  * - `salva`      → existe no store por trabalho do usuário (editada/clonada).
@@ -99,4 +99,34 @@ export function summarizeSheets(
     templates: templates.length,
     codesReferencia: [...referencias, ...templates],
   };
+}
+
+/**
+ * A ficha está **intacta** em relação ao modelo? (ninguém editou nada)
+ *
+ * `seedFor()` é determinístico — sem uuid, sem data de agora. Então a
+ * comparação estrutural é confiável: se o documento persistido é idêntico ao
+ * que o modelo produz, nenhuma edição humana aconteceu sobre ele.
+ *
+ * Serve para migrar o store que já está no navegador de quem usou o sistema
+ * antes da Onda 22: essas fichas foram materializadas por `ensure()` e não têm
+ * o mapa `materializadas` — sem esta checagem continuariam se passando por
+ * "fichas salvas".
+ *
+ * Falso negativo possível: ficha editada e devolvida ao estado exato do modelo.
+ * Nesse caso tratá-la como template é o resultado correto — o conteúdo É o modelo.
+ */
+export function isPristineSheet(doc: TechSheetData, ref: string): boolean {
+  try {
+    return JSON.stringify(doc) === JSON.stringify(seedFor(ref));
+  } catch {
+    return false;
+  }
+}
+
+/** Refs do store que são cópia intacta do modelo. */
+export function pristineRefs(sheets: Record<string, TechSheetData> | undefined): string[] {
+  return Object.entries(sheets ?? {})
+    .filter(([ref, doc]) => isPristineSheet(doc, ref))
+    .map(([ref]) => ref);
 }

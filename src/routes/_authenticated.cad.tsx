@@ -57,7 +57,10 @@ function CadPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [syncConsumptionOnSave, setSyncConsumptionOnSave] = useState(true);
   const [form, setForm] = useState({
-    refCode: "DEV000006",
+    // Vazio de propósito: antes vinha "DEV000006" e salvar um molde sem trocar o
+    // campo criava encaixe CAD para a ficha de demonstração, sincronizando
+    // consumo de tecido de exemplo como se fosse produto da empresa.
+    refCode: "",
     fileName: "",
     format: "ADS" as CadFormat,
     sistemaCad: "Audaces" as CadMarkerItem["sistemaCad"],

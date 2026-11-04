@@ -2,6 +2,7 @@
 // Aplicações, Medidas com Graduação Automática, Etiquetagem ABNT/INMETRO,
 // Encaixe CAD e Precificação por Mark-up Divisor — 100% retrocompatível com v1/v2.
 import { create } from "zustand";
+import { pristineRefs } from "./provenance";
 import { persist } from "zustand/middleware";
 import {
   bomItemCustoEfetivo,
@@ -472,6 +473,31 @@ function syncBomCusto(item: BomItem): BomItem {
   return item;
 }
 
+/**
+ * Migração do storage persistido (v0/v1 → v2).
+ *
+ * Exportada para teste: recebe o objeto cru do localStorage e devolve o estado
+ * pronto para o `persist` hidratar. Não descarta nada — só classifica o que é
+ * cópia do modelo como `materializadas`, e garante o mapa para storages antigos.
+ */
+export function migrateTechSheetStorage(
+  persisted: unknown,
+  fromVersion: number,
+): { data: Record<string, TechSheetData>; materializadas: Record<string, true> } {
+  const estado = (persisted ?? {}) as {
+    data?: Record<string, TechSheetData>;
+    materializadas?: Record<string, true>;
+  };
+  const data = estado.data ?? {};
+  const materializadas: Record<string, true> = { ...(estado.materializadas ?? {}) };
+
+  if (fromVersion < 2) {
+    for (const ref of pristineRefs(data)) materializadas[ref] = true;
+  }
+
+  return { data, materializadas };
+}
+
 export const useTechSheetStore = create<State>()(
   persist(
     (set, get) => {
@@ -788,7 +814,18 @@ export const useTechSheetStore = create<State>()(
         },
       };
     },
-    { name: "use-moda:techsheet" },
+    {
+      name: "use-moda:techsheet",
+      version: 2,
+      /**
+       * v0 → v2: o storage de quem usou o sistema antes da Onda 22 tem fichas
+       * materializadas por `ensure()` sem o mapa `materializadas`. Comparar com o
+       * modelo (determinístico) distingue as duas: cópia intacta é template,
+       * qualquer diferença é trabalho do usuário. Sem isso, a correção da Onda 22
+       * só valeria para conta nova.
+       */
+      migrate: migrateTechSheetStorage as never,
+    },
   ),
 );
 

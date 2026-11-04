@@ -45,6 +45,8 @@ import {
   type ColorRef,
 } from "@/lib/colors/store";
 import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
+import { SemFichaSalva } from "@/components/techsheet/SemFichaSalva";
 import type { TechSheetColorway } from "@/lib/techsheet/textile";
 
 export const Route = createFileRoute("/_authenticated/colors")({
@@ -246,20 +248,17 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
   const setColorways = useTechSheetStore((s) => s.setColorways);
 
   const [syncOpen, setSyncOpen] = useState(false);
-  const [targetRef, setTargetRef] = useState("DEV000006");
+  const { codes: refOptions } = useOperationalRefs();
+  const [targetRef, setTargetRef] = useSelectedRef(refOptions);
   const [syncMode, setSyncMode] = useState<"replace" | "append">("replace");
-
-  const refOptions = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
 
   const handlePushToTechSheet = () => {
     if (palette.colors.length === 0) {
       toast.error("Adicione ao menos uma cor Pantone antes de enviar para a ficha.");
+      return;
+    }
+    if (!targetRef) {
+      toast.error("Nenhuma ficha salva para receber a paleta. Salve uma ficha técnica antes.");
       return;
     }
     const curDoc = sheetsMap[targetRef] ?? ensureSheet(targetRef);
@@ -345,6 +344,9 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
                       <strong>{palette.name}</strong> diretamente para as variantes de cor e mix de
                       corte da Ficha Técnica selecionada.
                     </p>
+                    {refOptions.length === 0 && (
+                      <SemFichaSalva acao="enviar a cartela de cores para uma ficha" />
+                    )}
                     <div className="space-y-1">
                       <Label className="text-2xs uppercase tracking-wider">
                         Referência da Ficha Técnica
@@ -410,13 +412,17 @@ function PaletteDetail({ palette }: { palette: ColorPalette }) {
                         navigate({ to: "/tech-sheet", search: { ref: targetRef } });
                       }}
                     >
-                      Abrir {targetRef} <ArrowUpRight className="h-3.5 w-3.5" />
+                      Abrir {targetRef || "ficha"} <ArrowUpRight className="h-3.5 w-3.5" />
                     </Button>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => setSyncOpen(false)}>
                         Cancelar
                       </Button>
-                      <Button size="sm" onClick={handlePushToTechSheet}>
+                      <Button
+                        size="sm"
+                        onClick={handlePushToTechSheet}
+                        disabled={refOptions.length === 0}
+                      >
                         Aplicar na Ficha
                       </Button>
                     </div>

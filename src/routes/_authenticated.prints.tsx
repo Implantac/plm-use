@@ -62,7 +62,9 @@ import {
   analyzePrintTechnicalViability,
   buildAplicacaoFromPrint,
 } from "@/lib/techsheet/digital-twin";
-import { useTechSheetStore } from "@/lib/techsheet/store";
+import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { SemFichaSalva } from "@/components/techsheet/SemFichaSalva";
+import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import { streamImage } from "@/lib/streamImage";
 
 export const Route = createFileRoute("/_authenticated/prints")({
@@ -548,29 +550,22 @@ function PrintAiDialog({
   open: boolean;
   onOpenChange: (next: boolean) => void;
 }) {
-  const sheetsMap = useTechSheetStore((s) => s.data);
-  const ensure = useTechSheetStore((s) => s.ensure);
-  const [targetRef, setTargetRef] = useState("DEV000006");
+  const { sheetsMap, codes: refOptions } = useOperationalRefs();
+  const [targetRef, setTargetRef] = useSelectedRef(refOptions);
   const [promptExtra, setPromptExtra] = useState("");
   const [busy, setBusy] = useState(false);
   const [generatedSrc, setGeneratedSrc] = useState<string | null>(null);
 
+  // Sem ficha salva não há compatibilidade química para analisar: a "análise
+  // industrial" de uma estampa contra uma ficha de demonstração é número inventado.
   const targetDoc = useMemo(
-    () => sheetsMap[targetRef] ?? ensure(targetRef),
-    [sheetsMap, targetRef, ensure],
+    () => (targetRef ? (sheetsMap[targetRef] ?? seedFor(targetRef)) : null),
+    [sheetsMap, targetRef],
   );
   const viability = useMemo(
-    () => analyzePrintTechnicalViability(print, targetDoc),
+    () => (targetDoc ? analyzePrintTechnicalViability(print, targetDoc) : null),
     [print, targetDoc],
   );
-
-  const refOptions = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
 
   async function generatePrintVariant() {
     setBusy(true);
@@ -624,92 +619,100 @@ function PrintAiDialog({
             Análise Industrial & Variante IA · {print.code} ({TECNICA_LABEL[print.tecnica]})
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 text-xs">
-          <div className="flex items-center justify-between gap-2">
-            <Label htmlFor="print-ai-ref">Validar compatibilidade química contra a Ficha:</Label>
-            <select
-              id="print-ai-ref"
-              value={targetRef}
-              onChange={(e) => setTargetRef(e.target.value)}
-              className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
-            >
-              {refOptions.map((r) => (
-                <option key={r} value={r}>
-                  {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div className="rounded border border-border bg-muted/40 p-2.5">
-              <span className="text-2xs uppercase text-muted-foreground block">Score Técnico</span>
-              <strong className="font-mono text-sm text-foreground">{viability.score}/100</strong>
-            </div>
-            <div className="rounded border border-border bg-muted/40 p-2.5">
-              <span className="text-2xs uppercase text-muted-foreground block">Custo / Peça</span>
-              <strong className="font-mono text-sm text-foreground">
-                R$ {viability.estimatedUnitCostBrl.toFixed(2)}
-              </strong>
-            </div>
-            <div className="rounded border border-border bg-muted/40 p-2.5">
-              <span className="text-2xs uppercase text-muted-foreground block">Setup Estimado</span>
-              <strong className="font-mono text-sm text-foreground">
-                R$ {viability.estimatedSetupBrl.toFixed(2)}
-              </strong>
-            </div>
-          </div>
-
-          {viability.alerts.map((a, idx) => (
-            <div
-              key={idx}
-              className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300"
-            >
-              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{a}</span>
-            </div>
-          ))}
-
-          <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
-            {viability.recommendations.map((rec, idx) => (
-              <li key={idx}>{rec}</li>
-            ))}
-          </ul>
-
-          <div className="border-t border-border pt-3 space-y-2">
-            <Label htmlFor="print-ai-prompt" className="text-2xs uppercase tracking-wider">
-              Gerar nova variante de estampa em PNG Transparente (IA)
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                id="print-ai-prompt"
-                value={promptExtra}
-                onChange={(e) => setPromptExtra(e.target.value)}
-                placeholder="Ex.: traço botânico minimalista em verde-esmeralda e dourado"
-                disabled={busy}
-              />
-              <Button
-                type="button"
-                size="sm"
-                disabled={busy}
-                onClick={() => void generatePrintVariant()}
-                className="gap-1.5 shrink-0"
+        {!targetDoc || !viability ? (
+          <SemFichaSalva acao="analisar a compatibilidade química da estampa" />
+        ) : (
+          <div className="space-y-3 text-xs">
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="print-ai-ref">Validar compatibilidade química contra a Ficha:</Label>
+              <select
+                id="print-ai-ref"
+                value={targetRef}
+                onChange={(e) => setTargetRef(e.target.value)}
+                className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
               >
-                {busy ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Wand2 className="h-3.5 w-3.5" />
-                )}
-                Gerar PNG
-              </Button>
+                {refOptions.map((r) => (
+                  <option key={r} value={r}>
+                    {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+                  </option>
+                ))}
+              </select>
             </div>
-            {generatedSrc && (
-              <div className="rounded-md border border-border p-2 flex items-center justify-center bg-[#141D2E]">
-                <img src={generatedSrc} alt="Variante gerada" className="h-36 object-contain" />
+
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded border border-border bg-muted/40 p-2.5">
+                <span className="text-2xs uppercase text-muted-foreground block">
+                  Score Técnico
+                </span>
+                <strong className="font-mono text-sm text-foreground">{viability.score}/100</strong>
               </div>
-            )}
+              <div className="rounded border border-border bg-muted/40 p-2.5">
+                <span className="text-2xs uppercase text-muted-foreground block">Custo / Peça</span>
+                <strong className="font-mono text-sm text-foreground">
+                  R$ {viability.estimatedUnitCostBrl.toFixed(2)}
+                </strong>
+              </div>
+              <div className="rounded border border-border bg-muted/40 p-2.5">
+                <span className="text-2xs uppercase text-muted-foreground block">
+                  Setup Estimado
+                </span>
+                <strong className="font-mono text-sm text-foreground">
+                  R$ {viability.estimatedSetupBrl.toFixed(2)}
+                </strong>
+              </div>
+            </div>
+
+            {viability.alerts.map((a, idx) => (
+              <div
+                key={idx}
+                className="flex items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300"
+              >
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>{a}</span>
+              </div>
+            ))}
+
+            <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+              {viability.recommendations.map((rec, idx) => (
+                <li key={idx}>{rec}</li>
+              ))}
+            </ul>
+
+            <div className="border-t border-border pt-3 space-y-2">
+              <Label htmlFor="print-ai-prompt" className="text-2xs uppercase tracking-wider">
+                Gerar nova variante de estampa em PNG Transparente (IA)
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  id="print-ai-prompt"
+                  value={promptExtra}
+                  onChange={(e) => setPromptExtra(e.target.value)}
+                  placeholder="Ex.: traço botânico minimalista em verde-esmeralda e dourado"
+                  disabled={busy}
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={busy}
+                  onClick={() => void generatePrintVariant()}
+                  className="gap-1.5 shrink-0"
+                >
+                  {busy ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Wand2 className="h-3.5 w-3.5" />
+                  )}
+                  Gerar PNG
+                </Button>
+              </div>
+              {generatedSrc && (
+                <div className="rounded-md border border-border p-2 flex items-center justify-center bg-[#141D2E]">
+                  <img src={generatedSrc} alt="Variante gerada" className="h-36 object-contain" />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Fechar
@@ -729,22 +732,18 @@ function LinkPrintToTechSheetDialog({
   open: boolean;
   onOpenChange: (next: boolean) => void;
 }) {
-  const sheetsMap = useTechSheetStore((s) => s.data);
+  const { sheetsMap, codes: refOptions } = useOperationalRefs();
   const ensure = useTechSheetStore((s) => s.ensure);
   const addAplicacao = useTechSheetStore((s) => s.addAplicacao);
 
-  const [targetRef, setTargetRef] = useState("DEV000006");
+  const [targetRef, setTargetRef] = useSelectedRef(refOptions);
   const [posicao, setPosicao] = useState<string>("Peito central");
 
-  const refOptions = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
-
   function confirmLink() {
+    if (!targetRef) {
+      toast.error("Nenhuma ficha salva para receber a estampa. Salve uma ficha técnica antes.");
+      return;
+    }
     const doc = sheetsMap[targetRef] ?? ensure(targetRef);
     const draft = buildAplicacaoFromPrint(print, posicao, doc);
     addAplicacao(targetRef, draft);
@@ -765,38 +764,42 @@ function LinkPrintToTechSheetDialog({
         <DialogHeader>
           <DialogTitle>Vincular {print.code} à Ficha Técnica</DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 text-xs">
-          <div className="space-y-1">
-            <Label htmlFor="link-print-ref">Ficha Técnica de destino</Label>
-            <select
-              id="link-print-ref"
-              value={targetRef}
-              onChange={(e) => setTargetRef(e.target.value)}
-              className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
-            >
-              {refOptions.map((r) => (
-                <option key={r} value={r}>
-                  {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
-                </option>
-              ))}
-            </select>
+        {refOptions.length === 0 ? (
+          <SemFichaSalva acao="vincular a estampa a uma ficha técnica" />
+        ) : (
+          <div className="space-y-3 text-xs">
+            <div className="space-y-1">
+              <Label htmlFor="link-print-ref">Ficha Técnica de destino</Label>
+              <select
+                id="link-print-ref"
+                value={targetRef}
+                onChange={(e) => setTargetRef(e.target.value)}
+                className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+              >
+                {refOptions.map((r) => (
+                  <option key={r} value={r}>
+                    {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="link-print-pos">Posição na peça</Label>
+              <select
+                id="link-print-pos"
+                value={posicao}
+                onChange={(e) => setPosicao(e.target.value)}
+                className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
+              >
+                {APLICACAO_POSICOES_SUGERIDAS.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="link-print-pos">Posição na peça</Label>
-            <select
-              id="link-print-pos"
-              value={posicao}
-              onChange={(e) => setPosicao(e.target.value)}
-              className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
-            >
-              {APLICACAO_POSICOES_SUGERIDAS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        )}
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
