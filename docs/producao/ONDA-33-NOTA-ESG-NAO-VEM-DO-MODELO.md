@@ -1,6 +1,6 @@
 # Onda 33 — A nota ESG não vem do modelo
 
-**Data:** 05/11/2026 · **Antecessor:** `f1b8169` (Onda 32 + docs)
+**Data:** 05/11/2026 · **Commit:** `354fd27` · **Antecessor:** `f1b8169` (Onda 32 + docs)
 
 ---
 
