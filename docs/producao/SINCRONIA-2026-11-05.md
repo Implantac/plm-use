@@ -11,8 +11,8 @@ o número deste arquivo é o que foi medido — refaça a medição antes de dis
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 25** — `8018242`                | `git ls-remote` / API de commits     |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 23**                            | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 25** + Onda 26 — `908fb60`      | `git ls-remote` / API de commits     |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 25** (republicado em 05/11)     | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e na RPC novas         |
 
 Ou seja: **ar e repositório estão alinhados** (Onda 25, medição de 05/11 12h UTC),
@@ -82,7 +82,7 @@ descrito na Onda 21: reserva criada em `'ativa'` e ninguém a encerra.
 
 | Lacuna                         | Ação                                                      | Quem faz        |
 | ------------------------------ | --------------------------------------------------------- | --------------- |
-| Ar na Onda 23, repo na 25      | Publicar de novo no Lovable (botão Publish)               | dono do projeto |
+| ~~Ar atrás do repo~~           | ✅ resolvido: republicado na Onda 25 (05/11)              | —               |
 | Banco sem as migrações 21 e 24 | `supabase db push` no projeto hospedado                   | dono do projeto |
 | E2E autenticado nunca roda     | fornecer credencial de teste (`PLM_E2E_EMAIL`/`PASSWORD`) | dono do projeto |
 
