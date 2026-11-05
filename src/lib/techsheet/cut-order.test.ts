@@ -90,8 +90,18 @@ describe("Sala de Corte (Enfesto/Fardos), Nuance de Rolos & Stage-Gate PLM", () 
     ]);
     expect(mixedBatch.homogeneo).toBe(false);
 
-    const gate = evaluateTechSheetGateReadiness(seedFor("DEV000006"));
+    const gate = evaluateTechSheetGateReadiness({
+      ...seedFor("DEV000006"),
+      etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "6109.10.00" },
+    });
     expect(gate.scorePct).toBe(100);
     expect(gate.readyToAdvance).toBe(true);
+
+    // Sem NCM a ficha perde o check de etiquetagem: 80% em vez de 100%.
+    // O gate técnico (BOM/BOP/POM/CAD) não trava por NCM — quem trava é o gate
+    // de catálogo em `omnichannel-readiness`, e o documento em `dpp-expedition`.
+    const semNcm = evaluateTechSheetGateReadiness(seedFor("DEV000006"));
+    expect(semNcm.scorePct).toBe(80);
+    expect(semNcm.checks.find((c) => c.id === "abnt")?.ok).toBe(false);
   });
 });

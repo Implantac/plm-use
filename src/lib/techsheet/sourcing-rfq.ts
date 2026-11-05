@@ -370,8 +370,8 @@ export function buildShowroomCatalogItem(refCode: string, doc: TechSheetData, is
     preset?.abnt ||
     (etq.composicao.length
       ? etq.composicao.map((c) => `${c.pct}% ${c.fibra}`).join(" · ")
-      : "100% Algodão");
-  const ncm = preset?.ncm || etq.ncm || "6109.90.00";
+      : "Composição não informada");
+  const ncm = preset?.ncm || etq.ncm || "";
 
   return {
     refCode,

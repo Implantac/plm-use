@@ -39,7 +39,11 @@ describe("Terceirização Industrial · Facções, Lavanderia & Remessa CFOP 590
   });
 
   it("gera XML NFe 4.00 de Remessa com CST 50 (suspensão ICMS) e Guia OS Cega sem preço comercial", () => {
-    const doc = seedFor("DEV000006");
+    // Remessa ao terceiro leva NCM: ficha sem classificação não emite (Onda 28).
+    const doc = {
+      ...seedFor("DEV000006"),
+      etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "6109.10.00" },
+    };
     const partner = INITIAL_PARTNERS[0]!;
     const os = INITIAL_SERVICE_ORDERS[0]!;
 

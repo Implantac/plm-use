@@ -49,6 +49,10 @@ export function evaluateOmnichannelReadiness(
         ? sheet.preCost.targetPreco
         : Math.round(sheet.preCost.targetCusto * (1 + sheet.preCost.markupPct / 100) * 100) / 100;
     const hasTargetPrice = suggestedRetailPriceBrl > 0;
+    // NCM é obrigatório num feed de marketplace e num catálogo que vai à SEFAZ.
+    // Antes, ficha sem NCM recebia "6109.10.00" e passava como pronta.
+    const ncmFiscal = sheet.etiquetagem?.ncm?.replace(/[^0-9.]/g, "") ?? "";
+    const hasNcm = ncmFiscal.replace(/\D/g, "").length === 8;
 
     const checks = [
       hasPrimaryFabric,
@@ -56,15 +60,18 @@ export function evaluateOmnichannelReadiness(
       hasCareLabelAbnt,
       hasOperationsBop,
       hasTargetPrice,
+      hasNcm,
     ];
     const passed = checks.filter(Boolean).length;
     const readinessScorePct = Math.round((passed / checks.length) * 100);
+    // NCM é veto, não ponto: com 5 de 6 checks o escore dá 83% e a ficha
+    // "passaria" — mas sem classificação fiscal não existe catálogo publicável.
     const goNoGoStatus: LaunchReadinessItem["goNoGoStatus"] =
-      readinessScorePct >= 80 ? "APTO_GO_LIVE" : "PENDENCIA_ENGENHARIA";
+      readinessScorePct >= 80 && hasNcm ? "APTO_GO_LIVE" : "PENDENCIA_ENGENHARIA";
 
     const abntComposition = sheet.etiquetagem?.composicao?.length
       ? sheet.etiquetagem.composicao.map((c) => `${c.pct}% ${c.fibra}`).join(" / ")
-      : "100% Algodão Certificado";
+      : "Composição não informada";
 
     return {
       ref: sheet.ref,
@@ -80,7 +87,7 @@ export function evaluateOmnichannelReadiness(
       goNoGoStatus,
       suggestedRetailPriceBrl,
       abntComposition,
-      ncmFiscal: sheet.etiquetagem?.ncm || "6109.10.00",
+      ncmFiscal,
       ean13: buildDeterministicEan13(sheet.ref),
     };
   });

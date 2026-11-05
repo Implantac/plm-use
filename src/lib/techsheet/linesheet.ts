@@ -7,7 +7,8 @@ import { SIZE_GRADES, cellTotal, rowTotal } from "@/lib/collection-map/store";
 import type { Look, LookItem } from "@/lib/looks/store";
 import { describeTextileMicroPhysics } from "@/lib/ai/photorealism";
 import { computeFullTechSheetPricing } from "./pricing";
-import { defaultColorwaysFor, defaultEtiquetagemFor, seedFor, type TechSheetData } from "./store";
+import { defaultColorwaysFor, defaultEtiquetagemFor, type TechSheetData } from "./store";
+import { sheetProvenance, type SheetProvenance } from "./provenance";
 import { round2 } from "./textile";
 
 export interface LookItemFinancialRow {
@@ -15,73 +16,106 @@ export interface LookItemFinancialRow {
   refName: string;
   role: LookItem["role"];
   colorHex: string;
+  provenance: SheetProvenance;
   linkedToTechSheet: boolean;
-  unitIndustrialCost: number;
-  unitSuggestedPrice: number;
+  /** `null` = não há ficha salva; a peça não tem preço, e a tela diz isso. */
+  unitIndustrialCost: number | null;
+  unitSuggestedPrice: number | null;
 }
 
 export interface LookFinancialSummary {
   items: LookItemFinancialRow[];
-  totalIndustrialCost: number;
-  totalSuggestedPrice: number;
-  comboKitB2bPrice: number;
-  comboGrossMarginPct: number;
+  /** Peças com preço vindo de ficha salva. */
+  comPreco: number;
+  /** Peças sem ficha salva — não entram em nenhum total. */
+  semPreco: number;
+  codesSemFicha: string[];
+  /** Só é `true` quando todas as peças têm preço. */
+  completo: boolean;
+  totalIndustrialCost: number | null;
+  totalSuggestedPrice: number | null;
+  comboKitB2bPrice: number | null;
+  comboGrossMarginPct: number | null;
 }
 
+/**
+ * Custeio de um look coordenado.
+ *
+ * Antes desta função existir do jeito que está, peça sem ficha recebia preço
+ * **inventado** por papel (R$ 249,90 / 169,90 / 289,90 / 89,90) e custo de 36%
+ * desse preço — e o look sheet B2B era impresso com esses números, com margem
+ * de kit calculada em cima. Um comprador podia fechar pedido sobre eles.
+ *
+ * Agora peça sem ficha salva não tem preço (`null`), não entra nos totais, e o
+ * kit só é precificado quando o look inteiro tem ficha (`completo`).
+ */
 export function computeLookFinancialSummary(
   lookItems: LookItem[],
   sheetsMap: Record<string, TechSheetData>,
 ): LookFinancialSummary {
   const rows: LookItemFinancialRow[] = lookItems.map((item) => {
     const code = item.refCode.trim();
-    const sheet = sheetsMap[code] ?? (/^(DEV|V24|U25|I25)/i.test(code) ? seedFor(code) : undefined);
+    const provenance = sheetProvenance(sheetsMap, code);
+    const sheet = sheetsMap[code];
 
-    if (sheet) {
-      const pricing = computeFullTechSheetPricing(sheet);
-      const pv =
-        pricing.precoReferenciaMargem > 0 ? pricing.precoReferenciaMargem : pricing.precoSugerido;
+    if (!sheet || provenance !== "salva") {
       return {
         refCode: item.refCode,
-        refName: item.refName || sheet.meta?.name || item.refCode,
+        refName: item.refName || sheet?.meta?.name || item.refCode,
         role: item.role,
-        colorHex: item.colorHex || sheet.colorways?.[0]?.hex || "#64748B",
-        linkedToTechSheet: true,
-        unitIndustrialCost: pricing.custoFinal,
-        unitSuggestedPrice: pv,
+        colorHex: item.colorHex || sheet?.colorways?.[0]?.hex || "#64748B",
+        provenance,
+        // A ficha existe no store (template) mas não é trabalho do usuário:
+        // dá para abrir, não dá para precificar.
+        linkedToTechSheet: Boolean(sheet),
+        unitIndustrialCost: null,
+        unitSuggestedPrice: null,
       };
     }
 
-    // Estimativa comercial padrão quando a referência ainda não tem Ficha Técnica aberta
-    const fallbackPv =
-      item.role === "peça-chave"
-        ? 249.9
-        : item.role === "complemento"
-          ? 169.9
-          : item.role === "calçado"
-            ? 289.9
-            : 89.9;
+    const pricing = computeFullTechSheetPricing(sheet);
+    const pv =
+      pricing.precoReferenciaMargem > 0 ? pricing.precoReferenciaMargem : pricing.precoSugerido;
     return {
       refCode: item.refCode,
-      refName: item.refName,
+      refName: item.refName || sheet.meta?.name || item.refCode,
       role: item.role,
-      colorHex: item.colorHex || "#64748B",
-      linkedToTechSheet: false,
-      unitIndustrialCost: round2(fallbackPv * 0.36),
-      unitSuggestedPrice: fallbackPv,
+      colorHex: item.colorHex || sheet.colorways?.[0]?.hex || "#64748B",
+      provenance,
+      linkedToTechSheet: true,
+      unitIndustrialCost: pricing.custoFinal,
+      unitSuggestedPrice: pv,
     };
   });
 
-  const totalIndustrialCost = round2(rows.reduce((s, r) => s + r.unitIndustrialCost, 0));
-  const totalSuggestedPrice = round2(rows.reduce((s, r) => s + r.unitSuggestedPrice, 0));
-  // Desconto comercial padrão de 8% na compra do Look Coordenado completo no showroom B2B
-  const comboKitB2bPrice = round2(totalSuggestedPrice * 0.92);
+  const precificadas = rows.filter(
+    (r): r is LookItemFinancialRow & { unitIndustrialCost: number; unitSuggestedPrice: number } =>
+      r.unitIndustrialCost !== null && r.unitSuggestedPrice !== null,
+  );
+  const codesSemFicha = rows.filter((r) => r.unitSuggestedPrice === null).map((r) => r.refCode);
+  const completo = rows.length > 0 && codesSemFicha.length === 0;
+
+  const totalIndustrialCost = completo
+    ? round2(precificadas.reduce((s, r) => s + r.unitIndustrialCost, 0))
+    : null;
+  const totalSuggestedPrice = completo
+    ? round2(precificadas.reduce((s, r) => s + r.unitSuggestedPrice, 0))
+    : null;
+
+  // Desconto comercial de 8% só faz sentido sobre o conjunto completo; com peça
+  // sem preço, o kit não é cotável.
+  const comboKitB2bPrice = totalSuggestedPrice === null ? null : round2(totalSuggestedPrice * 0.92);
   const comboGrossMarginPct =
-    comboKitB2bPrice > 0
-      ? round2(((comboKitB2bPrice - totalIndustrialCost) / comboKitB2bPrice) * 100)
-      : 0;
+    comboKitB2bPrice === null || totalIndustrialCost === null || comboKitB2bPrice <= 0
+      ? null
+      : round2(((comboKitB2bPrice - totalIndustrialCost) / comboKitB2bPrice) * 100);
 
   return {
     items: rows,
+    comPreco: precificadas.length,
+    semPreco: codesSemFicha.length,
+    codesSemFicha,
+    completo,
     totalIndustrialCost,
     totalSuggestedPrice,
     comboKitB2bPrice,
@@ -151,7 +185,10 @@ export function techSheetToMatrixRow(refCode: string, doc: TechSheetData): Matri
     refCode,
     refName: doc.meta?.name || refCode,
     category: mapToMatrixCategory(doc.meta?.category),
-    price: Math.round(pricing.precoReferenciaMargem || pricing.precoSugerido || 149),
+    // Sem preço de referência, a linha não inventa um: fica 0 e o documento
+    // marca "sem preço". Antes, `|| 149` colocava R$ 149,00 em toda peça cujo
+    // cálculo não retornava referência.
+    price: Math.round(pricing.precoReferenciaMargem || pricing.precoSugerido || 0),
     cost: round2(pricing.custoFinal),
     image:
       doc.image ||
@@ -202,10 +239,12 @@ export function buildLineSheetCsvPtBr(
   for (const row of rows) {
     const doc = sheetsMap[row.refCode];
     const etiq = doc?.etiquetagem ?? defaultEtiquetagemFor();
-    const comp = doc
+    const comp = etiq.composicao.length
       ? etiq.composicao.map((f) => `${f.pct}% ${f.fibra}`).join(" / ")
-      : "Conforme etiqueta";
-    const ncm = doc ? etiq.ncm : "6109.90.00";
+      : doc
+        ? "Composição não informada"
+        : "Sem ficha técnica";
+    const ncm = etiq.ncm || (doc ? "sem NCM" : "sem ficha");
 
     for (const cell of row.cells) {
       const total = cellTotal(cell);
@@ -237,15 +276,18 @@ export function buildLineSheetPrintableHtml(
   sheetsMap: Record<string, TechSheetData>,
 ): string {
   const totalUnits = rows.reduce((s, r) => s + rowTotal(r), 0);
-  const totalRevenue = rows.reduce((s, r) => s + rowTotal(r) * r.price, 0);
+  // Receita projetada soma só linhas com preço; linha sem preço não "custa zero".
+  const rowsComPreco = rows.filter((r) => r.price > 0);
+  const rowsSemPreco = rows.filter((r) => r.price <= 0);
+  const totalRevenue = rowsComPreco.reduce((s, r) => s + rowTotal(r) * r.price, 0);
 
   const bodyRows = rows
     .map((row) => {
       const doc = sheetsMap[row.refCode];
-      const comp = doc?.etiquetagem?.composicao
+      const comp = doc?.etiquetagem?.composicao?.length
         ? doc.etiquetagem.composicao.map((f) => `${f.pct}% ${f.fibra}`).join(" / ")
-        : "Composição padrão comercial";
-      const ncm = doc?.etiquetagem?.ncm ?? "6109.90.00";
+        : "Composição não informada";
+      const ncm = doc?.etiquetagem?.ncm || "sem NCM";
 
       return row.cells
         .map((cell, idx) => {
@@ -263,8 +305,8 @@ export function buildLineSheetPrintableHtml(
             <td><span class="swatch" style="background:${escHtml(cell.colorHex)}"></span>${escHtml(cell.colorName)}</td>
             ${SIZE_GRADES.map((s) => `<td class="num">${cell.grade[s] ?? "—"}</td>`).join("")}
             <td class="num"><strong>${tot}</strong></td>
-            <td class="num">R$ ${row.price.toFixed(2)}</td>
-            <td class="num"><strong>R$ ${(tot * row.price).toLocaleString("pt-BR")}</strong></td>
+            <td class="num">${row.price > 0 ? `R$ ${row.price.toFixed(2)}` : "—"}</td>
+            <td class="num"><strong>${row.price > 0 ? `R$ ${(tot * row.price).toLocaleString("pt-BR")}` : "—"}</strong></td>
           </tr>`;
         })
         .join("");
@@ -299,7 +341,11 @@ export function buildLineSheetPrintableHtml(
     <div class="kpis">
       <div><strong>Modelos:</strong> ${rows.length}</div>
       <div><strong>Peças Planejadas:</strong> ${totalUnits.toLocaleString("pt-BR")}</div>
-      <div><strong>Receita Alvo PVP:</strong> R$ ${totalRevenue.toLocaleString("pt-BR")}</div>
+      <div><strong>Receita Alvo PVP:</strong> R$ ${totalRevenue.toLocaleString("pt-BR")}${
+        rowsSemPreco.length > 0
+          ? ` <span style="color:#b45309">(exclui ${rowsSemPreco.length} referência(s) sem preço: ${rowsSemPreco.map((r) => r.refCode).join(", ")})</span>`
+          : ""
+      }</div>
     </div>
   </header>
   <table>

@@ -78,12 +78,16 @@ const STATUS_TONE: Record<LookStatus, string> = {
   arquivado: "bg-status-blocked/15 text-status-blocked",
 };
 
-const brl = (v: number) =>
-  (Number.isFinite(v) ? v : 0).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-  });
+// `null` é "não há ficha salva, logo não há preço" — e a tela mostra isso,
+// em vez de um R$ 0,00 que parece preço de verdade.
+const brl = (v: number | null) =>
+  v === null || !Number.isFinite(v)
+    ? "—"
+    : v.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+      });
 
 function LooksPage() {
   const looks = useLooks();
@@ -299,7 +303,9 @@ function LooksPage() {
                     </div>
                     {look.items.length > 0 && (
                       <span className="rounded bg-black/55 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-100 backdrop-blur-sm">
-                        Kit {brl(fin.comboKitB2bPrice)}
+                        {fin.comboKitB2bPrice === null
+                          ? `Kit — ${fin.semPreco} sem ficha`
+                          : `Kit ${brl(fin.comboKitB2bPrice)}`}
                       </span>
                     )}
                   </div>
@@ -318,7 +324,11 @@ function LooksPage() {
                     <span className="flex items-center gap-1">
                       <Shirt className="w-3 h-3" /> {look.items.length} peças
                     </span>
-                    <span className="font-mono">Margem {fin.comboGrossMarginPct.toFixed(0)}%</span>
+                    <span className="font-mono">
+                      {fin.comboGrossMarginPct === null
+                        ? "Margem —"
+                        : `Margem ${fin.comboGrossMarginPct.toFixed(0)}%`}
+                    </span>
                   </div>
                 </div>
               </button>
@@ -447,6 +457,18 @@ function LookDetail({ look }: { look: Look }) {
         </div>
 
         {/* Custeio Combinado & Kit B2B */}
+        {look.items.length > 0 && !fin.completo && (
+          <div
+            data-testid="look-sem-ficha"
+            className="rounded border border-amber-500/40 bg-amber-500/10 p-2 text-2xs leading-snug text-amber-800 dark:text-amber-300"
+          >
+            <strong className="font-semibold">
+              Custeio incompleto: {fin.semPreco} de {fin.items.length} peças sem ficha salva
+            </strong>{" "}
+            ({fin.codesSemFicha.join(", ")}). Peça sem ficha não recebe preço estimado — o custo do
+            conjunto e o kit B2B ficam em aberto até a ficha existir.
+          </div>
+        )}
         {look.items.length > 0 && (
           <div className="grid grid-cols-3 gap-2 text-xs">
             <div className="rounded border border-border/70 bg-muted/30 p-2">
@@ -496,6 +518,9 @@ function LookDetail({ look }: { look: Look }) {
                   <p className="text-xs font-medium text-foreground truncate">{item.refName}</p>
                   <p className="text-2xs text-muted-foreground">
                     {item.refCode} · {item.role} · {brl(item.unitSuggestedPrice)}
+                    {item.unitSuggestedPrice === null && (
+                      <span className="text-amber-600 dark:text-amber-400"> (sem ficha)</span>
+                    )}
                   </p>
                 </div>
                 {item.linkedToTechSheet && (
@@ -581,7 +606,9 @@ function LookDetail({ look }: { look: Look }) {
               src: activeRenderSrc,
               alt: `Coordenado ${look.name}`,
               title: `${look.name} (${look.season})`,
-              subtitle: `${look.items.length} peças · Kit B2B ${brl(fin.comboKitB2bPrice)} · Fundo PNG Transparente`,
+              subtitle: `${look.items.length} peças · Kit B2B ${brl(fin.comboKitB2bPrice)}${
+                fin.completo ? "" : " (incompleto: peça sem ficha)"
+              } · Fundo PNG Transparente`,
               exportBaseName: `look-${look.id}`,
             },
           ]}

@@ -3,7 +3,11 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { buildQrMatrixSvg, resolveReferenceTechSheet } from "./dpp-expedition";
+import {
+  DocumentoNaoEmitivelError,
+  buildQrMatrixSvg,
+  resolveReferenceTechSheet,
+} from "./dpp-expedition";
 import { defaultEtiquetagemFor, type TechSheetData } from "./store";
 import { round2 } from "./textile";
 
@@ -225,7 +229,13 @@ export function buildRemessaNfeXml400(
 ): string {
   const m = computeServiceOrderMetrics(os, partner, doc);
   const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
-  const ncm = (etq.ncm || "6109.90.00").replace(/\D/g, "").padEnd(8, "0").slice(0, 8);
+  // `padEnd(8, "0")` transformava qualquer NCM curto num código válido de
+  // mentira. Agora NCM ausente derruba a emissão, não vira 61099000.
+  const ncmDigits = (etq.ncm ?? "").replace(/\D/g, "");
+  if (ncmDigits.length !== 8) {
+    throw new DocumentoNaoEmitivelError([{ refCode: os.refCode, motivo: "sem-ncm" }]);
+  }
+  const ncm = ncmDigits;
   const cnpj = partner.cnpj.replace(/\D/g, "").padEnd(14, "0").slice(0, 14);
   const symbolicUnitBrl = round2(
     Math.max(

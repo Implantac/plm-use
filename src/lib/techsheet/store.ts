@@ -233,8 +233,11 @@ export const defaultEtiquetagemFor = (): CareLabelSpec => ({
     { fibra: "Poliéster", pct: 96 },
     { fibra: "Elastano", pct: 4 },
   ],
-  ncm: "6109.90.00",
-  paisOrigem: "Feito no Brasil",
+  // Vazio de propósito: NCM é classificação fiscal e origem é declaração —
+  // nenhuma das duas pode nascer preenchida por um default. Ficha nova abre com
+  // o campo em branco e o documento espera o preenchimento (Onda 28).
+  ncm: "",
+  paisOrigem: "",
   cuidados: {
     lavagem: "30C_SUAVE",
     alvejamento: "NAO_ALVEJAR",

@@ -38,7 +38,7 @@ import {
   buildLineSheetPrintableHtml,
   techSheetToMatrixRow,
 } from "@/lib/techsheet/linesheet";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 import {
   collectionMap,
   listFilters,
@@ -105,10 +105,11 @@ function CollectionMapRoute() {
 
   const allSourceRows = useMemo<MatrixRow[]>(() => {
     const existingCodes = new Set(collectionMap.rows.map((r) => r.refCode));
-    const plmKeys = Array.from(new Set(["DEV000006", ...Object.keys(sheetsMap)])).filter(
-      (k) => !existingCodes.has(k),
-    );
-    const plmRows = plmKeys.map((k) => techSheetToMatrixRow(k, sheetsMap[k] ?? seedFor(k)));
+    // Sem plantar DEV000006 e sem semear ficha: o mapa de coleção é documento
+    // comercial (CSV/line sheet A4 com NCM e receita alvo). Referência de
+    // demonstração entrava aqui e ia impressa.
+    const plmKeys = Object.keys(sheetsMap).filter((k) => !existingCodes.has(k));
+    const plmRows = plmKeys.map((k) => techSheetToMatrixRow(k, sheetsMap[k]!));
     return [...plmRows, ...collectionMap.rows];
   }, [sheetsMap]);
 

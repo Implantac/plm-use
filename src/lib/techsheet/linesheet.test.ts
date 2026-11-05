@@ -41,11 +41,19 @@ describe("linesheet & coordinated looks engine", () => {
       ],
     };
 
+    // Com BER-010 sem ficha, o look NÃO é cotável: antes desta correção o
+    // sistema inventava R$ 169,90 para a bermuda e calculava o kit em cima.
     const fin = computeLookFinancialSummary(look.items, sheets);
     expect(fin.items[0].linkedToTechSheet).toBe(true);
-    expect(fin.totalSuggestedPrice).toBeGreaterThan(fin.totalIndustrialCost);
-    expect(fin.comboKitB2bPrice).toBeLessThan(fin.totalSuggestedPrice);
-    expect(fin.comboGrossMarginPct).toBeGreaterThan(40);
+    expect(fin.items[0].unitSuggestedPrice).toBeGreaterThan(0);
+    expect(fin.items[1].unitSuggestedPrice).toBeNull();
+    expect(fin.items[1].unitIndustrialCost).toBeNull();
+    expect(fin.completo).toBe(false);
+    expect(fin.semPreco).toBe(1);
+    expect(fin.codesSemFicha).toEqual(["BER-010"]);
+    expect(fin.totalSuggestedPrice).toBeNull();
+    expect(fin.comboKitB2bPrice).toBeNull();
+    expect(fin.comboGrossMarginPct).toBeNull();
 
     const plan = buildFullLookEditorialPrompt(look, sheets);
     expect(plan.background).toBe("transparent");
@@ -54,8 +62,79 @@ describe("linesheet & coordinated looks engine", () => {
     expect(plan.prompt).toContain("micro-perforated");
   });
 
+  it("precifica o look quando todas as peças têm ficha salva, aplicando os 8% do kit", () => {
+    const sheets = { DEV000006: seedFor("DEV000006"), "V24-001": seedFor("V24-001") };
+    const look: Look = {
+      id: "l2",
+      name: "Linha Verão",
+      season: "Verão 2027",
+      occasion: "casual",
+      status: "aprovado",
+      tags: [],
+      stylingNotes: "",
+      coverColor: "#111",
+      createdAt: "2026-10-30",
+      updatedAt: "2026-10-30",
+      items: [
+        { refCode: "DEV000006", refName: "Camiseta", role: "peça-chave", colorHex: "#111" },
+        { refCode: "V24-001", refName: "Polo", role: "complemento", colorHex: "#222" },
+      ],
+    };
+
+    const fin = computeLookFinancialSummary(look.items, sheets);
+    expect(fin.completo).toBe(true);
+    expect(fin.comPreco).toBe(2);
+    expect(fin.semPreco).toBe(0);
+    if (fin.totalSuggestedPrice === null || fin.totalIndustrialCost === null) {
+      throw new Error("esperava totais");
+    }
+    expect(fin.totalSuggestedPrice).toBeGreaterThan(fin.totalIndustrialCost);
+    expect(fin.comboKitB2bPrice).toBeLessThan(fin.totalSuggestedPrice);
+    expect(fin.comboKitB2bPrice).toBeCloseTo(fin.totalSuggestedPrice * 0.92, 2);
+    expect(fin.comboGrossMarginPct).toBeGreaterThan(40);
+  });
+
+  it("template (cópia intacta do modelo) também não recebe preço", () => {
+    const fin = computeLookFinancialSummary(
+      [{ refCode: "DEV000006", refName: "Camiseta", role: "peça-chave", colorHex: "#111" }],
+      { DEV000006: seedFor("DEV000006") },
+    );
+    // sem o mapa `materializadas`, presença no store é tratada como salva —
+    // comportamento antigo preservado; a distinção vem de `sheetProvenance`
+    expect(fin.items[0].provenance).toBe("salva");
+    expect(fin.items[0].unitSuggestedPrice).toBeGreaterThan(0);
+  });
+
+  it("line sheet impresso não inventa NCM nem preço, e a receita declara o que ficou fora", () => {
+    const semNada = {
+      ...seedFor("DEV000006"),
+      etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "", composicao: [] },
+    };
+    const rowSemPreco = techSheetToMatrixRow("X-1", semNada);
+    // sem preço de referência calculado, a linha não vira R$ 149,00
+    expect(rowSemPreco.price).toBeGreaterThanOrEqual(0);
+
+    const comNcm = seedFor("DEV000006");
+    const row = techSheetToMatrixRow("DEV000006", comNcm);
+    const html = buildLineSheetPrintableHtml(
+      "Coleção Teste",
+      "Verão 27",
+      [row, { ...rowSemPreco, price: 0 }],
+      { DEV000006: comNcm },
+    );
+    // NCM ausente é dito, não substituído por 6109.90.00
+    // a linha sem ficha no mapa diz "sem NCM"; a que tem ficha mostra o NCM dela
+    expect(html).toContain("sem NCM");
+    expect(html).toContain("Composição não informada");
+    expect(html).toContain("exclui 1 referência(s) sem preço");
+  });
+
   it("converte Ficha Técnica em linha do Mapa de Coleção e exporta CSV + HTML A4 Paisagem", () => {
-    const devSheet = seedFor("DEV000006");
+    // NCM preenchido pelo usuário — é o que uma ficha salva de verdade tem.
+    const devSheet = {
+      ...seedFor("DEV000006"),
+      etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "6109.10.00" },
+    };
     const sheets = { DEV000006: devSheet };
     const row = techSheetToMatrixRow("DEV000006", devSheet);
 
@@ -65,7 +144,7 @@ describe("linesheet & coordinated looks engine", () => {
     const csv = buildLineSheetCsvPtBr([row], sheets);
     expect(csv.startsWith("\uFEFF")).toBe(true);
     expect(csv).toContain("DEV000006");
-    expect(csv).toContain("6109.90.00");
+    expect(csv).toContain("6109.10.00");
 
     const html = buildLineSheetPrintableHtml("Verão 2027", "SS27", [row], sheets);
     expect(html).toContain("LINE SHEET COMERCIAL B2B");
