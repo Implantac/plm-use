@@ -1,7 +1,7 @@
 // Cockpit Fluido de Engenharia do Produto (PLM 2.0 — alinhado ao layout ideal):
 //  - Barra superior operacional: Salvo automaticamente, Duplicar Base, PDF Facção
 //    (Sem Custo), PDF Engenharia, Explosão SKUs/OP UseCloud e Publicar no Catálogo;
-//  - Título hero editável inline (DEV000006 · Camiseta Esportiva Dry Pro · Coleção Verão 2027)
+//  - Título hero editável inline (referência ativa · produto · coleção)
 //    + Esteira de 7 Estágios de Engenharia;
 //  - Coluna esquerda fixa (GarmentSketchStudio com prancheta branca Frente+Costas);
 //  - Coluna direita fluida com abas de foco + badge interativo Encaixe CAD (88,3%).
@@ -41,10 +41,14 @@ import {
   defaultEncaixeCadFor,
   defaultMedidasFor,
   LIFECYCLE_STAGES,
+  seedFor,
   tempoTotalBOP,
   useTechSheetStore,
   type TechSheetLifecycleStage,
 } from "@/lib/techsheet/store";
+import { sheetProvenance } from "@/lib/techsheet/provenance";
+import { podeEmitirDocumento, resolveCockpitRef } from "@/lib/techsheet/cockpit-entry";
+import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
 import { buildTechSheetPrintHtml, openPrintWindow } from "@/lib/techsheet/print";
 import {
   buildCutOrderPrintHtml,
@@ -102,24 +106,39 @@ function TechSheetPage() {
 
   const ensure = useTechSheetStore((s) => s.ensure);
   const allDocs = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const dirtyMap = useTechSheetStore((s) => s.dirty);
   const updateMeta = useTechSheetStore((s) => s.updateMeta);
   const setEncaixeCad = useTechSheetStore((s) => s.setEncaixeCad);
   const duplicateTechSheet = useTechSheetStore((s) => s.duplicateTechSheet);
 
-  const activeRef = (refParam?.trim() || "DEV000006").toUpperCase();
-  const doc = useTechSheetStore((s) => s.data[activeRef] ?? ensure(activeRef));
+  const refsSalvas = useMemo(
+    () =>
+      Object.keys(allDocs)
+        .filter((c) => !materializadas[c])
+        .sort(),
+    [allDocs, materializadas],
+  );
+  // Onda 31: sem ?ref= o cockpit NÃO escolhe DEV000006. Se não há ficha salva,
+  // não há produto a abrir — estado vazio em vez de engenharia inventada.
+  const activeRef = resolveCockpitRef(refParam, refsSalvas) ?? "";
+  const docDoStore = useTechSheetStore((s) => (activeRef ? s.data[activeRef] : undefined));
+  const provenance = sheetProvenance(allDocs, activeRef, materializadas);
+  const emitivel = podeEmitirDocumento(provenance);
+  // Placeholder apenas para os hooks abaixo: NÃO grava no store. O efeito cria
+  // a ficha (fora do seletor) quando o usuário navega com uma referência nova.
+  const doc = docDoStore ?? seedFor(activeRef || "NOVA");
 
   useEffect(() => {
-    ensure(activeRef);
-  }, [activeRef, ensure]);
+    if (activeRef && !docDoStore) ensure(activeRef);
+  }, [activeRef, docDoStore, ensure]);
 
   const linkedDbRef = useMemo(
     () => dbRefs.find((r) => r.code.toUpperCase() === activeRef),
     [dbRefs, activeRef],
   );
 
-  const productName = linkedDbRef?.name ?? doc.meta?.name ?? `Camiseta Esportiva Dry Pro`;
+  const productName = linkedDbRef?.name ?? doc.meta?.name ?? `Produto ${activeRef || "novo"}`;
   const productCategory = doc.meta?.category ?? "Esportivo / Malharia";
   const productCollection = linkedDbRef?.collection_id ?? doc.meta?.collection ?? "Verão 2027";
   const currentStage: TechSheetLifecycleStage = doc.meta?.stage ?? 3;
@@ -170,7 +189,16 @@ function TechSheetPage() {
     });
   }, [doc, opCustomer, mrpPlan]);
 
+  const exigirFichaSalva = (saida: string): boolean => {
+    if (emitivel) return true;
+    toast.error(
+      `Sem ficha técnica salva: ${saida} sairia com BOM, custos e NCM do modelo de demonstração. Registre a engenharia primeiro.`,
+    );
+    return false;
+  };
+
   const downloadMrpCsv = () => {
+    if (!exigirFichaSalva("o CSV de compras/MRP")) return;
     if (typeof window === "undefined") return;
     const csv = buildMrpCsvPtBr(mrpPlan);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -184,6 +212,7 @@ function TechSheetPage() {
   };
 
   const printCutOrder = () => {
+    if (!exigirFichaSalva("a Ordem de Corte A4")) return;
     const html = buildCutOrderPrintHtml(
       { ref: activeRef, name: productName, collection: productCollection },
       doc,
@@ -196,11 +225,13 @@ function TechSheetPage() {
   };
 
   const availableRefs = useMemo(() => {
-    const set = new Set<string>(["DEV000006", activeRef]);
-    Object.keys(allDocs).forEach((k) => set.add(k.toUpperCase()));
+    const set = new Set<string>(refsSalvas.map((c) => c.toUpperCase()));
+    if (activeRef) set.add(activeRef);
+    // Refs do banco são produtos reais sem ficha: o usuário pode abrir uma para
+    // criar a engenharia. O que saiu foi a ref de demonstração plantada.
     dbRefs.forEach((r) => set.add(r.code.toUpperCase()));
     return Array.from(set).sort();
-  }, [allDocs, dbRefs, activeRef]);
+  }, [refsSalvas, dbRefs, activeRef]);
 
   const switchRef = (nextRef: string) => {
     const clean = nextRef.trim().toUpperCase();
@@ -219,6 +250,7 @@ function TechSheetPage() {
   };
 
   const exportPdf = (omitCosts: boolean) => {
+    if (!exigirFichaSalva("o PDF da Ficha Técnica")) return;
     const html = buildTechSheetPrintHtml(
       {
         ref: activeRef,
@@ -253,6 +285,7 @@ function TechSheetPage() {
   };
 
   const handlePublishCatalog = async () => {
+    if (!exigirFichaSalva("a publicação no catálogo")) return;
     setPublishing(true);
     try {
       const res = await publishTechSheetToCatalog(doc, {
@@ -276,8 +309,36 @@ function TechSheetPage() {
 
   const isDirty = Boolean(dirtyMap[activeRef]);
 
+  // Todos os hooks acima rodaram: o early-return aqui é seguro.
+  if (!activeRef) {
+    return (
+      <div
+        className="rounded-xl border border-border/80 bg-card p-6 space-y-3"
+        data-testid="cockpit-sem-ficha"
+      >
+        <h2 className="text-sm font-semibold text-foreground">Nenhuma ficha técnica salva</h2>
+        <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+          O cockpit não abre mais a ficha de demonstração DEV000006. Escolha uma referência do
+          cadastro para criar a engenharia, ou abra uma ficha já salva. Documentos de compras, Ordem
+          de Corte e Dossiê A4 só saem de produto com ficha registrada.
+        </p>
+        <Link to="/development" className="text-xs text-primary underline">
+          Ir para a Esteira de Desenvolvimento
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
+      {!emitivel && (
+        <SheetProvenanceNote
+          provenance={provenance}
+          code={activeRef}
+          compact
+          data-testid="cockpit-provenance"
+        />
+      )}
       {/* 1. BARRA OPERACIONAL SUPERIOR DO COCKPIT PLM 2.0 */}
       <div className="rounded-xl border border-border/80 bg-card/80 backdrop-blur-md px-4 py-3 space-y-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -293,6 +354,7 @@ function TechSheetPage() {
               onChange={(e) => switchRef(e.target.value)}
               className="h-8 rounded-md border border-border/80 bg-surface-sunken/70 px-2.5 text-xs font-mono font-bold text-foreground focus:outline-none focus:border-teal-500"
             >
+              <option value="">Selecione uma referência…</option>
               {availableRefs.map((r) => (
                 <option key={r} value={r}>
                   {r}
@@ -351,7 +413,12 @@ function TechSheetPage() {
               variant="outline"
               className="h-8 text-2xs gap-1.5 border-teal-500/45 hover:border-teal-500"
               onClick={() => exportPdf(true)}
-              title="Gera Ficha Técnica A4 para Facção Externa ocultando 100% dos custos e margens"
+              disabled={!emitivel}
+              title={
+                emitivel
+                  ? "Gera Ficha Técnica A4 para Facção Externa ocultando 100% dos custos e margens"
+                  : "Salve a ficha técnica antes de emitir"
+              }
             >
               <FileDown className="w-3.5 h-3.5 text-teal-500" /> PDF Facção (Sem Custo)
             </Button>
@@ -361,7 +428,12 @@ function TechSheetPage() {
               variant="outline"
               className="h-8 text-2xs gap-1.5"
               onClick={() => exportPdf(false)}
-              title="Gera Dossiê de Engenharia Completo com custos e Mark-up Divisor"
+              disabled={!emitivel}
+              title={
+                emitivel
+                  ? "Gera Dossiê de Engenharia Completo com custos e Mark-up Divisor"
+                  : "Salve a ficha técnica antes de emitir"
+              }
             >
               <FileSpreadsheet className="w-3.5 h-3.5" /> PDF Engenharia
             </Button>
@@ -381,13 +453,15 @@ function TechSheetPage() {
               style={{ backgroundColor: "#3B6376", color: "#EEF7FA" }}
               className="h-8 text-2xs gap-1.5 border border-[#5DAEC6]/50 hover:opacity-95"
               onClick={() => setPubOpen(true)}
+              disabled={!emitivel}
+              title={emitivel ? undefined : "Salve a ficha técnica antes de publicar no catálogo"}
             >
               <Send className="w-3.5 h-3.5 text-[#7FD4EB]" /> Publicar Catálogo
             </Button>
           </div>
         </div>
 
-        {/* Título Hero Editável Inline (DEV000006 · Camiseta Esportiva Dry Pro · Coleção Verão 2027) */}
+        {/* Título Hero Editável Inline */}
         <div className="flex items-baseline justify-between gap-3 flex-wrap pt-0.5">
           <div className="flex items-baseline gap-2 flex-wrap min-w-0 flex-1">
             <span className="text-lg lg:text-xl font-extrabold font-mono tracking-tight text-foreground">
@@ -973,10 +1047,10 @@ function TechSheetPage() {
           </div>
           <DialogFooter className="flex items-center justify-between sm:justify-between flex-wrap gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <Button variant="outline" size="sm" onClick={printCutOrder}>
+              <Button variant="outline" size="sm" onClick={printCutOrder} disabled={!emitivel}>
                 <Scissors className="w-3.5 h-3.5 mr-1 text-teal-500" /> Ordem de Corte A4
               </Button>
-              <Button variant="outline" size="sm" onClick={downloadMrpCsv}>
+              <Button variant="outline" size="sm" onClick={downloadMrpCsv} disabled={!emitivel}>
                 <FileSpreadsheet className="w-3.5 h-3.5 mr-1 text-teal-500" /> CSV Compras/MRP
               </Button>
               <Button
@@ -1052,7 +1126,7 @@ function TechSheetPage() {
             <Button variant="outline" onClick={() => setPubOpen(false)} disabled={publishing}>
               Cancelar
             </Button>
-            <Button onClick={() => void handlePublishCatalog()} disabled={publishing}>
+            <Button onClick={() => void handlePublishCatalog()} disabled={publishing || !emitivel}>
               {publishing ? "Publicando..." : "Confirmar Publicação"}
             </Button>
           </DialogFooter>

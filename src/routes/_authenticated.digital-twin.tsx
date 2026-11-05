@@ -29,7 +29,8 @@ import {
   buildStudioPayloadFromTechSheet,
 } from "@/lib/ai/photorealism";
 import { streamImage } from "@/lib/streamImage";
-import { defaultColorwaysFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import { simulateDigitalTwinScenario } from "@/lib/techsheet/digital-twin";
 
 export const Route = createFileRoute("/_authenticated/digital-twin")({
@@ -64,14 +65,15 @@ const ALPHA_STAGE_STYLE: React.CSSProperties = {
 };
 
 function DigitalTwinPage() {
-  const sheetsMap = useTechSheetStore((s) => s.data);
-  const ensure = useTechSheetStore((s) => s.ensure);
+  // Onda 31: o gêmeo digital só simula engenharia salva. Antes ele nasciam em
+  // "DEV000006", plantava as 4 refs no seletor e chamava `ensure()` DENTRO do
+  // seletor do Zustand (mutação no render), gravando o modelo no store.
+  const { sheetsMap, codes: refOptions } = useOperationalRefs();
   const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
+  const [selectedRef, setSelectedRef] = useSelectedRef(refOptions);
+  const doc = selectedRef ? sheetsMap[selectedRef] : undefined;
 
-  const [selectedRef, setSelectedRef] = useState("DEV000006");
-  const doc = useTechSheetStore((s) => s.data[selectedRef] ?? ensure(selectedRef));
-
-  const colorways = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
+  const colorways = doc?.colorways?.length ? doc.colorways : [];
   const [selectedCwId, setSelectedCwId] = useState<string>(colorways[0]?.id ?? "");
   const activeCw = colorways.find((c) => c.id === selectedCwId) ?? colorways[0];
 
@@ -82,7 +84,7 @@ function DigitalTwinPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Controles do Simulador Industrial What-If
-  const defaultBatch = Math.max(100, Number(doc.preCost.tiragemPlanejada) || 500);
+  const defaultBatch = Math.max(100, Number(doc?.preCost.tiragemPlanejada) || 500);
   const [batchQty, setBatchQty] = useState<number>(defaultBatch);
   const [fabricCostDeltaPct, setFabricCostDeltaPct] = useState<number>(0);
   const [outsourceSharePct, setOutsourceSharePct] = useState<number>(0);
@@ -91,38 +93,31 @@ function DigitalTwinPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const refParam = new URLSearchParams(window.location.search).get("ref")?.trim();
-    if (refParam) {
-      ensure(refParam);
-      setSelectedRef(refParam);
-    }
+    const refParam = new URLSearchParams(window.location.search).get("ref")?.trim().toUpperCase();
+    // Só aceita ?ref= se for ficha salva: abrir com uma ref qualquer não cria
+    // produto de demonstração no store.
+    if (refParam && refOptions.includes(refParam)) setSelectedRef(refParam);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    setBatchQty(Math.max(100, Number(doc.preCost.tiragemPlanejada) || 500));
+    setBatchQty(Math.max(100, Number(doc?.preCost.tiragemPlanejada) || 500));
     setSelectedCwId(colorways[0]?.id ?? "");
     setAiRenderSrc(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRef]);
 
-  const refOptions = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
-
   const sim = useMemo(
     () =>
-      simulateDigitalTwinScenario(selectedRef, doc, {
-        batchQty,
-        fabricCostDeltaPct,
-        outsourceSharePct,
-        cellEfficiencyPct,
-        operators,
-      }),
+      doc
+        ? simulateDigitalTwinScenario(selectedRef, doc, {
+            batchQty,
+            fabricCostDeltaPct,
+            outsourceSharePct,
+            cellEfficiencyPct,
+            operators,
+          })
+        : null,
     [
       selectedRef,
       doc,
@@ -135,6 +130,7 @@ function DigitalTwinPage() {
   );
 
   const volumetricDataUrl = useMemo(() => {
+    if (!doc) return "";
     const svg = nativeVisualSvg({
       family: doc.meta?.category,
       category: doc.meta?.category,
@@ -144,11 +140,15 @@ function DigitalTwinPage() {
       transparent: true,
     });
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }, [doc.meta?.category, doc.meta?.name, selectedRef, activeCw?.hex, angle]);
+  }, [doc, selectedRef, activeCw?.hex, angle]);
 
   const displaySrc = aiRenderSrc || volumetricDataUrl;
 
   async function renderAiTwin() {
+    if (!doc) {
+      toast.error("Sem ficha técnica salva: não há produto para renderizar.");
+      return;
+    }
     setAiBusy(true);
     try {
       const payload = buildStudioPayloadFromTechSheet(selectedRef, doc, activeCw?.id);
@@ -195,6 +195,10 @@ function DigitalTwinPage() {
   }
 
   function commitBatchToSheet() {
+    if (!doc) {
+      toast.error("Sem ficha técnica salva: a tiragem não tem onde ser gravada.");
+      return;
+    }
     updatePreCost(selectedRef, { tiragemPlanejada: batchQty });
     toast.success(
       `Tiragem planejada de ${batchQty} peças gravada na Ficha Técnica ${selectedRef}.`,
@@ -207,6 +211,26 @@ function DigitalTwinPage() {
     { id: "cost", label: "3 · Custo & Margem" },
     { id: "factory", label: "4 · Célula & Gargalo" },
   ];
+
+  if (!doc || !sim) {
+    return (
+      <Card className="p-6 border-border bg-card space-y-3" data-testid="gemeo-sem-ficha">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">
+            Nenhuma ficha técnica salva — gêmeo digital não apurável
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-xl">
+            As referências de demonstração não têm BOM, BOP, cartela de cores nem tiragem próprias.
+            A simulação What-If, o render IA e a gravação da tiragem só existem para engenharia
+            registrada.
+          </p>
+        </div>
+        <Link to="/tech-sheet" className="text-xs text-primary underline">
+          Abrir Ficha Técnica
+        </Link>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-5 pb-8">

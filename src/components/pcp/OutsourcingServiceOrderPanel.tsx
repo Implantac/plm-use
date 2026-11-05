@@ -79,15 +79,37 @@ export function OutsourcingServiceOrderPanel() {
     dueDate: "2026-11-14",
   });
 
-  const enrichedOrders = useMemo(() => {
-    return serviceOrders.map((os) => {
-      const partner = partners.find((p) => p.id === os.partnerId) ?? partners[0]!;
-      const ref = resolveReferenceTechSheet(os.refCode, sheetsMap);
-      const { doc } = ref;
-      const metrics = computeServiceOrderMetrics(os, partner, doc);
-      return { os, partner, doc, metrics, emitivel: ref.emitivel };
-    });
-  }, [serviceOrders, partners, sheetsMap]);
+  const resolvidas = useMemo(
+    () =>
+      serviceOrders.map((os) => {
+        const partner = partners.find((p) => p.id === os.partnerId) ?? partners[0]!;
+        const ref = resolveReferenceTechSheet(os.refCode, sheetsMap);
+        return { os, partner, emitivel: ref.emitivel, doc: ref.doc };
+      }),
+    [serviceOrders, partners, sheetsMap],
+  );
+
+  // Onda 31: OS de referência sem ficha não entra em capacidade, financeiro nem
+  // tabela. Antes `resolveReferenceTechSheet` devolvia um documento montado à
+  // mão (NCM, composição e BOM de exemplo) e as métricas apareciam como reais.
+  const osSemFicha = useMemo(
+    () => resolvidas.filter((r) => !r.emitivel).map((r) => `${r.os.osNumber} (${r.os.refCode})`),
+    [resolvidas],
+  );
+
+  const enrichedOrders = useMemo(
+    () =>
+      resolvidas
+        .filter((r) => r.emitivel)
+        .map((r) => ({
+          os: r.os,
+          partner: r.partner,
+          doc: r.doc,
+          metrics: computeServiceOrderMetrics(r.os, r.partner, r.doc),
+          emitivel: true as const,
+        })),
+    [resolvidas],
+  );
 
   const totals = useMemo(() => {
     return enrichedOrders.reduce(
@@ -242,6 +264,21 @@ export function OutsourcingServiceOrderPanel() {
             <span className="text-2xs text-muted-foreground block">desconto matéria-prima</span>
           </div>
         </div>
+
+        {osSemFicha.length > 0 && (
+          <div
+            data-testid="os-sem-ficha"
+            className="rounded-lg border border-rose-500/40 bg-rose-500/5 p-3 mb-3 text-xs"
+          >
+            <strong className="text-rose-600 dark:text-rose-300">
+              {osSemFicha.length} Ordem(ns) de Serviço fora das métricas — sem ficha técnica salva
+            </strong>
+            <p className="text-2xs text-muted-foreground mt-1 leading-relaxed">
+              NCM, composição, SAM e consumo viriam do modelo de demonstração. Estas OS não entram
+              em capacidade do parceiro, líquido a pagar nem glosa. {osSemFicha.join(" · ")}
+            </p>
+          </div>
+        )}
 
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-xs">

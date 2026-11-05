@@ -35,6 +35,7 @@ import {
   type PhotoStudioPresetId,
 } from "@/lib/ai/photorealism";
 import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useOperationalRefs } from "@/lib/techsheet/use-operational-refs";
 import { streamImage } from "@/lib/streamImage";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -276,8 +277,7 @@ export function ProductStudio() {
     applications: string[];
   } | null>(null);
   const [selectedTechRef, setSelectedTechRef] = useState("DEV000006");
-  const sheetsMap = useTechSheetStore((s) => s.data);
-  const ensureTechSheet = useTechSheetStore((s) => s.ensure);
+  const { sheetsMap, codes: techSheetRefOptions } = useOperationalRefs();
   const [variationColors, setVariationColors] = useState("areia, azul, verde, preto, estampada");
   const [artwork, setArtwork] = useState<{ name: string; dataUrl: string } | null>(null);
   const [artworkError, setArtworkError] = useState("");
@@ -301,16 +301,15 @@ export function ProductStudio() {
     [proposal, briefing],
   );
 
-  const techSheetRefOptions = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
+  // Onda 31: o estúdio só importa engenharia salva. Antes oferecia as quatro
+  // refs de exemplo e `ensure()` fabricava a ficha no ato de importar.
 
   function importFromTechSheet(refCode: string) {
-    const doc = sheetsMap[refCode] ?? ensureTechSheet(refCode);
+    const doc = sheetsMap[refCode];
+    if (!doc) {
+      toast.error("Essa referência não tem ficha técnica salva para importar.");
+      return;
+    }
     const payload = buildStudioPayloadFromTechSheet(refCode, doc);
     setBriefing(payload.briefing);
     setTechSheetCtx({
@@ -805,7 +804,7 @@ export function ProductStudio() {
               >
                 {techSheetRefOptions.map((r) => (
                   <option key={r} value={r}>
-                    {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+                    {r} — {sheetsMap[r]?.meta?.name ?? r}
                   </option>
                 ))}
               </select>

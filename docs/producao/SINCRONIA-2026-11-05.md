@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 6ª medição, 05/11/2026
+# Sincronia repo × ar × banco — 7ª medição, 05/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,15 +10,15 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 30**                            | `git log` / `git ls-remote`          |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 31**                            | `git log` / `git ls-remote`          |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 29**                            | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** o ar avançou da **Onda 28 para a 29**
-(entry novo `index-1d8-RbIh.js`, 219 chunks, marcadores `pedidosSemFicha`,
-`rfq-sem-ficha` e `showroom-sem-ficha` presentes). É publicação nova, não cache.
-O **banco não mudou** — 6ª medição, mesmo resultado. O repo agora está uma onda
-à frente do ar (Onda 30), e o banco continua sendo o elo atrasado.
+**O que mudou desde a medição anterior:** nada no ar e nada no banco. O app
+segue na **Onda 29** (mesmo entry `index-1d8-RbIh.js`, 218 chunks lidos) e o
+banco segue sem as migrações (7ª medição, mesmo `PGRST205`/`PGRST202`). O repo
+avançou para a **Onda 31**: agora são **duas ondas** de código ainda não
+publicadas (30 e 31). O banco continua sendo o elo atrasado.
 
 ---
 
@@ -29,7 +29,7 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 
 - entry: **`index-1d8-RbIh.js`** (histórico: `index-CQexDK2k.js` = 23,
   `index-BCX5Of78.js` = 25, `index-gNNeOgTl.js` = 26, `index-bJxsbr7k.js` = 28)
-- **219 chunks**, ~3,1 MB de JS lidos
+- **218 chunks**, ~3,1 MB de JS lidos
 
 | Onda | Marcador procurado                 | Ocorrências | Leitura |
 | ---- | ---------------------------------- | ----------- | ------- |
@@ -43,8 +43,10 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 29   | `showroom-sem-ficha`               | 1           | ✅      |
 | 30   | `DRE não apurável`                 | **0**       | ❌      |
 | 30   | `omnichannel-sem-ficha`            | **0**       | ❌      |
+| 31   | `cockpit-sem-ficha`                | **0**       | ❌      |
+| 31   | `gemeo-sem-ficha`                  | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 29**. Nada da Onda 30 foi publicado ainda.
+**Conclusão:** o ar está na **Onda 29**. Nada das Ondas 30 e 31 foi publicado.
 
 ---
 
@@ -97,7 +99,7 @@ automação e o disponível não volta.
 
 | Lacuna                             | Ação                                                                               | Quem faz        |
 | ---------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| **Ar uma onda atrás do repo**      | republicar no Lovable depois deste commit                                          | dono do projeto |
+| **Ar duas ondas atrás do repo**    | republicar no Lovable depois deste commit                                          | dono do projeto |
 | **Banco sem as migrações 21 e 24** | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
 | E2E autenticado nunca roda         | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
 | Cancelar reservas presas           | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |

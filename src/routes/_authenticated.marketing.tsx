@@ -137,6 +137,7 @@ function MarketingPage() {
       toast.error("Informe o nome da campanha ou drop.");
       return;
     }
+    // Onda 31: campanha vazia não ganhava SKU de demonstração escondido.
     const skuRefs = formData.skuRefsText
       .split(",")
       .map((s) => s.trim().toUpperCase())
@@ -149,7 +150,7 @@ function MarketingPage() {
       channel: formData.channel.trim() || "Omnichannel",
       dropDate: formData.dropDate || "2026-11-28",
       status: formData.status,
-      skuRefs: skuRefs.length > 0 ? skuRefs : ["DEV000006"],
+      skuRefs,
       creativeFormat: formData.creativeFormat.trim() || "Fotos + Catálogo",
       transparentStudioReady: formData.transparentStudioReady,
       productionCostBrl: Math.max(0, Number(formData.productionCostBrl) || 0),
