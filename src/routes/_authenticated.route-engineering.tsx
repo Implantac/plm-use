@@ -27,9 +27,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useProductionRoutes, type ProdRoute } from "@/hooks/use-production-orders";
 import { buildLineBalancingPrintableHtml, computeCellGsdBalancing } from "@/lib/techsheet/cfo-dre";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
-import { resolveSheet } from "@/lib/techsheet/provenance";
-import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import { SETORES_PCP } from "@/types/pcp";
 
 export const Route = createFileRoute("/_authenticated/route-engineering")({
@@ -136,39 +135,35 @@ function RouteEngineering() {
 }
 
 function CellBalancingTab() {
-  const sheetsMap = useTechSheetStore((s) => s.data);
-  const materializadas = useTechSheetStore((s) => s.materializadas);
-  const ensure = useTechSheetStore((s) => s.ensure);
+  const { sheetsMap, codes: availableRefs } = useOperationalRefs();
   const updateBopStep = useTechSheetStore((s) => s.updateBopStep);
-
-  const availableRefs = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
-
-  const [selectedRef, setSelectedRef] = useState("DEV000006");
+  const [selectedRef, setSelectedRef] = useSelectedRef(availableRefs);
   const [jornadaMin, setJornadaMin] = useState(480);
   const [eficienciaPct, setEficienciaPct] = useState(85);
   const [metaDia, setMetaDia] = useState(420);
   const [custoMinuto, setCustoMinuto] = useState(1.18);
 
-  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor, materializadas);
+  // Balanceamento imprime Folha A4 e escreve custo/maquina no BOP. Com o seed
+  // de demonstração isso gravava engenharia inventada num produto inexistente.
+  const doc = selectedRef ? sheetsMap[selectedRef] : undefined;
   const res = useMemo(
     () =>
-      computeCellGsdBalancing(doc, {
-        jornadaMinutosDia: jornadaMin,
-        eficienciaOperacionalPct: eficienciaPct,
-        metaPecasDia: metaDia,
-        custoMinutoIndustrial: custoMinuto,
-      }),
+      doc
+        ? computeCellGsdBalancing(doc, {
+            jornadaMinutosDia: jornadaMin,
+            eficienciaOperacionalPct: eficienciaPct,
+            metaPecasDia: metaDia,
+            custoMinutoIndustrial: custoMinuto,
+          })
+        : null,
     [doc, jornadaMin, eficienciaPct, metaDia, custoMinuto],
   );
 
   function syncMinuteCostToTechSheet() {
-    ensure(selectedRef);
+    if (!doc || !res) {
+      toast.error("Sem ficha técnica salva: não há BOP para sincronizar.");
+      return;
+    }
     for (const st of res.stations) {
       if (!st.terceirizada) {
         updateBopStep(selectedRef, st.stepId, {
@@ -183,6 +178,10 @@ function CellBalancingTab() {
   }
 
   function printBalancingSheet() {
+    if (!doc || !res) {
+      toast.error("Sem ficha técnica salva: a Folha de Balanceamento não é emitível.");
+      return;
+    }
     const html = buildLineBalancingPrintableHtml(selectedRef, doc.meta?.name || selectedRef, res);
     const w = window.open("", "_blank");
     if (!w) {
@@ -196,11 +195,25 @@ function CellBalancingTab() {
     setTimeout(() => w.print(), 250);
   }
 
+  if (!doc || !res) {
+    return (
+      <Card className="p-4 border-border bg-card" data-testid="balanceamento-sem-ficha">
+        <p className="text-xs font-semibold text-foreground">
+          Nenhuma ficha técnica salva — balanceamento não apurável
+        </p>
+        <p className="text-2xs text-muted-foreground mt-1 leading-relaxed">
+          As referências de demonstração não têm BOP próprio. A Folha de Balanceamento A4 e a
+          sincronização de custo/minuto só saem com engenharia registrada.
+        </p>
+        <Link to="/tech-sheet" className="text-2xs text-primary underline mt-2 inline-block">
+          Abrir Ficha Técnica
+        </Link>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {provenance === "referencia" && (
-        <SheetProvenanceNote provenance={provenance} code={selectedRef} compact />
-      )}
       <Card className="p-4 border-border bg-card space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="flex flex-wrap items-end gap-3">
@@ -216,7 +229,7 @@ function CellBalancingTab() {
               >
                 {availableRefs.map((r) => (
                   <option key={r} value={r}>
-                    {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
+                    {r} — {sheetsMap[r]?.meta?.name ?? r}
                   </option>
                 ))}
               </select>
@@ -410,7 +423,6 @@ function CellBalancingTab() {
                         aria-label={`SAM ${s.etapa}`}
                         value={s.samMin}
                         onChange={(e) => {
-                          ensure(selectedRef);
                           updateBopStep(selectedRef, s.stepId, {
                             tempoMin: Math.max(0.05, Number(e.target.value) || 0.2),
                           });

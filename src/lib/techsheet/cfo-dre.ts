@@ -2,7 +2,8 @@
 // e Apuração DRE Gerencial Têxtil + OTB (Open-To-Buy) + Ponto de Equilíbrio (CFO).
 
 import { computeFullTechSheetPricing, resolveDivisorParams } from "./pricing";
-import { seedFor, type BopStep, type TechSheetData } from "./store";
+import { type BopStep, type TechSheetData } from "./store";
+import { operationalCodes } from "./provenance";
 import { round2 } from "./textile";
 
 export interface CellGsdParams {
@@ -47,7 +48,7 @@ export interface CellGsdBalancingResult {
 export interface DreSkuBreakdown {
   refCode: string;
   refName: string;
-  /** `false` quando o SKU só existe no modelo de demonstração. */
+  /** Sempre `true`: a DRE só apura SKUs com ficha salva (Onda 30). */
   salva: boolean;
   tiragem: number;
   unitPrice: number;
@@ -78,21 +79,22 @@ export interface CollectionDreSummary {
   otbBudgetBrl: number;
   otbCommittedBrl: number;
   otbRemainingBrl: number;
+  /** `false` quando não há nenhuma ficha salva: não existe DRE a apurar. */
+  apuravel: boolean;
   /**
-   * De onde vieram os SKUs que entraram na conta. A home mostrava EBITDA de
-   * coleção somando quatro fichas de exemplo; sem esta informação o número
-   * aparecia como se fosse a operação da empresa.
+   * A Onda 25 rotulava a origem; a Onda 30 tira o modelo da conta. `salvas`
+   * são os SKUs que entraram, `referencias` os SKUs de demonstração que
+   * **ficaram de fora** — declarados, nunca somados.
    */
   origem: {
     salvas: string[];
     referencias: string[];
-    /** Nenhuma ficha salva: os números são 100% modelo. */
+    /** Nenhuma ficha salva: não há número operacional, apenas `—`. */
     apenasReferencia: boolean;
   };
   /**
-   * Totais das fichas salvas, sem o modelo. `contribuicaoBrl` é margem de
-   * contribuição (receita − impostos − comerciais − CMV); só vira EBITDA quando
-   * não há SKU de referência diluindo o overhead fixo da coleção.
+   * Mantido por compatibilidade com a Onda 25: desde que o modelo saiu da soma,
+   * este espelho é igual aos próprios totais da DRE.
    */
   somenteSalvas: { totalPieces: number; grossRevenue: number; contribuicaoBrl: number };
   skus: DreSkuBreakdown[];
@@ -234,54 +236,56 @@ export function computeCellGsdBalancing(
   };
 }
 
+/**
+ * DRE Gerencial da coleção.
+ *
+ * Até a Onda 29 esta função plantava quatro referências de demonstração na
+ * lista, caía em `seedFor(ref)` para cada uma e somava receita, CMV, OTB e
+ * EBITDA do modelo junto das fichas reais. A Onda 25 passou a *rotular* essa
+ * mistura (`origem`, `somenteSalvas`), mas o número principal continuava misto
+ * — inclusive no A4 impresso. A regra das Ondas 27/28/29 é outra: só ficha
+ * salva entra em número operacional. Então o modelo sai da soma; a ausência
+ * fica declarada em `origem.referencias` e vira `—` na tela.
+ */
 export function computeCollectionDreSummary(
   sheetsMap: Record<string, TechSheetData>,
   fixedOverheadBrl = 85_000,
   otbBudgetBrl = 220_000,
+  // `ensure()` é chamado no render de várias telas e materializa o modelo no
+  // store. Sem este filtro, abrir uma tela criaria um SKU e a DRE passaria a
+  // apurá-lo como se fosse engenharia da empresa (Onda 22/30).
+  materializadas?: Record<string, true>,
 ): CollectionDreSummary {
-  const keys = Array.from(
-    new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
-  );
+  const keys = operationalCodes(sheetsMap, [], materializadas).sort();
+  const apuravel = keys.length > 0;
 
-  const multByRef: Record<string, { tiragem: number; priceMult: number; name?: string }> = {
-    DEV000006: { tiragem: 1800, priceMult: 1 },
-    "V24-001": { tiragem: 1400, priceMult: 1.35, name: "Camisa Polo Piquet Pima" },
-    "U25-014": { tiragem: 950, priceMult: 1.85, name: "Moletom Raglan Tech Fleece" },
-    "I25-088": { tiragem: 1200, priceMult: 1.65, name: "Calça Jogger Alfaiataria Tech" },
-  };
+  // Só para declarar o que ficou de fora. Nenhum destes códigos entra num
+  // acumulador abaixo, e `multByRef` (tiragem e multiplicador de preço do
+  // exemplo) deixou de existir junto com o `|| 99.9` do preço de papel.
+  const MODELO_REFS = ["DEV000006", "I25-088", "U25-014", "V24-001"];
+  const referencias = Array.from(
+    new Set([
+      ...MODELO_REFS.filter((r) => !(r in sheetsMap)),
+      ...Object.keys(sheetsMap).filter((r) => !keys.includes(r)),
+    ]),
+  ).sort();
 
   let totalPieces = 0;
   let grossRevenue = 0;
-  // Acumuladores paralelos: o que é de ficha salva, separado do que é modelo.
-  let salvasPieces = 0;
-  let salvasRevenue = 0;
-  let salvasEbitdaBase = 0;
   let taxDeductions = 0;
   let cmvMaterial = 0;
   let cmvLabor = 0;
   let commercialExpenses = 0;
 
   const skus: DreSkuBreakdown[] = keys.map((refCode) => {
-    const isCustom = refCode in sheetsMap;
-    const doc = sheetsMap[refCode] ?? seedFor(refCode);
-    const preset = !isCustom ? multByRef[refCode] : undefined;
+    const doc = sheetsMap[refCode]!;
     const pricing = computeFullTechSheetPricing(doc);
     const div = resolveDivisorParams(doc.preCost.divisor);
 
-    const tiragem = Math.max(
-      50,
-      isCustom
-        ? (doc.preCost.tiragemPlanejada ?? 600)
-        : (preset?.tiragem ?? doc.preCost.tiragemPlanejada ?? 600),
-    );
-    const mult = preset?.priceMult ?? 1;
-    const unitPrice = round2(
-      (pricing.precoReferenciaMargem || pricing.precoSugerido || 99.9) * mult,
-    );
-    const unitMaterialCost = round2(
-      (pricing.bom + pricing.aplicacoesPeca + pricing.setupPorPeca) * mult,
-    );
-    const unitLaborCost = round2((pricing.bop + pricing.overhead) * mult);
+    const tiragem = Math.max(50, doc.preCost.tiragemPlanejada ?? 600);
+    const unitPrice = round2(pricing.precoReferenciaMargem || pricing.precoSugerido || 0);
+    const unitMaterialCost = round2(pricing.bom + pricing.aplicacoesPeca + pricing.setupPorPeca);
+    const unitLaborCost = round2(pricing.bop + pricing.overhead);
 
     const taxPct = div.impostosPct / 100;
     const commPct =
@@ -303,16 +307,10 @@ export function computeCollectionDreSummary(
     cmvMaterial += skuMat;
     cmvLabor += skuLab;
 
-    if (isCustom) {
-      salvasPieces += tiragem;
-      salvasRevenue += skuGross;
-      salvasEbitdaBase += skuMcBrl;
-    }
-
     return {
       refCode,
-      refName: preset?.name || doc.meta?.name || refCode,
-      salva: isCustom,
+      refName: doc.meta?.name || refCode,
+      salva: true,
       tiragem,
       unitPrice,
       unitMaterialCost,
@@ -336,10 +334,13 @@ export function computeCollectionDreSummary(
     grossRevenue > 0 ? round2((contributionMarginBrl / grossRevenue) * 100) : 0;
 
   const fixed = Math.max(0, fixedOverheadBrl);
-  const ebitdaBrl = round2(contributionMarginBrl - fixed);
-  const ebitdaPct = grossRevenue > 0 ? round2((ebitdaBrl / grossRevenue) * 100) : 0;
+  // Sem ficha, não há receita a que o overhead fixo possa ser contraposto:
+  // imprimir "EBITDA = -R$ 85.000" seria inventar prejuízo a partir do vazio.
+  const ebitdaBrl = apuravel ? round2(contributionMarginBrl - fixed) : 0;
+  const ebitdaPct = apuravel && grossRevenue > 0 ? round2((ebitdaBrl / grossRevenue) * 100) : 0;
 
-  const avgContributionPerPiece = totalPieces > 0 ? contributionMarginBrl / totalPieces : 1;
+  const avgContributionPerPiece =
+    apuravel && totalPieces > 0 ? contributionMarginBrl / totalPieces : 0;
   const breakEvenPieces =
     avgContributionPerPiece > 0 ? Math.ceil(fixed / avgContributionPerPiece) : 0;
   const avgTicket = totalPieces > 0 ? grossRevenue / totalPieces : 0;
@@ -347,9 +348,6 @@ export function computeCollectionDreSummary(
 
   const otbCommittedBrl = cmvMaterial;
   const otbRemainingBrl = round2(otbBudgetBrl - otbCommittedBrl);
-
-  const salvas = skus.filter((k) => k.salva).map((k) => k.refCode);
-  const referencias = skus.filter((k) => !k.salva).map((k) => k.refCode);
 
   return {
     totalPieces,
@@ -371,19 +369,16 @@ export function computeCollectionDreSummary(
     otbBudgetBrl: round2(otbBudgetBrl),
     otbCommittedBrl,
     otbRemainingBrl,
+    apuravel,
     origem: {
-      salvas,
+      salvas: keys,
       referencias,
-      apenasReferencia: salvas.length === 0,
+      apenasReferencia: !apuravel,
     },
-    // O overhead fixo é da operação inteira: quando só há parte das fichas
-    // salvas, ratear esse custo entre elas daria um EBITDA falso para baixo.
-    // Por isso o "somente salvas" é contribuição, não EBITDA, e só vira EBITDA
-    // quando todas as fichas da coleção são salvas.
     somenteSalvas: {
-      totalPieces: salvasPieces,
-      grossRevenue: round2(salvasRevenue),
-      contribuicaoBrl: round2(salvasEbitdaBase),
+      totalPieces,
+      grossRevenue,
+      contribuicaoBrl: contributionMarginBrl,
     },
     skus,
   };
@@ -463,6 +458,27 @@ export function buildLineBalancingPrintableHtml(
 export function buildDrePrintableHtml(dre: CollectionDreSummary): string {
   const fmt = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
+  // Sem ficha salva não há DRE: o A4 declara a ausência em vez de imprimir uma
+  // tabela de zeros com cara de apuração.
+  const v = (n: number) => (dre.apuravel ? fmt(n) : "—");
+  const n = (x: number) => (dre.apuravel ? x.toLocaleString("pt-BR") : "—");
+  const pct = (x: number) => (dre.apuravel ? x.toFixed(1) : "—");
+
+  const aviso = !dre.apuravel
+    ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
+    <strong>DRE não apurável: nenhuma ficha técnica salva.</strong>
+    Os SKUs de demonstração (${dre.origem.referencias.join(", ")}) não entram na
+    apuração. Abra a Ficha Técnica e salve a engenharia de um produto para gerar a DRE.
+  </div>`
+    : dre.origem.referencias.length > 0
+      ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
+    <strong>SKUs de demonstração excluídos da apuração.</strong>
+    Sem ficha salva: ${dre.origem.referencias.join(", ")}.
+    Apurados: ${dre.origem.salvas.join(", ")}.
+    Esta DRE contém apenas fichas salvas pela engenharia da empresa.
+  </div>`
+      : "";
+
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -483,44 +499,25 @@ export function buildDrePrintableHtml(dre: CollectionDreSummary): string {
   <header>
     <div>
       <h1>DRE Gerencial Projetada da Coleção & Ponto de Equilíbrio</h1>
-      <div>Volume Planejado: <strong>${dre.totalPieces.toLocaleString("pt-BR")} peças</strong> · Break-Even: <strong>${dre.breakEvenPieces.toLocaleString("pt-BR")} peças (${fmt(dre.breakEvenRevenueBrl)})</strong></div>
+      <div>Volume Planejado: <strong>${n(dre.totalPieces)} peças</strong> · Break-Even: <strong>${n(dre.breakEvenPieces)} peças (${v(dre.breakEvenRevenueBrl)})</strong></div>
     </div>
     <div style="text-align:right">
-      <div>EBITDA Projetado: <strong>${fmt(dre.ebitdaBrl)} (${dre.ebitdaPct.toFixed(1)}%)</strong></div>
+      <div>EBITDA Projetado: <strong>${v(dre.ebitdaBrl)} (${pct(dre.ebitdaPct)}%)</strong></div>
     </div>
   </header>
-  ${
-    dre.origem.referencias.length > 0
-      ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
-    <strong>Documento com dados de demonstração.</strong>
-    SKU(s) sem ficha salva: ${dre.origem.referencias.join(", ")}.
-    ${dre.origem.salvas.length > 0 ? `Salvos: ${dre.origem.salvas.join(", ")}.` : "Nenhuma ficha salva."}
-    Os valores desses SKUs vêm do modelo, não da engenharia da empresa.
-  </div>`
-      : ""
-  }
-  ${
-    dre.origem.referencias.length > 0
-      ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
-    <strong>Documento com dados de demonstração.</strong>
-    SKU(s) sem ficha salva: ${dre.origem.referencias.join(", ")}.
-    ${dre.origem.salvas.length > 0 ? `Salvos: ${dre.origem.salvas.join(", ")}.` : "Nenhuma ficha salva."}
-    Os valores desses SKUs vêm do modelo, não da engenharia da empresa.
-  </div>`
-      : ""
-  }
+  ${aviso}
   <table>
     <tbody>
-      <tr class="bold"><td>(+) Receita Operacional Bruta</td><td style="text-align:right">${fmt(dre.grossRevenue)}</td></tr>
-      <tr><td>(-) Deduções Tributárias (ICMS / PIS / COFINS)</td><td style="text-align:right">- ${fmt(dre.taxDeductions)}</td></tr>
-      <tr class="bold"><td>(=) Receita Operacional Líquida</td><td style="text-align:right">${fmt(dre.netRevenue)}</td></tr>
-      <tr><td>(-) CMV · Matéria-Prima & Aplicações (BOM)</td><td style="text-align:right">- ${fmt(dre.cmvMaterial)}</td></tr>
-      <tr><td>(-) CMV · Mão de Obra Direta & Overhead Industrial (BOP)</td><td style="text-align:right">- ${fmt(dre.cmvLabor)}</td></tr>
-      <tr class="bold"><td>(=) Lucro Bruto Industrial</td><td style="text-align:right">${fmt(dre.grossProfit)}</td></tr>
-      <tr><td>(-) Despesas Variáveis Comerciais (Comissão + Frete + Taxa + Inadimplência)</td><td style="text-align:right">- ${fmt(dre.commercialExpenses)}</td></tr>
-      <tr class="bold"><td>(=) Margem de Contribuição (${dre.contributionMarginPct.toFixed(1)}%)</td><td style="text-align:right">${fmt(dre.contributionMarginBrl)}</td></tr>
+      <tr class="bold"><td>(+) Receita Operacional Bruta</td><td style="text-align:right">${v(dre.grossRevenue)}</td></tr>
+      <tr><td>(-) Deduções Tributárias (ICMS / PIS / COFINS)</td><td style="text-align:right">- ${v(dre.taxDeductions)}</td></tr>
+      <tr class="bold"><td>(=) Receita Operacional Líquida</td><td style="text-align:right">${v(dre.netRevenue)}</td></tr>
+      <tr><td>(-) CMV · Matéria-Prima & Aplicações (BOM)</td><td style="text-align:right">- ${v(dre.cmvMaterial)}</td></tr>
+      <tr><td>(-) CMV · Mão de Obra Direta & Overhead Industrial (BOP)</td><td style="text-align:right">- ${v(dre.cmvLabor)}</td></tr>
+      <tr class="bold"><td>(=) Lucro Bruto Industrial</td><td style="text-align:right">${v(dre.grossProfit)}</td></tr>
+      <tr><td>(-) Despesas Variáveis Comerciais (Comissão + Frete + Taxa + Inadimplência)</td><td style="text-align:right">- ${v(dre.commercialExpenses)}</td></tr>
+      <tr class="bold"><td>(=) Margem de Contribuição (${pct(dre.contributionMarginPct)}%)</td><td style="text-align:right">${v(dre.contributionMarginBrl)}</td></tr>
       <tr><td>(-) Custos e Despesas Fixas Estruturais</td><td style="text-align:right">- ${fmt(dre.fixedOverheadBrl)}</td></tr>
-      <tr class="bold"><td>(=) EBITDA Operacional Projetado (${dre.ebitdaPct.toFixed(1)}%)</td><td style="text-align:right">${fmt(dre.ebitdaBrl)}</td></tr>
+      <tr class="bold"><td>(=) EBITDA Operacional Projetado (${pct(dre.ebitdaPct)}%)</td><td style="text-align:right">${v(dre.ebitdaBrl)}</td></tr>
     </tbody>
   </table>
 </body>

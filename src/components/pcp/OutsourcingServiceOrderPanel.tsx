@@ -24,6 +24,7 @@ import {
   type ExternalServiceType,
 } from "@/lib/techsheet/outsourcing-os";
 import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useOperationalRefs } from "@/lib/techsheet/use-operational-refs";
 
 const STATUS_BADGE: Record<string, string> = {
   Concluída: "border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
@@ -33,7 +34,7 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 export function OutsourcingServiceOrderPanel() {
-  const sheetsMap = useTechSheetStore((s) => s.data);
+  const { sheetsMap, codes: refOptions } = useOperationalRefs();
   const partners = useOutsourcingStore((s) => s.partners);
   const serviceOrders = useOutsourcingStore((s) => s.serviceOrders);
   const addServiceOrder = useOutsourcingStore((s) => s.addServiceOrder);
@@ -43,14 +44,6 @@ export function OutsourcingServiceOrderPanel() {
   const [isNewOpen, setIsNewOpen] = useState(false);
   const [qrZoom, setQrZoom] = useState<{ src: string; title: string; subtitle: string } | null>(
     null,
-  );
-
-  const refOptions = useMemo(
-    () =>
-      Array.from(
-        new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
-      ),
-    [sheetsMap],
   );
 
   const servicePartners = useMemo(
@@ -76,7 +69,7 @@ export function OutsourcingServiceOrderPanel() {
     dueDate: string;
   }>({
     opNumber: "OP-2026-120",
-    refCode: "DEV000006",
+    refCode: "",
     partnerId: "11111111-1111-4111-8111-111111111111",
     serviceType: "Costura Externa",
     processRecipe: "Fechamento completo conforme BOP e peça-piloto lacrada; inspeção AQL 2.5.",
@@ -114,6 +107,10 @@ export function OutsourcingServiceOrderPanel() {
 
   function handleCreateOs() {
     const qty = Math.max(1, Math.round(Number(draft.qtySent) || 0));
+    if (!draft.refCode || !refOptions.includes(draft.refCode)) {
+      toast.error("Selecione uma ficha técnica salva antes de emitir a Ordem de Serviço.");
+      return;
+    }
     const partnerId = draft.partnerId || servicePartners[0]?.id || partners[0]?.id || "";
     if (!partnerId) {
       toast.error("Cadastre ao menos uma facção ou lavanderia antes de emitir a OS.");
@@ -442,9 +439,10 @@ export function OutsourcingServiceOrderPanel() {
                   onChange={(e) => setDraft({ ...draft, refCode: e.target.value })}
                   className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
                 >
+                  <option value="">Selecione uma ficha salva</option>
                   {refOptions.map((r) => (
                     <option key={r} value={r}>
-                      {r} — {resolveReferenceTechSheet(r, sheetsMap).doc.meta?.name || r}
+                      {r} — {sheetsMap[r]?.meta?.name || r}
                     </option>
                   ))}
                 </select>

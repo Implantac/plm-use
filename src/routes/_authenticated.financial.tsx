@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +59,7 @@ const DEFAULT_TRANSACTIONS: FinancialTransaction[] = [
 
 function FinancialPage() {
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
 
   const [fixedOverheadBrl, setFixedOverheadBrl] = useState(85_000);
   const [otbBudgetBrl, setOtbBudgetBrl] = useState(220_000);
@@ -97,12 +98,17 @@ function FinancialPage() {
   }, [fixedOverheadBrl, otbBudgetBrl, transactions]);
 
   const dre = useMemo(
-    () => computeCollectionDreSummary(sheetsMap, fixedOverheadBrl, otbBudgetBrl),
-    [sheetsMap, fixedOverheadBrl, otbBudgetBrl],
+    () => computeCollectionDreSummary(sheetsMap, fixedOverheadBrl, otbBudgetBrl, materializadas),
+    [sheetsMap, fixedOverheadBrl, otbBudgetBrl, materializadas],
   );
 
   const fmtBrl = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
+  // Sem ficha salva a DRE não é apurável: `—` declarado, nunca R$ 0,00 com
+  // cara de apuração e nunca o número do modelo (Onda 30).
+  const fmtDre = (v: number) => (dre.apuravel ? fmtBrl(v) : "—");
+  const fmtPecasDre = (v: number) => (dre.apuravel ? v.toLocaleString("pt-BR") : "—");
+  const fmtPctDre = (v: number) => (dre.apuravel ? v.toFixed(1) : "—");
 
   const [receber, setReceber] = useState<{ count: number; total: number } | null>(null);
   useEffect(() => {
@@ -188,26 +194,26 @@ function FinancialPage() {
   const financeStats = [
     {
       label: "Receita Líquida Projetada",
-      value: fmtBrl(dre.netRevenue),
-      change: `${dre.totalPieces.toLocaleString("pt-BR")} pçs`,
+      value: fmtDre(dre.netRevenue),
+      change: dre.apuravel ? `${dre.totalPieces.toLocaleString("pt-BR")} pçs` : "sem ficha salva",
       trend: "up" as const,
     },
     {
       label: "Custo Mercadoria (CMV)",
-      value: fmtBrl(dre.cmvTotal),
-      change: `BOM ${fmtBrl(dre.cmvMaterial)}`,
+      value: fmtDre(dre.cmvTotal),
+      change: `BOM ${fmtDre(dre.cmvMaterial)}`,
       trend: "down" as const,
     },
     {
       label: "Margem de Contribuição",
-      value: `${dre.contributionMarginPct.toFixed(1)}%`,
-      change: fmtBrl(dre.contributionMarginBrl),
+      value: `${fmtPctDre(dre.contributionMarginPct)}%`,
+      change: fmtDre(dre.contributionMarginBrl),
       trend: "up" as const,
     },
     {
       label: "EBITDA Projetado",
-      value: fmtBrl(dre.ebitdaBrl),
-      change: `${dre.ebitdaPct.toFixed(1)}% s/ Bruta`,
+      value: fmtDre(dre.ebitdaBrl),
+      change: `${fmtPctDre(dre.ebitdaPct)}% s/ Bruta`,
       trend: dre.ebitdaBrl >= 0 ? ("up" as const) : ("down" as const),
     },
   ];
@@ -220,12 +226,12 @@ function FinancialPage() {
       onAdd={() => handleOpenDialog()}
       searchPlaceholder="Buscar lançamento, coleção ou centro de custo"
       metrics={[
-        { label: "Receita Bruta", value: fmtBrl(dre.grossRevenue), detail: "planejada" },
-        { label: "CMV Total", value: fmtBrl(dre.cmvTotal), detail: "BOM + BOP" },
+        { label: "Receita Bruta", value: fmtDre(dre.grossRevenue), detail: "planejada" },
+        { label: "CMV Total", value: fmtDre(dre.cmvTotal), detail: "BOM + BOP" },
         {
           label: "Break-Even",
-          value: `${dre.breakEvenPieces.toLocaleString("pt-BR")} pçs`,
-          detail: fmtBrl(dre.breakEvenRevenueBrl),
+          value: `${fmtPecasDre(dre.breakEvenPieces)} pçs`,
+          detail: fmtDre(dre.breakEvenRevenueBrl),
         },
         {
           label: "Saldo OTB",
@@ -255,7 +261,14 @@ function FinancialPage() {
         >
           <Wallet className="w-4 h-4 text-primary" /> Simulador OTB & Estrutura
         </Button>
-        <Button type="button" size="sm" onClick={printDreReport} className="text-xs gap-2">
+        <Button
+          type="button"
+          size="sm"
+          onClick={printDreReport}
+          disabled={!dre.apuravel}
+          title={dre.apuravel ? undefined : "Salve uma ficha técnica para apurar a DRE"}
+          className="text-xs gap-2"
+        >
           <FileText className="w-4 h-4" /> DRE Gerencial (A4)
         </Button>
       </div>
@@ -265,13 +278,13 @@ function FinancialPage() {
         {dre.origem.apenasReferencia ? (
           <DataProvenanceBadge
             source="demonstracao"
-            detail="nenhuma ficha salva — todos os SKUs são do modelo"
+            detail="nenhuma ficha salva — DRE não apurável"
             data-testid="dre-provenance"
           />
         ) : dre.origem.referencias.length > 0 ? (
           <DataProvenanceBadge
             source="parcial"
-            detail={`${dre.origem.salvas.length} salva(s) · ${dre.origem.referencias.length} de demonstração`}
+            detail={`${dre.origem.salvas.length} salva(s) · ${dre.origem.referencias.length} do modelo fora da conta`}
             data-testid="dre-provenance"
           />
         ) : (
@@ -283,7 +296,7 @@ function FinancialPage() {
         )}
         {dre.origem.referencias.length > 0 && (
           <span className="text-[11px] text-muted-foreground">
-            SKUs de demonstração:{" "}
+            SKUs do modelo excluídos da apuração:{" "}
             <span className="font-mono">{dre.origem.referencias.join(", ")}</span>
           </span>
         )}
@@ -311,7 +324,7 @@ function FinancialPage() {
               {dre.otbBudgetBrl > 0
                 ? ((dre.otbCommittedBrl / dre.otbBudgetBrl) * 100).toFixed(1)
                 : 0}
-              % ({fmtBrl(dre.otbCommittedBrl)} de {fmtBrl(dre.otbBudgetBrl)})
+              % ({fmtDre(dre.otbCommittedBrl)} de {fmtBrl(dre.otbBudgetBrl)})
             </Badge>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
@@ -346,19 +359,19 @@ function FinancialPage() {
                 Ponto de Equilíbrio
               </span>
               <strong className="font-mono text-sm text-foreground">
-                {dre.breakEvenPieces.toLocaleString("pt-BR")} peças
+                {fmtPecasDre(dre.breakEvenPieces)} peças
               </strong>
               <span className="text-2xs text-muted-foreground block">
-                {fmtBrl(dre.breakEvenRevenueBrl)}
+                {fmtDre(dre.breakEvenRevenueBrl)}
               </span>
             </div>
             <div className="rounded-lg border border-primary/30 bg-primary/10 p-2.5">
               <span className="text-2xs uppercase text-primary block">Deduções + Comissões</span>
               <strong className="font-mono text-sm text-primary">
-                {fmtBrl(dre.taxDeductions + dre.commercialExpenses)}
+                {fmtDre(dre.taxDeductions + dre.commercialExpenses)}
               </strong>
               <span className="text-2xs text-muted-foreground block">
-                Impostos {fmtBrl(dre.taxDeductions)}
+                Impostos {fmtDre(dre.taxDeductions)}
               </span>
             </div>
           </div>
@@ -428,6 +441,17 @@ function FinancialPage() {
                 </tr>
               </thead>
               <tbody>
+                {!dre.apuravel && (
+                  <tr className="border-t border-border/60" data-testid="dre-sem-ficha">
+                    <td colSpan={6} className="p-4 text-center text-xs text-muted-foreground">
+                      Nenhuma ficha técnica salva. A DRE não é apurável — os SKUs de demonstração
+                      não entram na conta.{" "}
+                      <Link to="/tech-sheet" className="text-primary underline">
+                        Abrir Ficha Técnica
+                      </Link>
+                    </td>
+                  </tr>
+                )}
                 {dre.skus.map((sku) => (
                   <tr key={sku.refCode} className="border-t border-border/60">
                     <td className="p-2.5">
@@ -528,17 +552,22 @@ function FinancialPage() {
                   Saúde Operacional da Coleção
                 </h3>
                 <p className="text-2xs text-status-approved font-semibold uppercase tracking-widest">
-                  {dre.ebitdaBrl >= 0 ? "Superavitária" : "Atenção ao Custo Fixo"}
+                  {!dre.apuravel
+                    ? "DRE não apurável"
+                    : dre.ebitdaBrl >= 0
+                      ? "Superavitária"
+                      : "Atenção ao Custo Fixo"}
                 </p>
               </div>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               O ponto de equilíbrio é atingido com{" "}
-              <strong className="text-foreground">
-                {dre.breakEvenPieces.toLocaleString("pt-BR")} peças
-              </strong>{" "}
-              ({((dre.breakEvenPieces / Math.max(1, dre.totalPieces)) * 100).toFixed(0)}% da tiragem
-              planejada).
+              <strong className="text-foreground">{fmtPecasDre(dre.breakEvenPieces)} peças</strong>{" "}
+              (
+              {dre.apuravel
+                ? ((dre.breakEvenPieces / Math.max(1, dre.totalPieces)) * 100).toFixed(0)
+                : "—"}
+              % da tiragem planejada).
             </p>
           </Card>
         </div>

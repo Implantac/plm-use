@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Clock, FileSpreadsheet, FileText, Layers, PackageCheck, Scissors } from "lucide-react";
 import { toast } from "sonner";
@@ -8,25 +8,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { buildCutOrderPrintableHtml, computeLayAndCutPlan } from "@/lib/techsheet/cut-order";
-import { defaultColorwaysFor, seedFor, useTechSheetStore } from "@/lib/techsheet/store";
-import { resolveSheet } from "@/lib/techsheet/provenance";
-import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
+import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 
 export function CuttingRoomPlanPanel() {
-  const sheetsMap = useTechSheetStore((s) => s.data);
-  const materializadas = useTechSheetStore((s) => s.materializadas);
-  const availableRefs = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
-
-  const [selectedRef, setSelectedRef] = useState("DEV000006");
-  const { doc, provenance } = resolveSheet(sheetsMap, selectedRef, seedFor, materializadas);
-  const cws = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
-  const [colorName, setColorName] = useState(cws[0]?.name ?? "Verde Brasil");
+  const { sheetsMap, codes: availableRefs } = useOperationalRefs();
+  const [selectedRef, setSelectedRef] = useSelectedRef(availableRefs);
+  // Sem ficha salva não há encaixe, BOM nem cor de enfesto: `resolveSheet`
+  // caía em `seedFor` e a Ordem de Corte A4 saía inteira do modelo.
+  const doc = selectedRef ? sheetsMap[selectedRef] : undefined;
+  const cws = doc?.colorways?.length ? doc.colorways : [];
+  const [colorName, setColorName] = useState("");
   const [totalPlies, setTotalPlies] = useState(140);
   const [maxPlies, setMaxPlies] = useState(60);
   const [endLossCm, setEndLossCm] = useState(4);
@@ -40,17 +31,29 @@ export function CuttingRoomPlanPanel() {
 
   const plan = useMemo(
     () =>
-      computeLayAndCutPlan(doc, {
-        markerRatio: ratio,
-        totalPlies,
-        maxPliesPerSpread: maxPlies,
-        endLossCm,
-        colorName,
-      }),
+      doc
+        ? computeLayAndCutPlan(doc, {
+            markerRatio: ratio,
+            totalPlies,
+            maxPliesPerSpread: maxPlies,
+            endLossCm,
+            colorName,
+          })
+        : null,
     [doc, ratio, totalPlies, maxPlies, endLossCm, colorName],
   );
 
+  useEffect(() => {
+    setColorName(cws[0]?.name ?? "");
+    // Só ao trocar de referência: digitar no campo não pode resetar o valor.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRef]);
+
   function printCutOrder() {
+    if (!doc || !plan) {
+      toast.error("Sem ficha técnica salva: a Ordem de Corte não é emitível.");
+      return;
+    }
     const html = buildCutOrderPrintableHtml(
       selectedRef,
       doc.meta?.name || selectedRef,
@@ -69,6 +72,25 @@ export function CuttingRoomPlanPanel() {
     setTimeout(() => w.print(), 250);
   }
 
+  if (!doc || !plan) {
+    return (
+      <Card className="border-border bg-card" data-testid="corte-sem-ficha">
+        <CardContent className="p-4 space-y-2">
+          <div className="text-xs font-semibold text-foreground">
+            Nenhuma ficha técnica salva — plano de corte não apurável
+          </div>
+          <p className="text-2xs text-muted-foreground leading-relaxed">
+            As referências de demonstração não têm encaixe, BOM ou grade próprios. A Ordem de Corte
+            A4 só é emitida para engenharia registrada.
+          </p>
+          <Link to="/tech-sheet" className="text-2xs text-primary underline">
+            Abrir Ficha Técnica
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <Card className="border-border bg-card">
@@ -85,14 +107,13 @@ export function CuttingRoomPlanPanel() {
                   onChange={(e) => {
                     const nextRef = e.target.value;
                     setSelectedRef(nextRef);
-                    const nextDoc = sheetsMap[nextRef] ?? seedFor(nextRef);
-                    setColorName(nextDoc.colorways?.[0]?.name ?? "Verde Brasil");
+                    setColorName(sheetsMap[nextRef]?.colorways?.[0]?.name ?? "");
                   }}
                   className="h-9 rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground"
                 >
                   {availableRefs.map((r) => (
                     <option key={r} value={r}>
-                      {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
+                      {r} — {sheetsMap[r]?.meta?.name ?? r}
                     </option>
                   ))}
                 </select>
@@ -235,9 +256,8 @@ export function CuttingRoomPlanPanel() {
         </CardContent>
       </Card>
 
-      {provenance === "referencia" && (
-        <SheetProvenanceNote provenance={provenance} code={selectedRef} compact />
-      )}
+      {/* O early-return acima garante ficha salva: não há mais procedência de
+          demonstração a declarar neste painel. */}
 
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-4">
         <Card className="border-border bg-card p-4 space-y-3 h-fit">

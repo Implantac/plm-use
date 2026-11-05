@@ -93,7 +93,6 @@ function LooksPage() {
   const looks = useLooks();
   const sheetsMap = useTechSheetStore((s) => s.data);
   const materializadas = useTechSheetStore((s) => s.materializadas);
-  const ensure = useTechSheetStore((s) => s.ensure);
   const [selectedId, setSelectedId] = useState<string | null>(looks[0]?.id ?? null);
   const [statusFilter, setStatusFilter] = useState<LookStatus | "all">("all");
   const [occasionFilter, setOccasionFilter] = useState<LookOccasion | "all">("all");
@@ -620,23 +619,26 @@ function LookDetail({ look }: { look: Look }) {
 
 function AddItemForm({ lookId }: { lookId: string }) {
   const sheetsMap = useTechSheetStore((s) => s.data);
-  const ensure = useTechSheetStore((s) => s.ensure);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [color, setColor] = useState("#1D6B47");
   const [role, setRole] = useState<LookItem["role"]>("complemento");
 
-  const sheetRefs = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
+  // Importar rápido para um look só oferece fichas salvas: antes as quatro
+  // referências de exemplo apareciam e `ensure()` fabricava a ficha no ato.
+  const sheetRefs = useMemo(
+    () => operationalCodes(sheetsMap, [], materializadas).sort(),
+    [sheetsMap, materializadas],
+  );
 
   function fillFromSheet(refCode: string) {
     if (!refCode) return;
-    const doc = sheetsMap[refCode] ?? ensure(refCode);
+    const doc = sheetsMap[refCode];
+    if (!doc) {
+      toast.error("Essa referência não tem ficha técnica salva.");
+      return;
+    }
     setCode(refCode);
     setName(doc.meta?.name || refCode);
     setColor(doc.colorways?.[0]?.hex || "#1D6B47");
@@ -668,7 +670,7 @@ function AddItemForm({ lookId }: { lookId: string }) {
         <option value="">+ Importar rápido de Ficha Técnica…</option>
         {sheetRefs.map((r) => (
           <option key={r} value={r}>
-            {r} — {sheetsMap[r]?.meta?.name ?? "Ficha Técnica"}
+            {r} — {sheetsMap[r]?.meta?.name ?? r}
           </option>
         ))}
       </select>

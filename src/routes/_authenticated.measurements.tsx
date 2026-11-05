@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import { measurementChartToTechSheetSpec } from "@/lib/techsheet/sourcing-rfq";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import {
   listCharts,
@@ -337,7 +337,7 @@ function MeasurementsPage() {
                     {refOptions.length === 0 && <option value="">Nenhuma ficha salva</option>}
                     {refOptions.map((r) => (
                       <option key={r} value={r}>
-                        {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
+                        {r} — {sheetsMap[r]?.meta?.name ?? r}
                       </option>
                     ))}
                   </select>

@@ -2,6 +2,44 @@
 // e Exportador Estruturado de Catálogo B2B / VTEX / Shopify (CSV + Checklist A4).
 
 import type { TechSheetData } from "@/lib/techsheet/store";
+import { operationalCodes, type SheetProvenance } from "@/lib/techsheet/provenance";
+
+export interface OmnichannelInputs {
+  /** Só fichas salvas (templates materializados ficam fora). */
+  docs: Record<string, TechSheetData>;
+  /** `false` → não há o que avaliar, exportar ou imprimir. */
+  apuravel: boolean;
+  provenance: SheetProvenance;
+  /** Refs que existem no store mas são apenas modelo materializado. */
+  excluidas: string[];
+}
+
+/**
+ * Onda 30. O painel montava `{ V24-001: seedFor(...), DEV000006: seedFor(...) }`
+ * quando o store estava vazio e, com isso, **exportava um feed CSV de catálogo
+ * (GTIN/EAN-13 + NCM) e imprimia um Checklist Go/No-Go A4 inteiros de
+ * demonstração**. Havia um selo de procedência na tela, mas os dois botões
+ * continuavam ativos. Sem ficha salva não existe catálogo: `docs` fica vazio e
+ * a tela desabilita as duas saídas.
+ */
+export function resolveOmnichannelInputs(
+  sheets: Record<string, TechSheetData> | undefined,
+  materializadas?: Record<string, true>,
+): OmnichannelInputs {
+  const todos = sheets ?? {};
+  const codes = operationalCodes(todos, [], materializadas);
+  const docs: Record<string, TechSheetData> = {};
+  for (const code of codes) {
+    const doc = todos[code];
+    if (doc) docs[code] = doc;
+  }
+  return {
+    docs,
+    apuravel: codes.length > 0,
+    provenance: codes.length > 0 ? "salva" : "referencia",
+    excluidas: Object.keys(todos).filter((c) => !codes.includes(c)),
+  };
+}
 
 export interface LaunchReadinessItem {
   ref: string;

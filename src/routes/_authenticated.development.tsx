@@ -38,29 +38,22 @@ import { filtrarLifecycles, useReferenceStore, type DevFilter } from "@/lib/refe
 import { percentualLifecycle, stageAtual, type ReferenceLifecycle } from "@/types/reference";
 import { useReferences } from "@/hooks/use-references";
 import {
-  defaultColorwaysFor,
-  defaultEncaixeCadFor,
   LIFECYCLE_STAGES,
-  seedFor,
   tempoTotalBOP,
   useTechSheetStore,
-  type TechSheetData,
   type TechSheetLifecycleStage,
 } from "@/lib/techsheet/store";
 import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
+import {
+  averageKanbanMargin,
+  buildKanbanRefItems,
+  canAdvanceStage,
+  type KanbanRefItem,
+} from "@/lib/techsheet/kanban-items";
 
 export const Route = createFileRoute("/_authenticated/development")({
   component: DevelopmentPage,
 });
-
-interface KanbanRefItem {
-  ref: string;
-  name: string;
-  category: string;
-  collection: string;
-  stage: TechSheetLifecycleStage;
-  doc: TechSheetData;
-}
 
 const brl = (n: number) =>
   (Number.isFinite(n) ? n : 0).toLocaleString("pt-BR", {
@@ -68,16 +61,6 @@ const brl = (n: number) =>
     currency: "BRL",
     minimumFractionDigits: 2,
   });
-
-function mapPercentToStage(pct: number): TechSheetLifecycleStage {
-  if (pct <= 15) return 1;
-  if (pct <= 30) return 2;
-  if (pct <= 50) return 3;
-  if (pct <= 65) return 4;
-  if (pct <= 80) return 5;
-  if (pct < 100) return 6;
-  return 7;
-}
 
 function DevelopmentPage() {
   const navigate = useNavigate();
@@ -104,67 +87,29 @@ function DevelopmentPage() {
     cloneFrom: "",
   });
 
-  // Consolida referências reais do store de Ficha Técnica + Ciclo de Vida + Supabase
+  // A esteira mostra o que a empresa está desenvolvendo. Referência que existe
+  // no Ciclo de Vida ou no banco mas não tem ficha salva entra **sem números**:
+  // até a Onda 29 ela virava `seedFor(code)`, e arrastar o cartão chamava
+  // `ensure()` + `updateMeta()`, gravando o modelo no store como "ficha salva".
+  // A partir daí RFQ, MRP e showroom operavam sobre engenharia inventada.
   const items = useMemo<KanbanRefItem[]>(() => {
-    const map = new Map<string, KanbanRefItem>();
-
-    // A esteira mostra o que a empresa está desenvolvendo. Existia aqui um
-    // "Garante DEV000006 sempre visível", que plantava a ficha de demonstração no
-    // quadro como se fosse referência em desenvolvimento — e o usuário podia
-    // arrastar de etapa um produto que não existe. Fora.
-
-    // Todas as fichas salvas no store persistente
-    for (const [key, doc] of Object.entries(techDocs)) {
-      const code = key.toUpperCase();
-      map.set(code, {
-        ref: code,
-        name: doc.meta?.name ?? `Produto ${code}`,
-        category: doc.meta?.category ?? "Confecção",
-        collection: doc.meta?.collection ?? "Verão 2027",
-        stage: doc.meta?.stage ?? 3,
-        doc,
-      });
-    }
-
-    // Referências do Centro de Desenvolvimento ainda não abertas no store
-    for (const lc of lifecycles) {
-      const code = lc.ref.toUpperCase();
-      if (!map.has(code)) {
-        const fallbackDoc = seedFor(code);
-        map.set(code, {
-          ref: code,
-          name: lc.nome,
-          category: "Coleção",
-          collection: lc.colecao ?? "Verão 2027",
-          stage: mapPercentToStage(percentualLifecycle(lc)),
-          doc: fallbackDoc,
-        });
-      }
-    }
-
-    // Referências vindas do banco Supabase
-    for (const r of dbRefs) {
-      const code = r.code.toUpperCase();
-      const existing = map.get(code);
-      if (existing) {
-        map.set(code, { ...existing, name: r.name || existing.name });
-      } else {
-        const fallbackDoc = seedFor(code);
-        map.set(code, {
-          ref: code,
-          name: r.name,
-          category: "Confecção",
-          collection: r.collection_id ?? "Verão 2027",
-          stage: 3,
-          doc: fallbackDoc,
-        });
-      }
-    }
-
+    const all = buildKanbanRefItems({
+      techDocs,
+      lifecycles: lifecycles.map((lc) => ({
+        ref: lc.ref,
+        nome: lc.nome,
+        colecao: lc.colecao,
+        pct: percentualLifecycle(lc),
+      })),
+      dbRefs: dbRefs.map((r) => ({
+        code: r.code,
+        name: r.name,
+        collection_id: r.collection_id,
+      })),
+    });
     const needle = searchQ.trim().toLowerCase();
-    const list = Array.from(map.values());
-    if (!needle) return list;
-    return list.filter(
+    if (!needle) return all;
+    return all.filter(
       (it) =>
         it.ref.toLowerCase().includes(needle) ||
         it.name.toLowerCase().includes(needle) ||
@@ -175,7 +120,12 @@ function DevelopmentPage() {
 
   const moveItemToStage = (refCode: string, nextStage: TechSheetLifecycleStage) => {
     const current = items.find((i) => i.ref === refCode);
-    ensure(refCode);
+    if (!canAdvanceStage(items, refCode)) {
+      toast.error(
+        `${refCode} não tem ficha técnica salva. Abra o Cockpit e registre a engenharia antes de avançar de estágio.`,
+      );
+      return;
+    }
     updateMeta(refCode, {
       stage: nextStage,
       name: current?.name,
@@ -255,14 +205,7 @@ function DevelopmentPage() {
 
   const pilotsStageCount = items.filter((i) => i.stage === 6).length;
   const readyCostCount = items.filter((i) => i.stage === 7).length;
-  const avgMargin = useMemo(() => {
-    if (!items.length) return 0;
-    const sum = items.reduce(
-      (acc, it) => acc + computeFullTechSheetPricing(it.doc).margemLiquidaRealPct,
-      0,
-    );
-    return Math.round((sum / items.length) * 10) / 10;
-  }, [items]);
+  const avgMargin = useMemo(() => averageKanbanMargin(items), [items]);
 
   return (
     <ModuleLayout
@@ -280,7 +223,11 @@ function DevelopmentPage() {
           value: String(readyCostCount),
           detail: "prontas p/ catálogo",
         },
-        { label: "Margem Líq. Média", value: `${avgMargin}%`, detail: "Mark-up Divisor" },
+        {
+          label: "Margem Líq. Média",
+          value: avgMargin === null ? "—" : `${avgMargin}%`,
+          detail: avgMargin === null ? "Sem ficha salva" : "Mark-up Divisor",
+        },
       ]}
     >
       <DevelopmentReferenceJourney />
@@ -337,19 +284,18 @@ function DevelopmentPage() {
 
                 <div className="flex-1 space-y-2.5">
                   {stageItems.map((item) => {
-                    const pricing = computeFullTechSheetPricing(item.doc);
-                    const cws = item.doc.colorways?.length
-                      ? item.doc.colorways
-                      : defaultColorwaysFor();
-                    const cad = item.doc.encaixeCad ?? defaultEncaixeCadFor();
-                    const sam = tempoTotalBOP(item.doc.bop);
+                    const doc = item.doc;
+                    const pricing = doc ? computeFullTechSheetPricing(doc) : null;
+                    const cws = doc?.colorways?.length ? doc.colorways : [];
+                    const cad = doc?.encaixeCad;
+                    const sam = doc ? tempoTotalBOP(doc.bop) : null;
                     const nextStage =
                       item.stage < 7 ? ((item.stage + 1) as TechSheetLifecycleStage) : null;
 
                     return (
                       <Card
                         key={item.ref}
-                        draggable
+                        draggable={!!item.doc}
                         onDragStart={(e) => onDragStartCard(item.ref, e)}
                         onDragEnd={() => {
                           setDragRef(null);
@@ -381,6 +327,11 @@ function DevelopmentPage() {
                           {/* Swatches bicolores das variantes */}
                           <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-1">
+                              {cws.length === 0 && (
+                                <span className="text-[10px] text-muted-foreground">
+                                  Sem variantes de cor
+                                </span>
+                              )}
                               {cws.slice(0, 4).map((cw) => (
                                 <span
                                   key={cw.id}
@@ -402,47 +353,71 @@ function DevelopmentPage() {
                             </div>
                             <span className="text-[10px] font-mono text-muted-foreground inline-flex items-center gap-1">
                               <Scissors className="w-2.5 h-2.5 text-teal-500" /> CAD{" "}
-                              {cad.eficienciaPct}%
+                              {cad ? `${cad.eficienciaPct}%` : "—"}
                             </span>
                           </div>
 
-                          {/* Mini KPIs Industriais: Custo Ind., PV e Margem */}
-                          <div className="grid grid-cols-3 gap-1 rounded-md border border-border/60 bg-background/60 p-1.5 text-center font-mono">
-                            <div>
-                              <div className="text-[9px] uppercase text-muted-foreground">
-                                Custo
+                          {/* Mini KPIs Industriais: só existem com ficha salva. */}
+                          {pricing ? (
+                            <div className="grid grid-cols-3 gap-1 rounded-md border border-border/60 bg-background/60 p-1.5 text-center font-mono">
+                              <div>
+                                <div className="text-[9px] uppercase text-muted-foreground">
+                                  Custo
+                                </div>
+                                <div className="text-[11px] font-bold text-foreground">
+                                  {brl(pricing.industrial)}
+                                </div>
                               </div>
-                              <div className="text-[11px] font-bold text-foreground">
-                                {brl(pricing.industrial)}
+                              <div>
+                                <div className="text-[9px] uppercase text-muted-foreground">PV</div>
+                                <div className="text-[11px] font-bold text-teal-600 dark:text-teal-300">
+                                  {brl(pricing.precoSugerido)}
+                                </div>
+                              </div>
+                              <div>
+                                <div className="text-[9px] uppercase text-muted-foreground">
+                                  Margem
+                                </div>
+                                <div
+                                  className={`text-[11px] font-bold inline-flex items-center justify-center gap-0.5 ${
+                                    pricing.margemLiquidaRealPct >=
+                                    pricing.margemLiquidaAlvoPct - 0.5
+                                      ? "text-emerald-600 dark:text-emerald-400"
+                                      : "text-amber-600 dark:text-amber-400"
+                                  }`}
+                                >
+                                  <TrendingUp className="w-2.5 h-2.5" />
+                                  {pricing.margemLiquidaRealPct.toFixed(0)}%
+                                </div>
                               </div>
                             </div>
-                            <div>
-                              <div className="text-[9px] uppercase text-muted-foreground">PV</div>
-                              <div className="text-[11px] font-bold text-teal-600 dark:text-teal-300">
-                                {brl(pricing.precoSugerido)}
+                          ) : (
+                            <div
+                              data-testid={`kanban-sem-ficha-${item.ref}`}
+                              className="rounded-md border border-amber-500/40 bg-amber-500/5 p-2 space-y-1"
+                            >
+                              <div className="text-[10px] text-amber-700 dark:text-amber-300 inline-flex items-center gap-1 font-semibold">
+                                <FileWarning className="w-3 h-3" /> Sem ficha técnica salva
                               </div>
-                            </div>
-                            <div>
-                              <div className="text-[9px] uppercase text-muted-foreground">
-                                Margem
-                              </div>
-                              <div
-                                className={`text-[11px] font-bold inline-flex items-center justify-center gap-0.5 ${
-                                  pricing.margemLiquidaRealPct >= pricing.margemLiquidaAlvoPct - 0.5
-                                    ? "text-emerald-600 dark:text-emerald-400"
-                                    : "text-amber-600 dark:text-amber-400"
-                                }`}
+                              <p className="text-[10px] text-muted-foreground leading-snug">
+                                Custo, PV, margem e SAM não são apurados. Avançar de estágio exige
+                                registrar a engenharia do produto.
+                              </p>
+                              <Link
+                                to="/tech-sheet"
+                                search={{ ref: item.ref }}
+                                className="text-[10px] text-primary underline inline-flex items-center gap-1"
                               >
-                                <TrendingUp className="w-2.5 h-2.5" />
-                                {pricing.margemLiquidaRealPct.toFixed(0)}%
-                              </div>
+                                Criar ficha técnica <ArrowRight className="w-2.5 h-2.5" />
+                              </Link>
                             </div>
-                          </div>
+                          )}
 
                           {/* Rodapé de Ação Rápida: SAM + Abrir Cockpit + Avançar Etapa */}
                           <div className="flex items-center justify-between pt-1 border-t border-border/50 gap-1.5">
                             <span className="text-[10px] font-mono text-muted-foreground inline-flex items-center gap-1">
-                              <Clock className="w-3 h-3" /> {sam.toFixed(1)}m
+                              <Clock className="w-3 h-3" />{" "}
+                              {sam !== null ? `${sam.toFixed(1)}m` : "—"}
                             </span>
                             <div className="flex items-center gap-1">
                               <Button
@@ -460,7 +435,12 @@ function DevelopmentPage() {
                                   size="sm"
                                   variant="ghost"
                                   className="h-6 px-1.5 text-[10px] gap-0.5"
-                                  title={`Avançar para estágio ${nextStage}`}
+                                  title={
+                                    doc
+                                      ? `Avançar para estágio ${nextStage}`
+                                      : "Salve a ficha técnica antes de avançar"
+                                  }
+                                  disabled={!doc}
                                   onClick={() => moveItemToStage(item.ref, nextStage)}
                                 >
                                   Etapa {nextStage} <ArrowRight className="w-2.5 h-2.5" />

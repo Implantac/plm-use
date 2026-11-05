@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "@tanstack/react-router";
 import { CheckCircle2, Download, FileText, ShieldCheck, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -8,30 +9,31 @@ import {
   buildLaunchGoNoGoHtml,
   buildOmnichannelCatalogCsv,
   evaluateOmnichannelReadiness,
+  resolveOmnichannelInputs,
 } from "@/lib/launch/omnichannel-readiness";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
-import type { SheetProvenance } from "@/lib/techsheet/provenance";
 
 export function OmnichannelReadinessPanel() {
   const sheets = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
 
-  const usouSeed = Object.keys(sheets).length === 0;
-  const provenance: SheetProvenance = usouSeed ? "referencia" : "salva";
-
-  const items = useMemo(() => {
-    const merged = usouSeed
-      ? {
-          "V24-001": seedFor("V24-001"),
-          DEV000006: seedFor("DEV000006"),
-        }
-      : sheets;
-    return evaluateOmnichannelReadiness(merged);
-  }, [sheets, usouSeed]);
+  const { docs, apuravel, provenance, excluidas } = useMemo(
+    () => resolveOmnichannelInputs(sheets, materializadas),
+    [sheets, materializadas],
+  );
+  const items = useMemo(
+    () => (apuravel ? evaluateOmnichannelReadiness(docs) : []),
+    [apuravel, docs],
+  );
 
   const readyCount = items.filter((i) => i.goNoGoStatus === "APTO_GO_LIVE").length;
 
   function handleExportCatalog() {
+    if (!apuravel) {
+      toast.error("Sem ficha técnica salva: não há catálogo para exportar.");
+      return;
+    }
     const csv = buildOmnichannelCatalogCsv(items);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -44,6 +46,10 @@ export function OmnichannelReadinessPanel() {
   }
 
   function handlePrintChecklist() {
+    if (!apuravel) {
+      toast.error("Sem ficha técnica salva: o checklist Go/No-Go não é apurável.");
+      return;
+    }
     const html = buildLaunchGoNoGoHtml(items);
     const w = window.open("", "_blank");
     if (!w) {
@@ -68,15 +74,22 @@ export function OmnichannelReadinessPanel() {
             </h3>
             <p className="text-2xs text-muted-foreground mt-0.5">
               Audita BOM, medidas ABNT, etiquetagem INMETRO, roteiro BOP e preço-alvo das fichas
-              reais ({readyCount}/{items.length} aptas p/ Go-Live).
+              reais (
+              {apuravel ? `${readyCount}/${items.length} aptas p/ Go-Live` : "nenhuma ficha salva"}
+              ).
             </p>
-            {usouSeed && (
+            {!apuravel && (
               <SheetProvenanceNote
                 provenance={provenance}
                 compact
                 className="mt-1.5"
                 data-testid="omnichannel-provenance"
               />
+            )}
+            {excluidas.length > 0 && (
+              <p className="text-2xs text-muted-foreground mt-1">
+                Modelos materializados fora do feed: {excluidas.join(", ")}
+              </p>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -85,6 +98,8 @@ export function OmnichannelReadinessPanel() {
               size="sm"
               variant="outline"
               onClick={handleExportCatalog}
+              disabled={!apuravel}
+              title={apuravel ? undefined : "Salve uma ficha técnica para exportar o feed"}
               className="h-8 text-xs gap-1.5"
             >
               <Download className="h-3.5 w-3.5 text-primary" /> Exportar Feed CSV (GTIN/NCM)
@@ -94,6 +109,8 @@ export function OmnichannelReadinessPanel() {
               size="sm"
               variant="outline"
               onClick={handlePrintChecklist}
+              disabled={!apuravel}
+              title={apuravel ? undefined : "Salve uma ficha técnica para imprimir o checklist"}
               className="h-8 text-xs gap-1.5"
             >
               <FileText className="h-3.5 w-3.5 text-emerald-500" /> Checklist Go/No-Go A4
@@ -114,6 +131,22 @@ export function OmnichannelReadinessPanel() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
+              {!apuravel && (
+                <tr data-testid="omnichannel-sem-ficha">
+                  <td colSpan={6} className="p-5 text-center text-xs text-muted-foreground">
+                    <p className="font-semibold text-foreground mb-1">
+                      Nenhuma ficha técnica salva — feed e checklist não apuráveis.
+                    </p>
+                    <p className="mb-2">
+                      Os SKUs de demonstração não entram no catálogo. O CSV de GTIN/NCM e o
+                      Checklist Go/No-Go A4 só saem com engenharia registrada.
+                    </p>
+                    <Link to="/tech-sheet" className="text-primary underline">
+                      Abrir Ficha Técnica
+                    </Link>
+                  </td>
+                </tr>
+              )}
               {items.map((it) => (
                 <tr key={it.ref}>
                   <td className="p-2.5">

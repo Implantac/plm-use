@@ -56,7 +56,10 @@ const PIPELINE_STAGES: { status: ReferenceStatus; color: string }[] = [
 function Dashboard() {
   const sheetsMap = useTechSheetStore((s) => s.data);
   const materializadas = useTechSheetStore((s) => s.materializadas);
-  const dre = useMemo(() => computeCollectionDreSummary(sheetsMap), [sheetsMap]);
+  const dre = useMemo(
+    () => computeCollectionDreSummary(sheetsMap, undefined, undefined, materializadas),
+    [sheetsMap, materializadas],
+  );
   const dppHero = useMemo(
     () => computeDigitalProductPassport(resolveReferenceTechSheet("DEV000006", sheetsMap)),
     [sheetsMap],
@@ -269,7 +272,7 @@ function Dashboard() {
                 <span className="text-2xs text-muted-foreground block">
                   Break-Even {dre.breakEvenPieces.toLocaleString("pt-BR")} pçs
                   {dre.origem.referencias.length > 0 &&
-                    ` · ${dre.origem.referencias.length} SKU de demonstração`}
+                    ` · ${dre.origem.referencias.length} do modelo fora da conta`}
                 </span>
               </>
             )}

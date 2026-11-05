@@ -1,9 +1,8 @@
-# Sincronia repo × ar × banco — medido em 05/11/2026
+# Sincronia repo × ar × banco — 6ª medição, 05/11/2026
 
-Este documento substitui a planilha que vivia solta em `/home/user/entrega/`. Ele é
-uma **medição**, não um plano: cada linha da tabela foi obtida executando o
-comando indicado no fim do arquivo. Se algo aqui divergir do que você vê na tela,
-o número deste arquivo é o que foi medido — refaça a medição antes de discordar.
+Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
+o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
+medição antes de discordar — e lembre que **publicar o app não aplica SQL**.
 
 ---
 
@@ -11,84 +10,101 @@ o número deste arquivo é o que foi medido — refaça a medição antes de dis
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 29** — `23b01a3`                | `git ls-remote` / API de commits     |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 28** (republicado em 05/11)     | marcadores no bundle (tabela abaixo) |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e na RPC novas         |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 30**                            | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 29**                            | marcadores no bundle (tabela abaixo) |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-Ou seja: **ar e repositório empatados na Onda 28** (3ª publicação do dia; entry
-`index-bJxsbr7k.js`, 217 chunks, marcadores das Ondas 24 a 28 presentes), e o
-**banco continua sem as migrações 21 e 24** — 4ª medição, mesmo resultado
-(`PGRST205` na view, `PGRST202` nas três RPCs). O banco é o único elo atrasado,
-e é o que faz a automação de estoque existir.
+**O que mudou desde a medição anterior:** o ar avançou da **Onda 28 para a 29**
+(entry novo `index-1d8-RbIh.js`, 219 chunks, marcadores `pedidosSemFicha`,
+`rfq-sem-ficha` e `showroom-sem-ficha` presentes). É publicação nova, não cache.
+O **banco não mudou** — 6ª medição, mesmo resultado. O repo agora está uma onda
+à frente do ar (Onda 30), e o banco continua sendo o elo atrasado.
+
+---
 
 ## 2. App publicado — qual onda está no ar
 
-Medição feita baixando o bundle a partir de `/login` e seguindo os imports
-relativos entre chunks (**220 chunks**; a medição da Onda 19 tinha 215). O entry
-mudou de `index-s84f6ian.js` para `index-CQexDK2k.js` — é build novo, não cache.
+Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
+todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 
-| Onda | Marcador procurado (texto de tela, não comentário) | Ocorrências |
-| ---- | -------------------------------------------------- | ----------- |
-| 19   | `Demonstração — não usar para decidir`             | ✅ 1        |
-| 20   | `Ficha de referência`                              | ✅ 1        |
-| 21   | `Consumo e liberação são automáticos`              | ✅ 1        |
-| 22   | `Ficha criada do modelo padrão`                    | ✅ 1        |
-| 23   | `vincular a estampa a uma ficha técnica`           | ✅ 1        |
-| 23   | `enviar a cartela de cores para uma ficha`         | ✅ 1        |
-| 24   | `Dar baixa do material`                            | ❌ 0        |
-| 24   | `op_reserved_materials`                            | ❌ 0        |
-| 25   | `Documento com dados de demonstração`              | ❌ 0        |
+- entry: **`index-1d8-RbIh.js`** (histórico: `index-CQexDK2k.js` = 23,
+  `index-BCX5Of78.js` = 25, `index-gNNeOgTl.js` = 26, `index-bJxsbr7k.js` = 28)
+- **219 chunks**, ~3,1 MB de JS lidos
 
-**Conclusão (05/11, 2ª medição):** o build publicado agora traz os marcadores até a
-Onda 25. O `entry` mudou de `index-CQexDK2k.js` para `index-BCX5Of78.js`.
+| Onda | Marcador procurado                 | Ocorrências | Leitura |
+| ---- | ---------------------------------- | ----------- | ------- |
+| 24   | `Dar baixa do material`            | 1           | ✅      |
+| 25   | `Documento com dados de demonstra` | 2           | ✅      |
+| 27   | `Custeio incompleto`               | 1           | ✅      |
+| 27   | `Composição não informada`         | 5           | ✅      |
+| 28   | `sem NCM`                          | 5           | ✅      |
+| 29   | `pedidosSemFicha`                  | 4           | ✅      |
+| 29   | `rfq-sem-ficha`                    | 1           | ✅      |
+| 29   | `showroom-sem-ficha`               | 1           | ✅      |
+| 30   | `DRE não apurável`                 | **0**       | ❌      |
+| 30   | `omnichannel-sem-ficha`            | **0**       | ❌      |
+
+**Conclusão:** o ar está na **Onda 29**. Nada da Onda 30 foi publicado ainda.
+
+---
 
 ## 3. Banco de produção — o que falta
 
-Consultado pela chave **publishable** que vem no próprio bundle do app (a mesma que
-o navegador usa), em `https://njmniwsqwohmigroswnl.supabase.co`:
+Consultado pela chave **publishable** que vem no próprio bundle do app (a mesma
+que o navegador usa), em `https://njmniwsqwohmigroswnl.supabase.co`:
 
-| Objeto                         | Esperado por | Resposta                                    |
-| ------------------------------ | ------------ | ------------------------------------------- |
-| view `stock_reservation_aging` | Onda 21      | **404**                                     |
-| RPC `op_reserved_materials`    | Onda 24      | **404** (`PGRST202`: função não encontrada) |
+| Objeto                                 | Esperado por | Resposta medida                                 |
+| -------------------------------------- | ------------ | ----------------------------------------------- |
+| view `stock_reservation_aging`         | Onda 21      | **404** `PGRST205` — "Could not find the table" |
+| RPC `consume_reservations_on_movement` | Onda 21      | **404** `PGRST202` — função não encontrada      |
+| RPC `record_op_material_consumption`   | Onda 24      | **404** `PGRST202`                              |
+| RPC `op_reserved_materials`            | Onda 24      | **404** `PGRST202`                              |
+
+`PGRST202` com a mensagem _"Searched for the function … without parameters or
+with a single unnamed json/jsonb parameter"_ é **conclusivo de função ausente** —
+não é RLS, não é permissão, não é cache de schema.
 
 Logo, `20261104120000_stock_reservation_lifecycle.sql` e
-`20261104200000_op_material_consumption.sql` **não foram aplicadas**. As migrações
-das Ondas 0–20 e das 22/23 (que são de UI) não dependem disto.
+`20261104200000_op_material_consumption.sql` **não foram aplicadas**. O pacote
+pronto, reaplicável e testado está em
+`docs/producao/APLICAR-ONDA-21-24.sql` (473 linhas, 163 asserções exit 0).
 
 ### A consequência que precisa ser dita
 
-A Onda 21 **está no ar** (tela de reservas) e ela exibe literalmente:
+A tela de reservas no ar promete:
 
 > "Consumo e liberação são automáticos: a saída de estoque consome a reserva e a
 > OP concluída ou cancelada libera o que sobrar."
 
-Em produção essa frase é **falsa**: o trigger que consumiria a reserva não existe
-no banco. Antes da republicação a tela antiga não prometia nada; agora ela promete
-uma automação que não roda. Publicar a UI antes da migração transformou um defeito
-silencioso em uma promessa falsa na cara do operador.
+Em produção essa frase é **falsa**: os triggers não existem no banco. Enquanto o
+SQL não for aplicado, a reserva criada em `'ativa'` nunca é encerrada pela
+automação e o disponível não volta.
 
-Enquanto `db push` não acontecer, o ciclo da reserva continua exatamente como
-descrito na Onda 21: reserva criada em `'ativa'` e ninguém a encerra.
+---
 
 ## 4. O que **não** foi medido (e por quê)
 
-- **Volume de dados em produção.** As tabelas respondem `200` com `[]` para a chave
-  publishable. Isso é o comportamento esperado com RLS ligada (todas as tabelas
-  testadas devolveram `[]` para `anon`), então **é indistinguível de tabela vazia**.
+- **Volume de dados em produção.** As tabelas respondem `200` com `[]` para a
+  chave publishable — esperado com RLS ligada e indistinguível de tabela vazia.
   Não afirmo nem "tem dados" nem "está vazio".
-- **Se há login funcionando.** Exige credencial; o E2E autenticado segue em `skipped`.
-- **Se o botão novo de baixa funciona em produção.** Depende da migração que falta.
+- **Se há login funcionando.** Exige credencial; `e2e-autenticado` segue
+  `skipped` na CI.
+- **Se os botões novos funcionam em produção.** Dependem da migração que falta.
+
+---
 
 ## 5. O que destrava cada lacuna
 
-| Lacuna                             | Ação                                                                        | Quem faz        |
-| ---------------------------------- | --------------------------------------------------------------------------- | --------------- |
-| ~~Ar atrás do repo~~               | ✅ resolvido: republicado na Onda 25 (05/11)                                | —               |
-| **Banco sem as migrações 21 e 24** | aplicar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor (ou `db push`) | dono do projeto |
-| E2E autenticado nunca roda         | fornecer credencial de teste (`PLM_E2E_EMAIL`/`PASSWORD`)                   | dono do projeto |
+| Lacuna                             | Ação                                                                               | Quem faz        |
+| ---------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
+| **Ar uma onda atrás do repo**      | republicar no Lovable depois deste commit                                          | dono do projeto |
+| **Banco sem as migrações 21 e 24** | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
+| E2E autenticado nunca roda         | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
+| Cancelar reservas presas           | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
 
-Nenhuma das duas restantes é código: uma é colar um arquivo (já pronto e testado), a outra é uma credencial.
+Nenhuma das pendências é código: publicar, colar um SQL e dar uma credencial.
+
+---
 
 ## 6. Como refazer esta medição
 
@@ -96,16 +112,32 @@ Nenhuma das duas restantes é código: uma é colar um arquivo (já pronto e tes
 # 1. repositório
 git ls-remote https://github.com/Implantac/plm-use.git main
 
-# 2. ar — baixa o bundle e procura os marcadores (script do repo)
-bash scripts/check-sync.sh
+# 2. ar — BFS pelos chunks do bundle e contagem de marcadores de tela
+python3 - <<'PY'
+import urllib.request, re, collections
+b='https://plmuse.lovable.app'
+g=lambda u: urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0'}),timeout=20).read().decode('utf8','replace')
+h=g(b+'/'); q=collections.deque(dict.fromkeys(re.findall(r'assets/([A-Za-z0-9_.-]+\.js)',h))); v=set(); t=''
+while q and len(v)<400:
+    c=q.popleft()
+    if c in v: continue
+    v.add(c)
+    try: s=g(b+'/assets/'+c)
+    except Exception: continue
+    t+=s
+    for n in re.findall(r'assets/([A-Za-z0-9_.-]+\.js)',s):
+        if n not in v: q.append(n)
+print('entry:', re.findall(r'assets/(index-[A-Za-z0-9_.-]+\.js)',h)[0], '| chunks:', len(v))
+for m in ['pedidosSemFicha','rfq-sem-ficha','DRE não apurável','omnichannel-sem-ficha']:
+    print(f'  {m:28} {t.count(m)}')
+PY
 
 # 3. banco — a chave publishable está no bundle; a URL é a do projeto
-KEY=$(grep -ahoE 'sb_publishable_[A-Za-z0-9_-]{10,}' /tmp/live6/*.js | head -1)
+KEY=sb_publishable_...   # extrair do JS acima
 URL=https://njmniwsqwohmigroswnl.supabase.co
-curl -s -o /dev/null -w '%{http_code}\n' -H "apikey: $KEY" "$URL/rest/v1/stock_reservation_aging?select=*&limit=1"
-curl -s -X POST -H "apikey: $KEY" -H "Content-Type: application/json" \
-     -d '{"_order_id":"00000000-0000-0000-0000-000000000000"}' \
+curl -s -H "apikey: $KEY" "$URL/rest/v1/stock_reservation_aging?select=*&limit=1"
+curl -s -X POST -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}' \
      "$URL/rest/v1/rpc/op_reserved_materials"
 ```
 
-`404` em ambas = as migrações das Ondas 21 e 24 continuam fora do ar.
+`PGRST205` na view e `PGRST202` nas RPCs = migrações 21/24 continuam fora do ar.

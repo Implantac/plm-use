@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { evaluateRollShadeBatch, type FabricRollItem } from "@/lib/techsheet/cut-order";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 
 const STORAGE_KEY = "use-moda:fabric-rolls-v1";
 
@@ -67,13 +68,12 @@ const SEED_ROLLS: FabricRollItem[] = [
 ];
 
 export function FabricRollsShadePanel() {
-  const sheetsMap = useTechSheetStore((s) => s.data);
-  const ensure = useTechSheetStore((s) => s.ensure);
+  const { sheetsMap, codes: refOptions } = useOperationalRefs();
   const updateBomItem = useTechSheetStore((s) => s.updateBomItem);
 
   const [rolls, setRolls] = useState<FabricRollItem[]>(SEED_ROLLS);
   const [selectedIds, setSelectedIds] = useState<string[]>(["rl-1", "rl-2"]);
-  const [targetRef, setTargetRef] = useState("DEV000006");
+  const [targetRef, setTargetRef] = useSelectedRef(refOptions);
   const [newRollCode, setNewRollCode] = useState("");
   const [newPartida, setNewPartida] = useState("PT-8841");
   const [newNuance, setNewNuance] = useState("A1");
@@ -131,7 +131,13 @@ export function FabricRollsShadePanel() {
   }
 
   function syncRollBalanceToBom() {
-    const doc = sheetsMap[targetRef] ?? ensure(targetRef);
+    // `ensure(targetRef)` fabricava a ficha de demonstração e gravava nela o
+    // saldo REAL do rolo: dado verdadeiro sobre uma BOM inventada.
+    const doc = targetRef ? sheetsMap[targetRef] : undefined;
+    if (!doc) {
+      toast.error("Sem ficha técnica salva: o saldo do rolo não tem BOM para vincular.");
+      return;
+    }
     const mainFabric = doc.bom.find((b) => b.tipo === "Tecido");
     if (!mainFabric) {
       toast.error(`Nenhum tecido encontrado na BOM de ${targetRef}.`);
@@ -166,11 +172,10 @@ export function FabricRollsShadePanel() {
               onChange={(e) => setTargetRef(e.target.value)}
               className="h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground"
             >
-              {Array.from(
-                new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
-              ).map((r) => (
+              {refOptions.length === 0 && <option value="">Sem ficha salva</option>}
+              {refOptions.map((r) => (
                 <option key={r} value={r}>
-                  {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
+                  {r} — {sheetsMap[r]?.meta?.name ?? r}
                 </option>
               ))}
             </select>
