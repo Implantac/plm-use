@@ -1,6 +1,6 @@
 # Onda 30 — Fechando o gerador de dinheiro de demonstração
 
-**Data:** 05/11/2026 · **Antecessor:** `59eced2` (Onda 29 + docs)
+**Data:** 05/11/2026 · **Commit:** `5564956` · **Antecessor:** `59eced2` (Onda 29 + docs)
 
 ---
 

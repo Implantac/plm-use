@@ -182,7 +182,7 @@ Este arquivo foi escrito quando `main` era `693ec16` (Onda 18). De lá para cá:
 | 27 — Documento só com ficha  | `16361dd` | DPP, romaneio, pré-NFe, remessa, OS cega e media kit recusam ficha não salva; NCM default eliminado; `DocumentoNaoEmitivelError`                                                                                       |
 | 28 — Preço e NCM reais       | `bdfa024` | line sheet do look para de inventar preço (null + kit só se completo); NCM perde o default em 5 pontos; NCM vira veto no gate de catálogo                                                                              |
 | 29 — Demo fora da operação   | `23b01a3` | RFQ, MRP, showroom e display deixam de usar ficha de demonstração; suíte deixa de ser instável (flake do OrderDetail resolvido) — **no ar**                                                                            |
-| 30 — Fechando o gerador      | `HEAD`    | DRE para de somar os 4 SKUs do modelo; esteira para de fabricar ficha ao arrastar; gate omnichannel não exporta CSV/A4 sem ficha; 4 emissores restantes passam a usar só fichas salvas; guarda de regressão nos fontes | ❌ não republicado      |
+| 30 — Fechando o gerador      | `5564956` | DRE para de somar os 4 SKUs do modelo; esteira para de fabricar ficha ao arrastar; gate omnichannel não exporta CSV/A4 sem ficha; 4 emissores restantes passam a usar só fichas salvas; guarda de regressão nos fontes | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -232,7 +232,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 30; hash exato em `git log -1`),
+Seção 7-A: `main@5564956` (Onda 30),
 `docs/producao/ONDA-19..30-*.md` e os números das suítes rodadas em 05/11
 (vitest **446/446**, SQL 163/163, bundle relido com **219 chunks**: marcadores
 das Ondas 24–29 presentes, marcadores da 30 com 0 ocorrências — logo o ar é a
