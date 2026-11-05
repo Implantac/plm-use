@@ -80,13 +80,13 @@ descrito na Onda 21: reserva criada em `'ativa'` e ninguém a encerra.
 
 ## 5. O que destrava cada lacuna
 
-| Lacuna                         | Ação                                                      | Quem faz        |
-| ------------------------------ | --------------------------------------------------------- | --------------- |
-| ~~Ar atrás do repo~~           | ✅ resolvido: republicado na Onda 25 (05/11)              | —               |
-| Banco sem as migrações 21 e 24 | `supabase db push` no projeto hospedado                   | dono do projeto |
-| E2E autenticado nunca roda     | fornecer credencial de teste (`PLM_E2E_EMAIL`/`PASSWORD`) | dono do projeto |
+| Lacuna                             | Ação                                                                        | Quem faz        |
+| ---------------------------------- | --------------------------------------------------------------------------- | --------------- |
+| ~~Ar atrás do repo~~               | ✅ resolvido: republicado na Onda 25 (05/11)                                | —               |
+| **Banco sem as migrações 21 e 24** | aplicar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor (ou `db push`) | dono do projeto |
+| E2E autenticado nunca roda         | fornecer credencial de teste (`PLM_E2E_EMAIL`/`PASSWORD`)                   | dono do projeto |
 
-Nenhuma das três é código. Duas são cliques, uma é uma credencial.
+Nenhuma das duas restantes é código: uma é colar um arquivo (já pronto e testado), a outra é uma credencial.
 
 ## 6. Como refazer esta medição
 
