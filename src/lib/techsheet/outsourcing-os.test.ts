@@ -53,9 +53,17 @@ describe("Terceirização Industrial · Facções, Lavanderia & Remessa CFOP 590
     expect(blindHtml).toContain("OS-2026-041");
     expect(blindHtml).not.toContain("Markup");
 
-    const metrics = computePartnerMetrics(partner, INITIAL_SERVICE_ORDERS, {});
-    expect(metrics.overallScore).toBeGreaterThanOrEqual(90);
-    expect(metrics.tier).toBe("A+");
-    expect(metrics.piecesInPossession).toBe(176);
+    // Capacidade só conta OS com ficha salva (Onda 27): sem mapa, nada entra.
+    const semFicha = computePartnerMetrics(partner, INITIAL_SERVICE_ORDERS, {});
+    expect(semFicha.piecesInPossession).toBe(0);
+
+    const comFicha = computePartnerMetrics(partner, INITIAL_SERVICE_ORDERS, {
+      DEV000006: seedFor("DEV000006"),
+      "V24-001": seedFor("V24-001"),
+      "U25-014": seedFor("U25-014"),
+    });
+    expect(comFicha.overallScore).toBeGreaterThanOrEqual(90);
+    expect(comFicha.tier).toBe("A+");
+    expect(comFicha.piecesInPossession).toBe(176);
   });
 });

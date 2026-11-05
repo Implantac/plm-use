@@ -21,7 +21,10 @@ import { ORDER_FLOW_STEPS, ORDER_STATUS } from "@/lib/sales/types";
 import { computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
 import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { sheetProvenance } from "@/lib/techsheet/provenance";
-import { computeDigitalProductPassport } from "@/lib/techsheet/dpp-expedition";
+import {
+  computeDigitalProductPassport,
+  resolveReferenceTechSheet,
+} from "@/lib/techsheet/dpp-expedition";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 
 import { Button } from "@/components/ui/button";
@@ -55,8 +58,7 @@ function Dashboard() {
   const materializadas = useTechSheetStore((s) => s.materializadas);
   const dre = useMemo(() => computeCollectionDreSummary(sheetsMap), [sheetsMap]);
   const dppHero = useMemo(
-    () =>
-      computeDigitalProductPassport("DEV000006", sheetsMap["DEV000006"] ?? seedFor("DEV000006")),
+    () => computeDigitalProductPassport(resolveReferenceTechSheet("DEV000006", sheetsMap)),
     [sheetsMap],
   );
   // O passaporte do herói é sempre do DEV000006; se essa ficha não foi editada,
@@ -304,12 +306,23 @@ function Dashboard() {
                 />
               )}
             </span>
-            <strong className="font-mono text-base text-emerald-600 dark:text-emerald-400">
-              Rating {dppHero.esgGrade} · {dppHero.carbonKgCo2e} kg CO₂e
-            </strong>
-            <span className="text-2xs text-muted-foreground block">
-              Circularidade {dppHero.circularityScore}/100
-            </span>
+            {dppHero ? (
+              <>
+                <strong className="font-mono text-base text-emerald-600 dark:text-emerald-400">
+                  Rating {dppHero.esgGrade} · {dppHero.carbonKgCo2e} kg CO₂e
+                </strong>
+                <span className="text-2xs text-muted-foreground block">
+                  Circularidade {dppHero.circularityScore}/100
+                </span>
+              </>
+            ) : (
+              <>
+                <strong className="font-mono text-base text-muted-foreground">—</strong>
+                <span className="text-2xs text-muted-foreground block">
+                  Sem ficha salva: o passaporte não é emitido
+                </span>
+              </>
+            )}
           </Link>
           <Link
             to="/commercial"

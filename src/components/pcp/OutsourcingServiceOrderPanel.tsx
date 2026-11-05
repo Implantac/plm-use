@@ -89,9 +89,10 @@ export function OutsourcingServiceOrderPanel() {
   const enrichedOrders = useMemo(() => {
     return serviceOrders.map((os) => {
       const partner = partners.find((p) => p.id === os.partnerId) ?? partners[0]!;
-      const doc = resolveReferenceTechSheet(os.refCode, sheetsMap);
+      const ref = resolveReferenceTechSheet(os.refCode, sheetsMap);
+      const { doc } = ref;
       const metrics = computeServiceOrderMetrics(os, partner, doc);
-      return { os, partner, doc, metrics };
+      return { os, partner, doc, metrics, emitivel: ref.emitivel };
     });
   }, [serviceOrders, partners, sheetsMap]);
 
@@ -141,7 +142,18 @@ export function OutsourcingServiceOrderPanel() {
     toast.success(`Ordem de Serviço ${newOs.osNumber} emitida e saldo remetido ao terceiro!`);
   }
 
+  // Documento não sai sobre ficha não salva: o XML de remessa leva NCM e valor,
+  // e a OS cega leva consumo e BOM.
+  function bloqueiaDocumento(row: (typeof enrichedOrders)[number]): boolean {
+    if (row.emitivel) return false;
+    toast.error(
+      `A referência ${row.os.refCode} não tem ficha salva — o documento sairia com dados de demonstração. Salve a ficha primeiro.`,
+    );
+    return true;
+  }
+
   function exportRemessaXml(row: (typeof enrichedOrders)[number]) {
+    if (bloqueiaDocumento(row)) return;
     const xml = buildRemessaNfeXml400(row.os, row.partner, row.doc);
     const blob = new Blob([xml], { type: "application/xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -156,6 +168,7 @@ export function OutsourcingServiceOrderPanel() {
   }
 
   function printBlindOs(row: (typeof enrichedOrders)[number]) {
+    if (bloqueiaDocumento(row)) return;
     const html = buildBlindServiceOrderHtml(row.os, row.partner, row.doc);
     const w = window.open("", "_blank");
     if (!w) {
@@ -431,7 +444,7 @@ export function OutsourcingServiceOrderPanel() {
                 >
                   {refOptions.map((r) => (
                     <option key={r} value={r}>
-                      {r} — {resolveReferenceTechSheet(r, sheetsMap).meta?.name || r}
+                      {r} — {resolveReferenceTechSheet(r, sheetsMap).doc.meta?.name || r}
                     </option>
                   ))}
                 </select>

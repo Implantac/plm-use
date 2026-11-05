@@ -171,19 +171,25 @@ export function buildDropMediaKitHtml(
   sheetsMap: Record<string, TechSheetData>,
 ): string {
   const roas = computeCampaignRoas(campaign);
-  const skuRows = campaign.skuRefs
-    .map((refCode) => {
-      const doc = resolveReferenceTechSheet(refCode, sheetsMap);
-      const pricing = computeFullTechSheetPricing(doc);
-      const dpp = computeDigitalProductPassport(refCode, doc);
-      return `<tr>
-        <td><strong>${escapeHtml(refCode)}</strong> — ${escapeHtml(doc.meta?.name || refCode)}</td>
+  // Media kit leva declaração ESG e preço ao cliente final: só ficha salva.
+  const linhas = campaign.skuRefs.flatMap((refCode) => {
+    const ref = resolveReferenceTechSheet(refCode, sheetsMap);
+    const dpp = computeDigitalProductPassport(ref);
+    if (!dpp) return [];
+    const pricing = computeFullTechSheetPricing(ref.doc);
+    return [
+      `<tr>
+        <td><strong>${escapeHtml(refCode)}</strong> — ${escapeHtml(ref.doc.meta?.name || refCode)}</td>
         <td>${escapeHtml(dpp.compositionText)}</td>
         <td>Classe ${dpp.esgGrade} (${dpp.carbonKgCo2e} kg CO₂e)</td>
         <td style="text-align:right">R$ ${pricing.precoSugerido.toFixed(2)}</td>
-      </tr>`;
-    })
-    .join("");
+      </tr>`,
+    ];
+  });
+  const skuRows =
+    linhas.length > 0
+      ? linhas.join("")
+      : `<tr><td colspan="4">Nenhuma referência da campanha tem ficha salva — este media kit não declara composição, classe ESG nem preço.</td></tr>`;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">

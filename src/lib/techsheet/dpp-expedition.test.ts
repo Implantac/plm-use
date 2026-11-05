@@ -1,30 +1,61 @@
 import { describe, expect, it } from "vitest";
-import { seedFor } from "./store";
+import { seedFor, type TechSheetData } from "./store";
 import {
+  DocumentoNaoEmitivelError,
   buildDppPrintableHtml,
   buildPackingListPrintableHtml,
   buildPreNfeXml400,
   computeDigitalProductPassport,
   computePackingAndNfePreview,
+  resolveReferenceTechSheet,
 } from "./dpp-expedition";
+
+/** Ficha que o usuário salvou: está no mapa e não é materialização do modelo. */
+const salvos: Record<string, TechSheetData> = {
+  DEV000006: seedFor("DEV000006"),
+  "V24-001": seedFor("V24-001"),
+};
+
+/** Ficha com NCM preenchido — exigência para faturar. */
+const salvosComNcm: Record<string, TechSheetData> = {
+  DEV000006: {
+    ...seedFor("DEV000006"),
+    etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "6109.10.00" },
+  },
+  "V24-001": {
+    ...seedFor("V24-001"),
+    etiquetagem: { ...seedFor("V24-001").etiquetagem!, ncm: "6105.10.00" },
+  },
+};
 
 describe("Passaporte Digital do Produto (DPP ESG) & Expedição Pré-NFe 4.00", () => {
   it("calcula pegada de carbono, água, circularidade, QR vetorial e certificado DPP A4", () => {
-    const dpp = computeDigitalProductPassport("DEV000006", seedFor("DEV000006"));
+    const ref = resolveReferenceTechSheet("DEV000006", salvos);
+    const dpp = computeDigitalProductPassport(ref);
+    expect(dpp).not.toBeNull();
+    if (!dpp) throw new Error("esperava DPP");
+
     expect(dpp.pieceWeightGrams).toBeGreaterThan(50);
     expect(dpp.carbonKgCo2e).toBeGreaterThan(0);
     expect(dpp.waterLiters).toBeGreaterThan(0);
     expect(dpp.circularityScore).toBeGreaterThanOrEqual(35);
     expect(dpp.qrSvgDataUrl).toContain("data:image/svg+xml");
 
-    const html = buildDppPrintableHtml(dpp);
+    const html = buildDppPrintableHtml({ ...dpp, ncm: "6109.10.00" });
     expect(html).toContain("Passaporte Digital do Produto");
     expect(html).toContain("DEV000006");
   });
 
   it("calcula caixas master, peso bruto/cubagem, CFOP estadual/interestadual e XML SEFAZ NFe 4.00", () => {
     const summarySp = computePackingAndNfePreview(
-      [{ refCode: "DEV000006", qtyPieces: 72, doc: seedFor("DEV000006") }],
+      [
+        {
+          refCode: "DEV000006",
+          qtyPieces: 72,
+          doc: salvosComNcm.DEV000006,
+          provenance: "salva",
+        },
+      ],
       "Luxury Boutique SP",
       "12.345.678/0001-90",
       "SP",
@@ -32,9 +63,17 @@ describe("Passaporte Digital do Produto (DPP ESG) & Expedição Pré-NFe 4.00", 
     expect(summarySp.cfop).toBe("6101"); // PR -> SP interestadual
     expect(summarySp.totalMasterBoxes).toBe(3); // 72 / 24
     expect(summarySp.grossWeightKg).toBeGreaterThan(summarySp.netWeightKg);
+    expect(summarySp.ignoradas).toHaveLength(0);
 
     const summaryPr = computePackingAndNfePreview(
-      [{ refCode: "V24-001", qtyPieces: 24, doc: seedFor("V24-001") }],
+      [
+        {
+          refCode: "V24-001",
+          qtyPieces: 24,
+          doc: salvosComNcm["V24-001"],
+          provenance: "salva",
+        },
+      ],
       "Urban Concept Curitiba",
       "09.112.880/0001-09",
       "PR",
@@ -49,5 +88,92 @@ describe("Passaporte Digital do Produto (DPP ESG) & Expedição Pré-NFe 4.00", 
     const packingHtml = buildPackingListPrintableHtml(summarySp);
     expect(packingHtml).toContain("Romaneio de Expedição");
     expect(packingHtml).toContain("Luxury Boutique SP");
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Onda 27: procedência é pré-requisito de documento
+// ─────────────────────────────────────────────────────────────────────────────
+describe("ficha não salva não vira documento", () => {
+  it("resolveReferenceTechSheet marca 'salva' com ficha no mapa e 'referencia' sem ela", () => {
+    const salva = resolveReferenceTechSheet("DEV000006", salvos);
+    expect(salva.provenance).toBe("salva");
+    expect(salva.emitivel).toBe(true);
+
+    const solta = resolveReferenceTechSheet("I25-088", salvos);
+    expect(solta.provenance).toBe("referencia");
+    expect(solta.emitivel).toBe(false);
+    // ainda entrega um doc para a vitrine não ficar vazia
+    expect(solta.doc.bom.length).toBeGreaterThan(0);
+  });
+
+  it("template (cópia intacta do modelo) também não é emitível", () => {
+    const ref = resolveReferenceTechSheet("DEV000006", salvos, { DEV000006: true });
+    expect(ref.provenance).toBe("template");
+    expect(ref.emitivel).toBe(false);
+    expect(computeDigitalProductPassport(ref)).toBeNull();
+  });
+
+  it("DPP de referência é null, não um passaporte com números inventados", () => {
+    const ref = resolveReferenceTechSheet("I25-088", {});
+    expect(computeDigitalProductPassport(ref)).toBeNull();
+  });
+
+  it("expedição ignora a referência sem ficha e diz o motivo", () => {
+    const summary = computePackingAndNfePreview(
+      [{ refCode: "I25-088", qtyPieces: 10, doc: seedFor("I25-088"), provenance: "referencia" }],
+      "Cliente",
+      "00.000.000/0001-00",
+      "SP",
+    );
+    expect(summary.lines).toHaveLength(0);
+    expect(summary.ignoradas).toEqual([{ refCode: "I25-088", motivo: "sem-ficha" }]);
+    expect(summary.totalPieces).toBe(0);
+    expect(summary.productsTotalBrl).toBe(0);
+  });
+
+  it("ficha salva sem NCM também é barrada, em vez de virar 6109.90.00", () => {
+    const semNcm = { ...seedFor("DEV000006") };
+    semNcm.etiquetagem = { ...semNcm.etiquetagem!, ncm: "" };
+    const summary = computePackingAndNfePreview(
+      [{ refCode: "DEV000006", qtyPieces: 5, doc: semNcm, provenance: "salva" }],
+      "Cliente",
+      "00.000.000/0001-00",
+      "SP",
+    );
+    expect(summary.ignoradas).toEqual([{ refCode: "DEV000006", motivo: "sem-ncm" }]);
+  });
+
+  it("geradores recusam emitir com linha pendente", () => {
+    const summary = computePackingAndNfePreview(
+      [{ refCode: "I25-088", qtyPieces: 10, doc: seedFor("I25-088"), provenance: "referencia" }],
+      "Cliente",
+      "00.000.000/0001-00",
+      "SP",
+    );
+    expect(() => buildPreNfeXml400(summary)).toThrow(DocumentoNaoEmitivelError);
+    expect(() => buildPackingListPrintableHtml(summary)).toThrow(DocumentoNaoEmitivelError);
+  });
+
+  it("DPP impresso sem NCM é recusado", () => {
+    const ref = resolveReferenceTechSheet("DEV000006", salvos);
+    const dpp = computeDigitalProductPassport(ref);
+    if (!dpp) throw new Error("esperava DPP");
+    const semNcm = { ...dpp, ncm: "" };
+    expect(() => buildDppPrintableHtml(semNcm)).toThrow(DocumentoNaoEmitivelError);
+  });
+
+  it("a mensagem do erro nomeia a referência e o motivo", () => {
+    const summary = computePackingAndNfePreview(
+      [{ refCode: "I25-088", qtyPieces: 10, doc: seedFor("I25-088"), provenance: "referencia" }],
+      "Cliente",
+      "00.000.000/0001-00",
+      "SP",
+    );
+    try {
+      buildPreNfeXml400(summary);
+    } catch (err) {
+      expect((err as Error).message).toContain("I25-088:sem-ficha");
+    }
   });
 });

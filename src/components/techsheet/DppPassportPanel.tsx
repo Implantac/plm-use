@@ -1,6 +1,14 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Droplets, FileSpreadsheet, Leaf, Printer, QrCode, Recycle } from "lucide-react";
+import {
+  AlertTriangle,
+  Droplets,
+  FileSpreadsheet,
+  Leaf,
+  Printer,
+  QrCode,
+  Recycle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,13 +35,19 @@ export function DppPassportPanel() {
     null,
   );
 
-  const passports = useMemo(() => {
-    const keys = Array.from(
-      new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
-    );
-    return keys.map((refCode) =>
-      computeDigitalProductPassport(refCode, resolveReferenceTechSheet(refCode, sheetsMap)),
-    );
+  // Só ficha salva vira passaporte. Antes, a lista plantava quatro referências
+  // de demonstração e emitia DPP sobre elas — NCM, composição e pegada de
+  // carbono inventados num documento que vai ao consumidor.
+  const { emitidos, naoEmitidos } = useMemo(() => {
+    const em: DigitalProductPassport[] = [];
+    const nao: { refCode: string; motivo: string }[] = [];
+    for (const refCode of Object.keys(sheetsMap)) {
+      const ref = resolveReferenceTechSheet(refCode, sheetsMap);
+      const dpp = computeDigitalProductPassport(ref);
+      if (dpp) em.push(dpp);
+      else nao.push({ refCode, motivo: ref.provenance === "template" ? "modelo" : "demonstração" });
+    }
+    return { emitidos: em, naoEmitidos: nao };
   }, [sheetsMap]);
 
   function printDpp(p: DigitalProductPassport) {
@@ -70,7 +84,7 @@ export function DppPassportPanel() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-          {passports.map((p) => (
+          {emitidos.map((p) => (
             <div
               key={p.refCode}
               className="rounded-lg border border-border/80 bg-muted/30 p-3 flex flex-col justify-between gap-2.5"
@@ -152,7 +166,39 @@ export function DppPassportPanel() {
               </div>
             </div>
           ))}
+
+          {emitidos.length === 0 && (
+            <div
+              data-testid="dpp-sem-ficha"
+              className="md:col-span-2 xl:col-span-4 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-xs text-amber-800 dark:text-amber-300"
+            >
+              <p className="font-semibold flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Nenhum passaporte a emitir
+              </p>
+              <p className="mt-1 leading-snug">
+                O DPP declara composição, NCM e métricas ESG ao consumidor. Só uma ficha
+                <strong className="font-semibold"> salva por você</strong> pode gerar o documento —
+                o modelo de demonstração não assina nada. Abra a Ficha Técnica, preencha a
+                etiquetagem (NCM e composição ABNT) e salve.
+              </p>
+            </div>
+          )}
         </div>
+
+        {naoEmitidos.length > 0 && (
+          <p
+            data-testid="dpp-nao-emitidos"
+            className="mt-3 text-2xs text-muted-foreground leading-snug"
+          >
+            Fora do passaporte ({naoEmitidos.length}):{" "}
+            {naoEmitidos
+              .map((n) => `${n.refCode} (${n.motivo})`)
+              .slice(0, 8)
+              .join(" · ")}
+            {naoEmitidos.length > 8 ? " …" : ""}
+          </p>
+        )}
       </CardContent>
 
       {qrZoom && (

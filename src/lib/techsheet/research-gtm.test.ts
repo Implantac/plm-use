@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { useTechSheetStore } from "./store";
+import { seedFor, useTechSheetStore } from "./store";
 import {
   INITIAL_BRIEFINGS,
   INITIAL_GTM_CAMPAIGNS,
@@ -28,8 +28,19 @@ describe("Pesquisa Criativa -> Engenharia (Briefing 1-Clique) & Hub GTM Drops", 
     expect(summary.blendedRoas).toBeGreaterThan(4);
     expect(summary.netFullRoas).toBeLessThan(summary.blendedRoas);
 
-    const html = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, {});
-    expect(html).toContain("Release GTM & Media Kit");
+    // Sem ficha salva, o media kit não declara composição nem ESG (Onda 27).
+    const vazio = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, {});
+    expect(vazio).toContain("Release GTM & Media Kit");
+    expect(vazio).not.toContain("DEV000006");
+    expect(vazio).toContain("Nenhuma referência da campanha tem ficha salva");
+
+    const salvos = {
+      DEV000006: seedFor("DEV000006"),
+      "V24-001": seedFor("V24-001"),
+      "U25-014": seedFor("U25-014"),
+      "I25-088": seedFor("I25-088"),
+    };
+    const html = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, salvos);
     expect(html).toContain("DEV000006");
     expect(html).toContain("CO₂e");
   });

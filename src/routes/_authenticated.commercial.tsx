@@ -4,6 +4,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
   Box,
@@ -85,6 +86,12 @@ const DEFAULT_CLIENTS: B2bClient[] = [
   },
 ];
 
+const MOTIVO_LABEL: Record<string, string> = {
+  "sem-ficha": "sem ficha salva",
+  template: "ficha ainda é o modelo",
+  "sem-ncm": "sem NCM na ficha",
+};
+
 function CommercialPage() {
   const navigate = useNavigate();
   const sheetsMap = useTechSheetStore((s) => s.data);
@@ -119,22 +126,22 @@ function CommercialPage() {
 
   const activeClient = clients.find((c) => c.id === selectedClientId) ?? clients[0]!;
 
-  const expeditionRefs = useMemo(
-    () =>
-      Array.from(
-        new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
-      ),
-    [sheetsMap],
-  );
+  // A expedição só oferece ficha salva. Antes plantava quatro referências de
+  // demonstração e o romaneio / pré-NFe saía com dados delas.
+  const expeditionRefs = useMemo(() => Object.keys(sheetsMap).sort(), [sheetsMap]);
 
   const nfeSummary = useMemo(
     () =>
       computePackingAndNfePreview(
-        expeditionRefs.map((refCode) => ({
-          refCode,
-          qtyPieces: qtyByRef[refCode] ?? 0,
-          doc: resolveReferenceTechSheet(refCode, sheetsMap),
-        })),
+        expeditionRefs.map((refCode) => {
+          const ref = resolveReferenceTechSheet(refCode, sheetsMap);
+          return {
+            refCode,
+            qtyPieces: qtyByRef[refCode] ?? 0,
+            doc: ref.doc,
+            provenance: ref.provenance,
+          };
+        }),
         activeClient?.name ?? "Cliente B2B",
         activeClient?.cnpj ?? "00.000.000/0001-00",
         activeClient?.uf ?? "SP",
@@ -202,7 +209,17 @@ function CommercialPage() {
     toast.error("Cliente removido da carteira");
   };
 
+  function bloqueioDeEmissao(): boolean {
+    if (nfeSummary.ignoradas.length === 0) return false;
+    const lista = nfeSummary.ignoradas
+      .map((i) => `${i.refCode} (${MOTIVO_LABEL[i.motivo]})`)
+      .join(", ");
+    toast.error(`Há referência com quantidade que não pode ser faturada: ${lista}`);
+    return true;
+  }
+
   function exportPreNfeXml() {
+    if (bloqueioDeEmissao()) return;
     if (nfeSummary.lines.length === 0) {
       toast.error("Informe quantidade > 0 em ao menos uma referência para gerar o XML NFe.");
       return;
@@ -219,6 +236,7 @@ function CommercialPage() {
   }
 
   function printPackingList() {
+    if (bloqueioDeEmissao()) return;
     if (nfeSummary.lines.length === 0) {
       toast.error("Informe quantidade > 0 para emitir o Romaneio Packing List.");
       return;
@@ -285,7 +303,7 @@ function CommercialPage() {
               Expedição Industrial · Romaneio Packing List & Pré-Nota Fiscal (SEFAZ NFe 4.00)
             </h3>
             <p className="text-2xs text-muted-foreground mt-0.5">
-              Puxa automaticamente NCM, peso líquido unitário e preço atacado das Fichas Técnicas.
+              Usa NCM, peso líquido e preço atacado das Fichas Técnicas <strong>salvas</strong>.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -321,6 +339,25 @@ function CommercialPage() {
           </div>
         </div>
 
+        {nfeSummary.ignoradas.length > 0 && (
+          <div
+            data-testid="expedicao-bloqueada"
+            className="rounded-md border border-rose-500/40 bg-rose-500/10 p-3 text-2xs text-rose-700 dark:text-rose-300"
+          >
+            <p className="font-semibold flex items-center gap-1.5">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              Romaneio e Pré-XML bloqueados
+            </p>
+            <p className="mt-1 leading-snug">
+              Estas referências têm quantidade acima de zero, mas não podem virar documento:{" "}
+              {nfeSummary.ignoradas
+                .map((i) => `${i.refCode} (${MOTIVO_LABEL[i.motivo]})`)
+                .join(", ")}
+              . Salve a ficha (e preencha o NCM) ou zere a quantidade.
+            </p>
+          </div>
+        )}
+
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-xs">
             <thead className="bg-muted/50 text-2xs uppercase tracking-wider text-muted-foreground">
@@ -336,7 +373,7 @@ function CommercialPage() {
             </thead>
             <tbody>
               {expeditionRefs.slice(0, 4).map((refCode) => {
-                const doc = resolveReferenceTechSheet(refCode, sheetsMap);
+                const { doc } = resolveReferenceTechSheet(refCode, sheetsMap);
                 const line = nfeSummary.lines.find((l) => l.refCode === refCode);
                 const qty = qtyByRef[refCode] ?? 0;
                 return (
@@ -348,7 +385,7 @@ function CommercialPage() {
                       </span>
                     </td>
                     <td className="p-2.5 font-mono text-muted-foreground">
-                      {doc.etiquetagem?.ncm || "6109.90.00"}
+                      {doc.etiquetagem?.ncm || <span className="text-rose-500">sem NCM</span>}
                     </td>
                     <td className="p-2.5 font-mono">{nfeSummary.cfop}</td>
                     <td className="p-2.5 text-right">

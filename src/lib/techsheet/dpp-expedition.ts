@@ -3,12 +3,48 @@
 
 import { computeFullTechSheetPricing, resolveDivisorParams } from "./pricing";
 import { defaultEncaixeCadFor, defaultEtiquetagemFor, seedFor, type TechSheetData } from "./store";
+import { sheetProvenance, type SheetProvenance } from "./provenance";
 import { converterMetroParaKg, round2 } from "./textile";
+
+/**
+ * Uma referência resolvida para tela, com a procedência do documento.
+ *
+ * `doc` existe sempre (senão a vitrine fica vazia), mas `emitivel` diz se ele
+ * é ficha **salva pelo usuário**. Só ficha salva pode virar passaporte DPP,
+ * romaneio ou pré-NFe: o resto é o modelo de demonstração, e um documento
+ * fiscal/ESG emitido sobre ele carrega NCM, composição e preço inventados.
+ */
+export interface ResolvedRef {
+  refCode: string;
+  doc: TechSheetData;
+  provenance: SheetProvenance;
+  emitivel: boolean;
+}
+
+/** Motivo objetivo para uma referência não poder virar documento. */
+export type MotivoNaoEmitivel = "sem-ficha" | "template" | "sem-ncm";
+
+export interface LinhaIgnorada {
+  refCode: string;
+  motivo: MotivoNaoEmitivel;
+}
 
 export function resolveReferenceTechSheet(
   refCode: string,
   sheetsMap: Record<string, TechSheetData>,
-): TechSheetData {
+  materializadas?: Record<string, true>,
+): ResolvedRef {
+  const provenance = sheetProvenance(sheetsMap, refCode, materializadas);
+  return {
+    refCode,
+    doc: resolveDoc(refCode, sheetsMap),
+    provenance,
+    // Template é cópia intacta do modelo: por dentro é demonstração também.
+    emitivel: provenance === "salva",
+  };
+}
+
+function resolveDoc(refCode: string, sheetsMap: Record<string, TechSheetData>): TechSheetData {
   if (sheetsMap[refCode]) return sheetsMap[refCode]!;
   const base = seedFor(refCode);
   if (refCode === "V24-001") {
@@ -87,6 +123,11 @@ export interface ExpeditionLineInput {
   refCode: string;
   qtyPieces: number;
   doc: TechSheetData;
+  /**
+   * Procedência obrigatória: é o que decide se a linha pode ser faturada.
+   * Um construtor novo não consegue "esquecer" o campo — o tipo não deixa.
+   */
+  provenance: SheetProvenance;
 }
 
 export interface ExpeditionLineComputed {
@@ -102,6 +143,8 @@ export interface ExpeditionLineComputed {
 }
 
 export interface PackingAndNfeSummary {
+  /** Referências com quantidade que NÃO entraram, e por quê. */
+  ignoradas: LinhaIgnorada[];
   clientName: string;
   clientCnpj: string;
   clientUf: string;
@@ -177,10 +220,16 @@ export function buildQrMatrixSvg(payload: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" shape-rendering="crispEdges"><rect width="25" height="25" rx="2" fill="#FFFFFF"/>${rects.join("")}</svg>`;
 }
 
-export function computeDigitalProductPassport(
-  refCode: string,
-  doc: TechSheetData,
-): DigitalProductPassport {
+/**
+ * Passaporte Digital do Produto.
+ *
+ * Devolve `null` quando a ficha não foi salva por ninguém: o DPP declara
+ * composição, NCM, origem e métricas ESG ao consumidor final — não é lugar
+ * para número de demonstração.
+ */
+export function computeDigitalProductPassport(ref: ResolvedRef): DigitalProductPassport | null {
+  if (!ref.emitivel) return null;
+  const { refCode, doc } = ref;
   const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
   const cad = doc.encaixeCad ?? defaultEncaixeCadFor();
   const weightKg = estimatePieceWeightKg(doc);
@@ -245,7 +294,9 @@ export function computeDigitalProductPassport(
           : "D";
 
   const version = doc.versoes?.[0]?.versao || "v1.0";
-  const ncm = etq.ncm || "6109.90.00";
+  // Sem NCM na ficha, o campo fica vazio: inventar classificação fiscal num
+  // passaporte que vai ao consumidor é pior do que assumir que falta.
+  const ncm = etq.ncm ?? "";
   const traceabilityUri = `https://dpp.usemoda.ind.br/${encodeURIComponent(refCode)}/${encodeURIComponent(version)}?ncm=${encodeURIComponent(ncm)}`;
   const qrSvg = buildQrMatrixSvg(traceabilityUri);
 
@@ -257,7 +308,7 @@ export function computeDigitalProductPassport(
     origin: etq.paisOrigem || "Feito no Brasil",
     compositionText: etq.composicao.length
       ? etq.composicao.map((c) => `${c.pct}% ${c.fibra}`).join(" · ")
-      : "100% Algodão",
+      : "Composição não informada na ficha",
     pieceWeightGrams,
     carbonKgCo2e,
     waterLiters,
@@ -286,38 +337,58 @@ export function computePackingAndNfePreview(
   let icmsValueBrl = 0;
   let pisCofinsValueBrl = 0;
 
-  const lines: ExpeditionLineComputed[] = inputs
+  // Nada entra no romaneio por padrão: ou a ficha é salva e tem NCM, ou a
+  // referência vai para `ignoradas` com o motivo. Antes, ficha ausente caía no
+  // seed e NCM vazio virava "6109.90.00" — ambos inventados.
+  const ignoradas: LinhaIgnorada[] = [];
+  const validas = inputs
     .filter((i) => i.qtyPieces > 0)
-    .map(({ refCode, qtyPieces, doc }) => {
-      const pricing = computeFullTechSheetPricing(doc);
-      const div = resolveDivisorParams(doc.preCost.divisor);
-      const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
-      const pv = pricing.precoReferenciaMargem || pricing.precoSugerido || 119.9;
-      const unitPriceBrl = round2(pv * 0.52); // Preço Faturamento B2B Indústria
-      const subtotalBrl = round2(unitPriceBrl * qtyPieces);
-      const unitKg = estimatePieceWeightKg(doc);
-      const lineNetKg = round2(unitKg * qtyPieces);
-      const masterBoxes = Math.max(1, Math.ceil(qtyPieces / 24));
-
-      totalPieces += qtyPieces;
-      totalMasterBoxes += masterBoxes;
-      netWeightKg += lineNetKg;
-      productsTotalBrl += subtotalBrl;
-      icmsValueBrl += subtotalBrl * ((sameState ? 18 : 12) / 100);
-      pisCofinsValueBrl += subtotalBrl * (Math.min(9.25, div.impostosPct * 0.25) / 100);
-
-      return {
-        refCode,
-        refName: doc.meta?.name || refCode,
-        ncm: (etq.ncm || "6109.90.00").replace(/[^0-9.]/g, ""),
-        cfop,
-        qtyPieces,
-        unitPriceBrl,
-        subtotalBrl,
-        netWeightKg: lineNetKg,
-        masterBoxes,
-      };
+    .filter((i) => {
+      if (i.provenance !== "salva") {
+        ignoradas.push({
+          refCode: i.refCode,
+          motivo: i.provenance === "template" ? "template" : "sem-ficha",
+        });
+        return false;
+      }
+      const ncm = (i.doc.etiquetagem?.ncm ?? "").replace(/[^0-9.]/g, "");
+      if (ncm.length < 8) {
+        ignoradas.push({ refCode: i.refCode, motivo: "sem-ncm" });
+        return false;
+      }
+      return true;
     });
+
+  const lines: ExpeditionLineComputed[] = validas.map(({ refCode, qtyPieces, doc }) => {
+    const pricing = computeFullTechSheetPricing(doc);
+    const div = resolveDivisorParams(doc.preCost.divisor);
+    const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
+    const pv = pricing.precoReferenciaMargem || pricing.precoSugerido;
+    const unitPriceBrl = round2(pv * 0.52); // Preço Faturamento B2B Indústria
+    const subtotalBrl = round2(unitPriceBrl * qtyPieces);
+    const unitKg = estimatePieceWeightKg(doc);
+    const lineNetKg = round2(unitKg * qtyPieces);
+    const masterBoxes = Math.max(1, Math.ceil(qtyPieces / 24));
+
+    totalPieces += qtyPieces;
+    totalMasterBoxes += masterBoxes;
+    netWeightKg += lineNetKg;
+    productsTotalBrl += subtotalBrl;
+    icmsValueBrl += subtotalBrl * ((sameState ? 18 : 12) / 100);
+    pisCofinsValueBrl += subtotalBrl * (Math.min(9.25, div.impostosPct * 0.25) / 100);
+
+    return {
+      refCode,
+      refName: doc.meta?.name || refCode,
+      ncm: (etq.ncm ?? "").replace(/[^0-9.]/g, ""),
+      cfop,
+      qtyPieces,
+      unitPriceBrl,
+      subtotalBrl,
+      netWeightKg: lineNetKg,
+      masterBoxes,
+    };
+  });
 
   netWeightKg = round2(netWeightKg);
   const grossWeightKg = round2(netWeightKg + totalMasterBoxes * 0.65); // tara 650g caixa papelão onda dupla
@@ -337,7 +408,25 @@ export function computePackingAndNfePreview(
     icmsValueBrl: round2(icmsValueBrl),
     pisCofinsValueBrl: round2(pisCofinsValueBrl),
     lines,
+    ignoradas,
   };
+}
+
+/** Há algo na expedição que não pode virar documento. */
+export function temLinhaNaoEmitivel(summary: PackingAndNfeSummary): boolean {
+  return summary.ignoradas.length > 0;
+}
+
+export class DocumentoNaoEmitivelError extends Error {
+  readonly ignoradas: LinhaIgnorada[];
+  constructor(ignoradas: LinhaIgnorada[]) {
+    super(
+      `Documento não emitido: ${ignoradas.length} referência(s) sem ficha salva ou sem NCM ` +
+        `(${ignoradas.map((i) => `${i.refCode}:${i.motivo}`).join(", ")}).`,
+    );
+    this.name = "DocumentoNaoEmitivelError";
+    this.ignoradas = ignoradas;
+  }
 }
 
 function escapeXml(s: string): string {
@@ -350,6 +439,7 @@ function escapeXml(s: string): string {
 }
 
 export function buildPreNfeXml400(summary: PackingAndNfeSummary): string {
+  if (temLinhaNaoEmitivel(summary)) throw new DocumentoNaoEmitivelError(summary.ignoradas);
   const detXml = summary.lines
     .map(
       (l, idx) => `    <det nItem="${idx + 1}">
@@ -407,6 +497,7 @@ ${detXml}
 }
 
 export function buildPackingListPrintableHtml(summary: PackingAndNfeSummary): string {
+  if (temLinhaNaoEmitivel(summary)) throw new DocumentoNaoEmitivelError(summary.ignoradas);
   const rows = summary.lines
     .map(
       (l) => `<tr>
@@ -466,6 +557,9 @@ export function buildPackingListPrintableHtml(summary: PackingAndNfeSummary): st
 }
 
 export function buildDppPrintableHtml(dpp: DigitalProductPassport): string {
+  if (dpp.ncm.trim() === "") {
+    throw new DocumentoNaoEmitivelError([{ refCode: dpp.refCode, motivo: "sem-ncm" }]);
+  }
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
