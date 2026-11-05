@@ -582,8 +582,14 @@ describe("OrderDetail", () => {
       ),
     );
     expect(api.recalcItem).toHaveBeenCalledWith("i1");
+    // "Editar linha" é toggle. Se o salvamento ainda não fechou o editor, o
+    // clique fecha em vez de abrir e "Remover material" some — era esta a
+    // corrida que fazia este teste falhar em ~metade das rodadas.
+    await waitFor(() =>
+      expect(screen.queryByRole("button", { name: "Salvar material" })).toBeNull(),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Editar linha Papel + tinta" }));
-    fireEvent.click(screen.getByRole("button", { name: "Remover material" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Remover material" }));
     await waitFor(() => expect(api.deleteMaterial).toHaveBeenCalledWith("m4"));
     // material do catálogo (sem source='custo') não oferece remoção
     fireEvent.click(screen.getByRole("button", { name: "Editar linha Dry 100% poliéster" }));

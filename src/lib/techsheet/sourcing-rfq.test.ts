@@ -56,7 +56,9 @@ describe("Sourcing Industrial RFQ, Tabelas POM & Showroom B2B", () => {
     expect(spec.pontos[0]!.regraGraduacaoCm).toBe(4);
     expect(spec.pontos[0]!.overrides?.["P"]).toBe(50);
 
-    const cat = buildShowroomCatalogItem("DEV000006", seedFor("DEV000006"));
+    const cat = buildShowroomCatalogItem("DEV000006", seedFor("DEV000006"), "salva");
+    expect(cat.wholesaleUnitPrice).not.toBeNull();
+    expect(cat.suggestedRetailPrice).not.toBeNull();
     const html = buildShowroomOrderPrintableHtml("Boutique Jardins", "12.345.678/0001-90", [
       {
         refCode: cat.refCode,
@@ -73,5 +75,16 @@ describe("Sourcing Industrial RFQ, Tabelas POM & Showroom B2B", () => {
     ]);
     expect(html).toContain("Boutique Jardins");
     expect(html).toContain("36 peças");
+  });
+
+  it("showroom não precifica referência sem ficha salva", () => {
+    const doc = seedFor("DEV000006");
+    const solta = buildShowroomCatalogItem("DEV000006", doc, "referencia");
+    expect(solta.wholesaleUnitPrice).toBeNull();
+    expect(solta.suggestedRetailPrice).toBeNull();
+    expect(solta.refCode).toBe("DEV000006");
+
+    const template = buildShowroomCatalogItem("DEV000006", doc, "template");
+    expect(template.wholesaleUnitPrice).toBeNull();
   });
 });

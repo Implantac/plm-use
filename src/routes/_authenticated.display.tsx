@@ -26,7 +26,7 @@ import { ImageLightbox } from "@/components/ui/image-lightbox";
 import { toast } from "sonner";
 import { nativeVisualSvg } from "@/lib/ai/native-visual";
 import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
-import { seedFor, useTechSheetStore, type TechSheetData } from "@/lib/techsheet/store";
+import { useTechSheetStore, type TechSheetData } from "@/lib/techsheet/store";
 import {
   listBoards,
   subscribe,
@@ -80,11 +80,11 @@ interface PaletteRefEntry {
 
 function buildTechSheetPaletteItems(sheetsMap: Record<string, TechSheetData>): PaletteRefEntry[] {
   const staticCodes = new Set(refCatalog.map((r) => r.code));
-  const keys = Array.from(new Set(["DEV000006", ...Object.keys(sheetsMap)])).filter(
-    (code) => code in sheetsMap || !staticCodes.has(code),
-  );
+  // Só ficha que existe: `["DEV000006", ...keys]` + `?? seedFor` colocava a
+  // referência de demonstração no quadro de displayagem com preço calculado.
+  const keys = Object.keys(sheetsMap).filter((code) => code in sheetsMap || !staticCodes.has(code));
   return keys.map((code) => {
-    const doc = sheetsMap[code] ?? seedFor(code);
+    const doc = sheetsMap[code]!;
     const pricing = computeFullTechSheetPricing(doc);
     const cw = doc.colorways?.[0];
     const hex = cw?.hex || "#1D6B47";
@@ -102,7 +102,7 @@ function buildTechSheetPaletteItems(sheetsMap: Record<string, TechSheetData>): P
       image: doc.image || `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`,
       category: doc.meta?.category || "Ficha PLM",
       colorHex: hex,
-      price: Math.round(pricing.precoReferenciaMargem || pricing.precoSugerido || 149),
+      price: Math.round(pricing.precoReferenciaMargem || pricing.precoSugerido || 0),
       transparentCutout: !doc.image,
     };
   });

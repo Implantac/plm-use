@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,7 +37,8 @@ import {
   scoreRfqProposals,
   type RfqSupplierQuote,
 } from "@/lib/techsheet/sourcing-rfq";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import { operationalCodes } from "@/lib/techsheet/provenance";
 
 export const Route = createFileRoute("/_authenticated/supplier-portal")({
   component: SupplierPortalPage,
@@ -642,21 +643,28 @@ function SamplesTab() {
 // -------- RFQ & Cotação Comparativa da BOM (Integrada à Ficha Técnica) --------
 function RfqBomTab() {
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const ensure = useTechSheetStore((s) => s.ensure);
   const updateBomItem = useTechSheetStore((s) => s.updateBomItem);
   const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
 
-  const availableRefs = useMemo(() => {
-    const base = ["DEV000006", "V24-001", "U25-014", "I25-088"];
-    for (const k of Object.keys(sheetsMap)) {
-      if (!base.includes(k)) base.push(k);
-    }
-    return base;
-  }, [sheetsMap]);
+  // RFQ negocia com fornecedor de verdade e termina em OC impressa. Só ficha
+  // salva entra: antes, as quatro referências de demonstração eram oferecidas
+  // como se fossem produto da empresa, e adjudicar gravava preço de fornecedor
+  // na BOM de um produto que não existe.
+  const availableRefs = useMemo(
+    () => operationalCodes(sheetsMap, [], materializadas),
+    [sheetsMap, materializadas],
+  );
 
-  const [selectedRef, setSelectedRef] = useState("DEV000006");
-  const doc = sheetsMap[selectedRef] ?? seedFor(selectedRef);
-  const requirements = useMemo(() => explodeBomRequirements(doc), [doc]);
+  const [selectedRef, setSelectedRef] = useState("");
+  useEffect(() => {
+    if (selectedRef && availableRefs.includes(selectedRef)) return;
+    setSelectedRef(availableRefs[0] ?? "");
+  }, [availableRefs, selectedRef]);
+
+  const doc = selectedRef ? sheetsMap[selectedRef] : undefined;
+  const requirements = useMemo(() => (doc ? explodeBomRequirements(doc) : []), [doc]);
   const [selectedItemId, setSelectedItemId] = useState<string>("");
 
   const activeReq =
@@ -682,7 +690,7 @@ function RfqBomTab() {
   }
 
   function awardWinner(q: (typeof scoredQuotes)[number]) {
-    if (!activeReq) return;
+    if (!activeReq || !doc) return;
     ensure(selectedRef);
     updateBomItem(selectedRef, activeReq.itemId, {
       fornecedor: q.fornecedor,
@@ -695,7 +703,7 @@ function RfqBomTab() {
   }
 
   function printOc() {
-    if (!activeReq || !winner) return;
+    if (!activeReq || !winner || !doc) return;
     const html = buildPurchaseOrderPrintableHtml(selectedRef, activeReq, winner);
     const w = window.open("", "_blank");
     if (!w) {
@@ -711,6 +719,28 @@ function RfqBomTab() {
 
   const fmtBrl = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
+
+  if (availableRefs.length === 0) {
+    return (
+      <Card
+        data-testid="rfq-sem-ficha"
+        className="p-6 border-amber-500/40 bg-amber-500/10 text-xs text-amber-800 dark:text-amber-300 space-y-2"
+      >
+        <p className="font-semibold flex items-center gap-1.5">
+          <FileSpreadsheet className="h-4 w-4" />
+          Nenhuma ficha salva para cotar
+        </p>
+        <p className="leading-relaxed">
+          A cotação (RFQ) explode a BOM da ficha e termina em ordem de compra assinada. O modelo de
+          demonstração não serve: a OC sairia comprando insumo de um produto que não existe. Abra a{" "}
+          <Link to="/tech-sheet" className="underline font-medium">
+            Ficha Técnica
+          </Link>
+          , monte a BOM e salve — a referência aparece aqui.
+        </p>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -732,7 +762,7 @@ function RfqBomTab() {
               >
                 {availableRefs.map((r) => (
                   <option key={r} value={r}>
-                    {r} — {(sheetsMap[r] ?? seedFor(r)).meta?.name ?? r}
+                    {r} — {sheetsMap[r]?.meta?.name ?? r}
                   </option>
                 ))}
               </select>
@@ -745,9 +775,10 @@ function RfqBomTab() {
                 type="number"
                 min={10}
                 step={50}
-                value={doc.preCost.tiragemPlanejada ?? 300}
+                value={doc?.preCost.tiragemPlanejada ?? 300}
+                disabled={!doc}
                 onChange={(e) => {
-                  ensure(selectedRef);
+                  if (!doc) return;
                   updatePreCost(selectedRef, {
                     tiragemPlanejada: Math.max(10, Number(e.target.value) || 300),
                   });

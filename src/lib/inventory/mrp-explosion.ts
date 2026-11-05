@@ -4,7 +4,7 @@
 // e emitir Requisição Automática de Compras (CSV + Guia A4).
 
 import { sumNominalGrade, type PrivateLabelOrder } from "@/lib/sales/private-label-queue";
-import { seedFor, type TechSheetData } from "@/lib/techsheet/store";
+import type { TechSheetData } from "@/lib/techsheet/store";
 
 export interface MrpNetRequirementRow {
   materialKey: string;
@@ -40,6 +40,12 @@ export interface MrpSummary {
     /** true quando ao menos uma linha usou saldo real do almoxarifado. */
     hasRealStock: boolean;
   };
+  /**
+   * Pedidos que ficaram FORA da explosão porque a referência não tem ficha
+   * salva. Sem isso, o BOM de demonstração entrava na conta e o comprador
+   * recebia uma requisição de compra de material de um produto inexistente.
+   */
+  pedidosSemFicha: string[];
 }
 
 /**
@@ -86,9 +92,17 @@ export function computeMrpNetExplosion(params: {
     }
   >();
 
+  // Só ficha salva explode BOM. `?? seedFor(...)` transformava o modelo de
+  // demonstração em necessidade de compra.
+  const pedidosSemFicha: string[] = [];
+
   for (const order of params.orders) {
     const pieces = Math.max(1, sumNominalGrade(order.grade));
-    const sheet = params.sheets[order.refCode] ?? seedFor(order.refCode);
+    const sheet = params.sheets[order.refCode];
+    if (!sheet) {
+      pedidosSemFicha.push(order.refCode);
+      continue;
+    }
 
     // 1) Materiais explícitos do pedido personalizado + BOM da ficha
     for (const m of order.materials) {
@@ -173,6 +187,7 @@ export function computeMrpNetExplosion(params: {
 
   return {
     rows,
+    pedidosSemFicha: [...new Set(pedidosSemFicha)],
     totalGrossItems: rows.length,
     shortageCount: rows.filter((r) => r.status === "RUPTURA_COMPRA").length,
     totalPurchaseBudgetBrl: round2(rows.reduce((a, r) => a + r.purchaseBudgetBrl, 0)),

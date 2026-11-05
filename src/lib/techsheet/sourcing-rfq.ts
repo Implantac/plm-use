@@ -2,6 +2,7 @@
 // Conversor de Tabelas Corporativas de Medidas -> POM da Ficha Técnica e
 // Espelho de Pré-Pedido B2B do Showroom Digital.
 import type { MeasurementChart } from "@/lib/measurements/store";
+import type { SheetProvenance } from "./provenance";
 import { computeFullTechSheetPricing } from "./pricing";
 import {
   defaultColorwaysFor,
@@ -58,8 +59,8 @@ export interface ShowroomPackLine {
   colorHex: string;
   packs: number;
   piecesPerPack: number;
-  wholesaleUnitPrice: number;
-  suggestedRetailPrice: number;
+  wholesaleUnitPrice: number | null;
+  suggestedRetailPrice: number | null;
   ncm: string;
   abnt: string;
 }
@@ -357,14 +358,30 @@ const SHOWROOM_PRESETS: Record<
   },
 };
 
-export function buildShowroomCatalogItem(refCode: string, doc: TechSheetData, isCustomized = true) {
-  const preset = !isCustomized ? SHOWROOM_PRESETS[refCode] : undefined;
+/**
+ * Item do catálogo de showroom (B2B).
+ *
+ * O showroom fecha pedido: preço de atacado e de varejo saem impressos na ordem
+ * e vão para a boutique. Por isso o item **só é precificado** quando a ficha é
+ * salva (`provenance === "salva"`); caso contrário, preços são `null` e a tela
+ * mostra `—`. Antes, tudo caía em `|| 159.9` multiplicado por um preset e o
+ * preço de atacado saía inventado.
+ */
+export function buildShowroomCatalogItem(
+  refCode: string,
+  doc: TechSheetData,
+  provenance: SheetProvenance = "referencia",
+) {
+  const emitivel = provenance === "salva";
+  const preset = emitivel ? undefined : SHOWROOM_PRESETS[refCode];
   const pricing = computeFullTechSheetPricing(doc);
-  const pvSugerido = round2(
-    (pricing.precoReferenciaMargem || pricing.precoSugerido || 159.9) * (preset?.mult ?? 1),
-  );
-  const wholesaleUnitPrice = round2(pvSugerido * 0.46);
-  const suggestedRetailPrice = round2(wholesaleUnitPrice * 2.35);
+  const pvBase = pricing.precoReferenciaMargem || pricing.precoSugerido || 0;
+  // O multiplicador do preset também é demonstração: não entra em preço de
+  // ficha que não foi salva.
+  const pvSugerido = emitivel && pvBase > 0 ? round2(pvBase * (preset?.mult ?? 1)) : null;
+  const wholesaleUnitPrice = pvSugerido === null ? null : round2(pvSugerido * 0.46);
+  const suggestedRetailPrice =
+    wholesaleUnitPrice === null ? null : round2(wholesaleUnitPrice * 2.35);
   const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
   const abnt =
     preset?.abnt ||
@@ -393,7 +410,7 @@ export function buildShowroomOrderPrintableHtml(
 ): string {
   const totalPieces = lines.reduce((acc, l) => acc + l.packs * l.piecesPerPack, 0);
   const totalWholesale = lines.reduce(
-    (acc, l) => acc + l.packs * l.piecesPerPack * l.wholesaleUnitPrice,
+    (acc, l) => acc + l.packs * l.piecesPerPack * (l.wholesaleUnitPrice ?? 0),
     0,
   );
   const rowsHtml = lines
@@ -403,8 +420,8 @@ export function buildShowroomOrderPrintableHtml(
       <td>${escapeHtml(l.colorName)}</td>
       <td>${escapeHtml(l.ncm)}</td>
       <td style="text-align:right">${l.packs} packs (${l.packs * l.piecesPerPack} pçs)</td>
-      <td style="text-align:right">R$ ${l.wholesaleUnitPrice.toFixed(2).replace(".", ",")}</td>
-      <td style="text-align:right"><strong>R$ ${(l.packs * l.piecesPerPack * l.wholesaleUnitPrice).toFixed(2).replace(".", ",")}</strong></td>
+      <td style="text-align:right">${l.wholesaleUnitPrice === null ? "—" : `R$ ${l.wholesaleUnitPrice.toFixed(2).replace(".", ",")}`}</td>
+      <td style="text-align:right"><strong>${l.wholesaleUnitPrice === null ? "—" : `R$ ${(l.packs * l.piecesPerPack * l.wholesaleUnitPrice).toFixed(2).replace(".", ",")}`}</strong></td>
     </tr>`,
     )
     .join("");

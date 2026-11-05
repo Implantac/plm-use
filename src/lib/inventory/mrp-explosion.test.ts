@@ -67,4 +67,24 @@ describe("MRP I Explosão Líquida de Materiais", () => {
     expect(normalizeMaterialName("LINHA DE COSTURA 120")).toBe("linha de costura 120");
     expect(normalizeMaterialName("Botão  4 furos")).toBe("botao 4 furos");
   });
+
+  it("pedido sem ficha salva fica fora da explosão e é reportado", () => {
+    const orders = INITIAL_PRIVATE_LABEL_ORDERS.slice(0, 2);
+    const semNenhuma = computeMrpNetExplosion({ orders, sheets: {} });
+    expect(semNenhuma.rows).toHaveLength(0);
+    expect(semNenhuma.totalPurchaseBudgetBrl).toBe(0);
+    expect(semNenhuma.pedidosSemFicha).toEqual(
+      [...new Set(orders.map((o) => o.refCode))].filter(Boolean),
+    );
+
+    // com a ficha do primeiro pedido, só ele entra
+    const [primeiro] = orders;
+    const so = computeMrpNetExplosion({
+      orders,
+      sheets: { [primeiro!.refCode]: seedFor(primeiro!.refCode) },
+    });
+    expect(so.rows.length).toBeGreaterThan(0);
+    expect(so.rows.every((r) => r.sourceRefs.every((ref) => ref === primeiro!.refCode))).toBe(true);
+    expect(so.pedidosSemFicha).not.toContain(primeiro!.refCode);
+  });
 });

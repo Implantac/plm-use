@@ -140,6 +140,23 @@ export function MrpNetExplosionPanel({ cloudBalancesByName }: MrpNetExplosionPan
           </p>
         </div>
 
+        {summary.pedidosSemFicha.length > 0 && (
+          <div
+            data-testid="mrp-pedidos-sem-ficha"
+            className="flex items-start gap-2 rounded-lg border border-rose-500/40 bg-rose-500/10 p-3"
+          >
+            <AlertTriangle className="h-4 w-4 text-rose-500 mt-0.5 shrink-0" />
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              <strong className="text-foreground">
+                {summary.pedidosSemFicha.length} pedido(s) fora da explosão por falta de ficha
+                salva:
+              </strong>{" "}
+              {summary.pedidosSemFicha.join(", ")}. Antes, essas referências explodiam o BOM do
+              modelo de demonstração e a compra saía com material de um produto que não existe.
+            </p>
+          </div>
+        )}
+
         <div className="overflow-x-auto rounded-lg border border-border/80 bg-background/60">
           <table className="w-full text-xs">
             <thead className="bg-muted/40 text-2xs uppercase text-muted-foreground">

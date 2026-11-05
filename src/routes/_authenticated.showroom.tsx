@@ -2,7 +2,7 @@
 // Reúne peças-mãe, feedback estruturado e decisão de lançamento (Go/No-Go).
 // Todas as escritas passam pela RLS: só membros com papel de mostruário editam.
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { statusToast } from "@/components/ui/status-presets";
 import {
   CheckCircle2,
@@ -29,7 +29,8 @@ import {
   buildShowroomOrderPrintableHtml,
   type ShowroomPackLine,
 } from "@/lib/techsheet/sourcing-rfq";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
+import { sheetProvenance } from "@/lib/techsheet/provenance";
 import {
   Select,
   SelectContent,
@@ -635,6 +636,7 @@ function DecisionCard({
 // -------- Vitrine Digital B2B & Sacola de Pré-Pedido (Showroom Comercial) --------
 function ShowroomB2bRackTab() {
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const [selectedColorByRef, setSelectedColorByRef] = useState<Record<string, number>>({});
   const [packsByKey, setPacksByKey] = useState<Record<string, number>>({ "DEV000006:0": 2 });
   const [buyerName, setBuyerName] = useState("Boutique Multimarcas Jardins");
@@ -646,24 +648,30 @@ function ShowroomB2bRackTab() {
     baseName: string;
   } | null>(null);
 
+  // O showroom fecha pedido com preço de atacado. Antes plantava as quatro
+  // referências de demonstração no catálogo — e a boutique recebia uma ordem
+  // com preço de produto que não existe.
   const catalogItems = useMemo(() => {
-    const keys = Array.from(
-      new Set(["DEV000006", "V24-001", "U25-014", "I25-088", ...Object.keys(sheetsMap)]),
-    );
-    return keys.map((refCode) => {
-      const isCustomized = refCode === "DEV000006" || refCode in sheetsMap;
-      const doc = sheetsMap[refCode] ?? seedFor(refCode);
-      const item = buildShowroomCatalogItem(refCode, doc, isCustomized);
-      return { doc, item };
-    });
-  }, [sheetsMap]);
+    return Object.keys(sheetsMap)
+      .sort()
+      .map((refCode) => {
+        const doc = sheetsMap[refCode]!;
+        const item = buildShowroomCatalogItem(
+          refCode,
+          doc,
+          sheetProvenance(sheetsMap, refCode, materializadas),
+        );
+        return { doc, item };
+      });
+  }, [sheetsMap, materializadas]);
 
   const orderLines = useMemo<ShowroomPackLine[]>(() => {
     const lines: ShowroomPackLine[] = [];
     for (const { item } of catalogItems) {
       item.colorways.forEach((cw, idx) => {
         const packs = packsByKey[`${item.refCode}:${idx}`] ?? 0;
-        if (packs > 0) {
+        // Sem preço não entra no pedido: não há como faturar o que não é cotável.
+        if (packs > 0 && item.wholesaleUnitPrice !== null) {
           lines.push({
             refCode: item.refCode,
             refName: item.refName,
@@ -684,16 +692,18 @@ function ShowroomB2bRackTab() {
 
   const totalPieces = orderLines.reduce((acc, l) => acc + l.packs * l.piecesPerPack, 0);
   const totalWholesale = orderLines.reduce(
-    (acc, l) => acc + l.packs * l.piecesPerPack * l.wholesaleUnitPrice,
+    (acc, l) => acc + l.packs * l.piecesPerPack * (l.wholesaleUnitPrice ?? 0),
     0,
   );
   const totalRetail = orderLines.reduce(
-    (acc, l) => acc + l.packs * l.piecesPerPack * l.suggestedRetailPrice,
+    (acc, l) => acc + l.packs * l.piecesPerPack * (l.suggestedRetailPrice ?? 0),
     0,
   );
 
-  const fmtBrl = (v: number) =>
-    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
+  const fmtBrl = (v: number | null) =>
+    v === null
+      ? "—"
+      : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2 });
 
   function printB2bOrder() {
     if (orderLines.length === 0) {
@@ -716,6 +726,22 @@ function ShowroomB2bRackTab() {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-5">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
+        {catalogItems.length === 0 && (
+          <Card
+            data-testid="showroom-sem-ficha"
+            className="md:col-span-2 p-6 border-amber-500/40 bg-amber-500/10 text-xs text-amber-800 dark:text-amber-300 space-y-2"
+          >
+            <p className="font-semibold">Catálogo vazio: nenhuma ficha salva</p>
+            <p className="leading-relaxed">
+              O showroom imprime ordem B2B com preço de atacado. Peça sem ficha não entra — o preço
+              seria inventado. Salve uma ficha em{" "}
+              <Link to="/tech-sheet" className="underline font-medium">
+                Ficha Técnica
+              </Link>{" "}
+              para o produto aparecer aqui.
+            </p>
+          </Card>
+        )}
         {catalogItems.map(({ doc, item }) => {
           const activeIdx = selectedColorByRef[item.refCode] ?? 0;
           const cw = item.colorways[activeIdx] ?? item.colorways[0]!;
@@ -836,7 +862,12 @@ function ShowroomB2bRackTab() {
                     </Button>
                   </div>
                   <span className="font-mono text-xs text-foreground">
-                    {packs * 12} pçs · {fmtBrl(packs * 12 * item.wholesaleUnitPrice)}
+                    {packs * 12} pçs ·{" "}
+                    {fmtBrl(
+                      item.wholesaleUnitPrice === null
+                        ? null
+                        : packs * 12 * item.wholesaleUnitPrice,
+                    )}
                   </span>
                 </div>
               </CardContent>
@@ -893,7 +924,9 @@ function ShowroomB2bRackTab() {
                     </p>
                   </div>
                   <strong className="font-mono text-foreground shrink-0">
-                    {fmtBrl(l.packs * 12 * l.wholesaleUnitPrice)}
+                    {fmtBrl(
+                      l.wholesaleUnitPrice === null ? null : l.packs * 12 * l.wholesaleUnitPrice,
+                    )}
                   </strong>
                 </div>
               ))

@@ -62,7 +62,7 @@ import {
   analyzePrintTechnicalViability,
   buildAplicacaoFromPrint,
 } from "@/lib/techsheet/digital-twin";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 import { SemFichaSalva } from "@/components/techsheet/SemFichaSalva";
 import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import { streamImage } from "@/lib/streamImage";
@@ -558,8 +558,10 @@ function PrintAiDialog({
 
   // Sem ficha salva não há compatibilidade química para analisar: a "análise
   // industrial" de uma estampa contra uma ficha de demonstração é número inventado.
+  // `targetRef` só existe se estiver em `codes` (fichas salvas), então não há
+  // fallback: buscar direto no mapa deixa a regra visível.
   const targetDoc = useMemo(
-    () => (targetRef ? (sheetsMap[targetRef] ?? seedFor(targetRef)) : null),
+    () => (targetRef ? (sheetsMap[targetRef] ?? null) : null),
     [sheetsMap, targetRef],
   );
   const viability = useMemo(

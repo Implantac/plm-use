@@ -12,7 +12,6 @@ import {
   defaultColorwaysFor,
   defaultEncaixeCadFor,
   defaultMedidasFor,
-  seedFor,
   type BomItem,
   type TechSheetData,
 } from "./store";
@@ -261,10 +260,9 @@ export function findMaterialWhereUsed(
   material: { name: string; sku?: string; unitCost: number },
   storedDocs: Record<string, TechSheetData>,
 ): MaterialWhereUsedHit[] {
-  const merged: Record<string, TechSheetData> = {
-    DEV000006: storedDocs.DEV000006 ?? seedFor("DEV000006"),
-    ...storedDocs,
-  };
+  // Antes plantava DEV000006 no mapa: o "onde usado" de um material listava
+  // uma ficha de demonstração como se fosse consumo da empresa.
+  const merged: Record<string, TechSheetData> = { ...storedDocs };
 
   const skuNeedle = normText(material.sku);
   const nameNeedle = normText(material.name);
