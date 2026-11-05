@@ -99,15 +99,21 @@ export function OutsourcingServiceOrderPanel() {
 
   const enrichedOrders = useMemo(
     () =>
-      resolvidas
-        .filter((r) => r.emitivel)
-        .map((r) => ({
-          os: r.os,
-          partner: r.partner,
-          doc: r.doc,
-          metrics: computeServiceOrderMetrics(r.os, r.partner, r.doc),
-          emitivel: true as const,
-        })),
+      resolvidas.flatMap((r) => {
+        // O resolvedor agora devolve `null` para ref sem ficha: só entra quem
+        // tem documento de verdade. Nenhum `!` — o tipo garante o narrowing.
+        if (!r.emitivel || !r.doc) return [];
+        const doc = r.doc;
+        return [
+          {
+            os: r.os,
+            partner: r.partner,
+            doc,
+            metrics: computeServiceOrderMetrics(r.os, r.partner, doc),
+            emitivel: true as const,
+          },
+        ];
+      }),
     [resolvidas],
   );
 
@@ -332,7 +338,7 @@ export function OutsourcingServiceOrderPanel() {
                     <td className="p-2.5 max-w-[230px]">
                       <div className="font-semibold text-foreground truncate">{partner.name}</div>
                       <div className="text-2xs text-muted-foreground truncate">
-                        {os.serviceType} · {doc.meta?.name || os.refCode}
+                        {os.serviceType} · {doc?.meta?.name || os.refCode}
                       </div>
                       <Badge
                         variant="outline"

@@ -103,8 +103,8 @@ describe("ficha não salva não vira documento", () => {
     const solta = resolveReferenceTechSheet("I25-088", salvos);
     expect(solta.provenance).toBe("referencia");
     expect(solta.emitivel).toBe(false);
-    // ainda entrega um doc para a vitrine não ficar vazia
-    expect(solta.doc.bom.length).toBeGreaterThan(0);
+    // Onda 32: ausência é `null`, não uma ficha fabricada "para a vitrine".
+    expect(solta.doc).toBeNull();
   });
 
   it("template (cópia intacta do modelo) também não é emitível", () => {
@@ -121,7 +121,7 @@ describe("ficha não salva não vira documento", () => {
 
   it("expedição ignora a referência sem ficha e diz o motivo", () => {
     const summary = computePackingAndNfePreview(
-      [{ refCode: "I25-088", qtyPieces: 10, doc: seedFor("I25-088"), provenance: "referencia" }],
+      [{ refCode: "I25-088", qtyPieces: 10, doc: null, provenance: "referencia" }],
       "Cliente",
       "00.000.000/0001-00",
       "SP",
@@ -146,7 +146,7 @@ describe("ficha não salva não vira documento", () => {
 
   it("geradores recusam emitir com linha pendente", () => {
     const summary = computePackingAndNfePreview(
-      [{ refCode: "I25-088", qtyPieces: 10, doc: seedFor("I25-088"), provenance: "referencia" }],
+      [{ refCode: "I25-088", qtyPieces: 10, doc: null, provenance: "referencia" }],
       "Cliente",
       "00.000.000/0001-00",
       "SP",
@@ -165,7 +165,7 @@ describe("ficha não salva não vira documento", () => {
 
   it("a mensagem do erro nomeia a referência e o motivo", () => {
     const summary = computePackingAndNfePreview(
-      [{ refCode: "I25-088", qtyPieces: 10, doc: seedFor("I25-088"), provenance: "referencia" }],
+      [{ refCode: "I25-088", qtyPieces: 10, doc: null, provenance: "referencia" }],
       "Cliente",
       "00.000.000/0001-00",
       "SP",
@@ -175,5 +175,49 @@ describe("ficha não salva não vira documento", () => {
     } catch (err) {
       expect((err as Error).message).toContain("I25-088:sem-ficha");
     }
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Onda 32: o resolvedor não fabrica documento
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Onda 32 — referência sem ficha é null, não ficha inventada", () => {
+  it("as três refs que eram montadas à mão agora não devolvem documento", () => {
+    for (const ref of ["V24-001", "U25-014", "I25-088", "QUALQUER-999"]) {
+      const r = resolveReferenceTechSheet(ref, {});
+      expect(r.doc).toBeNull();
+      expect(r.provenance).toBe("referencia");
+      expect(r.emitivel).toBe(false);
+      expect(computeDigitalProductPassport(r)).toBeNull();
+    }
+  });
+
+  it("ficha salva devolve o próprio documento, sem cópia nem enchimento", () => {
+    const doc = salvos["V24-001"]!;
+    const r = resolveReferenceTechSheet("V24-001", salvos);
+    expect(r.doc).toBe(doc);
+    expect(r.emitivel).toBe(true);
+  });
+
+  it("emitivel=true com doc=null não produz passaporte (defesa em profundidade)", () => {
+    const montado = {
+      refCode: "FALSO-1",
+      doc: null,
+      provenance: "salva" as const,
+      emitivel: true,
+    };
+    expect(computeDigitalProductPassport(montado)).toBeNull();
+  });
+
+  it("expedição barra doc=null antes de ler NCM, sem lançar", () => {
+    const summary = computePackingAndNfePreview(
+      [{ refCode: "FALSO-1", qtyPieces: 8, doc: null, provenance: "salva" }],
+      "Cliente",
+      "00.000.000/0001-00",
+      "SP",
+    );
+    expect(summary.lines).toEqual([]);
+    expect(summary.ignoradas).toEqual([{ refCode: "FALSO-1", motivo: "sem-ficha" }]);
+    expect(summary.productsTotalBrl).toBe(0);
   });
 });

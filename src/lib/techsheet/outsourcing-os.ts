@@ -197,7 +197,7 @@ export function computePartnerMetrics(
     // SAM por peça vem da ficha. Se ela não foi salva, o número é do modelo de
     // demonstração e não pode entrar na ocupação de capacidade do parceiro.
     const ref = resolveReferenceTechSheet(o.refCode, sheetsMap);
-    if (!ref.emitivel) continue;
+    if (!ref.emitivel || !ref.doc) continue;
     const m = computeServiceOrderMetrics(o, partner, ref.doc);
     if (m.balanceInThirdParty > 0) {
       openOrdersCount += 1;

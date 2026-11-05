@@ -2,21 +2,23 @@
 // e Expedição Comercial B2B (Packing List por Caixa Master + Pré-XML NFe 4.00 SEFAZ).
 
 import { computeFullTechSheetPricing, resolveDivisorParams } from "./pricing";
-import { defaultEncaixeCadFor, defaultEtiquetagemFor, seedFor, type TechSheetData } from "./store";
+import { defaultEncaixeCadFor, defaultEtiquetagemFor, type TechSheetData } from "./store";
 import { sheetProvenance, type SheetProvenance } from "./provenance";
 import { converterMetroParaKg, round2 } from "./textile";
 
 /**
  * Uma referência resolvida para tela, com a procedência do documento.
  *
- * `doc` existe sempre (senão a vitrine fica vazia), mas `emitivel` diz se ele
- * é ficha **salva pelo usuário**. Só ficha salva pode virar passaporte DPP,
- * romaneio ou pré-NFe: o resto é o modelo de demonstração, e um documento
- * fiscal/ESG emitido sobre ele carrega NCM, composição e preço inventados.
+ * `doc` é **`null` quando não há ficha salva**. Até a Onda 31 este resolvedor
+ * fabricava três fichas inteiras à mão (`V24-001`, `U25-014`, `I25-088`) — com
+ * nome, NCM, composição ABNT, eficiência de encaixe e custo de BOM próprios —
+ * para "a vitrine não ficar vazia". `emitivel: false` barrava a emissão, mas o
+ * documento inventado seguia vivo para quem calculasse ou exibisse qualquer
+ * número a partir dele. Onda 32: ausência é `null`, não é modelo.
  */
 export interface ResolvedRef {
   refCode: string;
-  doc: TechSheetData;
+  doc: TechSheetData | null;
   provenance: SheetProvenance;
   emitivel: boolean;
 }
@@ -35,70 +37,15 @@ export function resolveReferenceTechSheet(
   materializadas?: Record<string, true>,
 ): ResolvedRef {
   const provenance = sheetProvenance(sheetsMap, refCode, materializadas);
+  const doc = sheetsMap[refCode] ?? null;
   return {
     refCode,
-    doc: resolveDoc(refCode, sheetsMap),
+    doc,
     provenance,
     // Template é cópia intacta do modelo: por dentro é demonstração também.
-    emitivel: provenance === "salva",
+    // E, por construção, sem doc não há o que emitir.
+    emitivel: provenance === "salva" && doc !== null,
   };
-}
-
-function resolveDoc(refCode: string, sheetsMap: Record<string, TechSheetData>): TechSheetData {
-  if (sheetsMap[refCode]) return sheetsMap[refCode]!;
-  const base = seedFor(refCode);
-  if (refCode === "V24-001") {
-    return {
-      ...base,
-      meta: { ...base.meta!, name: "Camisa Polo Piquet Pima" },
-      etiquetagem: {
-        ...defaultEtiquetagemFor(),
-        ncm: "6105.10.00",
-        composicao: [{ fibra: "Algodão Pima", pct: 100 }],
-      },
-      encaixeCad: { ...defaultEncaixeCadFor(), eficienciaPct: 86.4 },
-      bom: base.bom.map((b, i) =>
-        i === 0 ? { ...b, consumo: "0.21", custoUnitario: 54.0, custo: 12.1 } : b,
-      ),
-    };
-  }
-  if (refCode === "U25-014") {
-    return {
-      ...base,
-      meta: { ...base.meta!, name: "Moletom Raglan Tech Fleece" },
-      etiquetagem: {
-        ...defaultEtiquetagemFor(),
-        ncm: "6110.20.00",
-        composicao: [
-          { fibra: "Algodão Orgânico", pct: 68 },
-          { fibra: "Poliéster Reciclado", pct: 32 },
-        ],
-      },
-      encaixeCad: { ...defaultEncaixeCadFor(), eficienciaPct: 81.5 },
-      bom: base.bom.map((b, i) =>
-        i === 0 ? { ...b, consumo: "0.42", custoUnitario: 62.5, custo: 28.1 } : b,
-      ),
-    };
-  }
-  if (refCode === "I25-088") {
-    return {
-      ...base,
-      meta: { ...base.meta!, name: "Calça Jogger Alfaiataria Tech" },
-      etiquetagem: {
-        ...defaultEtiquetagemFor(),
-        ncm: "6203.43.00",
-        composicao: [
-          { fibra: "Poliamida", pct: 90 },
-          { fibra: "Elastano", pct: 10 },
-        ],
-      },
-      encaixeCad: { ...defaultEncaixeCadFor(), eficienciaPct: 79.2 },
-      bom: base.bom.map((b, i) =>
-        i === 0 ? { ...b, consumo: "0.31", custoUnitario: 58.0, custo: 19.2 } : b,
-      ),
-    };
-  }
-  return base;
 }
 
 export interface DigitalProductPassport {
@@ -122,7 +69,8 @@ export interface DigitalProductPassport {
 export interface ExpeditionLineInput {
   refCode: string;
   qtyPieces: number;
-  doc: TechSheetData;
+  /** `null` = sem ficha salva; a linha vai para `ignoradas` antes de qualquer cálculo. */
+  doc: TechSheetData | null;
   /**
    * Procedência obrigatória: é o que decide se a linha pode ser faturada.
    * Um construtor novo não consegue "esquecer" o campo — o tipo não deixa.
@@ -228,8 +176,9 @@ export function buildQrMatrixSvg(payload: string): string {
  * para número de demonstração.
  */
 export function computeDigitalProductPassport(ref: ResolvedRef): DigitalProductPassport | null {
-  if (!ref.emitivel) return null;
-  const { refCode, doc } = ref;
+  if (!ref.emitivel || !ref.doc) return null;
+  const { refCode } = ref;
+  const doc = ref.doc;
   const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
   const cad = doc.encaixeCad ?? defaultEncaixeCadFor();
   const weightKg = estimatePieceWeightKg(doc);
@@ -341,13 +290,15 @@ export function computePackingAndNfePreview(
   // referência vai para `ignoradas` com o motivo. Antes, ficha ausente caía no
   // seed e NCM vazio virava "6109.90.00" — ambos inventados.
   const ignoradas: LinhaIgnorada[] = [];
+  type LinhaValida = ExpeditionLineInput & { doc: TechSheetData };
   const validas = inputs
     .filter((i) => i.qtyPieces > 0)
-    .filter((i) => {
-      if (i.provenance !== "salva") {
+    .filter((i): i is LinhaValida => {
+      if (i.provenance !== "salva" || !i.doc) {
         ignoradas.push({
           refCode: i.refCode,
-          motivo: i.provenance === "template" ? "template" : "sem-ficha",
+          motivo:
+            i.provenance !== "salva" && i.provenance === "template" ? "template" : "sem-ficha",
         });
         return false;
       }

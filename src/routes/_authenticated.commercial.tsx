@@ -381,11 +381,11 @@ function CommercialPage() {
                     <td className="p-2.5">
                       <span className="font-mono text-primary mr-1.5">{refCode}</span>
                       <span className="font-medium text-foreground">
-                        {doc.meta?.name || refCode}
+                        {doc?.meta?.name || refCode}
                       </span>
                     </td>
                     <td className="p-2.5 font-mono text-muted-foreground">
-                      {doc.etiquetagem?.ncm || <span className="text-rose-500">sem NCM</span>}
+                      {doc?.etiquetagem?.ncm || <span className="text-rose-500">sem NCM</span>}
                     </td>
                     <td className="p-2.5 font-mono">{nfeSummary.cfop}</td>
                     <td className="p-2.5 text-right">

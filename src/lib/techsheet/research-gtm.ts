@@ -175,11 +175,12 @@ export function buildDropMediaKitHtml(
   const linhas = campaign.skuRefs.flatMap((refCode) => {
     const ref = resolveReferenceTechSheet(refCode, sheetsMap);
     const dpp = computeDigitalProductPassport(ref);
-    if (!dpp) return [];
-    const pricing = computeFullTechSheetPricing(ref.doc);
+    if (!ref.doc || !dpp) return [];
+    const doc = ref.doc;
+    const pricing = computeFullTechSheetPricing(doc);
     return [
       `<tr>
-        <td><strong>${escapeHtml(refCode)}</strong> — ${escapeHtml(ref.doc.meta?.name || refCode)}</td>
+        <td><strong>${escapeHtml(refCode)}</strong> — ${escapeHtml(doc.meta?.name || refCode)}</td>
         <td>${escapeHtml(dpp.compositionText)}</td>
         <td>Classe ${dpp.esgGrade} (${dpp.carbonKgCo2e} kg CO₂e)</td>
         <td style="text-align:right">R$ ${pricing.precoSugerido.toFixed(2)}</td>

@@ -63,6 +63,7 @@ describe("Onda 31 — pontos de entrada sem modelo plantado", () => {
   it("OS sem ficha fica fora das métricas e é declarada", () => {
     const s = ler("src/components/pcp/OutsourcingServiceOrderPanel.tsx");
     expect(s).toContain('data-testid="os-sem-ficha"');
-    expect(s).toContain("filter((r) => r.emitivel)");
+    // Onda 32 trocou o filter por flatMap: agora também exige doc não-nulo.
+    expect(s).toContain("!r.emitivel || !r.doc");
   });
 });
