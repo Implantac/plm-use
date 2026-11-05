@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { buildDrePrintableHtml, computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
+import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/financial")({
@@ -259,6 +260,35 @@ function FinancialPage() {
         </Button>
       </div>
 
+      {/* De onde vem a DRE: sem isso os cards parecem operação real. */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        {dre.origem.apenasReferencia ? (
+          <DataProvenanceBadge
+            source="demonstracao"
+            detail="nenhuma ficha salva — todos os SKUs são do modelo"
+            data-testid="dre-provenance"
+          />
+        ) : dre.origem.referencias.length > 0 ? (
+          <DataProvenanceBadge
+            source="parcial"
+            detail={`${dre.origem.salvas.length} salva(s) · ${dre.origem.referencias.length} de demonstração`}
+            data-testid="dre-provenance"
+          />
+        ) : (
+          <DataProvenanceBadge
+            source="real"
+            detail="todas as fichas são salvas"
+            data-testid="dre-provenance"
+          />
+        )}
+        {dre.origem.referencias.length > 0 && (
+          <span className="text-[11px] text-muted-foreground">
+            SKUs de demonstração:{" "}
+            <span className="font-mono">{dre.origem.referencias.join(", ")}</span>
+          </span>
+        )}
+      </div>
+
       {/* Painel Simulador OTB & Ponto de Equilíbrio */}
       {otbPanelOpen && (
         <Card className="rounded-xl border-border bg-card p-4 mb-6 space-y-3">
@@ -403,6 +433,13 @@ function FinancialPage() {
                     <td className="p-2.5">
                       <span className="font-mono text-primary mr-1.5">{sku.refCode}</span>
                       <span className="font-medium text-foreground">{sku.refName}</span>
+                      {!sku.salva && (
+                        <DataProvenanceBadge
+                          source="demonstracao"
+                          className="ml-2 align-middle"
+                          data-testid={`sku-provenance-${sku.refCode}`}
+                        />
+                      )}
                     </td>
                     <td className="p-2.5 text-right font-mono">{sku.tiragem} pçs</td>
                     <td className="p-2.5 text-right font-mono">{fmtBrl(sku.unitPrice)}</td>

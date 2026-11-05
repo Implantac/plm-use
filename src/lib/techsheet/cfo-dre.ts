@@ -47,6 +47,8 @@ export interface CellGsdBalancingResult {
 export interface DreSkuBreakdown {
   refCode: string;
   refName: string;
+  /** `false` quando o SKU só existe no modelo de demonstração. */
+  salva: boolean;
   tiragem: number;
   unitPrice: number;
   unitMaterialCost: number;
@@ -76,6 +78,23 @@ export interface CollectionDreSummary {
   otbBudgetBrl: number;
   otbCommittedBrl: number;
   otbRemainingBrl: number;
+  /**
+   * De onde vieram os SKUs que entraram na conta. A home mostrava EBITDA de
+   * coleção somando quatro fichas de exemplo; sem esta informação o número
+   * aparecia como se fosse a operação da empresa.
+   */
+  origem: {
+    salvas: string[];
+    referencias: string[];
+    /** Nenhuma ficha salva: os números são 100% modelo. */
+    apenasReferencia: boolean;
+  };
+  /**
+   * Totais das fichas salvas, sem o modelo. `contribuicaoBrl` é margem de
+   * contribuição (receita − impostos − comerciais − CMV); só vira EBITDA quando
+   * não há SKU de referência diluindo o overhead fixo da coleção.
+   */
+  somenteSalvas: { totalPieces: number; grossRevenue: number; contribuicaoBrl: number };
   skus: DreSkuBreakdown[];
 }
 
@@ -233,6 +252,10 @@ export function computeCollectionDreSummary(
 
   let totalPieces = 0;
   let grossRevenue = 0;
+  // Acumuladores paralelos: o que é de ficha salva, separado do que é modelo.
+  let salvasPieces = 0;
+  let salvasRevenue = 0;
+  let salvasEbitdaBase = 0;
   let taxDeductions = 0;
   let cmvMaterial = 0;
   let cmvLabor = 0;
@@ -280,9 +303,16 @@ export function computeCollectionDreSummary(
     cmvMaterial += skuMat;
     cmvLabor += skuLab;
 
+    if (isCustom) {
+      salvasPieces += tiragem;
+      salvasRevenue += skuGross;
+      salvasEbitdaBase += skuMcBrl;
+    }
+
     return {
       refCode,
       refName: preset?.name || doc.meta?.name || refCode,
+      salva: isCustom,
       tiragem,
       unitPrice,
       unitMaterialCost,
@@ -318,6 +348,9 @@ export function computeCollectionDreSummary(
   const otbCommittedBrl = cmvMaterial;
   const otbRemainingBrl = round2(otbBudgetBrl - otbCommittedBrl);
 
+  const salvas = skus.filter((k) => k.salva).map((k) => k.refCode);
+  const referencias = skus.filter((k) => !k.salva).map((k) => k.refCode);
+
   return {
     totalPieces,
     grossRevenue,
@@ -338,6 +371,20 @@ export function computeCollectionDreSummary(
     otbBudgetBrl: round2(otbBudgetBrl),
     otbCommittedBrl,
     otbRemainingBrl,
+    origem: {
+      salvas,
+      referencias,
+      apenasReferencia: salvas.length === 0,
+    },
+    // O overhead fixo é da operação inteira: quando só há parte das fichas
+    // salvas, ratear esse custo entre elas daria um EBITDA falso para baixo.
+    // Por isso o "somente salvas" é contribuição, não EBITDA, e só vira EBITDA
+    // quando todas as fichas da coleção são salvas.
+    somenteSalvas: {
+      totalPieces: salvasPieces,
+      grossRevenue: round2(salvasRevenue),
+      contribuicaoBrl: round2(salvasEbitdaBase),
+    },
     skus,
   };
 }
@@ -442,6 +489,26 @@ export function buildDrePrintableHtml(dre: CollectionDreSummary): string {
       <div>EBITDA Projetado: <strong>${fmt(dre.ebitdaBrl)} (${dre.ebitdaPct.toFixed(1)}%)</strong></div>
     </div>
   </header>
+  ${
+    dre.origem.referencias.length > 0
+      ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
+    <strong>Documento com dados de demonstração.</strong>
+    SKU(s) sem ficha salva: ${dre.origem.referencias.join(", ")}.
+    ${dre.origem.salvas.length > 0 ? `Salvos: ${dre.origem.salvas.join(", ")}.` : "Nenhuma ficha salva."}
+    Os valores desses SKUs vêm do modelo, não da engenharia da empresa.
+  </div>`
+      : ""
+  }
+  ${
+    dre.origem.referencias.length > 0
+      ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
+    <strong>Documento com dados de demonstração.</strong>
+    SKU(s) sem ficha salva: ${dre.origem.referencias.join(", ")}.
+    ${dre.origem.salvas.length > 0 ? `Salvos: ${dre.origem.salvas.join(", ")}.` : "Nenhuma ficha salva."}
+    Os valores desses SKUs vêm do modelo, não da engenharia da empresa.
+  </div>`
+      : ""
+  }
   <table>
     <tbody>
       <tr class="bold"><td>(+) Receita Operacional Bruta</td><td style="text-align:right">${fmt(dre.grossRevenue)}</td></tr>

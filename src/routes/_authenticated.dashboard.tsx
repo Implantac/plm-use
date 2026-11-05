@@ -19,6 +19,8 @@ import {
 
 import { ORDER_FLOW_STEPS, ORDER_STATUS } from "@/lib/sales/types";
 import { computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
+import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
+import { sheetProvenance } from "@/lib/techsheet/provenance";
 import { computeDigitalProductPassport } from "@/lib/techsheet/dpp-expedition";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 
@@ -50,12 +52,16 @@ const PIPELINE_STAGES: { status: ReferenceStatus; color: string }[] = [
 
 function Dashboard() {
   const sheetsMap = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const dre = useMemo(() => computeCollectionDreSummary(sheetsMap), [sheetsMap]);
   const dppHero = useMemo(
     () =>
       computeDigitalProductPassport("DEV000006", sheetsMap["DEV000006"] ?? seedFor("DEV000006")),
     [sheetsMap],
   );
+  // O passaporte do herói é sempre do DEV000006; se essa ficha não foi editada,
+  // o rating ESG exibido é do exemplo, não do produto da empresa.
+  const dppReferencia = sheetProvenance(sheetsMap, "DEV000006", materializadas) !== "salva";
   const { items, loading, error } = useReferences();
   const { openEntity } = useEntityDrawer();
 
@@ -237,20 +243,34 @@ function Dashboard() {
           <Link
             to="/financial"
             className="rounded-lg border border-border/70 bg-muted/30 p-3 hover:border-primary/40 transition"
+            data-testid="card-ebitda"
           >
             <span className="text-2xs uppercase text-muted-foreground block">
               EBITDA Projetado Coleção
             </span>
-            <strong className="font-mono text-base text-primary">
-              {dre.ebitdaBrl.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-                maximumFractionDigits: 0,
-              })}
-            </strong>
-            <span className="text-2xs text-muted-foreground block">
-              Break-Even {dre.breakEvenPieces.toLocaleString("pt-BR")} pçs
-            </span>
+            {dre.origem.apenasReferencia ? (
+              <>
+                <strong className="font-mono text-base text-muted-foreground">—</strong>
+                <span className="text-2xs text-muted-foreground block">
+                  Sem ficha salva: a coleção existe só no modelo
+                </span>
+              </>
+            ) : (
+              <>
+                <strong className="font-mono text-base text-primary">
+                  {dre.ebitdaBrl.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                    maximumFractionDigits: 0,
+                  })}
+                </strong>
+                <span className="text-2xs text-muted-foreground block">
+                  Break-Even {dre.breakEvenPieces.toLocaleString("pt-BR")} pçs
+                  {dre.origem.referencias.length > 0 &&
+                    ` · ${dre.origem.referencias.length} SKU de demonstração`}
+                </span>
+              </>
+            )}
           </Link>
           <Link
             to="/production"
@@ -260,18 +280,29 @@ function Dashboard() {
               Volume Industrial Planejado
             </span>
             <strong className="font-mono text-base text-foreground">
-              {dre.totalPieces.toLocaleString("pt-BR")} peças
+              {dre.origem.apenasReferencia
+                ? "—"
+                : `${dre.totalPieces.toLocaleString("pt-BR")} peças`}
             </strong>
             <span className="text-2xs text-muted-foreground block">
-              Corte, Enfesto & Fardos ativos
+              {dre.origem.apenasReferencia
+                ? "Sem ficha salva para planejar volume"
+                : "Corte, Enfesto & Fardos ativos"}
             </span>
           </Link>
           <Link
             to="/pieces-report"
             className="rounded-lg border border-border/70 bg-muted/30 p-3 hover:border-primary/40 transition"
           >
-            <span className="text-2xs uppercase text-muted-foreground block">
+            <span className="text-2xs uppercase text-muted-foreground block flex items-center gap-1.5">
               Passaporte Digital ESG (DPP)
+              {dppReferencia && (
+                <DataProvenanceBadge
+                  source="demonstracao"
+                  detail="DEV000006"
+                  data-testid="dpp-provenance"
+                />
+              )}
             </span>
             <strong className="font-mono text-base text-emerald-600 dark:text-emerald-400">
               Rating {dppHero.esgGrade} · {dppHero.carbonKgCo2e} kg CO₂e
