@@ -11,13 +11,13 @@ o número deste arquivo é o que foi medido — refaça a medição antes de dis
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 27** — `16361dd`                | `git ls-remote` / API de commits     |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 28** — `bdfa024`                | `git ls-remote` / API de commits     |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 26** (republicado em 05/11)     | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e na RPC novas         |
 
 Ou seja: o ar está na **Onda 26** (republicado — medido de novo: entry
 `index-gNNeOgTl.js`, 217 chunks, marcador da Onda 26 presente), o repositório na
-**Onda 27**, e o **banco continua sem as migrações 21 e 24**. O banco segue sendo
+**Onda 28**, e o **banco continua sem as migrações 21 e 24**. O banco segue sendo
 o único elo atrasado — e é o que faz a automação existir.
 
 ## 2. App publicado — qual onda está no ar
