@@ -156,11 +156,11 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 28 (04–05/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 29 (04–05/11/2026) — o que mudou depois deste documento
 
 > **Atualização de 05/11 (2ª medição):** o app publicado está na **Onda 26**
 > (entry `index-gNNeOgTl.js`, 217 chunks, marcadores de 23 a 26 presentes); o
-> repositório está na **Onda 28**. O banco de produção **continua sem as
+> repositório está na **Onda 29**. O banco de produção **continua sem as
 > migrações das Ondas 21 e 24** — verificado de novo no mesmo dia (`PGRST205`
 > na view, `PGRST202` nas três RPCs).
 > Medição completa, com comandos para refazer: `docs/producao/SINCRONIA-2026-11-05.md`.
@@ -179,6 +179,7 @@ Este arquivo foi escrito quando `main` era `693ec16` (Onda 18). De lá para cá:
 | 26 — Tela honesta sem banco  | `3cf30d0` | a UI deixa de prometer automação que o banco não tem: 3 estados na aba Material (migração pendente / erro real / vazio), sonda em cache por sessão; pacote `APLICAR-ONDA-21-24.sql` |
 | 27 — Documento só com ficha  | `16361dd` | DPP, romaneio, pré-NFe, remessa, OS cega e media kit recusam ficha não salva; NCM default eliminado; `DocumentoNaoEmitivelError`                                                    |
 | 28 — Preço e NCM reais       | `bdfa024` | line sheet do look para de inventar preço (null + kit só se completo); NCM perde o default em 5 pontos; NCM vira veto no gate de catálogo                                           |
+| 29 — Demo fora da operação   | `23b01a3` | RFQ, MRP, showroom e display deixam de usar ficha de demonstração; suite deixa de ser instável (flake do OrderDetail resolvido)                                                     |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -219,7 +220,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 407 testes
+cd plm-use && npx vitest run            # 409 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -227,6 +228,6 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@bdfa024`, `docs/producao/ONDA-19..28-*.md` e os números das
-suítes rodadas em 05/11 (vitest 407/407, SQL 163/163, bundle relido com 217 chunks:
+Seção 7-A: `main@23b01a3`, `docs/producao/ONDA-19..29-*.md` e os números das
+suítes rodadas em 05/11 (vitest 409/409, SQL 163/163, bundle relido com 217 chunks:
 `Ficha de referência` e `Consumo e liberação` = 0 ocorrências, logo o ar é a Onda 19).

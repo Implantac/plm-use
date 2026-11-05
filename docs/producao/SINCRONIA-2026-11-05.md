@@ -11,7 +11,7 @@ o número deste arquivo é o que foi medido — refaça a medição antes de dis
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 28** — `d617166`                | `git ls-remote` / API de commits     |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 29** — `23b01a3`                | `git ls-remote` / API de commits     |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 28** (republicado em 05/11)     | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e na RPC novas         |
 
