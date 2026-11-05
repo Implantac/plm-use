@@ -2,7 +2,7 @@
 // e Expedição Comercial B2B (Packing List por Caixa Master + Pré-XML NFe 4.00 SEFAZ).
 
 import { computeFullTechSheetPricing, resolveDivisorParams } from "./pricing";
-import { defaultEncaixeCadFor, defaultEtiquetagemFor, type TechSheetData } from "./store";
+import { type TechSheetData } from "./store";
 import { sheetProvenance, type SheetProvenance } from "./provenance";
 import { converterMetroParaKg, round2 } from "./textile";
 
@@ -168,19 +168,56 @@ export function buildQrMatrixSvg(payload: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 25" shape-rendering="crispEdges"><rect width="25" height="25" rx="2" fill="#FFFFFF"/>${rects.join("")}</svg>`;
 }
 
+/** O que falta na ficha para o DPP ser apurável. */
+export type DppPendencia =
+  "sem-ficha" | "sem-ncm" | "sem-origem" | "sem-composicao" | "sem-encaixe";
+
+export interface DppRequirements {
+  ok: boolean;
+  pendencias: DppPendencia[];
+}
+
+export const DPP_PENDENCIA_LABEL: Record<DppPendencia, string> = {
+  "sem-ficha": "sem ficha salva",
+  "sem-ncm": "NCM de 8 dígitos",
+  "sem-origem": "país de origem declarado",
+  "sem-composicao": "composição ABNT declarada",
+  "sem-encaixe": "encaixe CAD informado",
+};
+
 /**
- * Passaporte Digital do Produto.
+ * Onda 33. Até aqui uma ficha "salva" que fosse cópia do modelo (ou tivesse só
+ * o nome editado) produzia nota ESG, kg CO₂e e litros de água calculados sobre
+ * **Poliéster 96% / Elastano 4%** e **eficiência 88,3%** — os defaults de
+ * demonstração que `seedFor()` preenche. A home exibia esse rating como se
+ * fosse do produto. `buildDppPrintableHtml` barrava o PDF sem NCM (Onda 28),
+ * mas o objeto DPP já existia e alimentava tela, media kit e QR.
  *
- * Devolve `null` quando a ficha não foi salva por ninguém: o DPP declara
- * composição, NCM, origem e métricas ESG ao consumidor final — não é lugar
- * para número de demonstração.
+ * Agora o veto entra no próprio cálculo: ficha salva + NCM de 8 dígitos +
+ * origem declarada + composição declarada + encaixe declarado. Sem nenhum
+ * `?? default*()` — ausência é ausência.
  */
+export function dppRequirements(ref: ResolvedRef): DppRequirements {
+  const doc = ref.doc;
+  if (!ref.emitivel || !doc) return { ok: false, pendencias: ["sem-ficha"] };
+
+  const pendencias: DppPendencia[] = [];
+  const ncm = (doc.etiquetagem?.ncm ?? "").replace(/\D/g, "");
+  if (ncm.length !== 8) pendencias.push("sem-ncm");
+  if (!(doc.etiquetagem?.paisOrigem ?? "").trim()) pendencias.push("sem-origem");
+  if (!doc.etiquetagem?.composicao?.length) pendencias.push("sem-composicao");
+  if (!doc.encaixeCad) pendencias.push("sem-encaixe");
+  return { ok: pendencias.length === 0, pendencias };
+}
+
 export function computeDigitalProductPassport(ref: ResolvedRef): DigitalProductPassport | null {
-  if (!ref.emitivel || !ref.doc) return null;
+  if (!dppRequirements(ref).ok) return null;
   const { refCode } = ref;
   const doc = ref.doc;
-  const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
-  const cad = doc.encaixeCad ?? defaultEncaixeCadFor();
+  const etq = doc?.etiquetagem;
+  const cad = doc?.encaixeCad;
+  // Garantido por dppRequirements; as guardas só estreitam o tipo para o TS.
+  if (!doc || !etq || !cad) return null;
   const weightKg = estimatePieceWeightKg(doc);
   const pieceWeightGrams = Math.round(weightKg * 1000);
 
@@ -254,10 +291,8 @@ export function computeDigitalProductPassport(ref: ResolvedRef): DigitalProductP
     refName: doc.meta?.name || refCode,
     version,
     ncm,
-    origin: etq.paisOrigem || "Feito no Brasil",
-    compositionText: etq.composicao.length
-      ? etq.composicao.map((c) => `${c.pct}% ${c.fibra}`).join(" · ")
-      : "Composição não informada na ficha",
+    origin: etq.paisOrigem,
+    compositionText: etq.composicao.map((c) => `${c.pct}% ${c.fibra}`).join(" · "),
     pieceWeightGrams,
     carbonKgCo2e,
     waterLiters,
@@ -302,8 +337,10 @@ export function computePackingAndNfePreview(
         });
         return false;
       }
-      const ncm = (i.doc.etiquetagem?.ncm ?? "").replace(/[^0-9.]/g, "");
-      if (ncm.length < 8) {
+      // Mesmo critério do DPP e da Onda 28: exatamente 8 dígitos, contados
+      // sem a pontuação de exibição. Antes `< 8` aceitava NCM de 9+ dígitos.
+      const ncm = (i.doc.etiquetagem?.ncm ?? "").replace(/\D/g, "");
+      if (ncm.length !== 8) {
         ignoradas.push({ refCode: i.refCode, motivo: "sem-ncm" });
         return false;
       }
@@ -313,7 +350,7 @@ export function computePackingAndNfePreview(
   const lines: ExpeditionLineComputed[] = validas.map(({ refCode, qtyPieces, doc }) => {
     const pricing = computeFullTechSheetPricing(doc);
     const div = resolveDivisorParams(doc.preCost.divisor);
-    const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
+    const etq = doc.etiquetagem;
     const pv = pricing.precoReferenciaMargem || pricing.precoSugerido;
     const unitPriceBrl = round2(pv * 0.52); // Preço Faturamento B2B Indústria
     const subtotalBrl = round2(unitPriceBrl * qtyPieces);
@@ -331,7 +368,7 @@ export function computePackingAndNfePreview(
     return {
       refCode,
       refName: doc.meta?.name || refCode,
-      ncm: (etq.ncm ?? "").replace(/[^0-9.]/g, ""),
+      ncm: (etq?.ncm ?? "").replace(/[^0-9.]/g, ""),
       cfop,
       qtyPieces,
       unitPriceBrl,
@@ -508,7 +545,7 @@ export function buildPackingListPrintableHtml(summary: PackingAndNfeSummary): st
 }
 
 export function buildDppPrintableHtml(dpp: DigitalProductPassport): string {
-  if (dpp.ncm.trim() === "") {
+  if (dpp.ncm.replace(/\D/g, "").length !== 8) {
     throw new DocumentoNaoEmitivelError([{ refCode: dpp.refCode, motivo: "sem-ncm" }]);
   }
   return `<!DOCTYPE html>

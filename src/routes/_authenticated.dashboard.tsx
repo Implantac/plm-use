@@ -23,6 +23,8 @@ import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { sheetProvenance } from "@/lib/techsheet/provenance";
 import {
   computeDigitalProductPassport,
+  dppRequirements,
+  DPP_PENDENCIA_LABEL,
   resolveReferenceTechSheet,
 } from "@/lib/techsheet/dpp-expedition";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
@@ -322,7 +324,9 @@ function Dashboard() {
               <>
                 <strong className="font-mono text-base text-muted-foreground">—</strong>
                 <span className="text-2xs text-muted-foreground block">
-                  Sem ficha salva: o passaporte não é emitido
+                  {dppRequirements(resolveReferenceTechSheet("DEV000006", sheetsMap))
+                    .pendencias.map((x) => DPP_PENDENCIA_LABEL[x])
+                    .join(" · ") || "passaporte não apurável"}
                 </span>
               </>
             )}

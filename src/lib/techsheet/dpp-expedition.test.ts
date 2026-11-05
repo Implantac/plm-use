@@ -8,6 +8,7 @@ import {
   computeDigitalProductPassport,
   computePackingAndNfePreview,
   resolveReferenceTechSheet,
+  dppRequirements,
 } from "./dpp-expedition";
 
 /** Ficha que o usuário salvou: está no mapa e não é materialização do modelo. */
@@ -15,6 +16,16 @@ const salvos: Record<string, TechSheetData> = {
   DEV000006: seedFor("DEV000006"),
   "V24-001": seedFor("V24-001"),
 };
+
+/** Onda 33: ficha apurável para DPP — NCM, origem, composição e encaixe declarados. */
+function fichaCompleta(ref: string, ncm: string): TechSheetData {
+  const base = seedFor(ref);
+  return {
+    ...base,
+    etiquetagem: { ...base.etiquetagem!, ncm, paisOrigem: "Brasil" },
+    encaixeCad: { ...base.encaixeCad!, eficienciaPct: 86.4 },
+  };
+}
 
 /** Ficha com NCM preenchido — exigência para faturar. */
 const salvosComNcm: Record<string, TechSheetData> = {
@@ -30,7 +41,9 @@ const salvosComNcm: Record<string, TechSheetData> = {
 
 describe("Passaporte Digital do Produto (DPP ESG) & Expedição Pré-NFe 4.00", () => {
   it("calcula pegada de carbono, água, circularidade, QR vetorial e certificado DPP A4", () => {
-    const ref = resolveReferenceTechSheet("DEV000006", salvos);
+    const ref = resolveReferenceTechSheet("DEV000006", {
+      DEV000006: fichaCompleta("DEV000006", "6109.10.00"),
+    });
     const dpp = computeDigitalProductPassport(ref);
     expect(dpp).not.toBeNull();
     if (!dpp) throw new Error("esperava DPP");
@@ -156,7 +169,9 @@ describe("ficha não salva não vira documento", () => {
   });
 
   it("DPP impresso sem NCM é recusado", () => {
-    const ref = resolveReferenceTechSheet("DEV000006", salvos);
+    const ref = resolveReferenceTechSheet("DEV000006", {
+      DEV000006: fichaCompleta("DEV000006", "6109.10.00"),
+    });
     const dpp = computeDigitalProductPassport(ref);
     if (!dpp) throw new Error("esperava DPP");
     const semNcm = { ...dpp, ncm: "" };
@@ -219,5 +234,72 @@ describe("Onda 32 — referência sem ficha é null, não ficha inventada", () =
     expect(summary.lines).toEqual([]);
     expect(summary.ignoradas).toEqual([{ refCode: "FALSO-1", motivo: "sem-ficha" }]);
     expect(summary.productsTotalBrl).toBe(0);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Onda 33: o veto de NCM/origem entra no próprio DPP, não só no PDF
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Onda 33 — nota ESG só com engenharia declarada", () => {
+  const req = (doc: TechSheetData | null) =>
+    dppRequirements({
+      refCode: "X-1",
+      doc,
+      provenance: doc ? "salva" : "referencia",
+      emitivel: doc !== null,
+    });
+
+  it("ficha que é cópia do modelo não produz DPP: NCM e origem faltam", () => {
+    const copia = seedFor("DEV000006");
+    const r = req(copia);
+    expect(r.ok).toBe(false);
+    expect(r.pendencias).toContain("sem-ncm");
+    expect(r.pendencias).toContain("sem-origem");
+    expect(
+      computeDigitalProductPassport({
+        refCode: "DEV000006",
+        doc: copia,
+        provenance: "salva",
+        emitivel: true,
+      }),
+    ).toBeNull();
+  });
+
+  it("só o nome editado não basta — continua sem classificação fiscal", () => {
+    const copia = seedFor("DEV000006");
+    copia.meta = { ...copia.meta!, name: "Produto da empresa" };
+    expect(req(copia).pendencias).toContain("sem-ncm");
+  });
+
+  it("NCM de 7 dígitos é veto, não arredondamento", () => {
+    expect(req(fichaCompleta("X-1", "6109100")).pendencias).toContain("sem-ncm");
+    expect(req(fichaCompleta("X-1", "6109.10.00")).ok).toBe(true);
+  });
+
+  it("falta de composição ou encaixe também barra, sem usar defaults", () => {
+    const semComposicao = fichaCompleta("X-1", "6109.10.00");
+    semComposicao.etiquetagem = { ...semComposicao.etiquetagem!, composicao: [] };
+    expect(req(semComposicao).pendencias).toContain("sem-composicao");
+
+    const semEncaixe = fichaCompleta("X-1", "6109.10.00");
+    semEncaixe.encaixeCad = undefined;
+    expect(req(semEncaixe).pendencias).toContain("sem-encaixe");
+  });
+
+  it("DPP completo declara a origem real, não 'Feito no Brasil' inventado", () => {
+    const doc = fichaCompleta("X-1", "6109.10.00");
+    doc.etiquetagem = { ...doc.etiquetagem!, paisOrigem: "Portugal" };
+    const dpp = computeDigitalProductPassport({
+      refCode: "X-1",
+      doc,
+      provenance: "salva",
+      emitivel: true,
+    });
+    expect(dpp?.origin).toBe("Portugal");
+    expect(dpp?.compositionText).not.toContain("não informada");
+  });
+
+  it("sem ficha a pendência é objetiva", () => {
+    expect(req(null)).toEqual({ ok: false, pendencias: ["sem-ficha"] });
   });
 });

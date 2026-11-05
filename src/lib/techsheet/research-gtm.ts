@@ -190,7 +190,7 @@ export function buildDropMediaKitHtml(
   const skuRows =
     linhas.length > 0
       ? linhas.join("")
-      : `<tr><td colspan="4">Nenhuma referência da campanha tem ficha salva — este media kit não declara composição, classe ESG nem preço.</td></tr>`;
+      : `<tr><td colspan="4">Nenhuma referência da campanha tem passaporte apurável (ficha salva, NCM de 8 dígitos, origem, composição ABNT e encaixe CAD declarados) — este media kit não declara composição, classe ESG nem preço.</td></tr>`;
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">

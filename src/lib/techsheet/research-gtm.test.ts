@@ -32,15 +32,30 @@ describe("Pesquisa Criativa -> Engenharia (Briefing 1-Clique) & Hub GTM Drops", 
     const vazio = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, {});
     expect(vazio).toContain("Release GTM & Media Kit");
     expect(vazio).not.toContain("DEV000006");
-    expect(vazio).toContain("Nenhuma referência da campanha tem ficha salva");
+    expect(vazio).toContain("Nenhuma referência da campanha tem passaporte apurável");
 
-    const salvos = {
+    // Onda 33: ficha que é só cópia do modelo (sem NCM/origem declarados) não
+    // produz mais nota ESG no media kit.
+    const copias = {
       DEV000006: seedFor("DEV000006"),
       "V24-001": seedFor("V24-001"),
       "U25-014": seedFor("U25-014"),
       "I25-088": seedFor("I25-088"),
     };
-    const html = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, salvos);
+    const soCopias = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, copias);
+    expect(soCopias).not.toContain("CO₂e");
+
+    const completo = (ref: string) => {
+      const base = seedFor(ref);
+      return {
+        ...base,
+        etiquetagem: { ...base.etiquetagem!, ncm: "6109.10.00", paisOrigem: "Brasil" },
+      };
+    };
+    const html = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, {
+      DEV000006: completo("DEV000006"),
+      "V24-001": completo("V24-001"),
+    });
     expect(html).toContain("DEV000006");
     expect(html).toContain("CO₂e");
   });

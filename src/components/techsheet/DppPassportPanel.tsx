@@ -17,6 +17,8 @@ import { ImageLightbox } from "@/components/ui/image-lightbox";
 import {
   buildDppPrintableHtml,
   computeDigitalProductPassport,
+  dppRequirements,
+  DPP_PENDENCIA_LABEL,
   resolveReferenceTechSheet,
   type DigitalProductPassport,
 } from "@/lib/techsheet/dpp-expedition";
@@ -45,7 +47,15 @@ export function DppPassportPanel() {
       const ref = resolveReferenceTechSheet(refCode, sheetsMap);
       const dpp = computeDigitalProductPassport(ref);
       if (dpp) em.push(dpp);
-      else nao.push({ refCode, motivo: ref.provenance === "template" ? "modelo" : "demonstração" });
+      else {
+        const pendencias = dppRequirements(ref).pendencias;
+        nao.push({
+          refCode,
+          // Antes dizia só "modelo"/"demonstração" mesmo quando a ficha estava
+          // salva e faltava NCM ou composição. Agora diz exatamente o que falta.
+          motivo: pendencias.map((x) => DPP_PENDENCIA_LABEL[x]).join(" · "),
+        });
+      }
     }
     return { emitidos: em, naoEmitidos: nao };
   }, [sheetsMap]);
