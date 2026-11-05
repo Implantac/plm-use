@@ -1,6 +1,6 @@
 # Onda 31 — O cockpit não nasce no modelo de demonstração
 
-**Data:** 05/11/2026 · **Antecessor:** `1365121` (Onda 30 + docs)
+**Data:** 05/11/2026 · **Commit:** `5f41a95` · **Antecessor:** `1365121` (Onda 30 + docs)
 
 ---
 
