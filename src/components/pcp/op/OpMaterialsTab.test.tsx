@@ -106,3 +106,48 @@ describe("aba Material da OP", () => {
     expect(botao.disabled).toBe(true);
   });
 });
+
+describe("migração pendente não é lista vazia", () => {
+  it("404 na RPC (PGRST202) mostra aviso de migração, não 'sem material'", async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: {
+        code: "PGRST202",
+        message: "Could not find the function public.op_reserved_materials",
+      },
+    });
+
+    render(<OpMaterialsTab orderId="op-1" orderNumber="OP-PED-1" />);
+
+    await waitFor(() => expect(screen.getByTestId("material-migracao-pendente")).toBeTruthy());
+    // o texto de "não tem reserva" seria mentira: não deu para ler
+    expect(screen.queryByText(/não tem material reservado em aberto/i)).toBeNull();
+    const botao = screen.getByRole("button", {
+      name: /Dar baixa do material/i,
+    }) as HTMLButtonElement;
+    expect(botao.disabled).toBe(true);
+  });
+
+  it("erro de verdade (não-migração) aparece como erro com 'tentar de novo'", async () => {
+    rpc.mockResolvedValue({
+      data: null,
+      error: { code: "08006", message: "connection failure" },
+    });
+
+    render(<OpMaterialsTab orderId="op-1" orderNumber="OP-PED-1" />);
+
+    await waitFor(() => expect(screen.getByTestId("material-erro-leitura")).toBeTruthy());
+    expect(screen.getByText(/connection failure/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Tentar de novo/i })).toBeTruthy();
+    expect(screen.queryByTestId("material-migracao-pendente")).toBeNull();
+  });
+
+  it("quando a migração está aplicada, nenhum aviso aparece", async () => {
+    rpc.mockResolvedValueOnce({ data: [reserva()], error: null });
+    render(<OpMaterialsTab orderId="op-1" orderNumber="OP-PED-1" />);
+
+    await waitFor(() => expect(screen.getByText(/Tecido Dry/)).toBeTruthy());
+    expect(screen.queryByTestId("material-migracao-pendente")).toBeNull();
+    expect(screen.queryByTestId("material-erro-leitura")).toBeNull();
+  });
+});

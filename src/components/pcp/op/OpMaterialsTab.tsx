@@ -10,6 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useUserRoles, useAuth } from "@/hooks/use-auth";
+import {
+  isMissingDatabaseObject,
+  MENSAGEM_MIGRACAO_PENDENTE,
+} from "@/lib/inventory/stock-lifecycle";
 
 interface ReservedMaterial {
   reservation_id: string;
@@ -41,15 +45,23 @@ export function OpMaterialsTab({ orderId, orderNumber }: { orderId: string; orde
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [ultimo, setUltimo] = useState<ConsumeResult | null>(null);
+  // Erro NÃO é lista vazia. Antes desta separação, um 404 de RPC (migração
+  // pendente) caía no estado vazio e a tela dizia "esta OP não tem material
+  // reservado" — mentira: não deu para ler.
+  const [erro, setErro] = useState<{ pendente: boolean; mensagem: string } | null>(null);
 
   const carregar = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase.rpc("op_reserved_materials", { _order_id: orderId });
     setLoading(false);
     if (error) {
-      toast.error(`Não foi possível ler as reservas da OP: ${error.message}`);
+      const pendente = isMissingDatabaseObject(error as { code?: string; message?: string });
+      setErro({ pendente, mensagem: error.message });
+      setRows([]);
+      if (!pendente) toast.error(`Não foi possível ler as reservas da OP: ${error.message}`);
       return;
     }
+    setErro(null);
     setRows((data ?? []) as ReservedMaterial[]);
   }, [orderId]);
 
@@ -67,10 +79,15 @@ export function OpMaterialsTab({ orderId, orderNumber }: { orderId: string; orde
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      if (isMissingDatabaseObject(error as { code?: string; message?: string })) {
+        setErro({ pendente: true, mensagem: error.message });
+      } else {
+        toast.error(error.message);
+      }
       return;
     }
     const res = data as unknown as ConsumeResult;
+    setErro(null);
     setUltimo(res);
     if (res.total_consumido > 0) {
       toast.success(
@@ -108,7 +125,7 @@ export function OpMaterialsTab({ orderId, orderNumber }: { orderId: string; orde
             size="sm"
             className="gap-1.5"
             onClick={() => void baixar()}
-            disabled={busy || totalReservado === 0 || !podeBaixar}
+            disabled={busy || totalReservado === 0 || !podeBaixar || Boolean(erro)}
             title={
               podeBaixar
                 ? "Registrar a saída dos insumos reservados"
@@ -128,7 +145,36 @@ export function OpMaterialsTab({ orderId, orderNumber }: { orderId: string; orde
         </p>
       )}
 
-      {!loading && totalReservado === 0 && (
+      {erro?.pendente && (
+        <div
+          data-testid="material-migracao-pendente"
+          className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300 space-y-1"
+        >
+          <p className="flex items-center gap-1.5 font-semibold">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            Baixa de material indisponível neste banco
+          </p>
+          <p className="leading-snug">{MENSAGEM_MIGRACAO_PENDENTE}</p>
+        </div>
+      )}
+
+      {erro && !erro.pendente && (
+        <div
+          data-testid="material-erro-leitura"
+          className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-[11px] text-destructive space-y-1"
+        >
+          <p className="flex items-center gap-1.5 font-semibold">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            Não foi possível ler as reservas desta OP
+          </p>
+          <p className="leading-snug font-mono">{erro.mensagem}</p>
+          <Button size="sm" variant="outline" onClick={() => void carregar()}>
+            Tentar de novo
+          </Button>
+        </div>
+      )}
+
+      {!loading && !erro && totalReservado === 0 && (
         <p className="text-xs text-muted-foreground py-4 text-center">
           Esta OP não tem material reservado em aberto. Reservas nascem quando o pedido é liberado
           para o PCP com insumos ligados ao almoxarifado.

@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { updateReservationStatus } from "@/lib/inventory/inventory.functions";
+import { MENSAGEM_MIGRACAO_PENDENTE, useStockLifecycle } from "@/lib/inventory/stock-lifecycle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { StockItem } from "@/hooks/use-stock";
@@ -27,6 +28,9 @@ interface Reservation {
 }
 
 export function ReservationsPanel({ items }: { items: StockItem[] }) {
+  // A automação depende de migration. Quando ela não está lá, o texto antigo
+  // prometia consumo automático que não acontece — e o operador esperava.
+  const ciclo = useStockLifecycle();
   const [rows, setRows] = useState<Reservation[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [opMeta, setOpMeta] = useState<Record<string, { id: string; number: string }>>({});
