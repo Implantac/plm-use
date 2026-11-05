@@ -158,6 +158,11 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ## 7-A. Ondas 19 a 25 (04/11/2026) — o que mudou depois deste documento
 
+> **Atualização de 05/11:** a coluna "Está no ar?" desta tabela foi medida de novo.
+> O app publicado saiu da Onda 19 e está na **Onda 23**; as Ondas 24 e 25 ainda não
+> subiram, e o banco de produção **não** tem as migrações das Ondas 21 e 24.
+> Medição completa, com comandos para refazer: `docs/producao/SINCRONIA-2026-11-05.md`.
+
 Este arquivo foi escrito quando `main` era `693ec16` (Onda 18). De lá para cá:
 
 | Onda                         | Commit    | O que entregou                                                                                                                                        | Está no ar?             |
