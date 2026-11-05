@@ -183,7 +183,7 @@ Este arquivo foi escrito quando `main` era `693ec16` (Onda 18). De lá para cá:
 | 29 — Demo fora da operação   | `23b01a3` | RFQ, MRP, showroom e display deixam de usar ficha de demonstração; suíte deixa de ser instável (flake do OrderDetail resolvido) — **no ar**                                                                                                     |
 | 30 — Fechando o gerador      | `5564956` | DRE para de somar os 4 SKUs do modelo; esteira para de fabricar ficha ao arrastar; gate omnichannel não exporta CSV/A4 sem ficha; 4 emissores restantes passam a usar só fichas salvas; guarda de regressão nos fontes                          | ❌ não republicado      |
 | 31 — Cockpit fora do modelo  | `5f41a95` | `/tech-sheet` deixa de nascer em `DEV000006`; `ensure()` sai do seletor do Zustand; 5 saídas (PDFs, Ordem de Corte, CSV MRP, publicação) exigem ficha salva; gêmeo digital, estúdio e GTM param de plantar refs; OS sem ficha fora das métricas | ❌ não republicado      |
-| 32 — Resolvedor honesto      | `HEAD`    | `resolveReferenceTechSheet` deixa de fabricar 3 fichas com NCM/composição/BOM próprias: `ResolvedRef.doc` vira `null`; 8 consumidores ajustados; expedição barra `doc` nulo antes de ler NCM                                                    | ❌ não republicado      |
+| 32 — Resolvedor honesto      | `d08fccb` | `resolveReferenceTechSheet` deixa de fabricar 3 fichas com NCM/composição/BOM próprias: `ResolvedRef.doc` vira `null`; 8 consumidores ajustados; expedição barra `doc` nulo antes de ler NCM                                                    | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -234,7 +234,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 32; hash em `git log -1`),
+Seção 7-A: `main@d08fccb` (Onda 32),
 `docs/producao/ONDA-19..32-*.md` e os números das suítes rodadas em 05/11
 (vitest **471/471**, SQL 163/163, bundle relido com **218 chunks**: marcadores
 das Ondas 24–29 presentes, marcadores das Ondas 30, 31 e 32 com 0 ocorrências

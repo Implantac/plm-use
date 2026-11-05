@@ -1,6 +1,6 @@
 # Onda 32 — O resolvedor de referência não inventa documento
 
-**Data:** 05/11/2026 · **Antecessor:** `e8181c7` (Onda 31 + docs)
+**Data:** 05/11/2026 · **Commit:** `d08fccb` · **Antecessor:** `e8181c7` (Onda 31 + docs)
 
 ---
 
