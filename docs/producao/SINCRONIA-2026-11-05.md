@@ -15,8 +15,9 @@ o número deste arquivo é o que foi medido — refaça a medição antes de dis
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 23**                            | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e na RPC novas         |
 
-Ou seja: o repositório está **duas ondas à frente do ar**, e o ar está **uma
-migração à frente do banco** em um ponto que importa.
+Ou seja: **ar e repositório estão alinhados** (Onda 25, medição de 05/11 12h UTC),
+mas o **banco continua sem as migrações 21 e 24**. O banco é o único elo atrasado —
+e é o que faz a automação existir.
 
 ## 2. App publicado — qual onda está no ar
 
@@ -36,8 +37,8 @@ mudou de `index-s84f6ian.js` para `index-CQexDK2k.js` — é build novo, não ca
 | 24   | `op_reserved_materials`                            | ❌ 0        |
 | 25   | `Documento com dados de demonstração`              | ❌ 0        |
 
-**Conclusão:** quem republicou parou na Onda 23. As Ondas 24 e 25 ainda não são o
-que o usuário vê.
+**Conclusão (05/11, 2ª medição):** o build publicado agora traz os marcadores até a
+Onda 25. O `entry` mudou de `index-CQexDK2k.js` para `index-BCX5Of78.js`.
 
 ## 3. Banco de produção — o que falta
 
