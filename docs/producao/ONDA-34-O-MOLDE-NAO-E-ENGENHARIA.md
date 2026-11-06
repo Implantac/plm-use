@@ -1,6 +1,6 @@
 # Onda 34 — O molde de demonstração não é engenharia
 
-**Data:** 05/11/2026 · **Antecessor:** `9e5498a` (Onda 33 + docs)
+**Data:** 05/11/2026 · **Commit:** `c06e3f3` · **Antecessor:** `9e5498a` (Onda 33 + docs)
 
 ---
 
