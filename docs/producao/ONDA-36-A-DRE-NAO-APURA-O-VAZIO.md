@@ -1,6 +1,6 @@
 # Onda 36 — A DRE não apura o vazio
 
-**Data:** 05/11/2026 · **Antecessor:** `bbc2b2e` (Onda 35 + docs)
+**Data:** 05/11/2026 · **Commit:** `1694e3d` · **Antecessor:** `bbc2b2e` (Onda 35 + docs)
 
 ---
 

@@ -185,7 +185,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 33 — Nota ESG real           | `354fd27` | `dppRequirements` leva o veto de NCM/origem/composição/encaixe para dentro do DPP; sem `?? default*()`, sem "Feito no Brasil"; PDF e expedição exigem 8 dígitos; pendências objetivas na home e no painel                                                                              | ❌ não republicado      |
 | 34 — Molde não é engenharia  | `c06e3f3` | `seedFor()` nasce sem composição, NCM, origem e risco CAD; moldes renomeados para `empty*Spec()`; plano de corte ganha `apuravel` e barra a A4; morrem os defaults numéricos escondidos (1,8 m / 5,35 m / 155 g); gate de estágio declara ausência; 14 testes novos                    | ❌ não republicado      |
 | 35 — Criar ficha é criar     | `c145545` | Medição executada: o briefing 1-clique virava ficha salva com BOM, BOP, colorways e custos do modelo. Entram `blankFor()` e `criarFicha()`; os 20 updaters deixam de cair no seed; `ensure()` sai de rotas e dos 6 painéis; MRP e UseCloud não emprestam variantes. 16 testes novos    | ❌ não republicado      |
-| 36 — DRE não apura o vazio   | `HEAD`    | Medição com overhead padrão: ficha vazia gerava EBITDA -R$ 85.000, 50 peças inventadas e A4 sem aviso. Entram `pendenciasEngenhariaDre` e `origem.semEngenharia`; só BOM custeada, preço e tiragem declarados entram na soma; morrem o piso de 50 e o fallback de 600. 11 testes novos | ❌ não republicado      |
+| 36 — DRE não apura o vazio   | `1694e3d` | Medição com overhead padrão: ficha vazia gerava EBITDA -R$ 85.000, 50 peças inventadas e A4 sem aviso. Entram `pendenciasEngenhariaDre` e `origem.semEngenharia`; só BOM custeada, preço e tiragem declarados entram na soma; morrem o piso de 50 e o fallback de 600. 11 testes novos | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -236,7 +236,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 36; hash em `git log -1`),
+Seção 7-A: `main@1694e3d` (Onda 36),
 `docs/producao/ONDA-19..36-*.md` e os números das suítes rodadas em 05/11
 (vitest **522/522**, SQL 163/163, bundle relido com **218 chunks**: marcadores
 das Ondas 24–29 presentes, marcadores das Ondas 30 a 36 com 0 ocorrências —
