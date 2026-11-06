@@ -255,11 +255,13 @@ function Dashboard() {
             <span className="text-2xs uppercase text-muted-foreground block">
               EBITDA Projetado Coleção
             </span>
-            {dre.origem.apenasReferencia ? (
+            {!dre.apuravel ? (
               <>
                 <strong className="font-mono text-base text-muted-foreground">—</strong>
                 <span className="text-2xs text-muted-foreground block">
-                  Sem ficha salva: a coleção existe só no modelo
+                  {dre.origem.semEngenharia.length > 0
+                    ? `${dre.origem.semEngenharia.length} ficha(s) sem engenharia custeada`
+                    : "Sem ficha salva: a coleção existe só no modelo"}
                 </span>
               </>
             ) : (
@@ -275,6 +277,8 @@ function Dashboard() {
                   Break-Even {dre.breakEvenPieces.toLocaleString("pt-BR")} pçs
                   {dre.origem.referencias.length > 0 &&
                     ` · ${dre.origem.referencias.length} do modelo fora da conta`}
+                  {dre.origem.semEngenharia.length > 0 &&
+                    ` · ${dre.origem.semEngenharia.length} sem engenharia fora da conta`}
                 </span>
               </>
             )}
@@ -287,13 +291,13 @@ function Dashboard() {
               Volume Industrial Planejado
             </span>
             <strong className="font-mono text-base text-foreground">
-              {dre.origem.apenasReferencia
-                ? "—"
-                : `${dre.totalPieces.toLocaleString("pt-BR")} peças`}
+              {!dre.apuravel ? "—" : `${dre.totalPieces.toLocaleString("pt-BR")} peças`}
             </strong>
             <span className="text-2xs text-muted-foreground block">
-              {dre.origem.apenasReferencia
-                ? "Sem ficha salva para planejar volume"
+              {!dre.apuravel
+                ? dre.origem.semEngenharia.length > 0
+                  ? "Sem engenharia custeada para planejar volume"
+                  : "Sem ficha salva para planejar volume"
                 : "Corte, Enfesto & Fardos ativos"}
             </span>
           </Link>

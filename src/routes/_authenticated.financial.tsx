@@ -195,7 +195,11 @@ function FinancialPage() {
     {
       label: "Receita Líquida Projetada",
       value: fmtDre(dre.netRevenue),
-      change: dre.apuravel ? `${dre.totalPieces.toLocaleString("pt-BR")} pçs` : "sem ficha salva",
+      change: dre.apuravel
+        ? `${dre.totalPieces.toLocaleString("pt-BR")} pçs`
+        : dre.origem.semEngenharia.length > 0
+          ? "sem engenharia custeada"
+          : "sem ficha salva",
       trend: "up" as const,
     },
     {
@@ -444,8 +448,9 @@ function FinancialPage() {
                 {!dre.apuravel && (
                   <tr className="border-t border-border/60" data-testid="dre-sem-ficha">
                     <td colSpan={6} className="p-4 text-center text-xs text-muted-foreground">
-                      Nenhuma ficha técnica salva. A DRE não é apurável — os SKUs de demonstração
-                      não entram na conta.{" "}
+                      {dre.origem.semEngenharia.length > 0
+                        ? `DRE não apurável: ${dre.origem.semEngenharia.length} ficha(s) salva(s) sem BOM custeada, preço ou tiragem declarada (${dre.origem.semEngenharia.join(", ")}). Overhead fixo não vira prejuízo inventado.`
+                        : "Nenhuma ficha técnica salva. A DRE não é apurável — os SKUs de demonstração não entram na conta."}{" "}
                       <Link to="/tech-sheet" className="text-primary underline">
                         Abrir Ficha Técnica
                       </Link>

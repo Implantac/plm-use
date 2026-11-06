@@ -79,7 +79,12 @@ export interface CollectionDreSummary {
   otbBudgetBrl: number;
   otbCommittedBrl: number;
   otbRemainingBrl: number;
-  /** `false` quando não há nenhuma ficha salva: não existe DRE a apurar. */
+  /**
+   * Onda 36. `false` quando não há **nenhuma ficha com engenharia custeada**.
+   * Uma ficha salva mas sem BOM custeada, preço calculado ou tiragem declarada
+   * não é apurável: apurá-la produzia EBITDA = -overhead fixo e 50 peças
+   * inventadas a partir do vazio.
+   */
   apuravel: boolean;
   /**
    * A Onda 25 rotulava a origem; a Onda 30 tira o modelo da conta. `salvas`
@@ -87,9 +92,12 @@ export interface CollectionDreSummary {
    * **ficaram de fora** — declarados, nunca somados.
    */
   origem: {
+    /** Fichas salvas **e** com engenharia custeada: as únicas somadas. */
     salvas: string[];
     referencias: string[];
-    /** Nenhuma ficha salva: não há número operacional, apenas `—`. */
+    /** Fichas salvas, mas sem BOM custeada / preço / tiragem. Declaradas, não somadas. */
+    semEngenharia: string[];
+    /** Nenhuma ficha apurável: não há número operacional, apenas `—`. */
     apenasReferencia: boolean;
   };
   /**
@@ -247,6 +255,36 @@ export function computeCellGsdBalancing(
  * salva entra em número operacional. Então o modelo sai da soma; a ausência
  * fica declarada em `origem.referencias` e vira `—` na tela.
  */
+/** O que falta numa ficha para ela entrar na apuração da DRE. */
+export type DrePendencia = "sem-bom-custeada" | "sem-preco" | "sem-tiragem";
+
+export const DRE_PENDENCIA_LABEL: Record<DrePendencia, string> = {
+  "sem-bom-custeada": "BOM custeada",
+  "sem-preco": "preço calculado",
+  "sem-tiragem": "tiragem declarada",
+};
+
+/**
+ * Onda 36. `blankFor()` (Onda 35) cria fichas salvas sem nenhuma engenharia.
+ * A Onda 30 só checava `keys.length > 0`, então uma ficha vazia virava SKU:
+ * `Math.max(50, tiragem ?? 600)` inventava 50 peças e o overhead fixo de
+ * R$ 85.000 virava EBITDA negativo impresso no A4 **sem aviso**. Era o
+ * "prejuízo a partir do vazio" que a própria Onda 30 quisera eliminar.
+ */
+export function pendenciasEngenhariaDre(doc: TechSheetData): DrePendencia[] {
+  const pricing = computeFullTechSheetPricing(doc);
+  const pendencias: DrePendencia[] = [];
+  // Aplicações/aviamentos isolados não configuram engenharia: sem BOM
+  // custeada o preço é derivado de papel. Antes somávamos `aplicacoesPeca`
+  // aqui e uma ficha com bom: [] passava no gate.
+  if (!(pricing.bom > 0)) pendencias.push("sem-bom-custeada");
+  if (!((pricing.precoReferenciaMargem || pricing.precoSugerido || 0) > 0)) {
+    pendencias.push("sem-preco");
+  }
+  if (!(Number(doc.preCost.tiragemPlanejada ?? 0) > 0)) pendencias.push("sem-tiragem");
+  return pendencias;
+}
+
 export function computeCollectionDreSummary(
   sheetsMap: Record<string, TechSheetData>,
   fixedOverheadBrl = 85_000,
@@ -257,7 +295,14 @@ export function computeCollectionDreSummary(
   materializadas?: Record<string, true>,
 ): CollectionDreSummary {
   const keys = operationalCodes(sheetsMap, [], materializadas).sort();
-  const apuravel = keys.length > 0;
+  const semEngenharia: string[] = [];
+  const apuraveis = keys.filter((refCode) => {
+    const pendencias = pendenciasEngenhariaDre(sheetsMap[refCode]!);
+    if (pendencias.length === 0) return true;
+    semEngenharia.push(refCode);
+    return false;
+  });
+  const apuravel = apuraveis.length > 0;
 
   // Só para declarar o que ficou de fora. Nenhum destes códigos entra num
   // acumulador abaixo, e `multByRef` (tiragem e multiplicador de preço do
@@ -277,12 +322,14 @@ export function computeCollectionDreSummary(
   let cmvLabor = 0;
   let commercialExpenses = 0;
 
-  const skus: DreSkuBreakdown[] = keys.map((refCode) => {
+  const skus: DreSkuBreakdown[] = apuraveis.map((refCode) => {
     const doc = sheetsMap[refCode]!;
     const pricing = computeFullTechSheetPricing(doc);
     const div = resolveDivisorParams(doc.preCost.divisor);
 
-    const tiragem = Math.max(50, doc.preCost.tiragemPlanejada ?? 600);
+    // Só entram aqui fichas com tiragem declarada > 0. Sem `Math.max(50, ...)`
+    // e sem `?? 600`: peça de papel não vira produção planejada.
+    const tiragem = Number(doc.preCost.tiragemPlanejada ?? 0);
     const unitPrice = round2(pricing.precoReferenciaMargem || pricing.precoSugerido || 0);
     const unitMaterialCost = round2(pricing.bom + pricing.aplicacoesPeca + pricing.setupPorPeca);
     const unitLaborCost = round2(pricing.bop + pricing.overhead);
@@ -371,8 +418,9 @@ export function computeCollectionDreSummary(
     otbRemainingBrl,
     apuravel,
     origem: {
-      salvas: keys,
+      salvas: apuraveis,
       referencias,
+      semEngenharia,
       apenasReferencia: !apuravel,
     },
     somenteSalvas: {
@@ -463,21 +511,39 @@ export function buildDrePrintableHtml(dre: CollectionDreSummary): string {
   const v = (n: number) => (dre.apuravel ? fmt(n) : "—");
   const n = (x: number) => (dre.apuravel ? x.toLocaleString("pt-BR") : "—");
   const pct = (x: number) => (dre.apuravel ? x.toFixed(1) : "—");
+  const neg = (x: number) => `${dre.apuravel ? "- " : ""}${v(x)}`;
 
+  const listaSemEngenharia = dre.origem.semEngenharia.join(", ");
   const aviso = !dre.apuravel
     ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
-    <strong>DRE não apurável: nenhuma ficha técnica salva.</strong>
-    Os SKUs de demonstração (${dre.origem.referencias.join(", ")}) não entram na
-    apuração. Abra a Ficha Técnica e salve a engenharia de um produto para gerar a DRE.
+    <strong>DRE não apurável: ${
+      listaSemEngenharia
+        ? `nenhuma ficha tem engenharia custeada (${listaSemEngenharia}).`
+        : "nenhuma ficha técnica salva."
+    }</strong>
+    A apuração exige BOM custeada, preço calculado e tiragem declarada. Sem isso
+    não há receita, peças ou EBITDA — overhead fixo não vira prejuízo inventado.
+    ${
+      dre.origem.referencias.length > 0
+        ? `Os SKUs de demonstração (${dre.origem.referencias.join(", ")}) também ficam de fora.`
+        : ""
+    }
+    Abra a Ficha Técnica e registre a engenharia de um produto para gerar a DRE.
   </div>`
-    : dre.origem.referencias.length > 0
+    : dre.origem.semEngenharia.length > 0
       ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
+    <strong>Fichas sem engenharia custeada excluídas da apuração.</strong>
+    Sem BOM custeada, preço ou tiragem: ${listaSemEngenharia}.
+    Apuradas: ${dre.origem.salvas.join(", ")}.
+  </div>`
+      : dre.origem.referencias.length > 0
+        ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
     <strong>SKUs de demonstração excluídos da apuração.</strong>
     Sem ficha salva: ${dre.origem.referencias.join(", ")}.
     Apurados: ${dre.origem.salvas.join(", ")}.
     Esta DRE contém apenas fichas salvas pela engenharia da empresa.
   </div>`
-      : "";
+        : "";
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -509,14 +575,14 @@ export function buildDrePrintableHtml(dre: CollectionDreSummary): string {
   <table>
     <tbody>
       <tr class="bold"><td>(+) Receita Operacional Bruta</td><td style="text-align:right">${v(dre.grossRevenue)}</td></tr>
-      <tr><td>(-) Deduções Tributárias (ICMS / PIS / COFINS)</td><td style="text-align:right">- ${v(dre.taxDeductions)}</td></tr>
+      <tr><td>(-) Deduções Tributárias (ICMS / PIS / COFINS)</td><td style="text-align:right">${neg(dre.taxDeductions)}</td></tr>
       <tr class="bold"><td>(=) Receita Operacional Líquida</td><td style="text-align:right">${v(dre.netRevenue)}</td></tr>
-      <tr><td>(-) CMV · Matéria-Prima & Aplicações (BOM)</td><td style="text-align:right">- ${v(dre.cmvMaterial)}</td></tr>
-      <tr><td>(-) CMV · Mão de Obra Direta & Overhead Industrial (BOP)</td><td style="text-align:right">- ${v(dre.cmvLabor)}</td></tr>
+      <tr><td>(-) CMV · Matéria-Prima & Aplicações (BOM)</td><td style="text-align:right">${neg(dre.cmvMaterial)}</td></tr>
+      <tr><td>(-) CMV · Mão de Obra Direta & Overhead Industrial (BOP)</td><td style="text-align:right">${neg(dre.cmvLabor)}</td></tr>
       <tr class="bold"><td>(=) Lucro Bruto Industrial</td><td style="text-align:right">${v(dre.grossProfit)}</td></tr>
-      <tr><td>(-) Despesas Variáveis Comerciais (Comissão + Frete + Taxa + Inadimplência)</td><td style="text-align:right">- ${v(dre.commercialExpenses)}</td></tr>
+      <tr><td>(-) Despesas Variáveis Comerciais (Comissão + Frete + Taxa + Inadimplência)</td><td style="text-align:right">${neg(dre.commercialExpenses)}</td></tr>
       <tr class="bold"><td>(=) Margem de Contribuição (${pct(dre.contributionMarginPct)}%)</td><td style="text-align:right">${v(dre.contributionMarginBrl)}</td></tr>
-      <tr><td>(-) Custos e Despesas Fixas Estruturais</td><td style="text-align:right">- ${fmt(dre.fixedOverheadBrl)}</td></tr>
+      <tr><td>(-) Custos e Despesas Fixas Estruturais</td><td style="text-align:right">${neg(dre.fixedOverheadBrl)}</td></tr>
       <tr class="bold"><td>(=) EBITDA Operacional Projetado (${pct(dre.ebitdaPct)}%)</td><td style="text-align:right">${v(dre.ebitdaBrl)}</td></tr>
     </tbody>
   </table>

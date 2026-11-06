@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 12ª medição, 05/11/2026
+# Sincronia repo × ar × banco — 13ª medição, 05/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,17 +10,18 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 35** — `c145545`                | `git log` / `git ls-remote`          |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 36**                            | `git log` / `git ls-remote`          |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 29**                            | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
 **O que mudou desde a medição anterior:** nada no ar e nada no banco. O app
 segue na **Onda 29** (mesmo entry `index-1d8-RbIh.js`, 218 chunks lidos;
 `Poliéster` **11 vezes** e `Malha Dry Fit` **8 vezes** no bundle — a etiqueta e
-a BOM do modelo continuam sendo servidas) e o banco segue sem as migrações
-(12ª medição, mesmo `PGRST205`/`PGRST202`). O repo avançou para a **Onda 35**:
-agora são **seis ondas** de código ainda não publicadas (30, 31, 32, 33, 34 e
-35). O banco continua sendo o elo atrasado.
+a BOM do modelo continuam sendo servidas; `Fichas sem engenharia` = 0) e o
+banco segue sem as migrações (13ª medição, mesmo `PGRST205`/`PGRST202`). O repo
+avançou para a **Onda 36**: agora são **sete ondas** de código ainda não
+publicadas (30, 31, 32, 33, 34, 35 e 36). O banco continua sendo o elo
+atrasado.
 
 ---
 
@@ -52,9 +53,10 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 34   | `Risco CAD não declarado`          | **0**       | ❌      |
 | 34   | `Plano de corte não apurável`      | **0**       | ❌      |
 | 35   | `blankFor` / `criarFicha`          | **0**       | ❌      |
+| 36   | `Fichas sem engenharia`            | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 29**. Nada das Ondas 30, 31, 32, 33, 34 e
-35 foi publicado.
+**Conclusão:** o ar está na **Onda 29**. Nada das Ondas 30, 31, 32, 33, 34, 35
+e 36 foi publicado.
 
 ---
 
@@ -107,7 +109,7 @@ automação e o disponível não volta.
 
 | Lacuna                             | Ação                                                                               | Quem faz        |
 | ---------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| **Ar seis ondas atrás do repo**    | republicar no Lovable depois deste commit                                          | dono do projeto |
+| **Ar sete ondas atrás do repo**    | republicar no Lovable depois deste commit                                          | dono do projeto |
 | **Banco sem as migrações 21 e 24** | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
 | E2E autenticado nunca roda         | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
 | Cancelar reservas presas           | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |

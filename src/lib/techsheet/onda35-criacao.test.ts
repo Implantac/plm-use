@@ -158,10 +158,12 @@ describe("Onda 35 — resíduo medido, sem número inventado", () => {
     const dre = computeCollectionDreSummary({ "NOVA-004": doc }, 0, 0);
     expect(dre.ebitdaBrl).toBe(0);
     expect(Number.isNaN(dre.ebitdaBrl)).toBe(false);
-    // Registro honesto: a DRE ainda marca `apuravel: true` para uma ficha
-    // salva sem BOM custeada. O EBITDA é zero, não inventado — mas o próximo
-    // risco é sinalizar na tela que não há engenharia a apurar.
-    expect(dre.skus).toHaveLength(1);
+    // Resíduo que a Onda 35 registrou e a **Onda 36 fechou**: antes a DRE
+    // marcava `apuravel: true` para uma ficha salva sem BOM custeada. Agora
+    // ela é declarada em `origem.semEngenharia` e não entra na apuração.
+    expect(dre.apuravel).toBe(false);
+    expect(dre.skus).toEqual([]);
+    expect(dre.origem.semEngenharia).toEqual(["NOVA-004"]);
   });
 });
 
