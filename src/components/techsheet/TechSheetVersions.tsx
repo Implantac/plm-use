@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { FieldMessage } from "@/components/ui/field-message";
 import { GitBranch, CheckCircle2, Clock4, Archive, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { useTechSheetStore, type TechSheetVersion } from "@/lib/techsheet/store";
+import { useTechSheetStore, type TechSheetVersion, blankFor } from "@/lib/techsheet/store";
 import { VersionDiff } from "@/components/techsheet/VersionDiff";
 
 const statusIcon = (s: TechSheetVersion["status"]) =>
@@ -20,8 +20,7 @@ const statusIcon = (s: TechSheetVersion["status"]) =>
   );
 
 export function TechSheetVersions({ refAtual }: { refAtual: string }) {
-  const ensure = useTechSheetStore((s) => s.ensure);
-  const data = useTechSheetStore((s) => s.data[refAtual] ?? ensure(refAtual));
+  const data = useTechSheetStore((s) => s.data[refAtual]) ?? blankFor(refAtual);
   const create = useTechSheetStore((s) => s.createVersion);
   const [compareA, setCompareA] = useState<string | null>(data.versoes[0]?.id ?? null);
   const [compareB, setCompareB] = useState<string | null>(data.versoes[1]?.id ?? null);

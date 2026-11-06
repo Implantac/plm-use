@@ -18,7 +18,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
-import { emptyCadMarkerSpec, useTechSheetStore } from "@/lib/techsheet/store";
+import { emptyCadMarkerSpec, useTechSheetStore, blankFor } from "@/lib/techsheet/store";
 import { normalizeTechSheetDoc } from "@/lib/techsheet/server";
 import {
   compareTaxRegimes,
@@ -38,8 +38,7 @@ const brl = (n: number) =>
   });
 
 export function PreCostPanel({ refAtual }: { refAtual: string }) {
-  const ensure = useTechSheetStore((s) => s.ensure);
-  const raw = useTechSheetStore((s) => s.data[refAtual] ?? ensure(refAtual));
+  const raw = useTechSheetStore((s) => s.data[refAtual]) ?? blankFor(refAtual);
   const data = normalizeTechSheetDoc(raw);
   const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
   const setEncaixeCad = useTechSheetStore((s) => s.setEncaixeCad);

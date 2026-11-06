@@ -25,7 +25,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { defaultMedidasFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { defaultMedidasFor, useTechSheetStore, blankFor } from "@/lib/techsheet/store";
 import {
   computeGradedMatrix,
   parseExcelMeasurementsPaste,
@@ -36,8 +36,7 @@ import {
 import { listCharts } from "@/lib/measurements/store";
 
 export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
-  const ensure = useTechSheetStore((s) => s.ensure);
-  const doc = useTechSheetStore((s) => s.data[refAtual] ?? ensure(refAtual));
+  const doc = useTechSheetStore((s) => s.data[refAtual]) ?? blankFor(refAtual);
   const setMedidas = useTechSheetStore((s) => s.setMedidas);
 
   const spec: TechSheetMeasurementSpec = doc.medidas ?? defaultMedidasFor();

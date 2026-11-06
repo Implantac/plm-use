@@ -37,11 +37,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  defaultColorwaysFor,
+  blankFor,
   emptyCadMarkerSpec,
   defaultMedidasFor,
   LIFECYCLE_STAGES,
-  seedFor,
   tempoTotalBOP,
   useTechSheetStore,
   type TechSheetLifecycleStage,
@@ -104,7 +103,7 @@ function TechSheetPage() {
   const navigate = useNavigate();
   const { items: dbRefs } = useReferences();
 
-  const ensure = useTechSheetStore((s) => s.ensure);
+  const criarFicha = useTechSheetStore((s) => s.criarFicha);
   const allDocs = useTechSheetStore((s) => s.data);
   const materializadas = useTechSheetStore((s) => s.materializadas);
   const dirtyMap = useTechSheetStore((s) => s.dirty);
@@ -125,13 +124,10 @@ function TechSheetPage() {
   const docDoStore = useTechSheetStore((s) => (activeRef ? s.data[activeRef] : undefined));
   const provenance = sheetProvenance(allDocs, activeRef, materializadas);
   const emitivel = podeEmitirDocumento(provenance);
-  // Placeholder apenas para os hooks abaixo: NÃO grava no store. O efeito cria
-  // a ficha (fora do seletor) quando o usuário navega com uma referência nova.
-  const doc = docDoStore ?? seedFor(activeRef || "NOVA");
-
-  useEffect(() => {
-    if (activeRef && !docDoStore) ensure(activeRef);
-  }, [activeRef, docDoStore, ensure]);
+  // Onda 35: o placeholder dos hooks era `seedFor()` — o modelo inteiro, com
+  // BOM custeada e pré-custo — e um efeito ainda gravava `ensure()` no store.
+  // Agora o placeholder é um documento VAZIO e nada é gravado por navegar.
+  const doc = docDoStore ?? blankFor(activeRef || "NOVA");
 
   const linkedDbRef = useMemo(
     () => dbRefs.find((r) => r.code.toUpperCase() === activeRef),
@@ -139,14 +135,14 @@ function TechSheetPage() {
   );
 
   const productName = linkedDbRef?.name ?? doc.meta?.name ?? `Produto ${activeRef || "novo"}`;
-  const productCategory = doc.meta?.category ?? "Esportivo / Malharia";
-  const productCollection = linkedDbRef?.collection_id ?? doc.meta?.collection ?? "Verão 2027";
+  const productCategory = doc.meta?.category || "—";
+  const productCollection = linkedDbRef?.collection_id ?? doc.meta?.collection ?? "—";
   const currentStage: TechSheetLifecycleStage = doc.meta?.stage ?? 3;
   const cad = doc.encaixeCad ?? emptyCadMarkerSpec();
   const cadDeclarado = Boolean(doc.encaixeCad && doc.encaixeCad.larguraEnfestoM > 0);
   const samTotal = useMemo(() => tempoTotalBOP(doc.bop), [doc.bop]);
 
-  const colorways = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
+  const colorways = doc.colorways ?? [];
   const [activeCwId, setActiveCwId] = useState<string>(colorways[0]?.id ?? "cw-1");
   const [tab, setTab] = useState<WorkspaceTab>("fluido");
 
@@ -237,7 +233,7 @@ function TechSheetPage() {
   const switchRef = (nextRef: string) => {
     const clean = nextRef.trim().toUpperCase();
     if (!clean) return;
-    ensure(clean);
+    criarFicha(clean);
     void navigate({ to: "/tech-sheet", search: { ref: clean } });
   };
 

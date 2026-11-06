@@ -735,7 +735,6 @@ function LinkPrintToTechSheetDialog({
   onOpenChange: (next: boolean) => void;
 }) {
   const { sheetsMap, codes: refOptions } = useOperationalRefs();
-  const ensure = useTechSheetStore((s) => s.ensure);
   const addAplicacao = useTechSheetStore((s) => s.addAplicacao);
 
   const [targetRef, setTargetRef] = useSelectedRef(refOptions);
@@ -746,7 +745,13 @@ function LinkPrintToTechSheetDialog({
       toast.error("Nenhuma ficha salva para receber a estampa. Salve uma ficha técnica antes.");
       return;
     }
-    const doc = sheetsMap[targetRef] ?? ensure(targetRef);
+    // Onda 35: vincular estampa não pode fabricar a ficha. `targetRef` vem de
+    // `useOperationalRefs`, então a ausência é erro declarado, não `ensure()`.
+    const doc = sheetsMap[targetRef];
+    if (!doc) {
+      toast.error("A ficha de destino não está mais salva. Selecione outra referência.");
+      return;
+    }
     const draft = buildAplicacaoFromPrint(print, posicao, doc);
     addAplicacao(targetRef, draft);
     upsertPrint({

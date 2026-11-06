@@ -250,6 +250,59 @@ export const emptyCadMarkerSpec = (): CadMarkerSpec => ({
   larguraEnfestoM: 0,
 });
 
+/** Grade de medidas em branco — sem POMs nem observação do modelo. */
+export const emptyMedidasSpec = (): TechSheetMeasurementSpec => ({
+  tamanhoBase: "M",
+  tamanhos: [],
+  unidade: "cm",
+  pontos: [],
+});
+
+/**
+ * Onda 35. Documento **vazio** para uma referência nova. Até aqui qualquer
+ * updater chamado sem ficha fazia `s.data[ref] ?? blankFor(ref)` e plantava a
+ * BOM custeada, as 4 operações BOP, as 3 colorways, a grade POM e o pré-custo
+ * (34 / 185% / 200 pçs) do DEV000006. Um único `updateMeta` bastava para
+ * transformar isso em `provenance: "salva"` e a ficha entrava na DRE.
+ *
+ * `seedFor()` continua existindo como **modelo de demonstração explícito**
+ * (vitrines, `ensure()`/`materializadas`, `isPristineSheet`). A criação de
+ * ficha e os updaters agora partem daqui.
+ */
+export const blankFor = (ref: string): TechSheetData => ({
+  ref,
+  bom: [],
+  bop: [],
+  versoes: [],
+  aplicacoes: [],
+  preCost: {
+    targetCusto: 0,
+    overheadPct: 0,
+    markupPct: 0,
+    pricingMode: "divisor",
+    tiragemPlanejada: 0,
+  },
+  meta: {
+    name: `Produto ${ref}`,
+    category: "Confecção",
+    collection: "",
+    statusLabel: "Em engenharia",
+    stage: 1,
+  },
+  colorways: [],
+  medidas: emptyMedidasSpec(),
+  etiquetagem: emptyCareLabelSpec(),
+  encaixeCad: undefined,
+});
+
+/**
+ * Cria uma ficha nova **sem herdar nada do modelo**. Diferente de `ensure()`,
+ * não entra no mapa `materializadas`: é trabalho do usuário, não template.
+ */
+export type CriarFichaMeta = Partial<
+  Pick<TechSheetMeta, "name" | "category" | "collection" | "statusLabel" | "stage" | "silhouette">
+>;
+
 export const seedFor = (ref: string): TechSheetData => ({
   ref,
   meta: {
@@ -438,6 +491,7 @@ interface State {
   dirty: Record<string, true>;
   clearDirty(refs: string[]): void;
   ensure(ref: string): TechSheetData;
+  criarFicha(ref: string, meta?: CriarFichaMeta): TechSheetData;
   updateMeta(ref: string, patch: Partial<TechSheetMeta>): void;
   setImage(ref: string, url: string | undefined): void;
   addBomItem(ref: string, item: Omit<BomItem, "id">): void;
@@ -531,10 +585,23 @@ export const useTechSheetStore = create<State>()(
           }));
           return fresh;
         },
+        criarFicha(ref, meta) {
+          const cur = get().data[ref];
+          if (cur) return cur;
+          const fresh: TechSheetData = {
+            ...blankFor(ref),
+            meta: { ...blankFor(ref).meta!, ...meta },
+          };
+          set((st) => ({
+            data: { ...st.data, [ref]: fresh },
+            dirty: { ...st.dirty, [ref]: true },
+          }));
+          return fresh;
+        },
         updateMeta(ref, patch) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             const baseMeta: TechSheetMeta = cur.meta ?? {
               name: `Produto ${ref}`,
               category: "Confecção",
@@ -551,7 +618,7 @@ export const useTechSheetStore = create<State>()(
         setImage(ref, url) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             const clean = url && /^https:\/\//.test(url.trim()) ? url.trim() : undefined;
             return {
               data: { ...s.data, [ref]: { ...cur, image: clean } },
@@ -562,7 +629,7 @@ export const useTechSheetStore = create<State>()(
         addBomItem(ref, item) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             const nextItem = syncBomCusto({ ...item, id: uid() });
             return {
               data: { ...s.data, [ref]: { ...cur, bom: [...cur.bom, nextItem] } },
@@ -574,7 +641,7 @@ export const useTechSheetStore = create<State>()(
           marcarEditada(ref);
           if (!items.length) return;
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             const created = items.map((item) => syncBomCusto({ ...item, id: uid() }));
             return {
               data: { ...s.data, [ref]: { ...cur, bom: [...cur.bom, ...created] } },
@@ -585,7 +652,7 @@ export const useTechSheetStore = create<State>()(
         updateBomItem(ref, id, patch) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: {
                 ...s.data,
@@ -601,7 +668,7 @@ export const useTechSheetStore = create<State>()(
         removeBomItem(ref, id) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, bom: cur.bom.filter((b) => b.id !== id) } },
               dirty: { ...s.dirty, [ref]: true },
@@ -611,7 +678,7 @@ export const useTechSheetStore = create<State>()(
         addBopStep(ref, step) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, bop: [...cur.bop, { ...step, id: uid() }] } },
               dirty: { ...s.dirty, [ref]: true },
@@ -621,7 +688,7 @@ export const useTechSheetStore = create<State>()(
         updateBopStep(ref, id, patch) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: {
                 ...s.data,
@@ -637,7 +704,7 @@ export const useTechSheetStore = create<State>()(
         removeBopStep(ref, id) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, bop: cur.bop.filter((b) => b.id !== id) } },
               dirty: { ...s.dirty, [ref]: true },
@@ -647,7 +714,7 @@ export const useTechSheetStore = create<State>()(
         updatePreCost(ref, patch) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, preCost: { ...cur.preCost, ...patch } } },
               dirty: { ...s.dirty, [ref]: true },
@@ -658,7 +725,7 @@ export const useTechSheetStore = create<State>()(
         addAplicacao(ref, item) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: {
                 ...s.data,
@@ -671,7 +738,7 @@ export const useTechSheetStore = create<State>()(
         updateAplicacao(ref, id, patch) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: {
                 ...s.data,
@@ -689,7 +756,7 @@ export const useTechSheetStore = create<State>()(
         removeAplicacao(ref, id) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: {
                 ...s.data,
@@ -703,7 +770,7 @@ export const useTechSheetStore = create<State>()(
         setColorways(ref, colorways) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, colorways } },
               dirty: { ...s.dirty, [ref]: true },
@@ -713,7 +780,7 @@ export const useTechSheetStore = create<State>()(
         setMedidas(ref, medidas) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, medidas } },
               dirty: { ...s.dirty, [ref]: true },
@@ -723,7 +790,7 @@ export const useTechSheetStore = create<State>()(
         setEtiquetagem(ref, etiquetagem) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, etiquetagem } },
               dirty: { ...s.dirty, [ref]: true },
@@ -733,7 +800,7 @@ export const useTechSheetStore = create<State>()(
         setEncaixeCad(ref, encaixeCad) {
           marcarEditada(ref);
           set((s) => {
-            const cur = s.data[ref] ?? seedFor(ref);
+            const cur = s.data[ref] ?? blankFor(ref);
             return {
               data: { ...s.data, [ref]: { ...cur, encaixeCad } },
               dirty: { ...s.dirty, [ref]: true },
@@ -743,7 +810,7 @@ export const useTechSheetStore = create<State>()(
 
         duplicateTechSheet(sourceRef, targetRef, targetName) {
           const cleanRef = targetRef.trim().toUpperCase();
-          const src = get().data[sourceRef] ?? seedFor(sourceRef);
+          const src = get().data[sourceRef] ?? blankFor(sourceRef);
           const cloned: TechSheetData = {
             ...structuredClone(src),
             ref: cleanRef,
@@ -777,7 +844,7 @@ export const useTechSheetStore = create<State>()(
 
         createVersion(ref, autor, resumo, alteracoes) {
           marcarEditada(ref);
-          const cur = get().data[ref] ?? seedFor(ref);
+          const cur = get().data[ref] ?? blankFor(ref);
           const last = cur.versoes[0]?.versao ?? "v1.0";
           const nova: TechSheetVersion = {
             id: uid(),

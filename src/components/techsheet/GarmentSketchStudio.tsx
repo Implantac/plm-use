@@ -47,6 +47,7 @@ import {
 import { streamImage } from "@/lib/streamImage";
 import { storageAssetSource, uploadGeneratedImage } from "@/lib/storage/assets";
 import {
+  blankFor,
   defaultCalloutsFor,
   defaultColorwaysFor,
   emptyCareLabelSpec,
@@ -90,8 +91,7 @@ export function GarmentSketchStudio({
   onSelectColorway,
   onFocusSection,
 }: GarmentSketchStudioProps) {
-  const ensure = useTechSheetStore((s) => s.ensure);
-  const doc = useTechSheetStore((s) => s.data[refAtual] ?? ensure(refAtual));
+  const doc = useTechSheetStore((s) => s.data[refAtual]) ?? blankFor(refAtual);
   const updateMeta = useTechSheetStore((s) => s.updateMeta);
   const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
   const setColorways = useTechSheetStore((s) => s.setColorways);

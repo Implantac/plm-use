@@ -13,7 +13,7 @@ import type {
   ErpStockLevel,
   ErpSupplier,
 } from "./contract";
-import { defaultColorwaysFor, defaultMedidasFor, type TechSheetData } from "@/lib/techsheet/store";
+import { type TechSheetData } from "@/lib/techsheet/store";
 import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
 import {
   bomItemCustoEfetivo,
@@ -53,12 +53,10 @@ export interface UseCloudProductionOrderPayload {
 
 export function buildUseCloudSkuExplosion(doc: TechSheetData): UseCloudSkuPayload[] {
   const pricing = computeFullTechSheetPricing(doc);
-  const colorways = (doc.colorways?.length ? doc.colorways : defaultColorwaysFor()).filter(
-    (c) => c.status !== "Cancelada",
-  );
-  const tamanhos = doc.medidas?.tamanhos?.length
-    ? doc.medidas.tamanhos
-    : defaultMedidasFor().tamanhos;
+  // Onda 35: sem colorways/grade declaradas não há SKU a explodir — antes o
+  // adapter emprestava as 3 variantes e os 5 tamanhos do DEV000006.
+  const colorways = (doc.colorways ?? []).filter((c) => c.status !== "Cancelada");
+  const tamanhos = doc.medidas?.tamanhos ?? [];
   const comp = validateComposicaoAbnt(doc.etiquetagem?.composicao ?? []);
   const baseName = doc.meta?.name ?? `Produto ${doc.ref}`;
   const pv =

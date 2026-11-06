@@ -8,7 +8,7 @@
 // 4. Gera CSV PT-BR (`;` + BOM UTF-8) e Ordem de Corte A4 pronta para impressão.
 
 import { computeFullTechSheetPricing } from "./pricing";
-import { defaultColorwaysFor, defaultMedidasFor, type BomItem, type TechSheetData } from "./store";
+import { emptyMedidasSpec, type BomItem, type TechSheetData } from "./store";
 import { bomItemCustoEfetivo, parseDecimalPtBr, round2, round4 } from "./textile";
 
 export interface CutMatrixColorRow {
@@ -84,9 +84,12 @@ export function computeMrpCutPlan(
   opts: ComputeMrpOptions,
 ): MrpCutPlanResult {
   const totalPieces = Math.max(1, Math.round(Number(opts.totalPieces) || 1));
-  const medidas = doc.medidas ?? defaultMedidasFor();
+  // Onda 35: grade e POMs da ficha, não os do modelo. A grade genérica
+  // PP..GG só entra quando a ficha não declarou tamanhos; as variantes de cor
+  // NUNCA são inventadas (sem colorways a matriz fica vazia).
+  const medidas = doc.medidas ?? emptyMedidasSpec();
   const sizes = medidas.tamanhos.length > 0 ? medidas.tamanhos : ["PP", "P", "M", "G", "GG"];
-  const rawCws = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
+  const rawCws = doc.colorways ?? [];
   const activeCws = rawCws.filter((c) => c.status !== "Cancelada");
   const cws = activeCws.length > 0 ? activeCws : rawCws;
 

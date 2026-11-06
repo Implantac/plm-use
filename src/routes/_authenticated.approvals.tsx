@@ -23,7 +23,7 @@ import { operationalCodes, resolveSheet } from "@/lib/techsheet/provenance";
 import { SheetProvenanceNote } from "@/components/techsheet/SheetProvenanceNote";
 import {
   LIFECYCLE_STAGES,
-  seedFor,
+  blankFor,
   useTechSheetStore,
   type TechSheetLifecycleStage,
 } from "@/lib/techsheet/store";
@@ -77,7 +77,6 @@ const fmt = (iso: string | null) =>
 function ApprovalsPage() {
   const sheetsMap = useTechSheetStore((s) => s.data);
   const materializadas = useTechSheetStore((s) => s.materializadas);
-  const ensure = useTechSheetStore((s) => s.ensure);
   const updateMeta = useTechSheetStore((s) => s.updateMeta);
   const createVersion = useTechSheetStore((s) => s.createVersion);
 
@@ -86,7 +85,7 @@ function ApprovalsPage() {
   // aprovar etapa de um exemplo e o toast dizia "aprovada", o que era falso.
   const techSheetGateItems = useMemo(() => {
     return operationalCodes(sheetsMap, [], materializadas).map((refCode) => {
-      const { doc, provenance } = resolveSheet(sheetsMap, refCode, seedFor, materializadas);
+      const { doc, provenance } = resolveSheet(sheetsMap, refCode, blankFor, materializadas);
       const report = evaluateTechSheetGateReadiness(doc);
       return { refCode, doc, report, provenance };
     });
@@ -264,7 +263,7 @@ function ApprovalsPage() {
                     size="sm"
                     disabled={!report.readyToAdvance}
                     onClick={() => {
-                      ensure(refCode);
+                      if (!doc) return;
                       const nextStage = Math.min(
                         7,
                         report.stageCurrent + 1,

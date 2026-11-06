@@ -644,7 +644,6 @@ function SamplesTab() {
 function RfqBomTab() {
   const sheetsMap = useTechSheetStore((s) => s.data);
   const materializadas = useTechSheetStore((s) => s.materializadas);
-  const ensure = useTechSheetStore((s) => s.ensure);
   const updateBomItem = useTechSheetStore((s) => s.updateBomItem);
   const updatePreCost = useTechSheetStore((s) => s.updatePreCost);
 
@@ -691,7 +690,6 @@ function RfqBomTab() {
 
   function awardWinner(q: (typeof scoredQuotes)[number]) {
     if (!activeReq || !doc) return;
-    ensure(selectedRef);
     updateBomItem(selectedRef, activeReq.itemId, {
       fornecedor: q.fornecedor,
       custoUnitario: q.precoUnitario,

@@ -5,12 +5,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { computeDigitalProductPassport, resolveReferenceTechSheet } from "./dpp-expedition";
 import { computeFullTechSheetPricing } from "./pricing";
-import {
-  defaultColorwaysFor,
-  emptyCareLabelSpec,
-  useTechSheetStore,
-  type TechSheetData,
-} from "./store";
+import { emptyCareLabelSpec, useTechSheetStore, type TechSheetData } from "./store";
 import { round2, type GarmentSilhouette } from "./textile";
 
 export interface BriefingInsight {
@@ -74,7 +69,11 @@ export function convertBriefingToTechSheetStore(
   const refCode =
     briefing.convertedRefCode || `CR27-${String(100 + Math.max(1, nextSeq)).padStart(3, "0")}`;
   const ts = useTechSheetStore.getState();
-  const doc = ts.ensure(refCode);
+  // Onda 35: antes `ensure()` plantava BOM (4 itens), BOP (4), 3 colorways e
+  // pré-custo 34/185%/200pçs do DEV000006; um `updateMeta` bastava para virar
+  // "salva" e entrar na DRE. Agora a conversão parte de uma ficha VAZIA e
+  // declara somente o que o briefing realmente traz.
+  ts.criarFicha(refCode);
 
   ts.updateMeta(refCode, {
     name: briefing.title,
@@ -94,7 +93,6 @@ export function convertBriefingToTechSheetStore(
     ts.setImage(refCode, briefing.imageUrl);
   }
 
-  const baseColorways = defaultColorwaysFor();
   ts.setColorways(refCode, [
     {
       id: "cw-1",
@@ -103,9 +101,8 @@ export function convertBriefingToTechSheetStore(
       hex: briefing.colorHex,
       secondaryHex: "#F8FAFC",
       status: "Ativa",
-      mixPct: 60,
+      mixPct: 100,
     },
-    ...baseColorways.slice(1).map((c, idx) => ({ ...c, mixPct: idx === 0 ? 25 : 15 })),
   ]);
 
   ts.setEtiquetagem(refCode, {
@@ -113,17 +110,18 @@ export function convertBriefingToTechSheetStore(
     composicao: [{ fibra: briefing.compositionFibra || "Algodão", pct: 100 }],
   });
 
-  const firstBom = doc.bom[0];
-  if (firstBom) {
-    ts.updateBomItem(refCode, firstBom.id, {
-      material: briefing.fabricSuggestion,
-      gramaturaGm2: briefing.gramaturaGm2,
-      variantesCor: {
-        ...(firstBom.variantesCor ?? {}),
-        "cw-1": `${briefing.colorHex} · ${briefing.colorName}`,
-      },
-    });
-  }
+  // O briefing declara tecido e gramatura, não consumo nem custo. O item nasce
+  // sem custo (0) e o gate de estágio continua reprovando até custear a BOM.
+  ts.addBomItem(refCode, {
+    tipo: "Tecido",
+    material: briefing.fabricSuggestion,
+    fornecedor: "",
+    consumo: "",
+    unidade: "kg",
+    custo: 0,
+    gramaturaGm2: briefing.gramaturaGm2,
+    variantesCor: { "cw-1": `${briefing.colorHex} · ${briefing.colorName}` },
+  });
 
   ts.updatePreCost(refCode, {
     targetPreco: briefing.targetPriceBrl,

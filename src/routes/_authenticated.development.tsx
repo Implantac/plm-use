@@ -68,7 +68,7 @@ function DevelopmentPage() {
   const lifecycles = useReferenceStore((s) => s.lifecycles);
 
   const techDocs = useTechSheetStore((s) => s.data);
-  const ensure = useTechSheetStore((s) => s.ensure);
+  const criarFicha = useTechSheetStore((s) => s.criarFicha);
   const updateMeta = useTechSheetStore((s) => s.updateMeta);
   const duplicateTechSheet = useTechSheetStore((s) => s.duplicateTechSheet);
 
@@ -186,10 +186,16 @@ function DevelopmentPage() {
       return;
     }
     if (!editingRef && form.cloneFrom) {
-      ensure(form.cloneFrom);
+      // Clonar uma referência que não existe não pode fabricar o modelo como
+      // origem: `ensure()` faria isso e a cópia viraria "salva" com custos do
+      // DEV000006 (Onda 35).
+      if (!techDocs[form.cloneFrom]) {
+        toast.error("A referência de origem não tem ficha salva. Escolha outra ou crie do zero.");
+        return;
+      }
       duplicateTechSheet(form.cloneFrom, code, form.name.trim());
-    } else {
-      ensure(code);
+    } else if (!editingRef) {
+      criarFicha(code);
     }
     updateMeta(code, {
       name: form.name.trim(),

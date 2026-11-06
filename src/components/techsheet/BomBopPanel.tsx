@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
+  blankFor,
   custoTotalBOM,
   custoTotalBOP,
   defaultColorwaysFor,
@@ -75,8 +76,7 @@ export interface BomBopPanelProps {
 }
 
 export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
-  const ensure = useTechSheetStore((s) => s.ensure);
-  const data = useTechSheetStore((s) => s.data[refAtual] ?? ensure(refAtual));
+  const data = useTechSheetStore((s) => s.data[refAtual]) ?? blankFor(refAtual);
   const addBom = useTechSheetStore((s) => s.addBomItem);
   const bulkAddBom = useTechSheetStore((s) => s.bulkAddBomItems);
   const updateBom = useTechSheetStore((s) => s.updateBomItem);

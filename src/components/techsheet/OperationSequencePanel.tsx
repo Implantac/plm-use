@@ -12,16 +12,11 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { computeLineBalancing } from "@/lib/techsheet/line-balancing";
-import { useTechSheetStore } from "@/lib/techsheet/store";
+import { useTechSheetStore, blankFor } from "@/lib/techsheet/store";
 
 export function OperationSequencePanel({ refAtual }: { refAtual: string }) {
-  const ensure = useTechSheetStore((s) => s.ensure);
   const docFromStore = useTechSheetStore((s) => s.data[refAtual]);
-  const doc = docFromStore ?? ensure(refAtual);
-
-  useEffect(() => {
-    if (!docFromStore) ensure(refAtual);
-  }, [docFromStore, ensure, refAtual]);
+  const doc = docFromStore ?? blankFor(refAtual);
 
   const [expanded, setExpanded] = useState(true);
   const [costureiras, setCostureiras] = useState(8);
