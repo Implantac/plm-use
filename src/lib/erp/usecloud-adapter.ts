@@ -13,12 +13,7 @@ import type {
   ErpStockLevel,
   ErpSupplier,
 } from "./contract";
-import {
-  defaultColorwaysFor,
-  defaultEtiquetagemFor,
-  defaultMedidasFor,
-  type TechSheetData,
-} from "@/lib/techsheet/store";
+import { defaultColorwaysFor, defaultMedidasFor, type TechSheetData } from "@/lib/techsheet/store";
 import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
 import {
   bomItemCustoEfetivo,
@@ -64,8 +59,7 @@ export function buildUseCloudSkuExplosion(doc: TechSheetData): UseCloudSkuPayloa
   const tamanhos = doc.medidas?.tamanhos?.length
     ? doc.medidas.tamanhos
     : defaultMedidasFor().tamanhos;
-  const et = doc.etiquetagem ?? defaultEtiquetagemFor();
-  const comp = validateComposicaoAbnt(et.composicao);
+  const comp = validateComposicaoAbnt(doc.etiquetagem?.composicao ?? []);
   const baseName = doc.meta?.name ?? `Produto ${doc.ref}`;
   const pv =
     doc.preCost.targetPreco && doc.preCost.targetPreco > 0
@@ -82,7 +76,7 @@ export function buildUseCloudSkuExplosion(doc: TechSheetData): UseCloudSkuPayloa
         colorCode: cw.code,
         colorName: cw.name,
         size,
-        ncm: et.ncm,
+        ncm: doc.etiquetagem?.ncm ?? "",
         composicaoAbnt: comp.resumo,
         custoIndustrial: pricing.industrial,
         custoFinal: pricing.custoFinal,

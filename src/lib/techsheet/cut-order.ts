@@ -1,13 +1,7 @@
 // Motor Industrial de Sala de Corte (Plano de Enfesto, Fardos/Pacotes de Costura),
 // Controle de Rolos por Partida/Nuance (ΔE CMC) e Checklist Stage-Gate de Engenharia.
 
-import {
-  defaultEncaixeCadFor,
-  defaultEtiquetagemFor,
-  defaultMedidasFor,
-  LIFECYCLE_STAGES,
-  type TechSheetData,
-} from "./store";
+import { defaultMedidasFor, LIFECYCLE_STAGES, type TechSheetData } from "./store";
 import { converterMetroParaKg, round2, validateComposicaoAbnt } from "./textile";
 
 export interface CutPlanParams {
@@ -50,6 +44,9 @@ export interface CutOrderPlanResult {
   pecasPorTamanho: Record<string, number>;
   spreads: SpreadTableItem[];
   bundles: CutBundleTicket[];
+  /** Onda 34: sem encaixe/composição/gramatura declarados não há plano. */
+  apuravel: boolean;
+  motivoNaoApuravel: string | null;
 }
 
 export interface FabricRollItem {
@@ -91,11 +88,19 @@ export function computeLayAndCutPlan(
   doc: TechSheetData,
   params: CutPlanParams,
 ): CutOrderPlanResult {
-  const cad = doc.encaixeCad ?? defaultEncaixeCadFor();
+  // Onda 34. Antes: `doc.encaixeCad ?? defaultEncaixeCadFor()` injetava 88,3%
+  // de eficiência, 1,8 m de largura e o arquivo de molde do DEV000006; e os
+  // `|| 1.8` / `|| 5.35` / `|| 155` recolocavam os mesmos números quando o
+  // campo estava zerado. Uma ficha sem risco CAD homologado produzia mesa de
+  // enfesto, metragem, kg de malha e fardos **do produto de demonstração**.
+  // Agora só o que foi declarado entra; ausência devolve plano não apurável.
+  const cad = doc.encaixeCad;
+  const etq = doc.etiquetagem;
   const mainFabric = doc.bom.find((b) => b.tipo === "Tecido");
-  const gramaturaGm2 = Math.max(60, Number(mainFabric?.gramaturaGm2) || 155);
-  const larguraEnfestoM = Math.max(0.8, Number(cad.larguraEnfestoM) || 1.8);
-  const comprimentoRiscoM = Math.max(0.5, Number(cad.comprimentoRiscoM) || 5.35);
+  const gramaturaGm2 = Number(mainFabric?.gramaturaGm2 ?? 0);
+  const larguraEnfestoM = Number(cad?.larguraEnfestoM ?? 0);
+  const comprimentoRiscoM = Number(cad?.comprimentoRiscoM ?? 0);
+  const eficienciaPct = Number(cad?.eficienciaPct ?? 0);
   const endLossM = Math.max(0, Number(params.endLossCm) || 0) / 100;
   const comprimentoMesaM = round2(comprimentoRiscoM + endLossM);
 
@@ -107,10 +112,35 @@ export function computeLayAndCutPlan(
   const totalFolhas = Math.max(1, Math.round(params.totalPlies || 60));
   const maxPlies = Math.max(5, Math.round(params.maxPliesPerSpread || 60));
 
-  const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
-  const hasElastano = etq.composicao.some(
-    (c) => /elastano|lycra|spandex/i.test(c.fibra) && c.pct >= 2,
-  );
+  const pendencias: string[] = [];
+  if (!(larguraEnfestoM > 0)) pendencias.push("largura de enfesto não declarada no risco CAD");
+  if (!(comprimentoRiscoM > 0)) pendencias.push("comprimento de risco não declarado no CAD");
+  if (!(gramaturaGm2 > 0)) pendencias.push("gramatura do tecido principal não declarada na BOM");
+  const composicao = etq?.composicao ?? [];
+  if (composicao.length === 0) pendencias.push("composição ABNT não declarada");
+  if (pendencias.length > 0) {
+    const motivo = `Plano de corte não apurável: ${pendencias.join(" · ")}.`;
+    return {
+      comprimentoRiscoM: 0,
+      comprimentoMesaM: 0,
+      larguraEnfestoM: 0,
+      gramaturaGm2: 0,
+      eficienciaPct: 0,
+      pecasPorFolha,
+      totalFolhas,
+      totalPecasCortadas: 0,
+      metragemLinearTotalM: 0,
+      pesoTotalMalhaKg: 0,
+      descansoMalhaHoras: 0,
+      pecasPorTamanho: {},
+      spreads: [],
+      bundles: [],
+      apuravel: false,
+      motivoNaoApuravel: motivo,
+    };
+  }
+
+  const hasElastano = composicao.some((c) => /elastano|lycra|spandex/i.test(c.fibra) && c.pct >= 2);
   const descansoMalhaHoras = hasElastano ? 24 : 0;
 
   const spreads: SpreadTableItem[] = [];
@@ -168,7 +198,7 @@ export function computeLayAndCutPlan(
     comprimentoMesaM,
     larguraEnfestoM,
     gramaturaGm2,
-    eficienciaPct: cad.eficienciaPct,
+    eficienciaPct,
     pecasPorFolha,
     totalFolhas,
     totalPecasCortadas: totalFolhas * pecasPorFolha,
@@ -178,6 +208,8 @@ export function computeLayAndCutPlan(
     pecasPorTamanho,
     spreads,
     bundles,
+    apuravel: true,
+    motivoNaoApuravel: null,
   };
 }
 
@@ -246,11 +278,12 @@ export function evaluateTechSheetGateReadiness(doc: TechSheetData): GateReadines
   const bopOk = doc.bop.length > 0 && doc.bop.some((s) => s.tempoMin > 0);
   const med = doc.medidas ?? defaultMedidasFor();
   const pomOk = med.pontos.length >= 2 && med.tamanhos.length >= 3;
-  const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
-  const abntCheck = validateComposicaoAbnt(etq.composicao);
-  const etqOk = abntCheck.valida && Boolean(etq.ncm?.trim());
-  const cad = doc.encaixeCad ?? defaultEncaixeCadFor();
-  const cadOk = cad.eficienciaPct >= 75 && cad.larguraEnfestoM > 0;
+  const etq = doc.etiquetagem;
+  const abntCheck = validateComposicaoAbnt(etq?.composicao ?? []);
+  const etqOk =
+    Boolean(etq) && abntCheck.valida && (etq?.ncm ?? "").replace(/\D/g, "").length === 8;
+  const cad = doc.encaixeCad;
+  const cadOk = Boolean(cad) && cad!.eficienciaPct >= 75 && cad!.larguraEnfestoM > 0;
 
   const checks = [
     {
@@ -275,13 +308,13 @@ export function evaluateTechSheetGateReadiness(doc: TechSheetData): GateReadines
       id: "abnt",
       label: "Etiqueta ABNT 100% & NCM",
       ok: etqOk,
-      detail: `NCM ${etq.ncm || "—"}`,
+      detail: etq?.ncm ? `NCM ${etq.ncm}` : "NCM não declarado",
     },
     {
       id: "cad",
       label: "Risco CAD Homologado (≥75%)",
       ok: cadOk,
-      detail: `Eficiência ${cad.eficienciaPct}%`,
+      detail: cad ? `Eficiência ${cad.eficienciaPct}%` : "Risco CAD não declarado",
     },
   ];
 
@@ -312,6 +345,9 @@ export function buildCutOrderPrintableHtml(
   colorName: string,
   plan: CutOrderPlanResult,
 ): string {
+  if (!plan.apuravel) {
+    throw new Error(plan.motivoNaoApuravel ?? "Plano de corte não apurável.");
+  }
   const spreadRows = plan.spreads
     .map(
       (s) => `<tr>

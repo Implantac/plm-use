@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seedFor } from "@/lib/techsheet/store";
+import { fichaDeclarada } from "@/test/ficha-declarada";
 import { buildUseCloudProductionOrderPayload, buildUseCloudSkuExplosion } from "./usecloud-adapter";
 import { mockErpAdapter } from "./mock-adapter";
 
@@ -7,8 +8,8 @@ describe("integração UseCloud ERP (explosão SKU + OP sem cliente obrigatório
   it("explode SKUs de produto acabado cruzando Colorways ativas × Grade de tamanhos", () => {
     // Ficha salva de verdade traz NCM; o default do modelo agora é vazio.
     const doc = {
-      ...seedFor("DEV000006"),
-      etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "6109.90.00" },
+      ...fichaDeclarada(),
+      etiquetagem: { ...fichaDeclarada().etiquetagem!, ncm: "6109.90.00" },
     };
     // 3 colorways × 5 tamanhos (PP..GG) = 15 SKUs
     const skus = buildUseCloudSkuExplosion(doc);

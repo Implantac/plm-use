@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seedFor } from "./store";
+import { fichaDeclarada } from "@/test/ficha-declarada";
 import {
   buildCutOrderPrintableHtml,
   computeLayAndCutPlan,
@@ -9,7 +10,7 @@ import {
 
 describe("Sala de Corte (Enfesto/Fardos), Nuance de Rolos & Stage-Gate PLM", () => {
   it("divide folhas em múltiplos enfestos pelo limite da faca e gera pacotes numerados", () => {
-    const doc = seedFor("DEV000006");
+    const doc = fichaDeclarada();
     const plan = computeLayAndCutPlan(doc, {
       markerRatio: { P: 1, M: 2, G: 2, GG: 1 },
       totalPlies: 140,
@@ -90,18 +91,19 @@ describe("Sala de Corte (Enfesto/Fardos), Nuance de Rolos & Stage-Gate PLM", () 
     ]);
     expect(mixedBatch.homogeneo).toBe(false);
 
-    const gate = evaluateTechSheetGateReadiness({
-      ...seedFor("DEV000006"),
-      etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "6109.10.00" },
-    });
+    const gate = evaluateTechSheetGateReadiness(fichaDeclarada());
     expect(gate.scorePct).toBe(100);
     expect(gate.readyToAdvance).toBe(true);
 
-    // Sem NCM a ficha perde o check de etiquetagem: 80% em vez de 100%.
-    // O gate técnico (BOM/BOP/POM/CAD) não trava por NCM — quem trava é o gate
-    // de catálogo em `omnichannel-readiness`, e o documento em `dpp-expedition`.
-    const semNcm = evaluateTechSheetGateReadiness(seedFor("DEV000006"));
-    expect(semNcm.scorePct).toBe(80);
-    expect(semNcm.checks.find((c) => c.id === "abnt")?.ok).toBe(false);
+    // Onda 34: o seed puro não declara NEM etiqueta ABNT NEM risco CAD.
+    // Antes o CAD passava com 88,3% emprestada do modelo; agora são dois
+    // checks reprovados, não um.
+    const semEngenharia = evaluateTechSheetGateReadiness(seedFor("DEV000006"));
+    expect(semEngenharia.scorePct).toBe(60);
+    expect(semEngenharia.checks.find((c) => c.id === "abnt")?.ok).toBe(false);
+    expect(semEngenharia.checks.find((c) => c.id === "cad")?.ok).toBe(false);
+    expect(semEngenharia.checks.find((c) => c.id === "cad")?.detail).toBe(
+      "Risco CAD não declarado",
+    );
   });
 });

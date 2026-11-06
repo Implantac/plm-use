@@ -18,7 +18,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
-import { defaultEncaixeCadFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { emptyCadMarkerSpec, useTechSheetStore } from "@/lib/techsheet/store";
 import { normalizeTechSheetDoc } from "@/lib/techsheet/server";
 import {
   compareTaxRegimes,
@@ -47,7 +47,7 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
   const [collapsed, setCollapsed] = useState(false);
   const [showCompareRegimes, setShowCompareRegimes] = useState(false);
 
-  const cad = data.encaixeCad ?? defaultEncaixeCadFor();
+  const cad = data.encaixeCad ?? emptyCadMarkerSpec();
   const divisorParams = resolveDivisorParams(data.preCost.divisor);
   const totals = useMemo(() => computeFullTechSheetPricing(data), [data]);
   const reverseTarget = useMemo(() => computeReverseTargetCost(data), [data]);
@@ -482,7 +482,7 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
                 Encolhimento
               </h4>
               <span className="text-2xs font-mono px-2 py-0.5 rounded bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/30">
-                Aproveitamento: {cad.eficienciaPct}%
+                Aproveitamento: {cad.eficienciaPct > 0 ? `${cad.eficienciaPct}%` : "—"}
               </span>
             </div>
 

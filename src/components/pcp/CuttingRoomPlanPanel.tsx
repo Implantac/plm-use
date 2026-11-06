@@ -54,6 +54,10 @@ export function CuttingRoomPlanPanel() {
       toast.error("Sem ficha técnica salva: a Ordem de Corte não é emitível.");
       return;
     }
+    if (!plan.apuravel) {
+      toast.error(plan.motivoNaoApuravel ?? "Plano de corte não apurável.");
+      return;
+    }
     const html = buildCutOrderPrintableHtml(
       selectedRef,
       doc.meta?.name || selectedRef,
@@ -72,16 +76,17 @@ export function CuttingRoomPlanPanel() {
     setTimeout(() => w.print(), 250);
   }
 
-  if (!doc || !plan) {
+  if (!doc || !plan || !plan.apuravel) {
     return (
       <Card className="border-border bg-card" data-testid="corte-sem-ficha">
         <CardContent className="p-4 space-y-2">
           <div className="text-xs font-semibold text-foreground">
-            Nenhuma ficha técnica salva — plano de corte não apurável
+            {plan?.motivoNaoApuravel ?? "Nenhuma ficha técnica salva — plano de corte não apurável"}
           </div>
           <p className="text-2xs text-muted-foreground leading-relaxed">
-            As referências de demonstração não têm encaixe, BOM ou grade próprios. A Ordem de Corte
-            A4 só é emitida para engenharia registrada.
+            O plano de enfesto exige composição ABNT, gramatura do tecido na BOM e risco CAD
+            homologado declarados na ficha. Sem eles, mesa, metragem, kg de malha e fardos não são
+            apuráveis — a Ordem de Corte A4 não é emitida.
           </p>
           <Link to="/tech-sheet" className="text-2xs text-primary underline">
             Abrir Ficha Técnica

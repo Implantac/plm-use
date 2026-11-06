@@ -4,12 +4,7 @@
 import type { MeasurementChart } from "@/lib/measurements/store";
 import type { SheetProvenance } from "./provenance";
 import { computeFullTechSheetPricing } from "./pricing";
-import {
-  defaultColorwaysFor,
-  defaultEtiquetagemFor,
-  type BomItem,
-  type TechSheetData,
-} from "./store";
+import { defaultColorwaysFor, type BomItem, type TechSheetData } from "./store";
 import { round2, type MeasurementPomRow, type TechSheetMeasurementSpec } from "./textile";
 
 export interface BomMrpRequirement {
@@ -382,13 +377,13 @@ export function buildShowroomCatalogItem(
   const wholesaleUnitPrice = pvSugerido === null ? null : round2(pvSugerido * 0.46);
   const suggestedRetailPrice =
     wholesaleUnitPrice === null ? null : round2(wholesaleUnitPrice * 2.35);
-  const etq = doc.etiquetagem ?? defaultEtiquetagemFor();
+  const etq = doc.etiquetagem;
   const abnt =
     preset?.abnt ||
-    (etq.composicao.length
+    (etq?.composicao?.length
       ? etq.composicao.map((c) => `${c.pct}% ${c.fibra}`).join(" · ")
       : "Composição não informada");
-  const ncm = preset?.ncm || etq.ncm || "";
+  const ncm = preset?.ncm || etq?.ncm || "";
 
   return {
     refCode,

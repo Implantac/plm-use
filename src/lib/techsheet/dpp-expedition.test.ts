@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seedFor, type TechSheetData } from "./store";
+import { fichaDeclarada } from "@/test/ficha-declarada";
 import {
   DocumentoNaoEmitivelError,
   buildDppPrintableHtml,
@@ -19,10 +20,10 @@ const salvos: Record<string, TechSheetData> = {
 
 /** Onda 33: ficha apurável para DPP — NCM, origem, composição e encaixe declarados. */
 function fichaCompleta(ref: string, ncm: string): TechSheetData {
-  const base = seedFor(ref);
+  const base = fichaDeclarada(ref);
   return {
     ...base,
-    etiquetagem: { ...base.etiquetagem!, ncm, paisOrigem: "Brasil" },
+    etiquetagem: { ...base.etiquetagem!, ncm },
     encaixeCad: { ...base.encaixeCad!, eficienciaPct: 86.4 },
   };
 }

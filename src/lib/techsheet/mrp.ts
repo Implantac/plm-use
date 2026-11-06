@@ -8,13 +8,7 @@
 // 4. Gera CSV PT-BR (`;` + BOM UTF-8) e Ordem de Corte A4 pronta para impressão.
 
 import { computeFullTechSheetPricing } from "./pricing";
-import {
-  defaultColorwaysFor,
-  defaultEncaixeCadFor,
-  defaultMedidasFor,
-  type BomItem,
-  type TechSheetData,
-} from "./store";
+import { defaultColorwaysFor, defaultMedidasFor, type BomItem, type TechSheetData } from "./store";
 import { bomItemCustoEfetivo, parseDecimalPtBr, round2, round4 } from "./textile";
 
 export interface CutMatrixColorRow {
@@ -375,7 +369,11 @@ export function buildCutOrderPrintHtml(
   plan: MrpCutPlanResult,
   now: Date = new Date(),
 ): string {
-  const cad = doc.encaixeCad ?? defaultEncaixeCadFor();
+  const cad = doc.encaixeCad;
+  // Onda 34: sem risco CAD homologado o relatório declara "—" em vez de
+  // imprimir 88,3%, 1,8 m e o arquivo de molde do DEV000006.
+  const cadTxt = (v: string | number | undefined | null) =>
+    v === undefined || v === null || v === "" || v === 0 ? "—" : esc(String(v));
   const stamp = now.toLocaleString("pt-BR");
 
   const sizeHeaders = plan.sizes.map((s) => `<th class="num">${esc(s)}</th>`).join("");
@@ -451,9 +449,9 @@ export function buildCutOrderPrintHtml(
 </header>
 <div class="kpis">
   <div class="kpi"><span>Total a Cortar</span><strong>${plan.totalPieces} peças</strong></div>
-  <div class="kpi"><span>Aproveitamento CAD</span><strong>${cad.eficienciaPct}% (${esc(cad.sistemaCad)})</strong></div>
-  <div class="kpi"><span>Largura / Risco</span><strong>${cad.larguraEnfestoM} m × ${cad.comprimentoRiscoM} m</strong></div>
-  <div class="kpi"><span>Encolhimento (U × T)</span><strong>${cad.encolhimentoUrdumePct}% × ${cad.encolhimentoTramaPct}%</strong></div>
+  <div class="kpi"><span>Aproveitamento CAD</span><strong>${cadTxt(cad?.eficienciaPct)}${cad?.sistemaCad ? ` (${cadTxt(cad.sistemaCad)})` : ""}</strong></div>
+  <div class="kpi"><span>Largura / Risco</span><strong>${cadTxt(cad?.larguraEnfestoM)} m × ${cadTxt(cad?.comprimentoRiscoM)} m</strong></div>
+  <div class="kpi"><span>Encolhimento (U × T)</span><strong>${cadTxt(cad?.encolhimentoUrdumePct)}% × ${cadTxt(cad?.encolhimentoTramaPct)}%</strong></div>
 </div>
 <h2>1. Grade Proporcional de Corte (Cor × Tamanho)</h2>
 <table>
@@ -468,7 +466,7 @@ export function buildCutOrderPrintHtml(
   <thead><tr><th>Tipo</th><th>Material &amp; Explosão por Cor</th><th class="num">Qtd Bruta</th><th class="num">Saldo Atual</th><th class="num">Falta Comprar</th><th>Situação</th></tr></thead>
   <tbody>${matRows}</tbody>
 </table>
-<p class="meta">Arquivo de molde vinculado: <strong>${esc(cad.arquivoMolde || "Não informado")}</strong> · Folhas estimadas no enfesto: <strong>${plan.enfestoFolhasEstimadas} camadas</strong>.</p>
+<p class="meta">Arquivo de molde vinculado: <strong>${cadTxt(cad?.arquivoMolde)}</strong> · Folhas estimadas no enfesto: <strong>${plan.enfestoFolhasEstimadas} camadas</strong>.</p>
 <footer><span>USE MODA PLM 2.0 — emitida em ${esc(stamp)}</span><span>Assinatura Sala de Corte: _______________________</span></footer>
 </body></html>`;
 }

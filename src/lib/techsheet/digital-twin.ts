@@ -7,7 +7,7 @@ import type { AplicacaoDraft, AplicacaoTipo } from "./aplicacoes";
 import { computeLineBalancing, type LineBalancingResult } from "./line-balancing";
 import { computeMrpCutPlan, type MrpCutPlanResult } from "./mrp";
 import { computeFullTechSheetPricing } from "./pricing";
-import { defaultEtiquetagemFor, defaultMedidasFor, type TechSheetData } from "./store";
+import { defaultMedidasFor, type TechSheetData } from "./store";
 import { round2 } from "./textile";
 
 export type FullTechSheetPricing = ReturnType<typeof computeFullTechSheetPricing>;
@@ -168,8 +168,10 @@ export function simulateDigitalTwinScenario(
 
   const mainFabric = simulatedDoc.bom.find((b) => b.tipo === "Tecido") ?? simulatedDoc.bom[0];
   const medidas = doc.medidas ?? defaultMedidasFor();
-  const etiquetagem = doc.etiquetagem ?? defaultEtiquetagemFor();
-  const compResumo = etiquetagem.composicao.map((f) => `${f.pct}% ${f.fibra}`).join(" / ");
+  const composicao = doc.etiquetagem?.composicao ?? [];
+  const compResumo = composicao.length
+    ? composicao.map((f) => `${f.pct}% ${f.fibra}`).join(" / ")
+    : "Composição não declarada";
 
   const hotspots: TwinHotspotZone[] = [
     {
@@ -204,7 +206,7 @@ export function simulateDigitalTwinScenario(
       id: "acabamento",
       title: "Aplicações, Custo & Etiquetagem",
       metric: `R$ ${simulatedPricing.custoFinal.toFixed(2)}/pç · Margem ${simulatedPricing.margemLiquidaRealPct.toFixed(1)}%`,
-      detail: `${compResumo || "Composição ABNT"} · NCM ${etiquetagem.ncm}`,
+      detail: `${compResumo} · NCM ${doc.etiquetagem?.ncm || "não declarado"}`,
       tone:
         simulatedPricing.margemLiquidaRealPct < simulatedPricing.margemLiquidaAlvoPct
           ? "warn"

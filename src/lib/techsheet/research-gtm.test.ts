@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seedFor, useTechSheetStore } from "./store";
+import { fichaDeclarada } from "@/test/ficha-declarada";
 import {
   INITIAL_BRIEFINGS,
   INITIAL_GTM_CAMPAIGNS,
@@ -45,13 +46,7 @@ describe("Pesquisa Criativa -> Engenharia (Briefing 1-Clique) & Hub GTM Drops", 
     const soCopias = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, copias);
     expect(soCopias).not.toContain("CO₂e");
 
-    const completo = (ref: string) => {
-      const base = seedFor(ref);
-      return {
-        ...base,
-        etiquetagem: { ...base.etiquetagem!, ncm: "6109.10.00", paisOrigem: "Brasil" },
-      };
-    };
+    const completo = (ref: string) => fichaDeclarada(ref);
     const html = buildDropMediaKitHtml(INITIAL_GTM_CAMPAIGNS[0]!, {
       DEV000006: completo("DEV000006"),
       "V24-001": completo("V24-001"),

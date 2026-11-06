@@ -27,6 +27,7 @@ import { computeLineBalancing } from "./line-balancing";
 import { computeAqlInspectionPlan } from "../quality/aql";
 import { deserializeTechSheetRow, serializeTechSheetDoc } from "./server";
 import { seedFor } from "./store";
+import { fichaDeclarada } from "@/test/ficha-declarada";
 
 describe("engenharia têxtil pura (rendimento, quebra, graduação, ABNT, Excel)", () => {
   it("calcula rendimento m/kg e converte kg ↔ m com consistência", () => {
@@ -155,7 +156,7 @@ describe("envelope v3 + PDF Facção Cego + Ponte Ficha → Catálogo", () => {
   });
 
   it("PDF Facção (omitCosts: true) remove 100% dos valores em R$ e pré-custo mantendo medidas e ABNT", () => {
-    const doc = seedFor("DEV000006");
+    const doc = fichaDeclarada();
     const html = buildTechSheetPrintHtml(
       {
         ref: "DEV000006",

@@ -34,7 +34,7 @@ import {
   custoTotalBOM,
   custoTotalBOP,
   defaultColorwaysFor,
-  defaultEncaixeCadFor,
+  emptyCadMarkerSpec,
   tempoTotalBOP,
   useTechSheetStore,
   type BomItem,
@@ -103,7 +103,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
   const [stockEdit, setStockEdit] = useState<{ item: BomItem; val: string } | null>(null);
 
   const colorways = data.colorways?.length ? data.colorways : defaultColorwaysFor();
-  const cad = data.encaixeCad ?? defaultEncaixeCadFor();
+  const cad = data.encaixeCad ?? emptyCadMarkerSpec();
 
   // Resolve saldo de almoxarifado priorizando stock_balance real do banco (quando existir)
   const resolveAvailableStock = (b: BomItem): number | null => {
@@ -576,7 +576,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                   <span>
                     Aproveitamento CAD:{" "}
                     <strong className="font-mono text-teal-600 dark:text-teal-400">
-                      {cad.eficienciaPct.toFixed(1)}%
+                      {cad.eficienciaPct > 0 ? `${cad.eficienciaPct.toFixed(1)}%` : "—"}
                     </strong>
                   </span>
                   <span>

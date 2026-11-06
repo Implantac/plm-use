@@ -7,7 +7,7 @@ import { computeDigitalProductPassport, resolveReferenceTechSheet } from "./dpp-
 import { computeFullTechSheetPricing } from "./pricing";
 import {
   defaultColorwaysFor,
-  defaultEtiquetagemFor,
+  emptyCareLabelSpec,
   useTechSheetStore,
   type TechSheetData,
 } from "./store";
@@ -109,7 +109,7 @@ export function convertBriefingToTechSheetStore(
   ]);
 
   ts.setEtiquetagem(refCode, {
-    ...defaultEtiquetagemFor(),
+    ...emptyCareLabelSpec(),
     composicao: [{ fibra: briefing.compositionFibra || "Algodão", pct: 100 }],
   });
 

@@ -38,7 +38,7 @@ import {
 import { toast } from "sonner";
 import {
   defaultColorwaysFor,
-  defaultEncaixeCadFor,
+  emptyCadMarkerSpec,
   defaultMedidasFor,
   LIFECYCLE_STAGES,
   seedFor,
@@ -142,7 +142,8 @@ function TechSheetPage() {
   const productCategory = doc.meta?.category ?? "Esportivo / Malharia";
   const productCollection = linkedDbRef?.collection_id ?? doc.meta?.collection ?? "Verão 2027";
   const currentStage: TechSheetLifecycleStage = doc.meta?.stage ?? 3;
-  const cad = doc.encaixeCad ?? defaultEncaixeCadFor();
+  const cad = doc.encaixeCad ?? emptyCadMarkerSpec();
+  const cadDeclarado = Boolean(doc.encaixeCad && doc.encaixeCad.larguraEnfestoM > 0);
   const samTotal = useMemo(() => tempoTotalBOP(doc.bop), [doc.bop]);
 
   const colorways = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
@@ -599,7 +600,7 @@ function TechSheetPage() {
               <Workflow className="w-3.5 h-3.5 text-teal-500" />
               <span>Encaixe CAD</span>
               <strong className="font-mono text-teal-600 dark:text-teal-300">
-                ({cad.eficienciaPct.toFixed(1)}%)
+                ({cadDeclarado ? `${cad.eficienciaPct.toFixed(1)}%` : "—"})
               </strong>
               <ChevronDown className="w-3 h-3 text-muted-foreground" />
             </button>
@@ -665,7 +666,7 @@ function TechSheetPage() {
                 <Label className="text-xs">Sistema CAD</Label>
                 <select
                   aria-label="Sistema CAD"
-                  value={cad.sistemaCad ?? "Audaces"}
+                  value={cad.sistemaCad ?? ""}
                   onChange={(e) =>
                     setEncaixeCad(activeRef, {
                       ...cad,

@@ -17,8 +17,8 @@ const codigo = (f: string) =>
 describe("Onda 33 — passaporte ESG sem conteúdo de demonstração", () => {
   it("o motor do DPP não usa mais defaults do modelo", () => {
     const s = codigo(ler("src/lib/techsheet/dpp-expedition.ts"));
-    expect(s).not.toContain("defaultEtiquetagemFor(");
-    expect(s).not.toContain("defaultEncaixeCadFor(");
+    expect(s).not.toContain("emptyCareLabelSpec(");
+    expect(s).not.toContain("emptyCadMarkerSpec(");
     expect(s).not.toContain("Feito no Brasil");
     expect(s).not.toContain("Composição não informada na ficha");
   });

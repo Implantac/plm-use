@@ -7,7 +7,7 @@ import { SIZE_GRADES, cellTotal, rowTotal } from "@/lib/collection-map/store";
 import type { Look, LookItem } from "@/lib/looks/store";
 import { describeTextileMicroPhysics } from "@/lib/ai/photorealism";
 import { computeFullTechSheetPricing } from "./pricing";
-import { defaultColorwaysFor, defaultEtiquetagemFor, type TechSheetData } from "./store";
+import { defaultColorwaysFor, type TechSheetData } from "./store";
 import { sheetProvenance, type SheetProvenance } from "./provenance";
 import { round2 } from "./textile";
 
@@ -238,13 +238,13 @@ export function buildLineSheetCsvPtBr(
   const lines = [headers.join(";")];
   for (const row of rows) {
     const doc = sheetsMap[row.refCode];
-    const etiq = doc?.etiquetagem ?? defaultEtiquetagemFor();
-    const comp = etiq.composicao.length
+    const etiq = doc?.etiquetagem;
+    const comp = etiq?.composicao?.length
       ? etiq.composicao.map((f) => `${f.pct}% ${f.fibra}`).join(" / ")
       : doc
         ? "Composição não informada"
         : "Sem ficha técnica";
-    const ncm = etiq.ncm || (doc ? "sem NCM" : "sem ficha");
+    const ncm = etiq?.ncm || (doc ? "sem NCM" : "sem ficha");
 
     for (const cell of row.cells) {
       const total = cellTotal(cell);

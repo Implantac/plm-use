@@ -49,7 +49,7 @@ import { storageAssetSource, uploadGeneratedImage } from "@/lib/storage/assets";
 import {
   defaultCalloutsFor,
   defaultColorwaysFor,
-  defaultEtiquetagemFor,
+  emptyCareLabelSpec,
   defaultMedidasFor,
   useTechSheetStore,
 } from "@/lib/techsheet/store";
@@ -121,7 +121,7 @@ export function GarmentSketchStudio({
     : defaultCalloutsFor();
   const colorways = doc.colorways?.length ? doc.colorways : defaultColorwaysFor();
   const activeCw = colorways.find((c) => c.id === activeColorwayId) ?? colorways[0];
-  const etiquetagem = doc.etiquetagem ?? defaultEtiquetagemFor();
+  const etiquetagem = doc.etiquetagem ?? emptyCareLabelSpec();
   const medidas = doc.medidas ?? defaultMedidasFor();
 
   const pomA = medidas.pontos.find((p) => p.codigo.toUpperCase() === "A") ?? medidas.pontos[0];

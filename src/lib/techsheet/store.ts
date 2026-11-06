@@ -228,11 +228,8 @@ export const defaultMedidasFor = (): TechSheetMeasurementSpec => ({
   ],
 });
 
-export const defaultEtiquetagemFor = (): CareLabelSpec => ({
-  composicao: [
-    { fibra: "Poliéster", pct: 96 },
-    { fibra: "Elastano", pct: 4 },
-  ],
+export const emptyCareLabelSpec = (): CareLabelSpec => ({
+  composicao: [],
   // Vazio de propósito: NCM é classificação fiscal e origem é declaração —
   // nenhuma das duas pode nascer preenchida por um default. Ficha nova abre com
   // o campo em branco e o documento espera o preenchimento (Onda 28).
@@ -245,17 +242,12 @@ export const defaultEtiquetagemFor = (): CareLabelSpec => ({
     passadoria: "BAIXA_110",
     limpezaProfissional: "NAO_LIMPAR_SECO",
   },
-  instrucoesExtras: "Lavar pelo avesso; não passar ferro sobre o transfer ou bordado.",
+  instrucoesExtras: "",
 });
 
-export const defaultEncaixeCadFor = (): CadMarkerSpec => ({
-  eficienciaPct: 88.3,
-  larguraEnfestoM: 1.8,
-  comprimentoRiscoM: 4.65,
-  encolhimentoUrdumePct: 2.0,
-  encolhimentoTramaPct: 1.5,
-  arquivoMolde: "DEV000006_CAMISETA_DRY_PRO_v4.ADS",
-  sistemaCad: "Audaces",
+export const emptyCadMarkerSpec = (): CadMarkerSpec => ({
+  eficienciaPct: 0,
+  larguraEnfestoM: 0,
 });
 
 export const seedFor = (ref: string): TechSheetData => ({
@@ -271,8 +263,11 @@ export const seedFor = (ref: string): TechSheetData => ({
   },
   colorways: defaultColorwaysFor(),
   medidas: defaultMedidasFor(),
-  etiquetagem: defaultEtiquetagemFor(),
-  encaixeCad: defaultEncaixeCadFor(),
+  etiquetagem: emptyCareLabelSpec(),
+  // Onda 34: a ficha nova NASCE sem risco CAD. O molde vazio existe só para os
+  // formulários de edição (`doc.encaixeCad ?? emptyCadMarkerSpec()`); um objeto
+  // zerado dentro do documento faria "0%" parecer engenharia registrada.
+  encaixeCad: undefined,
   bom: [
     {
       id: "b1",
@@ -394,7 +389,9 @@ export const seedFor = (ref: string): TechSheetData => ({
       data: "2026-10-20",
       autor: "Engenharia Produto",
       status: "Aprovada",
-      resumo: "Ajuste de encaixe CAD (88,3%) e ribana gola V listrada.",
+      // Onda 34: o changelog do modelo não pode afirmar um encaixe CAD de
+      // 88,3% que a ficha não declara mais.
+      resumo: "Revisão de engenharia pendente de homologação.",
       alteracoes: [
         "Malha Dry Fit UV50+: 0,260 kg (+7% perda)",
         "+ Matriz de 3 variantes de cor",

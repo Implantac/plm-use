@@ -11,7 +11,7 @@ import {
   inferPresetFromView,
 } from "@/lib/ai/photorealism";
 import { nativeVisualSvg } from "@/lib/ai/native-visual";
-import { seedFor } from "@/lib/techsheet/store";
+import { fichaDeclarada } from "@/test/ficha-declarada";
 
 describe("product-studio utils", () => {
   it("constrói um prompt completo a partir do briefing", () => {
@@ -120,7 +120,7 @@ describe("product-studio utils", () => {
   });
 
   it("hidrata o AI Product Studio a partir da Ficha Técnica e gera SVG volumétrico 3D com fundo transparente por padrão", () => {
-    const doc = seedFor("DEV000006");
+    const doc = fichaDeclarada();
     const payload = buildStudioPayloadFromTechSheet("DEV000006", doc);
     expect(payload.gramaturaGm2).toBe(135);
     expect(payload.composicao).toContain("Poliéster");

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { PrintAsset } from "@/lib/prints/store";
 import { seedFor } from "./store";
+import { fichaDeclarada } from "@/test/ficha-declarada";
 import {
   analyzePrintTechnicalViability,
   buildAplicacaoFromPrint,
@@ -38,7 +39,7 @@ describe("digital-twin & print viability engine", () => {
   });
 
   it("valida compatibilidade química de sublimação vs algodão/poliéster e gera AplicacaoDraft", () => {
-    const polySheet = seedFor("DEV000006"); // 92% Poliéster / 8% Elastano
+    const polySheet = fichaDeclarada(); // composição declarada: 96% Poliéster / 4% Elastano
     const cottonSheet = {
       ...polySheet,
       etiquetagem: {
