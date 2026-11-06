@@ -1,6 +1,6 @@
 # Onda 35 — Criar uma ficha não é copiar o modelo
 
-**Data:** 05/11/2026 · **Antecessor:** `65be399` (Onda 34 + docs)
+**Data:** 05/11/2026 · **Commit:** `c145545` · **Antecessor:** `65be399` (Onda 34 + docs)
 
 ---
 
