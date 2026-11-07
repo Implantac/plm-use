@@ -242,7 +242,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 38; hash em `git log -1`),
+Seção 7-A: `main@903727c` (Onda 38),
 `docs/producao/ONDA-19..38-*.md` e os números das suítes rodadas em 05/11
 (vitest **538/538**, SQL 163/163, bundle relido com **221 chunks** no entry
 `index-DYB6k9Kp.js`: marcadores das Ondas 24–37 presentes — logo o ar é a

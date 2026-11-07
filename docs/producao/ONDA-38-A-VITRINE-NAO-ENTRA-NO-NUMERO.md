@@ -1,6 +1,6 @@
 # Onda 38 — A vitrine não entra no número
 
-**Data:** 06/11/2026 · **Antecessor:** `87baa2e` (Onda 37 + docs)
+**Data:** 06/11/2026 · **Commit:** `903727c` · **Antecessor:** `87baa2e` (Onda 37 + docs)
 
 ---
 
