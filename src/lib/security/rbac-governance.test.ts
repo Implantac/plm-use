@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  INITIAL_GOVERNANCE_EVENTS,
-  buildLgpdAuditCsv,
-  simulateRoleAccess,
-} from "./rbac-governance";
+import { eventosSalvos } from "@/test/governanca-e-briefings";
+import { buildLgpdAuditCsv, simulateRoleAccess } from "./rbac-governance";
 
 describe("Matriz RBAC, Isolamento RLS & Exportação LGPD", () => {
   it("bloqueia 100% de sales_order_item_costs para comercial e aplica Ficha Cega para fornecedor_externo", () => {
@@ -28,7 +25,7 @@ describe("Matriz RBAC, Isolamento RLS & Exportação LGPD", () => {
     const adminSim = simulateRoleAccess("admin");
     expect(adminSim.every((r) => r.effectiveOutcome === "ACESSO_COMPLETO")).toBe(true);
 
-    const csv = buildLgpdAuditCsv(INITIAL_GOVERNANCE_EVENTS);
+    const csv = buildLgpdAuditCsv(eventosSalvos());
     expect(csv).toContain("id;data_hora;ator;papel_rbac;acao_auditada;base_legal_lgpd");
     expect(csv).toContain("engenharia_custo");
     expect(csv).toContain("Lista Nominal por Peça");

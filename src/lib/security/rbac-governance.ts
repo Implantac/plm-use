@@ -28,6 +28,12 @@ export interface GovernanceAuditEntry {
   role: AppRole;
   action: string;
   lgpdBasis: "Execução de Contrato" | "Legítimo Interesse" | "Obrigação Legal Fiscal";
+  /**
+   * Onda 41. `true` só nos eventos que o app traz de fábrica. Têm atores,
+   * aprovações e bases legais INVENTADOS: não podem entrar numa trilha de
+   * auditoria LGPD exportada em CSV ou no Relatório de Governança A4.
+   */
+  demo?: boolean;
 }
 
 export const SIMULATABLE_ROLES: Array<{
@@ -143,9 +149,18 @@ export function simulateRoleAccess(role: AppRole): SimulatedAccessRow[] {
   });
 }
 
+export const EVENTO_DEMO_LABEL = "Evento de demonstração — não entra na trilha de auditoria LGPD";
+
+/** Só eventos registrados de verdade. A vitrine fica de fora. */
+export function eventosAuditaveis(entries: GovernanceAuditEntry[]): GovernanceAuditEntry[] {
+  return entries.filter((e) => e.demo !== true);
+}
+
 export function buildLgpdAuditCsv(entries: GovernanceAuditEntry[]): string {
   const header = "id;data_hora;ator;papel_rbac;acao_auditada;base_legal_lgpd";
-  const rows = entries.map((e) =>
+  // Onda 41: sem filtro, o CSV exportava 4 eventos fabricados (Helena Prado,
+  // Marcos Viana, aprovação do PD-2026-802...) como trilha de conformidade.
+  const rows = eventosAuditaveis(entries).map((e) =>
     [
       e.id,
       e.timestampIso,
@@ -181,7 +196,8 @@ export function buildRbacGovernanceHtmlReport(
     )
     .join("");
 
-  const logRows = entries
+  const auditaveis = eventosAuditaveis(entries);
+  const logRows = auditaveis
     .slice(0, 12)
     .map(
       (e) => `<tr>
@@ -192,6 +208,15 @@ export function buildRbacGovernanceHtmlReport(
     </tr>`,
     )
     .join("");
+
+  const avisoLog =
+    auditaveis.length === 0
+      ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
+    <strong>Trilha LGPD não auditável: nenhum evento registrado.</strong>
+    Os eventos de demonstração exibidos na tela não entram neste relatório;
+    registre uma ação real no Trust Center para gerar a trilha.
+  </div>`
+      : "";
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -218,16 +243,22 @@ export function buildRbacGovernanceHtmlReport(
     <tbody>${simRows}</tbody>
   </table>
   <h2 style="font-size:11px;text-transform:uppercase">Trilha Recente de Auditoria & LGPD</h2>
-  <table>
+  ${avisoLog}
+  ${
+    auditaveis.length > 0
+      ? `<table>
     <thead><tr><th>Data/Hora</th><th>Ator / Papel</th><th>Evento</th><th>Base Legal LGPD</th></tr></thead>
     <tbody>${logRows}</tbody>
-  </table>
+  </table>`
+      : ""
+  }
 </body>
 </html>`;
 }
 
 export const INITIAL_GOVERNANCE_EVENTS: GovernanceAuditEntry[] = [
   {
+    demo: true,
     id: "aud-1",
     timestampIso: "2026-11-03T13:40:00.000Z",
     actor: "Helena Prado",
@@ -236,6 +267,7 @@ export const INITIAL_GOVERNANCE_EVENTS: GovernanceAuditEntry[] = [
     lgpdBasis: "Execução de Contrato",
   },
   {
+    demo: true,
     id: "aud-2",
     timestampIso: "2026-11-03T12:15:00.000Z",
     actor: "Marcos Viana",
@@ -244,6 +276,7 @@ export const INITIAL_GOVERNANCE_EVENTS: GovernanceAuditEntry[] = [
     lgpdBasis: "Execução de Contrato",
   },
   {
+    demo: true,
     id: "aud-3",
     timestampIso: "2026-11-03T10:50:00.000Z",
     actor: "Facção Costura Fina",
@@ -252,6 +285,7 @@ export const INITIAL_GOVERNANCE_EVENTS: GovernanceAuditEntry[] = [
     lgpdBasis: "Obrigação Legal Fiscal",
   },
   {
+    demo: true,
     id: "aud-4",
     timestampIso: "2026-11-03T09:10:00.000Z",
     actor: "Admin PLM",

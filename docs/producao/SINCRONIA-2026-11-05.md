@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 17ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 18ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,19 +10,21 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 40** — `3b33065`                | `git log` / `git ls-remote`          |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 41**                            | `git log` / `git ls-remote`          |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 38** — `index-BcTzKh6M.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** **nada no ar e nada no banco**. Pela
-primeira vez em várias rodadas não houve publicação: o bundle segue com o mesmo
-entry **`index-BcTzKh6M.js` (221 chunks)**, `gtm-so-vitrine` 1 vez e
-**`sop-sem-pedidos` 0** — a **Onda 39 não foi publicada**. `sop-sem-faccao`,
-`apuravelFaccao`, `servicosOperacionais` e `lotesOperacionais` também são 0.
-O repo avançou para a **Onda 40**, então existem agora **duas ondas** de código
-ainda não publicadas (39 e 40). `DEV000006` permanece em **27** ocorrências.
-O banco segue sem as migrações (17ª medição: `PGRST205` na view e `PGRST202`
-nas três RPCs).
+**O que mudou desde a medição anterior:** **nada no ar e nada no banco** pela
+segunda rodada seguida. O bundle permanece **`index-BcTzKh6M.js` (221 chunks)**
+com `gtm-so-vitrine` 1 vez e `sop-sem-pedidos`, `sop-sem-faccao`,
+`lgpd-so-vitrine`, `briefing-so-vitrine` = **0**. A medição encontrou a prova
+direta do furo que a Onda 41 fecha: **`"Helena Prado"` 1 vez** e
+**`"Aprovou matriz de setup"` 1 vez** no bundle publicado, com
+`"Trilha LGPD não auditável"` = 0 — o CSV e o Relatório de Governança A4 no ar
+exportam eventos de auditoria inventados. O repo avançou para a **Onda 41**:
+são agora **três ondas** não publicadas (39, 40 e 41). `DEV000006` segue em
+**27** ocorrências. O banco continua sem as migrações (18ª medição:
+`PGRST205` na view e `PGRST202` nas três RPCs).
 
 ---
 
@@ -35,40 +37,42 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   `index-BCX5Of78.js` = 25, `index-gNNeOgTl.js` = 26, `index-bJxsbr7k.js` = 28)
 - **218 chunks**, ~3,1 MB de JS lidos
 
-| Onda | Marcador procurado                           | Ocorrências | Leitura |
-| ---- | -------------------------------------------- | ----------- | ------- |
-| 24   | `Dar baixa do material`                      | 1           | ✅      |
-| 25   | `Documento com dados de demonstra`           | 2           | ✅      |
-| 27   | `Custeio incompleto`                         | 1           | ✅      |
-| 27   | `Composição não informada`                   | 5           | ✅      |
-| 28   | `sem NCM`                                    | 5           | ✅      |
-| 29   | `pedidosSemFicha`                            | 4           | ✅      |
-| 29   | `rfq-sem-ficha`                              | 1           | ✅      |
-| 29   | `showroom-sem-ficha`                         | 1           | ✅      |
-| 30   | `DRE não apurável`                           | 4           | ✅      |
-| 30   | `omnichannel-sem-ficha`                      | 1           | ✅      |
-| 30   | `kanban-sem-ficha`                           | 1           | ✅      |
-| 31   | `cockpit-sem-ficha`                          | 1           | ✅      |
-| 31   | `gemeo-sem-ficha`                            | 1           | ✅      |
-| 31   | `os-sem-ficha`                               | 2           | ✅      |
-| 32   | `Passaporte ESG`                             | 2           | ✅      |
-| 33   | `país de origem declarado`                   | 1           | ✅      |
-| 33   | `composição ABNT declarada`                  | 1           | ✅      |
-| 34   | `Risco CAD não declarado`                    | 1           | ✅      |
-| 34   | `Plano de corte não apurável`                | 3           | ✅      |
-| 35   | `A referência de origem não tem ficha salva` | 1           | ✅      |
-| 36   | `Fichas sem engenharia`                      | 1           | ✅      |
-| 36   | `sem engenharia custeada`                    | 3           | ✅      |
-| 37   | `reserva-migracao-pendente`                  | 1           | ✅      |
-| 38   | `gtm-so-vitrine` / `sop-sem-drops`           | 1           | ✅      |
-| 39   | `sop-sem-pedidos`                            | **0**       | ❌      |
-| 40   | `sop-sem-faccao` / `apuravelFaccao`          | **0**       | ❌      |
+| Onda | Marcador procurado                              | Ocorrências | Leitura |
+| ---- | ----------------------------------------------- | ----------- | ------- |
+| 24   | `Dar baixa do material`                         | 1           | ✅      |
+| 25   | `Documento com dados de demonstra`              | 2           | ✅      |
+| 27   | `Custeio incompleto`                            | 1           | ✅      |
+| 27   | `Composição não informada`                      | 5           | ✅      |
+| 28   | `sem NCM`                                       | 5           | ✅      |
+| 29   | `pedidosSemFicha`                               | 4           | ✅      |
+| 29   | `rfq-sem-ficha`                                 | 1           | ✅      |
+| 29   | `showroom-sem-ficha`                            | 1           | ✅      |
+| 30   | `DRE não apurável`                              | 4           | ✅      |
+| 30   | `omnichannel-sem-ficha`                         | 1           | ✅      |
+| 30   | `kanban-sem-ficha`                              | 1           | ✅      |
+| 31   | `cockpit-sem-ficha`                             | 1           | ✅      |
+| 31   | `gemeo-sem-ficha`                               | 1           | ✅      |
+| 31   | `os-sem-ficha`                                  | 2           | ✅      |
+| 32   | `Passaporte ESG`                                | 2           | ✅      |
+| 33   | `país de origem declarado`                      | 1           | ✅      |
+| 33   | `composição ABNT declarada`                     | 1           | ✅      |
+| 34   | `Risco CAD não declarado`                       | 1           | ✅      |
+| 34   | `Plano de corte não apurável`                   | 3           | ✅      |
+| 35   | `A referência de origem não tem ficha salva`    | 1           | ✅      |
+| 36   | `Fichas sem engenharia`                         | 1           | ✅      |
+| 36   | `sem engenharia custeada`                       | 3           | ✅      |
+| 37   | `reserva-migracao-pendente`                     | 1           | ✅      |
+| 38   | `gtm-so-vitrine` / `sop-sem-drops`              | 1           | ✅      |
+| 39   | `sop-sem-pedidos`                               | **0**       | ❌      |
+| 40   | `sop-sem-faccao` / `apuravelFaccao`             | **0**       | ❌      |
+| 41   | `lgpd-so-vitrine` / `Trilha LGPD não auditável` | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 38**, **duas ondas** atrás do repo (39 e
-40). A
-camada mais atrasada continua sendo o **banco**. A frase "Consumo e liberação
-são automáticos" ainda existe no bundle, mas condicionada ao ramo `ativa` —
-com as migrações pendentes, o operador vê o aviso âmbar, não a promessa.
+**Conclusão:** o ar está na **Onda 38**, **três ondas** atrás do repo (39, 40
+e 41). A camada mais atrasada continua sendo o **banco**. A frase "Consumo e
+liberação são automáticos" ainda existe no bundle, mas condicionada ao ramo
+`ativa` — com as migrações pendentes, o operador vê o aviso âmbar, não a
+promessa. A trilha LGPD publicada, por outro lado, ainda contém ficção até a
+Onda 41 ser publicada.
 
 ---
 

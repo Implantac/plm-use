@@ -33,6 +33,8 @@ import {
   buildLgpdAuditCsv,
   buildRbacGovernanceHtmlReport,
   simulateRoleAccess,
+  EVENTO_DEMO_LABEL,
+  eventosAuditaveis,
   useSecurityGovernanceStore,
 } from "@/lib/security/rbac-governance";
 
@@ -44,6 +46,10 @@ function SecurityPage() {
   const selectedRole = useSecurityGovernanceStore((s) => s.selectedRole);
   const lastDrDrillIso = useSecurityGovernanceStore((s) => s.lastDrDrillIso);
   const auditEntries = useSecurityGovernanceStore((s) => s.auditEntries);
+  // Onda 41: os 4 eventos de fábrica têm atores, aprovações e bases legais
+  // inventados. Não podem virar trilha LGPD exportada nem contar como eventos.
+  const eventosReais = eventosAuditaveis(auditEntries);
+  const soVitrine = eventosReais.length === 0;
   const setSelectedRole = useSecurityGovernanceStore((s) => s.setSelectedRole);
   const recordAuditEvent = useSecurityGovernanceStore((s) => s.recordAuditEvent);
   const runRestoreDrill = useSecurityGovernanceStore((s) => s.runRestoreDrill);
@@ -71,6 +77,12 @@ function SecurityPage() {
   ).length;
 
   function handleExportCsv() {
+    if (soVitrine) {
+      toast.error(
+        "Trilha LGPD não auditável: registre um evento real no Trust Center antes de exportar.",
+      );
+      return;
+    }
     const csv = buildLgpdAuditCsv(auditEntries);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -83,6 +95,12 @@ function SecurityPage() {
   }
 
   function handlePrintGovernanceReport() {
+    if (soVitrine) {
+      toast.error(
+        "Relatório A4 não auditável: registre um evento real no Trust Center antes de imprimir.",
+      );
+      return;
+    }
     const html = buildRbacGovernanceHtmlReport(selectedRole, auditEntries);
     const w = window.open("", "_blank");
     if (!w) {
@@ -138,11 +156,21 @@ function SecurityPage() {
         },
         {
           label: "Trilha LGPD",
-          value: `${auditEntries.length} eventos`,
-          detail: "exportável CSV + A4",
+          value: soVitrine ? "—" : `${eventosReais.length} eventos`,
+          detail: soVitrine ? "sem eventos auditáveis" : "exportável CSV + A4",
         },
       ]}
     >
+      {soVitrine && (
+        <div
+          data-testid="lgpd-so-vitrine"
+          className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300"
+        >
+          <strong>{auditEntries.length} eventos de demonstração na trilha.</strong>{" "}
+          {EVENTO_DEMO_LABEL}. Registre uma ação real no Trust Center para que o CSV e o Relatório
+          A4 de governança passem a ser auditáveis.
+        </div>
+      )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <ModuleTabs group="admin" />
         <div className="flex flex-wrap items-center gap-2">
@@ -297,9 +325,20 @@ function SecurityPage() {
                   >
                     <div className="flex items-center justify-between gap-2 text-[11px]">
                       <span className="font-bold text-foreground">{ev.actor}</span>
-                      <Badge variant="outline" className="font-mono text-[10px]">
-                        {ev.role}
-                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        {ev.demo && (
+                          <Badge
+                            variant="outline"
+                            title={EVENTO_DEMO_LABEL}
+                            className="border-amber-500/40 bg-amber-500/10 text-[10px] text-amber-700 dark:text-amber-300"
+                          >
+                            Demonstração
+                          </Badge>
+                        )}
+                        <Badge variant="outline" className="font-mono text-[10px]">
+                          {ev.role}
+                        </Badge>
+                      </div>
                     </div>
                     <p className="text-xs text-foreground/90">{ev.action}</p>
                     <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-0.5">

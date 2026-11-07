@@ -31,6 +31,8 @@ import { motion } from "framer-motion";
 import { MoodBoard } from "@/components/research/MoodBoard";
 import { AiCroquiPanel } from "@/components/research/AiCroquiPanel";
 import {
+  BRIEFING_DEMO_LABEL,
+  briefingsOperacionais,
   convertBriefingToTechSheetStore,
   useResearchGtmStore,
   type BriefingInsight,
@@ -108,10 +110,16 @@ function ResearchHub() {
     [briefings],
   );
 
+  // Onda 41: os 4 briefings de fábrica têm confidencePct e targetPriceBrl
+  // inventados. A média 92,5% virava "Aderência Comercial · score tendência".
+  const briefingsReais = useMemo(() => briefingsOperacionais(briefings), [briefings]);
+  const soVitrine = briefingsReais.length === 0;
   const avgConfidence = useMemo(() => {
-    if (briefings.length === 0) return 0;
-    return Math.round(briefings.reduce((a, b) => a + b.confidencePct, 0) / briefings.length);
-  }, [briefings]);
+    if (briefingsReais.length === 0) return null;
+    return Math.round(
+      briefingsReais.reduce((a, b) => a + b.confidencePct, 0) / briefingsReais.length,
+    );
+  }, [briefingsReais]);
 
   function handleOpenDialog(item?: BriefingInsight) {
     if (item) {
@@ -222,16 +230,33 @@ function ResearchHub() {
       onSearch={setSearchTerm}
       searchPlaceholder="Buscar briefing, tecido, gramatura, cor ou tag"
       metrics={[
-        { label: "Briefings Ativos", value: String(briefings.length), detail: "persistidos" },
+        {
+          label: "Briefings Ativos",
+          value: soVitrine ? "—" : String(briefingsReais.length),
+          detail: soVitrine ? "só demonstração" : "persistidos",
+        },
         {
           label: "Fichas Geradas",
           value: String(convertedCount),
           detail: "enviadas p/ engenharia",
         },
         { label: "Cápsulas", value: String(CAPSULES.length - 1), detail: "em planejamento" },
-        { label: "Aderência Comercial", value: `${avgConfidence}%`, detail: "score tendência" },
+        {
+          label: "Aderência Comercial",
+          value: avgConfidence === null ? "—" : `${avgConfidence}%`,
+          detail: avgConfidence === null ? "score não apurável" : "score tendência",
+        },
       ]}
     >
+      {soVitrine && (
+        <div
+          data-testid="briefing-so-vitrine"
+          className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300"
+        >
+          <strong>{briefings.length} briefings de demonstração.</strong> {BRIEFING_DEMO_LABEL}. Crie
+          ou edite um briefing para que a aderência comercial e o preço-alvo passem a ser apurados.
+        </div>
+      )}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6 mb-6">
         <Card className="glass-card rounded-xl p-5 border-primary/20 bg-primary/[0.03]">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -327,6 +352,15 @@ function ResearchHub() {
                   <Badge className="bg-background/90 text-foreground border-border text-[10px]">
                     {item.capsule}
                   </Badge>
+                  {item.demo && (
+                    <Badge
+                      variant="outline"
+                      title={BRIEFING_DEMO_LABEL}
+                      className="border-amber-500/40 bg-amber-500/10 text-[10px] text-amber-700 dark:text-amber-300"
+                    >
+                      Demonstração
+                    </Badge>
+                  )}
                 </div>
                 <div className="absolute top-2.5 right-2.5 z-10">
                   <ModuleActionMenu

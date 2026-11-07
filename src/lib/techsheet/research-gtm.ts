@@ -23,6 +23,12 @@ export interface BriefingInsight {
   confidencePct: number;
   tags: string[];
   convertedRefCode?: string;
+  /**
+   * Onda 41. `true` só nos briefings que o app traz de fábrica. Têm
+   * `targetPriceBrl` e `confidencePct` inventados: não podem gerar um
+   * "score de aderência comercial" apresentado como análise real.
+   */
+  demo?: boolean;
 }
 
 export type DropCampaignStatus = "Ativa" | "Em Produção Criativa" | "Planejada";
@@ -143,6 +149,22 @@ export function computeCampaignRoas(
   return round2(c.attributedSalesBrl / c.mediaSpendBrl);
 }
 
+export const BRIEFING_DEMO_LABEL =
+  "Briefing de demonstração — score e preço-alvo não são análise real";
+
+/** Só briefings criados/editados pela empresa. A vitrine fica de fora. */
+export function briefingsOperacionais(briefings: BriefingInsight[]): BriefingInsight[] {
+  return briefings.filter((b) => b.demo !== true);
+}
+
+function promoverBriefing(b: BriefingInsight): BriefingInsight {
+  return { ...b, demo: false };
+}
+
+function promoverCampanha(c: GtmDropCampaign): GtmDropCampaign {
+  return { ...c, demo: false };
+}
+
 export const GTM_DEMO_LABEL = "Campanha de demonstração — não entra em número operacional";
 
 /** Só campanhas criadas/editadas pela empresa. A vitrine fica de fora. */
@@ -255,6 +277,7 @@ export function buildDropMediaKitHtml(
 
 export const INITIAL_BRIEFINGS: BriefingInsight[] = [
   {
+    demo: true,
     id: "br-1",
     title: "Polo Resort Tricot Linho Cru",
     capsule: "Cápsula Resort",
@@ -271,6 +294,7 @@ export const INITIAL_BRIEFINGS: BriefingInsight[] = [
     tags: ["#linho", "#resort", "#monomaterial"],
   },
   {
+    demo: true,
     id: "br-2",
     title: "Calça Alfaiataria Tech Bi-Stretch",
     capsule: "Alfaiataria Tech",
@@ -287,6 +311,7 @@ export const INITIAL_BRIEFINGS: BriefingInsight[] = [
     tags: ["#alfaiataria", "#bistretch", "#urbano"],
   },
   {
+    demo: true,
     id: "br-3",
     title: "T-Shirt Gola V Algodão Pima Peruano",
     capsule: "Essenciais Pima",
@@ -303,6 +328,7 @@ export const INITIAL_BRIEFINGS: BriefingInsight[] = [
     tags: ["#pima", "#essencial", "#altoverao"],
   },
   {
+    demo: true,
     id: "br-4",
     title: "Crewneck Raglan Moletinho Orgânico",
     capsule: "Alto Verão 2027",
@@ -391,8 +417,8 @@ export const useResearchGtmStore = create<ResearchGtmStoreState>()(
           const exists = s.briefings.some((b) => b.id === item.id);
           return {
             briefings: exists
-              ? s.briefings.map((b) => (b.id === item.id ? item : b))
-              : [item, ...s.briefings],
+              ? s.briefings.map((b) => (b.id === item.id ? promoverBriefing(item) : b))
+              : [promoverBriefing(item), ...s.briefings],
           };
         }),
       deleteBriefing: (id) => set((s) => ({ briefings: s.briefings.filter((b) => b.id !== id) })),
@@ -407,8 +433,8 @@ export const useResearchGtmStore = create<ResearchGtmStoreState>()(
           const exists = s.campaigns.some((c) => c.id === camp.id);
           return {
             campaigns: exists
-              ? s.campaigns.map((c) => (c.id === camp.id ? camp : c))
-              : [camp, ...s.campaigns],
+              ? s.campaigns.map((c) => (c.id === camp.id ? promoverCampanha(camp) : c))
+              : [promoverCampanha(camp), ...s.campaigns],
           };
         }),
       deleteCampaign: (id) => set((s) => ({ campaigns: s.campaigns.filter((c) => c.id !== id) })),
