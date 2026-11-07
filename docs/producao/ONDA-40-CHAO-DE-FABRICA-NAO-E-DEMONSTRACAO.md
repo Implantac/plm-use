@@ -1,6 +1,6 @@
 # Onda 40 — Chão de fábrica não é demonstração
 
-**Data:** 06/11/2026 · **Antecessor:** `b8b07f2` (Onda 39 + docs)
+**Data:** 06/11/2026 · **Commit:** `3b33065` · **Antecessor:** `b8b07f2` (Onda 39 + docs)
 
 ---
 
