@@ -1,6 +1,6 @@
 # Onda 42 — Fornecedor de papel não homologa nem assina documento
 
-**Data:** 06/11/2026 · **Antecessor:** `fce26d0` (Onda 41 + docs)
+**Data:** 06/11/2026 · **Commit:** `7b11535` · **Antecessor:** `fce26d0` (Onda 41 + docs)
 
 ---
 
