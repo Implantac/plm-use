@@ -1,6 +1,6 @@
 # Onda 37 — A UI não promete o que o banco não tem
 
-**Data:** 06/11/2026 · **Antecessor:** `21df9d6` (Onda 36 + docs)
+**Data:** 06/11/2026 · **Commit:** `6d3000e` · **Antecessor:** `21df9d6` (Onda 36 + docs)
 
 ---
 
