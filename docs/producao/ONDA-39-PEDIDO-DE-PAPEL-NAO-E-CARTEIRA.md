@@ -1,6 +1,6 @@
 # Onda 39 — Pedido de papel não é carteira
 
-**Data:** 06/11/2026 · **Antecessor:** `0228013` (Onda 38 + docs)
+**Data:** 06/11/2026 · **Commit:** `7526080` · **Antecessor:** `0228013` (Onda 38 + docs)
 
 ---
 

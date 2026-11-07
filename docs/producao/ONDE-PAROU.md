@@ -190,7 +190,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 36 — DRE não apura o vazio          | `1694e3d` | Medição com overhead padrão: ficha vazia gerava EBITDA -R$ 85.000, 50 peças inventadas e A4 sem aviso. Entram `pendenciasEngenhariaDre` e `origem.semEngenharia`; só BOM custeada, preço e tiragem declarados entram na soma; morrem o piso de 50 e o fallback de 600. 11 testes novos                                            | ❌ não republicado      |
 | 37 — UI não promete o banco         | `6d3000e` | Medição do bundle publicado: `ReservationsPanel` importava `useStockLifecycle` desde a Onda 26 mas nunca lia `ciclo`. Agora três estados (verificando / pendente / ativa), aviso âmbar nomeando `APLICAR-ONDA-21-24.sql`, e a promessa de automação só no ramo ativo. 4 testes novos                                              | ❌ não republicado      |
 | 38 — Vitrine fora do número         | `903727c` | Medição: copiloto respondia "2 fichas ativas · SAM médio 13.5 min/peça" com `seedFor` e as 3 campanhas de fábrica injetavam R$ 218.400 no ROAS/S&OP. `demo?: boolean` + `campanhasOperacionais`, resumo filtra internamente, copiloto declara `—`, AI Agents sem `seedFor`, Marketing e Live S&OP com `—` e selo. 12 testes novos | ❌ não republicado      |
-| 39 — Pedido de papel não é carteira | `HEAD`    | Medição: 2 pedidos de fábrica (CNPJ 14.890.300/0001-22) geravam R$ 9.867,20 de carteira B2B, 112 peças e "preço mínimo R$ 90,62". `demo?: boolean` + `pedidosOperacionais`, 5 updaters promovem a vitrine a carteira, filtros em S&OP/MRP/copiloto/capacidade, A4 e KPIs com `—`, selo na Fila de Custos. 12 testes novos         | ❌ não republicado      |
+| 39 — Pedido de papel não é carteira | `7526080` | Medição: 2 pedidos de fábrica (CNPJ 14.890.300/0001-22) geravam R$ 9.867,20 de carteira B2B, 112 peças e "preço mínimo R$ 90,62". `demo?: boolean` + `pedidosOperacionais`, 5 updaters promovem a vitrine a carteira, filtros em S&OP/MRP/copiloto/capacidade, A4 e KPIs com `—`, selo na Fila de Custos. 12 testes novos         | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -242,7 +242,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 39; hash em `git log -1`),
+Seção 7-A: `main@7526080` (Onda 39),
 `docs/producao/ONDA-19..39-*.md` e os números das suítes rodadas em 05/11
 (vitest **550/550**, SQL 163/163, bundle relido com **221 chunks** no entry
 `index-BcTzKh6M.js`: marcadores das Ondas 24–38 presentes — logo o ar é a
