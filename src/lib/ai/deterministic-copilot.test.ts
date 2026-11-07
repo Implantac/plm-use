@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { INITIAL_PRIVATE_LABEL_ORDERS } from "@/lib/sales/private-label-queue";
+import { campanhasSalvas } from "@/test/campanhas-salvas";
+import { pedidosSalvos } from "@/test/pedidos-salvos";
 import { INITIAL_GTM_CAMPAIGNS } from "@/lib/techsheet/research-gtm";
 import { seedFor } from "@/lib/techsheet/store";
-import { campanhasSalvas } from "@/test/campanhas-salvas";
 import { runDeterministicAgentAnalysis } from "./deterministic-copilot";
 
 describe("Copiloto Industrial Determinístico (USE AI Agents)", () => {
@@ -13,7 +13,7 @@ describe("Copiloto Industrial Determinístico (USE AI Agents)", () => {
       agent: "engenharia",
       question: "Quais pedidos estão com margem comprimida pelo setup?",
       sheets,
-      privateLabelOrders: INITIAL_PRIVATE_LABEL_ORDERS,
+      privateLabelOrders: pedidosSalvos(),
       lotesSummary: [],
       drops: campanhasSalvas(),
     });
@@ -28,7 +28,7 @@ describe("Copiloto Industrial Determinístico (USE AI Agents)", () => {
       agent: "marketing",
       question: "Qual drop tem maior ROAS?",
       sheets,
-      privateLabelOrders: INITIAL_PRIVATE_LABEL_ORDERS,
+      privateLabelOrders: pedidosSalvos(),
       lotesSummary: [],
       drops: campanhasSalvas(),
     });

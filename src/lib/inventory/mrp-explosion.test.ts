@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { INITIAL_PRIVATE_LABEL_ORDERS } from "@/lib/sales/private-label-queue";
+import { pedidosSalvos } from "@/test/pedidos-salvos";
 import { seedFor } from "@/lib/techsheet/store";
 import { buildMrpCsv, computeMrpNetExplosion, normalizeMaterialName } from "./mrp-explosion";
 
 describe("MRP I Explosão Líquida de Materiais", () => {
   it("calcula necessidade bruta, desconta estoque disponível e apura orçamento de compra líquida", () => {
     const summary = computeMrpNetExplosion({
-      orders: INITIAL_PRIVATE_LABEL_ORDERS,
+      orders: pedidosSalvos(),
       sheets: {
         DEV000006: seedFor("DEV000006"),
         "V24-001": seedFor("V24-001"),
@@ -26,7 +26,7 @@ describe("MRP I Explosão Líquida de Materiais", () => {
 
   it("marca cada linha com a origem do saldo: almoxarifado quando há saldo real", () => {
     const sheets = { DEV000006: seedFor("DEV000006") };
-    const semEstoque = computeMrpNetExplosion({ orders: INITIAL_PRIVATE_LABEL_ORDERS, sheets });
+    const semEstoque = computeMrpNetExplosion({ orders: pedidosSalvos(), sheets });
 
     // sem balance informado, nada é saldo real
     expect(semEstoque.provenance.hasRealStock).toBe(false);
@@ -36,7 +36,7 @@ describe("MRP I Explosão Líquida de Materiais", () => {
     // agora com um material realmente presente no almoxarifado
     const material = semEstoque.rows[0].materialName;
     const comEstoque = computeMrpNetExplosion({
-      orders: INITIAL_PRIVATE_LABEL_ORDERS,
+      orders: pedidosSalvos(),
       sheets,
       cloudBalancesByName: { [normalizeMaterialName(material)]: 999 },
     });
@@ -54,7 +54,7 @@ describe("MRP I Explosão Líquida de Materiais", () => {
 
   it("não confunde referência do BOM com saldo físico no CSV", () => {
     const summary = computeMrpNetExplosion({
-      orders: INITIAL_PRIVATE_LABEL_ORDERS,
+      orders: pedidosSalvos(),
       sheets: { DEV000006: seedFor("DEV000006") },
     });
     const csv = buildMrpCsv(summary);
@@ -69,7 +69,7 @@ describe("MRP I Explosão Líquida de Materiais", () => {
   });
 
   it("pedido sem ficha salva fica fora da explosão e é reportado", () => {
-    const orders = INITIAL_PRIVATE_LABEL_ORDERS.slice(0, 2);
+    const orders = pedidosSalvos().slice(0, 2);
     const semNenhuma = computeMrpNetExplosion({ orders, sheets: {} });
     expect(semNenhuma.rows).toHaveLength(0);
     expect(semNenhuma.totalPurchaseBudgetBrl).toBe(0);

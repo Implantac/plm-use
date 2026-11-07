@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { pedidosSalvos } from "@/test/pedidos-salvos";
 import {
-  INITIAL_PRIVATE_LABEL_ORDERS,
   buildBlindOrderProductionSheetHtml,
   clonePrivateLabelOrder,
   consolidateNominalRosterToGrade,
@@ -30,7 +30,7 @@ describe("Fila de Custos Private Label, Lista Nominal & Ficha Cega A4", () => {
   });
 
   it("clona pedido B2B preservando grade/operações/lista nominal e gera Ficha Cega sem vazar R$", () => {
-    const src = INITIAL_PRIVATE_LABEL_ORDERS[0]!;
+    const src = pedidosSalvos()[0]!;
     const evalSmall = evaluateOrderCosting(src);
     expect(evalSmall.totalPieces).toBe(8);
     expect(evalSmall.setupPerPieceBrl).toBeGreaterThan(20); // setup alto diluído em lote pequeno (8 pçs)

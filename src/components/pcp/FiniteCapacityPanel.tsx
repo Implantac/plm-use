@@ -12,7 +12,11 @@ import {
   sequenceOrdersEdd,
   type SchedulableOrderInput,
 } from "@/lib/pcp/finite-capacity-planner";
-import { sumNominalGrade, usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
+import {
+  pedidosOperacionais,
+  sumNominalGrade,
+  usePrivateLabelQueueStore,
+} from "@/lib/sales/private-label-queue";
 
 interface FiniteCapacityPanelProps {
   cloudOrders: Array<{
@@ -25,7 +29,7 @@ interface FiniteCapacityPanelProps {
 }
 
 export function FiniteCapacityPanel({ cloudOrders }: FiniteCapacityPanelProps) {
-  const plOrders = usePrivateLabelQueueStore((s) => s.orders);
+  const plOrders = pedidosOperacionais(usePrivateLabelQueueStore((s) => s.orders));
   const [sewingOperators, setSewingOperators] = useState(12);
 
   const combinedOrders = useMemo<SchedulableOrderInput[]>(() => {

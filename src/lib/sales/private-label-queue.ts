@@ -65,6 +65,12 @@ export interface PrivateLabelOrder {
   nominalRoster: NominalPersonEntry[];
   materials: CustomOrderMaterial[];
   operations: CustomOrderOperation[];
+  /**
+   * Onda 39. `true` só nos pedidos que o app traz de fábrica para mostrar o
+   * formato da Fila de Custos. Têm CNPJ, preço, materiais e nomes de papel:
+   * **não entram em faturamento, margem, MRP, capacidade, S&OP nem copiloto**.
+   */
+  demo?: boolean;
 }
 
 export interface EvaluatedOrderCosting {
@@ -298,6 +304,7 @@ function escapeXmlSafe(s: string): string {
 
 export const INITIAL_PRIVATE_LABEL_ORDERS: PrivateLabelOrder[] = [
   {
+    demo: true,
     id: "pl-1",
     orderNumber: "PD-2026-801",
     customerName: "Arena Esportes & Running Club",
@@ -373,6 +380,7 @@ export const INITIAL_PRIVATE_LABEL_ORDERS: PrivateLabelOrder[] = [
     ],
   },
   {
+    demo: true,
     id: "pl-2",
     orderNumber: "PD-2026-802",
     customerName: "AgroSul Cooperativa Corporativo",
@@ -443,6 +451,18 @@ interface PrivateLabelQueueState {
   setOrderStatus: (orderId: string, status: QueueOrderStatus) => void;
 }
 
+export const PEDIDO_DEMO_LABEL = "Pedido de demonstração — não entra em número operacional";
+
+/** Só pedidos criados/editados pela empresa. A vitrine fica de fora. */
+export function pedidosOperacionais(orders: PrivateLabelOrder[]): PrivateLabelOrder[] {
+  return orders.filter((o) => o.demo !== true);
+}
+
+/** Qualquer edição humana promove o pedido da vitrine a portfólio real. */
+function promover(o: PrivateLabelOrder): PrivateLabelOrder {
+  return { ...o, demo: false };
+}
+
 export const usePrivateLabelQueueStore = create<PrivateLabelQueueState>()(
   persist(
     (set, get) => ({
@@ -450,20 +470,20 @@ export const usePrivateLabelQueueStore = create<PrivateLabelQueueState>()(
       cloneOrder: (id) => {
         const src = get().orders.find((o) => o.id === id);
         if (!src) return null;
-        const cloned = clonePrivateLabelOrder(src, get().orders.length + 1);
+        const cloned = promover(clonePrivateLabelOrder(src, get().orders.length + 1));
         set((s) => ({ orders: [cloned, ...s.orders] }));
         return cloned;
       },
       updateOrderPricing: (id, unitSellingPriceBrl) =>
         set((s) => ({
-          orders: s.orders.map((o) => (o.id === id ? { ...o, unitSellingPriceBrl } : o)),
+          orders: s.orders.map((o) => (o.id === id ? { ...promover(o), unitSellingPriceBrl } : o)),
         })),
       updateOperationFields: (orderId, opId, patch) =>
         set((s) => ({
           orders: s.orders.map((o) =>
             o.id === orderId
               ? {
-                  ...o,
+                  ...promover(o),
                   status: o.status === "Custo Aprovado" ? "Em Detalhamento" : o.status,
                   operations: o.operations.map((op) => (op.id === opId ? { ...op, ...patch } : op)),
                 }
@@ -475,12 +495,12 @@ export const usePrivateLabelQueueStore = create<PrivateLabelQueueState>()(
           orders: s.orders.map((o) => {
             if (o.id !== orderId) return o;
             const { grade } = consolidateNominalRosterToGrade(roster);
-            return { ...o, nominalRoster: roster, grade };
+            return { ...promover(o), nominalRoster: roster, grade };
           }),
         })),
       setOrderStatus: (orderId, status) =>
         set((s) => ({
-          orders: s.orders.map((o) => (o.id === orderId ? { ...o, status } : o)),
+          orders: s.orders.map((o) => (o.id === orderId ? { ...promover(o), status } : o)),
         })),
     }),
     { name: "use-moda:private-label-orders-v1" },

@@ -3,7 +3,11 @@
 // (Fichas Técnicas, Fila de Custos Private Label, PCP e Campanhas/Drops GTM),
 // garantindo resposta imediata mesmo offline ou sem chave externa de LLM.
 
-import { evaluateOrderCosting, type PrivateLabelOrder } from "@/lib/sales/private-label-queue";
+import {
+  evaluateOrderCosting,
+  pedidosOperacionais,
+  type PrivateLabelOrder,
+} from "@/lib/sales/private-label-queue";
 import {
   campanhasOperacionais,
   computeCampaignRoas,
@@ -27,9 +31,10 @@ export function runDeterministicAgentAnalysis(input: CopilotSnapshotInput): stri
   // Onda 38: mesmo que um chamador esqueça de filtrar, a vitrine GTM não vira
   // ROAS de diagnóstico. `sheets` já chega sem `seedFor` da rota de AI Agents.
   const drops = campanhasOperacionais(input.drops);
+  const pedidos = pedidosOperacionais(input.privateLabelOrders);
 
   if (input.agent === "engenharia") {
-    const evaluatedOrders = input.privateLabelOrders.map((o) => ({
+    const evaluatedOrders = pedidos.map((o) => ({
       order: o,
       ev: evaluateOrderCosting(o),
     }));
@@ -54,7 +59,9 @@ export function runDeterministicAgentAnalysis(input: CopilotSnapshotInput): stri
                 `${order.orderNumber} (${order.productName}, ${ev.totalPieces} pçs) opera com margem real de **${ev.realMarginPct?.toFixed(1) ?? "0"}%** (meta ${order.minMarginPct}%) devido ao setup de R$ ${ev.setupPerPieceBrl.toFixed(2)}/pç — preço mínimo recomendado: **R$ ${ev.suggestedMinPriceBrl.toFixed(2)}**`,
             )
             .join("; ")}.`
-        : "• Todos os pedidos da Fila Private Label atingem a meta mínima de margem industrial.",
+        : pedidos.length === 0
+          ? "• Sem pedidos B2B salvos: margem industrial não apurável. Os pedidos de demonstração não entram na conta."
+          : "• Todos os pedidos da Fila Private Label atingem a meta mínima de margem industrial.",
       `• **Recomendação Técnica p/ "${input.question.slice(0, 60)}"**: diluir setup de sublimação/bordado em lotes ≥ 30 peças ou aplicar taxa destacada de clichê/matriz B2B.`,
     ];
     return lines.join("\n\n");

@@ -16,6 +16,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { campanhasSalvas } from "@/test/campanhas-salvas";
+import { pedidosSalvos } from "@/test/pedidos-salvos";
 import { computeLiveSopSnapshot } from "@/lib/analytics/live-sop";
 import { INITIAL_PRIVATE_LABEL_ORDERS } from "@/lib/sales/private-label-queue";
 import { runDeterministicAgentAnalysis } from "@/lib/ai/deterministic-copilot";
@@ -77,7 +78,7 @@ describe("Onda 38 — as campanhas de fábrica são vitrine, não portfólio", (
 
   it("o S&OP A4 não herda o ROAS e a receita de papel", () => {
     const snap = computeLiveSopSnapshot({
-      orders: INITIAL_PRIVATE_LABEL_ORDERS,
+      orders: pedidosSalvos(),
       campaigns: INITIAL_GTM_CAMPAIGNS,
       serviceOrders: [],
     });

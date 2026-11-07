@@ -10,7 +10,7 @@ import {
   computeMrpNetExplosion,
 } from "@/lib/inventory/mrp-explosion";
 import { useStockBalancesByName } from "@/hooks/use-stock";
-import { usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
+import { pedidosOperacionais, usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
 import { brl } from "@/lib/sales/types";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 
@@ -19,7 +19,7 @@ interface MrpNetExplosionPanelProps {
 }
 
 export function MrpNetExplosionPanel({ cloudBalancesByName }: MrpNetExplosionPanelProps) {
-  const orders = usePrivateLabelQueueStore((s) => s.orders);
+  const orders = pedidosOperacionais(usePrivateLabelQueueStore((s) => s.orders));
   const sheets = useTechSheetStore((s) => s.data);
   // Saldo real do almoxarifado (`stock_balance`, já líquido de reservas ativas).
   // Sem isso o motor caía em saldos de referência do BOM e o painel apresentava

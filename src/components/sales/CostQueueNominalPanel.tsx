@@ -178,6 +178,15 @@ export function CostQueueNominalPanel() {
                       <Badge variant="outline" className={`text-[10px] ${STATUS_STYLE[o.status]}`}>
                         {o.status}
                       </Badge>
+                      {o.demo && (
+                        <Badge
+                          variant="outline"
+                          title="Pedido de demonstração — não entra em número operacional"
+                          className="text-[10px] border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                        >
+                          Demonstração
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-2xs text-muted-foreground mt-0.5">
                       Cliente: <strong className="text-foreground">{o.customerName}</strong> (CNPJ{" "}

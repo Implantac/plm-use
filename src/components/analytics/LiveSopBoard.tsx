@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { buildExecutiveSopReportHtml, computeLiveSopSnapshot } from "@/lib/analytics/live-sop";
-import { usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
+import { pedidosOperacionais, usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
 import { brl } from "@/lib/sales/types";
 import { useOutsourcingStore } from "@/lib/techsheet/outsourcing-os";
 import { campanhasOperacionais, useResearchGtmStore } from "@/lib/techsheet/research-gtm";
 
 export function LiveSopBoard() {
-  const orders = usePrivateLabelQueueStore((s) => s.orders);
+  const ordersRaw = usePrivateLabelQueueStore((s) => s.orders);
+  // Onda 39: os 2 pedidos de fábrica geravam R$ 9.867,20 de carteira B2B.
+  const orders = pedidosOperacionais(ordersRaw);
+  const soVitrinePedidos = orders.length === 0;
   const campaigns = useResearchGtmStore((s) => s.campaigns);
   // Onda 38: sem nenhum Drop da empresa, receita e ROAS do S&OP são `—`.
   const soVitrine = campanhasOperacionais(campaigns).length === 0;
@@ -40,6 +43,15 @@ export function LiveSopBoard() {
   return (
     <Card className="border-border bg-card rounded-xl mb-6">
       <CardContent className="p-4 space-y-3">
+        {soVitrinePedidos && (
+          <p
+            data-testid="sop-sem-pedidos"
+            className="text-[10px] text-amber-700 dark:text-amber-300"
+          >
+            Pedidos de demonstração não entram na carteira B2B: faturamento, margem ponderada e
+            volume não são apuráveis sem um pedido cadastrado pela empresa.
+          </p>
+        )}
         {soVitrine && (
           <p data-testid="sop-sem-drops" className="text-[10px] text-amber-700 dark:text-amber-300">
             Campanhas de demonstração não entram no Book Executivo S&OP: receita e ROAS de Drops não
@@ -84,7 +96,7 @@ export function LiveSopBoard() {
               Carteira B2B Ativa
             </span>
             <strong className="font-mono text-sm text-primary">
-              {brl(snap.b2bOrderRevenueBrl)}
+              {soVitrinePedidos ? "—" : brl(snap.b2bOrderRevenueBrl)}
             </strong>
           </div>
           <div className="rounded-lg border border-border/80 bg-muted/25 p-3">
@@ -92,7 +104,7 @@ export function LiveSopBoard() {
               Margem Pond. Real
             </span>
             <strong className="font-mono text-sm text-emerald-600 dark:text-emerald-400">
-              {snap.b2bWeightedMarginPct.toFixed(1)}%
+              {soVitrinePedidos ? "—" : `${snap.b2bWeightedMarginPct.toFixed(1)}%`}
             </strong>
           </div>
           <div className="rounded-lg border border-border/80 bg-muted/25 p-3">
@@ -100,7 +112,7 @@ export function LiveSopBoard() {
               Volume Carteira
             </span>
             <strong className="font-mono text-sm text-foreground">
-              {snap.totalActivePiecesB2b} pçs
+              {soVitrinePedidos ? "—" : `${snap.totalActivePiecesB2b} pçs`}
             </strong>
           </div>
           <div className="rounded-lg border border-border/80 bg-muted/25 p-3">

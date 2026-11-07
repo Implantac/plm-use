@@ -7,6 +7,7 @@ import {
   evaluateOrderCosting,
   sumNominalGrade,
   type PrivateLabelOrder,
+  pedidosOperacionais,
 } from "@/lib/sales/private-label-queue";
 import type { ExternalServiceOrder } from "@/lib/techsheet/outsourcing-os";
 import { computeGtmPortfolioSummary, type GtmDropCampaign } from "@/lib/techsheet/research-gtm";
@@ -19,6 +20,10 @@ export interface LiveSopSnapshot {
   sewingUtilizationPct: number;
   outsourcedPiecesInFlight: number;
   totalActivePiecesB2b: number;
+  /** Onda 39: sem pedido próprio, carteira/margem/volume são `—`, não zero. */
+  apuravelB2b: boolean;
+  /** Onda 38: sem Drop próprio, receita/ROAS GTM são `—`, não zero. */
+  apuravelGtm: boolean;
 }
 
 function round2(v: number): number {
@@ -30,11 +35,15 @@ export function computeLiveSopSnapshot(params: {
   campaigns: GtmDropCampaign[];
   serviceOrders: ExternalServiceOrder[];
 }): LiveSopSnapshot {
+  // Onda 39: os 2 pedidos de fábrica têm CNPJ e preço de papel e geravam
+  // R$ 9.867,20 de "carteira B2B" + 112 peças no Book Executivo. Filtrar AQUI
+  // protege de uma vez o painel, o A4 e o cálculo de capacidade finita.
+  const pedidos = pedidosOperacionais(params.orders);
   let b2bOrderRevenueBrl = 0;
   let b2bIndustrialCostBrl = 0;
   let totalActivePiecesB2b = 0;
 
-  for (const o of params.orders) {
+  for (const o of pedidos) {
     const ev = evaluateOrderCosting(o);
     b2bOrderRevenueBrl += ev.grossRevenueBrl;
     b2bIndustrialCostBrl += ev.totals.industrialCost;
@@ -49,7 +58,7 @@ export function computeLiveSopSnapshot(params: {
   const gtm = computeGtmPortfolioSummary(params.campaigns);
 
   const crpLoads = evaluateFiniteSectorCapacity(
-    params.orders.map((o) => ({
+    pedidos.map((o) => ({
       id: o.id,
       orderNumber: o.orderNumber,
       refCode: o.refCode,
@@ -76,10 +85,30 @@ export function computeLiveSopSnapshot(params: {
     sewingUtilizationPct: sewing?.utilizationPct ?? 0,
     outsourcedPiecesInFlight,
     totalActivePiecesB2b,
+    apuravelB2b: pedidos.length > 0,
+    apuravelGtm: gtm.totalCampaigns > 0,
   };
 }
 
 export function buildExecutiveSopReportHtml(snap: LiveSopSnapshot): string {
+  const carteira = snap.apuravelB2b
+    ? `R$ ${snap.b2bOrderRevenueBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+    : "—";
+  const margem = snap.apuravelB2b ? `${snap.b2bWeightedMarginPct.toFixed(1)}%` : "—";
+  const volume = snap.apuravelB2b ? `${snap.totalActivePiecesB2b} peças` : "—";
+  const receitaGtm = snap.apuravelGtm
+    ? `R$ ${snap.gtmAttributedSalesBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+    : "—";
+  const roasGtm = snap.apuravelGtm ? `${snap.gtmBlendedRoas.toFixed(2)}x` : "—";
+  const aviso =
+    !snap.apuravelB2b || !snap.apuravelGtm
+      ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
+    <strong>Book S&OP parcialmente não apurável.</strong>
+    ${!snap.apuravelB2b ? "Sem pedido B2B salvo: carteira, margem e volume não são apurados. " : ""}
+    ${!snap.apuravelGtm ? "Sem Drop GTM salvo: receita atribuída e ROAS não são apurados. " : ""}
+    Pedidos e campanhas de demonstração não entram na consolidação.
+  </div>`
+      : "";
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -100,12 +129,13 @@ export function buildExecutiveSopReportHtml(snap: LiveSopSnapshot): string {
     <div style="font-size:9px;font-weight:700">DIRETORIA S&OP · CONSOLIDAÇÃO AUTOMÁTICA EM TEMPO REAL</div>
     <h1>Painel Integrado Comercial × Industrial × GTM</h1>
   </div>
+  ${aviso}
   <div class="grid">
-    <div class="kpi"><div class="lbl">Carteira B2B Ativa</div><div class="val">R$ ${snap.b2bOrderRevenueBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div></div>
-    <div class="kpi"><div class="lbl">Margem Industrial Ponderada</div><div class="val">${snap.b2bWeightedMarginPct.toFixed(1)}%</div></div>
-    <div class="kpi"><div class="lbl">Volume B2B</div><div class="val">${snap.totalActivePiecesB2b} peças</div></div>
-    <div class="kpi"><div class="lbl">Receita GTM Atribuída</div><div class="val">R$ ${snap.gtmAttributedSalesBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div></div>
-    <div class="kpi"><div class="lbl">ROAS Blended Real</div><div class="val">${snap.gtmBlendedRoas.toFixed(2)}x</div></div>
+    <div class="kpi"><div class="lbl">Carteira B2B Ativa</div><div class="val">${carteira}</div></div>
+    <div class="kpi"><div class="lbl">Margem Industrial Ponderada</div><div class="val">${margem}</div></div>
+    <div class="kpi"><div class="lbl">Volume B2B</div><div class="val">${volume}</div></div>
+    <div class="kpi"><div class="lbl">Receita GTM Atribuída</div><div class="val">${receitaGtm}</div></div>
+    <div class="kpi"><div class="lbl">ROAS Blended Real</div><div class="val">${roasGtm}</div></div>
     <div class="kpi"><div class="lbl">Costura Interna / Em Facção</div><div class="val">${snap.sewingUtilizationPct}% · ${snap.outsourcedPiecesInFlight} pçs</div></div>
   </div>
 </body>

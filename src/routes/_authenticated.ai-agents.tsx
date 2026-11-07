@@ -29,7 +29,7 @@ import {
 import { fetchLiveContext } from "@/lib/ai/live-context.functions";
 import { resumoInfluencers, useInfluencersStore } from "@/lib/influencers/store";
 import { usePCPStore } from "@/lib/pcp/store";
-import { usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
+import { pedidosOperacionais, usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
 import { campanhasOperacionais, useResearchGtmStore } from "@/lib/techsheet/research-gtm";
 import { operationalCodes } from "@/lib/techsheet/provenance";
 import { useTechSheetStore } from "@/lib/techsheet/store";
@@ -113,7 +113,7 @@ function AIAgentsPage() {
   const influencers = useInfluencersStore((s) => s.influencers);
   const rawSheets = useTechSheetStore((s) => s.data);
   const materializadas = useTechSheetStore((s) => s.materializadas);
-  const plOrders = usePrivateLabelQueueStore((s) => s.orders);
+  const plOrders = pedidosOperacionais(usePrivateLabelQueueStore((s) => s.orders));
   const campanhas = useResearchGtmStore((s) => s.campaigns);
 
   // Onda 38. A tela montava `{ V24-001: seedFor(...), DEV000006: seedFor(...) }`
@@ -125,7 +125,7 @@ function AIAgentsPage() {
   const temFichaSalva = codigosSalvos.length > 0;
   // As 3 campanhas de fábrica têm R$ 218.400 de "vendas atribuídas" de papel.
   const drops = campanhasOperacionais(campanhas);
-  const soVitrine = !temFichaSalva && drops.length === 0;
+  const soVitrine = !temFichaSalva && drops.length === 0 && plOrders.length === 0;
   const origemAnalise = soVitrine ? ("referencia" as const) : ("salva" as const);
 
   function computeLocalDeterministic(question: string): string {
@@ -260,7 +260,11 @@ function AIAgentsPage() {
           value: temFichaSalva ? String(Object.keys(sheets).length) : "—",
           detail: temFichaSalva ? "BOM + SAM" : "sem ficha salva",
         },
-        { label: "Fila Custos", value: `${plOrders.length} pedidos`, detail: "margem real" },
+        {
+          label: "Fila Custos",
+          value: plOrders.length > 0 ? `${plOrders.length} pedidos` : "—",
+          detail: plOrders.length > 0 ? "margem real" : "margem não apurável",
+        },
         {
           label: "Drops GTM",
           value: drops.length > 0 ? `${drops.length} ativos` : "—",

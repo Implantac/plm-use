@@ -3,7 +3,11 @@
 // e os saldos livres de Almoxarifado para apurar Necessidade Bruta, Ruptura Líquida
 // e emitir Requisição Automática de Compras (CSV + Guia A4).
 
-import { sumNominalGrade, type PrivateLabelOrder } from "@/lib/sales/private-label-queue";
+import {
+  pedidosOperacionais,
+  sumNominalGrade,
+  type PrivateLabelOrder,
+} from "@/lib/sales/private-label-queue";
 import type { TechSheetData } from "@/lib/techsheet/store";
 
 export interface MrpNetRequirementRow {
@@ -96,7 +100,8 @@ export function computeMrpNetExplosion(params: {
   // demonstração em necessidade de compra.
   const pedidosSemFicha: string[] = [];
 
-  for (const order of params.orders) {
+  // Onda 39: pedidos de demonstração não viram necessidade de compra.
+  for (const order of pedidosOperacionais(params.orders)) {
     const pieces = Math.max(1, sumNominalGrade(order.grade));
     const sheet = params.sheets[order.refCode];
     if (!sheet) {
