@@ -32,7 +32,9 @@ import { toast } from "sonner";
 import { OutsourcingServiceOrderPanel } from "@/components/pcp/OutsourcingServiceOrderPanel";
 import { SupplierScoreboard } from "@/components/suppliers/SupplierScoreboard";
 import {
+  PARCEIRO_DEMO_LABEL,
   computePartnerMetrics,
+  parceirosOperacionais,
   useOutsourcingStore,
   type ComplianceBadge,
   type IndustrialPartner,
@@ -100,10 +102,16 @@ function SuppliersPage() {
       }));
   }, [partners, serviceOrders, sheetsMap, searchTerm]);
 
+  // Onda 42: os 4 parceiros de fábrica têm CNPJ, "Certificado ABVTEX" e
+  // scores AQL/OTIF inventados. Não são homologação e não geram OTIF médio.
+  const parceirosReais = useMemo(() => parceirosOperacionais(partners), [partners]);
+  const soVitrine = parceirosReais.length === 0;
   const avgOtif = useMemo(() => {
-    if (partners.length === 0) return 0;
-    return Math.round(partners.reduce((acc, p) => acc + p.otifScore, 0) / partners.length);
-  }, [partners]);
+    if (parceirosReais.length === 0) return null;
+    return Math.round(
+      parceirosReais.reduce((acc, p) => acc + p.otifScore, 0) / parceirosReais.length,
+    );
+  }, [parceirosReais]);
 
   const totalOpenOs = useMemo(
     () => enriched.reduce((acc, r) => acc + r.metrics.openOrdersCount, 0),
@@ -211,18 +219,36 @@ function SuppliersPage() {
       onSearch={setSearchTerm}
       searchPlaceholder="Buscar facção, lavanderia, tecelagem, CNPJ ou UF"
       metrics={[
-        { label: "Parceiros Ativos", value: String(partners.length), detail: "homologados" },
+        {
+          label: "Parceiros Ativos",
+          value: soVitrine ? "—" : String(parceirosReais.length),
+          detail: soVitrine ? "só demonstração" : "homologados",
+        },
         { label: "OS em Aberto", value: String(totalOpenOs), detail: "industrialização" },
         {
           label: "Peças em Terceiros",
           value: totalPiecesExternal.toLocaleString("pt-BR"),
           detail: "saldo remessa",
         },
-        { label: "OTIF Médio", value: `${avgOtif}%`, detail: "entrega no prazo" },
+        {
+          label: "OTIF Médio",
+          value: avgOtif === null ? "—" : `${avgOtif}%`,
+          detail: avgOtif === null ? "não apurável" : "entrega no prazo",
+        },
       ]}
     >
       <OutsourcingServiceOrderPanel />
 
+      {soVitrine && (
+        <div
+          data-testid="supplier-so-vitrine"
+          className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300"
+        >
+          <strong>{partners.length} fornecedores de demonstração.</strong> {PARCEIRO_DEMO_LABEL}.
+          Cadastre ou edite um parceiro para que o ranking, o OTIF médio e os documentos de remessa
+          passem a ser apurados.
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {enriched.map(({ partner: sup, metrics: m }) => (
           <Card
@@ -254,8 +280,17 @@ function SuppliersPage() {
                     <h3 className="text-base font-bold text-foreground tracking-tight">
                       {sup.name}
                     </h3>
-                    {sup.compliance === "Certificado ABVTEX" && (
+                    {sup.compliance === "Certificado ABVTEX" && !sup.demo && (
                       <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    )}
+                    {sup.demo && (
+                      <Badge
+                        variant="outline"
+                        title={PARCEIRO_DEMO_LABEL}
+                        className="border-amber-500/40 bg-amber-500/10 text-[10px] text-amber-700 dark:text-amber-300"
+                      >
+                        Demonstração
+                      </Badge>
                     )}
                   </div>
                   <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-primary">
@@ -267,11 +302,15 @@ function SuppliersPage() {
                 <div className="flex items-center justify-end gap-1 text-amber-500 mb-0.5">
                   <Star className="w-3.5 h-3.5 fill-current" />
                   <span className="text-sm font-bold text-foreground font-mono">
-                    {m.overallScore} ({m.tier})
+                    {m.apuravel ? `${m.overallScore} (${m.tier})` : "—"}
                   </span>
                 </div>
-                <Badge variant="outline" className="text-[10px]">
-                  {sup.compliance}
+                <Badge
+                  variant="outline"
+                  className="text-[10px]"
+                  title={sup.demo ? PARCEIRO_DEMO_LABEL : undefined}
+                >
+                  {sup.demo ? "Certificação de demonstração" : sup.compliance}
                 </Badge>
               </div>
             </div>

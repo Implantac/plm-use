@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { seedFor } from "./store";
+import { parceirosSalvos } from "@/test/parceiros-salvos";
 import {
-  INITIAL_PARTNERS,
   INITIAL_SERVICE_ORDERS,
   buildBlindServiceOrderHtml,
   buildRemessaNfeXml400,
@@ -12,8 +12,8 @@ import {
 describe("Terceirização Industrial · Facções, Lavanderia & Remessa CFOP 5901/5902/5124", () => {
   it("calcula saldo em poder de terceiros, CFOP estadual (5901/5902/5124) e interestadual (6901/6902/6124)", () => {
     const doc = seedFor("DEV000006");
-    const partnerPr = INITIAL_PARTNERS[0]!; // PR
-    const partnerSc = INITIAL_PARTNERS[2]!; // SC
+    const partnerPr = parceirosSalvos()[0]!; // PR
+    const partnerSc = parceirosSalvos()[2]!; // SC
 
     const mPr = computeServiceOrderMetrics(INITIAL_SERVICE_ORDERS[0]!, partnerPr, doc, "PR");
     expect(mPr.cfopRemessa).toBe("5901");
@@ -29,7 +29,7 @@ describe("Terceirização Industrial · Facções, Lavanderia & Remessa CFOP 590
 
   it("apura glosa financeira quando quebra + 2ª qualidade excedem a franquia técnica contratual", () => {
     const doc = seedFor("U25-014");
-    const partnerLav = INITIAL_PARTNERS[1]!;
+    const partnerLav = parceirosSalvos()[1]!;
     // 400 enviadas, franquia 1% = 4 pçs; retorno 2ª=5 + perda=3 -> total avaria 8 -> excesso 4 pçs
     const m = computeServiceOrderMetrics(INITIAL_SERVICE_ORDERS[1]!, partnerLav, doc, "PR");
     expect(m.excessLossPieces).toBe(4);
@@ -44,7 +44,7 @@ describe("Terceirização Industrial · Facções, Lavanderia & Remessa CFOP 590
       ...seedFor("DEV000006"),
       etiquetagem: { ...seedFor("DEV000006").etiquetagem!, ncm: "6109.10.00" },
     };
-    const partner = INITIAL_PARTNERS[0]!;
+    const partner = parceirosSalvos()[0]!;
     const os = INITIAL_SERVICE_ORDERS[0]!;
 
     const xml = buildRemessaNfeXml400(os, partner, doc);

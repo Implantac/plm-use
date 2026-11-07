@@ -2,7 +2,12 @@ import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, ShieldCheck, Clock, DollarSign, Star, Gauge } from "lucide-react";
-import { computePartnerMetrics, useOutsourcingStore } from "@/lib/techsheet/outsourcing-os";
+import {
+  PARCEIRO_DEMO_LABEL,
+  computePartnerMetrics,
+  parceirosOperacionais,
+  useOutsourcingStore,
+} from "@/lib/techsheet/outsourcing-os";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 
 const tierStyle = (tier: "A+" | "A" | "B" | "C") =>
@@ -18,6 +23,10 @@ export function SupplierScoreboard() {
   const partners = useOutsourcingStore((s) => s.partners);
   const serviceOrders = useOutsourcingStore((s) => s.serviceOrders);
   const sheetsMap = useTechSheetStore((s) => s.data);
+
+  // Onda 42: sem esta declaração, a tabela ordenava 4 fornecedores de papel
+  // por scores AQL/OTIF inventados ("93 · A+ ... 88 · A").
+  const soVitrine = parceirosOperacionais(partners).length === 0;
 
   const rows = useMemo(() => {
     return partners
@@ -36,9 +45,18 @@ export function SupplierScoreboard() {
           OTIF · Capacidade Tomada
         </h3>
         <Badge variant="outline" className="text-2xs font-mono">
-          {rows.length} parceiros auditados
+          {soVitrine ? "—" : `${rows.length} parceiros auditados`}
         </Badge>
       </div>
+      {soVitrine && (
+        <p
+          data-testid="scoreboard-so-vitrine"
+          className="mb-3 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300"
+        >
+          {PARCEIRO_DEMO_LABEL}. Scores, CNPJ e certificações abaixo são de demonstração: o ranking
+          de homologação não é apurável.
+        </p>
+      )}
       <div className="rounded-lg border border-border/60 overflow-x-auto">
         <table className="w-full text-left">
           <thead className="border-b border-border/60 bg-muted/50 text-2xs uppercase tracking-widest text-muted-foreground">
@@ -79,24 +97,30 @@ export function SupplierScoreboard() {
                 <td className="px-4 py-3">
                   <div className="font-semibold">{r.name}</div>
                   <div className="text-2xs text-muted-foreground font-mono">
-                    {r.city}/{r.uf} · {r.compliance}
+                    {r.city}/{r.uf} · {r.demo ? "certificação de demonstração" : r.compliance}
                   </div>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{r.category}</td>
-                <td className="px-4 py-3 font-mono">{r.qualityScore}%</td>
-                <td className="px-4 py-3 font-mono">{r.otifScore}%</td>
-                <td className="px-4 py-3 font-mono">{r.costScore}%</td>
+                <td className="px-4 py-3 font-mono">{m.apuravel ? `${r.qualityScore}%` : "—"}</td>
+                <td className="px-4 py-3 font-mono">{m.apuravel ? `${r.otifScore}%` : "—"}</td>
+                <td className="px-4 py-3 font-mono">{m.apuravel ? `${r.costScore}%` : "—"}</td>
                 <td className="px-4 py-3 font-mono">
                   {r.category === "Tecelagem & Malharia" || r.category === "Aviamentos"
                     ? "Insumo"
                     : `${m.capacityUtilizationPct}% (${m.piecesInPossession} pç)`}
                 </td>
-                <td className="px-4 py-3 font-mono">{r.reliabilityScore}%</td>
+                <td className="px-4 py-3 font-mono">
+                  {m.apuravel ? `${r.reliabilityScore}%` : "—"}
+                </td>
                 <td className="px-4 py-3 text-right">
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-2xs font-bold border ${tierStyle(m.tier)}`}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-2xs font-bold border ${
+                      m.apuravel
+                        ? tierStyle(m.tier)
+                        : "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                    }`}
                   >
-                    {m.overallScore} · {m.tier}
+                    {m.apuravel ? `${m.overallScore} · ${m.tier}` : "—"}
                   </span>
                 </td>
               </tr>

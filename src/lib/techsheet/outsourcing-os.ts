@@ -36,6 +36,12 @@ export interface IndustrialPartner {
   reliabilityScore: number; // 0-100
   leadTimeDays: number;
   contactEmail: string;
+  /**
+   * Onda 42. `true` só nos parceiros que o app traz de fábrica: têm CNPJ,
+   * certificação ABVTEX e scores AQL/OTIF INVENTADOS. Não podem gerar um
+   * ranking de homologação nem assinar XML de NF-e de remessa / Guia A4.
+   */
+  demo?: boolean;
 }
 
 export type ExternalServiceType =
@@ -66,6 +72,8 @@ export interface ExternalServiceOrder {
 }
 
 export interface ComputedPartnerMetrics {
+  /** Onda 42: sem `apuravel`, `overallScore`/`tier` não devem ser exibidos. */
+  apuravel: boolean;
   overallScore: number;
   tier: "A+" | "A" | "B" | "C";
   allocatedMinutes: number;
@@ -187,11 +195,37 @@ export function computeServiceOrderMetrics(
   };
 }
 
+export const PARCEIRO_DEMO_LABEL =
+  "Fornecedor de demonstração — CNPJ, certificação e scores não são reais";
+
+/** Só parceiros cadastrados/editados pela empresa. A vitrine fica de fora. */
+export function parceirosOperacionais(partners: IndustrialPartner[]): IndustrialPartner[] {
+  return partners.filter((p) => p.demo !== true);
+}
+
+/** Qualquer edição humana promove o parceiro a cadastro real. */
+function promoverParceiro(p: IndustrialPartner): IndustrialPartner {
+  return { ...p, demo: false };
+}
+
 export function computePartnerMetrics(
   partner: IndustrialPartner,
   orders: ExternalServiceOrder[],
   sheetsMap: Record<string, TechSheetData>,
 ): ComputedPartnerMetrics {
+  // Onda 42: os 4 parceiros de fábrica geravam ranking 93/A+ > 92/A+ >
+  // 90/A+ > 88/A com scores e CNPJs inventados. Ausência NÃO vira zero lido.
+  if (partner.demo === true) {
+    return {
+      apuravel: false,
+      overallScore: 0,
+      tier: "C",
+      allocatedMinutes: 0,
+      capacityUtilizationPct: 0,
+      openOrdersCount: 0,
+      piecesInPossession: 0,
+    };
+  }
   const { overallScore, tier } = computePartnerScore(partner);
   const partnerOrders = orders.filter((o) => o.partnerId === partner.id);
 
@@ -219,6 +253,7 @@ export function computePartnerMetrics(
       : Math.min(100, Math.round((allocatedMinutes / cap) * 100));
 
   return {
+    apuravel: true,
     overallScore,
     tier,
     allocatedMinutes: round2(allocatedMinutes),
@@ -376,6 +411,7 @@ export function buildBlindServiceOrderHtml(
 
 export const INITIAL_PARTNERS: IndustrialPartner[] = [
   {
+    demo: true,
     id: "11111111-1111-4111-8111-111111111111",
     name: "Facção Costura Fina Vale",
     cnpj: "19.840.220/0001-31",
@@ -393,6 +429,7 @@ export const INITIAL_PARTNERS: IndustrialPartner[] = [
     contactEmail: "pcp@costurafinavale.ind.br",
   },
   {
+    demo: true,
     id: "22222222-2222-4222-8222-222222222222",
     name: "Lavanderia EcoWash Têxtil",
     cnpj: "24.115.908/0001-77",
@@ -410,6 +447,7 @@ export const INITIAL_PARTNERS: IndustrialPartner[] = [
     contactEmail: "receitas@ecowashtextil.com.br",
   },
   {
+    demo: true,
     id: "33333333-3333-4333-8333-333333333333",
     name: "Estamparia & Bordados Blumenau",
     cnpj: "08.774.310/0001-05",
@@ -427,6 +465,7 @@ export const INITIAL_PARTNERS: IndustrialPartner[] = [
     contactEmail: "os@bordadosblumenau.com.br",
   },
   {
+    demo: true,
     id: "44444444-4444-4444-8444-444444444444",
     name: "Têxtil Camargo Malharia",
     cnpj: "61.402.880/0001-92",
@@ -540,8 +579,8 @@ export const useOutsourcingStore = create<OutsourcingStoreState>()(
           const exists = s.partners.some((p) => p.id === partner.id);
           return {
             partners: exists
-              ? s.partners.map((p) => (p.id === partner.id ? partner : p))
-              : [partner, ...s.partners],
+              ? s.partners.map((p) => (p.id === partner.id ? promoverParceiro(partner) : p))
+              : [promoverParceiro(partner), ...s.partners],
           };
         }),
       deletePartner: (id) =>

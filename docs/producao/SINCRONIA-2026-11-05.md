@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 18ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 19ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,21 +10,22 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 41** — `334d672`                | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 38** — `index-BcTzKh6M.js`      | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 42**                            | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 41** — `index-HH9GNbDa.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** **nada no ar e nada no banco** pela
-segunda rodada seguida. O bundle permanece **`index-BcTzKh6M.js` (221 chunks)**
-com `gtm-so-vitrine` 1 vez e `sop-sem-pedidos`, `sop-sem-faccao`,
-`lgpd-so-vitrine`, `briefing-so-vitrine` = **0**. A medição encontrou a prova
-direta do furo que a Onda 41 fecha: **`"Helena Prado"` 1 vez** e
-**`"Aprovou matriz de setup"` 1 vez** no bundle publicado, com
-`"Trilha LGPD não auditável"` = 0 — o CSV e o Relatório de Governança A4 no ar
-exportam eventos de auditoria inventados. O repo avançou para a **Onda 41**:
-são agora **três ondas** não publicadas (39, 40 e 41). `DEV000006` segue em
-**27** ocorrências. O banco continua sem as migrações (18ª medição:
-`PGRST205` na view e `PGRST202` nas três RPCs).
+**O que mudou desde a medição anterior:** **o ar avançou de novo, sem aviso
+do dono**. Saiu `index-BcTzKh6M.js` e entrou **`index-HH9GNbDa.js` (221
+chunks)**. `sop-sem-pedidos` **1**, `sop-sem-faccao` **1**,
+`lgpd-so-vitrine` **1** e `briefing-so-vitrine` **1**: as **Ondas 39, 40 e 41
+foram publicadas juntas** depois de duas rodadas paradas. `"Helena Prado"`
+ainda aparece 1 vez, o que é esperado — a vitrine continua na tela, mas fora
+do CSV/A4 e com selo. `supplier-so-vitrine` e `scoreboard-so-vitrine` = **0**:
+a **Onda 42** ainda não foi publicada. `"Certificado ABVTEX"` aparece **8
+vezes** e o CNPJ `19.840.220/0001-31` 1 vez — a vitrine de fornecedores segue
+sem declaração no ar. `DEV000006` permanece em **27** ocorrências. O banco
+continua sem as migrações (19ª medição: `PGRST205` na view e `PGRST202` nas
+três RPCs).
 
 ---
 
@@ -63,16 +64,17 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 36   | `sem engenharia custeada`                       | 3           | ✅      |
 | 37   | `reserva-migracao-pendente`                     | 1           | ✅      |
 | 38   | `gtm-so-vitrine` / `sop-sem-drops`              | 1           | ✅      |
-| 39   | `sop-sem-pedidos`                               | **0**       | ❌      |
-| 40   | `sop-sem-faccao` / `apuravelFaccao`             | **0**       | ❌      |
-| 41   | `lgpd-so-vitrine` / `Trilha LGPD não auditável` | **0**       | ❌      |
+| 39   | `sop-sem-pedidos`                               | **1**       | ✅      |
+| 40   | `sop-sem-faccao` / `apuravelFaccao`             | **1**       | ✅      |
+| 41   | `lgpd-so-vitrine` / `briefing-so-vitrine`       | **1**       | ✅      |
+| 42   | `supplier-so-vitrine` / `scoreboard-so-vitrine` | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 38**, **três ondas** atrás do repo (39, 40
-e 41). A camada mais atrasada continua sendo o **banco**. A frase "Consumo e
-liberação são automáticos" ainda existe no bundle, mas condicionada ao ramo
-`ativa` — com as migrações pendentes, o operador vê o aviso âmbar, não a
-promessa. A trilha LGPD publicada, por outro lado, ainda contém ficção até a
-Onda 41 ser publicada.
+**Conclusão:** o ar está na **Onda 41**, **uma onda** atrás do repo (42). A
+camada mais atrasada continua sendo o **banco**. A frase "Consumo e liberação
+são automáticos" ainda existe no bundle, mas condicionada ao ramo `ativa` —
+com as migrações pendentes, o operador vê o aviso âmbar, não a promessa. A
+trilha LGPD publicada já não contém ficção: o CSV e o A4 foram corrigidos
+pela Onda 41. O que resta sem declaração no ar é o ranking de fornecedores.
 
 ---
 

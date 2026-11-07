@@ -170,11 +170,21 @@ export function OutsourcingServiceOrderPanel() {
   // Documento não sai sobre ficha não salva: o XML de remessa leva NCM e valor,
   // e a OS cega leva consumo e BOM.
   function bloqueiaDocumento(row: (typeof enrichedOrders)[number]): boolean {
-    if (row.emitivel) return false;
-    toast.error(
-      `A referência ${row.os.refCode} não tem ficha salva — o documento sairia com dados de demonstração. Salve a ficha primeiro.`,
-    );
-    return true;
+    if (!row.emitivel) {
+      toast.error(
+        `A referência ${row.os.refCode} não tem ficha salva — o documento sairia com dados de demonstração. Salve a ficha primeiro.`,
+      );
+      return true;
+    }
+    // Onda 42: XML de NF-e de remessa e Guia A4 não podem sair com CNPJ e
+    // certificação de um fornecedor que não existe.
+    if (row.partner.demo === true) {
+      toast.error(
+        `${row.partner.name} é fornecedor de demonstração: CNPJ e certificação não são reais. Cadastre ou edite o parceiro antes de emitir o documento.`,
+      );
+      return true;
+    }
+    return false;
   }
 
   function exportRemessaXml(row: (typeof enrichedOrders)[number]) {
