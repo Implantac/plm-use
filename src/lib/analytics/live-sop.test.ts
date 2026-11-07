@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 import { INITIAL_PRIVATE_LABEL_ORDERS } from "@/lib/sales/private-label-queue";
 import { useOutsourcingStore } from "@/lib/techsheet/outsourcing-os";
 import { INITIAL_GTM_CAMPAIGNS } from "@/lib/techsheet/research-gtm";
+import { campanhasSalvas } from "@/test/campanhas-salvas";
 import { computeLiveSopSnapshot } from "./live-sop";
 
 describe("Torre Executiva S&OP em Tempo Real (/analytics)", () => {
   it("consolida faturamento B2B, margem ponderada, ROAS GTM e saldo em facção sem entrada manual", () => {
     const snap = computeLiveSopSnapshot({
       orders: INITIAL_PRIVATE_LABEL_ORDERS,
-      campaigns: INITIAL_GTM_CAMPAIGNS,
+      campaigns: campanhasSalvas(),
       serviceOrders: useOutsourcingStore.getState().serviceOrders,
     });
 

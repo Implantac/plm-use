@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { seedFor, useTechSheetStore } from "./store";
 import { fichaDeclarada } from "@/test/ficha-declarada";
+import { campanhasSalvas } from "@/test/campanhas-salvas";
 import {
   INITIAL_BRIEFINGS,
   INITIAL_GTM_CAMPAIGNS,
@@ -24,7 +25,7 @@ describe("Pesquisa Criativa -> Engenharia (Briefing 1-Clique) & Hub GTM Drops", 
   });
 
   it("calcula ROAS consolidado (mídia vs. investimento total c/ produção) e gera Media Kit A4 com ESG DPP", () => {
-    const summary = computeGtmPortfolioSummary(INITIAL_GTM_CAMPAIGNS);
+    const summary = computeGtmPortfolioSummary(campanhasSalvas());
     expect(summary.totalCampaigns).toBe(3);
     expect(summary.blendedRoas).toBeGreaterThan(4);
     expect(summary.netFullRoas).toBeLessThan(summary.blendedRoas);

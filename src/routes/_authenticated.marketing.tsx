@@ -30,6 +30,8 @@ import {
   buildDropMediaKitHtml,
   computeCampaignRoas,
   computeGtmPortfolioSummary,
+  campanhasOperacionais,
+  GTM_DEMO_LABEL,
   useResearchGtmStore,
   type DropCampaignStatus,
   type GtmDropCampaign,
@@ -89,6 +91,9 @@ function MarketingPage() {
   }, [campaigns, searchTerm]);
 
   const summary = useMemo(() => computeGtmPortfolioSummary(campaigns), [campaigns]);
+  // Onda 38: as 3 campanhas de fábrica são vitrine, não portfólio. Os números
+  // do resumo já as ignoram; `—` evita que zero pareça apuração.
+  const soVitrine = campanhasOperacionais(campaigns).length === 0 && campaigns.length > 0;
 
   const fmtBrlCompact = (v: number) =>
     v.toLocaleString("pt-BR", {
@@ -191,26 +196,38 @@ function MarketingPage() {
       metrics={[
         {
           label: "Drops & Campanhas",
-          value: String(summary.totalCampaigns),
-          detail: "persistidos",
+          value: soVitrine ? "—" : String(summary.totalCampaigns),
+          detail: soVitrine ? "só demonstração" : "persistidos",
         },
         {
           label: "Mídia + Produção",
-          value: fmtBrlCompact(summary.totalInvestmentBrl),
+          value: soVitrine ? "—" : fmtBrlCompact(summary.totalInvestmentBrl),
           detail: "investimento total",
         },
         {
           label: "Receita Atribuída",
-          value: fmtBrlCompact(summary.totalSalesBrl),
+          value: soVitrine ? "—" : fmtBrlCompact(summary.totalSalesBrl),
           detail: "sell-out canais",
         },
         {
           label: "ROAS Mídia / Full",
-          value: `${summary.blendedRoas.toFixed(1)}x / ${summary.netFullRoas.toFixed(1)}x`,
+          value: soVitrine
+            ? "—"
+            : `${summary.blendedRoas.toFixed(1)}x / ${summary.netFullRoas.toFixed(1)}x`,
           detail: "bruto vs. líquido prod.",
         },
       ]}
     >
+      {soVitrine && (
+        <div
+          data-testid="gtm-so-vitrine"
+          className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300"
+        >
+          <strong>{campaigns.length} campanhas de demonstração na vitrine.</strong> {GTM_DEMO_LABEL}
+          . Cadastre um Drop ou edite um dos existentes para que os números de mídia, receita
+          atribuída e ROAS passem a ser apurados.
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
           <div className="flex flex-wrap justify-between items-center gap-2">
@@ -250,6 +267,15 @@ function MarketingPage() {
                           <Badge variant="outline" className="text-[10px]">
                             {camp.status}
                           </Badge>
+                          {camp.demo && (
+                            <Badge
+                              variant="outline"
+                              title={GTM_DEMO_LABEL}
+                              className="text-[10px] border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                            >
+                              Demonstração
+                            </Badge>
+                          )}
                           {camp.transparentStudioReady && (
                             <Badge
                               variant="outline"

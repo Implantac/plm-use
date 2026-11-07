@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 14ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 15ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,20 +10,21 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 37** — `6d3000e`                | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 36** — `index-DDU6Ug_A.js`      | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 38**                            | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 37** — `index-DYB6k9Kp.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** o dono **publicou o projeto** e o ar
-avançou de verdade. Saiu o entry `index-1d8-RbIh.js` (Onda 29, 218 chunks) e
-entrou **`index-DDU6Ug_A.js` (221 chunks)**, com marcadores das Ondas 29 a 36
-presentes. É a **primeira vez na série que ar e repo ficam na mesma onda**. O
-banco, porém, **não mudou**: 14ª medição, mesmo `PGRST205` na view de aging e
-`PGRST202` nas três RPCs. Publicar app não aplica SQL — confirmado agora com o
-app já na Onda 36. O repo avançou para a **Onda 37** (correção da frase
-"Consumo e liberação são automáticos", encontrada incondicional no bundle
-publicado); portanto, depois deste commit, o ar volta a ficar **uma onda**
-atrás, até nova publicação. O banco continua sendo o elo atrasado.
+**O que mudou desde a medição anterior:** o ar avançou **de novo, sem aviso do
+dono**. Saiu `index-DDU6Ug_A.js` (Onda 36) e entrou **`index-DYB6k9Kp.js`
+(221 chunks)** com `reserva-migracao-pendente` **1 vez**. Extraímos o contexto
+para não confundir string presente com promessa ativa: a frase "Consumo e
+liberação são automáticos" agora está **dentro de `u === "ativa"`**, com
+`data-testid="reserva-ciclo-ativo"`. A **Onda 37 está no ar** e, como o banco
+segue sem as migrações, o card mostra o aviso âmbar `pendente` — o
+comportamento correto. O banco **não mudou** (15ª medição: `PGRST205` + 3×
+`PGRST202`). O repo avançou para a **Onda 38** (`gtm-so-vitrine` e
+`sop-sem-drops` = **0** no ar), então o ar volta a ficar **uma onda** atrás.
+`DEV000006` ainda aparece **29 vezes** no bundle publicado.
 
 ---
 
@@ -60,14 +61,13 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 35   | `A referência de origem não tem ficha salva` | 1           | ✅      |
 | 36   | `Fichas sem engenharia`                      | 1           | ✅      |
 | 36   | `sem engenharia custeada`                    | 3           | ✅      |
-| 37   | `reserva-migracao-pendente`                  | **0**       | ❌      |
+| 37   | `reserva-migracao-pendente`                  | 1           | ✅      |
+| 38   | `gtm-so-vitrine` / `sop-sem-drops`           | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 36**, sincronizado com o repo no momento da
-medição. A única camada ainda atrasada é o **banco**. Extraímos também o
-contexto do bundle: a frase "Consumo e liberação são automáticos" aparece **1
-vez, incondicional**, em `_authenticated.inventory-DWVO8C0d.js`, enquanto
-`stock-lifecycle-CGHgF4FA.js` já detecta `PGRST202`/`PGRST205`. A Onda 37 liga
-os dois — mas só vale no ar depois de republicar.
+**Conclusão:** o ar está na **Onda 37**, uma onda atrás do repo (Onda 38). A
+camada mais atrasada continua sendo o **banco**. A frase "Consumo e liberação
+são automáticos" ainda existe no bundle, mas condicionada ao ramo `ativa` —
+com as migrações pendentes, o operador vê o aviso âmbar, não a promessa.
 
 ---
 
@@ -120,7 +120,7 @@ automação e o disponível não volta.
 
 | Lacuna                                  | Ação                                                                               | Quem faz        |
 | --------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| **Ar uma onda atrás do repo (Onda 37)** | republicar no Lovable depois deste commit                                          | dono do projeto |
+| **Ar uma onda atrás do repo (Onda 38)** | republicar no Lovable depois deste commit                                          | dono do projeto |
 | **Banco sem as migrações 21 e 24**      | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
 | E2E autenticado nunca roda              | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
 | Cancelar reservas presas                | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |

@@ -9,11 +9,13 @@ import { buildExecutiveSopReportHtml, computeLiveSopSnapshot } from "@/lib/analy
 import { usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
 import { brl } from "@/lib/sales/types";
 import { useOutsourcingStore } from "@/lib/techsheet/outsourcing-os";
-import { useResearchGtmStore } from "@/lib/techsheet/research-gtm";
+import { campanhasOperacionais, useResearchGtmStore } from "@/lib/techsheet/research-gtm";
 
 export function LiveSopBoard() {
   const orders = usePrivateLabelQueueStore((s) => s.orders);
   const campaigns = useResearchGtmStore((s) => s.campaigns);
+  // Onda 38: sem nenhum Drop da empresa, receita e ROAS do S&OP são `—`.
+  const soVitrine = campanhasOperacionais(campaigns).length === 0;
   const serviceOrders = useOutsourcingStore((s) => s.serviceOrders);
 
   const snap = useMemo(
@@ -38,6 +40,12 @@ export function LiveSopBoard() {
   return (
     <Card className="border-border bg-card rounded-xl mb-6">
       <CardContent className="p-4 space-y-3">
+        {soVitrine && (
+          <p data-testid="sop-sem-drops" className="text-[10px] text-amber-700 dark:text-amber-300">
+            Campanhas de demonstração não entram no Book Executivo S&OP: receita e ROAS de Drops não
+            são apuráveis sem um Drop cadastrado pela empresa.
+          </p>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary" />
@@ -100,7 +108,7 @@ export function LiveSopBoard() {
               Receita Drops GTM
             </span>
             <strong className="font-mono text-sm text-foreground">
-              {brl(snap.gtmAttributedSalesBrl)}
+              {soVitrine ? "—" : brl(snap.gtmAttributedSalesBrl)}
             </strong>
           </div>
           <div className="rounded-lg border border-border/80 bg-muted/25 p-3">
@@ -108,7 +116,7 @@ export function LiveSopBoard() {
               ROAS Blended Real
             </span>
             <strong className="font-mono text-sm text-primary">
-              {snap.gtmBlendedRoas.toFixed(2)}x
+              {soVitrine ? "—" : `${snap.gtmBlendedRoas.toFixed(2)}x`}
             </strong>
           </div>
           <div className="rounded-lg border border-border/80 bg-muted/25 p-3">

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { INITIAL_PRIVATE_LABEL_ORDERS } from "@/lib/sales/private-label-queue";
 import { INITIAL_GTM_CAMPAIGNS } from "@/lib/techsheet/research-gtm";
 import { seedFor } from "@/lib/techsheet/store";
+import { campanhasSalvas } from "@/test/campanhas-salvas";
 import { runDeterministicAgentAnalysis } from "./deterministic-copilot";
 
 describe("Copiloto Industrial Determinístico (USE AI Agents)", () => {
@@ -14,7 +15,7 @@ describe("Copiloto Industrial Determinístico (USE AI Agents)", () => {
       sheets,
       privateLabelOrders: INITIAL_PRIVATE_LABEL_ORDERS,
       lotesSummary: [],
-      drops: INITIAL_GTM_CAMPAIGNS,
+      drops: campanhasSalvas(),
     });
 
     expect(reply).toContain("PD-2026-801");
@@ -29,7 +30,7 @@ describe("Copiloto Industrial Determinístico (USE AI Agents)", () => {
       sheets,
       privateLabelOrders: INITIAL_PRIVATE_LABEL_ORDERS,
       lotesSummary: [],
-      drops: INITIAL_GTM_CAMPAIGNS,
+      drops: campanhasSalvas(),
     });
 
     expect(reply).toContain("ROAS");

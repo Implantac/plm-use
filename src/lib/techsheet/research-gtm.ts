@@ -41,6 +41,12 @@ export interface GtmDropCampaign {
   mediaSpendBrl: number;
   attributedSalesBrl: number;
   clicksCount: number;
+  /**
+   * Onda 38. `true` só nas campanhas que o app traz de fábrica para mostrar o
+   * formato da vitrine. Elas têm `attributedSalesBrl`/`mediaSpendBrl` de papel
+   * e **não entram em nenhum número operacional** (ROAS, S&OP, copiloto).
+   */
+  demo?: boolean;
 }
 
 export interface GtmPortfolioSummary {
@@ -137,23 +143,34 @@ export function computeCampaignRoas(
   return round2(c.attributedSalesBrl / c.mediaSpendBrl);
 }
 
+export const GTM_DEMO_LABEL = "Campanha de demonstração — não entra em número operacional";
+
+/** Só campanhas criadas/editadas pela empresa. A vitrine fica de fora. */
+export function campanhasOperacionais(campaigns: GtmDropCampaign[]): GtmDropCampaign[] {
+  return campaigns.filter((c) => c.demo !== true);
+}
+
 export function computeGtmPortfolioSummary(campaigns: GtmDropCampaign[]): GtmPortfolioSummary {
+  // Onda 38: a vitrine (`demo: true`) tem R$ 218.400 de "vendas atribuídas"
+  // e R$ 42.000 de mídia inventados. Filtrar AQUI protege todos os chamadores
+  // de uma vez: marketing, Live S&OP A4 e copiloto.
+  const operacionais = campanhasOperacionais(campaigns);
   const totalMediaSpendBrl = round2(
-    campaigns.reduce((a, c) => a + Math.max(0, c.mediaSpendBrl), 0),
+    operacionais.reduce((a, c) => a + Math.max(0, c.mediaSpendBrl), 0),
   );
   const totalProductionBrl = round2(
-    campaigns.reduce((a, c) => a + Math.max(0, c.productionCostBrl), 0),
+    operacionais.reduce((a, c) => a + Math.max(0, c.productionCostBrl), 0),
   );
   const totalInvestmentBrl = round2(totalMediaSpendBrl + totalProductionBrl);
   const totalSalesBrl = round2(
-    campaigns.reduce((a, c) => a + Math.max(0, c.attributedSalesBrl), 0),
+    operacionais.reduce((a, c) => a + Math.max(0, c.attributedSalesBrl), 0),
   );
   const blendedRoas = totalMediaSpendBrl > 0 ? round2(totalSalesBrl / totalMediaSpendBrl) : 0;
   const netFullRoas = totalInvestmentBrl > 0 ? round2(totalSalesBrl / totalInvestmentBrl) : 0;
-  const transparentReadyCount = campaigns.filter((c) => c.transparentStudioReady).length;
+  const transparentReadyCount = operacionais.filter((c) => c.transparentStudioReady).length;
 
   return {
-    totalCampaigns: campaigns.length,
+    totalCampaigns: operacionais.length,
     totalMediaSpendBrl,
     totalProductionBrl,
     totalInvestmentBrl,
@@ -305,6 +322,7 @@ export const INITIAL_BRIEFINGS: BriefingInsight[] = [
 
 export const INITIAL_GTM_CAMPAIGNS: GtmDropCampaign[] = [
   {
+    demo: true,
     id: "gtm-1",
     name: "Drop 01 · Alto Verão Performance & Pima",
     collectionName: "Alto Verão 2027",
@@ -320,6 +338,7 @@ export const INITIAL_GTM_CAMPAIGNS: GtmDropCampaign[] = [
     clicksCount: 38_400,
   },
   {
+    demo: true,
     id: "gtm-2",
     name: "Drop 02 · Cápsula Tech Fleece & Alfaiataria",
     collectionName: "Transição Outono 2027",
@@ -335,6 +354,7 @@ export const INITIAL_GTM_CAMPAIGNS: GtmDropCampaign[] = [
     clicksCount: 21_900,
   },
   {
+    demo: true,
     id: "gtm-3",
     name: "Seeding Creators · Sustentabilidade DPP QR",
     collectionName: "Institucional ESG",

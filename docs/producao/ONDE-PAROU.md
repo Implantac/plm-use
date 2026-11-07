@@ -156,39 +156,41 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 37 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 38 (04–06/11/2026) — o que mudou depois deste documento
 
-> **Atualização de 06/11 (14ª medição):** o dono publicou o projeto e **o
-> ar avançou de verdade** — entry novo `index-DDU6Ug_A.js`, 221 chunks, com
-> marcadores das Ondas 29 a 36 presentes. Pela primeira vez na série, **ar e
-> repo ficaram na mesma onda (36)**. O banco de produção **continua sem as
-> migrações das Ondas 21 e 24** (`PGRST205` na view, `PGRST202` nas três
-> RPCs): publicar app não aplica SQL. A Onda 37 corrige justamente a frase
-> "Consumo e liberação são automáticos" que essa medição encontrou incondicional
-> no card de reservas; ela ainda precisa de nova publicação. Medição completa:
+> **Atualização de 06/11 (15ª medição):** o ar avançou **de novo, sem
+> aviso do dono** — entry `index-DYB6k9Kp.js`, 221 chunks, com
+> `reserva-migracao-pendente` presente e a frase "Consumo e liberação são
+> automáticos" agora **dentro do ramo `ativa`**: a **Onda 37 foi publicada**.
+> O repositório está na **Onda 38** (a vitrine GTM e o copiloto deixam de
+> produzir números de demonstração); `gtm-so-vitrine` e `sop-sem-drops` = 0
+> no ar, então falta publicar esta onda. O banco **continua sem as migrações
+> das Ondas 21 e 24** (`PGRST205` na view, `PGRST202` nas três RPCs) —
+> publicar app não aplica SQL. Medição completa:
 > `docs/producao/SINCRONIA-2026-11-05.md`.
 
-| Onda                         | Commit    | O que entregou                                                                                                                                                                                                                                                                         | Está no ar?             |
-| ---------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| 19 — Verdade dos Dados       | `ccb54e6` | MRP passou a ler `stock_balance` em vez de `seedFor()`; selo de proveniência nos painéis; 139 asserções SQL                                                                                                                                                                            | ✅ confirmada no bundle |
-| 20 — Ficha confiável         | `29ff4c6` | provenance em `/route-engineering` e `CuttingRoomPlanPanel`; E2E autenticado na CI (dá SKIP sem credencial)                                                                                                                                                                            | ❌ não republicado      |
-| 22 — Ficha fora da decisão   | `be4456a` | `ensure()` parou de converter demonstração em "ficha salva"; comitê de gate, esteira, looks e copiloto só decidem sobre ficha editada                                                                                                                                                  | ❌ não republicado      |
-| 23 — Documento da ficha real | `9815e0c` | migração do store persistido (v0→v2) faz a correção chegar a quem já usava; as 5 telas que emitem documento deixam de nascer na ficha de demonstração                                                                                                                                  | ❌ não republicado      |
-| 24 — Baixa de material da OP | `85b6820` | PCP registra o consumo dos insumos reservados pela OP (aba Material), com atribuição correta por OP; saída avulsa passa a vincular à OP                                                                                                                                                | ❌ não republicado      |
-| 25 — EBITDA da home          | `b61c724` | a DRE da coleção declara origem por SKU; home mostra `—` sem ficha salva; DRE impressa sai com tarja quando há SKU de demonstração                                                                                                                                                     | ❌ não republicado      |
-| 21 — Ciclo da reserva        | `72247cd` | reserva de estoque deixou de ficar `ativa` para sempre: saída consome em FIFO, OP encerrada libera o resto, view de aging                                                                                                                                                              | ❌ não republicado      |
-| 26 — Tela honesta sem banco  | `3cf30d0` | a UI deixa de prometer automação que o banco não tem: 3 estados na aba Material (migração pendente / erro real / vazio), sonda em cache por sessão; pacote `APLICAR-ONDA-21-24.sql`                                                                                                    |
-| 27 — Documento só com ficha  | `16361dd` | DPP, romaneio, pré-NFe, remessa, OS cega e media kit recusam ficha não salva; NCM default eliminado; `DocumentoNaoEmitivelError`                                                                                                                                                       |
-| 28 — Preço e NCM reais       | `bdfa024` | line sheet do look para de inventar preço (null + kit só se completo); NCM perde o default em 5 pontos; NCM vira veto no gate de catálogo                                                                                                                                              |
-| 29 — Demo fora da operação   | `23b01a3` | RFQ, MRP, showroom e display deixam de usar ficha de demonstração; suíte deixa de ser instável (flake do OrderDetail resolvido) — **no ar**                                                                                                                                            |
-| 30 — Fechando o gerador      | `5564956` | DRE para de somar os 4 SKUs do modelo; esteira para de fabricar ficha ao arrastar; gate omnichannel não exporta CSV/A4 sem ficha; 4 emissores restantes passam a usar só fichas salvas; guarda de regressão nos fontes                                                                 | ❌ não republicado      |
-| 31 — Cockpit fora do modelo  | `5f41a95` | `/tech-sheet` deixa de nascer em `DEV000006`; `ensure()` sai do seletor do Zustand; 5 saídas (PDFs, Ordem de Corte, CSV MRP, publicação) exigem ficha salva; gêmeo digital, estúdio e GTM param de plantar refs; OS sem ficha fora das métricas                                        | ❌ não republicado      |
-| 32 — Resolvedor honesto      | `d08fccb` | `resolveReferenceTechSheet` deixa de fabricar 3 fichas com NCM/composição/BOM próprias: `ResolvedRef.doc` vira `null`; 8 consumidores ajustados; expedição barra `doc` nulo antes de ler NCM                                                                                           | ❌ não republicado      |
-| 33 — Nota ESG real           | `354fd27` | `dppRequirements` leva o veto de NCM/origem/composição/encaixe para dentro do DPP; sem `?? default*()`, sem "Feito no Brasil"; PDF e expedição exigem 8 dígitos; pendências objetivas na home e no painel                                                                              | ❌ não republicado      |
-| 34 — Molde não é engenharia  | `c06e3f3` | `seedFor()` nasce sem composição, NCM, origem e risco CAD; moldes renomeados para `empty*Spec()`; plano de corte ganha `apuravel` e barra a A4; morrem os defaults numéricos escondidos (1,8 m / 5,35 m / 155 g); gate de estágio declara ausência; 14 testes novos                    | ❌ não republicado      |
-| 35 — Criar ficha é criar     | `c145545` | Medição executada: o briefing 1-clique virava ficha salva com BOM, BOP, colorways e custos do modelo. Entram `blankFor()` e `criarFicha()`; os 20 updaters deixam de cair no seed; `ensure()` sai de rotas e dos 6 painéis; MRP e UseCloud não emprestam variantes. 16 testes novos    | ❌ não republicado      |
-| 36 — DRE não apura o vazio   | `1694e3d` | Medição com overhead padrão: ficha vazia gerava EBITDA -R$ 85.000, 50 peças inventadas e A4 sem aviso. Entram `pendenciasEngenhariaDre` e `origem.semEngenharia`; só BOM custeada, preço e tiragem declarados entram na soma; morrem o piso de 50 e o fallback de 600. 11 testes novos | ❌ não republicado      |
-| 37 — UI não promete o banco  | `6d3000e` | Medição do bundle publicado: `ReservationsPanel` importava `useStockLifecycle` desde a Onda 26 mas nunca lia `ciclo`. Agora três estados (verificando / pendente / ativa), aviso âmbar nomeando `APLICAR-ONDA-21-24.sql`, e a promessa de automação só no ramo ativo. 4 testes novos   | ❌ não republicado      |
+| Onda                         | Commit    | O que entregou                                                                                                                                                                                                                                                                                                                    | Está no ar?             |
+| ---------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| 19 — Verdade dos Dados       | `ccb54e6` | MRP passou a ler `stock_balance` em vez de `seedFor()`; selo de proveniência nos painéis; 139 asserções SQL                                                                                                                                                                                                                       | ✅ confirmada no bundle |
+| 20 — Ficha confiável         | `29ff4c6` | provenance em `/route-engineering` e `CuttingRoomPlanPanel`; E2E autenticado na CI (dá SKIP sem credencial)                                                                                                                                                                                                                       | ❌ não republicado      |
+| 22 — Ficha fora da decisão   | `be4456a` | `ensure()` parou de converter demonstração em "ficha salva"; comitê de gate, esteira, looks e copiloto só decidem sobre ficha editada                                                                                                                                                                                             | ❌ não republicado      |
+| 23 — Documento da ficha real | `9815e0c` | migração do store persistido (v0→v2) faz a correção chegar a quem já usava; as 5 telas que emitem documento deixam de nascer na ficha de demonstração                                                                                                                                                                             | ❌ não republicado      |
+| 24 — Baixa de material da OP | `85b6820` | PCP registra o consumo dos insumos reservados pela OP (aba Material), com atribuição correta por OP; saída avulsa passa a vincular à OP                                                                                                                                                                                           | ❌ não republicado      |
+| 25 — EBITDA da home          | `b61c724` | a DRE da coleção declara origem por SKU; home mostra `—` sem ficha salva; DRE impressa sai com tarja quando há SKU de demonstração                                                                                                                                                                                                | ❌ não republicado      |
+| 21 — Ciclo da reserva        | `72247cd` | reserva de estoque deixou de ficar `ativa` para sempre: saída consome em FIFO, OP encerrada libera o resto, view de aging                                                                                                                                                                                                         | ❌ não republicado      |
+| 26 — Tela honesta sem banco  | `3cf30d0` | a UI deixa de prometer automação que o banco não tem: 3 estados na aba Material (migração pendente / erro real / vazio), sonda em cache por sessão; pacote `APLICAR-ONDA-21-24.sql`                                                                                                                                               |
+| 27 — Documento só com ficha  | `16361dd` | DPP, romaneio, pré-NFe, remessa, OS cega e media kit recusam ficha não salva; NCM default eliminado; `DocumentoNaoEmitivelError`                                                                                                                                                                                                  |
+| 28 — Preço e NCM reais       | `bdfa024` | line sheet do look para de inventar preço (null + kit só se completo); NCM perde o default em 5 pontos; NCM vira veto no gate de catálogo                                                                                                                                                                                         |
+| 29 — Demo fora da operação   | `23b01a3` | RFQ, MRP, showroom e display deixam de usar ficha de demonstração; suíte deixa de ser instável (flake do OrderDetail resolvido) — **no ar**                                                                                                                                                                                       |
+| 30 — Fechando o gerador      | `5564956` | DRE para de somar os 4 SKUs do modelo; esteira para de fabricar ficha ao arrastar; gate omnichannel não exporta CSV/A4 sem ficha; 4 emissores restantes passam a usar só fichas salvas; guarda de regressão nos fontes                                                                                                            | ❌ não republicado      |
+| 31 — Cockpit fora do modelo  | `5f41a95` | `/tech-sheet` deixa de nascer em `DEV000006`; `ensure()` sai do seletor do Zustand; 5 saídas (PDFs, Ordem de Corte, CSV MRP, publicação) exigem ficha salva; gêmeo digital, estúdio e GTM param de plantar refs; OS sem ficha fora das métricas                                                                                   | ❌ não republicado      |
+| 32 — Resolvedor honesto      | `d08fccb` | `resolveReferenceTechSheet` deixa de fabricar 3 fichas com NCM/composição/BOM próprias: `ResolvedRef.doc` vira `null`; 8 consumidores ajustados; expedição barra `doc` nulo antes de ler NCM                                                                                                                                      | ❌ não republicado      |
+| 33 — Nota ESG real           | `354fd27` | `dppRequirements` leva o veto de NCM/origem/composição/encaixe para dentro do DPP; sem `?? default*()`, sem "Feito no Brasil"; PDF e expedição exigem 8 dígitos; pendências objetivas na home e no painel                                                                                                                         | ❌ não republicado      |
+| 34 — Molde não é engenharia  | `c06e3f3` | `seedFor()` nasce sem composição, NCM, origem e risco CAD; moldes renomeados para `empty*Spec()`; plano de corte ganha `apuravel` e barra a A4; morrem os defaults numéricos escondidos (1,8 m / 5,35 m / 155 g); gate de estágio declara ausência; 14 testes novos                                                               | ❌ não republicado      |
+| 35 — Criar ficha é criar     | `c145545` | Medição executada: o briefing 1-clique virava ficha salva com BOM, BOP, colorways e custos do modelo. Entram `blankFor()` e `criarFicha()`; os 20 updaters deixam de cair no seed; `ensure()` sai de rotas e dos 6 painéis; MRP e UseCloud não emprestam variantes. 16 testes novos                                               | ❌ não republicado      |
+| 36 — DRE não apura o vazio   | `1694e3d` | Medição com overhead padrão: ficha vazia gerava EBITDA -R$ 85.000, 50 peças inventadas e A4 sem aviso. Entram `pendenciasEngenhariaDre` e `origem.semEngenharia`; só BOM custeada, preço e tiragem declarados entram na soma; morrem o piso de 50 e o fallback de 600. 11 testes novos                                            | ❌ não republicado      |
+| 37 — UI não promete o banco  | `6d3000e` | Medição do bundle publicado: `ReservationsPanel` importava `useStockLifecycle` desde a Onda 26 mas nunca lia `ciclo`. Agora três estados (verificando / pendente / ativa), aviso âmbar nomeando `APLICAR-ONDA-21-24.sql`, e a promessa de automação só no ramo ativo. 4 testes novos                                              | ❌ não republicado      |
+| 38 — Vitrine fora do número  | `HEAD`    | Medição: copiloto respondia "2 fichas ativas · SAM médio 13.5 min/peça" com `seedFor` e as 3 campanhas de fábrica injetavam R$ 218.400 no ROAS/S&OP. `demo?: boolean` + `campanhasOperacionais`, resumo filtra internamente, copiloto declara `—`, AI Agents sem `seedFor`, Marketing e Live S&OP com `—` e selo. 12 testes novos | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -217,11 +219,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    isso não acontece, o defeito continua ativo nos dados reais — e as reservas
    antigas já presas não são limpas sozinhas: use `stock_reservation_aging`
    (ordene por `dias_ativa`) para cancelar o que já foi consumido na prática.
-2. **Republicar o app no Lovable na Onda 37.** O bundle em
-   `plmuse.lovable.app` é o da **Onda 36** (14ª medição, entry
-   `index-DDU6Ug_A.js`): as Ondas 20–36 estão no ar, falta só a 37. Enquanto
-   isso, o card "Reservas ativas" publicado ainda promete consumo automático
-   que o banco não faz. Isto é publicar — **não** aplica o SQL do item 1.
+2. **Republicar o app no Lovable na Onda 38.** O bundle em
+   `plmuse.lovable.app` é o da **Onda 37** (15ª medição, entry
+   `index-DYB6k9Kp.js`): as Ondas 20–37 estão no ar, falta só a 38. O card de
+   reservas já mostra o aviso de migration pendente. Isto é publicar —
+   **não** aplica o SQL do item 1.
 
 ---
 
@@ -232,7 +234,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 526 testes
+cd plm-use && npx vitest run            # 538 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -240,8 +242,8 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@6d3000e` (Onda 37),
-`docs/producao/ONDA-19..37-*.md` e os números das suítes rodadas em 05/11
-(vitest **526/526**, SQL 163/163, bundle relido com **221 chunks** no entry
-`index-DDU6Ug_A.js`: marcadores das Ondas 24–36 presentes — logo o ar é a
-Onda 36, sincronizado com o repo no momento da medição). Medição por camada em `SINCRONIA-2026-11-05.md`.
+Seção 7-A: `main@HEAD` (Onda 38; hash em `git log -1`),
+`docs/producao/ONDA-19..38-*.md` e os números das suítes rodadas em 05/11
+(vitest **538/538**, SQL 163/163, bundle relido com **221 chunks** no entry
+`index-DYB6k9Kp.js`: marcadores das Ondas 24–37 presentes — logo o ar é a
+Onda 37, uma onda atrás do repo). Medição por camada em `SINCRONIA-2026-11-05.md`.

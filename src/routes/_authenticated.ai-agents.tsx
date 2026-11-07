@@ -30,8 +30,9 @@ import { fetchLiveContext } from "@/lib/ai/live-context.functions";
 import { resumoInfluencers, useInfluencersStore } from "@/lib/influencers/store";
 import { usePCPStore } from "@/lib/pcp/store";
 import { usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
-import { useResearchGtmStore } from "@/lib/techsheet/research-gtm";
-import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { campanhasOperacionais, useResearchGtmStore } from "@/lib/techsheet/research-gtm";
+import { operationalCodes } from "@/lib/techsheet/provenance";
+import { useTechSheetStore } from "@/lib/techsheet/store";
 import {
   diasParaPrazo,
   ocorrenciasAbertasLote,
@@ -111,16 +112,21 @@ function AIAgentsPage() {
   const lotes = usePCPStore((s) => s.lotes);
   const influencers = useInfluencersStore((s) => s.influencers);
   const rawSheets = useTechSheetStore((s) => s.data);
+  const materializadas = useTechSheetStore((s) => s.materializadas);
   const plOrders = usePrivateLabelQueueStore((s) => s.orders);
-  const drops = useResearchGtmStore((s) => s.campaigns);
+  const campanhas = useResearchGtmStore((s) => s.campaigns);
 
-  // Sem ficha salva o copiloto ainda responde (é útil ver o formato), mas a tela
-  // não pode dizer que está "conectado aos seus números" — não está.
-  const temFichaSalva = Object.keys(rawSheets).length > 0;
-  const sheets = temFichaSalva
-    ? rawSheets
-    : { "V24-001": seedFor("V24-001"), DEV000006: seedFor("DEV000006") };
-  const origemAnalise = temFichaSalva ? ("salva" as const) : ("referencia" as const);
+  // Onda 38. A tela montava `{ V24-001: seedFor(...), DEV000006: seedFor(...) }`
+  // quando o store estava vazio, e o copiloto respondia "2 fichas ativas ·
+  // SAM médio 13.5 min/peça" com engenharia do modelo. Agora `sheets` é só o
+  // que a empresa salvou; a ausência é declarada, nunca preenchida.
+  const codigosSalvos = operationalCodes(rawSheets, [], materializadas);
+  const sheets = Object.fromEntries(codigosSalvos.map((c) => [c, rawSheets[c]!]));
+  const temFichaSalva = codigosSalvos.length > 0;
+  // As 3 campanhas de fábrica têm R$ 218.400 de "vendas atribuídas" de papel.
+  const drops = campanhasOperacionais(campanhas);
+  const soVitrine = !temFichaSalva && drops.length === 0;
+  const origemAnalise = soVitrine ? ("referencia" as const) : ("salva" as const);
 
   function computeLocalDeterministic(question: string): string {
     return runDeterministicAgentAnalysis({
@@ -241,13 +247,25 @@ function AIAgentsPage() {
   return (
     <ModuleLayout
       title="USE AI Agents & Copiloto Industrial"
-      subtitle="4 especialistas conectados aos dados reais de Engenharia de Custos, PCP, Criação e Drops GTM (híbrido determinístico + LLM)."
+      subtitle={
+        soVitrine
+          ? "4 especialistas em modo demonstração: sem ficha salva nem Drop da empresa, os números de engenharia e ROAS não são apurados (híbrido determinístico + LLM)."
+          : "4 especialistas conectados aos dados reais de Engenharia de Custos, PCP, Criação e Drops GTM (híbrido determinístico + LLM)."
+      }
       version="Agents v2.17"
       metrics={[
         { label: "Especialista", value: A.label, detail: "ativo" },
-        { label: "Fichas Lidas", value: String(Object.keys(sheets).length), detail: "BOM + SAM" },
+        {
+          label: "Fichas Lidas",
+          value: temFichaSalva ? String(Object.keys(sheets).length) : "—",
+          detail: temFichaSalva ? "BOM + SAM" : "sem ficha salva",
+        },
         { label: "Fila Custos", value: `${plOrders.length} pedidos`, detail: "margem real" },
-        { label: "Drops GTM", value: `${drops.length} ativos`, detail: "ROAS projetado" },
+        {
+          label: "Drops GTM",
+          value: drops.length > 0 ? `${drops.length} ativos` : "—",
+          detail: drops.length > 0 ? "ROAS projetado" : "ROAS não apurável",
+        },
       ]}
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -339,12 +357,12 @@ function AIAgentsPage() {
                 }
                 title={
                   origemAnalise === "referencia"
-                    ? "Não há ficha técnica salva: a análise usa a ficha de referência (demonstração)."
+                    ? "Sem ficha técnica salva nem Drop da empresa: nenhuma ficha de referência é usada e os números de engenharia/ROAS ficam declarados como ausentes."
                     : "A análise usa as fichas salvas no seu workspace."
                 }
               >
                 {origemAnalise === "referencia"
-                  ? "Sem ficha salva · análise sobre referência"
+                  ? "Sem ficha salva · sem números de demonstração"
                   : "Copiloto Híbrido · Stores + Cloud"}
               </Badge>
             </div>
