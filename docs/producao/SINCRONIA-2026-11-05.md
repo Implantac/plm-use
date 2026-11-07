@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 13ª medição, 05/11/2026
+# Sincronia repo × ar × banco — 14ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,18 +10,20 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 36** — `1694e3d`                | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 29**                            | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 37**                            | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 36** — `index-DDU6Ug_A.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** nada no ar e nada no banco. O app
-segue na **Onda 29** (mesmo entry `index-1d8-RbIh.js`, 218 chunks lidos;
-`Poliéster` **11 vezes** e `Malha Dry Fit` **8 vezes** no bundle — a etiqueta e
-a BOM do modelo continuam sendo servidas; `Fichas sem engenharia` = 0) e o
-banco segue sem as migrações (13ª medição, mesmo `PGRST205`/`PGRST202`). O repo
-avançou para a **Onda 36**: agora são **sete ondas** de código ainda não
-publicadas (30, 31, 32, 33, 34, 35 e 36). O banco continua sendo o elo
-atrasado.
+**O que mudou desde a medição anterior:** o dono **publicou o projeto** e o ar
+avançou de verdade. Saiu o entry `index-1d8-RbIh.js` (Onda 29, 218 chunks) e
+entrou **`index-DDU6Ug_A.js` (221 chunks)**, com marcadores das Ondas 29 a 36
+presentes. É a **primeira vez na série que ar e repo ficam na mesma onda**. O
+banco, porém, **não mudou**: 14ª medição, mesmo `PGRST205` na view de aging e
+`PGRST202` nas três RPCs. Publicar app não aplica SQL — confirmado agora com o
+app já na Onda 36. O repo avançou para a **Onda 37** (correção da frase
+"Consumo e liberação são automáticos", encontrada incondicional no bundle
+publicado); portanto, depois deste commit, o ar volta a ficar **uma onda**
+atrás, até nova publicação. O banco continua sendo o elo atrasado.
 
 ---
 
@@ -34,29 +36,38 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   `index-BCX5Of78.js` = 25, `index-gNNeOgTl.js` = 26, `index-bJxsbr7k.js` = 28)
 - **218 chunks**, ~3,1 MB de JS lidos
 
-| Onda | Marcador procurado                 | Ocorrências | Leitura |
-| ---- | ---------------------------------- | ----------- | ------- |
-| 24   | `Dar baixa do material`            | 1           | ✅      |
-| 25   | `Documento com dados de demonstra` | 2           | ✅      |
-| 27   | `Custeio incompleto`               | 1           | ✅      |
-| 27   | `Composição não informada`         | 5           | ✅      |
-| 28   | `sem NCM`                          | 5           | ✅      |
-| 29   | `pedidosSemFicha`                  | 4           | ✅      |
-| 29   | `rfq-sem-ficha`                    | 1           | ✅      |
-| 29   | `showroom-sem-ficha`               | 1           | ✅      |
-| 30   | `DRE não apurável`                 | **0**       | ❌      |
-| 30   | `omnichannel-sem-ficha`            | **0**       | ❌      |
-| 31   | `cockpit-sem-ficha`                | **0**       | ❌      |
-| 31   | `gemeo-sem-ficha`                  | **0**       | ❌      |
-| 32   | `ResolvedRef.doc` nulo             | **0**       | ❌      |
-| 33   | `dppRequirements`                  | **0**       | ❌      |
-| 34   | `Risco CAD não declarado`          | **0**       | ❌      |
-| 34   | `Plano de corte não apurável`      | **0**       | ❌      |
-| 35   | `blankFor` / `criarFicha`          | **0**       | ❌      |
-| 36   | `Fichas sem engenharia`            | **0**       | ❌      |
+| Onda | Marcador procurado                           | Ocorrências | Leitura |
+| ---- | -------------------------------------------- | ----------- | ------- |
+| 24   | `Dar baixa do material`                      | 1           | ✅      |
+| 25   | `Documento com dados de demonstra`           | 2           | ✅      |
+| 27   | `Custeio incompleto`                         | 1           | ✅      |
+| 27   | `Composição não informada`                   | 5           | ✅      |
+| 28   | `sem NCM`                                    | 5           | ✅      |
+| 29   | `pedidosSemFicha`                            | 4           | ✅      |
+| 29   | `rfq-sem-ficha`                              | 1           | ✅      |
+| 29   | `showroom-sem-ficha`                         | 1           | ✅      |
+| 30   | `DRE não apurável`                           | 4           | ✅      |
+| 30   | `omnichannel-sem-ficha`                      | 1           | ✅      |
+| 30   | `kanban-sem-ficha`                           | 1           | ✅      |
+| 31   | `cockpit-sem-ficha`                          | 1           | ✅      |
+| 31   | `gemeo-sem-ficha`                            | 1           | ✅      |
+| 31   | `os-sem-ficha`                               | 2           | ✅      |
+| 32   | `Passaporte ESG`                             | 2           | ✅      |
+| 33   | `país de origem declarado`                   | 1           | ✅      |
+| 33   | `composição ABNT declarada`                  | 1           | ✅      |
+| 34   | `Risco CAD não declarado`                    | 1           | ✅      |
+| 34   | `Plano de corte não apurável`                | 3           | ✅      |
+| 35   | `A referência de origem não tem ficha salva` | 1           | ✅      |
+| 36   | `Fichas sem engenharia`                      | 1           | ✅      |
+| 36   | `sem engenharia custeada`                    | 3           | ✅      |
+| 37   | `reserva-migracao-pendente`                  | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 29**. Nada das Ondas 30, 31, 32, 33, 34, 35
-e 36 foi publicado.
+**Conclusão:** o ar está na **Onda 36**, sincronizado com o repo no momento da
+medição. A única camada ainda atrasada é o **banco**. Extraímos também o
+contexto do bundle: a frase "Consumo e liberação são automáticos" aparece **1
+vez, incondicional**, em `_authenticated.inventory-DWVO8C0d.js`, enquanto
+`stock-lifecycle-CGHgF4FA.js` já detecta `PGRST202`/`PGRST205`. A Onda 37 liga
+os dois — mas só vale no ar depois de republicar.
 
 ---
 
@@ -107,12 +118,12 @@ automação e o disponível não volta.
 
 ## 5. O que destrava cada lacuna
 
-| Lacuna                             | Ação                                                                               | Quem faz        |
-| ---------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| **Ar sete ondas atrás do repo**    | republicar no Lovable depois deste commit                                          | dono do projeto |
-| **Banco sem as migrações 21 e 24** | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
-| E2E autenticado nunca roda         | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
-| Cancelar reservas presas           | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
+| Lacuna                                  | Ação                                                                               | Quem faz        |
+| --------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
+| **Ar uma onda atrás do repo (Onda 37)** | republicar no Lovable depois deste commit                                          | dono do projeto |
+| **Banco sem as migrações 21 e 24**      | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
+| E2E autenticado nunca roda              | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
+| Cancelar reservas presas                | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
 
 Nenhuma das pendências é código: publicar, colar um SQL e dar uma credencial.
 

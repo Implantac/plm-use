@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { updateReservationStatus } from "@/lib/inventory/inventory.functions";
 import { MENSAGEM_MIGRACAO_PENDENTE, useStockLifecycle } from "@/lib/inventory/stock-lifecycle";
@@ -86,10 +86,35 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
         <CardTitle className="text-xs font-semibold uppercase tracking-[0.04em] text-primary">
           Reservas ativas ({rows.length})
         </CardTitle>
-        <p className="text-[10px] text-muted-foreground mt-1">
-          Consumo e liberação são automáticos: a saída de estoque consome a reserva e a OP concluída
-          ou cancelada libera o que sobrar. Os botões abaixo são para ajuste manual.
-        </p>
+        {/* Onda 37. O hook e a mensagem já estavam importados desde a Onda 26,
+            mas `ciclo` nunca era lido: o texto prometia automação mesmo com o
+            banco devolvendo PGRST205/PGRST202. Medido no bundle publicado
+            (index-DDU6Ug_A.js): a frase aparecia incondicional no card. */}
+        {ciclo === "verificando" && (
+          <p
+            className="text-[10px] text-muted-foreground mt-1"
+            data-testid="reserva-ciclo-verificando"
+          >
+            Verificando se o ciclo automático da reserva está aplicado neste banco…
+          </p>
+        )}
+        {ciclo === "ativa" && (
+          <p className="text-[10px] text-muted-foreground mt-1" data-testid="reserva-ciclo-ativo">
+            Consumo e liberação são automáticos: a saída de estoque consome a reserva e a OP
+            concluída ou cancelada libera o que sobrar. Os botões abaixo são para ajuste manual.
+          </p>
+        )}
+        {ciclo === "pendente" && (
+          <div
+            data-testid="reserva-migracao-pendente"
+            className="mt-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-2.5 text-[11px] text-amber-800 dark:text-amber-300 space-y-1"
+          >
+            <p className="flex items-center gap-1.5 font-semibold">
+              <AlertTriangle className="h-3.5 w-3.5" /> Ciclo automático indisponível neste banco
+            </p>
+            <p className="leading-snug">{MENSAGEM_MIGRACAO_PENDENTE}</p>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
         {rows.length === 0 && <p className="text-xs text-muted-foreground">Sem reservas ativas.</p>}

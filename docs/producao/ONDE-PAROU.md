@@ -156,15 +156,17 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 36 (04–05/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 37 (04–06/11/2026) — o que mudou depois deste documento
 
-> **Atualização de 05/11 (13ª medição):** o app publicado **continua na
-> Onda 29** (entry `index-1d8-RbIh.js`, 218 chunks; `Poliéster` 11 vezes e
-> `Malha Dry Fit` 8 vezes no bundle; marcadores das Ondas 30 a 36 = 0
-> ocorrências); o repositório está na **Onda 36**. Nenhuma das sete foi
-> publicada. O banco de produção **continua sem as migrações das Ondas 21 e
-> 24** (`PGRST205` na view, `PGRST202` nas três RPCs). Publicar app não aplica
-> SQL. Medição completa: `docs/producao/SINCRONIA-2026-11-05.md`.
+> **Atualização de 06/11 (14ª medição):** o dono publicou o projeto e **o
+> ar avançou de verdade** — entry novo `index-DDU6Ug_A.js`, 221 chunks, com
+> marcadores das Ondas 29 a 36 presentes. Pela primeira vez na série, **ar e
+> repo ficaram na mesma onda (36)**. O banco de produção **continua sem as
+> migrações das Ondas 21 e 24** (`PGRST205` na view, `PGRST202` nas três
+> RPCs): publicar app não aplica SQL. A Onda 37 corrige justamente a frase
+> "Consumo e liberação são automáticos" que essa medição encontrou incondicional
+> no card de reservas; ela ainda precisa de nova publicação. Medição completa:
+> `docs/producao/SINCRONIA-2026-11-05.md`.
 
 | Onda                         | Commit    | O que entregou                                                                                                                                                                                                                                                                         | Está no ar?             |
 | ---------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
@@ -186,6 +188,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 34 — Molde não é engenharia  | `c06e3f3` | `seedFor()` nasce sem composição, NCM, origem e risco CAD; moldes renomeados para `empty*Spec()`; plano de corte ganha `apuravel` e barra a A4; morrem os defaults numéricos escondidos (1,8 m / 5,35 m / 155 g); gate de estágio declara ausência; 14 testes novos                    | ❌ não republicado      |
 | 35 — Criar ficha é criar     | `c145545` | Medição executada: o briefing 1-clique virava ficha salva com BOM, BOP, colorways e custos do modelo. Entram `blankFor()` e `criarFicha()`; os 20 updaters deixam de cair no seed; `ensure()` sai de rotas e dos 6 painéis; MRP e UseCloud não emprestam variantes. 16 testes novos    | ❌ não republicado      |
 | 36 — DRE não apura o vazio   | `1694e3d` | Medição com overhead padrão: ficha vazia gerava EBITDA -R$ 85.000, 50 peças inventadas e A4 sem aviso. Entram `pendenciasEngenhariaDre` e `origem.semEngenharia`; só BOM custeada, preço e tiragem declarados entram na soma; morrem o piso de 50 e o fallback de 600. 11 testes novos | ❌ não republicado      |
+| 37 — UI não promete o banco  | `HEAD`    | Medição do bundle publicado: `ReservationsPanel` importava `useStockLifecycle` desde a Onda 26 mas nunca lia `ciclo`. Agora três estados (verificando / pendente / ativa), aviso âmbar nomeando `APLICAR-ONDA-21-24.sql`, e a promessa de automação só no ramo ativo. 4 testes novos   | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -214,10 +217,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    isso não acontece, o defeito continua ativo nos dados reais — e as reservas
    antigas já presas não são limpas sozinhas: use `stock_reservation_aging`
    (ordene por `dias_ativa`) para cancelar o que já foi consumido na prática.
-2. **Republicar o app no Lovable na Onda 36.** O bundle em
-   `plmuse.lovable.app` é o da **Onda 29** (13ª medição); as Ondas 20–29 já
-   estão no ar, faltam a 30, a 31, a 32, a 33, a 34, a 35 e a 36. Isto é
-   publicar — **não** aplica o SQL do item 1.
+2. **Republicar o app no Lovable na Onda 37.** O bundle em
+   `plmuse.lovable.app` é o da **Onda 36** (14ª medição, entry
+   `index-DDU6Ug_A.js`): as Ondas 20–36 estão no ar, falta só a 37. Enquanto
+   isso, o card "Reservas ativas" publicado ainda promete consumo automático
+   que o banco não faz. Isto é publicar — **não** aplica o SQL do item 1.
 
 ---
 
@@ -228,7 +232,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 522 testes
+cd plm-use && npx vitest run            # 526 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -236,8 +240,8 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@1694e3d` (Onda 36),
-`docs/producao/ONDA-19..36-*.md` e os números das suítes rodadas em 05/11
-(vitest **522/522**, SQL 163/163, bundle relido com **218 chunks**: marcadores
-das Ondas 24–29 presentes, marcadores das Ondas 30 a 36 com 0 ocorrências —
-logo o ar é a Onda 29). Medição por camada em `SINCRONIA-2026-11-05.md`.
+Seção 7-A: `main@HEAD` (Onda 37; hash em `git log -1`),
+`docs/producao/ONDA-19..37-*.md` e os números das suítes rodadas em 05/11
+(vitest **526/526**, SQL 163/163, bundle relido com **221 chunks** no entry
+`index-DDU6Ug_A.js`: marcadores das Ondas 24–36 presentes — logo o ar é a
+Onda 36, sincronizado com o repo no momento da medição). Medição por camada em `SINCRONIA-2026-11-05.md`.
