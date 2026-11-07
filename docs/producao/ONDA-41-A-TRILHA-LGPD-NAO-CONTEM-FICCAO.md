@@ -1,6 +1,6 @@
 # Onda 41 — A trilha LGPD não contém ficção
 
-**Data:** 06/11/2026 · **Antecessor:** `13f6961` (Onda 40 + docs)
+**Data:** 06/11/2026 · **Commit:** `334d672` · **Antecessor:** `13f6961` (Onda 40 + docs)
 
 ---
 

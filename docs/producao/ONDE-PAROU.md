@@ -193,7 +193,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 38 — Vitrine fora do número         | `903727c` | Medição: copiloto respondia "2 fichas ativas · SAM médio 13.5 min/peça" com `seedFor` e as 3 campanhas de fábrica injetavam R$ 218.400 no ROAS/S&OP. `demo?: boolean` + `campanhasOperacionais`, resumo filtra internamente, copiloto declara `—`, AI Agents sem `seedFor`, Marketing e Live S&OP com `—` e selo. 12 testes novos                        | ❌ não republicado      |
 | 39 — Pedido de papel não é carteira | `7526080` | Medição: 2 pedidos de fábrica (CNPJ 14.890.300/0001-22) geravam R$ 9.867,20 de carteira B2B, 112 peças e "preço mínimo R$ 90,62". `demo?: boolean` + `pedidosOperacionais`, 5 updaters promovem a vitrine a carteira, filtros em S&OP/MRP/copiloto/capacidade, A4 e KPIs com `—`, selo na Fila de Custos. 12 testes novos                                | ❌ não republicado      |
 | 40 — Chão de fábrica não é vitrine  | `3b33065` | Medição: 3 OS de fábrica geravam 656 peças "em voo" no Book S&OP A4 e 4 lotes PCP viravam "4 lotes monitorados" no copiloto. `demo?: boolean` em OS e Lote, `servicosOperacionais`/`lotesOperacionais`, 3 updaters promovem a vitrine, `apuravelFaccao`, A4 e KPIs com `—`. 12 testes novos                                                              | ❌ não republicado      |
-| 41 — Trilha LGPD sem ficção         | `HEAD`    | Medição: `buildLgpdAuditCsv` e o A4 de governança exportavam 4 eventos fabricados (Helena Prado, PD-2026-802, bases legais LGPD); 4 briefings geravam "Aderência Comercial 92%". `demo?: boolean` + `eventosAuditaveis`/`briefingsOperacionais`, CSV só com cabeçalho, A4 com aviso, KPIs `—`, botões bloqueados, selos, edição promove. 12 testes novos | ❌ não republicado      |
+| 41 — Trilha LGPD sem ficção         | `334d672` | Medição: `buildLgpdAuditCsv` e o A4 de governança exportavam 4 eventos fabricados (Helena Prado, PD-2026-802, bases legais LGPD); 4 briefings geravam "Aderência Comercial 92%". `demo?: boolean` + `eventosAuditaveis`/`briefingsOperacionais`, CSV só com cabeçalho, A4 com aviso, KPIs `—`, botões bloqueados, selos, edição promove. 12 testes novos | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -246,7 +246,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 41; hash em `git log -1`),
+Seção 7-A: `main@334d672` (Onda 41),
 `docs/producao/ONDA-19..41-*.md` e os números das suítes rodadas em 05/11
 (vitest **574/574**, SQL 163/163, bundle relido com **221 chunks** no entry
 `index-BcTzKh6M.js`: marcadores das Ondas 24–38 presentes — logo o ar é a
