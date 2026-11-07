@@ -71,10 +71,16 @@ export function runDeterministicAgentAnalysis(input: CopilotSnapshotInput): stri
     const totalPend = input.lotesSummary.reduce((a, l) => a + l.pendentePcs, 0);
     const slowest = [...input.lotesSummary].sort((a, b) => a.prontoPct - b.prontoPct)[0];
     return [
-      `🏭 **Diagnóstico PCP & Balanceamento de Chão de Fábrica** (${input.lotesSummary.length} lotes monitorados · ${totalPend} peças pendentes):`,
+      `🏭 **Diagnóstico PCP & Balanceamento de Chão de Fábrica** (${
+        input.lotesSummary.length > 0
+          ? `${input.lotesSummary.length} lotes monitorados · ${totalPend} peças pendentes`
+          : "sem lotes salvos · balanceamento não apurável"
+      }):`,
       slowest
         ? `• **Lote Prioritário de Atenção**: **${slowest.numero}** (${slowest.grupo}) está em **${slowest.prontoPct}%** concluído com **${slowest.pendentePcs} peças** em fila.`
-        : "• Nenhuma fila crítica pendente nos lotes atuais.",
+        : input.lotesSummary.length === 0
+          ? "• Sem lotes de produção salvos: os lotes de demonstração não entram no balanceamento."
+          : "• Nenhuma fila crítica pendente nos lotes atuais.",
       `• **Plano de Ação Imediato**: executar sequenciamento EDD em **/planner** e emitir Guia de Remessa Cega A4 (CFOP 5901) em **/suppliers** caso a ocupação da Costura ultrapasse 95%.`,
     ].join("\n\n");
   }

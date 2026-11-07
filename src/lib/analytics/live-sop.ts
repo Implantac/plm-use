@@ -9,7 +9,7 @@ import {
   type PrivateLabelOrder,
   pedidosOperacionais,
 } from "@/lib/sales/private-label-queue";
-import type { ExternalServiceOrder } from "@/lib/techsheet/outsourcing-os";
+import { servicosOperacionais, type ExternalServiceOrder } from "@/lib/techsheet/outsourcing-os";
 import { computeGtmPortfolioSummary, type GtmDropCampaign } from "@/lib/techsheet/research-gtm";
 
 export interface LiveSopSnapshot {
@@ -24,6 +24,8 @@ export interface LiveSopSnapshot {
   apuravelB2b: boolean;
   /** Onda 38: sem Drop próprio, receita/ROAS GTM são `—`, não zero. */
   apuravelGtm: boolean;
+  /** Onda 40: sem OS própria, peças em facção são `—`, não zero. */
+  apuravelFaccao: boolean;
 }
 
 function round2(v: number): number {
@@ -71,7 +73,9 @@ export function computeLiveSopSnapshot(params: {
   );
   const sewing = crpLoads.find((l) => l.sector.sectorId === "costura");
 
-  const outsourcedPiecesInFlight = params.serviceOrders.reduce(
+  // Onda 40: as 3 OS de fábrica somavam 656 peças "em voo" no Book A4.
+  const servicos = servicosOperacionais(params.serviceOrders);
+  const outsourcedPiecesInFlight = servicos.reduce(
     (acc, os) =>
       acc + Math.max(0, os.qtySent - os.qtyReturnedFirst - os.qtyReturnedSecond - os.qtyLost),
     0,
@@ -87,6 +91,7 @@ export function computeLiveSopSnapshot(params: {
     totalActivePiecesB2b,
     apuravelB2b: pedidos.length > 0,
     apuravelGtm: gtm.totalCampaigns > 0,
+    apuravelFaccao: servicos.length > 0,
   };
 }
 
@@ -100,13 +105,17 @@ export function buildExecutiveSopReportHtml(snap: LiveSopSnapshot): string {
     ? `R$ ${snap.gtmAttributedSalesBrl.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
     : "—";
   const roasGtm = snap.apuravelGtm ? `${snap.gtmBlendedRoas.toFixed(2)}x` : "—";
+  const faccao = snap.apuravelFaccao
+    ? `${snap.sewingUtilizationPct}% · ${snap.outsourcedPiecesInFlight} pçs`
+    : "—";
   const aviso =
-    !snap.apuravelB2b || !snap.apuravelGtm
+    !snap.apuravelB2b || !snap.apuravelGtm || !snap.apuravelFaccao
       ? `<div style="border:1px solid #b45309;background:#fffbeb;color:#92400e;padding:8px 10px;margin-bottom:10px;font-size:11px">
     <strong>Book S&OP parcialmente não apurável.</strong>
     ${!snap.apuravelB2b ? "Sem pedido B2B salvo: carteira, margem e volume não são apurados. " : ""}
     ${!snap.apuravelGtm ? "Sem Drop GTM salvo: receita atribuída e ROAS não são apurados. " : ""}
-    Pedidos e campanhas de demonstração não entram na consolidação.
+    ${!snap.apuravelFaccao ? "Sem OS de facção salva: peças em voo não são apuradas. " : ""}
+    Pedidos, campanhas e ordens de serviço de demonstração não entram na consolidação.
   </div>`
       : "";
   return `<!DOCTYPE html>
@@ -136,7 +145,7 @@ export function buildExecutiveSopReportHtml(snap: LiveSopSnapshot): string {
     <div class="kpi"><div class="lbl">Volume B2B</div><div class="val">${volume}</div></div>
     <div class="kpi"><div class="lbl">Receita GTM Atribuída</div><div class="val">${receitaGtm}</div></div>
     <div class="kpi"><div class="lbl">ROAS Blended Real</div><div class="val">${roasGtm}</div></div>
-    <div class="kpi"><div class="lbl">Costura Interna / Em Facção</div><div class="val">${snap.sewingUtilizationPct}% · ${snap.outsourcedPiecesInFlight} pçs</div></div>
+    <div class="kpi"><div class="lbl">Costura Interna / Em Facção</div><div class="val">${faccao}</div></div>
   </div>
 </body>
 </html>`;

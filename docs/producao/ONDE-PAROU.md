@@ -156,16 +156,16 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 39 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 40 (04–06/11/2026) — o que mudou depois deste documento
 
-> **Atualização de 06/11 (16ª medição):** o ar avançou **mais uma vez,
-> sem aviso do dono** — entry `index-BcTzKh6M.js`, 221 chunks, com
-> `gtm-so-vitrine` e `sop-sem-drops` presentes: a **Onda 38 foi publicada**.
-> `sop-sem-pedidos` = 0, então a **Onda 39** (pedidos de demonstração fora da
-> carteira B2B, do MRP, do S&OP A4 e do copiloto) ainda precisa de publicação.
-> `DEV000006` caiu de 29 para 27 ocorrências. O banco **continua sem as
-> migrações das Ondas 21 e 24** (`PGRST205` na view, `PGRST202` nas três
-> RPCs) — publicar app não aplica SQL. Medição completa:
+> **Atualização de 06/11 (17ª medição):** pela primeira vez em várias
+> rodadas, **o ar não avançou** — segue `index-BcTzKh6M.js`, 221 chunks,
+> com `sop-sem-pedidos` = 0: a **Onda 39 não foi publicada**. O repositório
+> está na **Onda 40** (OS de facção e lotes PCP de demonstração fora do Book
+> S&OP A4 e do copiloto), portanto há **duas ondas** para publicar (39 e 40).
+> `DEV000006` segue em 27 ocorrências. O banco **continua sem as migrações
+> das Ondas 21 e 24** (`PGRST205` na view, `PGRST202` nas três RPCs) —
+> publicar app não aplica SQL. Medição completa:
 > `docs/producao/SINCRONIA-2026-11-05.md`.
 
 | Onda                                | Commit    | O que entregou                                                                                                                                                                                                                                                                                                                    | Está no ar?             |
@@ -191,6 +191,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 37 — UI não promete o banco         | `6d3000e` | Medição do bundle publicado: `ReservationsPanel` importava `useStockLifecycle` desde a Onda 26 mas nunca lia `ciclo`. Agora três estados (verificando / pendente / ativa), aviso âmbar nomeando `APLICAR-ONDA-21-24.sql`, e a promessa de automação só no ramo ativo. 4 testes novos                                              | ❌ não republicado      |
 | 38 — Vitrine fora do número         | `903727c` | Medição: copiloto respondia "2 fichas ativas · SAM médio 13.5 min/peça" com `seedFor` e as 3 campanhas de fábrica injetavam R$ 218.400 no ROAS/S&OP. `demo?: boolean` + `campanhasOperacionais`, resumo filtra internamente, copiloto declara `—`, AI Agents sem `seedFor`, Marketing e Live S&OP com `—` e selo. 12 testes novos | ❌ não republicado      |
 | 39 — Pedido de papel não é carteira | `7526080` | Medição: 2 pedidos de fábrica (CNPJ 14.890.300/0001-22) geravam R$ 9.867,20 de carteira B2B, 112 peças e "preço mínimo R$ 90,62". `demo?: boolean` + `pedidosOperacionais`, 5 updaters promovem a vitrine a carteira, filtros em S&OP/MRP/copiloto/capacidade, A4 e KPIs com `—`, selo na Fila de Custos. 12 testes novos         | ❌ não republicado      |
+| 40 — Chão de fábrica não é vitrine  | `HEAD`    | Medição: 3 OS de fábrica geravam 656 peças "em voo" no Book S&OP A4 e 4 lotes PCP viravam "4 lotes monitorados" no copiloto. `demo?: boolean` em OS e Lote, `servicosOperacionais`/`lotesOperacionais`, 3 updaters promovem a vitrine, `apuravelFaccao`, A4 e KPIs com `—`. 12 testes novos                                       | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -219,11 +220,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    isso não acontece, o defeito continua ativo nos dados reais — e as reservas
    antigas já presas não são limpas sozinhas: use `stock_reservation_aging`
    (ordene por `dias_ativa`) para cancelar o que já foi consumido na prática.
-2. **Republicar o app no Lovable na Onda 39.** O bundle em
-   `plmuse.lovable.app` é o da **Onda 38** (16ª medição, entry
-   `index-BcTzKh6M.js`): as Ondas 20–38 estão no ar, falta só a 39. O card de
-   reservas já mostra o aviso de migration pendente. Isto é publicar —
-   **não** aplica o SQL do item 1.
+2. **Republicar o app no Lovable na Onda 40.** O bundle em
+   `plmuse.lovable.app` é o da **Onda 38** (17ª medição, entry
+   `index-BcTzKh6M.js`): as Ondas 20–38 estão no ar, faltam a **39 e a 40**.
+   Enquanto isso, o Book S&OP no ar ainda imprime 656 peças de facção e
+   R$ 9.867,20 de carteira B2B de papel. Isto é publicar — **não** aplica o
+   SQL do item 1.
 
 ---
 
@@ -234,7 +236,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 550 testes
+cd plm-use && npx vitest run            # 562 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -242,8 +244,8 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@7526080` (Onda 39),
-`docs/producao/ONDA-19..39-*.md` e os números das suítes rodadas em 05/11
-(vitest **550/550**, SQL 163/163, bundle relido com **221 chunks** no entry
+Seção 7-A: `main@HEAD` (Onda 40; hash em `git log -1`),
+`docs/producao/ONDA-19..40-*.md` e os números das suítes rodadas em 05/11
+(vitest **562/562**, SQL 163/163, bundle relido com **221 chunks** no entry
 `index-BcTzKh6M.js`: marcadores das Ondas 24–38 presentes — logo o ar é a
-Onda 38, uma onda atrás do repo). Medição por camada em `SINCRONIA-2026-11-05.md`.
+Onda 38, duas ondas atrás do repo). Medição por camada em `SINCRONIA-2026-11-05.md`.

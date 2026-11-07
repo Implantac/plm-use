@@ -87,6 +87,8 @@ export interface Lote {
   responsavel: string;
   observacao?: string;
   referencias: ReferenciaLote[];
+  /** Onda 40: os 4 lotes de fábrica são vitrine, não produção monitorada. */
+  demo?: boolean;
 }
 
 // ----- Cálculos derivados (puros) -----

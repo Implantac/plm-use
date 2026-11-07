@@ -57,6 +57,12 @@ export interface ExternalServiceOrder {
   qtyLost: number;
   issuedAt: string;
   dueDate: string;
+  /**
+   * Onda 40. `true` só nas OS que o app traz de fábrica. As 3 iniciais somam
+   * 656 peças "em voo" que o Book Executivo S&OP imprimia como produção real
+   * em facção. Não entram em número operacional.
+   */
+  demo?: boolean;
 }
 
 export interface ComputedPartnerMetrics {
@@ -441,6 +447,7 @@ export const INITIAL_PARTNERS: IndustrialPartner[] = [
 
 export const INITIAL_SERVICE_ORDERS: ExternalServiceOrder[] = [
   {
+    demo: true,
     id: "os-101",
     osNumber: "OS-2026-041",
     opNumber: "OP-2026-104",
@@ -459,6 +466,7 @@ export const INITIAL_SERVICE_ORDERS: ExternalServiceOrder[] = [
     dueDate: "2026-11-06",
   },
   {
+    demo: true,
     id: "os-102",
     osNumber: "OS-2026-042",
     opNumber: "OP-2026-108",
@@ -477,6 +485,7 @@ export const INITIAL_SERVICE_ORDERS: ExternalServiceOrder[] = [
     dueDate: "2026-11-04",
   },
   {
+    demo: true,
     id: "os-103",
     osNumber: "OS-2026-043",
     opNumber: "OP-2026-112",
@@ -509,6 +518,18 @@ interface OutsourcingStoreState {
   deleteServiceOrder: (id: string) => void;
 }
 
+export const SERVICO_DEMO_LABEL = "OS de demonstração — não entra em número operacional";
+
+/** Só OS criadas/editadas pela empresa. A vitrine fica de fora. */
+export function servicosOperacionais(orders: ExternalServiceOrder[]): ExternalServiceOrder[] {
+  return orders.filter((o) => o.demo !== true);
+}
+
+/** Qualquer edição humana promove a OS da vitrine a produção real. */
+function promoverOS(o: ExternalServiceOrder): ExternalServiceOrder {
+  return { ...o, demo: false };
+}
+
 export const useOutsourcingStore = create<OutsourcingStoreState>()(
   persist(
     (set) => ({
@@ -529,11 +550,13 @@ export const useOutsourcingStore = create<OutsourcingStoreState>()(
         })),
       addServiceOrder: (order) =>
         set((s) => ({
-          serviceOrders: [order, ...s.serviceOrders],
+          serviceOrders: [promoverOS(order), ...s.serviceOrders],
         })),
       updateOrderReturns: (id, patch) =>
         set((s) => ({
-          serviceOrders: s.serviceOrders.map((o) => (o.id === id ? { ...o, ...patch } : o)),
+          serviceOrders: s.serviceOrders.map((o) =>
+            o.id === id ? { ...promoverOS(o), ...patch } : o,
+          ),
         })),
       deleteServiceOrder: (id) =>
         set((s) => ({

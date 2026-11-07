@@ -15,6 +15,7 @@ import { resolve } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import { campanhasSalvas } from "@/test/campanhas-salvas";
 import { pedidosSalvos } from "@/test/pedidos-salvos";
+import { servicosSalvos } from "@/test/chao-de-fabrica-salvo";
 import { computeLiveSopSnapshot, buildExecutiveSopReportHtml } from "@/lib/analytics/live-sop";
 import { computeMrpNetExplosion } from "@/lib/inventory/mrp-explosion";
 import { runDeterministicAgentAnalysis } from "@/lib/ai/deterministic-copilot";
@@ -115,7 +116,7 @@ describe("Onda 39 — com carteira real tudo continua apurando", () => {
     const snap = computeLiveSopSnapshot({
       orders: pedidosSalvos(),
       campaigns: campanhasSalvas(),
-      serviceOrders: [],
+      serviceOrders: servicosSalvos(),
     });
     expect(snap.b2bOrderRevenueBrl).toBeGreaterThan(9000);
     expect(snap.b2bWeightedMarginPct).toBeGreaterThan(40);

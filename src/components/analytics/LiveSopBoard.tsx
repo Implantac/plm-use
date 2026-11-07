@@ -8,7 +8,7 @@ import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { buildExecutiveSopReportHtml, computeLiveSopSnapshot } from "@/lib/analytics/live-sop";
 import { pedidosOperacionais, usePrivateLabelQueueStore } from "@/lib/sales/private-label-queue";
 import { brl } from "@/lib/sales/types";
-import { useOutsourcingStore } from "@/lib/techsheet/outsourcing-os";
+import { servicosOperacionais, useOutsourcingStore } from "@/lib/techsheet/outsourcing-os";
 import { campanhasOperacionais, useResearchGtmStore } from "@/lib/techsheet/research-gtm";
 
 export function LiveSopBoard() {
@@ -19,7 +19,10 @@ export function LiveSopBoard() {
   const campaigns = useResearchGtmStore((s) => s.campaigns);
   // Onda 38: sem nenhum Drop da empresa, receita e ROAS do S&OP são `—`.
   const soVitrine = campanhasOperacionais(campaigns).length === 0;
-  const serviceOrders = useOutsourcingStore((s) => s.serviceOrders);
+  const serviceOrdersRaw = useOutsourcingStore((s) => s.serviceOrders);
+  // Onda 40: as 3 OS de fábrica geravam 656 peças "em voo" de papel.
+  const serviceOrders = servicosOperacionais(serviceOrdersRaw);
+  const soVitrineFaccao = serviceOrders.length === 0;
 
   const snap = useMemo(
     () => computeLiveSopSnapshot({ orders, campaigns, serviceOrders }),
@@ -43,6 +46,15 @@ export function LiveSopBoard() {
   return (
     <Card className="border-border bg-card rounded-xl mb-6">
       <CardContent className="p-4 space-y-3">
+        {soVitrineFaccao && (
+          <p
+            data-testid="sop-sem-faccao"
+            className="text-[10px] text-amber-700 dark:text-amber-300"
+          >
+            Ordens de serviço de demonstração não entram no Book S&OP: peças em voo em facção não
+            são apuráveis sem uma OS cadastrada pela empresa.
+          </p>
+        )}
         {soVitrinePedidos && (
           <p
             data-testid="sop-sem-pedidos"
@@ -136,7 +148,9 @@ export function LiveSopBoard() {
               Ocupação Costura / Facção
             </span>
             <strong className="font-mono text-sm text-foreground">
-              {snap.sewingUtilizationPct}% · {snap.outsourcedPiecesInFlight} pçs
+              {soVitrineFaccao
+                ? "—"
+                : `${snap.sewingUtilizationPct}% · ${snap.outsourcedPiecesInFlight} pçs`}
             </strong>
           </div>
         </div>

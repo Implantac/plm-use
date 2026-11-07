@@ -18,6 +18,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 // ---------- Seed ----------
 const seed: Lote[] = [
   {
+    demo: true,
     numero: "LOTE 2601",
     grupo: "Camisaria Masculina",
     colecao: "Alto Verão 2026",
@@ -99,6 +100,7 @@ const seed: Lote[] = [
     ],
   },
   {
+    demo: true,
     numero: "LOTE 2602",
     grupo: "Vestidos",
     colecao: "Alto Verão 2026",
@@ -144,6 +146,7 @@ const seed: Lote[] = [
     ],
   },
   {
+    demo: true,
     numero: "LOTE 2603",
     grupo: "Calças",
     colecao: "Alto Verão 2026",
@@ -179,6 +182,7 @@ const seed: Lote[] = [
     ],
   },
   {
+    demo: true,
     numero: "LOTE 2604",
     grupo: "Blusaria Feminina",
     colecao: "Pré-Verão 2026",
@@ -268,6 +272,16 @@ function cloneLotes(lotes: Lote[]): Lote[] {
   }));
 }
 
+/** Onda 40: só lotes criados/editados pela empresa. A vitrine fica de fora. */
+export function lotesOperacionais(lotes: Lote[]): Lote[] {
+  return lotes.filter((l) => l.demo !== true);
+}
+
+/** Qualquer movimentação humana promove o lote a produção real. */
+function promoverLotes(lotes: Lote[], numero: string): Lote[] {
+  return lotes.map((l) => (l.numero === numero ? { ...l, demo: false } : l));
+}
+
 // ---------- Store ----------
 export const usePCPStore = create<PCPState>((set, get) => ({
   lotes: seed,
@@ -344,7 +358,7 @@ export const usePCPStore = create<PCPState>((set, get) => ({
           f.r.status = "Em produção";
         }
       }
-      return { lotes };
+      return { lotes: promoverLotes(lotes, lote) };
     });
 
     return { ok: true };
@@ -382,7 +396,7 @@ export const usePCPStore = create<PCPState>((set, get) => ({
       if (tipo === "positiva") f.r.qtd_adicional += qtd;
       if (tipo === "negativa") f.r.qtd_perdida += qtd;
       if (tipo === "negativa" && f.r.status !== "Concluído") f.r.status = "Ocorrência";
-      return { lotes };
+      return { lotes: promoverLotes(lotes, lote) };
     });
 
     void import("@/lib/activity/log").then(({ logActivity }) =>

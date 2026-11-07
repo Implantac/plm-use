@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 16ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 17ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,19 +10,19 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 39** — `7526080`                | `git log` / `git ls-remote`          |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 40**                            | `git log` / `git ls-remote`          |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 38** — `index-BcTzKh6M.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** o ar avançou **mais uma vez, sem
-aviso do dono**. Saiu `index-DYB6k9Kp.js` (Onda 37) e entrou
-**`index-BcTzKh6M.js` (221 chunks)** com `gtm-so-vitrine` **1 vez**,
-`sop-sem-drops` **1 vez** e `não entra em número operacional` **1 vez**: a
-**Onda 38 está no ar**. `sop-sem-pedidos` = **0**, então a Onda 39 ainda não
-foi publicada e o ar volta a ficar **uma onda** atrás do repo. `DEV000006` caiu
-de 29 para **27** ocorrências. O banco **não mudou** (16ª medição: `PGRST205`
-
-- 3× `PGRST202`).
+**O que mudou desde a medição anterior:** **nada no ar e nada no banco**. Pela
+primeira vez em várias rodadas não houve publicação: o bundle segue com o mesmo
+entry **`index-BcTzKh6M.js` (221 chunks)**, `gtm-so-vitrine` 1 vez e
+**`sop-sem-pedidos` 0** — a **Onda 39 não foi publicada**. `sop-sem-faccao`,
+`apuravelFaccao`, `servicosOperacionais` e `lotesOperacionais` também são 0.
+O repo avançou para a **Onda 40**, então existem agora **duas ondas** de código
+ainda não publicadas (39 e 40). `DEV000006` permanece em **27** ocorrências.
+O banco segue sem as migrações (17ª medição: `PGRST205` na view e `PGRST202`
+nas três RPCs).
 
 ---
 
@@ -62,8 +62,10 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 37   | `reserva-migracao-pendente`                  | 1           | ✅      |
 | 38   | `gtm-so-vitrine` / `sop-sem-drops`           | 1           | ✅      |
 | 39   | `sop-sem-pedidos`                            | **0**       | ❌      |
+| 40   | `sop-sem-faccao` / `apuravelFaccao`          | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 38**, uma onda atrás do repo (Onda 39). A
+**Conclusão:** o ar está na **Onda 38**, **duas ondas** atrás do repo (39 e
+40). A
 camada mais atrasada continua sendo o **banco**. A frase "Consumo e liberação
 são automáticos" ainda existe no bundle, mas condicionada ao ramo `ativa` —
 com as migrações pendentes, o operador vê o aviso âmbar, não a promessa.
@@ -117,12 +119,12 @@ automação e o disponível não volta.
 
 ## 5. O que destrava cada lacuna
 
-| Lacuna                                  | Ação                                                                               | Quem faz        |
-| --------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| **Ar uma onda atrás do repo (Onda 39)** | republicar no Lovable depois deste commit                                          | dono do projeto |
-| **Banco sem as migrações 21 e 24**      | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
-| E2E autenticado nunca roda              | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
-| Cancelar reservas presas                | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
+| Lacuna                                    | Ação                                                                               | Quem faz        |
+| ----------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
+| **Ar duas ondas atrás do repo (39 + 40)** | republicar no Lovable depois deste commit                                          | dono do projeto |
+| **Banco sem as migrações 21 e 24**        | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
+| E2E autenticado nunca roda                | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
+| Cancelar reservas presas                  | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
 
 Nenhuma das pendências é código: publicar, colar um SQL e dar uma credencial.
 
