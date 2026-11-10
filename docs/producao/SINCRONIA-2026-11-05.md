@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 24ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 25ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,45 +10,18 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                     | Como foi medido                      |
 | ---------------------------------------------- | --------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 45** — `504dde3`           | `git log` / `git ls-remote`          |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 46** — `2ef69b5`           | `git log` / `git ls-remote`          |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 45** — `index-CPZSdWEg.js` | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções  |
 
-**O que mudou desde a medição anterior:** o dono aplicou
-`APLICAR-ONDA-21-24.sql` no **SQL Editor do Lovable** (Mais → Database → SQL
-editor). O editor exibiu o modal _"Confirm destructive operation"_ pelo
-`DROP TRIGGER IF EXISTS` e, confirmado, retornou **"Query succeeded / No rows
-returned"** — sem mostrar os `RAISE NOTICE`, como era esperado naquele wrapper.
-O `DO $$` de verificação embutido no próprio SQL teria lançado
-`RAISE EXCEPTION` se view, RPC ou os 2 triggers faltassem; **não lançou**.
-
-Re-medição externa pela chave publishable do bundle, sem sessão de usuário:
-
-| Sonda                                                      | 23ª medição    | **24ª medição**                                |
-| ---------------------------------------------------------- | -------------- | ---------------------------------------------- |
-| view `stock_reservation_aging`                             | `404 PGRST205` | **`200 []`**                                   |
-| `op_reserved_materials(_order_id)`                         | `404 PGRST202` | **`401 42501 permission denied for function`** |
-| `stock_on_hand(_item_id,_warehouse_id)`                    | não sondada    | **`401 42501 permission denied for function`** |
-| `record_op_material_consumption(_order_id,_justification)` | `404 PGRST202` | **`401 42501 permission denied for function`** |
-| `cancel_reservations_for_ref(_ref_type,_ref_id,_motivo)`   | não sondada    | **`401 42501 permission denied for function`** |
-
-`401 42501` **prova que a função existe**: o PostgREST a encontrou no catálogo e
-o papel `anon` foi barrado pelo `REVOKE ... FROM public, anon` + `GRANT ... TO
-authenticated, service_role`. Antes, `PGRST202` dizia _"no matches were found in
-the schema cache"_. As **três camadas estão agora alinhadas na Onda 45**.
-`DEV000006` segue em **27** ocorrências e o entry permanece
-`index-CPZSdWEg.js` (223 chunks).
-
-### Correção metodológica (importante)
-
-`consume_reservations_on_movement()` e `sync_reservations_on_op_status()` são
-**`RETURNS trigger`** — funções de gatilho, **nunca expostas como RPC**. Usá-las
-como sonda nas medições 4ª–23ª foi um erro de método: o `PGRST202` delas
-persistiria mesmo com a migration aplicada. A prova correta de ausência era a
-view `PGRST205` somada às funções escalares/tabulares chamadas **com os nomes
-de parâmetros corretos** (chamadas com `{}` também devolvem `PGRST202` por
-assinatura incompatível, não por ausência). A sonda canônica passa a ser a
-view + as 4 funções da tabela acima.
+**O que mudou desde a medição anterior:** o dono disse **"ok prossiga"** e a
+Onda **46** foi escolhida pelo risco. O banco **permanece alinhado** (view
+`200 []`, 4 funções `401 42501` — re-medido agora). O **ar parou** novamente:
+continua `index-CPZSdWEg.js` (223 chunks) = **Onda 45**, e os marcadores novos
+`cad-so-vitrine`, `prototipo-so-vitrine`, `studio-sem-ficha`, `Cadastrar meu
+molde` e `cta-cad-sem-molde` dão **0** no bundle. `DEV000006` segue **27×**.
+O repo avançou para a **Onda 46**: a vitrine de CAD/Pilotagem deixou de apurar
+número e o `<Toaster />` passou a existir. Distância: **uma onda (46)**.
 
 ---
 
@@ -94,14 +67,16 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 43   | `comece-por-aqui` / `progresso-onboarding`      | **1**       | ✅      |
 | 44   | `cta-supplier-so-vitrine` / `CtaProximoPasso`   | **1**       | ✅      |
 | 45   | `glossario-termos` / `Ferramentas do produto`   | **1**       | ✅      |
+| 46   | `cad-so-vitrine` / `prototipo-so-vitrine`       | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 45**, na mesma onda do repositório, e o
-**banco também foi alinhado** na 24ª medição. Pela primeira vez desde a 4ª
-medição **nenhuma camada está atrasada**. A tela de reservas deixou de prometer
-uma automação inexistente. O que ainda não foi provado é o fluxo autenticado de
-ponta a ponta: sem `PLM_E2E_EMAIL`/`PLM_E2E_PASSWORD` os dois specs de e2e
-seguem `skipped`. `DEV000006` permanece em 27 ocorrências no bundle (dívida de
-vitrine, não de número operacional).
+**Conclusão:** o **repo está na Onda 46**, o **ar na Onda 45** (uma onda para
+publicar) e o **banco continua alinhado** desde a 24ª medição — a camada que
+atrasou por 20 medições agora é a mais estável. A frase "Consumo e liberação
+são automáticos" deixou de ser falsa em produção. O que o ar ainda não tem:
+KPIs honestos de `/cad` e `/prototypes`, bloqueio de sync/lacre sobre a
+vitrine, avisos com CTA e **qualquer feedback de toast**. O que ainda não foi
+provado em nenhuma camada é o fluxo autenticado de ponta a ponta: sem
+`PLM_E2E_EMAIL`/`PLM_E2E_PASSWORD` os dois specs de e2e seguem `skipped`.
 
 ---
 
@@ -147,10 +122,11 @@ passam a existir.
 | ----------------------------------------------- | -------------------------------------------------------------------------- | --------------- |
 | ~~Ar duas ondas atrás do repo~~ **zerado**      | ~~republicar~~ concluído na 23ª medição (`index-CPZSdWEg.js`)              | dono do projeto |
 | ~~Banco sem as migrações 21 e 24~~ **aplicado** | ~~colar SQL~~ concluído na 24ª medição: view `200 []`, funções `401 42501` | dono do projeto |
+| **Ar uma onda atrás do repo (46)**              | republicar no Lovable — **só publicar**, o SQL já está aplicado            | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                              | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`    | dono do projeto |
 
-Publicação **e** SQL concluídos — repo, ar e banco estão alinhados. Resta uma ação que não é código: dar a credencial de e2e (e, se houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
+Publicação das Ondas 44/45 e SQL concluídos; banco alinhado. Restam duas ações que não são código: **publicar a Onda 46** e dar a credencial de e2e (e, se houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
 
