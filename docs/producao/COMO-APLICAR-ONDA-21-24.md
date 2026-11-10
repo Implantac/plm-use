@@ -67,6 +67,33 @@ Esperado **antes** de aplicar:
 - Se `view_aging` já vier `public.stock_reservation_aging`, a migration já foi
   aplicada; pule para o passo 5 e me avise para eu re-medir.
 
+> **Resultado real observado no Lovable (Mais → Database → SQL editor):**
+> `tabela_base = stock_reservation`, `view_aging = NULL`. Está **correto**. O
+> `to_regclass` devolve o tipo `regclass`, que omite o prefixo `public.` quando
+> o objeto está no `search_path` — `stock_reservation` **é**
+> `public.stock_reservation`. Cruzado com a sonda externa no mesmo instante:
+> `404 PGRST205` na view e `PGRST202` nas 3 RPCs, coerentes com o `NULL`.
+
+### 1.2 Cheque os pré-requisitos (opcional, recomendado)
+
+O arquivo cria triggers em `stock_movement` e `production_orders`, lê
+`stock_balance` e chama a função de RBAC `has_stock_write_role`. Rode antes de
+colar, para não descobrir um `relation does not exist` no meio da execução:
+
+```sql
+-- esperado: 6 linhas, NENHUMA com objeto NULL
+select nome, to_regclass('public.' || nome) as objeto
+  from (values ('stock_reservation'), ('stock_movement'), ('production_orders'),
+               ('stock_balance'), ('stock_item'), ('warehouse')) v(nome);
+
+-- esperado: 1 linha
+select p.proname
+  from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+ where n.nspname = 'public' and p.proname = 'has_stock_write_role';
+```
+
+Se algo vier `NULL`/vazio, **pare e me avise** — o schema base está incompleto.
+
 ---
 
 ## 2. Copie o arquivo **inteiro**
@@ -95,10 +122,13 @@ metade):
 
 ## 3. Cole e execute
 
-1. Clique dentro da área do editor da **New query** e cole (`Ctrl+V` / `Cmd+V`).
-2. Confira que a última linha é mesmo `NOTIFY pgrst, 'reload schema';`.
-3. Clique em **Run** (ou `Ctrl+Enter` / `Cmd+Enter`).
-4. **Aguarde até o fim** — são ~473 linhas, alguns segundos. Não aperte Run
+1. Clique em **Clear** (ou `Ctrl+A` + `Delete`) para **remover a query de
+   verificação** que ficou no editor — ela não deve ir junto com o arquivo.
+2. Clique dentro da área do editor e cole (`Ctrl+V` / `Cmd+V`).
+3. Confira que a última linha é mesmo `NOTIFY pgrst, 'reload schema';` e que
+   a 1ª é o `-- ===...` (473 linhas).
+4. Clique em **Run** (ou `Ctrl+Enter` / `Cmd+Enter`).
+5. **Aguarde até o fim** — são ~473 linhas, alguns segundos. Não aperte Run
    duas vezes enquanto a primeira ainda está rodando.
 
 > O arquivo termina com o bloco **VERIFICAÇÃO** e o `NOTIFY`, então **uma única
