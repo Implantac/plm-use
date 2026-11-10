@@ -156,7 +156,28 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 48 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 49 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (30ª e 31ª medições): publicação não relatada
+> detectada, Onda 49 fechada no repo.** O dono disse apenas `ok prossiga` e
+> **não anunciou publicação**; a re-medição por camada achou o ar em
+> **`index-DPV0JUG6.js` / `index-DnKqdFO4.js`** com os **6 marcadores da Onda
+> 48 = 1**. Cliques reais em produção confirmaram: `/marketing` 3 bloqueios,
+> 0 botões, 0 popups no aviso, editar → 1 popup de Media Kit;
+> `/collection-map` 0 botões CSV/A4, **0 apuráveis**, aviso sem popup nem
+> download; `/orders` sem regressão. **Repo, ar e banco alinhados na Onda 48.** Escolha da onda seguinte por risco: os **5 emissores** cujo clique
+> falhara na 29ª estão **`disabled` (protegidos)** e não restou nenhum
+> desprotegido; o risco medido passou a ser **campos sem nome acessível**.
+> **Onda 49**: 31 marcadores em 11 arquivos (14 pares `id`/`htmlFor`, 16
+> `aria-label` + 1 `SelectTrigger`, 6 `aria-required`), com correção
+> metodológica — o 31º elemento bruto era o `BubbleSelect` oculto do Radix.
+> Medido ANTES (produção) e DEPOIS (local) com o mesmo critério:
+> **30/66 → 0/66**; validações `waveErrors`/`capaErrors` preservadas. Gates
+> **686/686**, `tsc` 0, `eslint` 0 erros, `prettier` limpo. **31ª medição:
+> repo Onda 49, ar Onda 48** (6 marcadores da 49 = 0), banco com view `200 []`
+> e 4 funções `401 42501`. Publicar a Onda 49 é a próxima ação do dono.
+> Detalhes em `ONDA-49-TODO-CAMPO-TEM-NOME.md` e
+> `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (28ª e 29ª medições): publicação validada, Onda 48
 > fechada no repo.** O dono reportou "tudo publicado" e a **28ª medição
@@ -280,12 +301,17 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    `index-CdXaXBJP.js` (227 chunks) com todos os marcadores, confirmado por
    cliques reais em produção. Aqui foi **só publicar**: o SQL já estava
    aplicado desde a 24ª medição.
-5. **Publicar a Onda 48.** O ar segue em `index-CdXaXBJP.js` (Onda 47). A 30ª
-   medição deve achar `media-kit-bloqueado`, `colecao-so-vitrine`,
-   `line-sheet-bloqueado`, `cta-colecao-sem-ficha`, `Coleção em cadastro` e
-   `Editar para emitir` no bundle, e repetir os cliques em produção. Publicar
-   app **não aplica SQL**.
-6. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
+5. **~~Publicar a Onda 48~~ — concluído (30ª medição), sem marco relatado.**
+   Entry `index-DPV0JUG6.js` / `index-DnKqdFO4.js` com os 6 marcadores da 48,
+   confirmado por cliques reais em produção. A publicação foi **detectada por
+   BFS**, não confirmada cegamente a partir de um aviso do dono. Aqui foi
+   **só publicar**: o SQL já estava aplicado desde a 24ª medição.
+6. **Publicar a Onda 49.** O ar segue em `index-DPV0JUG6.js` (Onda 48). A 32ª
+   medição deve achar `Buscar ficha PLM ou referência`, `Defeito ou problema
+da CAPA`, `wave-codigo`, `lojista-razao`, `URL da imagem de referência
+visual` e `Descrição da peça para gerar croqui` no bundle, e repetir os
+   cliques em produção. Publicar app **não aplica SQL**.
+7. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
    specs de e2e seguem `skipped` e não há prova de fluxo autenticado contra
    produção (baixa de material, cancelamento de reservas, sync CAD → ficha).
 
@@ -298,7 +324,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 681 testes
+cd plm-use && npx vitest run            # 686 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -306,12 +332,14 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: código das Ondas 47/48 em `main@5af3964` (`48f05c6` é a 47) +
-commits de medição,
-`docs/producao/ONDA-19..48-*.md` e os números das suítes
-(vitest **681/681**, SQL 163/163). 28ª medição: bundle `index-CdXaXBJP.js`
-com **227 chunks** e todos os marcadores da Onda 47 — repo/ar/banco
-alinhados. 29ª medição: os **6 marcadores da Onda 48 = 0**, logo o ar é a
-**Onda 47**, uma onda atrás do repo; `DEV000006` **20**; banco com as
-migrações 21/24 aplicadas desde a 24ª medição, view `200 []` e 4 funções
-`401 42501`). Medição por camada em `SINCRONIA-2026-11-05.md`.
+Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
+`5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
+números das suítes (vitest **686/686**, SQL 163/163). 28ª medição: bundle
+`index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
+repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
+**30ª medição: publicação não relatada da Onda 48 detectada por BFS**
+(`index-DPV0JUG6.js` / `index-DnKqdFO4.js`) e validada por cliques reais em
+produção. **31ª medição: repo Onda 49, ar Onda 48** (224 chunks / 3.175.104
+bytes no BFS estrito, 6 marcadores da 49 = 0); `DEV000006` **20**; banco com
+as migrações 21/24 aplicadas desde a 24ª medição, view `200 []` e 4 funções
+`401 42501`. Medição por camada em `SINCRONIA-2026-11-05.md`.
