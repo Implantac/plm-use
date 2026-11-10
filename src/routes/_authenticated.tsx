@@ -169,18 +169,16 @@ function AuthenticatedLayout() {
       typeof window !== "undefined"
         ? window.localStorage.getItem("use-moda-sidebar-sections-v4")
         : null;
-    return stored
-      ? (JSON.parse(stored) as Record<string, boolean>)
-      : {
-          inicio: true,
-          criar: false,
-          colecoes: false,
-          produtos: false,
-          industrial: false,
-          mercado: false,
-          inteligencia: false,
-          admin: false,
-        };
+    if (stored) return JSON.parse(stored) as Record<string, boolean>;
+    // Onda 43. O default antigo usava chaves obsoletas (`inicio`, `criar`,
+    // `colecoes`...) que NAO existem mais em NAV_GROUPS. Resultado medido no
+    // browser: só 4 das 42 rotas ficavam visíveis no primeiro uso, e o usuário
+    // precisava adivinhar que os títulos eram botões clicáveis. As chaves agora
+    // vêm do proprio registry e os tres grupos iniciais abrem por padrao.
+    const abertos = new Set(["geral", "plm-criacao", "plm-engenharia"]);
+    return Object.fromEntries(
+      (Object.keys(NAV_GROUPS) as string[]).map((g) => [g, abertos.has(g)]),
+    );
   });
 
   // Sincroniza o grupo ativo com a rota atual — abre automaticamente a seção do processo em uso.
@@ -312,7 +310,17 @@ function AuthenticatedLayout() {
                     aria-expanded={open}
                     className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-semibold uppercase tracking-wide transition-colors ${sectionActive ? "text-foreground" : "text-muted-foreground/70 hover:text-foreground"}`}
                   >
-                    <span>{section.label}</span>
+                    <span className="flex items-center gap-1.5">
+                      <span>{section.label}</span>
+                      {!open && (
+                        <span
+                          aria-label={`${section.items.length} páginas neste grupo`}
+                          className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-normal tabular-nums text-muted-foreground"
+                        >
+                          {section.items.length}
+                        </span>
+                      )}
+                    </span>
                     <ChevronDown
                       className={`w-3 h-3 transition-transform ${open ? "" : "-rotate-90"}`}
                     />

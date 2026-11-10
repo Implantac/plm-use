@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 19ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 20ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,22 +10,20 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 42** — `7b11535`                | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 41** — `index-HH9GNbDa.js`      | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 43**                            | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 42** — `index-D2xvfyGH.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** **o ar avançou de novo, sem aviso
-do dono**. Saiu `index-BcTzKh6M.js` e entrou **`index-HH9GNbDa.js` (221
-chunks)**. `sop-sem-pedidos` **1**, `sop-sem-faccao` **1**,
-`lgpd-so-vitrine` **1** e `briefing-so-vitrine` **1**: as **Ondas 39, 40 e 41
-foram publicadas juntas** depois de duas rodadas paradas. `"Helena Prado"`
-ainda aparece 1 vez, o que é esperado — a vitrine continua na tela, mas fora
-do CSV/A4 e com selo. `supplier-so-vitrine` e `scoreboard-so-vitrine` = **0**:
-a **Onda 42** ainda não foi publicada. `"Certificado ABVTEX"` aparece **8
-vezes** e o CNPJ `19.840.220/0001-31` 1 vez — a vitrine de fornecedores segue
-sem declaração no ar. `DEV000006` permanece em **27** ocorrências. O banco
-continua sem as migrações (19ª medição: `PGRST205` na view e `PGRST202` nas
-três RPCs).
+**O que mudou desde a medição anterior:** **o ar avançou mais uma vez, sem
+aviso do dono**. Saiu `index-HH9GNbDa.js` e entrou **`index-D2xvfyGH.js` (221
+chunks)** com `supplier-so-vitrine` **1** e `scoreboard-so-vitrine` **1**: a
+**Onda 42 está no ar**. O repo passou para a **Onda 43**, que é uma revisão de
+UX executada no browser (`ComecePorAqui`, sidebar corrigida, fluxo colapsado,
+`aria-required`), então `comece-por-aqui`, `progresso-onboarding`,
+`fluxo-operacional-detalhes` e `páginas neste grupo` = **0** no bundle. A
+distância continua sendo **uma onda**. `DEV000006` permanece em **27**
+ocorrências. O banco segue sem as migrações (20ª medição: `PGRST205` na view
+e `PGRST202` nas três RPCs).
 
 ---
 
@@ -67,14 +65,15 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 39   | `sop-sem-pedidos`                               | **1**       | ✅      |
 | 40   | `sop-sem-faccao` / `apuravelFaccao`             | **1**       | ✅      |
 | 41   | `lgpd-so-vitrine` / `briefing-so-vitrine`       | **1**       | ✅      |
-| 42   | `supplier-so-vitrine` / `scoreboard-so-vitrine` | **0**       | ❌      |
+| 42   | `supplier-so-vitrine` / `scoreboard-so-vitrine` | **1**       | ✅      |
+| 43   | `comece-por-aqui` / `progresso-onboarding`      | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 41**, **uma onda** atrás do repo (42). A
+**Conclusão:** o ar está na **Onda 42**, **uma onda** atrás do repo (43). A
 camada mais atrasada continua sendo o **banco**. A frase "Consumo e liberação
 são automáticos" ainda existe no bundle, mas condicionada ao ramo `ativa` —
 com as migrações pendentes, o operador vê o aviso âmbar, não a promessa. A
-trilha LGPD publicada já não contém ficção: o CSV e o A4 foram corrigidos
-pela Onda 41. O que resta sem declaração no ar é o ranking de fornecedores.
+trilha LGPD e o ranking de fornecedores publicados já estão corrigidos; o que
+falta no ar é a **experiência de primeiro uso** da Onda 43.
 
 ---
 

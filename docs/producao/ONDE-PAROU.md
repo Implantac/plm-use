@@ -156,18 +156,22 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 42 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 43 (04–06/11/2026) — o que mudou depois deste documento
 
-> **Atualização de 06/11 (19ª medição):** depois de duas rodadas paradas,
-> **o ar avançou de novo, sem aviso do dono** — entry **`index-HH9GNbDa.js`**,
-> 221 chunks, com `sop-sem-pedidos`, `sop-sem-faccao`, `lgpd-so-vitrine` e
-> `briefing-so-vitrine` presentes: as **Ondas 39, 40 e 41 foram publicadas
-> juntas**. A distância caiu de três ondas para **uma**. O repositório está
-> na **Onda 42** (fornecedores de demonstração fora do ranking de homologação,
-> do OTIF médio e dos documentos de remessa); `supplier-so-vitrine` = 0 no
-> ar. `DEV000006` segue em 27 ocorrências. O banco **continua sem as
-> migrações das Ondas 21 e 24** (`PGRST205` na view, `PGRST202` nas três
-> RPCs) — publicar app não aplica SQL. Medição completa:
+> **Atualização de 06/11 (20ª medição):** o ar **avançou mais uma vez,
+> sem aviso** — entry **`index-D2xvfyGH.js`**, 221 chunks, com
+> `supplier-so-vitrine` e `scoreboard-so-vitrine` presentes: a **Onda 42 foi
+> publicada**. A **Onda 43 muda de frente**: em vez de outra vitrine, é uma
+> **revisão de UX ponta a ponta executada no browser** (17 rotas, 4 tarefas,
+> Chromium headless). Diagnóstico: só 4 das 42 rotas visíveis na sidebar por
+> causa de chaves obsoletas no default, ~100 `—` espalhados e nenhuma resposta
+> para "o que faço agora?". Correções: card `ComecePorAqui` com 4 passos e
+> progresso derivado dos stores, sidebar com 19 links e contadores, fluxo de
+> 6 etapas colapsado, `aria-required` no primeiro formulário. **24 testes
+> novos, 610/610.** `DEV000006` segue em 27 ocorrências. O banco **continua
+> sem as migrações das Ondas 21 e 24** (`PGRST205` na view, `PGRST202` nas
+> três RPCs) — publicar app não aplica SQL. Relatório completo:
+> `docs/producao/ONDA-43-REVISAO-DE-UX-PONTA-A-PONTA.md`; medição em
 > `docs/producao/SINCRONIA-2026-11-05.md`.
 
 | Onda                                  | Commit    | O que entregou                                                                                                                                                                                                                                                                                                                                           | Está no ar?             |
@@ -196,6 +200,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 40 — Chão de fábrica não é vitrine    | `3b33065` | Medição: 3 OS de fábrica geravam 656 peças "em voo" no Book S&OP A4 e 4 lotes PCP viravam "4 lotes monitorados" no copiloto. `demo?: boolean` em OS e Lote, `servicosOperacionais`/`lotesOperacionais`, 3 updaters promovem a vitrine, `apuravelFaccao`, A4 e KPIs com `—`. 12 testes novos                                                              | ❌ não republicado      |
 | 41 — Trilha LGPD sem ficção           | `334d672` | Medição: `buildLgpdAuditCsv` e o A4 de governança exportavam 4 eventos fabricados (Helena Prado, PD-2026-802, bases legais LGPD); 4 briefings geravam "Aderência Comercial 92%". `demo?: boolean` + `eventosAuditaveis`/`briefingsOperacionais`, CSV só com cabeçalho, A4 com aviso, KPIs `—`, botões bloqueados, selos, edição promove. 12 testes novos | ❌ não republicado      |
 | 42 — Fornecedor de papel não homologa | `7b11535` | Medição: 4 parceiros com CNPJ/certificação ABVTEX/scores inventados geravam ranking 93/A+ > 92/A+ > 90/A+ > 88/A, "4 homologados", OTIF 90% e podiam assinar XML NF-e/Guia A4. `demo?: boolean`, `parceirosOperacionais`, `apuravel`, KPIs e scoreboard com `—`, bloqueio de XML/A4, edição promove. 12 testes novos                                     | ❌ não republicado      |
+| 43 — Revisão de UX ponta a ponta      | `HEAD`    | Teste real no browser (17 rotas, 4 tarefas): sidebar 4→19 links, Ficha Técnica 2→1 clique, `aria-required` 0→2, fluxo de 6 etapas colapsado. `ComecePorAqui` com 4 passos e progresso derivado de `operationalCodes`/`pedidosOperacionais`/`parceirosOperacionais`/`campanhasOperacionais`. 24 testes novos                                              | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -224,11 +229,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    isso não acontece, o defeito continua ativo nos dados reais — e as reservas
    antigas já presas não são limpas sozinhas: use `stock_reservation_aging`
    (ordene por `dias_ativa`) para cancelar o que já foi consumido na prática.
-2. **Republicar o app no Lovable na Onda 42.** O bundle em
-   `plmuse.lovable.app` é o da **Onda 41** (19ª medição, entry
-   `index-HH9GNbDa.js`): as Ondas 20–41 estão no ar, falta **só a 42**.
-   Enquanto isso, o ranking de fornecedores no ar ainda usa CNPJs e
-   certificações de demonstração. Isto é publicar — **não** aplica o SQL do
+2. **Republicar o app no Lovable na Onda 43.** O bundle em
+   `plmuse.lovable.app` é o da **Onda 42** (20ª medição, entry
+   `index-D2xvfyGH.js`): as Ondas 20–42 estão no ar, falta **só a 43**.
+   Enquanto isso, o primeiro uso no ar continua com 4 rotas visíveis e sem
+   nenhuma orientação sobre os `—`. Isto é publicar — **não** aplica o SQL do
    item 1.
 
 ---
@@ -240,7 +245,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 586 testes
+cd plm-use && npx vitest run            # 610 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -248,8 +253,8 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@7b11535` (Onda 42),
-`docs/producao/ONDA-19..42-*.md` e os números das suítes rodadas em 05/11
-(vitest **586/586**, SQL 163/163, bundle relido com **221 chunks** no entry
-`index-HH9GNbDa.js`: marcadores das Ondas 24–41 presentes — logo o ar é a
-Onda 41, uma onda atrás do repo). Medição por camada em `SINCRONIA-2026-11-05.md`.
+Seção 7-A: `main@HEAD` (Onda 43; hash em `git log -1`),
+`docs/producao/ONDA-19..43-*.md` e os números das suítes rodadas em 05/11
+(vitest **610/610**, SQL 163/163, bundle relido com **221 chunks** no entry
+`index-D2xvfyGH.js`: marcadores das Ondas 24–42 presentes — logo o ar é a
+Onda 42, uma onda atrás do repo). Medição por camada em `SINCRONIA-2026-11-05.md`.

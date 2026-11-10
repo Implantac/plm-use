@@ -8,6 +8,7 @@ import {
   Boxes,
   Calculator,
   CircleDot,
+  ChevronDown,
   ClipboardCheck,
   Factory,
   Layers3,
@@ -20,6 +21,7 @@ import {
 import { ORDER_FLOW_STEPS, ORDER_STATUS } from "@/lib/sales/types";
 import { computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
 import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
+import { ComecePorAqui } from "@/components/onboarding/ComecePorAqui";
 import { sheetProvenance } from "@/lib/techsheet/provenance";
 import {
   computeDigitalProductPassport,
@@ -148,6 +150,9 @@ function Dashboard() {
         </div>
       </motion.section>
 
+      {/* Onda 43: um unico ponto de entrada explica o "—" e da o proximo passo. */}
+      <ComecePorAqui />
+
       {/* Redesign 26/out — "onde começa e onde termina": o ciclo comercial vira
           trilha numerada na primeira dobra do dashboard. Fonte: ORDER_FLOW_STEPS
           (mesma máquina que o backend executa — docs/FLUXO-OPERACIONAL-PEDIDO.md). */}
@@ -158,46 +163,61 @@ function Dashboard() {
         aria-label="Fluxo operacional do pedido"
         className="glass-card rounded-lg p-4"
       >
-        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-sm font-semibold">Fluxo operacional — do pedido à OP</h2>
-          <p className="text-xs text-muted-foreground">
-            Começa com o <span className="font-medium text-foreground">vendedor</span> criando o
-            pedido; termina quando a{" "}
-            <span className="font-medium text-foreground">OP entra na régua do PCP</span>.
-          </p>
-        </div>
-        <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {ORDER_FLOW_STEPS.map((step, i) => (
-            <li key={step.status}>
-              <Link
-                to={step.status === "liberado_pcp" ? "/production" : "/orders"}
-                className="group flex h-full items-start gap-2.5 rounded-lg border border-border/60 px-3 py-2.5 transition-colors hover:border-primary/40 hover:bg-primary/5"
-              >
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-2xs font-semibold tabular-nums text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground">
-                  {i + 1}
-                </span>
-                <span className="min-w-0">
-                  <span className="flex items-center gap-1.5 text-xs font-semibold">
-                    {step.status === "rascunho" && <Send className="h-3.5 w-3.5 text-primary" />}
-                    {(step.status === "enviado" || step.status === "em_custo") && (
-                      <Calculator className="h-3.5 w-3.5 text-primary" />
-                    )}
-                    {(step.status === "custo_concluido" || step.status === "aprovado") && (
-                      <BadgeCheck className="h-3.5 w-3.5 text-primary" />
-                    )}
-                    {step.status === "liberado_pcp" && (
-                      <Factory className="h-3.5 w-3.5 text-primary" />
-                    )}
-                    {ORDER_STATUS[step.status].label}
-                  </span>
-                  <span className="block text-2xs leading-snug text-muted-foreground">
-                    {step.who} · {step.action}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ol>
+        <details data-testid="fluxo-operacional-detalhes" className="group">
+          <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-2 [&::-webkit-details-marker]:hidden">
+            <span className="flex flex-wrap items-baseline gap-2">
+              <h2 className="text-sm font-semibold">Como funciona o fluxo do pedido</h2>
+              <span className="text-xs text-muted-foreground">
+                6 etapas · do pedido do vendedor até a OP na régua do PCP
+              </span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-primary">
+              Ver etapas
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+            </span>
+          </summary>
+          <div className="mt-3 border-t border-border/60 pt-3">
+            <p className="mb-3 text-xs text-muted-foreground">
+              Começa com o <span className="font-medium text-foreground">vendedor</span> criando o
+              pedido; termina quando a{" "}
+              <span className="font-medium text-foreground">OP entra na régua do PCP</span>.
+            </p>
+            <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+              {ORDER_FLOW_STEPS.map((step, i) => (
+                <li key={step.status}>
+                  <Link
+                    to={step.status === "liberado_pcp" ? "/production" : "/orders"}
+                    className="group flex h-full items-start gap-2.5 rounded-lg border border-border/60 px-3 py-2.5 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                  >
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-2xs font-semibold tabular-nums text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground">
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="flex items-center gap-1.5 text-xs font-semibold">
+                        {step.status === "rascunho" && (
+                          <Send className="h-3.5 w-3.5 text-primary" />
+                        )}
+                        {(step.status === "enviado" || step.status === "em_custo") && (
+                          <Calculator className="h-3.5 w-3.5 text-primary" />
+                        )}
+                        {(step.status === "custo_concluido" || step.status === "aprovado") && (
+                          <BadgeCheck className="h-3.5 w-3.5 text-primary" />
+                        )}
+                        {step.status === "liberado_pcp" && (
+                          <Factory className="h-3.5 w-3.5 text-primary" />
+                        )}
+                        {ORDER_STATUS[step.status].label}
+                      </span>
+                      <span className="block text-2xs leading-snug text-muted-foreground">
+                        {step.who} · {step.action}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </details>
       </motion.section>
 
       {/* Torre Executiva 360° — Pulso Industrial PLM Fluido 2.0 */}

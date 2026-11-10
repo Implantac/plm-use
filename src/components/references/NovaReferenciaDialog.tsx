@@ -186,6 +186,8 @@ export function NovaReferenciaDialog({
                       setErrors((p) => ({ ...p, code: undefined }));
                     }}
                     placeholder="VR-001"
+                    required
+                    aria-required="true"
                     aria-invalid={!!errors.code}
                   />
                   <Button
@@ -232,6 +234,8 @@ export function NovaReferenciaDialog({
                     setErrors((p) => ({ ...p, name: undefined }));
                   }}
                   placeholder="Camiseta manga curta gola V"
+                  required
+                  aria-required="true"
                   aria-invalid={!!errors.name}
                 />
                 {errors.name && <FieldMessage variant="error">{errors.name}</FieldMessage>}
