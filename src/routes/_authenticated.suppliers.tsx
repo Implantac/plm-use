@@ -31,6 +31,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { OutsourcingServiceOrderPanel } from "@/components/pcp/OutsourcingServiceOrderPanel";
 import { SupplierScoreboard } from "@/components/suppliers/SupplierScoreboard";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import {
   PARCEIRO_DEMO_LABEL,
   computePartnerMetrics,
@@ -247,6 +248,12 @@ function SuppliersPage() {
           <strong>{partners.length} fornecedores de demonstração.</strong> {PARCEIRO_DEMO_LABEL}.
           Cadastre ou edite um parceiro para que o ranking, o OTIF médio e os documentos de remessa
           passem a ser apurados.
+          <CtaProximoPasso
+            passo="fornecedor"
+            onAcao={() => handleOpenDialog()}
+            label="Cadastrar parceiro"
+            testId="cta-supplier-so-vitrine"
+          />
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

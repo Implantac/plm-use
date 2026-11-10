@@ -16,6 +16,7 @@ import { toast } from "sonner";
 
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -169,6 +170,12 @@ function SecurityPage() {
           <strong>{auditEntries.length} eventos de demonstração na trilha.</strong>{" "}
           {EVENTO_DEMO_LABEL}. Registre uma ação real no Trust Center para que o CSV e o Relatório
           A4 de governança passem a ser auditáveis.
+          <CtaProximoPasso
+            passo="ficha"
+            onAcao={() => setOpenLogModal(true)}
+            label="Registrar evento"
+            testId="cta-lgpd-so-vitrine"
+          />
         </div>
       )}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

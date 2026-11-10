@@ -10,6 +10,7 @@ import { pedidosOperacionais, usePrivateLabelQueueStore } from "@/lib/sales/priv
 import { brl } from "@/lib/sales/types";
 import { servicosOperacionais, useOutsourcingStore } from "@/lib/techsheet/outsourcing-os";
 import { campanhasOperacionais, useResearchGtmStore } from "@/lib/techsheet/research-gtm";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 export function LiveSopBoard() {
   const ordersRaw = usePrivateLabelQueueStore((s) => s.orders);
@@ -47,28 +48,48 @@ export function LiveSopBoard() {
     <Card className="border-border bg-card rounded-xl mb-6">
       <CardContent className="p-4 space-y-3">
         {soVitrineFaccao && (
-          <p
-            data-testid="sop-sem-faccao"
-            className="text-[10px] text-amber-700 dark:text-amber-300"
-          >
-            Ordens de serviço de demonstração não entram no Book S&OP: peças em voo em facção não
-            são apuráveis sem uma OS cadastrada pela empresa.
-          </p>
+          <div>
+            <p
+              data-testid="sop-sem-faccao"
+              className="text-[10px] text-amber-700 dark:text-amber-300"
+            >
+              Ordens de serviço de demonstração não entram no Book S&OP: peças em voo em facção não
+              são apuráveis sem uma OS cadastrada pela empresa.
+            </p>
+            <CtaProximoPasso
+              passo="fornecedor"
+              label="Ir para Fornecedores"
+              testId="cta-sop-sem-faccao"
+            />
+          </div>
         )}
         {soVitrinePedidos && (
-          <p
-            data-testid="sop-sem-pedidos"
-            className="text-[10px] text-amber-700 dark:text-amber-300"
-          >
-            Pedidos de demonstração não entram na carteira B2B: faturamento, margem ponderada e
-            volume não são apuráveis sem um pedido cadastrado pela empresa.
-          </p>
+          <div>
+            <p
+              data-testid="sop-sem-pedidos"
+              className="text-[10px] text-amber-700 dark:text-amber-300"
+            >
+              Pedidos de demonstração não entram na carteira B2B: faturamento, margem ponderada e
+              volume não são apuráveis sem um pedido cadastrado pela empresa.
+            </p>
+            <CtaProximoPasso passo="pedido" label="Ir para Pedidos" testId="cta-sop-sem-pedidos" />
+          </div>
         )}
         {soVitrine && (
-          <p data-testid="sop-sem-drops" className="text-[10px] text-amber-700 dark:text-amber-300">
-            Campanhas de demonstração não entram no Book Executivo S&OP: receita e ROAS de Drops não
-            são apuráveis sem um Drop cadastrado pela empresa.
-          </p>
+          <div>
+            <p
+              data-testid="sop-sem-drops"
+              className="text-[10px] text-amber-700 dark:text-amber-300"
+            >
+              Campanhas de demonstração não entram no Book Executivo S&OP: receita e ROAS de Drops
+              não são apuráveis sem um Drop cadastrado pela empresa.
+            </p>
+            <CtaProximoPasso
+              passo="campanha"
+              label="Ir para Marketing"
+              testId="cta-sop-sem-drops"
+            />
+          </div>
         )}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">

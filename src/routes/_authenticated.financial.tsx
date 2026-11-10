@@ -16,6 +16,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import {
   Dialog,
   DialogContent,
@@ -303,6 +304,9 @@ function FinancialPage() {
             SKUs do modelo excluídos da apuração:{" "}
             <span className="font-mono">{dre.origem.referencias.join(", ")}</span>
           </span>
+        )}
+        {dre.origem.apenasReferencia && (
+          <CtaProximoPasso passo="ficha" label="Criar ficha técnica" testId="cta-dre-sem-ficha" />
         )}
       </div>
 

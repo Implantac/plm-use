@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { MoodBoard } from "@/components/research/MoodBoard";
 import { AiCroquiPanel } from "@/components/research/AiCroquiPanel";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import {
   BRIEFING_DEMO_LABEL,
   briefingsOperacionais,
@@ -255,6 +256,12 @@ function ResearchHub() {
         >
           <strong>{briefings.length} briefings de demonstração.</strong> {BRIEFING_DEMO_LABEL}. Crie
           ou edite um briefing para que a aderência comercial e o preço-alvo passem a ser apurados.
+          <CtaProximoPasso
+            passo="ficha"
+            onAcao={() => handleOpenDialog()}
+            label="Criar briefing"
+            testId="cta-briefing-so-vitrine"
+          />
         </div>
       )}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-6 mb-6">

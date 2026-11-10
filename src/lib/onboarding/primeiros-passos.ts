@@ -133,3 +133,9 @@ export function usePrimeirosPassos(): EstadoOnboarding {
     [data, materializadas, orders, partners, campaigns],
   );
 }
+
+/** Um passo específico, para os avisos de vitrine espalhados pelas telas. */
+export function usePasso(id: PassoId): Passo {
+  const estado = usePrimeirosPassos();
+  return estado.passos.find((p) => p.id === id) ?? estado.passos[0]!;
+}

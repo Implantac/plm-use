@@ -9,6 +9,7 @@ import {
   useOutsourcingStore,
 } from "@/lib/techsheet/outsourcing-os";
 import { useTechSheetStore } from "@/lib/techsheet/store";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 const tierStyle = (tier: "A+" | "A" | "B" | "C") =>
   tier === "A+"
@@ -55,6 +56,11 @@ export function SupplierScoreboard() {
         >
           {PARCEIRO_DEMO_LABEL}. Scores, CNPJ e certificações abaixo são de demonstração: o ranking
           de homologação não é apurável.
+          <CtaProximoPasso
+            passo="fornecedor"
+            label="Ir para Fornecedores"
+            testId="cta-scoreboard-so-vitrine"
+          />
         </p>
       )}
       <div className="rounded-lg border border-border/60 overflow-x-auto">

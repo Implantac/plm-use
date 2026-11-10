@@ -37,6 +37,7 @@ import {
   type GtmDropCampaign,
 } from "@/lib/techsheet/research-gtm";
 import { useTechSheetStore } from "@/lib/techsheet/store";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 export const Route = createFileRoute("/_authenticated/marketing")({
   component: MarketingPage,
@@ -226,6 +227,12 @@ function MarketingPage() {
           <strong>{campaigns.length} campanhas de demonstração na vitrine.</strong> {GTM_DEMO_LABEL}
           . Cadastre um Drop ou edite um dos existentes para que os números de mídia, receita
           atribuída e ROAS passem a ser apurados.
+          <CtaProximoPasso
+            passo="campanha"
+            onAcao={() => handleOpenDialog()}
+            label="Cadastrar Drop"
+            testId="cta-gtm-so-vitrine"
+          />
         </div>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

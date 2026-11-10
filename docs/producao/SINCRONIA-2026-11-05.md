@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 20ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 21ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,20 +10,20 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 43** — `ee97e4f`                | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 42** — `index-D2xvfyGH.js`      | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 44**                            | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 43** — `index-BuzojJqi.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
 **O que mudou desde a medição anterior:** **o ar avançou mais uma vez, sem
-aviso do dono**. Saiu `index-HH9GNbDa.js` e entrou **`index-D2xvfyGH.js` (221
-chunks)** com `supplier-so-vitrine` **1** e `scoreboard-so-vitrine` **1**: a
-**Onda 42 está no ar**. O repo passou para a **Onda 43**, que é uma revisão de
-UX executada no browser (`ComecePorAqui`, sidebar corrigida, fluxo colapsado,
-`aria-required`), então `comece-por-aqui`, `progresso-onboarding`,
-`fluxo-operacional-detalhes` e `páginas neste grupo` = **0** no bundle. A
-distância continua sendo **uma onda**. `DEV000006` permanece em **27**
-ocorrências. O banco segue sem as migrações (20ª medição: `PGRST205` na view
-e `PGRST202` nas três RPCs).
+aviso do dono**. Saiu `index-D2xvfyGH.js` e entrou **`index-BuzojJqi.js` (221
+chunks)** com `comece-por-aqui` **3**, `Comece por aqui` **1**,
+`progresso-onboarding` **1**, `páginas neste grupo` **1** e
+`fluxo-operacional-detalhes` **1**: a **Onda 43 está no ar**. O repo passou para
+a **Onda 44** (9 avisos de vitrine ganharam CTA), então
+`cta-supplier-so-vitrine`, `cta-sop-sem-pedidos` e `CtaProximoPasso` = **0** no
+bundle. A distância continua sendo **uma onda**. `DEV000006` permanece em **27**
+ocorrências. O banco segue sem as migrações (21ª medição: `PGRST205` na view e
+`PGRST202` nas três RPCs).
 
 ---
 
@@ -66,14 +66,15 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 40   | `sop-sem-faccao` / `apuravelFaccao`             | **1**       | ✅      |
 | 41   | `lgpd-so-vitrine` / `briefing-so-vitrine`       | **1**       | ✅      |
 | 42   | `supplier-so-vitrine` / `scoreboard-so-vitrine` | **1**       | ✅      |
-| 43   | `comece-por-aqui` / `progresso-onboarding`      | **0**       | ❌      |
+| 43   | `comece-por-aqui` / `progresso-onboarding`      | **1**       | ✅      |
+| 44   | `cta-supplier-so-vitrine` / `CtaProximoPasso`   | **0**       | ❌      |
 
-**Conclusão:** o ar está na **Onda 42**, **uma onda** atrás do repo (43). A
+**Conclusão:** o ar está na **Onda 43**, **uma onda** atrás do repo (44). A
 camada mais atrasada continua sendo o **banco**. A frase "Consumo e liberação
 são automáticos" ainda existe no bundle, mas condicionada ao ramo `ativa` —
-com as migrações pendentes, o operador vê o aviso âmbar, não a promessa. A
-trilha LGPD e o ranking de fornecedores publicados já estão corrigidos; o que
-falta no ar é a **experiência de primeiro uso** da Onda 43.
+com as migrações pendentes, o operador vê o aviso âmbar, não a promessa. O
+primeiro uso publicado já tem o guia "Comece por aqui" e a sidebar corrigida;
+o que falta no ar é a **saída de cada aviso de vitrine** da Onda 44.
 
 ---
 
