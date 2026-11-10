@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 25ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 26ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,18 +10,36 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                     | Como foi medido                      |
 | ---------------------------------------------- | --------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 46** — `2ef69b5`           | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 45** — `index-CPZSdWEg.js` | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 46** — `2ff1647`           | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 46** — `index-CeAMfFot.js` | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções  |
 
-**O que mudou desde a medição anterior:** o dono disse **"ok prossiga"** e a
-Onda **46** foi escolhida pelo risco. O banco **permanece alinhado** (view
-`200 []`, 4 funções `401 42501` — re-medido agora). O **ar parou** novamente:
-continua `index-CPZSdWEg.js` (223 chunks) = **Onda 45**, e os marcadores novos
-`cad-so-vitrine`, `prototipo-so-vitrine`, `studio-sem-ficha`, `Cadastrar meu
-molde` e `cta-cad-sem-molde` dão **0** no bundle. `DEV000006` segue **27×**.
-O repo avançou para a **Onda 46**: a vitrine de CAD/Pilotagem deixou de apurar
-número e o `<Toaster />` passou a existir. Distância: **uma onda (46)**.
+**O que mudou desde a medição anterior:** o dono reportou **"publicado"** e a
+medição **confirmou**. Saiu `index-CPZSdWEg.js` e entrou
+**`index-CeAMfFot.js` (223 chunks)**. Marcadores da Onda 46 no bundle:
+`cad-so-vitrine` **1**, `prototipo-so-vitrine` **1**, `studio-sem-ficha` **1**,
+`cta-cad-sem-molde` **1**, `cta-prototipo-sem-piloto` **1**, `"Cadastrar meu
+molde"` **1**, `"Cadastrar como meu"` **1**, `"Sync indisponível"` **1**,
+`"Sem foto do piloto"` **1**, `"Demonstração · não apurado"` **2** e
+`"toaster group"` **1** (o `<Toaster />` agora entra no bundle).
+`glossario-termos` segue **1**, `CtaProximoPasso` **7**, `"Torre Executiva PLM
+2.0"` **0**. **`DEV000006` caiu de 27 para 20 ocorrências**: os 7 literais de
+código executável/formulário saíram; os 20 restantes são a vitrine declarada
+(`demo: true`) nos stores. **Repo, ar e banco alinhados na Onda 46** — a
+distância de uma onda zerou.
+
+Além do BFS, houve **validação com cliques reais contra produção**
+(Chromium, sessão local sem escrita no banco): `/cad` com `MOLDES ATIVOS —`,
+`EFICIÊNCIA MÉDIA —`, `APROVADOS —`, aviso + CTA, 2 `cad-sync-bloqueado`,
+formulário `['', '', '', '0', '0', '0', '1', '0', '0', '0', 'on']` e, ao
+salvar vazio, o toast **"Informe o código da referência e o nome do arquivo de
+molde."**; `/prototypes` com 4 KPIs `—`, aviso + CTA e 2 "Cadastrar como meu";
+`/ai-center` com `studio-sem-ficha`, `<select>` de 1 opção e botão
+"Carregar Ficha" **desabilitado**. Capturas:
+`/home/user/onda46-producao-cad.png`, `/home/user/onda46-producao-prototypes.png`.
+
+Banco re-medido, sem mudança: view `stock_reservation_aging` **`200 []`** e as
+4 funções **`401 42501`**.
 
 ---
 
@@ -67,15 +85,15 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 43   | `comece-por-aqui` / `progresso-onboarding`      | **1**       | ✅      |
 | 44   | `cta-supplier-so-vitrine` / `CtaProximoPasso`   | **1**       | ✅      |
 | 45   | `glossario-termos` / `Ferramentas do produto`   | **1**       | ✅      |
-| 46   | `cad-so-vitrine` / `prototipo-so-vitrine`       | **0**       | ❌      |
+| 46   | `cad-so-vitrine` / `prototipo-so-vitrine`       | **1**       | ✅      |
 
-**Conclusão:** o **repo está na Onda 46**, o **ar na Onda 45** (uma onda para
-publicar) e o **banco continua alinhado** desde a 24ª medição — a camada que
-atrasou por 20 medições agora é a mais estável. A frase "Consumo e liberação
-são automáticos" deixou de ser falsa em produção. O que o ar ainda não tem:
-KPIs honestos de `/cad` e `/prototypes`, bloqueio de sync/lacre sobre a
-vitrine, avisos com CTA e **qualquer feedback de toast**. O que ainda não foi
-provado em nenhuma camada é o fluxo autenticado de ponta a ponta: sem
+**Conclusão:** **repo, ar e banco estão na Onda 46** — nenhuma camada atrasada.
+A vitrine de CAD/Pilotagem deixou de apurar número também no ar, o bloqueio de
+sync/lacre está publicado, os avisos têm CTA e o feedback de toast finalmente
+aparece para o usuário. `DEV000006` caiu de 27× para **20×** e o que resta é
+vitrine explicitamente rotulada. A frase "Consumo e liberação são automáticos"
+deixou de ser falsa em produção desde a 24ª medição. O que ainda **não** foi
+provado: o fluxo autenticado de ponta a ponta — sem
 `PLM_E2E_EMAIL`/`PLM_E2E_PASSWORD` os dois specs de e2e seguem `skipped`.
 
 ---
@@ -122,11 +140,11 @@ passam a existir.
 | ----------------------------------------------- | -------------------------------------------------------------------------- | --------------- |
 | ~~Ar duas ondas atrás do repo~~ **zerado**      | ~~republicar~~ concluído na 23ª medição (`index-CPZSdWEg.js`)              | dono do projeto |
 | ~~Banco sem as migrações 21 e 24~~ **aplicado** | ~~colar SQL~~ concluído na 24ª medição: view `200 []`, funções `401 42501` | dono do projeto |
-| **Ar uma onda atrás do repo (46)**              | republicar no Lovable — **só publicar**, o SQL já está aplicado            | dono do projeto |
+| ~~Ar uma onda atrás do repo (46)~~ **zerado**   | ~~republicar~~ concluído na 26ª medição (`index-CeAMfFot.js`)              | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                              | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`    | dono do projeto |
 
-Publicação das Ondas 44/45 e SQL concluídos; banco alinhado. Restam duas ações que não são código: **publicar a Onda 46** e dar a credencial de e2e (e, se houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
+Publicação das Ondas 44/45/46 e SQL concluídos; as três camadas alinhadas. Resta uma ação que não é código: dar a credencial de e2e (e, se houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
 

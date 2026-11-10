@@ -174,3 +174,38 @@ declarada; `ensure()` ainda cria modelo/`materializadas` se chamado (sem
 chamadores em código executável); `photorealism`/placeholder de primeiro frame;
 jargão em telas internas (`/audit`, `/route-engineering`); formulário longo de
 `/orders` (18 inputs / 62 botões).
+
+---
+
+## 7. Adendo — 26ª medição: publicado e confirmado em produção
+
+O dono reportou **"publicado"**. Validação em **duas camadas**, não confirmação
+cega:
+
+**Bundle (BFS, 223 chunks):** saiu `index-CPZSdWEg.js`, entrou
+**`index-CeAMfFot.js`**. `cad-so-vitrine`, `prototipo-so-vitrine`,
+`studio-sem-ficha`, `cta-cad-sem-molde`, `cta-prototipo-sem-piloto`,
+`"Cadastrar meu molde"`, `"Cadastrar como meu"`, `"Sync indisponível"`,
+`"Sem foto do piloto"`, `"toaster group"` = **1** cada;
+`"Demonstração · não apurado"` = **2**. **`DEV000006` 27× → 20×** (os 7
+literais executáveis removidos; os 20 restantes são a vitrine `demo: true`).
+
+**Browser com cliques reais contra `plmuse.lovable.app`:**
+
+| Rota          | Medido em produção                                                                                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/cad`        | `MOLDES ATIVOS —`, `EFICIÊNCIA MÉDIA —`, `APROVADOS —`; aviso + CTA; 2 `cad-sync-bloqueado`; 2 selos; formulário zerado; ao salvar vazio, toast **"Informe o código da referência e o nome do arquivo de molde."** |
+| `/prototypes` | 4 KPIs `—`; aviso + CTA; 2 botões "Cadastrar como meu"                                                                                                                                                             |
+| `/ai-center`  | `studio-sem-ficha` presente; `<select>` com 1 opção ("Nenhuma ficha técnica salva"); "Carregar Ficha" **desabilitado**                                                                                             |
+
+> Nota metodológica: a sessão usada no browser é local (token injetado no
+> `localStorage`), sem escrita no banco. Os `401/403` que ela produz em chamadas
+> autenticadas são artefato da sessão simulada, **não** comportamento de usuário
+> real — por isso a validação se limita a DOM, cliques e feedback visual.
+
+**Banco re-medido, sem mudança:** view `200 []`, 4 funções `401 42501`.
+**Repo · ar · banco alinhados na Onda 46.** Resta apenas
+`PLM_E2E_EMAIL`/`PLM_E2E_PASSWORD` para provar o fluxo autenticado.
+
+Capturas: `/home/user/onda46-producao-cad.png`,
+`/home/user/onda46-producao-prototypes.png`.

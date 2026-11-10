@@ -158,23 +158,21 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ## 7-A. Ondas 19 a 46 (04–06/11/2026) — o que mudou depois deste documento
 
-> **Atualização de 06/11 (25ª medição):** "ok prossiga" → Onda **46**
-> escolhida pelo risco, sem pedir confirmação. Com repo/ar/banco alinhados na
-> 24ª (migration aplicada: view `200 []`, funções `401 42501`), medi no browser
-> que **`/cad` apurava 2 moldes / 86,4% / 2 aprovados** e **`/prototypes`
-> apurava 2 pilotos / 23 evidências / 1 lacrado** a partir de dado de fábrica;
-> "Sync + BOM" e "Prova POM & Lacre" chamavam `ensureSheet("DEV000006")` e os
-> formulários já nasciam com `DEV000006`/`88.3`/`1.8`. Vitrine agora
-> **declarada** (`demo: true` + `moldesOperacionais()`/`pilotosOperacionais()`),
-> métricas em **`—` com aviso + CTA**, sincronização e lacre bloqueados,
-> promoção explícita, e o seletor do estúdio derivado só das fichas salvas.
-> **Achado de clique real:** o `<Toaster />` nunca estava montado — todo
-> `toast.*` do app era silencioso; montado em `__root.tsx`. Browser depois:
-> KPIs `—`, 2 CTAs, salvar molde real → `1`, promover piloto → `1`, toasts de
-> validação aparecem. **19 testes, 661/661.** `DEV000006` segue **27×** no ar,
-> agora só como vitrine rotulada. **Repo Onda 46 · ar Onda 45 (1 onda) · banco
-> alinhado.** Relatório: `ONDA-46-A-VITRINE-NAO-APURA-O-NUMERO.md`; medição em
-> `SINCRONIA-2026-11-05.md`.
+> **Atualização de 06/11 (26ª medição):** o dono reportou
+> **"publicado"** e a medição **confirmou de duas formas**. (1) Bundle: saiu
+> `index-CPZSdWEg.js` e entrou **`index-CeAMfFot.js`** (223 chunks), com
+> `cad-so-vitrine`, `prototipo-so-vitrine`, `studio-sem-ficha`,
+> `cta-cad-sem-molde`, `cta-prototipo-sem-piloto`, `"Cadastrar meu molde"` e
+> `"toaster group"` = **1**, `"Demonstração · não apurado"` = **2**.
+> **`DEV000006` caiu de 27× para 20×** — os 7 literais executáveis saíram;
+> os 20 restantes são a vitrine declarada nos stores. (2) Browser com cliques
+> reais **contra `plmuse.lovable.app`**: `/cad` e `/prototypes` com KPIs `—`,
+> avisos + CTAs, 2 syncs bloqueados, formulário zerado e **toast de validação
+> aparecendo**; `/ai-center` com `studio-sem-ficha`, 1 opção e botão
+> desabilitado. **Repo, ar e banco alinhados na Onda 46.** Banco re-medido:
+> view `200 []`, 4 funções `401 42501`. Resta apenas a credencial de e2e.
+> Medição em `SINCRONIA-2026-11-05.md`; adendo em
+> `ONDA-46-A-VITRINE-NAO-APURA-O-NUMERO.md`.
 
 | Onda                                     | Commit    | O que entregou                                                                                                                                                                                                                                                                                                                                           | Está no ar?             |
 | ---------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
@@ -205,7 +203,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 43 — Revisão de UX ponta a ponta         | `ee97e4f` | Teste real no browser (17 rotas, 4 tarefas): sidebar 4→19 links, Ficha Técnica 2→1 clique, `aria-required` 0→2, fluxo de 6 etapas colapsado. `ComecePorAqui` com 4 passos e progresso derivado de `operationalCodes`/`pedidosOperacionais`/`parceirosOperacionais`/`campanhasOperacionais`. 24 testes novos                                              | ❌ não republicado      |
 | 44 — Todo aviso tem uma saída            | `030ca6c` | Medição: 9 avisos de vitrine, 0 com botão. `CtaProximoPasso` + `usePasso` derivados do onboarding: 4 CTAs abrem diálogo/modal local, 5 navegam. Passo concluído → CTA desaparece. 9 `data-testid` antigos preservados. Validação no browser: 9/9 com saída, clique abre "Homologar Novo Fornecedor" e navega para `/orders`. 14 testes novos             | ✅ confirmada no bundle |
 | 45 — Primeira dobra em linguagem simples | `65df431` | 35 rotas medidas no DOM: 15 siglas na 1ª dobra. Glossário com 24 termos (`dl/dt/dd`, colapsado), 17 na 1ª dobra; título "Ferramentas do produto"; `title` nos 5 links técnicos; `h1` em `/tech-sheet`; fim da promessa "XML SEFAZ prontos" sem ficha. 18 testes novos                                                                                    | ✅ confirmada no bundle |
-| 46 — Vitrine não apura número            | `2ef69b5` | Browser mediu KPIs de `/cad` (2 moldes/86,4%) e `/prototypes` (23 evidências) vindos de fábrica. `demo` + filtros operacionais, `—` com aviso/CTA, sync e lacre bloqueados, promoção explícita, estúdio sem default e `<Toaster />` montado. 19 testes, 661/661                                                                                          | ❌ não publicada        |
+| 46 — Vitrine não apura número            | `2ef69b5` | Browser mediu KPIs de `/cad` (2 moldes/86,4%) e `/prototypes` (23 evidências) vindos de fábrica. `demo` + filtros operacionais, `—` com aviso/CTA, sync e lacre bloqueados, promoção explícita, estúdio sem default e `<Toaster />` montado. 19 testes, 661/661                                                                                          | ✅ confirmada no bundle |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -237,10 +235,9 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 2. **~~Republicar as Ondas 44 e 45~~ — concluído (23ª medição).**
    `index-CPZSdWEg.js` (223 chunks). Atenção histórica: publicar app não
    aplicou SQL — o banco só foi alinhado depois, pela ação do item 1.
-3. **Publicar a Onda 46 no Lovable.** O ar segue em `index-CPZSdWEg.js`
-   (25ª medição): `cad-so-vitrine`, `prototipo-so-vitrine`, `studio-sem-ficha`
-   e `cta-cad-sem-molde` = **0**. Desta vez é **só publicar**: o SQL já está
-   aplicado.
+3. **~~Publicar a Onda 46~~ — concluído (26ª medição).** `index-CeAMfFot.js`
+   com todos os marcadores, confirmado também por cliques reais em produção.
+   Aqui foi **só publicar**: o SQL já estava aplicado desde a 24ª medição.
 4. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
    specs de e2e seguem `skipped` e não há prova de fluxo autenticado contra
    produção (baixa de material, cancelamento de reservas, sync CAD → ficha).
@@ -262,10 +259,10 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@2ef69b5` (código da Onda 46; o commit seguinte é só
+Seção 7-A: `main@2ff1647` (Onda 46 + 25ª medição; o commit da 26ª é só
 documentação), `docs/producao/ONDA-19..46-*.md` e os números das suítes
 (vitest **661/661**, SQL 163/163, bundle relido com **223 chunks** no entry
-`index-CPZSdWEg.js`: marcadores das Ondas 24–45 presentes, os da 46 ausentes
-— logo o ar é a **Onda 45, uma onda atrás do repo**; banco com as migrações
-21/24 aplicadas desde a 24ª medição). Medição por camada em
+`index-CeAMfFot.js`: marcadores das Ondas 24–46 presentes — logo o ar é a
+**Onda 46, na mesma onda do repo**; `DEV000006` 27→**20**; banco com as
+migrações 21/24 aplicadas desde a 24ª medição). Medição por camada em
 `SINCRONIA-2026-11-05.md`.
