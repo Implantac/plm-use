@@ -57,6 +57,7 @@ export function ModuleLayout({
               <div className="relative group w-full sm:w-72">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                 <Input
+                  aria-label={searchPlaceholder ?? "Buscar neste módulo"}
                   className="pl-10 focus:border-primary/40 focus:ring-0 text-2xs font-semibold uppercase tracking-widest/40"
                   placeholder={searchPlaceholder}
                   onChange={(e) => onSearch(e.target.value)}

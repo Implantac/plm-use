@@ -453,6 +453,20 @@ interface PrivateLabelQueueState {
 
 export const PEDIDO_DEMO_LABEL = "Pedido de demonstração — não entra em número operacional";
 
+/**
+ * Onda 47 — medido com browser: o card do pedido de demonstração oferecia
+ * "Ficha Cega A4" e `buildBlindOrderProductionSheetHtml()` imprimia CNPJ,
+ * referência, grade e lista nominal de um cliente que não existe. Toda edição
+ * humana já promove o pedido (`promover()` / `cloneOrder()`); só a EMISSÃO
+ * direta de documento escapava. Este é o gate único para chamadores de UI.
+ */
+export const FICHA_CEGA_DEMO_BLOQUEIO =
+  "Ficha Cega A4 indisponível para pedido de demonstração — clone ou edite o pedido antes de emitir.";
+
+export function podeEmitirFichaCega(order: PrivateLabelOrder): boolean {
+  return order.demo !== true;
+}
+
 /** Só pedidos criados/editados pela empresa. A vitrine fica de fora. */
 export function pedidosOperacionais(orders: PrivateLabelOrder[]): PrivateLabelOrder[] {
   return orders.filter((o) => o.demo !== true);

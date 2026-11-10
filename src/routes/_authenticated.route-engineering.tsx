@@ -17,6 +17,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,6 +85,11 @@ function RouteEngineering() {
       subtitle="Cronoanálise SAM, Takt Time, balanceamento de célula de costura (Yamazumi), pool de máquinas e rotas PCP."
       version="Engenharia Industrial v2.0"
     >
+      {/* Onda 47: PCP/SAM/GSD aparecem já no título e nos rótulos desta tela. */}
+      <GlossarioTermos
+        siglas={["PCP", "SAM", "GSD", "CAD", "BOM", "Yamazumi"]}
+        testId="glossario-route-engineering"
+      />
       <Tabs defaultValue="gsd-balancing" className="space-y-4">
         <TabsList className="bg-muted/50 border border-border">
           <TabsTrigger value="gsd-balancing">Balanceamento de Célula & GSD (BOP)</TabsTrigger>

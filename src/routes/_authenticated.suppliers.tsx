@@ -17,6 +17,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { ModuleLayout, ModuleActionMenu } from "@/components/modules/ModuleLayout";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { useEntityDrawer } from "@/components/entity/EntityContext";
 import { useEventEmitter } from "@/hooks/use-entity-events";
 import {
@@ -238,6 +239,11 @@ function SuppliersPage() {
         },
       ]}
     >
+      {/* Onda 47: 30 travessões e 11 siglas medidas na tela de fornecedores. */}
+      <GlossarioTermos
+        siglas={["OTIF", "SAM", "CFOP", "RFQ", "AQL", "NCM", "XML", "NF-e", "CAPA", "LGPD"]}
+        testId="glossario-suppliers"
+      />
       <OutsourcingServiceOrderPanel />
 
       {soVitrine && (

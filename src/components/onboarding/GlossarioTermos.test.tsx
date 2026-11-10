@@ -55,4 +55,25 @@ describe("Onda 45 — GlossarioTermos", () => {
     expect(screen.getByTestId("glossario-custom")).not.toBeNull();
     expect(screen.queryByTestId("glossario-termos")).toBeNull();
   });
+
+  // Onda 47 — o glossário passou a ser reutilizado nas telas internas.
+  it("explica as siglas novas das telas internas em linguagem simples", () => {
+    const { container } = render(
+      <GlossarioTermos
+        siglas={["CAD", "EAN", "GTIN", "ABNT", "CAPA", "LGPD", "XML", "DRE", "POM"]}
+        testId="glossario-interno"
+      />,
+    );
+    expect(screen.getByTestId("glossario-interno")).not.toBeNull();
+    expect(container.querySelectorAll("dt")).toHaveLength(9);
+    expect(container.querySelectorAll("dd")).toHaveLength(9);
+    expect(container.textContent).toContain("Código de barras do produto");
+    expect(container.textContent).toContain("Medidas da peça");
+    expect(container.textContent).toContain("Lei de proteção de dados");
+  });
+
+  it("um subconjunto interno não repete os 17 termos do dashboard", () => {
+    render(<GlossarioTermos siglas={["PCP", "SAM", "GSD", "CAD"]} testId="glossario-engenharia" />);
+    expect(document.querySelectorAll('[data-testid="glossario-engenharia"] dt')).toHaveLength(4);
+  });
 });

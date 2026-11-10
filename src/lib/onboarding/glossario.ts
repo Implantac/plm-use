@@ -142,6 +142,58 @@ export const TERMOS: readonly Termo[] = [
     nome: "Diretoria financeira",
     explicacao: "A área responsável por caixa, custos, margem e resultado da empresa.",
   },
+  {
+    sigla: "CAD",
+    nome: "Desenho técnico no computador",
+    explicacao:
+      "O arquivo de modelagem usado para definir como o tecido será cortado e aproveitado.",
+  },
+  {
+    sigla: "EAN",
+    nome: "Código de barras do produto",
+    explicacao: "O número lido no caixa ou no estoque para identificar cada peça e cada tamanho.",
+  },
+  {
+    sigla: "GTIN",
+    nome: "Identificador mundial do produto",
+    explicacao: "O código internacional que dá origem ao código de barras impresso na etiqueta.",
+  },
+  {
+    sigla: "ABNT",
+    nome: "Normas técnicas brasileiras",
+    explicacao:
+      "A organização que define regras como as de composição e conservação impressas na etiqueta.",
+  },
+  {
+    sigla: "CAPA",
+    nome: "Plano de correção de problema",
+    explicacao:
+      "O registro de uma falha de qualidade, da causa encontrada e da ação para não repeti-la.",
+  },
+  {
+    sigla: "LGPD",
+    nome: "Lei de proteção de dados",
+    explicacao:
+      "A lei brasileira que limita quais dados pessoais a empresa guarda e como ela pode usá-los.",
+  },
+  {
+    sigla: "XML",
+    nome: "Arquivo de dados estruturados",
+    explicacao:
+      "O arquivo usado para enviar documentos fiscais e integrar sistemas sem digitar de novo.",
+  },
+  {
+    sigla: "DRE",
+    nome: "Demonstrativo de resultados",
+    explicacao:
+      "O relatório que mostra receitas, custos e despesas para apurar o resultado do período.",
+  },
+  {
+    sigla: "POM",
+    nome: "Medidas da peça",
+    explicacao:
+      "A tabela de medidas como busto, cintura e comprimento usada na prova e na aprovação.",
+  },
 ] as const;
 
 /** Siglas que aparecem na primeira dobra do dashboard (medido no browser). */

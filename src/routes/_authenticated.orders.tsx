@@ -25,6 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { CostQueueNominalPanel } from "@/components/sales/CostQueueNominalPanel";
 import { OrderDetail } from "@/components/sales/OrderDetail";
 import { useAuth, useUserRoles } from "@/hooks/use-auth";
@@ -198,6 +199,11 @@ function OrdersPage() {
       searchPlaceholder="Buscar por número ou cliente"
       metrics={metrics}
     >
+      {/* Onda 47: o jargão não fica só na primeira dobra do dashboard. */}
+      <GlossarioTermos
+        siglas={["PCP", "MRP", "BOM", "SAM", "GSD", "NF-e", "CFOP", "CAD"]}
+        testId="glossario-orders"
+      />
       {/* Diagnóstico (26/out): conta sem papel em user_roles via todas as listas
           canSell/canCost/canPlan viravam "tela muda" — o dono testou etcsuporte889
           e concluiu que a opção de custo não existia. Nunca mais silencioso. */}
@@ -423,7 +429,7 @@ function NewOrderDialog({
         <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>Cliente</Label>
+              <Label htmlFor="novo-pedido-cliente">Cliente</Label>
               <button
                 onClick={onNeedCustomer}
                 className="text-2xs text-primary uppercase tracking-[0.04em] flex items-center gap-1"
@@ -432,6 +438,10 @@ function NewOrderDialog({
               </button>
             </div>
             <select
+              id="novo-pedido-cliente"
+              required
+              aria-required="true"
+              aria-describedby={customers.length === 0 ? "novo-pedido-sem-cliente" : undefined}
               value={customerId}
               onChange={(e) => setCustomerId(e.target.value)}
               className="h-10 w-full rounded-md border border-border bg-black/30 px-3 text-sm text-white"
@@ -444,7 +454,7 @@ function NewOrderDialog({
               ))}
             </select>
             {customers.length === 0 && (
-              <p className="text-2xs text-status-progress">
+              <p id="novo-pedido-sem-cliente" className="text-2xs text-status-progress">
                 Nenhum cliente cadastrado — use “cadastrar” ao lado.
               </p>
             )}
@@ -452,12 +462,18 @@ function NewOrderDialog({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label>Entrega</Label>
-              <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+              <Label htmlFor="novo-pedido-entrega">Entrega</Label>
+              <Input
+                id="novo-pedido-entrega"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
-              <Label>Validade do orçamento</Label>
+              <Label htmlFor="novo-pedido-validade">Validade do orçamento</Label>
               <Input
+                id="novo-pedido-validade"
                 type="date"
                 value={validUntil}
                 onChange={(e) => setValidUntil(e.target.value)}
@@ -476,8 +492,9 @@ function NewOrderDialog({
           </label>
 
           <div className="space-y-2">
-            <Label>Condição de pagamento</Label>
+            <Label htmlFor="novo-pedido-pagamento">Condição de pagamento</Label>
             <Input
+              id="novo-pedido-pagamento"
               value={paymentTerms}
               onChange={(e) => setPaymentTerms(e.target.value)}
               placeholder="Ex.: 50% na aprovação, 50% na entrega"
@@ -485,8 +502,13 @@ function NewOrderDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Observações</Label>
-            <Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <Label htmlFor="novo-pedido-observacoes">Observações</Label>
+            <Textarea
+              id="novo-pedido-observacoes"
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
           </div>
         </div>
 
@@ -545,26 +567,50 @@ function NewCustomerDialog({
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Razão social / nome</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+            <Label htmlFor="novo-cliente-nome">Razão social / nome</Label>
+            <Input
+              id="novo-cliente-nome"
+              required
+              aria-required="true"
+              autoComplete="organization"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
-            <Label>CNPJ / CPF</Label>
-            <Input value={taxId} onChange={(e) => setTaxId(e.target.value)} />
+            <Label htmlFor="novo-cliente-documento">CNPJ / CPF</Label>
+            <Input
+              id="novo-cliente-documento"
+              autoComplete="off"
+              value={taxId}
+              onChange={(e) => setTaxId(e.target.value)}
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label>Cidade</Label>
-              <Input value={city} onChange={(e) => setCity(e.target.value)} />
+              <Label htmlFor="novo-cliente-cidade">Cidade</Label>
+              <Input
+                id="novo-cliente-cidade"
+                autoComplete="address-level2"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
-              <Label>UF</Label>
-              <Input value={state} maxLength={2} onChange={(e) => setState(e.target.value)} />
+              <Label htmlFor="novo-cliente-uf">UF</Label>
+              <Input
+                id="novo-cliente-uf"
+                autoComplete="address-level1"
+                value={state}
+                maxLength={2}
+                onChange={(e) => setState(e.target.value)}
+              />
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Segmento</Label>
+            <Label htmlFor="novo-cliente-segmento">Segmento</Label>
             <Input
+              id="novo-cliente-segmento"
               value={segment}
               onChange={(e) => setSegment(e.target.value)}
               placeholder="Clube · Empresa · Escola"

@@ -24,7 +24,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  FICHA_CEGA_DEMO_BLOQUEIO,
   NOMINAL_SIZES,
+  PEDIDO_DEMO_LABEL,
+  podeEmitirFichaCega,
   buildBlindOrderProductionSheetHtml,
   evaluateOrderCosting,
   parseNominalRosterPaste,
@@ -94,6 +97,11 @@ export function CostQueueNominalPanel() {
   }
 
   function printBlindSheet(o: PrivateLabelOrder) {
+    // Onda 47: nenhum documento operacional nasce da vitrine.
+    if (!podeEmitirFichaCega(o)) {
+      toast.error(`${PEDIDO_DEMO_LABEL}. ${FICHA_CEGA_DEMO_BLOQUEIO}`);
+      return;
+    }
     const html = buildBlindOrderProductionSheetHtml(o);
     const w = window.open("", "_blank");
     if (!w) {
@@ -220,15 +228,25 @@ export function CostQueueNominalPanel() {
                   >
                     <Copy className="h-3 w-3 text-primary" /> Clonar Pedido
                   </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => printBlindSheet(o)}
-                    className="h-7 text-2xs gap-1"
-                  >
-                    <FileText className="h-3 w-3 text-emerald-500" /> Ficha Cega A4
-                  </Button>
+                  {podeEmitirFichaCega(o) ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => printBlindSheet(o)}
+                      className="h-7 text-2xs gap-1"
+                    >
+                      <FileText className="h-3 w-3 text-emerald-500" /> Ficha Cega A4
+                    </Button>
+                  ) : (
+                    <span
+                      data-testid="ficha-cega-bloqueada"
+                      title={FICHA_CEGA_DEMO_BLOQUEIO}
+                      className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+                    >
+                      Ficha Cega indisponível · clone para emitir
+                    </span>
+                  )}
                   {o.status !== "Custo Aprovado" && o.status !== "Liberado PCP" ? (
                     <Button
                       type="button"
@@ -342,6 +360,9 @@ export function CostQueueNominalPanel() {
               {/* Operações editáveis inline pela Engenharia de Custos */}
               <div className="overflow-x-auto rounded-lg border border-border/70 bg-background/60">
                 <table className="w-full text-2xs">
+                  <caption className="sr-only">
+                    {`Operações de custo do pedido ${o.orderNumber}: quantidade do driver, custo do driver e setup fixo do lote`}
+                  </caption>
                   <thead className="bg-muted/40 uppercase text-muted-foreground">
                     <tr>
                       <th className="p-2 text-left">Setor / Operação</th>
@@ -363,6 +384,7 @@ export function CostQueueNominalPanel() {
                           <input
                             type="number"
                             min={0}
+                            aria-label={`Quantidade do driver · ${op.operation} · pedido ${o.orderNumber}`}
                             value={op.driverQty}
                             onChange={(e) =>
                               updateOperationFields(o.id, op.id, {
@@ -377,6 +399,7 @@ export function CostQueueNominalPanel() {
                             type="number"
                             step="0.05"
                             min={0}
+                            aria-label={`Custo do driver por unidade · ${op.operation} · pedido ${o.orderNumber}`}
                             value={op.unitCost}
                             onChange={(e) =>
                               updateOperationFields(o.id, op.id, {
@@ -391,6 +414,7 @@ export function CostQueueNominalPanel() {
                             type="number"
                             step="5"
                             min={0}
+                            aria-label={`Setup fixo do lote · ${op.operation} · pedido ${o.orderNumber}`}
                             value={op.setupCost}
                             onChange={(e) =>
                               updateOperationFields(o.id, op.id, {

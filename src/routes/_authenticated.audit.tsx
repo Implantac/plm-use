@@ -13,6 +13,7 @@
 
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import {
   Activity,
   AlertTriangle,
@@ -461,6 +462,30 @@ function AuditScreen() {
   return (
     <div className="min-h-dvh bg-background text-white p-6 md:p-10">
       <div className="mx-auto max-w-7xl space-y-8">
+        {/* Onda 47: 9 siglas medidas na primeira dobra desta tela. */}
+        <GlossarioTermos
+          siglas={[
+            "BOM",
+            "PCP",
+            "DPP",
+            "MRP",
+            "CFOP",
+            "RFQ",
+            "SEFAZ",
+            "LGPD",
+            "CAPA",
+            "ROAS",
+            "EAN",
+            "GTIN",
+            "ABNT",
+            "XML",
+            "DRE",
+            "NF-e",
+            "Kanban",
+            "CAD",
+          ]}
+          testId="glossario-audit"
+        />
         <header className="rounded-lg border border-border bg-muted/60 p-6 md:p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
