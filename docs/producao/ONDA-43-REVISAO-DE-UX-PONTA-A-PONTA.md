@@ -1,6 +1,6 @@
 # Onda 43 — Revisão de UX ponta a ponta: o usuário no centro
 
-**Data:** 06/11/2026 · **Antecessor:** `04c6759` (Onda 42 + docs)
+**Data:** 06/11/2026 · **Commit:** `ee97e4f` · **Antecessor:** `04c6759` (Onda 42 + docs)
 
 > Pedido do dono: _"revise o projeto de ponta a ponta, teste como usuário, sinta
 > a complexidade e dificuldade do usuário em usar o sistema e melhore a
