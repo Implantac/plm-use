@@ -32,6 +32,8 @@ import {
   computeGtmPortfolioSummary,
   campanhasOperacionais,
   GTM_DEMO_LABEL,
+  MEDIA_KIT_DEMO_BLOQUEIO,
+  podeEmitirMediaKit,
   useResearchGtmStore,
   type DropCampaignStatus,
   type GtmDropCampaign,
@@ -173,6 +175,12 @@ function MarketingPage() {
   }
 
   function printMediaKit(camp: GtmDropCampaign) {
+    // Onda 48: nenhum documento operacional nasce da vitrine. Cobre também o
+    // "Visualizar" do ModuleActionMenu, que chama esta mesma função.
+    if (!podeEmitirMediaKit(camp)) {
+      toast.error(`${GTM_DEMO_LABEL}. ${MEDIA_KIT_DEMO_BLOQUEIO}`);
+      return;
+    }
     const html = buildDropMediaKitHtml(camp, sheetsMap);
     const w = window.open("", "_blank");
     if (!w) {
@@ -300,22 +308,45 @@ function MarketingPage() {
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => printMediaKit(camp)}
-                        className="h-7 text-2xs gap-1"
-                      >
-                        <FileText className="h-3 w-3 text-primary" /> Media Kit A4
-                      </Button>
+                      {podeEmitirMediaKit(camp) ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printMediaKit(camp)}
+                          className="h-7 text-2xs gap-1"
+                        >
+                          <FileText className="h-3 w-3 text-primary" /> Media Kit A4
+                        </Button>
+                      ) : (
+                        <span
+                          data-testid="media-kit-bloqueado"
+                          className="inline-flex flex-wrap items-center gap-1"
+                        >
+                          <span
+                            title={MEDIA_KIT_DEMO_BLOQUEIO}
+                            className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+                          >
+                            Media Kit indisponível
+                          </span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenDialog(camp)}
+                            className="h-7 text-2xs"
+                          >
+                            Editar para emitir
+                          </Button>
+                        </span>
+                      )}
                       <ModuleActionMenu
                         onEdit={() => handleOpenDialog(camp)}
                         onDelete={() => {
                           deleteCampaign(camp.id);
                           toast.error("Campanha removida.");
                         }}
-                        onView={() => printMediaKit(camp)}
+                        onView={podeEmitirMediaKit(camp) ? () => printMediaKit(camp) : undefined}
                       />
                     </div>
                   </div>

@@ -33,6 +33,7 @@ import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import {
   buildLineSheetCsvPtBr,
   buildLineSheetPrintableHtml,
@@ -40,11 +41,15 @@ import {
 } from "@/lib/techsheet/linesheet";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 import {
+  COLECAO_DEMO_LABEL,
+  LINE_SHEET_DEMO_BLOQUEIO,
   collectionMap,
+  linhasApuraveis,
   listFilters,
   saveFilter,
   removeFilter,
   subscribeFilters,
+  podeEmitirLineSheet,
   cellTotal,
   rowTotal,
   SIZE_GRADES,
@@ -92,6 +97,10 @@ function CollectionMapRoute() {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<MatrixCell["status"][]>([]);
   const [q, setQ] = useState("");
+  // Onda 48: o nome/season da coleção também são dados de fábrica. O documento
+  // só sai com o nome que o usuário declarar — "Coleção em cadastro" enquanto
+  // não houver declaração. A matriz pode exibir a vitrine, o A4 não.
+  const [nomeColecao, setNomeColecao] = useState("");
   const [lightboxRow, setLightboxRow] = useState<MatrixRow | null>(null);
 
   const filters = useSyncExternalStore(
@@ -143,25 +152,39 @@ function CollectionMapRoute() {
       .filter((r) => r.cells.length > 0);
   }, [allSourceRows, selectedCats, selectedColors, selectedStatuses, q]);
 
+  // Onda 48 — só linhas com ficha técnica salva entram em KPI, CSV e A4.
+  // O mock de fábrica continua visível na matriz, mas não vira número.
+  const apuraveis = useMemo(
+    () => linhasApuraveis(filteredRows, sheetsMap),
+    [filteredRows, sheetsMap],
+  );
+  const soVitrine = filteredRows.length > 0 && apuraveis.length === 0;
+  const tituloColecao = nomeColecao.trim() || "Coleção em cadastro";
+
   function exportCsv() {
-    const csv = buildLineSheetCsvPtBr(filteredRows, sheetsMap);
+    const rows = apuraveis;
+    if (rows.length === 0) {
+      toast.error(`${COLECAO_DEMO_LABEL}. ${LINE_SHEET_DEMO_BLOQUEIO}`);
+      return;
+    }
+    const csv = buildLineSheetCsvPtBr(rows, sheetsMap);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `line-sheet-${collectionMap.season.toLowerCase().replace(/\s+/g, "-")}.csv`;
+    a.download = `line-sheet-${tituloColecao.toLowerCase().replace(/\s+/g, "-")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Line Sheet CSV (PT-BR) exportado com sucesso!");
   }
 
   function printLineSheetA4() {
-    const html = buildLineSheetPrintableHtml(
-      collectionMap.name,
-      collectionMap.season,
-      filteredRows,
-      sheetsMap,
-    );
+    const rows = apuraveis;
+    if (rows.length === 0) {
+      toast.error(`${COLECAO_DEMO_LABEL}. ${LINE_SHEET_DEMO_BLOQUEIO}`);
+      return;
+    }
+    const html = buildLineSheetPrintableHtml(tituloColecao, "—", rows, sheetsMap);
     const w = window.open("", "_blank");
     if (!w) {
       toast.error("Permita pop-ups para imprimir o Line Sheet A4.");
@@ -175,10 +198,19 @@ function CollectionMapRoute() {
   }
 
   const metrics = useMemo(() => {
-    const totalRows = filteredRows.length;
-    const totalUnits = filteredRows.reduce((s, r) => s + rowTotal(r), 0);
-    const totalRevenue = filteredRows.reduce((s, r) => s + rowTotal(r) * r.price, 0);
-    const totalCost = filteredRows.reduce((s, r) => s + rowTotal(r) * r.cost, 0);
+    // Onda 48: vitrine sem ficha salva mostra `—`, nunca zero apurado.
+    if (soVitrine) {
+      return [
+        { label: "Modelos", value: "—", detail: "só demonstração" },
+        { label: "Unidades", value: "—", detail: "não apurável" },
+        { label: "Receita alvo", value: "—", detail: "sem ficha salva" },
+        { label: "Margem", value: "—", detail: "não apurável" },
+      ];
+    }
+    const totalRows = apuraveis.length;
+    const totalUnits = apuraveis.reduce((s, r) => s + rowTotal(r), 0);
+    const totalRevenue = apuraveis.reduce((s, r) => s + rowTotal(r) * r.price, 0);
+    const totalCost = apuraveis.reduce((s, r) => s + rowTotal(r) * r.cost, 0);
     const margin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 0;
     return [
       { label: "Modelos", value: String(totalRows), detail: "no recorte" },
@@ -190,7 +222,7 @@ function CollectionMapRoute() {
       },
       { label: "Margem", value: `${margin.toFixed(0)}%`, detail: "bruta média" },
     ];
-  }, [filteredRows]);
+  }, [apuraveis, soVitrine]);
 
   const clearFilters = () => {
     setSelectedCats([]);
@@ -217,6 +249,21 @@ function CollectionMapRoute() {
       <div className="mb-4">
         <ModuleTabs group="collections" />
       </div>
+      {soVitrine && (
+        <div
+          data-testid="colecao-so-vitrine"
+          className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300"
+        >
+          <strong>{filteredRows.length} modelos de demonstração na vitrine.</strong>{" "}
+          {COLECAO_DEMO_LABEL}. Cadastre uma ficha técnica para que modelos, unidades, receita e
+          margem passem a ser apurados — e para que o Line Sheet A4 e o CSV B2B possam ser emitidos.
+          <CtaProximoPasso
+            passo="ficha"
+            label="Cadastrar ficha técnica"
+            testId="cta-colecao-sem-ficha"
+          />
+        </div>
+      )}
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         {/* Barra de filtros */}
         <div className="space-y-4">
@@ -239,6 +286,7 @@ function CollectionMapRoute() {
               </div>
 
               <Input
+                aria-label="Buscar referência ou nome no mapa de coleção"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Ref ou nome"
@@ -369,26 +417,53 @@ function CollectionMapRoute() {
               <Badge variant="outline" className="text-2xs uppercase tracking-widest">
                 {collectionMap.season}
               </Badge>
+              {soVitrine && (
+                <Badge
+                  variant="outline"
+                  className="text-2xs border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                >
+                  Demonstração
+                </Badge>
+              )}
               <span className="ml-auto text-2xs text-muted-foreground mr-2">
-                {filteredRows.length} modelos exibidos
+                {filteredRows.length} modelos exibidos · {apuraveis.length} apuráveis
               </span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-7 gap-1.5 text-2xs"
-                onClick={exportCsv}
-              >
-                <Download className="h-3 w-3" /> CSV B2B
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                className="h-7 gap-1.5 text-2xs"
-                onClick={printLineSheetA4}
-              >
-                <FileText className="h-3 w-3" /> Line Sheet A4
-              </Button>
+              <Input
+                aria-label="Nome da coleção para o Line Sheet A4 e o CSV B2B"
+                value={nomeColecao}
+                onChange={(e) => setNomeColecao(e.target.value)}
+                placeholder="Nome da coleção (para o documento)"
+                className="h-7 w-56 text-2xs"
+              />
+              {podeEmitirLineSheet(filteredRows, sheetsMap) ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 gap-1.5 text-2xs"
+                    onClick={exportCsv}
+                  >
+                    <Download className="h-3 w-3" /> CSV B2B
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-7 gap-1.5 text-2xs"
+                    onClick={printLineSheetA4}
+                  >
+                    <FileText className="h-3 w-3" /> Line Sheet A4
+                  </Button>
+                </>
+              ) : (
+                <span
+                  data-testid="line-sheet-bloqueado"
+                  title={LINE_SHEET_DEMO_BLOQUEIO}
+                  className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+                >
+                  Line Sheet / CSV indisponíveis · sem ficha salva
+                </span>
+              )}
             </div>
 
             <div className="overflow-x-auto">

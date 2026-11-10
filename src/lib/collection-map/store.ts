@@ -40,6 +40,36 @@ export type SavedFilter = {
   createdAt: string;
 };
 
+/**
+ * Onda 48 — medido em produção: `collectionMap.rows` é um mock de fábrica com
+ * 6 modelos, 2.985 peças e R$ 1.233.665 de PVP. Os KPIs da tela e o Line Sheet
+ * A4 / CSV B2B apuravam e imprimiam esses números como se fossem carteira real.
+ *
+ * Só a linha cuja referência tem ficha técnica SALVA entra em número ou
+ * documento. A matriz continua exibindo a vitrine (com `—` nos KPIs e aviso),
+ * mas ela não cruza a fronteira do documento. Cadastrar a ficha é a promoção
+ * explícita: `allSourceRows` já deriva `plmRows` de `sheetsMap`.
+ */
+export const COLECAO_DEMO_LABEL =
+  "Coleção de demonstração — não entra em número nem documento operacional";
+
+export const LINE_SHEET_DEMO_BLOQUEIO =
+  "Line Sheet A4 e CSV B2B indisponíveis enquanto não houver ficha técnica salva.";
+
+export function linhasApuraveis(
+  rows: readonly MatrixRow[],
+  sheetsMap: Record<string, unknown>,
+): MatrixRow[] {
+  return rows.filter((r) => Object.prototype.hasOwnProperty.call(sheetsMap, r.refCode));
+}
+
+export function podeEmitirLineSheet(
+  rows: readonly MatrixRow[],
+  sheetsMap: Record<string, unknown>,
+): boolean {
+  return linhasApuraveis(rows, sheetsMap).length > 0;
+}
+
 export const collectionMap: CollectionMap = {
   id: "col-25-verao",
   name: "Verão 2025 · Amalfi",

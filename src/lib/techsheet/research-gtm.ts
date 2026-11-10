@@ -167,6 +167,24 @@ function promoverCampanha(c: GtmDropCampaign): GtmDropCampaign {
 
 export const GTM_DEMO_LABEL = "Campanha de demonstração — não entra em número operacional";
 
+/**
+ * Onda 48 — medido com cliques reais contra produção: o card da campanha
+ * `demo: true` exibia o badge "Demonstração", mas "Media Kit A4" (e o
+ * "Visualizar" do ModuleActionMenu) imprimia R$ 42.000 de mídia, R$ 18.500
+ * de produção, R$ 218.400 de receita atribuída, 38.400 cliques e ROAS 5,20x
+ * como se fossem números reais.
+ *
+ * `upsertCampaign` já promove a campanha editada (`promoverCampanha`); só a
+ * EMISSÃO direta escapava. O gate fica no chamador de UI: `buildDropMediaKitHtml`
+ * continua uma função pura e nenhuma asserção das Ondas 27/33/38 é relaxada.
+ */
+export const MEDIA_KIT_DEMO_BLOQUEIO =
+  "Media Kit A4 indisponível para campanha de demonstração — edite ou cadastre um Drop antes de emitir.";
+
+export function podeEmitirMediaKit(camp: GtmDropCampaign): boolean {
+  return camp.demo !== true;
+}
+
 /** Só campanhas criadas/editadas pela empresa. A vitrine fica de fora. */
 export function campanhasOperacionais(campaigns: GtmDropCampaign[]): GtmDropCampaign[] {
   return campaigns.filter((c) => c.demo !== true);
