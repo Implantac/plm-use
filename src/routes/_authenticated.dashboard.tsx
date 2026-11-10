@@ -22,6 +22,8 @@ import { ORDER_FLOW_STEPS, ORDER_STATUS } from "@/lib/sales/types";
 import { computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
 import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { ComecePorAqui } from "@/components/onboarding/ComecePorAqui";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
+import { tituloTermo } from "@/lib/onboarding/glossario";
 import { sheetProvenance } from "@/lib/techsheet/provenance";
 import {
   computeDigitalProductPassport,
@@ -220,45 +222,56 @@ function Dashboard() {
         </details>
       </motion.section>
 
-      {/* Torre Executiva 360° — Pulso Industrial PLM Fluido 2.0 */}
+      {/* Onda 45: o cabecalho fala a lingua de quem chega; os nomes tecnicos
+          continuam nos links, agora com explicacao no title e no glossario. */}
       <section
-        aria-label="Pulso Industrial PLM 2.0"
+        aria-label="Ferramentas do produto"
         className="rounded-xl border border-primary/25 bg-card p-4 space-y-3"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
-              Torre Executiva PLM 2.0 · Engenharia, Sourcing, Corte, ESG & CFO
-            </h2>
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
+                Ferramentas do produto
+              </h2>
+              <p className="mt-0.5 text-2xs text-muted-foreground">
+                Da ficha técnica ao custo, ao corte, aos documentos e à venda.
+              </p>
+            </div>
           </div>
           <div className="flex flex-wrap gap-1.5 text-2xs">
             <Link
               to="/tech-sheet"
+              title={tituloTermo("BOM")}
               className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
             >
               Ficha Técnica
             </Link>
             <Link
               to="/digital-twin"
+              title={tituloTermo("What-If")}
               className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
             >
               Gêmeo 3D What-If
             </Link>
             <Link
               to="/supplier-portal"
+              title={tituloTermo("RFQ")}
               className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
             >
               Sourcing RFQ
             </Link>
             <Link
               to="/route-engineering"
+              title={tituloTermo("GSD")}
               className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
             >
               Cronoanálise GSD
             </Link>
             <Link
               to="/showroom"
+              title={tituloTermo("BOM")}
               className="rounded border border-border bg-muted/40 px-2.5 py-1 font-medium text-foreground hover:border-primary/50"
             >
               Showroom B2B
@@ -364,10 +377,12 @@ function Dashboard() {
             </span>
             <strong className="font-mono text-base text-foreground">CFOP 5101 / 6101</strong>
             <span className="text-2xs text-muted-foreground block">
-              Packing List & XML SEFAZ prontos
+              Packing List & XML SEFAZ quando houver ficha salva
             </span>
           </Link>
         </div>
+
+        <GlossarioTermos />
       </section>
 
       {error && (

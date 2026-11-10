@@ -313,7 +313,9 @@ function TechSheetPage() {
         className="rounded-xl border border-border/80 bg-card p-6 space-y-3"
         data-testid="cockpit-sem-ficha"
       >
-        <h2 className="text-sm font-semibold text-foreground">Nenhuma ficha técnica salva</h2>
+        <h1 className="text-lg font-semibold tracking-tight text-foreground">
+          Nenhuma ficha técnica salva
+        </h1>
         <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
           O cockpit não abre mais a ficha de demonstração DEV000006. Escolha uma referência do
           cadastro para criar a engenharia, ou abra uma ficha já salva. Documentos de compras, Ordem
@@ -328,6 +330,10 @@ function TechSheetPage() {
 
   return (
     <div className="space-y-4">
+      {/* Onda 45: o titulo visual desta tela e um campo editavel (input), que
+          nao pode ser um h1. Um h1 sr-only da o nome da pagina a leitores de
+          tela sem alterar o cockpit. */}
+      <h1 className="sr-only">Ficha técnica · {activeRef}</h1>
       {!emitivel && (
         <SheetProvenanceNote
           provenance={provenance}
