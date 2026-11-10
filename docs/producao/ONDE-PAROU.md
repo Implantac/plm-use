@@ -202,7 +202,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 42 — Fornecedor de papel não homologa    | `7b11535` | Medição: 4 parceiros com CNPJ/certificação ABVTEX/scores inventados geravam ranking 93/A+ > 92/A+ > 90/A+ > 88/A, "4 homologados", OTIF 90% e podiam assinar XML NF-e/Guia A4. `demo?: boolean`, `parceirosOperacionais`, `apuravel`, KPIs e scoreboard com `—`, bloqueio de XML/A4, edição promove. 12 testes novos                                     | ❌ não republicado      |
 | 43 — Revisão de UX ponta a ponta         | `ee97e4f` | Teste real no browser (17 rotas, 4 tarefas): sidebar 4→19 links, Ficha Técnica 2→1 clique, `aria-required` 0→2, fluxo de 6 etapas colapsado. `ComecePorAqui` com 4 passos e progresso derivado de `operationalCodes`/`pedidosOperacionais`/`parceirosOperacionais`/`campanhasOperacionais`. 24 testes novos                                              | ❌ não republicado      |
 | 44 — Todo aviso tem uma saída            | `030ca6c` | Medição: 9 avisos de vitrine, 0 com botão. `CtaProximoPasso` + `usePasso` derivados do onboarding: 4 CTAs abrem diálogo/modal local, 5 navegam. Passo concluído → CTA desaparece. 9 `data-testid` antigos preservados. Validação no browser: 9/9 com saída, clique abre "Homologar Novo Fornecedor" e navega para `/orders`. 14 testes novos             | ❌ não republicado      |
-| 45 — Primeira dobra em linguagem simples | `HEAD`    | 35 rotas medidas no DOM: 15 siglas na 1ª dobra. Glossário com 24 termos (`dl/dt/dd`, colapsado), 17 na 1ª dobra; título "Ferramentas do produto"; `title` nos 5 links técnicos; `h1` em `/tech-sheet`; fim da promessa "XML SEFAZ prontos" sem ficha. 18 testes novos                                                                                    | ❌ não republicado      |
+| 45 — Primeira dobra em linguagem simples | `65df431` | 35 rotas medidas no DOM: 15 siglas na 1ª dobra. Glossário com 24 termos (`dl/dt/dd`, colapsado), 17 na 1ª dobra; título "Ferramentas do produto"; `title` nos 5 links técnicos; `h1` em `/tech-sheet`; fim da promessa "XML SEFAZ prontos" sem ficha. 18 testes novos                                                                                    | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -255,7 +255,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 45; hash em `git log -1`),
+Seção 7-A: `main@65df431` (Onda 45),
 `docs/producao/ONDA-19..45-*.md` e os números das suítes rodadas em 05/11
 (vitest **642/642**, SQL 163/163, bundle relido com **221 chunks** no entry
 `index-BuzojJqi.js`: marcadores das Ondas 24–43 presentes — logo o ar é a

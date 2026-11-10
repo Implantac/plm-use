@@ -10,7 +10,7 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 45**                            | `git log` / `git ls-remote`          |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 45** — `65df431`                | `git log` / `git ls-remote`          |
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 43** — `index-BuzojJqi.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 

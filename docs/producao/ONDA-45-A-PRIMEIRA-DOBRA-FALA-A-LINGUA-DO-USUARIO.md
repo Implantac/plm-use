@@ -1,6 +1,6 @@
 # Onda 45 — A primeira dobra fala a língua do usuário
 
-**Data:** 06/11/2026 · **Antecessor:** `239c43c` (Onda 44 + docs)
+**Data:** 06/11/2026 · **Commit:** `65df431` · **Antecessor:** `239c43c` (Onda 44 + docs)
 
 ---
 
