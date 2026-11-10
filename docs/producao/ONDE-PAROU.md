@@ -158,21 +158,19 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ## 7-A. Ondas 19 a 45 (04–06/11/2026) — o que mudou depois deste documento
 
-> **Atualização de 06/11 (22ª medição):** **o ar parou** pela primeira
-> vez desde a 18ª — permanece **`index-BuzojJqi.js`**, 221 chunks, Onda 43;
-> `cta-supplier-so-vitrine` e `CtaProximoPasso` = 0, portanto a **Onda 44
-> ainda não foi publicada**. A **Onda 45** ataca o último atrito medido na
-> frente de UX: varredura do DOM de 35 rotas achou **15 siglas na primeira
-> dobra** (`BOM` em 12 telas, `PCP` em 10, `DPP`/`SAM` em 5) precedidas por
-> "Torre Executiva PLM 2.0". Entraram glossário colapsado com 24 termos em
-> linguagem simples, título "Ferramentas do produto", `title` nos 5 links
-> técnicos e `<h1>` em `/tech-sheet` (inclusive no estado vazio). A frase
-> "Packing List & XML SEFAZ prontos" virou "quando houver ficha salva".
-> **18 testes novos, 642/642.** `DEV000006` segue em 27 ocorrências. O banco
+> **Atualização de 06/11 (23ª medição):** o dono reportou **"Lovable
+> publicado"** e a medição **confirmou**: saiu `index-BuzojJqi.js` e entrou
+> **`index-CPZSdWEg.js`**, agora com **223 chunks**. `cta-supplier-so-vitrine`
+> 1, `CtaProximoPasso` 7, `cta-sop-sem-pedidos` 1, `glossario-termos` 1,
+> `"O que significam essas siglas?"` 1 e `"Ferramentas do produto"` 2: as
+> **Ondas 44 e 45 estão no ar**. `"Torre Executiva PLM 2.0"` e `"Packing List
+& XML SEFAZ prontos"` caíram para **0**; `"Lista de materiais"` (glossário)
+> aparece 1 vez. **Repo e ar voltaram a estar na mesma onda (45)** — a
+> distância de duas ondas zerou. `DEV000006` segue em 27 ocorrências. O banco
 > **continua sem as migrações das Ondas 21 e 24** (`PGRST205` na view,
-> `PGRST202` nas três RPCs) — publicar app não aplica SQL. Relatório:
-> `docs/producao/ONDA-45-A-PRIMEIRA-DOBRA-FALA-A-LINGUA-DO-USUARIO.md`;
-> medição em `docs/producao/SINCRONIA-2026-11-05.md`.
+> `PGRST202` nas três RPCs): publicar app não aplica SQL e o banco é agora a
+> **única** camada atrasada. Medição completa em
+> `docs/producao/SINCRONIA-2026-11-05.md`.
 
 | Onda                                     | Commit    | O que entregou                                                                                                                                                                                                                                                                                                                                           | Está no ar?             |
 | ---------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
@@ -201,8 +199,8 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 41 — Trilha LGPD sem ficção              | `334d672` | Medição: `buildLgpdAuditCsv` e o A4 de governança exportavam 4 eventos fabricados (Helena Prado, PD-2026-802, bases legais LGPD); 4 briefings geravam "Aderência Comercial 92%". `demo?: boolean` + `eventosAuditaveis`/`briefingsOperacionais`, CSV só com cabeçalho, A4 com aviso, KPIs `—`, botões bloqueados, selos, edição promove. 12 testes novos | ❌ não republicado      |
 | 42 — Fornecedor de papel não homologa    | `7b11535` | Medição: 4 parceiros com CNPJ/certificação ABVTEX/scores inventados geravam ranking 93/A+ > 92/A+ > 90/A+ > 88/A, "4 homologados", OTIF 90% e podiam assinar XML NF-e/Guia A4. `demo?: boolean`, `parceirosOperacionais`, `apuravel`, KPIs e scoreboard com `—`, bloqueio de XML/A4, edição promove. 12 testes novos                                     | ❌ não republicado      |
 | 43 — Revisão de UX ponta a ponta         | `ee97e4f` | Teste real no browser (17 rotas, 4 tarefas): sidebar 4→19 links, Ficha Técnica 2→1 clique, `aria-required` 0→2, fluxo de 6 etapas colapsado. `ComecePorAqui` com 4 passos e progresso derivado de `operationalCodes`/`pedidosOperacionais`/`parceirosOperacionais`/`campanhasOperacionais`. 24 testes novos                                              | ❌ não republicado      |
-| 44 — Todo aviso tem uma saída            | `030ca6c` | Medição: 9 avisos de vitrine, 0 com botão. `CtaProximoPasso` + `usePasso` derivados do onboarding: 4 CTAs abrem diálogo/modal local, 5 navegam. Passo concluído → CTA desaparece. 9 `data-testid` antigos preservados. Validação no browser: 9/9 com saída, clique abre "Homologar Novo Fornecedor" e navega para `/orders`. 14 testes novos             | ❌ não republicado      |
-| 45 — Primeira dobra em linguagem simples | `65df431` | 35 rotas medidas no DOM: 15 siglas na 1ª dobra. Glossário com 24 termos (`dl/dt/dd`, colapsado), 17 na 1ª dobra; título "Ferramentas do produto"; `title` nos 5 links técnicos; `h1` em `/tech-sheet`; fim da promessa "XML SEFAZ prontos" sem ficha. 18 testes novos                                                                                    | ❌ não republicado      |
+| 44 — Todo aviso tem uma saída            | `030ca6c` | Medição: 9 avisos de vitrine, 0 com botão. `CtaProximoPasso` + `usePasso` derivados do onboarding: 4 CTAs abrem diálogo/modal local, 5 navegam. Passo concluído → CTA desaparece. 9 `data-testid` antigos preservados. Validação no browser: 9/9 com saída, clique abre "Homologar Novo Fornecedor" e navega para `/orders`. 14 testes novos             | ✅ confirmada no bundle |
+| 45 — Primeira dobra em linguagem simples | `65df431` | 35 rotas medidas no DOM: 15 siglas na 1ª dobra. Glossário com 24 termos (`dl/dt/dd`, colapsado), 17 na 1ª dobra; título "Ferramentas do produto"; `title` nos 5 links técnicos; `h1` em `/tech-sheet`; fim da promessa "XML SEFAZ prontos" sem ficha. 18 testes novos                                                                                    | ✅ confirmada no bundle |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -225,18 +223,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 - teste `supabase/tests/60_reserva_lifecycle.sql` (9 asserções). Suíte SQL: 148
   asserções, exit 0. Vitest 349/349.
 
-### Duas pendências que só o dono resolve
+### Pendências que só o dono resolve
 
 1. **Aplicar a migration no Supabase hospedado** (`supabase db push`). Enquanto
    isso não acontece, o defeito continua ativo nos dados reais — e as reservas
    antigas já presas não são limpas sozinhas: use `stock_reservation_aging`
    (ordene por `dias_ativa`) para cancelar o que já foi consumido na prática.
-2. **Republicar o app no Lovable nas Ondas 44 e 45.** O bundle em
-   `plmuse.lovable.app` é o da **Onda 43** (22ª medição, entry
-   `index-BuzojJqi.js`, parado pela primeira vez desde a 18ª): as Ondas 20–43
-   estão no ar, faltam **44 e 45**. Enquanto isso, os 9 avisos de vitrine
-   publicados continuam sem botão de saída e a primeira dobra ainda exibe
-   "Torre Executiva PLM 2.0". Isto é publicar — **não** aplica o SQL do item 1.
+2. **~~Republicar as Ondas 44 e 45~~ — concluído.** Confirmado na 23ª
+   medição: `index-CPZSdWEg.js` (223 chunks) com todos os marcadores das duas
+   ondas; repo e ar estão os dois na Onda 45. **Atenção:** isto foi publicar
+   app, **não** aplicou o SQL do item 1 — o banco segue `PGRST205`/`PGRST202`.
+3. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
+   specs de e2e seguem `skipped` na CI e não há prova de fluxo autenticado
+   contra produção.
 
 ---
 
@@ -255,8 +254,8 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@65df431` (Onda 45),
+Seção 7-A: `main@504dde3` (Onda 45),
 `docs/producao/ONDA-19..45-*.md` e os números das suítes rodadas em 05/11
-(vitest **642/642**, SQL 163/163, bundle relido com **221 chunks** no entry
-`index-BuzojJqi.js`: marcadores das Ondas 24–43 presentes — logo o ar é a
-Onda 43, duas ondas atrás do repo). Medição por camada em `SINCRONIA-2026-11-05.md`.
+(vitest **642/642**, SQL 163/163, bundle relido com **223 chunks** no entry
+`index-CPZSdWEg.js`: marcadores das Ondas 24–45 presentes — logo o ar é a
+Onda 45, **na mesma onda do repo**). Medição por camada em `SINCRONIA-2026-11-05.md`.

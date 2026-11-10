@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 22ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 23ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -10,20 +10,21 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 | Camada                                         | Estado medido                          | Como foi medido                      |
 | ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 45** — `65df431`                | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 43** — `index-BuzojJqi.js`      | marcadores no bundle (tabela abaixo) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 45** — `504dde3`                | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 45** — `index-CPZSdWEg.js`      | marcadores no bundle (tabela abaixo) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
 
-**O que mudou desde a medição anterior:** **o ar parou** pela primeira vez
-desde a 18ª medição. Permanece **`index-BuzojJqi.js` (221 chunks)** = **Onda
-43**: `cta-supplier-so-vitrine` **0** e `CtaProximoPasso` **0** mostram que a
-**Onda 44 não foi publicada**. O repo passou para a **Onda 45** (glossário de
-24 termos, título em linguagem simples, `h1` em `/tech-sheet`), então
-`glossario-termos`, `Ferramentas do produto` e `O que significam essas siglas`
-= **0** no bundle, enquanto `"Torre Executiva PLM 2.0"` ainda aparece **1**
-vez. A distância volta a ser de **duas ondas** (44 e 45). `DEV000006` permanece
-em **27** ocorrências. O banco segue sem as migrações (22ª medição:
-`PGRST205` na view e `PGRST202` nas três RPCs).
+**O que mudou desde a medição anterior:** o dono reportou **"Lovable
+publicado"** e a medição **confirmou**. Saiu `index-BuzojJqi.js` (221 chunks)
+e entrou **`index-CPZSdWEg.js` (223 chunks)**. `cta-supplier-so-vitrine` **1**,
+`cta-sop-sem-pedidos` **1**, `CtaProximoPasso` **7**, `glossario-termos` **1**,
+`"O que significam essas siglas?"` **1**, `"Ferramentas do produto"` **2** e
+`"Lista de materiais"` **1**: as **Ondas 44 e 45 estão no ar**. Em compensação
+`"Torre Executiva PLM 2.0"` e `"Packing List & XML SEFAZ prontos"` caíram para
+**0**. `comece-por-aqui` segue **3** e `DEV000006` **27**. **Repo e ar voltaram
+a estar na mesma onda (45)** — a distância de duas ondas zerou. O banco segue
+sem as migrações (23ª medição: `PGRST205` na view e `PGRST202` nas três RPCs):
+publicar o app não aplicou SQL, e o banco é agora a **única** camada atrasada.
 
 ---
 
@@ -67,16 +68,16 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 41   | `lgpd-so-vitrine` / `briefing-so-vitrine`       | **1**       | ✅      |
 | 42   | `supplier-so-vitrine` / `scoreboard-so-vitrine` | **1**       | ✅      |
 | 43   | `comece-por-aqui` / `progresso-onboarding`      | **1**       | ✅      |
-| 44   | `cta-supplier-so-vitrine` / `CtaProximoPasso`   | **0**       | ❌      |
-| 45   | `glossario-termos` / `Ferramentas do produto`   | **0**       | ❌      |
+| 44   | `cta-supplier-so-vitrine` / `CtaProximoPasso`   | **1**       | ✅      |
+| 45   | `glossario-termos` / `Ferramentas do produto`   | **1**       | ✅      |
 
-**Conclusão:** o ar está na **Onda 43**, **duas ondas** atrás do repo (44 e
-45). A camada mais atrasada continua sendo o **banco**. A frase "Consumo e
-liberação são automáticos" ainda existe no bundle, mas condicionada ao ramo
-`ativa` — com as migrações pendentes, o operador vê o aviso âmbar, não a
-promessa. O primeiro uso publicado já tem o guia "Comece por aqui" e a sidebar
-corrigida; faltam no ar as **saídas dos 9 avisos de vitrine** (Onda 44) e a
-**tradução das siglas da primeira dobra** (Onda 45).
+**Conclusão:** o ar está na **Onda 45**, **na mesma onda do repositório** —
+pela primeira vez em muitas rodadas não há ondas pendentes de publicação. A
+**única camada atrasada é o banco**, sem as migrações das Ondas 21 e 24. A
+frase "Consumo e liberação são automáticos" ainda existe no bundle, mas
+condicionada ao ramo `ativa` — com as migrações pendentes, o operador vê o
+aviso âmbar, não a promessa. Os 9 avisos de vitrine já têm saída no ar e a
+primeira dobra já traz o glossário; o que falta não é mais deploy, é **SQL**.
 
 ---
 
@@ -127,14 +128,14 @@ automação e o disponível não volta.
 
 ## 5. O que destrava cada lacuna
 
-| Lacuna                                    | Ação                                                                               | Quem faz        |
-| ----------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
-| **Ar duas ondas atrás do repo (39 + 40)** | republicar no Lovable depois deste commit                                          | dono do projeto |
-| **Banco sem as migrações 21 e 24**        | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
-| E2E autenticado nunca roda                | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
-| Cancelar reservas presas                  | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
+| Lacuna                                     | Ação                                                                               | Quem faz        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- | --------------- |
+| ~~Ar duas ondas atrás do repo~~ **zerado** | ~~republicar~~ concluído na 23ª medição (`index-CPZSdWEg.js`)                      | dono do projeto |
+| **Banco sem as migrações 21 e 24**         | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
+| E2E autenticado nunca roda                 | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
+| Cancelar reservas presas                   | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
 
-Nenhuma das pendências é código: publicar, colar um SQL e dar uma credencial.
+A publicação foi concluída. Restam duas ações que não são código: colar um SQL e dar uma credencial.
 
 ---
 
