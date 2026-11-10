@@ -1,6 +1,6 @@
 # Onda 44 — Todo aviso de vitrine tem uma saída
 
-**Data:** 06/11/2026 · **Antecessor:** `80dd423` (Onda 43 + docs)
+**Data:** 06/11/2026 · **Commit:** `030ca6c` · **Antecessor:** `80dd423` (Onda 43 + docs)
 
 ---
 

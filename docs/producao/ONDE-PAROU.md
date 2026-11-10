@@ -201,7 +201,7 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 41 — Trilha LGPD sem ficção           | `334d672` | Medição: `buildLgpdAuditCsv` e o A4 de governança exportavam 4 eventos fabricados (Helena Prado, PD-2026-802, bases legais LGPD); 4 briefings geravam "Aderência Comercial 92%". `demo?: boolean` + `eventosAuditaveis`/`briefingsOperacionais`, CSV só com cabeçalho, A4 com aviso, KPIs `—`, botões bloqueados, selos, edição promove. 12 testes novos | ❌ não republicado      |
 | 42 — Fornecedor de papel não homologa | `7b11535` | Medição: 4 parceiros com CNPJ/certificação ABVTEX/scores inventados geravam ranking 93/A+ > 92/A+ > 90/A+ > 88/A, "4 homologados", OTIF 90% e podiam assinar XML NF-e/Guia A4. `demo?: boolean`, `parceirosOperacionais`, `apuravel`, KPIs e scoreboard com `—`, bloqueio de XML/A4, edição promove. 12 testes novos                                     | ❌ não republicado      |
 | 43 — Revisão de UX ponta a ponta      | `ee97e4f` | Teste real no browser (17 rotas, 4 tarefas): sidebar 4→19 links, Ficha Técnica 2→1 clique, `aria-required` 0→2, fluxo de 6 etapas colapsado. `ComecePorAqui` com 4 passos e progresso derivado de `operationalCodes`/`pedidosOperacionais`/`parceirosOperacionais`/`campanhasOperacionais`. 24 testes novos                                              | ❌ não republicado      |
-| 44 — Todo aviso tem uma saída         | `HEAD`    | Medição: 9 avisos de vitrine, 0 com botão. `CtaProximoPasso` + `usePasso` derivados do onboarding: 4 CTAs abrem diálogo/modal local, 5 navegam. Passo concluído → CTA desaparece. 9 `data-testid` antigos preservados. Validação no browser: 9/9 com saída, clique abre "Homologar Novo Fornecedor" e navega para `/orders`. 14 testes novos             | ❌ não republicado      |
+| 44 — Todo aviso tem uma saída         | `030ca6c` | Medição: 9 avisos de vitrine, 0 com botão. `CtaProximoPasso` + `usePasso` derivados do onboarding: 4 CTAs abrem diálogo/modal local, 5 navegam. Passo concluído → CTA desaparece. 9 `data-testid` antigos preservados. Validação no browser: 9/9 com saída, clique abre "Homologar Novo Fornecedor" e navega para `/orders`. 14 testes novos             | ❌ não republicado      |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -253,7 +253,7 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: `main@HEAD` (Onda 44; hash em `git log -1`),
+Seção 7-A: `main@030ca6c` (Onda 44),
 `docs/producao/ONDA-19..44-*.md` e os números das suítes rodadas em 05/11
 (vitest **624/624**, SQL 163/163, bundle relido com **221 chunks** no entry
 `index-BuzojJqi.js`: marcadores das Ondas 24–43 presentes — logo o ar é a
