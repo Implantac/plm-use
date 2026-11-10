@@ -131,6 +131,28 @@ metade):
 5. **Aguarde até o fim** — são ~473 linhas, alguns segundos. Não aperte Run
    duas vezes enquanto a primeira ainda está rodando.
 
+> ### ⚠️ Vai aparecer um modal "Confirm destructive operation" — **pode confirmar**
+>
+> O Lovable exibe: _"This query contains a DROP statement which can modify or
+> delete data. Are you sure you want to run it?"_ com **Cancel** / **Run anyway**.
+> **Clique em `Run anyway`.** O aviso é disparado por **palavra-chave**, não por
+> análise do SQL — ele conta até a palavra `DROP` dentro de um **comentário**.
+>
+> Medido no arquivo real: **3** ocorrências de `DROP` —
+>
+> - linha 24: dentro de um comentário (`-- Reexecutável: usa ... DROP TRIGGER IF EXISTS ...`);
+> - linhas 112 e 180: os dois únicos comandos executáveis, ambos
+>   `DROP TRIGGER IF EXISTS ... ON public.stock_movement` /
+>   `... ON public.production_orders`.
+>
+> Um `DROP TRIGGER` remove **metadado de gatilho**, nunca linha de tabela. E como
+> a migration nunca foi aplicada neste banco (`view_aging = NULL`,
+> `404 PGRST205`/`PGRST202` re-medidos), esses triggers **não existem** — o
+> `IF EXISTS` torna os dois comandos **no-op**. Não há nenhum
+> `DROP TABLE`, `DROP VIEW`, `DELETE`, `TRUNCATE` ou `ALTER TABLE` no arquivo.
+> Os 9 `CREATE OR REPLACE` também não substituem nada: view e funções estão
+> ausentes, logo é criação pura.
+
 > O arquivo termina com o bloco **VERIFICAÇÃO** e o `NOTIFY`, então **uma única
 > execução já aplica, verifica e recarrega o schema do PostgREST**. O comentário
 > do cabeçalho sugere rodar a verificação "numa nova execução" — isso é
