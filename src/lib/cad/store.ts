@@ -10,6 +10,8 @@ export type CadStatus = "Rascunho" | "Revisão" | "Aprovado" | "Produção";
 
 export type CadMarkerItem = {
   id: string;
+  /** Onda 46: molde de exemplo. Nunca entra em número, média ou sincronização. */
+  demo?: boolean;
   refCode: string;
   fileName: string;
   format: CadFormat;
@@ -30,6 +32,7 @@ export type CadMarkerItem = {
 export const initialCadMarkers: CadMarkerItem[] = [
   {
     id: "cad-1",
+    demo: true,
     refCode: "DEV000006",
     fileName: "DEV000006_CAMISETA_DRY_PRO_v4.ADS",
     format: "ADS",
@@ -48,6 +51,7 @@ export const initialCadMarkers: CadMarkerItem[] = [
   },
   {
     id: "cad-2",
+    demo: true,
     refCode: "V24-001",
     fileName: "Blusa_Linho_Amalfi_v4.DXF",
     format: "DXF",
@@ -112,6 +116,10 @@ export const useCadStore = create<CadState>()(
       addMarker(input) {
         const created: CadMarkerItem = {
           ...input,
+          // Onda 46: tudo que o usuário cadastra é operacional; só a lista
+          // inicial é vitrine. Sem `demo: true` aqui o molde novo seria
+          // ignorado para sempre pelos números da tela.
+          demo: false,
           id: uid(),
           refCode: input.refCode.trim().toUpperCase(),
           updatedAt: new Date().toISOString().slice(0, 10),
@@ -139,3 +147,24 @@ export const useCadStore = create<CadState>()(
     { name: "use-moda:cad-markers" },
   ),
 );
+
+// ---------------------------------------------------------------------------
+// Onda 46 — a vitrine de CAD não apura número.
+//
+// Medido com browser em 06/11: `/cad` abria com "Moldes ativos 2",
+// "Eficiência média 86.4%" e "Aprovados 2" usando DOIS estudos de fábrica,
+// e o botão "Sync + BOM" gravava 88,3% / 1,8 m / 135 g/m² numa ficha que
+// ninguém criou. Agora esses objetos continuam visíveis, mas declarados.
+// ---------------------------------------------------------------------------
+export const MOLDE_DEMO_LABEL =
+  "Molde de demonstração — eficiência, consumo e aprovação não entram nos números";
+
+/** Só moldes salvos/editados pela empresa. Nunca `undefined` vira apurado. */
+export function moldesOperacionais(markers: CadMarkerItem[]): CadMarkerItem[] {
+  return markers.filter((m) => m.demo !== true);
+}
+
+/** Promoção explícita: o usuário assume o exemplo como cadastro próprio. */
+export function promoverMolde(m: CadMarkerItem): CadMarkerItem {
+  return { ...m, demo: false };
+}

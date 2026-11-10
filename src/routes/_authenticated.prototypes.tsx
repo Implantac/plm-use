@@ -31,7 +31,13 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import { OptimizedImage } from "@/components/OptimizedImage";
-import { PROTOTYPE_STAGES, usePrototypeStore, type PrototypeItem } from "@/lib/prototypes/store";
+import {
+  PILOTO_DEMO_LABEL,
+  PROTOTYPE_STAGES,
+  pilotosOperacionais,
+  usePrototypeStore,
+  type PrototypeItem,
+} from "@/lib/prototypes/store";
 import { defaultMedidasFor, useTechSheetStore } from "@/lib/techsheet/store";
 import { round2 } from "@/lib/techsheet/textile";
 import { useCreatePiloto } from "@/hooks/use-pilotos";
@@ -48,6 +54,9 @@ function PrototypesPage() {
   const createLocal = usePrototypeStore((s) => s.create);
   const advanceStage = usePrototypeStore((s) => s.advanceStage);
   const remove = usePrototypeStore((s) => s.remove);
+  // Onda 46: os dois pilotos iniciais são vitrine. Números, ficha e lacre
+  // só existem para o que a empresa salvou/editou.
+  const operacionais = useMemo(() => pilotosOperacionais(prototypes), [prototypes]);
 
   const ensureSheet = useTechSheetStore((s) => s.ensure);
   const techDocs = useTechSheetStore((s) => s.data);
@@ -62,7 +71,7 @@ function PrototypesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPrototype, setEditingPrototype] = useState<PrototypeItem | null>(null);
   const [formData, setFormData] = useState({
-    refCode: "DEV000006",
+    refCode: "",
     name: "",
     version: "",
     requester: "",
@@ -91,7 +100,10 @@ function PrototypesPage() {
     if (prototype) {
       setEditingPrototype(prototype);
       setFormData({
-        refCode: prototype.refCode,
+        // Onda 46: abrir um exemplo para edição NÃO herda a referência de
+        // fábrica. O usuário precisa digitar a referência da empresa; ao
+        // salvar, o piloto é promovido (`demo: false`) explicitamente.
+        refCode: prototype.demo === true ? "" : prototype.refCode,
         name: prototype.name,
         version: prototype.version,
         requester: prototype.requester,
@@ -100,7 +112,7 @@ function PrototypesPage() {
     } else {
       setEditingPrototype(null);
       setFormData({
-        refCode: "DEV000006",
+        refCode: "",
         name: "",
         version: "1ª Prova — corte piloto",
         requester: "",
@@ -113,6 +125,12 @@ function PrototypesPage() {
   useEffect(() => onQuickAction("quick:new-piloto", () => handleOpenDialog()), []);
 
   const openFitAudit = (proto: PrototypeItem) => {
+    // Onda 46: "Prova POM & Lacre" chamava ensureSheet() e materializava a
+    // ficha de demonstração como se fosse engenharia da empresa.
+    if (proto.demo === true) {
+      toast.error(`${PILOTO_DEMO_LABEL}. Cadastre ou promova um piloto para auditar medidas.`);
+      return;
+    }
     const code = proto.refCode.toUpperCase();
     const sheet = techDocs[code] ?? ensureSheet(code);
     const spec = sheet.medidas ?? defaultMedidasFor();
@@ -203,6 +221,10 @@ function PrototypesPage() {
   };
 
   const handleSave = async () => {
+    if (!formData.refCode.trim()) {
+      toast.error("Informe a referência da peça piloto.");
+      return;
+    }
     if (!formData.name.trim()) {
       toast.error("Informe o nome da peça piloto.");
       return;
@@ -212,6 +234,8 @@ function PrototypesPage() {
         ...editingPrototype,
         ...formData,
         refCode: formData.refCode.trim().toUpperCase(),
+        // Promoção explícita: editou, é cadastro da empresa, não vitrine.
+        demo: false,
       });
       toast.success("Peça piloto atualizada.");
     } else {
@@ -238,24 +262,54 @@ function PrototypesPage() {
       onSearch={setSearchQ}
       onAdd={() => handleOpenDialog()}
       metrics={[
-        { label: "Pilotos ativos", value: String(prototypes.length), detail: "persistidos" },
+        {
+          label: "Pilotos ativos",
+          value: operacionais.length ? String(operacionais.length) : "—",
+          detail: operacionais.length ? "salvos pela empresa" : PILOTO_DEMO_LABEL,
+        },
         {
           label: "Ajustes abertos",
-          value: String(prototypes.reduce((sum, item) => sum + item.adjustments, 0)),
+          value: operacionais.length
+            ? String(operacionais.reduce((sum, item) => sum + item.adjustments, 0))
+            : "—",
           detail: "modelagem/costura",
         },
         {
           label: "Evidências",
-          value: String(prototypes.reduce((sum, item) => sum + item.photos + item.videos, 0)),
+          value: operacionais.length
+            ? String(operacionais.reduce((sum, item) => sum + item.photos + item.videos, 0))
+            : "—",
           detail: "fotos e vídeos",
         },
         {
           label: "Lacrados",
-          value: String(prototypes.filter((item) => item.status === "Aprovado").length),
+          value: operacionais.length
+            ? String(operacionais.filter((item) => item.status === "Aprovado").length)
+            : "—",
           detail: "aptos para OP",
         },
       ]}
     >
+      {operacionais.length === 0 && (
+        <div
+          data-testid="prototipo-so-vitrine"
+          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-xs text-foreground"
+        >
+          <p className="font-semibold">Nenhum piloto salvo ainda.</p>
+          <p className="mt-1 text-muted-foreground">
+            Os cards abaixo são {PILOTO_DEMO_LABEL.toLowerCase()}: não contam nos números, não geram
+            Ficha Técnica e não podem ser lacrados.
+          </p>
+          <Button
+            data-testid="cta-prototipo-sem-piloto"
+            size="sm"
+            className="mt-2 h-7 text-2xs"
+            onClick={() => handleOpenDialog()}
+          >
+            Cadastrar meu piloto
+          </Button>
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
         {visiblePrototypes.map((prototype) => (
           <Card
@@ -263,17 +317,28 @@ function PrototypesPage() {
             className="glass-card rounded-lg overflow-hidden hover:border-teal-500/40 transition-colors"
           >
             <div className="relative h-52 overflow-hidden">
-              <OptimizedImage
-                src={prototype.image}
-                alt={prototype.name}
-                className="h-full w-full object-cover"
-              />
+              {prototype.image ? (
+                <OptimizedImage
+                  src={prototype.image}
+                  alt={prototype.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-muted text-2xs text-muted-foreground">
+                  Sem foto do piloto
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-background/95 to-transparent" />
               <div className="absolute left-4 bottom-4 right-4 flex items-end justify-between gap-4">
                 <div>
                   <p className="text-2xs font-mono font-bold uppercase tracking-wider text-teal-500">
                     {prototype.id} · REF {prototype.refCode}
                   </p>
+                  {prototype.demo === true && (
+                    <span className="mt-0.5 inline-block rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                      Demonstração · não apurado
+                    </span>
+                  )}
                   <h3 className="mt-1 text-lg font-bold text-foreground">{prototype.name}</h3>
                   <p className="mt-0.5 text-2xs text-muted-foreground">{prototype.version}</p>
                 </div>
@@ -336,35 +401,49 @@ function PrototypesPage() {
                 </div>
 
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 text-2xs gap-1"
-                    onClick={() =>
-                      void navigate({ to: "/tech-sheet", search: { ref: prototype.refCode } })
-                    }
-                  >
-                    <ExternalLink className="w-3 h-3" /> Ficha
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 text-2xs gap-1 border-teal-500/45 hover:border-teal-500"
-                    onClick={() => openFitAudit(prototype)}
-                  >
-                    <Ruler className="w-3 h-3 text-teal-500" /> Prova POM &amp; Lacre
-                  </Button>
-                  {prototype.status !== "Aprovado" && (
+                  {prototype.demo === true ? (
                     <Button
+                      data-testid={"cta-promover-" + prototype.id}
                       size="sm"
-                      className="h-7 text-2xs gap-1 bg-teal-600 hover:bg-teal-500 text-[#EEF7FA]"
-                      onClick={() => {
-                        advanceStage(prototype.id);
-                        toast.success(`Piloto ${prototype.id} avançado de etapa.`);
-                      }}
+                      variant="outline"
+                      className="h-7 text-2xs gap-1 border-amber-500/50"
+                      onClick={() => handleOpenDialog(prototype)}
                     >
-                      Avançar <ArrowRight className="w-3 h-3" />
+                      Cadastrar como meu
                     </Button>
+                  ) : (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-2xs gap-1"
+                        onClick={() =>
+                          void navigate({ to: "/tech-sheet", search: { ref: prototype.refCode } })
+                        }
+                      >
+                        <ExternalLink className="w-3 h-3" /> Ficha
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-2xs gap-1 border-teal-500/45 hover:border-teal-500"
+                        onClick={() => openFitAudit(prototype)}
+                      >
+                        <Ruler className="w-3 h-3 text-teal-500" /> Prova POM &amp; Lacre
+                      </Button>
+                      {prototype.status !== "Aprovado" && (
+                        <Button
+                          size="sm"
+                          className="h-7 text-2xs gap-1 bg-teal-600 hover:bg-teal-500 text-[#EEF7FA]"
+                          onClick={() => {
+                            advanceStage(prototype.id);
+                            toast.success(`Piloto ${prototype.id} avançado de etapa.`);
+                          }}
+                        >
+                          Avançar <ArrowRight className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -510,7 +589,7 @@ function PrototypesPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, refCode: e.target.value.toUpperCase() })
                 }
-                placeholder="DEV000006"
+                placeholder="Ex.: REF-001"
                 className="font-mono"
               />
             </div>

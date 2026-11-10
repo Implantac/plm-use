@@ -276,8 +276,17 @@ export function ProductStudio() {
     secondaryHex?: string;
     applications: string[];
   } | null>(null);
-  const [selectedTechRef, setSelectedTechRef] = useState("DEV000006");
+  // Onda 46: o seletor nascia na referência de demonstração mesmo quando
+  // nenhuma ficha existia — um código de fábrica no valor do <select>. Agora o valor é
+  // derivado SÓ das fichas salvas, sem default plantado.
+  const [selectedTechRef, setSelectedTechRef] = useState("");
   const { sheetsMap, codes: techSheetRefOptions } = useOperationalRefs();
+  useEffect(() => {
+    const primeira = techSheetRefOptions[0] ?? "";
+    setSelectedTechRef((atual) =>
+      atual && techSheetRefOptions.includes(atual) ? atual : primeira,
+    );
+  }, [techSheetRefOptions]);
   const [variationColors, setVariationColors] = useState("areia, azul, verde, preto, estampada");
   const [artwork, setArtwork] = useState<{ name: string; dataUrl: string } | null>(null);
   const [artworkError, setArtworkError] = useState("");
@@ -802,6 +811,11 @@ export function ProductStudio() {
                 onChange={(e) => setSelectedTechRef(e.target.value)}
                 className="h-8 flex-1 rounded-md border border-border bg-background px-2 text-xs text-foreground"
               >
+                <option value="" disabled>
+                  {techSheetRefOptions.length === 0
+                    ? "Nenhuma ficha técnica salva"
+                    : "Selecione uma ficha"}
+                </option>
                 {techSheetRefOptions.map((r) => (
                   <option key={r} value={r}>
                     {r} — {sheetsMap[r]?.meta?.name ?? r}
@@ -813,6 +827,7 @@ export function ProductStudio() {
                 size="sm"
                 variant="outline"
                 className="h-8 text-xs shrink-0"
+                disabled={!selectedTechRef}
                 onClick={() => importFromTechSheet(selectedTechRef)}
               >
                 Carregar Ficha
@@ -822,6 +837,17 @@ export function ProductStudio() {
               Injeta gramatura (g/m²), composição ABNT, hexadecimais Pantone e costuras reais no
               motor fotográfico.
             </p>
+            {techSheetRefOptions.length === 0 && (
+              <p
+                data-testid="studio-sem-ficha"
+                className="text-[11px] text-amber-700 dark:text-amber-300"
+              >
+                Nenhuma ficha técnica salva: o estúdio não importa engenharia de exemplo.{" "}
+                <Link to="/references" className="font-semibold underline">
+                  Criar ficha técnica
+                </Link>
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">

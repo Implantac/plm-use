@@ -17,7 +17,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
-import { useCadStore, type CadFormat, type CadMarkerItem, type CadStatus } from "@/lib/cad/store";
+import {
+  MOLDE_DEMO_LABEL,
+  moldesOperacionais,
+  useCadStore,
+  type CadFormat,
+  type CadMarkerItem,
+  type CadStatus,
+} from "@/lib/cad/store";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 import { converterMetroParaKg, round4 } from "@/lib/techsheet/textile";
 
@@ -33,7 +40,7 @@ const integrations = [
 ];
 
 function calcMarkerConsumption(m: CadMarkerItem): { mPorPeca: number; kgPorPeca: number | null } {
-  const pecas = Math.max(1, Number(m.pecasNoRisco) || 5);
+  const pecas = Math.max(1, Number(m.pecasNoRisco) || 1);
   const mPorPeca = round4((Number(m.comprimentoRiscoM) || 0) / pecas);
   const gram = Number(m.gramaturaGm2) || 0;
   const larg = Number(m.larguraEnfestoM) || 0;
@@ -47,6 +54,9 @@ function CadPage() {
   const markers = useCadStore((s) => s.markers);
   const addMarker = useCadStore((s) => s.addMarker);
   const removeMarker = useCadStore((s) => s.removeMarker);
+  // Onda 46: os dois estudos iniciais são vitrine. Os números da tela e a
+  // sincronização com a Ficha Técnica só enxergam o que a empresa salvou.
+  const operacionais = useMemo(() => moldesOperacionais(markers), [markers]);
 
   const ensureSheet = useTechSheetStore((s) => s.ensure);
   const setEncaixeCad = useTechSheetStore((s) => s.setEncaixeCad);
@@ -57,21 +67,24 @@ function CadPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [syncConsumptionOnSave, setSyncConsumptionOnSave] = useState(true);
   const [form, setForm] = useState({
-    // Vazio de propósito: antes vinha "DEV000006" e salvar um molde sem trocar o
-    // campo criava encaixe CAD para a ficha de demonstração, sincronizando
+    // Vazio de propósito: antes vinha a referência de demonstração e salvar
+    // um molde sem trocar o campo criava encaixe CAD para essa ficha, sincronizando
     // consumo de tecido de exemplo como se fosse produto da empresa.
     refCode: "",
     fileName: "",
     format: "ADS" as CadFormat,
     sistemaCad: "Audaces" as CadMarkerItem["sistemaCad"],
     version: "v1.0",
-    eficienciaPct: 88.3,
-    larguraEnfestoM: 1.8,
-    comprimentoRiscoM: 5.35,
-    pecasNoRisco: 5,
-    gramaturaGm2: 135,
-    encolhimentoUrdumePct: 2.0,
-    encolhimentoTramaPct: 1.5,
+    // Onda 46: sem números de fábrica no formulário. Antes um "Salvar"
+    // sem preencher nada criava um molde com 88,3% / 1,8 m / 135 g/m² e
+    // sincronizava esse consumo como engenharia real de uma ficha.
+    eficienciaPct: 0,
+    larguraEnfestoM: 0,
+    comprimentoRiscoM: 0,
+    pecasNoRisco: 1,
+    gramaturaGm2: 0,
+    encolhimentoUrdumePct: 0,
+    encolhimentoTramaPct: 0,
     status: "Revisão" as CadStatus,
     notes: "",
   });
@@ -88,13 +101,20 @@ function CadPage() {
   }, [markers, q]);
 
   const avgEfficiency = useMemo(() => {
-    if (!markers.length) return 0;
+    if (!operacionais.length) return null;
     return (
-      Math.round((markers.reduce((acc, m) => acc + m.eficienciaPct, 0) / markers.length) * 10) / 10
+      Math.round(
+        (operacionais.reduce((acc, m) => acc + m.eficienciaPct, 0) / operacionais.length) * 10,
+      ) / 10
     );
-  }, [markers]);
+  }, [operacionais]);
 
   const syncToTechSheet = (m: CadMarkerItem, alsoUpdateBom: boolean) => {
+    // Onda 46: dado de fábrica não pode materializar ficha nem gravar BOM.
+    if (m.demo === true) {
+      toast.error(`${MOLDE_DEMO_LABEL}. Cadastre um molde para sincronizar com a ficha.`);
+      return;
+    }
     const code = m.refCode.trim().toUpperCase();
     const sheet = ensureSheet(code);
     setEncaixeCad(code, {
@@ -135,6 +155,10 @@ function CadPage() {
       toast.error("Informe o código da referência e o nome do arquivo de molde.");
       return;
     }
+    if (form.eficienciaPct <= 0 || form.larguraEnfestoM <= 0 || form.comprimentoRiscoM <= 0) {
+      toast.error("Informe eficiência, largura e comprimento de risco medidos no seu encaixe.");
+      return;
+    }
     const created = addMarker(form);
     syncToTechSheet(created, syncConsumptionOnSave);
     setDialogOpen(false);
@@ -156,18 +180,49 @@ function CadPage() {
       searchPlaceholder="Buscar por referência, arquivo .ADS/.DXF/.PLT ou sistema CAD"
       onSearch={setQ}
       metrics={[
-        { label: "Moldes ativos", value: String(markers.length), detail: "persistidos" },
-        { label: "Eficiência média", value: `${avgEfficiency}%`, detail: "aproveitamento" },
+        {
+          label: "Moldes ativos",
+          value: operacionais.length ? String(operacionais.length) : "—",
+          detail: operacionais.length ? "salvos pela empresa" : MOLDE_DEMO_LABEL,
+        },
+        {
+          label: "Eficiência média",
+          value: avgEfficiency == null ? "—" : `${avgEfficiency}%`,
+          detail: avgEfficiency == null ? "sem molde salvo" : "aproveitamento",
+        },
         { label: "Formatos", value: "ADS · DXF · PLT · AI", detail: "padrão confecção" },
         {
           label: "Aprovados",
-          value: String(
-            markers.filter((m) => m.status === "Aprovado" || m.status === "Produção").length,
-          ),
-          detail: "prontos p/ corte",
+          value: operacionais.length
+            ? String(
+                operacionais.filter((m) => m.status === "Aprovado" || m.status === "Produção")
+                  .length,
+              )
+            : "—",
+          detail: operacionais.length ? "prontos p/ corte" : "sem molde salvo",
         },
       ]}
     >
+      {operacionais.length === 0 && (
+        <div
+          data-testid="cad-so-vitrine"
+          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-xs text-foreground"
+        >
+          <p className="font-semibold">Nenhum molde salvo ainda.</p>
+          <p className="mt-1 text-muted-foreground">
+            Os estudos abaixo são {MOLDE_DEMO_LABEL.toLowerCase()}: não contam como moldes ativos,
+            eficiência média nem aprovados, e não podem sincronizar com a Ficha Técnica.
+          </p>
+          <Button
+            data-testid="cta-cad-sem-molde"
+            size="sm"
+            className="mt-2 h-7 text-2xs"
+            onClick={() => setDialogOpen(true)}
+          >
+            Cadastrar meu molde
+          </Button>
+        </div>
+      )}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_330px] gap-6">
         <Card className="glass-card rounded-lg overflow-hidden">
           <CardHeader className="p-4 border-b border-border/60">
@@ -194,7 +249,14 @@ function CadPage() {
                   const { mPorPeca, kgPorPeca } = calcMarkerConsumption(m);
                   return (
                     <tr key={m.id} className="hover:bg-accent/40">
-                      <td className="px-4 py-3 font-mono font-bold text-primary">{m.refCode}</td>
+                      <td className="px-4 py-3 font-mono font-bold text-primary">
+                        {m.refCode}
+                        {m.demo === true && (
+                          <span className="mt-1 block text-[9px] font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                            Demonstração · não apurado
+                          </span>
+                        )}
+                      </td>
                       <td className="px-4 py-3">
                         <div className="font-semibold text-foreground">{m.fileName}</div>
                         <div className="text-2xs text-muted-foreground">
@@ -222,15 +284,25 @@ function CadPage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="inline-flex items-center gap-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 text-2xs gap-1 border-teal-500/40 hover:border-teal-500"
-                            title="Sincroniza eficiência CAD e atualiza o consumo do tecido principal no BOM da Ficha Técnica"
-                            onClick={() => syncToTechSheet(m, true)}
-                          >
-                            <Link2 className="w-3 h-3 text-teal-500" /> Sync + BOM
-                          </Button>
+                          {m.demo === true ? (
+                            <span
+                              data-testid="cad-sync-bloqueado"
+                              title={MOLDE_DEMO_LABEL}
+                              className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-600 dark:text-amber-400"
+                            >
+                              Sync indisponível
+                            </span>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-2xs gap-1 border-teal-500/40 hover:border-teal-500"
+                              title="Sincroniza eficiência CAD e atualiza o consumo do tecido principal no BOM da Ficha Técnica"
+                              onClick={() => syncToTechSheet(m, true)}
+                            >
+                              <Link2 className="w-3 h-3 text-teal-500" /> Sync + BOM
+                            </Button>
+                          )}
                           <Button
                             size="icon"
                             variant="ghost"
@@ -299,7 +371,7 @@ function CadPage() {
                   onChange={(e) =>
                     setForm((s) => ({ ...s, refCode: e.target.value.toUpperCase() }))
                   }
-                  placeholder="DEV000006"
+                  placeholder="Ex.: REF-001"
                   className="font-mono"
                 />
               </div>
@@ -330,7 +402,7 @@ function CadPage() {
                 <Input
                   value={form.fileName}
                   onChange={(e) => setForm((s) => ({ ...s, fileName: e.target.value }))}
-                  placeholder="DEV000006_DRY_PRO_v5.ADS"
+                  placeholder="Ex.: REF-001_CAMISETA_v1.ADS"
                   className="font-mono text-xs"
                 />
               </div>

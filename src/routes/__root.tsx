@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { EntityDrawerProvider } from "../components/entity/EntityContext";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -163,6 +164,10 @@ function RootComponent() {
       <EntityDrawerProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        {/* Onda 46: descoberto com clique real no browser — o app chamava
+            toast.success/error/warning em dezenas de telas, mas o <Toaster />
+            nunca estava montado: TODO feedback de validação era silencioso. */}
+        <Toaster />
       </EntityDrawerProvider>
     </QueryClientProvider>
   );

@@ -6,6 +6,8 @@ export type PrototypeStatus = "Em progresso" | "Ajuste" | "Aprovado" | "Pausado"
 
 export type PrototypeItem = {
   id: string;
+  /** Onda 46: piloto de exemplo. Não apura número nem gera ficha/lacre. */
+  demo?: boolean;
   refCode: string;
   name: string;
   version: string;
@@ -34,6 +36,7 @@ export const PROTOTYPE_STAGES = [
 export const initialPrototypes: PrototypeItem[] = [
   {
     id: "PR-2606",
+    demo: true,
     refCode: "DEV000006",
     name: "Camiseta Esportiva Dry Pro",
     version: "2ª Prova — ajuste cava e ribana gola V",
@@ -51,6 +54,7 @@ export const initialPrototypes: PrototypeItem[] = [
   },
   {
     id: "PR-2501",
+    demo: true,
     refCode: "V24-001",
     name: "Blusa Linho Amalfi",
     version: "Piloto Lacrado — liberado p/ OP",
@@ -98,7 +102,9 @@ export const usePrototypeStore = create<PrototypeState>()(
           id: `PR-${Math.floor(Date.now() / 1000)
             .toString()
             .slice(-4)}`,
-          refCode: input.refCode.trim().toUpperCase() || "DEV000006",
+          // Onda 46: sem fallback silencioso. A rota valida o campo vazio
+          // antes de chamar create(); nenhum piloto novo nasce no DEV000006.
+          refCode: input.refCode.trim().toUpperCase(),
           name: input.name.trim() || "Peça Piloto",
           version: input.version.trim() || "1ª Prova — primeiro corte",
           stage: PROTOTYPE_STAGES[0],
@@ -109,8 +115,10 @@ export const usePrototypeStore = create<PrototypeState>()(
           photos: 0,
           videos: 0,
           status: "Em progresso",
-          image:
-            "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800",
+          // Sem foto de fábrica: a tela mostra o estado "sem foto" até o
+          // usuário anexar a evidência real.
+          image: "",
+          demo: false,
         };
         set((s) => ({ items: [created, ...s.items] }));
         return created;
@@ -136,3 +144,24 @@ export const usePrototypeStore = create<PrototypeState>()(
     { name: "use-moda:prototypes" },
   ),
 );
+
+// ---------------------------------------------------------------------------
+// Onda 46 — a vitrine de Pilotagem não apura número.
+//
+// Medido com browser em 06/11: `/prototypes` abria com 2 pilotos, 1 ajuste,
+// 23 evidências e 1 lacrado, todos de fábrica; o formulário "Novo piloto" já
+// vinha preenchido com DEV000006 e "Prova POM & Lacre" chamava ensure() para
+// materializar a ficha de demonstração.
+// ---------------------------------------------------------------------------
+export const PILOTO_DEMO_LABEL =
+  "Piloto de demonstração — etapas, evidências e lacre não entram nos números";
+
+/** Só pilotos salvos/editados pela empresa. */
+export function pilotosOperacionais(items: PrototypeItem[]): PrototypeItem[] {
+  return items.filter((p) => p.demo !== true);
+}
+
+/** Promoção explícita: o usuário assume o exemplo como cadastro próprio. */
+export function promoverPiloto(p: PrototypeItem): PrototypeItem {
+  return { ...p, demo: false };
+}
