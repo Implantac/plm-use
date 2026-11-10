@@ -28,16 +28,44 @@ vezes não quebra.
 
 ---
 
-## 1. Abra o SQL Editor
+## 1. Abra o SQL Editor — **pode ser direto no Lovable, sim**
 
-Escolha **um** dos dois caminhos:
+O projeto Lovable está conectado ao mesmo Supabase que o app usa: tanto o
+`.env` quanto o bundle publicado (`index-CPZSdWEg.js`) apontam para
+**`https://njmniwsqwohmigroswnl.supabase.co`**. O SQL Editor do Lovable Cloud
+executa nesse banco — não é uma cópia, não é staging. Outros SQLs deste repo
+já foram aplicados por esse caminho (ex.:
+`docs/producao/2026-10-30_PLM-FLUIDO-MULTITENANT.md`).
 
-- **Supabase (recomendado):** `https://supabase.com/dashboard/project/njmniwsqwohmigroswnl/sql/new`
-  → menu lateral **SQL Editor** → botão **+ New query**.
-- **Lovable:** abra o projeto → **More (⋯)** → **Cloud** → **SQL editor**.
+**Caminho mais curto (Lovable):** abra o projeto → **More (⋯)** → **Cloud** →
+**SQL Editor**. Dependendo da versão da UI o menu aparece como
+**More → Database → Manage → SQL editor** — é o mesmo lugar. Clique em
+**New query** / **+**.
 
-Os dois apontam para o mesmo banco. O SQL Editor do Supabase já executa como
-papel privilegiado (`postgres`), então você não precisa de nenhum `SET ROLE`.
+**Alternativa (Supabase):**
+`https://supabase.com/dashboard/project/njmniwsqwohmigroswnl/sql/new` →
+**+ New query**. Mesmo banco, mesma execução como papel privilegiado
+(`postgres`); você não precisa de `SET ROLE`, de CLI nem de `supabase db push`.
+
+### 1.1 Confirme que está no banco certo (10 segundos)
+
+Antes de colar o arquivo, rode esta query **somente leitura**:
+
+```sql
+select to_regclass('public.stock_reservation')       as tabela_base,
+       to_regclass('public.stock_reservation_aging') as view_aging;
+```
+
+Esperado **antes** de aplicar:
+
+| `tabela_base`              | `view_aging` |
+| -------------------------- | ------------ |
+| `public.stock_reservation` | `NULL`       |
+
+- Se `tabela_base` vier `NULL`, **pare**: você não está no schema do PLM (ou o
+  schema base ainda não foi aplicado). Não crie tabela na mão — me avise.
+- Se `view_aging` já vier `public.stock_reservation_aging`, a migration já foi
+  aplicada; pule para o passo 5 e me avise para eu re-medir.
 
 ---
 
@@ -91,11 +119,18 @@ ok  os 2 triggers da reserva estao instalados
 ```
 
 E nenhuma linha de erro. O `NOTIFY pgrst, 'reload schema'` **não imprime
-mensagem** — silêncio ali é normal.
+mensagem** — silêncio ali é normal. `NOTIFY` é um comando Postgres padrão e
+funciona tanto no editor do Lovable quanto no do Supabase; se o papel do
+Lovable reclamar dele, o PostgREST costuma recarregar sozinho em ~10–30 s
+(ou rode só essa linha no Supabase, que é o mesmo banco).
 
-> Se o Supabase não mostrar os NOTICEs de primeira, expanda a aba
-> **Messages** / **Logs** na parte inferior do resultado. O `DO $$` usa
-> `RAISE NOTICE`, que aparece como mensagem, não como linha de tabela.
+> Se os NOTICEs não aparecerem de primeira, expanda a aba **Messages** /
+> **Logs** na parte inferior do resultado. O `DO $$` usa `RAISE NOTICE`, que
+> aparece como mensagem, não como linha de tabela. **No SQL Editor do Lovable
+> isso é especialmente comum**: alguns wrappers mostram só o resultado da
+> última query e ocultam `RAISE NOTICE`. Nesse caso **não presuma falha** —
+> rode as queries de catálogo do passo 5; se elas derem 1 view / 6 funções /
+> 2 triggers, a migration aplicou com sucesso.
 
 **Se aparecer `FALHOU: ...`**, o próprio bloco lança `RAISE EXCEPTION` com o
 motivo. Não continue para o passo 6: vá para o passo 7.
@@ -172,14 +207,14 @@ SUPABASE_KEY='sb_publishable_...' bash scripts/check-sync.sh
 
 ## 7. Se der erro — o que fazer
 
-| Mensagem                                             | Causa                                                                   | Ação                                                                                          |
-| ---------------------------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `relation "public.stock_reservation" does not exist` | O schema base (migrations `drizzle/0014`) não está aplicado neste banco | **Pare.** Não crie tabela na mão. Me avise que eu levanto o schema real antes de qualquer SQL |
-| `syntax error at or near ...`                        | Colou pela metade ou colou o Markdown em vez do `.sql`                  | Limpe o editor, copie de novo o `.sql` de 473 linhas, confira a última linha                  |
-| `permission denied`                                  | Projeto/role errado                                                     | Confirme o ID `njmniwsqwohmigroswnl` e use o SQL Editor do Supabase (roda como `postgres`)    |
-| `trigger ... already exists`                         | Não deveria ocorrer (`DROP TRIGGER IF EXISTS`)                          | Reexecute o arquivo inteiro; é idempotente                                                    |
-| `FALHOU: view ... nao existe`                        | O `DO $$` de verificação rodou sem a parte 1 ter aplicado               | Reexecute o arquivo inteiro e leia os NOTICEs                                                 |
-| Os NOTICEs não aparecem                              | Aba de mensagens recolhida                                              | Expanda **Messages/Logs** no resultado; ou rode o bloco da linha 448 separadamente            |
+| Mensagem                                             | Causa                                                                   | Ação                                                                                                                                           |
+| ---------------------------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `relation "public.stock_reservation" does not exist` | O schema base (migrations `drizzle/0014`) não está aplicado neste banco | **Pare.** Não crie tabela na mão. Me avise que eu levanto o schema real antes de qualquer SQL                                                  |
+| `syntax error at or near ...`                        | Colou pela metade ou colou o Markdown em vez do `.sql`                  | Limpe o editor, copie de novo o `.sql` de 473 linhas, confira a última linha                                                                   |
+| `permission denied`                                  | Projeto/role errado                                                     | Rode a query 1.1; se `tabela_base` estiver correta e ainda assim falhar, use o SQL Editor do Supabase (roda como `postgres`) — é o mesmo banco |
+| `trigger ... already exists`                         | Não deveria ocorrer (`DROP TRIGGER IF EXISTS`)                          | Reexecute o arquivo inteiro; é idempotente                                                                                                     |
+| `FALHOU: view ... nao existe`                        | O `DO $$` de verificação rodou sem a parte 1 ter aplicado               | Reexecute o arquivo inteiro e leia os NOTICEs                                                                                                  |
+| Os NOTICEs não aparecem                              | Aba de mensagens recolhida                                              | Expanda **Messages/Logs** no resultado; ou rode o bloco da linha 448 separadamente                                                             |
 
 **Não faça:**
 
