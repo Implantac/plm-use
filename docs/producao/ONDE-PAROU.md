@@ -156,7 +156,26 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 47 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 48 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (28ª e 29ª medições): publicação validada, Onda 48
+> fechada no repo.** O dono reportou "tudo publicado" e a **28ª medição
+> confirmou**: entry `index-CdXaXBJP.js` (227 chunks), marcadores da Onda 47
+> = 1, `DEV000006` 20×, e cliques reais em produção (0 popups na vitrine, 1
+> ficha após clonar, 0 inputs sem rótulo, 4 glossários abrindo). Repo, ar e
+> banco alinhados na Onda 47. Em seguida, varredura de **44 rotas** e teste de
+> **16 emissores de documento** acharam o risco seguinte: `/marketing` ainda
+> imprimia Media Kit A4 de campanha `demo: true` (R$ 42.000 de mídia, R$
+> 218.400 de receita, 38.400 cliques) e `/collection-map` apurava/imprimia 6
+> modelos, 2.985 peças e R$ 1.233.665 do mock de fábrica. **Onda 48**: gate
+> `podeEmitirMediaKit()` nos dois caminhos (botão e "Visualizar"),
+> `linhasApuraveis()` + `podeEmitirLineSheet()` para KPIs/CSV/A4, KPIs `—`
+> com aviso/CTA, e nome da coleção declarado pelo usuário no documento.
+> Promoção real medida: converter briefing em ficha `CR27-101` → **1
+> apurável**, A4 e CSV só com ela. Gates **681/681**. **29ª medição: repo
+> Onda 48, ar ainda Onda 47** (6 marcadores da 48 = 0), banco inalterado.
+> Publicar a Onda 48 é a próxima ação do dono. Detalhes em
+> `ONDA-48-A-VITRINE-NAO-IMPORTA-NEM-IMPRIME.md` e `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (27ª medição): Onda 47 fechada no repo, ainda não
 > publicada.** Escolhida por risco: os 2 pedidos `demo: true` da fila de custos
@@ -221,7 +240,8 @@ Nesta ordem, porque cada passo destrava o seguinte:
 | 44 — Todo aviso tem uma saída            | `030ca6c` | Medição: 9 avisos de vitrine, 0 com botão. `CtaProximoPasso` + `usePasso` derivados do onboarding: 4 CTAs abrem diálogo/modal local, 5 navegam. Passo concluído → CTA desaparece. 9 `data-testid` antigos preservados. Validação no browser: 9/9 com saída, clique abre "Homologar Novo Fornecedor" e navega para `/orders`. 14 testes novos             | ✅ confirmada no bundle           |
 | 45 — Primeira dobra em linguagem simples | `65df431` | 35 rotas medidas no DOM: 15 siglas na 1ª dobra. Glossário com 24 termos (`dl/dt/dd`, colapsado), 17 na 1ª dobra; título "Ferramentas do produto"; `title` nos 5 links técnicos; `h1` em `/tech-sheet`; fim da promessa "XML SEFAZ prontos" sem ficha. 18 testes novos                                                                                    | ✅ confirmada no bundle           |
 | 46 — Vitrine não apura número            | `2ef69b5` | Browser mediu KPIs de `/cad` (2 moldes/86,4%) e `/prototypes` (23 evidências) vindos de fábrica. `demo` + filtros operacionais, `—` com aviso/CTA, sync e lacre bloqueados, promoção explícita, estúdio sem default e `<Toaster />` montado. 19 testes, 661/661                                                                                          | ✅ confirmada no bundle           |
-| 47 — Documento não nasce da vitrine      | `48f05c6` | Medição: 2 pedidos `demo: true` com badge, mas "Ficha Cega A4" ativa e `buildBlindOrderProductionSheetHtml()` sem guarda. Gate de emissão + aviso com saída; `/orders` 15→**0** inputs sem rótulo, 10 `id`/`htmlFor`, `aria-required`, `autoComplete`; glossário 24→**33** termos em 4 telas internas. 12 testes, **673/673**                            | ❌ não republicado (ação do dono) |
+| 47 — Documento não nasce da vitrine      | `48f05c6` | Medição: 2 pedidos `demo: true` com badge, mas "Ficha Cega A4" ativa e `buildBlindOrderProductionSheetHtml()` sem guarda. Gate de emissão + aviso com saída; `/orders` 15→**0** inputs sem rótulo, 10 `id`/`htmlFor`, `aria-required`, `autoComplete`; glossário 24→**33** termos em 4 telas internas. 12 testes, **673/673**                            | ✅ confirmada no bundle (28ª)     |
+| 48 — Vitrine não imprime em Coleção/GTM  | `5af3964` | Varredura de 44 rotas + 16 emissores: Media Kit A4 de campanha `demo` com R$ 218.400 inventados e Line Sheet/CSV/KPIs de coleção de fábrica (6 modelos/2.985 peças/R$ 1.233.665). Gates de emissão, `linhasApuraveis`, KPIs `—` + CTA, nome da coleção declarado. 8 testes, **681/681**                                                                  | ❌ não republicado (ação do dono) |
 
 ### Onda 21 — o defeito que valia mais que qualquer feature
 
@@ -256,13 +276,16 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 3. **~~Publicar a Onda 46~~ — concluído (26ª medição).** `index-CeAMfFot.js`
    com todos os marcadores, confirmado também por cliques reais em produção.
    Aqui foi **só publicar**: o SQL já estava aplicado desde a 24ª medição.
-4. **Publicar a Onda 47.** O repo está em `48f05c6` + docs da 27ª medição, mas o ar segue
-   em `index-CeAMfFot.js` (Onda 46). A 28ª medição deve achar
-   `ficha-cega-bloqueada`, `glossario-orders`, `glossario-audit`,
-   `glossario-route-engineering`, `glossario-suppliers`,
-   `novo-pedido-cliente`, `novo-cliente-nome` e `podeEmitirFichaCega` no bundle.
-   Publicar app **não aplica SQL** — o banco já está alinhado desde a 24ª.
-5. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
+4. **~~Publicar a Onda 47~~ — concluído (28ª medição).** Entry
+   `index-CdXaXBJP.js` (227 chunks) com todos os marcadores, confirmado por
+   cliques reais em produção. Aqui foi **só publicar**: o SQL já estava
+   aplicado desde a 24ª medição.
+5. **Publicar a Onda 48.** O ar segue em `index-CdXaXBJP.js` (Onda 47). A 30ª
+   medição deve achar `media-kit-bloqueado`, `colecao-so-vitrine`,
+   `line-sheet-bloqueado`, `cta-colecao-sem-ficha`, `Coleção em cadastro` e
+   `Editar para emitir` no bundle, e repetir os cliques em produção. Publicar
+   app **não aplica SQL**.
+6. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
    specs de e2e seguem `skipped` e não há prova de fluxo autenticado contra
    produção (baixa de material, cancelamento de reservas, sync CAD → ficha).
 
@@ -275,7 +298,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 673 testes
+cd plm-use && npx vitest run            # 681 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -283,10 +306,12 @@ git log --oneline -15                   # onde a história parou
 Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 `njmniwsqwohmigroswnl`, bundle de `plmuse.lovable.app` (206 chunks baixados em
 04/11 18:00 UTC) e `npm audit`.
-Seção 7-A: código da Onda 47 em `main@48f05c6` + commit da 27ª medição,
-`docs/producao/ONDA-19..47-*.md` e os números das suítes
-(vitest **673/673**, SQL 163/163, bundle relido com **226 chunks** no entry
-`index-CeAMfFot.js`: marcadores das Ondas 24–46 presentes, **nenhum** da 47 —
-logo o ar é a **Onda 46**, uma onda atrás do repo; `DEV000006` **20**; banco com
-as migrações 21/24 aplicadas desde a 24ª medição, view `200 []` e 4 funções
+Seção 7-A: código das Ondas 47/48 em `main@5af3964` (`48f05c6` é a 47) +
+commits de medição,
+`docs/producao/ONDA-19..48-*.md` e os números das suítes
+(vitest **681/681**, SQL 163/163). 28ª medição: bundle `index-CdXaXBJP.js`
+com **227 chunks** e todos os marcadores da Onda 47 — repo/ar/banco
+alinhados. 29ª medição: os **6 marcadores da Onda 48 = 0**, logo o ar é a
+**Onda 47**, uma onda atrás do repo; `DEV000006` **20**; banco com as
+migrações 21/24 aplicadas desde a 24ª medição, view `200 []` e 4 funções
 `401 42501`). Medição por camada em `SINCRONIA-2026-11-05.md`.
