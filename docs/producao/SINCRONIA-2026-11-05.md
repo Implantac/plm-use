@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 23ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 24ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -8,23 +8,47 @@ medição antes de discordar — e lembre que **publicar o app não aplica SQL**
 
 ## 1. O quadro
 
-| Camada                                         | Estado medido                          | Como foi medido                      |
-| ---------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 45** — `504dde3`                | `git log` / `git ls-remote`          |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 45** — `index-CPZSdWEg.js`      | marcadores no bundle (tabela abaixo) |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **sem as migrações das Ondas 21 e 24** | `404` na view e nas RPC novas        |
+| Camada                                         | Estado medido                     | Como foi medido                      |
+| ---------------------------------------------- | --------------------------------- | ------------------------------------ |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 45** — `504dde3`           | `git log` / `git ls-remote`          |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 45** — `index-CPZSdWEg.js` | marcadores no bundle (tabela abaixo) |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções  |
 
-**O que mudou desde a medição anterior:** o dono reportou **"Lovable
-publicado"** e a medição **confirmou**. Saiu `index-BuzojJqi.js` (221 chunks)
-e entrou **`index-CPZSdWEg.js` (223 chunks)**. `cta-supplier-so-vitrine` **1**,
-`cta-sop-sem-pedidos` **1**, `CtaProximoPasso` **7**, `glossario-termos` **1**,
-`"O que significam essas siglas?"` **1**, `"Ferramentas do produto"` **2** e
-`"Lista de materiais"` **1**: as **Ondas 44 e 45 estão no ar**. Em compensação
-`"Torre Executiva PLM 2.0"` e `"Packing List & XML SEFAZ prontos"` caíram para
-**0**. `comece-por-aqui` segue **3** e `DEV000006` **27**. **Repo e ar voltaram
-a estar na mesma onda (45)** — a distância de duas ondas zerou. O banco segue
-sem as migrações (23ª medição: `PGRST205` na view e `PGRST202` nas três RPCs):
-publicar o app não aplicou SQL, e o banco é agora a **única** camada atrasada.
+**O que mudou desde a medição anterior:** o dono aplicou
+`APLICAR-ONDA-21-24.sql` no **SQL Editor do Lovable** (Mais → Database → SQL
+editor). O editor exibiu o modal _"Confirm destructive operation"_ pelo
+`DROP TRIGGER IF EXISTS` e, confirmado, retornou **"Query succeeded / No rows
+returned"** — sem mostrar os `RAISE NOTICE`, como era esperado naquele wrapper.
+O `DO $$` de verificação embutido no próprio SQL teria lançado
+`RAISE EXCEPTION` se view, RPC ou os 2 triggers faltassem; **não lançou**.
+
+Re-medição externa pela chave publishable do bundle, sem sessão de usuário:
+
+| Sonda                                                      | 23ª medição    | **24ª medição**                                |
+| ---------------------------------------------------------- | -------------- | ---------------------------------------------- |
+| view `stock_reservation_aging`                             | `404 PGRST205` | **`200 []`**                                   |
+| `op_reserved_materials(_order_id)`                         | `404 PGRST202` | **`401 42501 permission denied for function`** |
+| `stock_on_hand(_item_id,_warehouse_id)`                    | não sondada    | **`401 42501 permission denied for function`** |
+| `record_op_material_consumption(_order_id,_justification)` | `404 PGRST202` | **`401 42501 permission denied for function`** |
+| `cancel_reservations_for_ref(_ref_type,_ref_id,_motivo)`   | não sondada    | **`401 42501 permission denied for function`** |
+
+`401 42501` **prova que a função existe**: o PostgREST a encontrou no catálogo e
+o papel `anon` foi barrado pelo `REVOKE ... FROM public, anon` + `GRANT ... TO
+authenticated, service_role`. Antes, `PGRST202` dizia _"no matches were found in
+the schema cache"_. As **três camadas estão agora alinhadas na Onda 45**.
+`DEV000006` segue em **27** ocorrências e o entry permanece
+`index-CPZSdWEg.js` (223 chunks).
+
+### Correção metodológica (importante)
+
+`consume_reservations_on_movement()` e `sync_reservations_on_op_status()` são
+**`RETURNS trigger`** — funções de gatilho, **nunca expostas como RPC**. Usá-las
+como sonda nas medições 4ª–23ª foi um erro de método: o `PGRST202` delas
+persistiria mesmo com a migration aplicada. A prova correta de ausência era a
+view `PGRST205` somada às funções escalares/tabulares chamadas **com os nomes
+de parâmetros corretos** (chamadas com `{}` também devolvem `PGRST202` por
+assinatura incompatível, não por ausência). A sonda canônica passa a ser a
+view + as 4 funções da tabela acima.
 
 ---
 
@@ -71,47 +95,38 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 | 44   | `cta-supplier-so-vitrine` / `CtaProximoPasso`   | **1**       | ✅      |
 | 45   | `glossario-termos` / `Ferramentas do produto`   | **1**       | ✅      |
 
-**Conclusão:** o ar está na **Onda 45**, **na mesma onda do repositório** —
-pela primeira vez em muitas rodadas não há ondas pendentes de publicação. A
-**única camada atrasada é o banco**, sem as migrações das Ondas 21 e 24. A
-frase "Consumo e liberação são automáticos" ainda existe no bundle, mas
-condicionada ao ramo `ativa` — com as migrações pendentes, o operador vê o
-aviso âmbar, não a promessa. Os 9 avisos de vitrine já têm saída no ar e a
-primeira dobra já traz o glossário; o que falta não é mais deploy, é **SQL**.
+**Conclusão:** o ar está na **Onda 45**, na mesma onda do repositório, e o
+**banco também foi alinhado** na 24ª medição. Pela primeira vez desde a 4ª
+medição **nenhuma camada está atrasada**. A tela de reservas deixou de prometer
+uma automação inexistente. O que ainda não foi provado é o fluxo autenticado de
+ponta a ponta: sem `PLM_E2E_EMAIL`/`PLM_E2E_PASSWORD` os dois specs de e2e
+seguem `skipped`. `DEV000006` permanece em 27 ocorrências no bundle (dívida de
+vitrine, não de número operacional).
 
 ---
 
-## 3. Banco de produção — o que falta
+## 3. Banco de produção — aplicado (24ª medição)
 
-Consultado pela chave **publishable** que vem no próprio bundle do app (a mesma
-que o navegador usa), em `https://njmniwsqwohmigroswnl.supabase.co`:
+`APLICAR-ONDA-21-24.sql` (473 linhas, 163 asserções exit 0) foi aplicado no SQL
+Editor do Lovable. Resultado: **view criada, 6 funções, 2 triggers instalados**,
+com `GRANT EXECUTE` apenas a `authenticated`/`service_role`.
 
-| Objeto                                 | Esperado por | Resposta medida                                 |
-| -------------------------------------- | ------------ | ----------------------------------------------- |
-| view `stock_reservation_aging`         | Onda 21      | **404** `PGRST205` — "Could not find the table" |
-| RPC `consume_reservations_on_movement` | Onda 21      | **404** `PGRST202` — função não encontrada      |
-| RPC `record_op_material_consumption`   | Onda 24      | **404** `PGRST202`                              |
-| RPC `op_reserved_materials`            | Onda 24      | **404** `PGRST202`                              |
+| Sonda (sem sessão)                         | Resposta     | Interpretação                                |
+| ------------------------------------------ | ------------ | -------------------------------------------- |
+| `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
+| `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
+| `POST /rpc/record_op_material_consumption` | `401 42501`  | função existe, `anon` barrado                |
+| `POST /rpc/cancel_reservations_for_ref`    | `401 42501`  | função existe, `anon` barrado                |
+| `POST /rpc/stock_on_hand`                  | `401 42501`  | função existe, `anon` barrado                |
 
-`PGRST202` com a mensagem _"Searched for the function … without parameters or
-with a single unnamed json/jsonb parameter"_ é **conclusivo de função ausente** —
-não é RLS, não é permissão, não é cache de schema.
+**Não confundir `401` com falha:** com a chave publicável e sem JWT de usuário,
+`401 42501` é exatamente o comportamento desejado — RLS/grants funcionando. O
+que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 
-Logo, `20261104120000_stock_reservation_lifecycle.sql` e
-`20261104200000_op_material_consumption.sql` **não foram aplicadas**. O pacote
-pronto, reaplicável e testado está em
-`docs/producao/APLICAR-ONDA-21-24.sql` (473 linhas, 163 asserções exit 0).
-
-### A consequência que precisa ser dita
-
-A tela de reservas no ar promete:
-
-> "Consumo e liberação são automáticos: a saída de estoque consome a reserva e a
-> OP concluída ou cancelada libera o que sobrar."
-
-Em produção essa frase é **falsa**: os triggers não existem no banco. Enquanto o
-SQL não for aplicado, a reserva criada em `'ativa'` nunca é encerrada pela
-automação e o disponível não volta.
+A frase da tela de reservas — _"Consumo e liberação são automáticos"_ — deixa
+de ser falsa em produção: os triggers `trg_stock_reservation_consume` (em
+`stock_movement`) e `trg_stock_reservation_op_status` (em `production_orders`)
+passam a existir.
 
 ---
 
@@ -122,20 +137,20 @@ automação e o disponível não volta.
   Não afirmo nem "tem dados" nem "está vazio".
 - **Se há login funcionando.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI.
-- **Se os botões novos funcionam em produção.** Dependem da migração que falta.
+- **Se os botões novos funcionam em produção.** A migração já está aplicada, mas a prova de ponta a ponta ainda exige login real (item abaixo).
 
 ---
 
 ## 5. O que destrava cada lacuna
 
-| Lacuna                                     | Ação                                                                               | Quem faz        |
-| ------------------------------------------ | ---------------------------------------------------------------------------------- | --------------- |
-| ~~Ar duas ondas atrás do repo~~ **zerado** | ~~republicar~~ concluído na 23ª medição (`index-CPZSdWEg.js`)                      | dono do projeto |
-| **Banco sem as migrações 21 e 24**         | colar `docs/producao/APLICAR-ONDA-21-24.sql` no SQL editor e reportar as 3 NOTICEs | dono do projeto |
-| E2E autenticado nunca roda                 | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                      | dono do projeto |
-| Cancelar reservas presas                   | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`            | dono do projeto |
+| Lacuna                                          | Ação                                                                       | Quem faz        |
+| ----------------------------------------------- | -------------------------------------------------------------------------- | --------------- |
+| ~~Ar duas ondas atrás do repo~~ **zerado**      | ~~republicar~~ concluído na 23ª medição (`index-CPZSdWEg.js`)              | dono do projeto |
+| ~~Banco sem as migrações 21 e 24~~ **aplicado** | ~~colar SQL~~ concluído na 24ª medição: view `200 []`, funções `401 42501` | dono do projeto |
+| E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                              | dono do projeto |
+| Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`    | dono do projeto |
 
-A publicação foi concluída. Restam duas ações que não são código: colar um SQL e dar uma credencial.
+Publicação **e** SQL concluídos — repo, ar e banco estão alinhados. Resta uma ação que não é código: dar a credencial de e2e (e, se houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
 

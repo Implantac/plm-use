@@ -289,3 +289,47 @@ Restam duas coisas, ambas do seu lado:
    na mesma onda pela primeira vez.
 3. **Credencial `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`** — sem ela os 2 specs de
    e2e seguem `skipped` e não há prova de fluxo autenticado contra produção.
+
+---
+
+## 9. Resultado real obtido (24ª medição, 06/11/2026)
+
+O dono seguiu este roteiro no Lovable. O editor exibiu o modal
+_"Confirm destructive operation"_ (pelos 2 `DROP TRIGGER IF EXISTS`), foi
+confirmado e retornou:
+
+```
+Query succeeded
+No rows returned.
+```
+
+Os `RAISE NOTICE` **não apareceram**, exatamente como o passo 4 previa — e
+isso **não é falha**: o bloco `DO $$` embutido no próprio SQL usa
+`RAISE EXCEPTION` quando view, RPC ou os 2 triggers faltam. Como a query
+sucedeu, as 3 verificações internas passaram.
+
+Re-medição externa, pela chave publishable do bundle e **sem sessão de
+usuário**:
+
+| Sonda                                                                       | Antes          | Depois                                         |
+| --------------------------------------------------------------------------- | -------------- | ---------------------------------------------- |
+| `GET /stock_reservation_aging?limit=1`                                      | `404 PGRST205` | **`200 []`**                                   |
+| `POST /rpc/op_reserved_materials` (`_order_id`)                             | `404 PGRST202` | **`401 42501 permission denied for function`** |
+| `POST /rpc/record_op_material_consumption` (`_order_id`, `_justification`)  | `404 PGRST202` | **`401 42501`**                                |
+| `POST /rpc/cancel_reservations_for_ref` (`_ref_type`, `_ref_id`, `_motivo`) | —              | **`401 42501`**                                |
+| `POST /rpc/stock_on_hand` (`_item_id`, `_warehouse_id`)                     | —              | **`401 42501`**                                |
+
+`401 42501` é o **sucesso**: a função existe no catálogo e o papel `anon` foi
+barrado pelo `REVOKE ... FROM public, anon` + `GRANT ... TO authenticated`.
+Chamadas com `{}` (sem os nomes de parâmetro corretos) continuam devolvendo
+`PGRST202` por **assinatura incompatível**, não por ausência.
+
+> **Correção de método:** `consume_reservations_on_movement()` e
+> `sync_reservations_on_op_status()` são `RETURNS trigger` e **nunca** foram
+> RPCs. Sondá-las como `/rpc/...` sempre dará `PGRST202`, mesmo com a migration
+> aplicada. A sonda canônica é a view + as 4 funções da tabela acima.
+
+**Conclusão:** migration aplicada, `NOTIFY pgrst` funcionou (a API enxergou a
+view), e repo · ar · banco ficaram alinhados pela primeira vez desde a 4ª
+medição. Resta apenas a credencial `PLM_E2E_EMAIL`/`PLM_E2E_PASSWORD` para
+provar o fluxo autenticado de ponta a ponta.

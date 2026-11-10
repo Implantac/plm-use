@@ -158,19 +158,19 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ## 7-A. Ondas 19 a 45 (04–06/11/2026) — o que mudou depois deste documento
 
-> **Atualização de 06/11 (23ª medição):** o dono reportou **"Lovable
-> publicado"** e a medição **confirmou**: saiu `index-BuzojJqi.js` e entrou
-> **`index-CPZSdWEg.js`**, agora com **223 chunks**. `cta-supplier-so-vitrine`
-> 1, `CtaProximoPasso` 7, `cta-sop-sem-pedidos` 1, `glossario-termos` 1,
-> `"O que significam essas siglas?"` 1 e `"Ferramentas do produto"` 2: as
-> **Ondas 44 e 45 estão no ar**. `"Torre Executiva PLM 2.0"` e `"Packing List
-& XML SEFAZ prontos"` caíram para **0**; `"Lista de materiais"` (glossário)
-> aparece 1 vez. **Repo e ar voltaram a estar na mesma onda (45)** — a
-> distância de duas ondas zerou. `DEV000006` segue em 27 ocorrências. O banco
-> **continua sem as migrações das Ondas 21 e 24** (`PGRST205` na view,
-> `PGRST202` nas três RPCs): publicar app não aplica SQL e o banco é agora a
-> **única** camada atrasada. Medição completa em
-> `docs/producao/SINCRONIA-2026-11-05.md`.
+> **Atualização de 06/11 (24ª medição):** o dono aplicou
+> **`APLICAR-ONDA-21-24.sql`** no SQL Editor do Lovable (Mais → Database →
+> SQL editor), confirmou o modal de `DROP TRIGGER` e obteve **"Query
+> succeeded / No rows returned"**. O `DO $$` embutido no SQL valida view, RPC
+> e os 2 triggers com `RAISE EXCEPTION` — não lançou. Re-medição externa:
+> view `stock_reservation_aging` **`200 []`** (era `404 PGRST205`) e as 4
+> funções chamáveis **`401 42501 permission denied for function`** (eram
+> `404 PGRST202`), o que **prova que existem** e estão protegidas por grants.
+> **Repo, ar e banco alinhados pela primeira vez desde a 4ª medição.**
+> Correção de método registrada em `SINCRONIA-2026-11-05.md`:
+> `consume_reservations_on_movement`/`sync_reservations_on_op_status` são
+> `RETURNS trigger` e nunca foram RPCs. `DEV000006` segue 27×. Resta apenas a
+> credencial de e2e. Medição completa em `SINCRONIA-2026-11-05.md`.
 
 | Onda                                     | Commit    | O que entregou                                                                                                                                                                                                                                                                                                                                           | Está no ar?             |
 | ---------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
@@ -225,14 +225,16 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ### Pendências que só o dono resolve
 
-1. **Aplicar a migration no Supabase hospedado** (`supabase db push`). Enquanto
-   isso não acontece, o defeito continua ativo nos dados reais — e as reservas
-   antigas já presas não são limpas sozinhas: use `stock_reservation_aging`
-   (ordene por `dias_ativa`) para cancelar o que já foi consumido na prática.
+1. **~~Aplicar a migration no Supabase hospedado~~ — concluído (24ª medição).**
+   `APLICAR-ONDA-21-24.sql` foi aplicado no SQL Editor do Lovable: view `200 []`,
+   funções `401 42501`, triggers instalados. A automação de reservas deixou de
+   ser promessa falsa. Se houver reservas antigas presas, agora é possível
+   listá-las por `stock_reservation_aging.dias_ativa` e decidir o cancelamento
+   — isso **não** foi feito automaticamente.
 2. **~~Republicar as Ondas 44 e 45~~ — concluído.** Confirmado na 23ª
    medição: `index-CPZSdWEg.js` (223 chunks) com todos os marcadores das duas
-   ondas; repo e ar estão os dois na Onda 45. **Atenção:** isto foi publicar
-   app, **não** aplicou o SQL do item 1 — o banco segue `PGRST205`/`PGRST202`.
+   ondas; repo e ar estão os dois na Onda 45. **Atenção histórica:** publicar
+   app não aplicou SQL — o banco só foi alinhado depois, pela ação do item 1.
 3. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
    specs de e2e seguem `skipped` na CI e não há prova de fluxo autenticado
    contra produção.
@@ -258,4 +260,5 @@ Seção 7-A: `main@504dde3` (Onda 45),
 `docs/producao/ONDA-19..45-*.md` e os números das suítes rodadas em 05/11
 (vitest **642/642**, SQL 163/163, bundle relido com **223 chunks** no entry
 `index-CPZSdWEg.js`: marcadores das Ondas 24–45 presentes — logo o ar é a
-Onda 45, **na mesma onda do repo**). Medição por camada em `SINCRONIA-2026-11-05.md`.
+Onda 45, **na mesma onda do repo**; banco com as migrações 21/24 aplicadas na
+24ª medição). Medição por camada em `SINCRONIA-2026-11-05.md`.
