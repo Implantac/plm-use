@@ -337,10 +337,14 @@ function FinancialPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
             <div>
-              <Label className="text-2xs uppercase text-muted-foreground block mb-1">
+              <Label
+                htmlFor="custo-fixo-colecao"
+                className="text-2xs uppercase text-muted-foreground block mb-1"
+              >
                 Custo Fixo da Coleção (R$)
               </Label>
               <Input
+                id="custo-fixo-colecao"
                 type="number"
                 step="5000"
                 min="0"
@@ -350,10 +354,14 @@ function FinancialPage() {
               />
             </div>
             <div>
-              <Label className="text-2xs uppercase text-muted-foreground block mb-1">
+              <Label
+                htmlFor="teto-otb-materia-prima"
+                className="text-2xs uppercase text-muted-foreground block mb-1"
+              >
                 Teto OTB Matéria-Prima (R$)
               </Label>
               <Input
+                id="teto-otb-materia-prima"
                 type="number"
                 step="10000"
                 min="10000"

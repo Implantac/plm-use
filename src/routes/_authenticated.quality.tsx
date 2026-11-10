@@ -396,6 +396,7 @@ function QualityPage() {
             <div className="relative">
               <Search className="w-3.5 h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
+                aria-label="Buscar defeito, referência ou lote"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder="Buscar defeito, ref, lote..."
@@ -403,6 +404,7 @@ function QualityPage() {
               />
             </div>
             <select
+              aria-label="Filtrar CAPA por status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as CapaStatus | "Todas")}
               className="h-8 bg-muted/50 border border-border rounded-md text-xs px-2"
@@ -419,6 +421,8 @@ function QualityPage() {
         <div className="p-3 rounded-md bg-muted/40 border border-border/60 space-y-2">
           <div className="flex flex-wrap gap-2 items-center">
             <Input
+              aria-label="Defeito ou problema da CAPA"
+              aria-required="true"
               value={form.defeito}
               onChange={(e) => {
                 setForm({ ...form, defeito: e.target.value });
@@ -429,6 +433,7 @@ function QualityPage() {
               aria-invalid={!!capaErrors.defeito}
             />
             <select
+              aria-label="Setor da CAPA"
               value={form.setor}
               onChange={(e) => setForm({ ...form, setor: e.target.value })}
               className="h-9 bg-muted/50 border border-border rounded-md text-xs px-2"
@@ -447,6 +452,7 @@ function QualityPage() {
               ))}
             </select>
             <select
+              aria-label="Tipo de CAPA"
               value={form.tipo}
               onChange={(e) => setForm({ ...form, tipo: e.target.value as CapaTipo })}
               className="h-9 bg-muted/50 border border-border rounded-md text-xs px-2"
@@ -455,6 +461,7 @@ function QualityPage() {
               <option>Preventiva</option>
             </select>
             <select
+              aria-label="Severidade da CAPA"
               value={form.severidade}
               onChange={(e) =>
                 setForm({
@@ -469,6 +476,8 @@ function QualityPage() {
               ))}
             </select>
             <Input
+              aria-label="Responsável pela CAPA"
+              aria-required="true"
               value={form.responsavel}
               onChange={(e) => {
                 setForm({ ...form, responsavel: e.target.value });
@@ -479,6 +488,7 @@ function QualityPage() {
               aria-invalid={!!capaErrors.responsavel}
             />
             <Input
+              aria-label="Prazo da CAPA"
               type="date"
               value={form.prazo}
               onChange={(e) => setForm({ ...form, prazo: e.target.value })}

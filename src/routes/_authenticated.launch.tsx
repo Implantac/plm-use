@@ -170,8 +170,12 @@ function LaunchPage() {
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-5">
               <div>
-                <Label required>Código</Label>
+                <Label required htmlFor="wave-codigo">
+                  Código
+                </Label>
                 <Input
+                  id="wave-codigo"
+                  aria-required="true"
                   value={form.codigo}
                   onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))}
                   placeholder="W-2026-01"
@@ -182,8 +186,12 @@ function LaunchPage() {
                 )}
               </div>
               <div>
-                <Label required>Coleção</Label>
+                <Label required htmlFor="wave-colecao">
+                  Coleção
+                </Label>
                 <Input
+                  id="wave-colecao"
+                  aria-required="true"
                   value={form.colecao}
                   onChange={(e) => setForm((f) => ({ ...f, colecao: e.target.value }))}
                   placeholder="Verão 26"
@@ -194,8 +202,12 @@ function LaunchPage() {
                 )}
               </div>
               <div>
-                <Label required>Início janela</Label>
+                <Label required htmlFor="wave-janela-inicio">
+                  Início janela
+                </Label>
                 <Input
+                  id="wave-janela-inicio"
+                  aria-required="true"
                   type="date"
                   value={form.janela_inicio}
                   onChange={(e) => setForm((f) => ({ ...f, janela_inicio: e.target.value }))}
@@ -206,8 +218,12 @@ function LaunchPage() {
                 )}
               </div>
               <div>
-                <Label required>Fim janela</Label>
+                <Label required htmlFor="wave-janela-fim">
+                  Fim janela
+                </Label>
                 <Input
+                  id="wave-janela-fim"
+                  aria-required="true"
                   type="date"
                   value={form.janela_fim}
                   onChange={(e) => setForm((f) => ({ ...f, janela_fim: e.target.value }))}
@@ -223,8 +239,9 @@ function LaunchPage() {
                 </Button>
               </div>
               <div className="md:col-span-5">
-                <Label>Notas</Label>
+                <Label htmlFor="wave-notas">Notas</Label>
                 <Textarea
+                  id="wave-notas"
                   rows={2}
                   value={form.notas}
                   onChange={(e) => setForm((f) => ({ ...f, notas: e.target.value }))}

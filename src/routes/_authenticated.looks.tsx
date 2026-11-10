@@ -209,8 +209,11 @@ function LooksPage() {
       <Card>
         <CardContent className="pt-6 flex flex-wrap gap-3 items-end">
           <div className="flex-1 min-w-[220px]">
-            <label className="uppercase-label text-muted-foreground">Buscar</label>
+            <label htmlFor="buscar-looks" className="uppercase-label text-muted-foreground">
+              Buscar
+            </label>
             <Input
+              id="buscar-looks"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Nome, tag, coleção…"
@@ -676,19 +679,21 @@ function AddItemForm({ lookId }: { lookId: string }) {
       </select>
       <div className="grid grid-cols-2 gap-2">
         <Input
+          aria-label="Código da referência da peça"
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="REF-…"
           className="text-xs col-span-1"
         />
         <Input
+          aria-label="Nome da peça do look"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nome da peça"
           className="text-xs col-span-1"
         />
         <Select value={role} onValueChange={(v) => setRole(v as LookItem["role"])}>
-          <SelectTrigger className="text-xs col-span-1">
+          <SelectTrigger aria-label="Papel da peça no look" className="text-xs col-span-1">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -700,6 +705,7 @@ function AddItemForm({ lookId }: { lookId: string }) {
         </Select>
         <div className="flex gap-1.5">
           <Input
+            aria-label="Cor de destaque da peça"
             type="color"
             value={color}
             onChange={(e) => setColor(e.target.value)}

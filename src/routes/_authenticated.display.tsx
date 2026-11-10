@@ -494,6 +494,7 @@ function RefPalette({ boardId, catalog }: { boardId: string; catalog: PaletteRef
             Fichas PLM (PNG Alpha) & Referências
           </p>
           <Input
+            aria-label="Buscar ficha PLM ou referência por código ou nome"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar código ou nome"

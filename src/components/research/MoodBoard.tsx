@@ -132,6 +132,7 @@ export function MoodBoard() {
 
       <div className="flex gap-2">
         <Input
+          aria-label="URL da imagem de referência visual"
           value={novo}
           onChange={(e) => setNovo(e.target.value)}
           placeholder="Cole URL https:// de referência visual..."

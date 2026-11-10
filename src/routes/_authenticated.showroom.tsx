@@ -887,16 +887,22 @@ function ShowroomB2bRackTab() {
         <CardContent className="space-y-3 text-xs">
           <div className="space-y-2">
             <div>
-              <Label className="text-2xs uppercase text-muted-foreground">Lojista / Razão</Label>
+              <Label htmlFor="lojista-razao" className="text-2xs uppercase text-muted-foreground">
+                Lojista / Razão
+              </Label>
               <Input
+                id="lojista-razao"
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
                 className="h-8 text-xs"
               />
             </div>
             <div>
-              <Label className="text-2xs uppercase text-muted-foreground">CNPJ</Label>
+              <Label htmlFor="lojista-cnpj" className="text-2xs uppercase text-muted-foreground">
+                CNPJ
+              </Label>
               <Input
+                id="lojista-cnpj"
                 value={buyerCnpj}
                 onChange={(e) => setBuyerCnpj(e.target.value)}
                 className="h-8 font-mono text-xs"

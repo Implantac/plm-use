@@ -128,6 +128,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
       <div className="space-y-1.5">
         <div className="flex gap-2">
           <Input
+            aria-label="Descrição da peça para gerar croqui"
             value={prompt}
             onChange={(e) => {
               setPrompt(e.target.value);

@@ -286,8 +286,14 @@ export function FabricRollsShadePanel() {
         {/* Entrada rápida de novo rolo recebido */}
         <div className="flex flex-wrap items-end gap-2 pt-1">
           <div>
-            <Label className="text-2xs uppercase text-muted-foreground block mb-1">Cód. Rolo</Label>
+            <Label
+              htmlFor="novo-rolo-codigo"
+              className="text-2xs uppercase text-muted-foreground block mb-1"
+            >
+              Cód. Rolo
+            </Label>
             <Input
+              id="novo-rolo-codigo"
               value={newRollCode}
               onChange={(e) => setNewRollCode(e.target.value)}
               placeholder="RL-2605"
@@ -295,24 +301,42 @@ export function FabricRollsShadePanel() {
             />
           </div>
           <div>
-            <Label className="text-2xs uppercase text-muted-foreground block mb-1">Partida</Label>
+            <Label
+              htmlFor="novo-rolo-partida"
+              className="text-2xs uppercase text-muted-foreground block mb-1"
+            >
+              Partida
+            </Label>
             <Input
+              id="novo-rolo-partida"
               value={newPartida}
               onChange={(e) => setNewPartida(e.target.value)}
               className="h-8 w-28 font-mono text-xs"
             />
           </div>
           <div>
-            <Label className="text-2xs uppercase text-muted-foreground block mb-1">Nuance</Label>
+            <Label
+              htmlFor="novo-rolo-nuance"
+              className="text-2xs uppercase text-muted-foreground block mb-1"
+            >
+              Nuance
+            </Label>
             <Input
+              id="novo-rolo-nuance"
               value={newNuance}
               onChange={(e) => setNewNuance(e.target.value)}
               className="h-8 w-20 font-mono text-xs"
             />
           </div>
           <div>
-            <Label className="text-2xs uppercase text-muted-foreground block mb-1">Peso (kg)</Label>
+            <Label
+              htmlFor="novo-rolo-peso"
+              className="text-2xs uppercase text-muted-foreground block mb-1"
+            >
+              Peso (kg)
+            </Label>
             <Input
+              id="novo-rolo-peso"
               type="number"
               min={1}
               step="0.5"

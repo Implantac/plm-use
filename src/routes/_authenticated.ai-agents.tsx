@@ -415,6 +415,7 @@ function AIAgentsPage() {
 
             <div className="flex gap-2 pt-3 border-t border-border">
               <Textarea
+                aria-label={`Mensagem para ${A.label}`}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
