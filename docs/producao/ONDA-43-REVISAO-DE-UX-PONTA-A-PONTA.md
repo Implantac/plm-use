@@ -17,7 +17,7 @@
 | Sessão    | sessão **local simulada** injetada no `localStorage` do Supabase — sem login real, **sem nenhuma escrita no banco**                                   |
 | Varredura | **17 rotas** percorridas com medição de texto, `—`, botões, inputs, `h1` e erros de console                                                           |
 | Tarefas   | "criar a primeira referência", "chegar à Ficha Técnica", "abrir o formulário", "entender por que os números estão vazios" — cliques e campos contados |
-| Evidência | screenshots `/tmp/ux_login.png`, `/tmp/ux_dashboard.png`, `/tmp/ux_dashboard_depois.png`                                                              |
+| Evidência | capturas do dashboard **antes** e **depois** e do formulário, exibidas na sessão; métricas consolidadas na tabela da seção 4                          |
 
 Os `401`/`403` vistos no console são esperados: o token é local e o banco o
 rejeita. Eles **não** representam o comportamento de um usuário autenticado de
