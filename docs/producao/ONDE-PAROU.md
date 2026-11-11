@@ -156,7 +156,27 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 50 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 51 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (34ª e 35ª medições): "publicado, prossiga" — marco
+> validado e Onda 51 escolhida pelo risco.** A **34ª medição não confirmou
+> cegamente** o relato: BFS achou entry novo `index-Ctoln0KB.js` /
+> `index-QjNtTEcp.js` (224 chunks / 3.179.918 bytes) com os marcadores da
+> Onda 50, e cliques reais em produção mediram os 3 emissores `disabled`, 0
+> popups/downloads e KPIs `—`. **Repo, ar e banco alinhados na Onda 50.**
+> Em seguida, a varredura de risco achou `/collections`: `Exportar` é um
+> `ExportMenu` (não botão morto — correção de diagnóstico) e seus itens
+> "Baixar CSV" / "Imprimir / PDF" emitiam **3 coleções de fábrica** (`Verão 25
+>
+> - Amalfi`, `Urban Resort`, `Essentials Atemporal`) sem aviso no arquivo.
+**Onda 51**: `demo: true`no seed,`upsertCollection()`promove para`demo: false`, `colecoesOperacionais()`/`podeExportarColecoes()`, CSV/PDF
+só com coleções salvas, 4 KPIs `—`, aviso `colecoes-so-vitrine`+ CTA, e os
+**7 campos do diálogo "Nova coleção" rotulados** (7/7 → 0/7). Browser
+local: com só vitrine 0 downloads/popups; criar`Outono 27 - Onda 51`→
+CSV com 1 linha e PDF`1 REGISTROS`, sem as 3 de fábrica. `filterCollections`,
+`ExportMenu`e`creative-sync`intactos. Gates **702/702**,`tsc`0,`eslint`0 erros,`prettier`limpo. **35ª medição: repo Onda 51, ar Onda
+50** (6 marcadores da 51 = 0), banco view`200 []`/ 4 funções`401 42501`/
+SQL SHA inalterado. Publicar a Onda 51 é a próxima ação do dono. Detalhes em`ONDA-51-A-VITRINE-NAO-ENTRA-NO-CSV-NEM-NO-PDF.md`e`SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (33ª medição): `ok prossiga` → Onda 50 escolhida
 > pelo risco, fechada no repo.** Com repo/ar/banco alinhados na Onda 49, a
@@ -357,10 +377,15 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 7. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
    specs de e2e seguem `skipped` e não há prova de fluxo autenticado contra
    produção (baixa de material, cancelamento de reservas, sync CAD → ficha).
-8. **Publicar a Onda 50.** O ar segue em `index--_hvA3Zc.js` (Onda 49). A 34ª
-   medição deve achar `mrp-sem-apuracao`, `cta-mrp-sem-pedido`, `crp-sem-op` e
-   `cta-crp-sem-op` no bundle, confirmar os 3 botões `disabled` e repetir os
-   cliques em produção. Publicar app **não aplica SQL**.
+8. **~~Publicar a Onda 50~~ — concluído (34ª medição), marco relatado e
+   validado.** Entry `index-Ctoln0KB.js` / `index-QjNtTEcp.js` com os
+   marcadores da 50; cliques reais em produção confirmaram os 3 botões
+   `disabled` e 0 popups/downloads. **Repo, ar e banco alinhados na Onda 50.**
+9. **Publicar a Onda 51.** O ar segue em `index-Ctoln0KB.js` (Onda 50). A 36ª
+   medição deve achar `colecoes-so-vitrine`, `cta-colecoes-sem-colecao`,
+   `Só há coleções de demonstração` e `colecao-name` no bundle, confirmar o
+   `Exportar` `disabled` e repetir os cliques no CSV/PDF em produção.
+   Publicar app **não aplica SQL**.
 
 ---
 
@@ -371,7 +396,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 694 testes
+cd plm-use && npx vitest run            # 702 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -381,7 +406,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **694/694**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **702/702**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -396,5 +421,11 @@ medidos **no ar** por cliques reais, guardas 47/48 intactas; gates
 **686/686**. **33ª medição: Onda 50 fechada no repo por escolha de risco**
 (`R$ 0,00` / `0%` apurados de carteira vazia em `/inventory` e `/planner`),
 gates **694/694**; ar ainda na Onda 49 (8 marcadores da 50 = 0), banco
-re-medido e inalterado. Há **uma publicação pendente** (a 50). Medição por
-camada em `SINCRONIA-2026-11-05.md`.
+re-medido e inalterado. **34ª medição: "publicado" re-medido e validado** —
+entry `index-Ctoln0KB.js` / `index-QjNtTEcp.js` (224 chunks / 3.179.918
+bytes), marcadores da 50 presentes, 3 emissores `disabled` e 0
+popups/downloads por cliques reais em produção; **repo/ar/banco na Onda 50**.
+**35ª medição: Onda 51 escolhida pelo risco** (CSV/PDF de coleções de fábrica
+em `/collections`), gates **702/702**; ar ainda na Onda 50 (6 marcadores da 51
+= 0), banco re-medido e inalterado. Há **uma publicação pendente** (a 51).
+Medição por camada em `SINCRONIA-2026-11-05.md`.
