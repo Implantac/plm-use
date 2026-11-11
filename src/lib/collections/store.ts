@@ -25,6 +25,13 @@ export type Collection = {
   avgPrice?: number; // R$
   sellThrough?: number; // %
   leadTimeDias?: number; // dias médios desenvolvimento → produção
+  /**
+   * Onda 51. `true` = coleção de demonstração que veio do `collectionsSeed`.
+   * Qualquer criação/edição humana promove para `demo: false`. Dados
+   * hidratados do servidor (`replaceAllCollections`) não têm a flag e já são
+   * operacionais. Ausente = salvo, nunca vitrine.
+   */
+  demo?: boolean;
 };
 
 export const collectionsSeed: Collection[] = [
@@ -51,6 +58,7 @@ export const collectionsSeed: Collection[] = [
     avgPrice: 249,
     sellThrough: 71,
     leadTimeDias: 96,
+    demo: true,
   },
   {
     id: 2,
@@ -75,6 +83,7 @@ export const collectionsSeed: Collection[] = [
     avgPrice: 139,
     sellThrough: 58,
     leadTimeDias: 78,
+    demo: true,
   },
   {
     id: 3,
@@ -99,6 +108,7 @@ export const collectionsSeed: Collection[] = [
     avgPrice: 129,
     sellThrough: 79,
     leadTimeDias: 62,
+    demo: true,
   },
 ];
 
@@ -130,9 +140,11 @@ export function subscribeCollections(l: () => void) {
 }
 
 export function upsertCollection(next: Collection) {
-  const idx = collections.findIndex((c) => c.id === next.id);
-  if (idx === -1) collections = [next, ...collections];
-  else collections = collections.map((c, i) => (i === idx ? next : c));
+  // Onda 51 (Onda 39): qualquer ação humana promove a coleção da vitrine.
+  const salva: Collection = { ...next, demo: false };
+  const idx = collections.findIndex((c) => c.id === salva.id);
+  if (idx === -1) collections = [salva, ...collections];
+  else collections = collections.map((c, i) => (i === idx ? salva : c));
   emit();
 }
 
@@ -145,4 +157,37 @@ export function removeCollection(id: number) {
 export function replaceAllCollections(next: Collection[]) {
   collections = next;
   emit();
+}
+
+/**
+ * Onda 51 — "a vitrine não entra no CSV nem no PDF".
+ *
+ * Medido em produção (34ª medição): `/collections` → `Exportar` → "Baixar
+ * CSV" baixava `colecoes-2026-11-11.csv` com **3 coleções de fábrica**
+ * (`Verão 25 - Amalfi` R$ 1,8 mi / 24.000 peças / ROI 3.4x, `Urban Resort`,
+ * `Essentials Atemporal`) e "Imprimir / PDF" abria o mesmo conteúdo em A4 —
+ * sem nenhum aviso, nenhum bloqueio e nenhuma marcação de demonstração no
+ * documento. O subtítulo da tela avisava, o arquivo não.
+ *
+ * Regra das Ondas 22/23/27–50: só coleção salva entra em documento
+ * operacional; vitrine é declarada com `—` + aviso/CTA e só é promovida por
+ * ação explícita. `filterCollections` e o store mutável não foram alterados.
+ */
+export const COLECOES_SEM_APURACAO =
+  "Só há coleções de demonstração na vitrine: receita, mix, margem e ROI não são apuráveis. O CSV e o PDF de coleções só podem ser emitidos com coleções salvas.";
+
+export function colecoesOperacionais(list: Collection[]): Collection[] {
+  return list.filter((c) => c.demo !== true);
+}
+
+export interface EmissaoColecoes {
+  pode: boolean;
+  motivo: string;
+}
+
+export function podeExportarColecoes(list: Collection[]): EmissaoColecoes {
+  if (colecoesOperacionais(list).length === 0) {
+    return { pode: false, motivo: COLECOES_SEM_APURACAO };
+  }
+  return { pode: true, motivo: "" };
 }

@@ -28,9 +28,12 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ModuleActionMenu, ModuleLayout } from "@/components/modules/ModuleLayout";
 import {
+  COLECOES_SEM_APURACAO,
   useCollections,
   upsertCollection,
   removeCollection,
+  colecoesOperacionais,
+  podeExportarColecoes,
   type Collection,
 } from "@/lib/collections/store";
 import { filterCollections } from "@/lib/collections/filter";
@@ -44,6 +47,7 @@ import { ExportMenu } from "@/components/export/ExportMenu";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { OptimizedImage } from "@/components/OptimizedImage";
 import { CollectionROI } from "@/components/collections/CollectionROI";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { CollectionPerformance } from "@/components/collections/CollectionPerformance";
 
 export const Route = createFileRoute("/_authenticated/collections")({
@@ -84,6 +88,12 @@ function CollectionsPage() {
     },
     { planned: 0, realized: 0 },
   );
+
+  // Onda 51: as 3 coleções do `collectionsSeed` são vitrine. Só coleção
+  // salva (criada/editada pelo usuário, ou hidratada do servidor) entra no
+  // CSV/PDF e nos KPIs do cabeçalho.
+  const operacionais = colecoesOperacionais(collections);
+  const emissao = podeExportarColecoes(collections);
 
   const handleOpenDialog = (collection?: Collection) => {
     if (collection) {
@@ -154,16 +164,53 @@ function CollectionsPage() {
       searchPlaceholder="Buscar coleção, marca ou temporada"
       onSearch={setQ}
       onAdd={() => handleOpenDialog()}
-      metrics={[
-        { label: "Coleções ativas", value: String(collections.length), detail: "multi marca" },
-        { label: "Mix planejado", value: String(totals.planned), detail: "referências" },
-        { label: "Mix realizado", value: String(totals.realized), detail: "em ciclo" },
-        { label: "Meta combinada", value: "R$ 3,36 mi", detail: "receita alvo" },
-      ]}
+      metrics={
+        emissao.pode
+          ? [
+              {
+                label: "Coleções ativas",
+                value: String(operacionais.length),
+                detail: "salvas",
+              },
+              {
+                label: "Mix planejado",
+                value: String(operacionais.reduce((a, c) => a + c.plannedMix, 0)),
+                detail: "referências",
+              },
+              {
+                label: "Mix realizado",
+                value: String(operacionais.reduce((a, c) => a + c.realizedMix, 0)),
+                detail: "em ciclo",
+              },
+              { label: "Meta combinada", value: "—", detail: "até integração BI" },
+            ]
+          : [
+              { label: "Coleções ativas", value: "—", detail: "sem coleção salva" },
+              { label: "Mix planejado", value: "—", detail: "não apurável" },
+              { label: "Mix realizado", value: "—", detail: "não apurável" },
+              { label: "Meta combinada", value: "—", detail: "não apurável" },
+            ]
+      }
     >
       <div className="mb-4">
         <ModuleTabs group="collections" />
       </div>
+      {!emissao.pode && (
+        <div
+          data-testid="colecoes-so-vitrine"
+          className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] text-amber-800 dark:text-amber-300"
+        >
+          <strong>{collections.length} coleções de demonstração na vitrine.</strong>{" "}
+          {COLECOES_SEM_APURACAO} Os KPIs de ROI/ROAS e de performance abaixo são simulações sobre
+          lotes de exemplo, não apuração da operação — os indicadores do cabeçalho ficam em `—`.
+          <CtaProximoPasso
+            passo="ficha"
+            onAcao={() => handleOpenDialog()}
+            label="Cadastrar coleção"
+            testId="cta-colecoes-sem-colecao"
+          />
+        </div>
+      )}
       <div className="mb-4 flex justify-end gap-2">
         <ExportMenu
           title="Coleções"
@@ -182,7 +229,7 @@ function CollectionsPage() {
             "mix_realizado",
             "roi",
           ]}
-          rows={collections.map((col) => ({
+          rows={operacionais.map((col) => ({
             nome: col.name,
             temporada: col.season,
             ano: col.year,
@@ -384,10 +431,14 @@ function CollectionsPage() {
               ["plannedQty", "Quantidade planejada", "Ex: 120 refs"],
             ].map(([key, label, placeholder]) => (
               <div key={key} className="space-y-2">
-                <Label className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
+                <Label
+                  htmlFor={`colecao-${key}`}
+                  className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground"
+                >
                   {label}
                 </Label>
                 <Input
+                  id={`colecao-${key}`}
                   value={formData[key as keyof typeof formData]}
                   onChange={(event) => setFormData({ ...formData, [key]: event.target.value })}
                   className="focus:border-primary/40 focus:ring-0"
