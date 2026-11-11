@@ -158,6 +158,24 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ## 7-A. Ondas 19 a 58 (04–06/11/2026) — o que mudou depois deste documento
 
+> **Atualização de 06/11 (52ª medição): "lovable não recebeu esse commit" —
+> revisão por camada NÃO confirmou o relato.** Com o token informado
+> (`GET /user` = `200 Implantac`), HEAD local = remoto =
+> `fae2a93154919f41bcb42bf73e4f0a53423208b2`, working tree limpo, 781 arquivos
+> todos `100644`, CI `quality`/`smoke-publico`/`db-certification` ✅. O ar
+> havia avançado para entry **novo** `index-IvTyinWJ.js` / `index-pMXbg9-8.js`
+> (214 chunks / 3.183.607 bytes) com os **9 marcadores da Onda 58 = 1** e o
+> entry da 57 zerado. Cliques reais em produção: 7 glossários colapsados
+> abrindo 3–7 termos (`financial` 6, `analytics` 7, `launch` 7, `inventory` 3
+> com `LEC`, `quality` 4, `planner` 5, `collections` 4) e o passo 8 do PCP sem
+> regressão. HTML com `no-cache, must-revalidate` e JS `immutable` por hash:
+> não há stale por CDN — a percepção é compatível com timing do deploy ou
+> aba/cache local do browser. Banco view `200 []` / 4 funções `401 42501` /
+> SQL SHA inalterado; gates **754/754**. **Repo, ar e banco alinhados na Onda
+> 58**, sem publicação pendente. Não havia código a corrigir: esta atualização
+> do GitHub registra a revisão e corrige a sincronia, que ainda dizia "ar na
+> Onda 57". Detalhes em `SINCRONIA-2026-11-05.md` § 2-Q.
+
 > **Atualização de 06/11 (50ª e 51ª medições): "projeto publicado pelo
 > lovable, continue com as melhorias" — publicação da 57 validada e Onda 58
 > escolhida pelo risco.** A **50ª medição** achou entry novo
@@ -576,11 +594,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     produção confirmaram o passo 8 com CTA → `/orders` e o toast de
     liberação. **Repo, ar e banco alinhados na Onda 57.** Aqui foi **só
     publicar**: o SQL já estava aplicado desde a 24ª medição.
-16. **Publicar a Onda 58.** O ar segue em `index-D5xUbEBY.js` (Onda 57). A
-    52ª medição deve achar `glossario-financial`, `glossario-launch`,
-    `glossario-inventory` e `Lote econômico de compra` no bundle, e abrir
-    os `<details>` em produção medindo os `dt`. Publicar app **não aplica
-    SQL**.
+16. **~~Publicar a Onda 58~~ — concluído antes da 52ª medição.** O dono
+    relatou que o Lovable não teria recebido o commit; a re-medição achou
+    entry `index-IvTyinWJ.js` / `index-pMXbg9-8.js` com os 9 marcadores da
+    58 e os glossários funcionando por cliques reais em produção. **Repo, ar
+    e banco alinhados na Onda 58.** Relato não confirmado; nenhuma publicação
+    pendente. Publicar app **não aplica SQL**.
 
 ---
 
@@ -670,5 +689,10 @@ re-medido e validado** — entry `index-D5xUbEBY.js` / `index-jPXI5Gle.js`
 `/orders` por cliques reais em produção; **repo/ar/banco na Onda 57**. **51ª
 medição: Onda 58 escolhida pelo risco** (20 rotas com jargão sem glossário →
 11 cobertas e 6 novos termos), gates **754/754**; ar ainda na Onda 57 (7
-marcadores da 58 = 0), banco re-medido e inalterado. Há **uma publicação
-pendente** (a 58). Medição por camada em `SINCRONIA-2026-11-05.md`.
+marcadores da 58 = 0), banco re-medido e inalterado. **52ª medição: relato
+"lovable não recebeu esse commit" revisado e NÃO confirmado** — HEAD
+local/remoto `fae2a93`, CI verde, entry novo `index-IvTyinWJ.js` /
+`index-pMXbg9-8.js` com os 9 marcadores da 58 = 1 e 7 glossários validados
+por cliques reais em produção; gates **754/754**. **Repo, ar e banco alinhados
+na Onda 58, sem publicação pendente.** Medição por camada em
+`SINCRONIA-2026-11-05.md`.

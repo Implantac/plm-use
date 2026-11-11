@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 51ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 52ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,31 +7,24 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (51ª medição, após fechar a Onda 58)
+## 1. O quadro (52ª medição, após revisar o relato de deploy)
 
-| Camada                                         | Estado medido                       | Como foi medido                     |
-| ---------------------------------------------- | ----------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 58** — código + docs 50ª/51ª | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 57** — `index-D5xUbEBY.js`   | BFS + cliques reais (seção 2-P)     |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**     | `200` na view · `42501` nas funções |
+| Camada                                         | Estado medido                     | Como foi medido                     |
+| ---------------------------------------------- | --------------------------------- | ----------------------------------- |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 58** — `fae2a93`           | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + cliques reais (seção 2-Q)     |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
 
-A **50ª medição** re-mediu o marco "projeto publicado pelo lovable": entry
-novo `index-D5xUbEBY.js` / `index-jPXI5Gle.js` (**214 chunks / 3.180.877
-bytes**, 9 chunks e ~9 KB a menos — remoção do código morto da Onda 57), os 3
-marcadores da 57 = 1 e `Cria lote no Kanban do PCP` = **0**. Cliques reais:
-passo 8 do PCP com CTA → `/orders` e `Liberar p/ PCP` → toast de liberação.
-**Repo, ar e banco alinhados na Onda 57.**
+O dono relatou **"lovable não recebeu esse commit"** e pediu revisão/atualização
+do GitHub com o token. A **52ª medição não confirmou o relato**: o repositório
+já estava com HEAD local/remoto `fae2a93`, working tree limpo e CI verde, e o
+ar havia avançado para um **entry novo** com todos os marcadores da Onda 58.
+**Repo, ar e banco alinhados na Onda 58 — nenhuma publicação pendente.**
 
-Com "continue com as melhorias", a varredura de **jargão técnico** das 44 rotas
-achou 41 com siglas, só 5 com glossário. Descontado o piso falso de `CAD`/`PCP`
-da sidebar, **20 rotas com jargão real e nenhuma com glossário** — e 6 siglas
-frequentes ausentes do dicionário. **Onda 58**: +6 termos (33 → 39) e
-`GlossarioTermos` em 11 rotas com `siglas` medidas por tela.
-
-O ar **não mudou** desde a 50ª: **7 marcadores da 58 = 0**. Repo e ar
-desalinhados em **uma onda, por publicação pendente** — não por defeito de
-código. O banco não precisava avançar: **publicar o app não aplica SQL**. Gates:
-`tsc` 0, `eslint` 0 erros / 20 warnings, `prettier` limpo, **754/754**.
+O que estava defasado era **este documento**, que ainda dizia "ar na Onda 57,
+publicação pendente". Esta atualização do GitHub corrige a sincronia e registra
+a revisão; não houve mudança de código porque não havia defeito a corrigir.
+Banco re-medido e inalterado; gates re-medidos **754/754**.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -637,6 +630,41 @@ inalterados; **7 marcadores da 58 = 0**. **Banco:** view `200 []`, 4 funções
 
 ---
 
+## 2-Q. 52ª medição — "lovable não recebeu esse commit" não se confirma
+
+**Revisão por camada (token `ghp_1hjm…`, `GET /user` `200 Implantac`):**
+
+| Camada           | Medição                                                                                                                                                                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repo             | HEAD local = remoto = **`fae2a93154919f41bcb42bf73e4f0a53423208b2`**, `main`, working tree limpo, 781 arquivos todos `100644`, token fora de `.git/config` e dos arquivos versionados                                                          |
+| GitHub API       | commit `fae2a93` com 3 arquivos (+281/−48); `check-runs`: `quality`, `smoke-publico`, `db-certification` ✅, 2 e2e `skipped`                                                                                                                   |
+| Ar               | entry **`index-IvTyinWJ.js` / `index-pMXbg9-8.js`**, 214 chunks / **3.183.607 bytes**, 0 falhas; `index-D5xUbEBY.js` = **0**                                                                                                                   |
+| Marcadores 58    | `glossario-financial`, `glossario-analytics`, `glossario-security`, `glossario-launch`, `glossario-marketing`, `glossario-inventory`, `Lote econômico de compra`, `Estratégia de ida ao mercado`, `O que significam essas siglas` = **1** cada |
+| Marcadores 57/47 | `cta-lancar-pedido-pcp` 1, `Cria lote no Kanban do PCP` **0**, `glossario-orders`/`audit`/`suppliers` 1, `ficha-cega-bloqueada` 1, `DEV000006` 20                                                                                              |
+| Banco            | view `200 []`, 4 funções `401 42501`, SQL SHA `382f0f19…` inalterado                                                                                                                                                                           |
+| Gates            | `tsc` 0, `eslint` 0 erros/20 warnings, `prettier` limpo, **754/754**                                                                                                                                                                           |
+
+**Cliques reais em produção:** `financial` (6 `dt`), `analytics` (7), `launch`
+(7), `inventory` (3 — `MRP`/`LEC`/`BOM`), `quality` (4), `planner` (5),
+`collections` (4): todos os `<details>` colapsados abriram com os termos
+medidos. Regressão da Onda 57 conferida: passo 8 com
+`cta-lancar-pedido-pcp` = 1 e o texto antigo ausente. Captura
+`/home/user/medicao52-glossario.png`.
+
+**Diagnóstico de cache/CDN:** o HTML responde
+`Cache-Control: no-cache, must-revalidate, max-age=0` e os JS com hash de
+conteúdo respondem `public, max-age=31536000, immutable`. Não há stale por CDN:
+um HTML sempre revalidado aponta para o entry novo. A percepção de "não
+recebeu" é compatível com **timing do deploy** ou **aba/cache local do browser**
+(hard refresh resolve), não com commit ausente no GitHub.
+
+**Conclusão:** não havia o que corrigir no código nem o que reenviar — o push
+da rodada anterior (`0d8eb95..fae2a93`) estava completo. Atualizamos o GitHub
+com a **52ª medição** (este documento, `ONDE-PAROU.md` e o doc da Onda 58),
+que também serve de novo commit caso o dono queira re-disparar o deploy.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -662,10 +690,11 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   (Onda 55) — 223 chunks / 3.188.613 bytes, 3 marcadores da 56 = **0**
 - entry medido na 48ª e 49ª: `index-C64BHus3.js` / `index-D6lNmNPq.js`
   (Onda 56) — 223 chunks / 3.190.257 bytes, 3 marcadores da 57 = **0**
-- **entry medido na 50ª e 51ª: `index-D5xUbEBY.js` / `index-jPXI5Gle.js`
-  (Onda 57)** — **214 chunks / 3.180.877 bytes**, 0 falhas; 3 marcadores da
-  57 = **1**, `Cria lote no Kanban do PCP` = **0**; **7 marcadores da 58 = 0**
-  na 51ª (publicação pendente)
+- entry medido na 50ª e 51ª: `index-D5xUbEBY.js` / `index-jPXI5Gle.js`
+  (Onda 57) — 214 chunks / 3.180.877 bytes, 7 marcadores da 58 = **0**
+- **entry medido na 52ª: `index-IvTyinWJ.js` / `index-pMXbg9-8.js`
+  (Onda 58)** — 214 chunks / **3.183.607 bytes**, 0 falhas; 9 marcadores da
+  58 = **1**, marcadores 57 e 47 intactos, entry da 57 zerado
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -729,7 +758,7 @@ com `GRANT EXECUTE` apenas a `authenticated`/`service_role`. SHA-256 do arquivo
 `382f0f192e23eac143dfda995f69cdc740c258b2017c4f9b07c9dff8f20c254f`, guardado
 por teste.
 
-| Sonda (sem sessão, 51ª medição)            | Resposta     | Interpretação                                |
+| Sonda (sem sessão, 52ª medição)            | Resposta     | Interpretação                                |
 | ------------------------------------------ | ------------ | -------------------------------------------- |
 | `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
 | `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
@@ -786,10 +815,10 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 - ~~Se a Onda 57 funciona em produção~~ **medido na 50ª**: passo 8 do PCP
   com CTA → `/orders`, texto antigo zerado e `Liberar p/ PCP` → toast **com
   cliques reais contra `plmuse.lovable.app`**.
-- **Se a Onda 58 funciona em produção.** Ainda não foi publicada: os 7
-  marcadores da 58 são **0** no bundle. A prova com cliques reais da 51ª foi
-  **local** (`127.0.0.1:8080`, papel `admin` simulado); não é evidência de
-  comportamento do domínio publicado.
+- ~~Se a Onda 58 funciona em produção~~ **medido na 52ª**: entry novo com
+  os 9 marcadores da 58 e 7 glossários abrindo com 3–7 termos **com cliques
+  reais contra `plmuse.lovable.app`**. O relato "lovable não recebeu o commit"
+  não se confirmou (seção 2-Q).
 - **Login de usuário real.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI. Sessão local simulada gera `401/403` e banner "Verifique
   sua conexão": artefato da medição, não bug.
@@ -814,14 +843,14 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 | ~~Ar uma onda atrás (55)~~ **zerado**           | ~~publicar~~ concluído na **46ª medição** (`index-BlLjcjGi.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (56)~~ **zerado**           | ~~publicar~~ concluído na **48ª medição** (`index-C64BHus3.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (57)~~ **zerado**           | ~~publicar~~ concluído na **50ª medição** (`index-D5xUbEBY.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
-| **Ar uma onda atrás do repo (58)**              | **publicar a Onda 58** e refazer BFS + cliques em produção (52ª medição)                                         | dono do projeto |
+| ~~Ar uma onda atrás (58)~~ **zerado**           | ~~publicar~~ concluído antes da **52ª medição** (`index-IvTyinWJ.js`); relato de deploy não confirmado           | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                    | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                          | dono do projeto |
 
-SQL aplicado, Ondas 44/45/46/47/48/49/50/51/52/53/54/55/56/57 publicadas
-e **Onda 58 fechada no repo**. Há **uma publicação pendente** (a 58). Restam
-duas ações que não são código: publicar a Onda 58 e dar a credencial de e2e
-(e, se houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
+SQL aplicado e **Ondas 44/45/46/47/48/49/50/51/52/53/54/55/56/57/58
+publicadas — repo, ar e banco alinhados na Onda 58**. Não há publicação
+pendente. Resta uma ação que não é código: dar a credencial de e2e (e, se
+houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
 
@@ -892,6 +921,5 @@ libere o pedido aprovado para o PCP (Liberar p/ PCP)` — **0 na 49ª**; o texto
 antigo `Cria lote no Kanban do PCP` caiu a **0** na 50ª. Marcadores da 58 =
 `glossario-financial`, `glossario-analytics`, `glossario-security`,
 `glossario-launch`, `glossario-inventory`, `Lote econômico de compra`,
-`Estratégia de ida ao mercado` — **0 na 51ª**, logo a Onda 58 ainda não está no
-ar. A 51ª é a medição corrente: repo na Onda 58, ar na Onda 57, banco
-aplicado.
+`Estratégia de ida ao mercado` — **0 na 51ª, 1 na 52ª**. A 52ª é a medição
+corrente: **repo, ar e banco alinhados na Onda 58**.

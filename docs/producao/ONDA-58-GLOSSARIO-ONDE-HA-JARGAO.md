@@ -135,6 +135,18 @@ Repo e ar **desalinhados em uma onda, por publicação pendente** — não por
 defeito de código. Publicar a Onda 58 é a próxima ação do dono; **publicar o
 app não aplica SQL** e o SQL já está aplicado desde a 24ª medição.
 
+### Publicação validada em produção (52ª medição)
+
+O dono relatou que o Lovable não teria recebido o commit. A re-medição por
+camada **não confirmou o relato**: HEAD local/remoto `fae2a93` com CI verde, e
+o ar em entry **novo** `index-IvTyinWJ.js` / `index-pMXbg9-8.js` (214 chunks /
+3.183.607 bytes) com os 9 marcadores da Onda 58 = 1 e `index-D5xUbEBY.js` = 0.
+Cliques reais em produção confirmaram 7 glossários (3–7 termos cada) e o passo
+8 do PCP sem regressão. O HTML usa `Cache-Control: no-cache,
+must-revalidate, max-age=0` e os JS `immutable` por hash de conteúdo — não há
+stale por CDN; a percepção é compatível com timing do deploy ou aba/cache local
+do browser (hard refresh). **Repo, ar e banco alinhados na Onda 58.**
+
 ### Dívida que permanece
 
 - `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD` com o dono: os 2 jobs de e2e seguem
