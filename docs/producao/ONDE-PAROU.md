@@ -156,7 +156,27 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 57 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 58 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (50ª e 51ª medições): "projeto publicado pelo
+> lovable, continue com as melhorias" — publicação da 57 validada e Onda 58
+> escolhida pelo risco.** A **50ª medição** achou entry novo
+> `index-D5xUbEBY.js` / `index-jPXI5Gle.js` (214 chunks / 3.180.877 bytes,
+> 9 chunks e ~9 KB a menos pela remoção do código morto), 3 marcadores da 57
+> = 1 e `Cria lote no Kanban do PCP` = 0; cliques reais confirmaram passo 8
+> → CTA → `/orders` e `Liberar p/ PCP` → toast. **Repo, ar e banco alinhados
+> na Onda 57.** A varredura de jargão achou 41 rotas com siglas, só 5 com
+> glossário; descontado o piso `CAD`/`PCP` da sidebar, **20 rotas com jargão
+> real e nenhuma com glossário**, e 6 siglas ausentes do dicionário. **Onda
+> 58**: +6 termos (33 → 39, sem duplicatas) e `GlossarioTermos` com `siglas`
+> medidas + `testId` em 11 rotas. 20 testes do glossário seguem verdes;
+> guardas 47–57 intactas. Browser local: 10/10 `<details>` colapsados abrindo
+> 4–7 termos (mais `inventory` para `LEC`), com `/launch` re-medido após
+> artefato de HMR. Gates **754/754**, `tsc` 0, `eslint` 0 erros, `prettier`
+> limpo. **51ª medição: repo Onda 58, ar Onda 57** (7 marcadores da 58 = 0),
+> banco view `200 []` / 4 funções `401 42501` / SQL SHA inalterado. Publicar a
+> Onda 58 é a próxima ação do dono. Detalhes em
+> `ONDA-58-GLOSSARIO-ONDE-HA-JARGAO.md` e `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (48ª e 49ª medições): "publicado no lovable,
 > prossiga com as melhorias" — publicação da 56 validada e Onda 57 escolhida
@@ -550,11 +570,17 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `/digital-twin` sem ficha, aviso/CTAs e Link → `/tech-sheet`. **Repo, ar
     e banco alinhados na Onda 56.** Aqui foi **só publicar**: o SQL já
     estava aplicado desde a 24ª medição.
-15. **Publicar a Onda 57.** O ar segue em `index-C64BHus3.js` (Onda 56). A
-    50ª medição deve achar `cta-lancar-pedido-pcp` e `Libere o pedido
-aprovado para o PCP: o lote nasce da OP real` no bundle, verificar que
-    `Cria lote no Kanban do PCP` caiu a 0 e repetir o clique no passo 8 em
-    produção. Publicar app **não aplica SQL**.
+15. **~~Publicar a Onda 57~~ — concluído (50ª medição), marco relatado e
+    validado.** Entry `index-D5xUbEBY.js` / `index-jPXI5Gle.js` com os 3
+    marcadores da 57 e `Cria lote no Kanban do PCP` = 0; cliques reais em
+    produção confirmaram o passo 8 com CTA → `/orders` e o toast de
+    liberação. **Repo, ar e banco alinhados na Onda 57.** Aqui foi **só
+    publicar**: o SQL já estava aplicado desde a 24ª medição.
+16. **Publicar a Onda 58.** O ar segue em `index-D5xUbEBY.js` (Onda 57). A
+    52ª medição deve achar `glossario-financial`, `glossario-launch`,
+    `glossario-inventory` e `Lote econômico de compra` no bundle, e abrir
+    os `<details>` em produção medindo os `dt`. Publicar app **não aplica
+    SQL**.
 
 ---
 
@@ -565,7 +591,7 @@ aprovado para o PCP: o lote nasce da OP real` no bundle, verificar que
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 747 testes
+cd plm-use && npx vitest run            # 754 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -575,7 +601,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **747/747**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **754/754**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -638,5 +664,11 @@ marcadores da 56 = 1 e `h1 = 1` em `/digital-twin` por cliques reais em
 produção; **repo/ar/banco na Onda 56**. **49ª medição: Onda 57 escolhida pelo
 risco** (`criarLote()` órfão removido e passo 8 do fluxo PCP agora honesto e
 com CTA real), gates **747/747**; ar ainda na Onda 56 (3 marcadores exclusivos
-da 57 = 0), banco re-medido e inalterado. Há **uma publicação pendente** (a
-57). Medição por camada em `SINCRONIA-2026-11-05.md`.
+da 57 = 0), banco re-medido e inalterado. **50ª medição: "projeto publicado"
+re-medido e validado** — entry `index-D5xUbEBY.js` / `index-jPXI5Gle.js`
+(214 chunks / 3.180.877 bytes), 3 marcadores da 57 = 1 e passo 8 com CTA →
+`/orders` por cliques reais em produção; **repo/ar/banco na Onda 57**. **51ª
+medição: Onda 58 escolhida pelo risco** (20 rotas com jargão sem glossário →
+11 cobertas e 6 novos termos), gates **754/754**; ar ainda na Onda 57 (7
+marcadores da 58 = 0), banco re-medido e inalterado. Há **uma publicação
+pendente** (a 58). Medição por camada em `SINCRONIA-2026-11-05.md`.
