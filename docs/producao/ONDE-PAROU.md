@@ -158,6 +158,19 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ## 7-A. Ondas 19 a 54 (04–06/11/2026) — o que mudou depois deste documento
 
+> **Atualização de 06/11 (43ª medição): "atualize o github" revelou uma
+> publicação não relatada da Onda 54.** O token novo validou (`GET /user` =
+> `200 Implantac`) e HEAD local/remoto já era `fb46267` — nenhum commit
+> pendente. A re-medição por camada, porém, achou o ar em entry novo
+> `index-CgpxQvgj.js` / `index-CyHoINKY.js` (223 chunks / 3.188.203 bytes)
+> com os 6 marcadores da Onda 54 = 1 e `index-CFlhwbuy.js` = 0. **Cliques
+> reais em produção** confirmaram os 5 CTAs (`/references` ×3, `/orders`,
+> toast `Pedido clonado como PD-2026-803` com 1 Ficha Cega A4 liberada) e
+> **0 rotas com aviso sem saída** em 22 rotas. Banco view `200 []` / 4 funções
+> `401 42501` / SQL SHA inalterado; gates **726/726**. **Repo, ar e banco
+> alinhados na Onda 54**, sem publicação pendente. Esta atualização do GitHub
+> registra a 43ª medição. Detalhes em `SINCRONIA-2026-11-05.md`.
+
 > **Atualização de 06/11 (40ª e 41ª medições): "lovable publicado, prossiga" —
 > marco validado e Onda 54 escolhida pelo risco.** A **40ª medição re-mediu**
 > o relato: entry novo `index-CFlhwbuy.js` / `index-CZvI_8s1.js` (224 chunks /
@@ -459,11 +472,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     validado.** Entry `index-CFlhwbuy.js` / `index-CZvI_8s1.js` com os 6
     marcadores da 53; cliques reais em produção confirmaram avisos/CTA, 0
     números de fábrica e 17 travessões. **Repo, ar e banco alinhados na Onda 53.**
-12. **Publicar a Onda 54.** O ar segue em `index-CFlhwbuy.js` (Onda 53). A 42ª
-    medição deve achar `cta-look-sem-ficha`, `cta-dpp-sem-ficha`,
-    `cta-producao-sem-op`, `cta-ficha-cega-clonar` e
-    `cta-line-sheet-sem-ficha` no bundle, e repetir em produção os cliques nos
-    5 CTAs medindo 0 avisos sem saída. Publicar app **não aplica SQL**.
+12. **~~Publicar a Onda 54~~ — concluído (43ª medição), sem marco relatado.**
+    Publicação **detectada por BFS** (`index-CgpxQvgj.js` /
+    `index-CyHoINKY.js`, 6 marcadores da 54 = 1) e validada por cliques reais
+    em produção: os 5 CTAs funcionam e 0 avisos sem saída. **Repo, ar e banco
+    alinhados na Onda 54.** Aqui foi **só publicar**: o SQL já estava aplicado
+    desde a 24ª medição.
 
 ---
 
@@ -524,5 +538,9 @@ marcadores da 53 presentes, avisos/CTA e 0 números de fábrica por cliques
 reais em produção; **repo/ar/banco na Onda 53**. **41ª medição: Onda 54
 escolhida pelo risco** (5 avisos de vitrine sem saída → 0 após 5 CTAs), gates
 **726/726**; ar ainda na Onda 53 (6 marcadores da 54 = 0), banco re-medido e
-inalterado. Há **uma publicação pendente** (a 54). Medição por camada em
-`SINCRONIA-2026-11-05.md`.
+inalterado. **42ª medição: push confirmado após troca de credencial** — token
+anterior `401`, novo PAT `200 Implantac`, push `1fb232b..8fa6b1d` e depois
+`8fa6b1d..fb46267`, `git ls-remote` = HEAD local. **43ª medição: publicação
+não relatada da Onda 54 detectada por BFS e validada por cliques reais**;
+repo, ar e banco alinhados na Onda 54, sem publicação pendente. Medição por
+camada em `SINCRONIA-2026-11-05.md`.

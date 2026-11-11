@@ -141,6 +141,18 @@ app não aplica SQL** e o SQL já está aplicado desde a 24ª medição.
 > idêntico ao HEAD local. Token fora de `.git/config` e dos arquivos
 > versionados (verificação por prefixo = 0). **A Onda 54 está empurrada.**
 
+### Publicação validada em produção (43ª medição)
+
+Sem marco relatado pelo dono, o BFS achou entry novo **`index-CgpxQvgj.js` /
+`index-CyHoINKY.js`** (223 chunks / 3.188.203 bytes, 0 falhas) com os 6
+marcadores da Onda 54 = 1 e `index-CFlhwbuy.js` = 0. **Cliques reais em
+produção** confirmaram os 5 CTAs: `/looks`, `/pieces-report` e
+`/collection-map` → `/references`; `/production` → `/orders`; `/orders` →
+toast `Pedido clonado como PD-2026-803` com 1 Ficha Cega A4 liberada.
+Varredura com contexto limpo: **0 rotas com aviso sem saída** em 22 rotas.
+Banco re-medido e inalterado; gates **726/726**. Capturas
+`/home/user/medicao43-*.png`. **Repo, ar e banco alinhados na Onda 54.**
+
 ### Dívida que permanece
 
 - `criarLote()` segue **sem chamador na UI** (código morto no store PCP); o
