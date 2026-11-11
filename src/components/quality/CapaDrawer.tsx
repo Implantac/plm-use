@@ -225,6 +225,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             <MetaRow local={local} onSave={persistPatch} />
             <Field label="Causa-raiz">
               <Textarea
+                aria-label="Causa-raiz da CAPA"
                 value={local.causa_raiz ?? ""}
                 onChange={(e) => setLocal({ ...local, causa_raiz: e.target.value })}
                 onBlur={() =>
@@ -265,6 +266,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 {local.cinco_porques.length < 5 && (
                   <div className="flex gap-2">
                     <Input
+                      aria-label="Novo porquê da CAPA"
                       value={porqueDraft}
                       onChange={(e) => setPorqueDraft(e.target.value)}
                       placeholder={`Porquê #${local.cinco_porques.length + 1}`}
@@ -314,6 +316,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             />
             <Field label="Eficácia verificada">
               <select
+                aria-label="Eficácia verificada da CAPA"
                 value={local.eficacia ?? ""}
                 onChange={(e) => {
                   const v = (e.target.value || null) as Capa["eficacia"];
@@ -365,6 +368,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
             ))}
             <div className="rounded-md border border-border bg-muted/50 p-3 space-y-2">
               <Input
+                aria-label="URL da evidência da CAPA"
                 value={evUrl}
                 onChange={(e) => setEvUrl(e.target.value)}
                 placeholder="URL da evidência (foto, laudo, doc)"
@@ -372,6 +376,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
               />
               <div className="flex gap-2">
                 <Input
+                  aria-label="Descrição da evidência da CAPA"
                   value={evLabel}
                   onChange={(e) => setEvLabel(e.target.value)}
                   placeholder="Descrição (opcional)"
@@ -431,6 +436,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
         {/* Footer com transições */}
         <div className="mt-4 pt-4 border-t border-border space-y-3">
           <Textarea
+            aria-label="Nota da transição da CAPA"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Nota da transição (opcional)"
@@ -501,6 +507,7 @@ function ActionField({
   return (
     <Field label={label}>
       <Textarea
+        aria-label={`${label} da CAPA`}
         value={v}
         onChange={(e) => setV(e.target.value)}
         onBlur={() => {
@@ -524,6 +531,7 @@ function MetaRow({
     <div className="grid grid-cols-2 gap-3">
       <Field label="Responsável">
         <Input
+          aria-label="Responsável pela CAPA"
           defaultValue={local.responsavel}
           onBlur={(e) =>
             e.target.value !== local.responsavel &&
@@ -534,6 +542,7 @@ function MetaRow({
       </Field>
       <Field label="Prazo">
         <Input
+          aria-label="Prazo da CAPA"
           type="date"
           defaultValue={local.prazo ?? ""}
           onBlur={(e) =>
@@ -545,6 +554,7 @@ function MetaRow({
       </Field>
       <Field label="Severidade">
         <select
+          aria-label="Severidade da CAPA"
           defaultValue={local.severidade}
           onChange={(e) => onSave({ severidade: e.target.value as CapaSeveridade }, "Severidade")}
           className="h-8 w-full bg-muted/50 border border-border rounded-md text-xs px-2"
@@ -556,6 +566,7 @@ function MetaRow({
       </Field>
       <Field label="Fornecedor">
         <Input
+          aria-label="Fornecedor da CAPA"
           defaultValue={local.fornecedor ?? ""}
           onBlur={(e) =>
             e.target.value !== (local.fornecedor ?? "") &&
