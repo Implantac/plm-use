@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 47ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 49ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,31 +7,33 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (47ª medição, após fechar a Onda 56)
+## 1. O quadro (49ª medição, após fechar a Onda 57)
 
 | Camada                                         | Estado medido                       | Como foi medido                     |
 | ---------------------------------------------- | ----------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 56** — código + docs 46ª/47ª | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 55** — `index-BlLjcjGi.js`   | BFS + cliques reais (seção 2-N)     |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 57** — código + docs 48ª/49ª | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 56** — `index-C64BHus3.js`   | BFS + cliques reais (seção 2-O)     |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**     | `200` na view · `42501` nas funções |
 
-A **46ª medição** re-mediu o marco "lovable publicado": entry novo
-`index-BlLjcjGi.js` / `index-CfT3W1YT.js` (223 chunks / 3.188.613 bytes) com os
-5 marcadores da Onda 55, e cliques reais em `/quality` confirmaram **0 campos
-sem nome nas 4 abas** do drawer CAPA, 2 `aria-invalid` e toast `CAPA aberta`.
-**Repo, ar e banco alinhados na Onda 55.**
+A **48ª medição** re-mediu o marco "publicado no lovable": entry novo
+`index-C64BHus3.js` / `index-D6lNmNPq.js` (223 chunks / 3.190.257 bytes) com
+os 3 marcadores da Onda 56, e cliques reais em `/digital-twin` confirmaram
+**`h1 = 1`** sem ficha salva, aviso/CTAs, 4 travessões e o Link →
+`/tech-sheet`. **Repo, ar e banco alinhados na Onda 56.**
 
-Com `prossiga`, a varredura de **títulos de página** das 43 rotas achou **1 rota
-sem `<h1>`: `/digital-twin`** — e corrigiu um diagnóstico antigo: não era
-timeout do crawler, era o retorno antecipado de vitrine que devolvia só um
-`<Card>` com `<h2>`. **Onda 56**: mesmo `<header>`/`<h1>` do caminho normal,
-KPIs em `—` e 2 saídas clicáveis, sem mexer na simulação ou nas guardas.
+Com "prossiga com as melhorias", a varredura de emissores e ações inertes
+descartou 4 falsos positivos (3 `ExportMenu`, 1 estado compartilhado da própria
+varredura, botões já `disabled`). O risco remanescente era **código morto com
+promessa falsa**: `criarLote()` nunca chamado e o passo 8 do fluxo PCP dizendo
+"Cria lote no Kanban do PCP", embora o Kanban leia OPs do banco. **Onda 57**:
+remover a função órfã, corrigir texto/checklist e dar ao passo 8 um CTA real
+para `/orders → Liberar p/ PCP`.
 
-O ar **não mudou** desde a 46ª: **3 marcadores exclusivos da Onda 56 = 0**
-(`Tiragem planejada` e o título já existiam no caminho normal). Repo e ar
-desalinhados em **uma onda, por publicação pendente** — não por defeito de
-código. O banco não precisava avançar: **publicar o app não aplica SQL**. Gates:
-`tsc` 0, `eslint` 0 erros / 20 warnings, `prettier` limpo, **740/740**.
+O ar **não mudou** desde a 48ª: **3 marcadores exclusivos da 57 = 0**, e o
+texto antigo `Cria lote no Kanban do PCP` ainda = 1. Repo e ar desalinhados em
+**uma onda, por publicação pendente** — não por defeito de código. O banco não
+precisava avançar: **publicar o app não aplica SQL**. Gates: `tsc` 0, `eslint`
+0 erros / 20 warnings, `prettier` limpo, **747/747**.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -553,6 +555,47 @@ inalterados; **3 marcadores exclusivos da 56 = 0**. **Banco:** view `200 []`,
 
 ---
 
+## 2-O. 48ª e 49ª medições — publicação da 56 e Onda 57
+
+**48ª (publicação validada):** BFS → entry **`index-C64BHus3.js` /
+`index-D6lNmNPq.js`**, 223 chunks / **3.190.257 bytes**, 0 falhas;
+`index-BlLjcjGi.js` = 0. Os 3 marcadores da 56 = **1**, marcadores 55 e 48/49
+intactos, `DEV000006` 20. Cliques reais em `/digital-twin`: **`h1 = 1`**
+(`Gêmeo Digital & Simulador What-If`), `gemeo-sem-ficha` 1, 2 CTAs, 4
+travessões, `Abrir Ficha Técnica` → `/tech-sheet`. Banco view `200 []`, 4
+funções `401 42501`, SHA inalterado. **Repo/ar/banco na Onda 56.**
+
+**Escolha por risco:** varredura de emissores/ações inertes nas 44 rotas.
+Falsos positivos descartados com medição dirigida: `analytics`/`materials`/
+`production "Exportar"` são `ExportMenu` (abrem `Baixar CSV` / `Imprimir /
+PDF`); `research "Gerar"` muda o DOM; `collections`/`planner "Exportar"` estão
+`disabled`; `planner "Mapa CRP A4"` com `DEV000006` vinha de **estado
+compartilhado** (pedido promovido por clique anterior) — com sessão limpa está
+`disabled` e `crp-sem-op` = 1. Nenhuma vitrine em documento, nenhum botão morto.
+
+Risco real: `criarLote()` declarado/implementado em `src/lib/pcp/store.ts` sem
+**nenhum chamador nem teste**, enquanto o passo "8 · Lançar pedido" prometia
+criar lote no Kanban — que na verdade lê OPs do banco via `usePcpLotes()` /
+`ordersToLotes`. **Correção:** remover o código morto (comentário declara o
+caminho real), `detail`/checklist do passo 8 apontando para `/orders → Liberar
+p/ PCP`, e `CtaProximoPasso` `cta-lancar-pedido-pcp`. Os **35 testes do PCP**
+seguem verdes; `podeEmitirCrp()`, `crp-sem-op`, `cta-producao-sem-op` e guardas
+47–56 intactas; SQL SHA inalterado.
+
+**Cliques reais no browser local:** `/production` mantém
+`cta-producao-sem-op` = 1; passo 8 mostra `Libere o pedido aprovado` e
+`Liberar p/ PCP` no checklist; `cta-lancar-pedido-pcp` = 1 e navega para
+**`/orders`**; `/orders → "Liberar p/ PCP"` → toast `Pedido PD-2026-802
+liberado para programação no PCP!`. Gates: `tsc` 0, `eslint` 0/20, `prettier`
+limpo, **747/747** (740 + 7).
+
+**Ar (49ª):** mesmo entry, 223 chunks / 3.190.257 bytes; marcadores 48–56
+inalterados; **3 marcadores exclusivos da 57 = 0** e `Cria lote no Kanban do
+PCP` ainda = **1**. **Banco:** view `200 []`, 4 funções `401 42501`, SQL SHA
+inalterado. Detalhe em `ONDA-57-FLUXO-PCP-HONESTO.md`.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -574,10 +617,12 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   (Onda 53) — 224 chunks / 3.187.305 bytes, 6 marcadores da 54 = **0**
 - entry medido na 43ª, 44ª e 45ª: `index-CgpxQvgj.js` / `index-CyHoINKY.js`
   (Onda 54) — 223 chunks / 3.188.203 bytes, 5 marcadores da 55 = **0**
-- **entry medido na 46ª e 47ª: `index-BlLjcjGi.js` / `index-CfT3W1YT.js`
-  (Onda 55)** — 223 chunks / **3.188.613 bytes**, 0 falhas; 5 marcadores da
-  55 = **1**, 54 e 48/49 intactos; **3 marcadores exclusivos da 56 = 0** na
-  47ª (publicação pendente)
+- entry medido na 46ª e 47ª: `index-BlLjcjGi.js` / `index-CfT3W1YT.js`
+  (Onda 55) — 223 chunks / 3.188.613 bytes, 3 marcadores da 56 = **0**
+- **entry medido na 48ª e 49ª: `index-C64BHus3.js` / `index-D6lNmNPq.js`
+  (Onda 56)** — 223 chunks / **3.190.257 bytes**, 0 falhas; 3 marcadores da
+  56 = **1**, 55 e 48/49 intactos; **3 marcadores exclusivos da 57 = 0** na
+  49ª (publicação pendente)
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -641,7 +686,7 @@ com `GRANT EXECUTE` apenas a `authenticated`/`service_role`. SHA-256 do arquivo
 `382f0f192e23eac143dfda995f69cdc740c258b2017c4f9b07c9dff8f20c254f`, guardado
 por teste.
 
-| Sonda (sem sessão, 47ª medição)            | Resposta     | Interpretação                                |
+| Sonda (sem sessão, 49ª medição)            | Resposta     | Interpretação                                |
 | ------------------------------------------ | ------------ | -------------------------------------------- |
 | `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
 | `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
@@ -692,9 +737,12 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 - ~~Se a Onda 55 funciona em produção~~ **medido na 46ª**: 0 campos sem nome
   nas 4 abas do drawer CAPA e validações preservadas **com cliques reais contra
   `plmuse.lovable.app`**.
-- **Se a Onda 56 funciona em produção.** Ainda não foi publicada: os 3
-  marcadores exclusivos da 56 são **0** no bundle. A prova com cliques reais da
-  47ª foi **local** (`127.0.0.1:8080`, papel `admin` simulado); não é
+- ~~Se a Onda 56 funciona em produção~~ **medido na 48ª**: `h1 = 1` em
+  `/digital-twin` sem ficha, aviso/CTAs e Link → `/tech-sheet` **com cliques
+  reais contra `plmuse.lovable.app`**.
+- **Se a Onda 57 funciona em produção.** Ainda não foi publicada: os 3
+  marcadores exclusivos da 57 são **0** no bundle. A prova com cliques reais da
+  49ª foi **local** (`127.0.0.1:8080`, papel `admin` simulado); não é
   evidência de comportamento do domínio publicado.
 - **Login de usuário real.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI. Sessão local simulada gera `401/403` e banner "Verifique
@@ -718,14 +766,15 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 | ~~Ar uma onda atrás (53)~~ **zerado**           | ~~publicar~~ concluído na **40ª medição** (`index-CFlhwbuy.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (54)~~ **zerado**           | ~~publicar~~ concluído na **43ª medição** (`index-CgpxQvgj.js`), sem marco relatado — achado por BFS + cliques   | dono do projeto |
 | ~~Ar uma onda atrás (55)~~ **zerado**           | ~~publicar~~ concluído na **46ª medição** (`index-BlLjcjGi.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
-| **Ar uma onda atrás do repo (56)**              | **publicar a Onda 56** e refazer BFS + cliques em produção (48ª medição)                                         | dono do projeto |
+| ~~Ar uma onda atrás (56)~~ **zerado**           | ~~publicar~~ concluído na **48ª medição** (`index-C64BHus3.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
+| **Ar uma onda atrás do repo (57)**              | **publicar a Onda 57** e refazer BFS + cliques em produção (50ª medição)                                         | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                    | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                          | dono do projeto |
 
-SQL aplicado, Ondas 44/45/46/47/48/49/50/51/52/53/54/55 publicadas e **Onda
-56 fechada no repo**. Há **uma publicação pendente** (a 56). Restam duas ações
-que não são código: publicar a Onda 56 e dar a credencial de e2e (e, se houver,
-revisar reservas presas com `stock_reservation_aging.dias_ativa`).
+SQL aplicado, Ondas 44/45/46/47/48/49/50/51/52/53/54/55/56 publicadas e
+**Onda 57 fechada no repo**. Há **uma publicação pendente** (a 57). Restam
+duas ações que não são código: publicar a Onda 57 e dar a credencial de e2e
+(e, se houver, revisar reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
 
@@ -789,5 +838,10 @@ lotes salvos`, `ticket médio de referência R$ 320` — **0 na 39ª, presentes 
 Onda 55 publicada na 46ª (`Responsável pela CAPA` = 1 é da Onda 49).
 Marcadores exclusivos da 56 = `cta-gemeo-sem-ficha`, `cta-gemeo-abrir-ficha`,
 `Simulação What-If` — **0 na 47ª**, logo a Onda 56 ainda não está no ar
-(`Tiragem planejada` e o título já existiam no caminho normal). A 47ª é a
-medição corrente: repo na Onda 56, ar na Onda 55, banco aplicado.
+(`Tiragem planejada` e o título já existiam no caminho normal; a Onda 56 foi
+publicada na 48ª). Marcadores exclusivos da 57 = `cta-lancar-pedido-pcp`,
+`Libere o pedido aprovado para o PCP: o lote nasce da OP real`, `Em Pedidos,
+libere o pedido aprovado para o PCP (Liberar p/ PCP)` — **0 na 49ª**; o texto
+antigo `Cria lote no Kanban do PCP` ainda = **1** no ar e deverá cair a 0 na
+publicação. A 49ª é a medição corrente: repo na Onda 57, ar na Onda 56, banco
+aplicado.
