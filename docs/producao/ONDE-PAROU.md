@@ -158,6 +158,26 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ## 7-A. Ondas 19 a 49 (04–06/11/2026) — o que mudou depois deste documento
 
+> **Atualização de 06/11 (32ª medição): "publicado pelo lovable" validado —
+> repo, ar e banco alinhados na Onda 49.** O dono relatou o marco; a medição
+> **não confirmou cegamente**. BFS achou entry **novo** `index--_hvA3Zc.js` /
+> `index-B-j1IXyJ.js`, 224 chunks / 3.176.611 bytes (0 falhas), com os
+> marcadores da Onda 49 de **0 → 1** (`wave-codigo`, `lojista-razao`,
+> `custo-fixo-colecao`, `novo-rolo-codigo` = 2; `aria-required` = 13), os 6
+> marcadores da 48 ainda = 1 e `DEV000006` 20. **Cliques reais em produção**:
+> **0/66 campos expostos sem nome** nas 12 rotas, `aria-required` 4 em
+> `/launch` + 2 em `/quality`, `/launch` com 4 `aria-invalid` e `Informe o
+código da wave.`, `/quality` com 2 `aria-invalid`, preenchimento por rótulo
+> em `/financial`, `/showroom`, `/inventory`, `/ai-agents`, `/research`,
+> `/display`, `/references` e `/looks`. Regressão: `/marketing` 3 bloqueios /
+> 0 botões / 0 popups no aviso, `/collection-map` 0 botões CSV / **0
+> apuráveis** / 0 downloads, `/orders` 2 bloqueios / 0 botões Ficha Cega A4.
+> Banco re-medido: view `200 []`, 4 funções `401 42501`, SQL SHA inalterado.
+> Gates re-medidos: `tsc` 0, `eslint` 0 erros/20 warnings, `prettier` limpo,
+> **686/686**. **Não há publicação pendente**; resta a credencial de e2e.
+> Capturas `/home/user/medicao32-*.png` e detalhe em
+> `SINCRONIA-2026-11-05.md`.
+
 > **Atualização de 06/11 (30ª e 31ª medições): publicação não relatada
 > detectada, Onda 49 fechada no repo.** O dono disse apenas `ok prossiga` e
 > **não anunciou publicação**; a re-medição por camada achou o ar em
@@ -306,11 +326,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    confirmado por cliques reais em produção. A publicação foi **detectada por
    BFS**, não confirmada cegamente a partir de um aviso do dono. Aqui foi
    **só publicar**: o SQL já estava aplicado desde a 24ª medição.
-6. **Publicar a Onda 49.** O ar segue em `index-DPV0JUG6.js` (Onda 48). A 32ª
-   medição deve achar `Buscar ficha PLM ou referência`, `Defeito ou problema
-da CAPA`, `wave-codigo`, `lojista-razao`, `URL da imagem de referência
-visual` e `Descrição da peça para gerar croqui` no bundle, e repetir os
-   cliques em produção. Publicar app **não aplica SQL**.
+6. **~~Publicar a Onda 49~~ — concluído (32ª medição), marco relatado e
+   validado.** Entry `index--_hvA3Zc.js` / `index-B-j1IXyJ.js` com os 10
+   marcadores da 49, confirmado por BFS e por **cliques reais em produção**
+   (0/66 campos sem nome, 6 `aria-required`, validações e guardas 47/48
+   preservadas). Aqui foi **só publicar**: o SQL já estava aplicado desde a
+   24ª medição, e o banco foi re-medido (view `200 []`, 4 funções
+   `401 42501`). **Repo, ar e banco alinhados na Onda 49.**
 7. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
    specs de e2e seguem `skipped` e não há prova de fluxo autenticado contra
    produção (baixa de material, cancelamento de reservas, sync CAD → ficha).
@@ -342,4 +364,9 @@ repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 produção. **31ª medição: repo Onda 49, ar Onda 48** (224 chunks / 3.175.104
 bytes no BFS estrito, 6 marcadores da 49 = 0); `DEV000006` **20**; banco com
 as migrações 21/24 aplicadas desde a 24ª medição, view `200 []` e 4 funções
-`401 42501`. Medição por camada em `SINCRONIA-2026-11-05.md`.
+`401 42501`. **32ª medição: o dono relatou "publicado pelo lovable" e a
+medição validou** — entry `index--_hvA3Zc.js` / `index-B-j1IXyJ.js`
+(224 chunks / 3.176.611 bytes), marcadores da 49 = 1, `0/66` campos sem nome
+medidos **no ar** por cliques reais, guardas 47/48 intactas; gates
+**686/686**. **Repo, ar e banco alinhados na Onda 49**, sem publicação
+pendente. Medição por camada em `SINCRONIA-2026-11-05.md`.

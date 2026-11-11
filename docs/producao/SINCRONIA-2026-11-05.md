@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 31ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 32ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,22 +7,26 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (31ª medição, após fechar a Onda 49)
+## 1. O quadro (32ª medição, após a publicação da Onda 49)
 
-| Camada                                         | Estado medido                       | Como foi medido                     |
-| ---------------------------------------------- | ----------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 49** — código + docs 30ª/31ª | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 48** — `index-DPV0JUG6.js`   | BFS + cliques reais (seção 2-A)     |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**     | `200` na view · `42501` nas funções |
+| Camada                                         | Estado medido                     | Como foi medido                     |
+| ---------------------------------------------- | --------------------------------- | ----------------------------------- |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 49** — `6e9beb9`           | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 49** — `index--_hvA3Zc.js` | BFS + cliques reais (seção 2-B)     |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
 
-A **30ª medição detectou uma publicação que o dono não relatou**: o ar saiu de
-`index-CdXaXBJP.js` (Onda 47) para **`index-DPV0JUG6.js` /
-`index-DnKqdFO4.js`** (Onda 48), com os 6 marcadores da 48 e cliques reais em
-produção. **Medir em vez de confirmar cegamente foi o que encontrou o marco.**
-Na 31ª, a Onda 49 fechou no repo; o ar segue na 48 (**6 marcadores da 49 = 0**).
-Repo e ar **desalinhados em uma onda — por publicação pendente, não por defeito
-de código**. O banco não precisava avançar: **publicar o app não aplica SQL** e
-o SQL já está aplicado desde a 24ª medição.
+O dono relatou **"publicado pelo lovable"**. A medição **não confirmou
+cegamente**: o BFS achou um entry **novo** (`index--_hvA3Zc.js` /
+`index-B-j1IXyJ.js`), os marcadores da Onda 49 passaram de **0 → 1**, os da
+Onda 48 permaneceram em **1**, e os cliques reais em produção mediram
+**0/66 campos expostos sem nome acessível**, `aria-required` **4 + 2**,
+validações preservadas e guardas das Ondas 47/48 intactas.
+
+**Repo, ar e banco alinhados na Onda 49.** Não há publicação pendente. O banco
+não precisava avançar: **publicar o app não aplica SQL** e o SQL está aplicado
+desde a 24ª medição (view `200 []`, 4 funções `401 42501`, SHA inalterado).
+Gates re-medidos nesta rodada: `tsc` 0, `eslint` 0 erros / 20 warnings,
+`prettier` limpo, **686/686**.
 
 ---
 
@@ -125,6 +129,51 @@ Detalhe completo em `ONDA-49-TODO-CAMPO-TEM-NOME.md`.
 
 ---
 
+## 2-B. 32ª medição — a Onda 49 no ar, validada por cliques
+
+**BFS (mesmo crawler estrito da 31ª):** entry **`index--_hvA3Zc.js` /
+`index-B-j1IXyJ.js`**, **224 chunks / 3.176.611 bytes**, **0 falhas**.
+`index-DPV0JUG6.js` e `index-CdXaXBJP.js` = **0** no HTML. A diferença de
+3.175.104 → 3.176.611 bytes (+1.507) é compatível com os 31 marcadores de
+acessibilidade da Onda 49; o número de chunks não mudou.
+
+| Marcador da Onda 49                   | 31ª | 32ª |
+| ------------------------------------- | --- | --- |
+| `Buscar ficha PLM ou referência`      | 0   | 1   |
+| `Defeito ou problema da CAPA`         | 0   | 1   |
+| `wave-codigo`                         | 0   | 2   |
+| `lojista-razao`                       | 0   | 2   |
+| `URL da imagem de referência visual`  | 0   | 1   |
+| `Descrição da peça para gerar croqui` | 0   | 1   |
+| `Mensagem para`                       | 0   | 1   |
+| `custo-fixo-colecao`                  | 0   | 2   |
+| `novo-rolo-codigo`                    | 0   | 2   |
+| `aria-required` (total no bundle)     | —   | 13  |
+
+Os **6 marcadores da Onda 48** seguem **1** cada; `ficha-cega-bloqueada` 1,
+`glossario-orders` 1, `DEV000006` **20**.
+
+**Cliques reais em produção** (Chromium, sessão local, papel `admin`
+simulado, contador de popups por página): 12 rotas medidas → **0/66 campos
+expostos sem nome**, `aria-required` **4 em `/launch` e 2 em `/quality`**.
+
+| Tarefa                                                                            | Resultado                                                                            |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `/launch` → "Criar" vazio                                                         | **4** `aria-invalid`, `Informe o código da wave.`, 0 popups                          |
+| `/quality` → "Abrir CAPA" vazio                                                   | **2** `aria-invalid`, 0 popups                                                       |
+| `/financial`                                                                      | `95000` / `180000` lidos por `get_by_label`                                          |
+| `/showroom`                                                                       | `Lojista 32a medicao` / `12345678000199`                                             |
+| `/inventory` · `/ai-agents` · `/research` · `/display` · `/references` · `/looks` | `RL-32`, `Qual o SAM da peca?`, URL + descrição 1/1, `RL`, `REF`, `Blusa teste`      |
+| Regressão `/marketing`                                                            | 3 `media-kit-bloqueado`, 0 botões A4, aviso → **0 popups**                           |
+| Regressão `/collection-map`                                                       | CTA 1, bloqueio 1, 0 botões CSV, **0 apuráveis**, aviso → **0 popups / 0 downloads** |
+| Regressão `/orders`                                                               | 2 `ficha-cega-bloqueada`, 0 botões Ficha Cega A4, 0 popups                           |
+
+Capturas: `/home/user/medicao32-launch.png`, `medicao32-quality.png`,
+`medicao32-marketing.png`, `medicao32-collection-map.png`,
+`medicao32-orders.png`. **`0/66` medido no ar, não só no browser local.**
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -132,9 +181,11 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 
 - entry medido nas 28ª e 29ª: **`index-CdXaXBJP.js`** (histórico recente:
   `index-CPZSdWEg.js` = Ondas 44/45, `index-CeAMfFot.js` = Onda 46)
-- **entry medido nas 30ª e 31ª: `index-DPV0JUG6.js` / `index-DnKqdFO4.js`
-  (Onda 48)** — 224 chunks / 3.175.104 bytes no BFS da 31ª (0 falhas);
-  6 marcadores da 48 = **1**, 6 marcadores da 49 = **0**
+- entry medido nas 30ª e 31ª: `index-DPV0JUG6.js` / `index-DnKqdFO4.js`
+  (Onda 48) — 224 chunks / 3.175.104 bytes, 6 marcadores da 49 = **0**
+- **entry medido na 32ª: `index--_hvA3Zc.js` / `index-B-j1IXyJ.js`
+  (Onda 49)** — 224 chunks / **3.176.611 bytes**, 0 falhas; 6 marcadores da
+  48 = **1**, 10 marcadores da 49 = **1 ou 2**, `aria-required` = 13
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -198,7 +249,7 @@ com `GRANT EXECUTE` apenas a `authenticated`/`service_role`. SHA-256 do arquivo
 `382f0f192e23eac143dfda995f69cdc740c258b2017c4f9b07c9dff8f20c254f`, guardado
 por teste.
 
-| Sonda (sem sessão, 31ª medição)            | Resposta     | Interpretação                                |
+| Sonda (sem sessão, 32ª medição)            | Resposta     | Interpretação                                |
 | ------------------------------------------ | ------------ | -------------------------------------------- |
 | `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
 | `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
@@ -224,9 +275,10 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
   chave publishable — esperado com RLS ligada e indistinguível de tabela vazia.
 - **Se há login funcionando.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI.
-- **Se a Onda 49 funciona em produção.** Ainda não foi publicada. A prova com
-  cliques reais da 31ª foi **local** (`127.0.0.1:8080`, papel `admin`
-  simulado); não é evidência de comportamento do domínio publicado.
+- ~~Se a Onda 49 funciona em produção~~ **medido na 32ª**: `0/66` campos
+  expostos sem nome, 6 `aria-required`, validações e guardas 47/48 preservadas
+  **com cliques reais contra `plmuse.lovable.app`**. A prova local da 31ª
+  deixou de ser a única evidência.
 - ~~As 10 rotas com campos sem rótulo~~ **corrigidas na Onda 49**: **30/66 →
   0/66** campos expostos, medidos com o mesmo critério antes/depois. O 31º
   elemento do levantamento bruto da 29ª era o `BubbleSelect` oculto do Radix
@@ -239,20 +291,20 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 
 ## 6. O que destrava cada lacuna
 
-| Lacuna                                          | Ação                                                                                                           | Quem faz        |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------- |
-| ~~Ar duas ondas atrás do repo~~ **zerado**      | ~~republicar~~ concluído na 23ª medição (`index-CPZSdWEg.js`)                                                  | dono do projeto |
-| ~~Banco sem as migrações 21 e 24~~ **aplicado** | ~~colar SQL~~ concluído na 24ª medição: view `200 []`, funções `401 42501`                                     | dono do projeto |
-| ~~Ar uma onda atrás (46)~~ **zerado**           | ~~republicar~~ concluído na 26ª medição (`index-CeAMfFot.js`)                                                  | dono do projeto |
-| ~~Ar uma onda atrás (47)~~ **zerado**           | ~~republicar~~ concluído na **28ª medição** (`index-CdXaXBJP.js`)                                              | dono do projeto |
-| ~~Ar uma onda atrás (48)~~ **zerado**           | ~~publicar~~ concluído na **30ª medição** (`index-DPV0JUG6.js`), sem marco relatado — achado por BFS + cliques | dono do projeto |
-| **Ar uma onda atrás do repo (49)**              | **publicar a Onda 49** e refazer BFS + cliques em produção (32ª medição)                                       | dono do projeto |
-| E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                  | dono do projeto |
-| Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                        | dono do projeto |
+| Lacuna                                          | Ação                                                                                                             | Quem faz        |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | --------------- |
+| ~~Ar duas ondas atrás do repo~~ **zerado**      | ~~republicar~~ concluído na 23ª medição (`index-CPZSdWEg.js`)                                                    | dono do projeto |
+| ~~Banco sem as migrações 21 e 24~~ **aplicado** | ~~colar SQL~~ concluído na 24ª medição: view `200 []`, funções `401 42501`                                       | dono do projeto |
+| ~~Ar uma onda atrás (46)~~ **zerado**           | ~~republicar~~ concluído na 26ª medição (`index-CeAMfFot.js`)                                                    | dono do projeto |
+| ~~Ar uma onda atrás (47)~~ **zerado**           | ~~republicar~~ concluído na **28ª medição** (`index-CdXaXBJP.js`)                                                | dono do projeto |
+| ~~Ar uma onda atrás (48)~~ **zerado**           | ~~publicar~~ concluído na **30ª medição** (`index-DPV0JUG6.js`), sem marco relatado — achado por BFS + cliques   | dono do projeto |
+| ~~Ar uma onda atrás (49)~~ **zerado**           | ~~publicar~~ concluído na **32ª medição** (`index--_hvA3Zc.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
+| E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                    | dono do projeto |
+| Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                          | dono do projeto |
 
-SQL aplicado, Ondas 44/45/46/47/48 publicadas, Onda 49 fechada no repo. Restam
-duas ações que não são código: **publicar a Onda 49** e dar a credencial de
-e2e (e, se houver, revisar reservas presas com
+SQL aplicado e **Ondas 44/45/46/47/48/49 publicadas — repo, ar e banco
+alinhados na Onda 49**. Não há publicação pendente. Resta uma ação que não é
+código: dar a credencial de e2e (e, se houver, revisar reservas presas com
 `stock_reservation_aging.dias_ativa`).
 
 ---
@@ -298,4 +350,5 @@ curl -s -X POST -H "apikey: $KEY" -H "Content-Type: application/json" \
 `PGRST205` na view e `PGRST202` nas RPCs = migrações 21/24 fora do ar.
 `200 []` na view e `401 42501` nas RPCs = migrações aplicadas e grants corretos.
 Marcadores da 48 diferentes de `0` = Onda 48 publicada. Marcadores da 49
-diferentes de `0` = Onda 49 publicada (na 31ª eram **0**).
+diferentes de `0` = Onda 49 publicada (**0 na 31ª, 1 na 32ª**). A 32ª é a
+medição corrente: repo/ar/banco alinhados na Onda 49.
