@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 35ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 37ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,33 +7,32 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (35ª medição, após fechar a Onda 51)
+## 1. O quadro (37ª medição, após fechar a Onda 52)
 
 | Camada                                         | Estado medido                       | Como foi medido                     |
 | ---------------------------------------------- | ----------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 51** — código + docs 34ª/35ª | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 50** — `index-Ctoln0KB.js`   | BFS + cliques reais (seção 2-D)     |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 52** — código + docs 36ª/37ª | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 51** — `index-BVDv6rFg.js`   | BFS + cliques reais (seção 2-F)     |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**     | `200` na view · `42501` nas funções |
 
-`publicado, prossiga` são **dois comandos**. O marco foi re-medido, não
-confirmado cegamente: a **34ª medição** achou entry novo
-`index-Ctoln0KB.js` / `index-QjNtTEcp.js` com os marcadores da Onda 50 e
-validou por cliques reais (3 emissores `disabled`, 0 popups/downloads).
-**Repo, ar e banco alinhados na Onda 50.**
+`publicado, prossiga` são **dois comandos**. A **36ª medição** re-mediu o
+marco, sem confirmar cegamente: entry novo `index-BVDv6rFg.js` /
+`index-VytO5e2k.js` com os marcadores da Onda 51, e cliques reais em produção
+(`Exportar disabled`, 0 downloads/popups, 0 campos sem nome no diálogo).
+**Repo, ar e banco alinhados na Onda 51.**
 
-Em seguida, a varredura de risco mediu `/collections`: `Exportar → Baixar
-CSV` e `→ Imprimir / PDF` emitiam **3 coleções de fábrica** (`Verão 25 -
-Amalfi`, `Urban Resort`, `Essentials Atemporal`) sem aviso nem marcação de
-demonstração no arquivo. **Onda 51**: `demo: true` no seed, promoção por
-`upsertCollection()`, `colecoesOperacionais()` / `podeExportarColecoes()`,
-CSV/PDF só com coleções salvas, 4 KPIs `—`, aviso/CTA e os **7 campos do
-diálogo "Nova coleção" rotulados** (7/7 → 0/7 sem nome acessível).
+Em seguida, a varredura de risco **abriu os diálogos** das 44 rotas com clique
+real — a Onda 49 só medira campos da carga inicial, e a 51 corrigira apenas o
+diálogo de `/collections`. Resultado: **19 diálogos em 13 rotas com 107 campos
+sem nome acessível**. **Onda 52**: 114 `aria-label` em 14 arquivos, derivados
+do rótulo visível; re-medido com cliques → **0 campos sem nome em 19
+diálogos**. Nenhum handler, validação, store ou guarda anterior mudou.
 
-O ar **não mudou** desde a 34ª: mesmo entry, 224 chunks / 3.179.918 bytes,
-**6 marcadores da Onda 51 = 0**. Repo e ar desalinhados em **uma onda, por
-publicação pendente** — não por defeito de código. O banco não precisava
-avançar: **publicar o app não aplica SQL**. Gates: `tsc` 0, `eslint` 0 erros /
-20 warnings, `prettier` limpo, **702/702**.
+O ar **não mudou** desde a 36ª: mesmo entry, 224 chunks / 3.181.542 bytes,
+**7 marcadores exclusivos da Onda 52 = 0**. Repo e ar desalinhados em **uma
+onda, por publicação pendente** — não por defeito de código. O banco não
+precisava avançar: **publicar o app não aplica SQL**. Gates: `tsc` 0, `eslint`
+0 erros / 20 warnings, `prettier` limpo, **710/710**.
 
 ---
 
@@ -273,6 +272,50 @@ REGISTROS`**, **sem** `Amalfi`/`Urban Resort`/`Essentials`. Gates: `tsc` 0,
 
 ---
 
+## 2-F. 36ª medição — "publicado" validado, repo/ar/banco na Onda 51
+
+BFS: entry **`index-BVDv6rFg.js` / `index-VytO5e2k.js`**, 224 chunks /
+**3.181.542 bytes**, 0 falhas; `index-Ctoln0KB.js` = 0. `colecoes-so-vitrine`
+1, `cta-colecoes-sem-colecao` 1, `Só há coleções de demonstração` 1,
+`Cadastrar coleção` 1; marcadores 50 e 48/49 intactos, `DEV000006` 20.
+(`COLECOES_SEM_APURACAO`/`colecao-name` = 0 é minificação/constante.)
+
+**Cliques reais em produção:** `/collections` com aviso 1 + CTA 1, `Exportar`
+**`disabled=True`**, 6 travessões, clique forçado → **0 downloads, 0 popups, 0
+toasts**; **0 campos sem nome na tela** e **0 no diálogo** (7 `label[for]`).
+Banco: view `200 []`, 4 funções `401 42501`, SHA inalterado. Captura
+`/home/user/medicao36-collections.png`.
+
+## 2-G. 37ª medição — diálogos medidos, Onda 52 fechada no repo
+
+**ANTES (produção, Onda 51):** varredura com clique real em botões de criação
+de 44 rotas → **19 diálogos em 13 rotas, 107 campos expostos sem nome
+acessível**. Maiores incidências: `cad` 11, `research` 11, `marketing` 10 (×2),
+`suppliers` 10, `tech-sheet` 2 + 10 (`AplicacoesPanel`), `catalog` 9,
+`prototypes` 5 (×2), `commercial` 5, `looks` 5. Já corretos: `collections`
+(51), `orders` (47), `references` (49).
+
+**Correção:** 114 `aria-label` em 13 rotas +
+`src/components/techsheet/AplicacoesPanel.tsx`, derivados do `<Label>`/`<label>`
+visível; 6 textos reescritos à mão (`Nome do look`, `Coleção do look`, `Cor do
+look`, `Tags do look…`, `Pontos de bordado (milhares)`, `Número de cores da
+aplicação`) e `SelectTrigger` "Ocasião do look". Nenhum `id` inventado, nenhum
+`<Label>` alterado. **DEPOIS (browser local, mesmo script/critério): 19
+diálogos, 0 campos sem nome, 0 rotas com problema.** O inventário estático
+achara 98; a diferença vinha de `DialogContent` em componente separado —
+corrigida e **re-medida com cliques**, não presumida.
+
+Gates: `tsc` 0, `eslint` 0/20, `prettier` limpo, **710/710** (702 + 8).
+**Ar (37ª):** entry `index-BVDv6rFg.js` / `index-VytO5e2k.js`, 224 chunks /
+3.181.542 bytes; marcadores 48/49/50/51 inalterados; **7 marcadores exclusivos
+da 52 = 0** (`Nome do look`, `Coleção do look`, `Cor do look`, `Tags do look…`,
+`Ocasião do look`, `Pontos de bordado…`, `Número de cores…`). `Arte (cartela de
+estampas)` = 1 **não é marcador**: é o `<Label>` pré-existente. **Banco:** view
+`200 []`, 4 funções `401 42501`, SQL SHA inalterado. Detalhe em
+`ONDA-52-DIALOGOS-TEM-NOME.md`.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -284,10 +327,12 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   (Onda 48) — 224 chunks / 3.175.104 bytes, 6 marcadores da 49 = **0**
 - entry medido na 32ª e 33ª: `index--_hvA3Zc.js` / `index-B-j1IXyJ.js`
   (Onda 49) — 224 chunks / 3.176.611 bytes, 8 marcadores da 50 = **0**
-- **entry medido na 34ª e 35ª: `index-Ctoln0KB.js` / `index-QjNtTEcp.js`
-  (Onda 50)** — 224 chunks / **3.179.918 bytes**, 0 falhas; marcadores 48/49
-  = 1, marcadores da 50 presentes (`crp-sem-op` = 2); **6 marcadores da 51 =
-  0** na 35ª (publicação pendente)
+- entry medido na 34ª e 35ª: `index-Ctoln0KB.js` / `index-QjNtTEcp.js`
+  (Onda 50) — 224 chunks / 3.179.918 bytes, 6 marcadores da 51 = **0**
+- **entry medido na 36ª e 37ª: `index-BVDv6rFg.js` / `index-VytO5e2k.js`
+  (Onda 51)** — 224 chunks / **3.181.542 bytes**, 0 falhas; marcadores 50 e
+  48/49 = 1, marcadores da 51 presentes; **7 marcadores exclusivos da 52 = 0**
+  na 37ª (publicação pendente)
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -351,7 +396,7 @@ com `GRANT EXECUTE` apenas a `authenticated`/`service_role`. SHA-256 do arquivo
 `382f0f192e23eac143dfda995f69cdc740c258b2017c4f9b07c9dff8f20c254f`, guardado
 por teste.
 
-| Sonda (sem sessão, 35ª medição)            | Resposta     | Interpretação                                |
+| Sonda (sem sessão, 37ª medição)            | Resposta     | Interpretação                                |
 | ------------------------------------------ | ------------ | -------------------------------------------- |
 | `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
 | `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
@@ -388,10 +433,13 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 - ~~Se a Onda 50 funciona em produção~~ **medido na 34ª**: 3 emissores
   `disabled`, 0 popups/downloads e KPIs `—` **com cliques reais contra
   `plmuse.lovable.app`**.
-- **Se a Onda 51 funciona em produção.** Ainda não foi publicada: os 6
-  marcadores da 51 são **0** no bundle. A prova com cliques reais da 35ª foi
-  **local** (`127.0.0.1:8080`, papel `admin` simulado); não é evidência de
-  comportamento do domínio publicado.
+- ~~Se a Onda 51 funciona em produção~~ **medido na 36ª**: `Exportar`
+  `disabled`, 0 downloads/popups e 0 campos sem nome no diálogo **com cliques
+  reais contra `plmuse.lovable.app`**.
+- **Se a Onda 52 funciona em produção.** Ainda não foi publicada: os 7
+  marcadores exclusivos da 52 são **0** no bundle. A prova com cliques reais
+  da 37ª foi **local** (`127.0.0.1:8080`, papel `admin` simulado); não é
+  evidência de comportamento do domínio publicado.
 - **Login de usuário real.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI. Sessão local simulada gera `401/403` e banner "Verifique
   sua conexão": artefato da medição, não bug.
@@ -409,13 +457,14 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 | ~~Ar uma onda atrás (48)~~ **zerado**           | ~~publicar~~ concluído na **30ª medição** (`index-DPV0JUG6.js`), sem marco relatado — achado por BFS + cliques   | dono do projeto |
 | ~~Ar uma onda atrás (49)~~ **zerado**           | ~~publicar~~ concluído na **32ª medição** (`index--_hvA3Zc.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (50)~~ **zerado**           | ~~publicar~~ concluído na **34ª medição** (`index-Ctoln0KB.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
-| **Ar uma onda atrás do repo (51)**              | **publicar a Onda 51** e refazer BFS + cliques em produção (36ª medição)                                         | dono do projeto |
+| ~~Ar uma onda atrás (51)~~ **zerado**           | ~~publicar~~ concluído na **36ª medição** (`index-BVDv6rFg.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
+| **Ar uma onda atrás do repo (52)**              | **publicar a Onda 52** e refazer BFS + cliques em produção (38ª medição)                                         | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                    | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                          | dono do projeto |
 
-SQL aplicado, Ondas 44/45/46/47/48/49/50 publicadas e **Onda 51 fechada no
-repo**. Há **uma publicação pendente** (a 51). Restam duas ações que não são
-código: publicar a Onda 51 e dar a credencial de e2e (e, se houver, revisar
+SQL aplicado, Ondas 44/45/46/47/48/49/50/51 publicadas e **Onda 52 fechada
+no repo**. Há **uma publicação pendente** (a 52). Restam duas ações que não são
+código: publicar a Onda 52 e dar a credencial de e2e (e, se houver, revisar
 reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
@@ -465,6 +514,9 @@ diferentes de `0` = Onda 49 publicada (**0 na 31ª, 1 na 32ª**). Marcadores da
 50 = `mrp-sem-apuracao`, `cta-mrp-sem-pedido`, `crp-sem-op`,
 `cta-crp-sem-op` — **0 na 33ª, presentes na 34ª**. Marcadores da 51 =
 `colecoes-so-vitrine`, `cta-colecoes-sem-colecao`, `Só há coleções de
-demonstração`, `colecao-name`, `Cadastrar coleção` — **0 na 35ª**, logo a Onda
-51 ainda não está no ar. A 35ª é a medição corrente: repo na Onda 51, ar na
-Onda 50, banco aplicado.
+demonstração`, `Cadastrar coleção` — **0 na 35ª, presentes na 36ª**. Marcadores
+exclusivos da 52 = `Nome do look`, `Coleção do look`, `Cor do look`, `Tags do
+look, separadas por vírgula`, `Ocasião do look`, `Pontos de bordado
+(milhares)`, `Número de cores da aplicação` — **0 na 37ª**, logo a Onda 52
+ainda não está no ar. A 37ª é a medição corrente: repo na Onda 52, ar na Onda
+51, banco aplicado.

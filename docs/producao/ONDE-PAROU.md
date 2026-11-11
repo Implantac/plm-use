@@ -156,7 +156,26 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 51 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 52 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (36ª e 37ª medições): "publicado, prossiga" — marco
+> validado e Onda 52 escolhida pelo risco.** A **36ª medição re-mediu** o
+> relato: entry novo `index-BVDv6rFg.js` / `index-VytO5e2k.js` (224 chunks /
+> 3.181.542 bytes) com os marcadores da Onda 51; cliques reais em produção
+> confirmaram `Exportar disabled`, 0 downloads/popups e 0 campos sem nome no
+> diálogo de `/collections`. **Repo, ar e banco alinhados na Onda 51.** A
+> varredura de risco seguinte **abriu os diálogos** das 44 rotas com clique
+> real (a Onda 49 medira só campos da carga inicial): **19 diálogos em 13
+> rotas com 107 campos sem nome acessível**. **Onda 52**: 114 `aria-label` em
+> 14 arquivos, derivados do rótulo visível, 6 textos reescritos à mão e
+> `SelectTrigger` "Ocasião do look"; nenhum handler, validação, store ou
+> guarda anterior alterado. Re-medido com o mesmo script: **19 diálogos, 0
+> campos sem nome, 0 rotas com problema**. Gates **710/710**, `tsc` 0,
+> `eslint` 0 erros, `prettier` limpo. **37ª medição: repo Onda 52, ar Onda
+> 51** (7 marcadores exclusivos da 52 = 0), banco view `200 []` / 4 funções
+> `401 42501` / SQL SHA inalterado. Publicar a Onda 52 é a próxima ação do
+> dono. Detalhes em `ONDA-52-DIALOGOS-TEM-NOME.md` e
+> `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (34ª e 35ª medições): "publicado, prossiga" — marco
 > validado e Onda 51 escolhida pelo risco.** A **34ª medição não confirmou
@@ -381,11 +400,17 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    validado.** Entry `index-Ctoln0KB.js` / `index-QjNtTEcp.js` com os
    marcadores da 50; cliques reais em produção confirmaram os 3 botões
    `disabled` e 0 popups/downloads. **Repo, ar e banco alinhados na Onda 50.**
-9. **Publicar a Onda 51.** O ar segue em `index-Ctoln0KB.js` (Onda 50). A 36ª
-   medição deve achar `colecoes-so-vitrine`, `cta-colecoes-sem-colecao`,
-   `Só há coleções de demonstração` e `colecao-name` no bundle, confirmar o
-   `Exportar` `disabled` e repetir os cliques no CSV/PDF em produção.
-   Publicar app **não aplica SQL**.
+9. **~~Publicar a Onda 51~~ — concluído (36ª medição), marco relatado e
+   validado.** Entry `index-BVDv6rFg.js` / `index-VytO5e2k.js` com os
+   marcadores da 51; cliques reais em produção confirmaram `Exportar`
+   `disabled`, 0 downloads/popups e 0 campos sem nome no diálogo. **Repo, ar e
+   banco alinhados na Onda 51.**
+10. **Publicar a Onda 52.** O ar segue em `index-BVDv6rFg.js` (Onda 51). A 38ª
+    medição deve achar `Nome do look`, `Coleção do look`, `Cor do look`, `Tags
+do look, separadas por vírgula`, `Ocasião do look`, `Pontos de bordado
+(milhares)` e `Número de cores da aplicação` no bundle, e reabrir os
+    diálogos em produção medindo 0 campos sem nome. Publicar app **não aplica
+    SQL**.
 
 ---
 
@@ -396,7 +421,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 702 testes
+cd plm-use && npx vitest run            # 710 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -406,7 +431,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **702/702**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **710/710**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -427,5 +452,12 @@ bytes), marcadores da 50 presentes, 3 emissores `disabled` e 0
 popups/downloads por cliques reais em produção; **repo/ar/banco na Onda 50**.
 **35ª medição: Onda 51 escolhida pelo risco** (CSV/PDF de coleções de fábrica
 em `/collections`), gates **702/702**; ar ainda na Onda 50 (6 marcadores da 51
-= 0), banco re-medido e inalterado. Há **uma publicação pendente** (a 51).
-Medição por camada em `SINCRONIA-2026-11-05.md`.
+= 0), banco re-medido e inalterado. **36ª medição: "publicado" re-medido e
+validado** — entry `index-BVDv6rFg.js` / `index-VytO5e2k.js` (224 chunks /
+3.181.542 bytes), marcadores da 51 presentes, `Exportar disabled` e 0 campos
+sem nome no diálogo por cliques reais em produção; **repo/ar/banco na Onda
+51**. **37ª medição: Onda 52 escolhida pelo risco** (107 campos sem nome em 19
+diálogos → 0 após 114 `aria-label`), gates **710/710**; ar ainda na Onda 51
+(7 marcadores exclusivos da 52 = 0), banco re-medido e inalterado. Há **uma
+publicação pendente** (a 52). Medição por camada em
+`SINCRONIA-2026-11-05.md`.
