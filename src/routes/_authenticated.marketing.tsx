@@ -488,6 +488,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Nome do Drop</Label>
                 <Input
+                  aria-label="Nome do Drop"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Ex: Drop 03 · Cápsula Linho Resort"
@@ -496,6 +497,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Data Lançamento</Label>
                 <Input
+                  aria-label="Data Lançamento"
                   type="date"
                   value={formData.dropDate}
                   onChange={(e) => setFormData({ ...formData, dropDate: e.target.value })}
@@ -507,6 +509,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Coleção</Label>
                 <Input
+                  aria-label="Coleção"
                   value={formData.collectionName}
                   onChange={(e) => setFormData({ ...formData, collectionName: e.target.value })}
                 />
@@ -514,6 +517,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Canal Principal</Label>
                 <Input
+                  aria-label="Canal Principal"
                   value={formData.channel}
                   onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
                 />
@@ -521,6 +525,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Status</Label>
                 <select
+                  aria-label="Status"
                   value={formData.status}
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value as DropCampaignStatus })
@@ -540,6 +545,7 @@ function MarketingPage() {
                   SKUs Vinculados (separados por vírgula)
                 </Label>
                 <Input
+                  aria-label="SKUs Vinculados (separados por vírgula)"
                   value={formData.skuRefsText}
                   onChange={(e) => setFormData({ ...formData, skuRefsText: e.target.value })}
                   className="font-mono"
@@ -548,6 +554,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Formato Criativo</Label>
                 <Input
+                  aria-label="Formato Criativo"
                   value={formData.creativeFormat}
                   onChange={(e) => setFormData({ ...formData, creativeFormat: e.target.value })}
                 />
@@ -558,6 +565,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Produção (R$)</Label>
                 <Input
+                  aria-label="Produção (R$)"
                   type="number"
                   value={formData.productionCostBrl}
                   onChange={(e) => setFormData({ ...formData, productionCostBrl: e.target.value })}
@@ -567,6 +575,7 @@ function MarketingPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Mídia Paga (R$)</Label>
                 <Input
+                  aria-label="Mídia Paga (R$)"
                   type="number"
                   value={formData.mediaSpendBrl}
                   onChange={(e) => setFormData({ ...formData, mediaSpendBrl: e.target.value })}
@@ -578,6 +587,7 @@ function MarketingPage() {
                   Vendas Atribuídas (R$)
                 </Label>
                 <Input
+                  aria-label="Vendas Atribuídas (R$)"
                   type="number"
                   value={formData.attributedSalesBrl}
                   onChange={(e) => setFormData({ ...formData, attributedSalesBrl: e.target.value })}

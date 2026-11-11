@@ -486,6 +486,7 @@ function DevelopmentPage() {
               <div>
                 <Label className="text-xs">Código da Referência</Label>
                 <Input
+                  aria-label="Código da Referência"
                   value={form.refCode}
                   disabled={Boolean(editingRef)}
                   onChange={(e) => setForm({ ...form, refCode: e.target.value.toUpperCase() })}
@@ -517,6 +518,7 @@ function DevelopmentPage() {
             <div>
               <Label className="text-xs">Nome Técnico do Produto</Label>
               <Input
+                aria-label="Nome Técnico do Produto"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Ex.: Regata Dry Fit Pro Run"
@@ -527,6 +529,7 @@ function DevelopmentPage() {
               <div>
                 <Label className="text-xs">Coleção</Label>
                 <Input
+                  aria-label="Coleção"
                   value={form.collection}
                   onChange={(e) => setForm({ ...form, collection: e.target.value })}
                   placeholder="Verão 2027"
@@ -536,6 +539,7 @@ function DevelopmentPage() {
               <div>
                 <Label className="text-xs">Categoria / Linha</Label>
                 <Input
+                  aria-label="Categoria / Linha"
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
                   placeholder="Esportivo / Malharia"

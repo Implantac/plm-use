@@ -283,6 +283,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
             <div className="space-y-1">
               <Label className="text-2xs uppercase tracking-widest">Técnica</Label>
               <select
+                aria-label="Técnica"
                 value={draft.tipo ?? "Bordado"}
                 onChange={(e) =>
                   setDraft((d) => ({ ...d, tipo: e.target.value as Aplicacao["tipo"] }))
@@ -300,6 +301,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
             <div className="space-y-1">
               <Label className="text-2xs uppercase tracking-widest">Posição</Label>
               <Input
+                aria-label="Posição"
                 list="aposicoes"
                 value={draft.posicao ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, posicao: e.target.value }))}
@@ -317,6 +319,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                 Arte (cartela de estampas)
               </Label>
               <Input
+                aria-label="Arte (cartela de estampas)"
                 list="aartes"
                 value={draft.arte ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, arte: e.target.value }))}
@@ -333,6 +336,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
             <div className="space-y-1">
               <Label className="text-2xs uppercase tracking-widest">Qtde por peça</Label>
               <Input
+                aria-label="Qtde por peça"
                 type="number"
                 min={1}
                 value={draft.qtdPorPeca ?? 1}
@@ -345,6 +349,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
             <div className="space-y-1">
               <Label className="text-2xs uppercase tracking-widest">Largura (cm)</Label>
               <Input
+                aria-label="Largura (cm)"
                 type="number"
                 min={0}
                 step={0.5}
@@ -356,6 +361,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
             <div className="space-y-1">
               <Label className="text-2xs uppercase tracking-widest">Altura (cm)</Label>
               <Input
+                aria-label="Altura (cm)"
                 type="number"
                 min={0}
                 step={0.5}
@@ -370,6 +376,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
               </Label>
               {draft.tipo === "Bordado" ? (
                 <Input
+                  aria-label="Pontos de bordado (milhares)"
                   type="number"
                   min={0}
                   value={draft.pontos ?? ""}
@@ -378,6 +385,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                 />
               ) : (
                 <Input
+                  aria-label="Número de cores da aplicação"
                   type="number"
                   min={1}
                   value={draft.cores ?? 1}
@@ -392,6 +400,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
             <div className="space-y-1">
               <Label className="text-2xs uppercase tracking-widest">Custo unitário (R$)</Label>
               <Input
+                aria-label="Custo unitário (R$)"
                 type="number"
                 min={0}
                 step={0.01}
@@ -407,6 +416,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                 Setup único — telas/chapas (R$, opcional)
               </Label>
               <Input
+                aria-label="Setup único — telas/chapas (R$, opcional)"
                 type="number"
                 min={0}
                 step={0.01}
@@ -421,6 +431,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
             <div className="space-y-1 col-span-2">
               <Label className="text-2xs uppercase tracking-widest">Observações do custo</Label>
               <Input
+                aria-label="Observações do custo"
                 value={draft.obs ?? ""}
                 onChange={(e) => setDraft((d) => ({ ...d, obs: e.target.value }))}
                 placeholder="base topper para malha; fio dourado; sentido do pelo…"

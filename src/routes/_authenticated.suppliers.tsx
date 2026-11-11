@@ -431,6 +431,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Razão Social</Label>
                 <Input
+                  aria-label="Razão Social"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Ex: Facção Modelo Apucarana LTDA"
@@ -439,6 +440,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">CNPJ</Label>
                 <Input
+                  aria-label="CNPJ"
                   value={formData.cnpj}
                   onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
                 />
@@ -449,6 +451,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Especialidade</Label>
                 <select
+                  aria-label="Especialidade"
                   value={formData.category}
                   onChange={(e) =>
                     setFormData({ ...formData, category: e.target.value as PartnerCategory })
@@ -467,6 +470,7 @@ function SuppliersPage() {
                   Certificação Social/Fiscal
                 </Label>
                 <select
+                  aria-label="Certificação Social/Fiscal"
                   value={formData.compliance}
                   onChange={(e) =>
                     setFormData({ ...formData, compliance: e.target.value as ComplianceBadge })
@@ -484,6 +488,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Cidade</Label>
                 <Input
+                  aria-label="Cidade"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 />
@@ -491,6 +496,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">UF</Label>
                 <Input
+                  aria-label="UF"
                   maxLength={2}
                   value={formData.uf}
                   onChange={(e) => setFormData({ ...formData, uf: e.target.value.toUpperCase() })}
@@ -499,6 +505,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Cap. (min/mês)</Label>
                 <Input
+                  aria-label="Cap. (min/mês)"
                   type="number"
                   value={formData.capacityMinutesMonth}
                   onChange={(e) =>
@@ -509,6 +516,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Prazo (d)</Label>
                 <Input
+                  aria-label="Prazo (d)"
                   type="number"
                   value={formData.leadTimeDays}
                   onChange={(e) => setFormData({ ...formData, leadTimeDays: e.target.value })}
@@ -522,6 +530,7 @@ function SuppliersPage() {
                   Parque de Máquinas
                 </Label>
                 <Input
+                  aria-label="Parque de Máquinas"
                   value={formData.machinesSummary}
                   onChange={(e) => setFormData({ ...formData, machinesSummary: e.target.value })}
                 />
@@ -529,6 +538,7 @@ function SuppliersPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">E-mail PCP/OS</Label>
                 <Input
+                  aria-label="E-mail PCP/OS"
                   value={formData.contactEmail}
                   onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
                 />

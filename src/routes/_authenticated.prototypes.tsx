@@ -493,6 +493,7 @@ function PrototypesPage() {
                         </td>
                         <td className="py-1.5 px-2 text-right">
                           <Input
+                            aria-label="Medida realizada (cm)"
                             type="number"
                             step="0.25"
                             value={medido}
@@ -532,6 +533,7 @@ function PrototypesPage() {
               <div>
                 <Label className="text-xs">Parecer Técnico da Prova / Lacre</Label>
                 <Textarea
+                  aria-label="Parecer Técnico da Prova / Lacre"
                   rows={2}
                   value={fitNotes}
                   onChange={(e) => setFitNotes(e.target.value)}
@@ -585,6 +587,7 @@ function PrototypesPage() {
             <div>
               <Label className="text-xs">Código da Referência</Label>
               <Input
+                aria-label="Código da Referência"
                 value={formData.refCode}
                 onChange={(e) =>
                   setFormData({ ...formData, refCode: e.target.value.toUpperCase() })
@@ -596,6 +599,7 @@ function PrototypesPage() {
             <div>
               <Label className="text-xs">Nome da Peça</Label>
               <Input
+                aria-label="Nome da Peça"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Camiseta Esportiva Dry Pro"
@@ -604,6 +608,7 @@ function PrototypesPage() {
             <div>
               <Label className="text-xs">Rodada / Objetivo da Prova</Label>
               <Input
+                aria-label="Rodada / Objetivo da Prova"
                 value={formData.version}
                 onChange={(e) => setFormData({ ...formData, version: e.target.value })}
                 placeholder="1ª Prova — validar caimento M"
@@ -613,6 +618,7 @@ function PrototypesPage() {
               <div>
                 <Label className="text-xs">Solicitante</Label>
                 <Input
+                  aria-label="Solicitante"
                   value={formData.requester}
                   onChange={(e) => setFormData({ ...formData, requester: e.target.value })}
                   placeholder="Estilo"
@@ -621,6 +627,7 @@ function PrototypesPage() {
               <div>
                 <Label className="text-xs">Pilotista / Responsável</Label>
                 <Input
+                  aria-label="Pilotista / Responsável"
                   value={formData.owner}
                   onChange={(e) => setFormData({ ...formData, owner: e.target.value })}
                   placeholder="Sandra Pilotagem"

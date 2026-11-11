@@ -586,6 +586,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
                   Nome
                 </Label>
                 <Input
+                  aria-label="Nome"
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
@@ -598,7 +599,12 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
               </div>
               <div>
                 <Label className="text-2xs uppercase tracking-widest">HEX</Label>
-                <Input value={hex} onChange={(e) => setHex(e.target.value)} className="font-mono" />
+                <Input
+                  aria-label="HEX"
+                  value={hex}
+                  onChange={(e) => setHex(e.target.value)}
+                  className="font-mono"
+                />
               </div>
             </div>
           </div>
@@ -606,6 +612,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             <div>
               <Label className="text-2xs uppercase tracking-widest">Pantone TCX</Label>
               <Input
+                aria-label="Pantone TCX"
                 value={pantone}
                 onChange={(e) => setPantone(e.target.value)}
                 placeholder="16-5533 TCX"
@@ -614,6 +621,7 @@ function AddColorDialog({ paletteId }: { paletteId: string }) {
             <div>
               <Label className="text-2xs uppercase tracking-widest">Fornecedor</Label>
               <Input
+                aria-label="Fornecedor"
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
                 placeholder="Cataguases"

@@ -652,6 +652,7 @@ function TechSheetPage() {
               <div>
                 <Label className="text-xs">Aproveitamento Encaixe (%)</Label>
                 <Input
+                  aria-label="Aproveitamento Encaixe (%)"
                   type="number"
                   step="0.1"
                   value={cad.eficienciaPct}
@@ -692,6 +693,7 @@ function TechSheetPage() {
               <div>
                 <Label className="text-xs">Largura Enfesto (m)</Label>
                 <Input
+                  aria-label="Largura Enfesto (m)"
                   type="number"
                   step="0.01"
                   value={cad.larguraEnfestoM}
@@ -707,6 +709,7 @@ function TechSheetPage() {
               <div>
                 <Label className="text-xs">Comprimento Risco (m)</Label>
                 <Input
+                  aria-label="Comprimento Risco (m)"
                   type="number"
                   step="0.05"
                   value={cad.comprimentoRiscoM}
@@ -724,6 +727,7 @@ function TechSheetPage() {
               <div>
                 <Label className="text-xs">Encolhimento Urdume (%)</Label>
                 <Input
+                  aria-label="Encolhimento Urdume (%)"
                   type="number"
                   step="0.5"
                   value={cad.encolhimentoUrdumePct}
@@ -739,6 +743,7 @@ function TechSheetPage() {
               <div>
                 <Label className="text-xs">Encolhimento Trama (%)</Label>
                 <Input
+                  aria-label="Encolhimento Trama (%)"
                   type="number"
                   step="0.5"
                   value={cad.encolhimentoTramaPct}
@@ -755,6 +760,7 @@ function TechSheetPage() {
             <div>
               <Label className="text-xs">Arquivo de Molde (.ADS / .DXF / .PLT)</Label>
               <Input
+                aria-label="Arquivo de Molde (.ADS / .DXF / .PLT)"
                 value={cad.arquivoMolde ?? ""}
                 onChange={(e) => setEncaixeCad(activeRef, { ...cad, arquivoMolde: e.target.value })}
                 className="font-mono text-xs"
@@ -784,6 +790,7 @@ function TechSheetPage() {
             <div>
               <Label className="text-xs">Novo Código de Referência</Label>
               <Input
+                aria-label="Novo Código de Referência"
                 placeholder="DEV000007"
                 value={dupCode}
                 onChange={(e) => setDupCode(e.target.value.toUpperCase())}
@@ -793,6 +800,7 @@ function TechSheetPage() {
             <div>
               <Label className="text-xs">Nome do Novo Produto</Label>
               <Input
+                aria-label="Nome do Novo Produto"
                 placeholder="Regata Esportiva Dry Pro"
                 value={dupName}
                 onChange={(e) => setDupName(e.target.value)}
@@ -843,6 +851,7 @@ function TechSheetPage() {
                   <div>
                     <Label className="text-[10px]">Lote Total (pçs)</Label>
                     <Input
+                      aria-label="Lote Total (pçs)"
                       type="number"
                       min={1}
                       value={opTotalPieces}
@@ -855,6 +864,7 @@ function TechSheetPage() {
                   <div>
                     <Label className="text-[10px]">Cliente (opcional)</Label>
                     <Input
+                      aria-label="Cliente (opcional)"
                       placeholder="Estoque Próprio"
                       value={opCustomer}
                       onChange={(e) => setOpCustomer(e.target.value)}

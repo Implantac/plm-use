@@ -452,6 +452,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Nome da Peça</Label>
                 <Input
+                  aria-label="Nome da Peça"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Ex: Camisa Linho Resort Manga Curta"
@@ -460,6 +461,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Cápsula</Label>
                 <select
+                  aria-label="Cápsula"
                   value={formData.capsule}
                   onChange={(e) =>
                     setFormData({
@@ -482,6 +484,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Tecido Sugerido</Label>
                 <Input
+                  aria-label="Tecido Sugerido"
                   value={formData.fabricSuggestion}
                   onChange={(e) => setFormData({ ...formData, fabricSuggestion: e.target.value })}
                 />
@@ -489,6 +492,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Gramatura g/m²</Label>
                 <Input
+                  aria-label="Gramatura g/m²"
                   type="number"
                   value={formData.gramaturaGm2}
                   onChange={(e) => setFormData({ ...formData, gramaturaGm2: e.target.value })}
@@ -497,6 +501,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Fibra ABNT</Label>
                 <Input
+                  aria-label="Fibra ABNT"
                   value={formData.compositionFibra}
                   onChange={(e) => setFormData({ ...formData, compositionFibra: e.target.value })}
                 />
@@ -507,6 +512,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Silhueta CAD</Label>
                 <select
+                  aria-label="Silhueta CAD"
                   value={formData.silhouette}
                   onChange={(e) =>
                     setFormData({
@@ -525,6 +531,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Nome Cor</Label>
                 <Input
+                  aria-label="Nome Cor"
                   value={formData.colorName}
                   onChange={(e) => setFormData({ ...formData, colorName: e.target.value })}
                 />
@@ -532,6 +539,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">HEX</Label>
                 <Input
+                  aria-label="HEX"
                   value={formData.colorHex}
                   onChange={(e) => setFormData({ ...formData, colorHex: e.target.value })}
                 />
@@ -539,6 +547,7 @@ function ResearchHub() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Preço Alvo R$</Label>
                 <Input
+                  aria-label="Preço Alvo R$"
                   type="number"
                   step="0.1"
                   value={formData.targetPriceBrl}
@@ -552,6 +561,7 @@ function ResearchHub() {
                 URL da Imagem / Render
               </Label>
               <Input
+                aria-label="URL da Imagem / Render"
                 value={formData.imageUrl}
                 onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
               />
@@ -560,6 +570,7 @@ function ResearchHub() {
             <div>
               <Label className="text-2xs uppercase text-muted-foreground">Tags</Label>
               <Input
+                aria-label="Tags"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
               />

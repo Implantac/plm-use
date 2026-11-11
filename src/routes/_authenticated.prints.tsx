@@ -863,6 +863,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
                 Rótulo
               </Label>
               <Input
+                aria-label="Rótulo"
                 value={label}
                 onChange={(e) => {
                   setLabel(e.target.value);
@@ -897,12 +898,14 @@ function NewVersionDialog({ printId }: { printId: string }) {
               Enviar arquivo de arte (PNG, JPG, WEBP ou SVG) ou informar URL
             </Label>
             <Input
+              aria-label="Enviar arquivo de arte (PNG, JPG, WEBP ou SVG) ou informar URL"
               type="file"
               accept="image/png,image/jpeg,image/webp,image/svg+xml"
               onChange={(e) => void handleFileUpload(e.target.files?.[0])}
               className="text-xs"
             />
             <Input
+              aria-label="Enviar arquivo de arte (PNG, JPG, WEBP ou SVG) ou informar URL"
               value={image}
               onChange={(e) => setImage(e.target.value)}
               placeholder="https://... ou Data URL carregada"
@@ -911,6 +914,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
           <div>
             <Label className="text-2xs uppercase tracking-widest">Nota</Label>
             <Textarea
+              aria-label="Nota"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="O que mudou nesta versão?"

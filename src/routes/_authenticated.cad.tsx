@@ -367,6 +367,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Referência PLM</Label>
                 <Input
+                  aria-label="Referência PLM"
                   value={form.refCode}
                   onChange={(e) =>
                     setForm((s) => ({ ...s, refCode: e.target.value.toUpperCase() }))
@@ -378,6 +379,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Sistema CAD</Label>
                 <select
+                  aria-label="Sistema CAD"
                   value={form.sistemaCad}
                   onChange={(e) =>
                     setForm((s) => ({
@@ -400,6 +402,7 @@ function CadPage() {
               <div className="col-span-2">
                 <Label className="text-xs">Nome do Arquivo</Label>
                 <Input
+                  aria-label="Nome do Arquivo"
                   value={form.fileName}
                   onChange={(e) => setForm((s) => ({ ...s, fileName: e.target.value }))}
                   placeholder="Ex.: REF-001_CAMISETA_v1.ADS"
@@ -409,6 +412,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Formato</Label>
                 <select
+                  aria-label="Formato"
                   value={form.format}
                   onChange={(e) => setForm((s) => ({ ...s, format: e.target.value as CadFormat }))}
                   className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs"
@@ -426,6 +430,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Eficiência Risco (%)</Label>
                 <Input
+                  aria-label="Eficiência Risco (%)"
                   type="number"
                   step="0.1"
                   value={form.eficienciaPct}
@@ -440,6 +445,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Largura Enfesto (m)</Label>
                 <Input
+                  aria-label="Largura Enfesto (m)"
                   type="number"
                   step="0.01"
                   value={form.larguraEnfestoM}
@@ -454,6 +460,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Compr. Risco (m)</Label>
                 <Input
+                  aria-label="Compr. Risco (m)"
                   type="number"
                   step="0.05"
                   value={form.comprimentoRiscoM}
@@ -471,6 +478,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Peças Encaixadas no Risco</Label>
                 <Input
+                  aria-label="Peças Encaixadas no Risco"
                   type="number"
                   min={1}
                   value={form.pecasNoRisco}
@@ -485,6 +493,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Gramatura Malha/Tecido (g/m²)</Label>
                 <Input
+                  aria-label="Gramatura Malha/Tecido (g/m²)"
                   type="number"
                   min={0}
                   value={form.gramaturaGm2}
@@ -510,6 +519,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Encolhimento Urdume (%)</Label>
                 <Input
+                  aria-label="Encolhimento Urdume (%)"
                   type="number"
                   step="0.5"
                   value={form.encolhimentoUrdumePct}
@@ -524,6 +534,7 @@ function CadPage() {
               <div>
                 <Label className="text-xs">Encolhimento Trama (%)</Label>
                 <Input
+                  aria-label="Encolhimento Trama (%)"
                   type="number"
                   step="0.5"
                   value={form.encolhimentoTramaPct}

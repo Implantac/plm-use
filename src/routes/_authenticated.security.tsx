@@ -399,6 +399,7 @@ function SecurityPage() {
             <div className="space-y-1">
               <Label>Responsável / Operador</Label>
               <Input
+                aria-label="Responsável / Operador"
                 value={actorName}
                 onChange={(e) => setActorName(e.target.value)}
                 placeholder="Ex.: DPO / Coordenação TI"
@@ -407,6 +408,7 @@ function SecurityPage() {
             <div className="space-y-1">
               <Label>Descrição da Ação ou Revisão de Acesso</Label>
               <Input
+                aria-label="Descrição da Ação ou Revisão de Acesso"
                 value={actionDesc}
                 onChange={(e) => setActionDesc(e.target.value)}
                 placeholder="Ex.: Revisão trimestral de acessos de facções externas"

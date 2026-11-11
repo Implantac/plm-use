@@ -386,6 +386,7 @@ function ProductDialog({
             <div className="space-y-2">
               <Label>Código</Label>
               <Input
+                aria-label="Código"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="CAM-FUT-2026"
@@ -394,6 +395,7 @@ function ProductDialog({
             <div className="space-y-2">
               <Label>Família</Label>
               <Input
+                aria-label="Família"
                 value={family}
                 onChange={(e) => setFamily(e.target.value)}
                 placeholder="Camisa"
@@ -404,6 +406,7 @@ function ProductDialog({
           <div className="space-y-2">
             <Label>Nome</Label>
             <Input
+              aria-label="Nome"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Camisa futebol oficial"
@@ -413,6 +416,7 @@ function ProductDialog({
           <div className="space-y-2">
             <Label>Descrição</Label>
             <Textarea
+              aria-label="Descrição"
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -423,6 +427,7 @@ function ProductDialog({
             <div className="space-y-2">
               <Label>Referência da ficha técnica</Label>
               <Input
+                aria-label="Referência da ficha técnica"
                 value={referenceCode}
                 onChange={(e) => setReferenceCode(e.target.value)}
                 placeholder="V26-001"
@@ -431,6 +436,7 @@ function ProductDialog({
             <div className="space-y-2">
               <Label>Configuração de rota (PCP)</Label>
               <select
+                aria-label="Configuração de rota (PCP)"
                 value={configurationId}
                 onChange={(e) => setConfigurationId(e.target.value)}
                 className="h-10 w-full rounded-md border border-border bg-black/30 px-3 text-sm text-white"
@@ -452,6 +458,7 @@ function ProductDialog({
             <div className="space-y-2">
               <Label>Preço base (R$)</Label>
               <Input
+                aria-label="Preço base (R$)"
                 inputMode="decimal"
                 value={basePrice}
                 onChange={(e) => setBasePrice(e.target.value)}
@@ -461,6 +468,7 @@ function ProductDialog({
             <div className="space-y-2">
               <Label>Quantidade mínima</Label>
               <Input
+                aria-label="Quantidade mínima"
                 type="number"
                 min={1}
                 value={minQty}
@@ -472,6 +480,7 @@ function ProductDialog({
           <div className="space-y-2">
             <Label>Grade (separada por vírgula)</Label>
             <Input
+              aria-label="Grade (separada por vírgula)"
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
               placeholder="P, M, G, GG, 3G"
@@ -654,12 +663,14 @@ function OptionsDialog({
             </p>
             <div className="grid grid-cols-2 gap-2">
               <Input
+                aria-label="gola"
                 value={groupCode}
                 onChange={(e) => setGroupCode(e.target.value)}
                 placeholder="gola"
                 className="h-9"
               />
               <Input
+                aria-label="Gola"
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 placeholder="Gola"
@@ -712,6 +723,7 @@ function OptionsDialog({
                   Grupo
                 </Label>
                 <select
+                  aria-label="Grupo"
                   value={targetGroup}
                   onChange={(e) => setTargetGroup(e.target.value)}
                   className="h-9 w-full rounded-md border border-border bg-black/30 px-2 text-xs text-white"
@@ -729,6 +741,7 @@ function OptionsDialog({
                   Nome
                 </Label>
                 <Input
+                  aria-label="Nome"
                   value={optName}
                   onChange={(e) => setOptName(e.target.value)}
                   placeholder="Bordado escudo"
@@ -740,6 +753,7 @@ function OptionsDialog({
                   Setor
                 </Label>
                 <Input
+                  aria-label="Setor"
                   value={optSector}
                   onChange={(e) => setOptSector(e.target.value)}
                   placeholder="Bordado"
@@ -751,6 +765,7 @@ function OptionsDialog({
                   Operação
                 </Label>
                 <Input
+                  aria-label="Operação"
                   value={optOperation}
                   onChange={(e) => setOptOperation(e.target.value)}
                   placeholder="Bordado escudo 8cm"
@@ -762,6 +777,7 @@ function OptionsDialog({
                   Driver
                 </Label>
                 <select
+                  aria-label="Driver"
                   value={optDriver}
                   onChange={(e) => setOptDriver(e.target.value as CostDriver)}
                   className="h-9 w-full rounded-md border border-border bg-black/30 px-2 text-xs text-white"
@@ -778,6 +794,7 @@ function OptionsDialog({
                   Custo unitário (R$)
                 </Label>
                 <Input
+                  aria-label="Custo unitário (R$)"
                   inputMode="decimal"
                   value={optUnitCost}
                   onChange={(e) => setOptUnitCost(e.target.value)}
@@ -790,6 +807,7 @@ function OptionsDialog({
                   Setup do pedido (R$)
                 </Label>
                 <Input
+                  aria-label="Setup do pedido (R$)"
                   inputMode="decimal"
                   value={optSetup}
                   onChange={(e) => setOptSetup(e.target.value)}
@@ -802,6 +820,7 @@ function OptionsDialog({
                   Δ preço de venda (R$)
                 </Label>
                 <Input
+                  aria-label="Δ preço de venda (R$)"
                   inputMode="decimal"
                   value={optPriceDelta}
                   onChange={(e) => setOptPriceDelta(e.target.value)}

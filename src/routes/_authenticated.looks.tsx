@@ -761,17 +761,26 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
       >
         <div>
           <label className="uppercase-label text-muted-foreground">Nome</label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} required />
+          <Input
+            aria-label="Nome do look"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="uppercase-label text-muted-foreground">Coleção</label>
-            <Input value={season} onChange={(e) => setSeason(e.target.value)} />
+            <Input
+              aria-label="Coleção do look"
+              value={season}
+              onChange={(e) => setSeason(e.target.value)}
+            />
           </div>
           <div>
             <label className="uppercase-label text-muted-foreground">Ocasião</label>
             <Select value={occasion} onValueChange={(v) => setOccasion(v as LookOccasion)}>
-              <SelectTrigger>
+              <SelectTrigger aria-label="Ocasião do look">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -788,6 +797,7 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
           <div>
             <label className="uppercase-label text-muted-foreground">Cor</label>
             <Input
+              aria-label="Cor do look"
               type="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
@@ -797,6 +807,7 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
           <div>
             <label className="uppercase-label text-muted-foreground">Tags (vírgula)</label>
             <Input
+              aria-label="Tags do look, separadas por vírgula"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="denim, oversized, monocromia"
@@ -806,6 +817,7 @@ function NewLookDialog({ onCreated }: { onCreated: (id: string) => void }) {
         <div>
           <label className="uppercase-label text-muted-foreground">Styling notes</label>
           <Textarea
+            aria-label="Como combinar as peças…"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}

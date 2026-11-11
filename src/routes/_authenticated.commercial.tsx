@@ -614,6 +614,7 @@ function CommercialPage() {
             <div>
               <Label className="text-2xs uppercase text-muted-foreground">Razão Social</Label>
               <Input
+                aria-label="Razão Social"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Ex: Luxury Boutique LTDA"
@@ -623,6 +624,7 @@ function CommercialPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">CNPJ</Label>
                 <Input
+                  aria-label="CNPJ"
                   value={formData.cnpj}
                   onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
                 />
@@ -630,6 +632,7 @@ function CommercialPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">UF</Label>
                 <Input
+                  aria-label="UF"
                   maxLength={2}
                   value={formData.uf}
                   onChange={(e) => setFormData({ ...formData, uf: e.target.value.toUpperCase() })}
@@ -640,6 +643,7 @@ function CommercialPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Pedidos</Label>
                 <Input
+                  aria-label="Pedidos"
                   type="number"
                   value={formData.orders}
                   onChange={(e) => setFormData({ ...formData, orders: e.target.value })}
@@ -648,6 +652,7 @@ function CommercialPage() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Volume Anual</Label>
                 <Input
+                  aria-label="Volume Anual"
                   value={formData.total}
                   onChange={(e) => setFormData({ ...formData, total: e.target.value })}
                 />
