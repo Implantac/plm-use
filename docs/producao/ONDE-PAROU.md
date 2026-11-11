@@ -156,7 +156,26 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 55 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 56 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (46ª e 47ª medições): "lovable publicado, prossiga" —
+> publicação da 55 validada e Onda 56 escolhida pelo risco.** A **46ª medição**
+> achou entry novo `index-BlLjcjGi.js` / `index-CfT3W1YT.js` (223 chunks /
+> 3.188.613 bytes) com os 5 marcadores da 55; cliques reais em `/quality`
+> confirmaram **0 campos sem nome nas 4 abas** do drawer CAPA, 2 `aria-invalid`
+> e toast `CAPA aberta`. **Repo, ar e banco alinhados na Onda 55.** Varredura
+> de `<h1>` nas 43 rotas: **42 com título, 1 sem — `/digital-twin`**. Correção
+> de diagnóstico: não era timeout do crawler (espera fixa, nenhum `pageerror`),
+> era o retorno antecipado de vitrine que devolvia só um `<Card>` com `<h2>`.
+> **Onda 56**: mesmo `<header>`/`<h1>` do caminho normal, KPIs `—`, Link
+> `/tech-sheet` preservado e `CtaProximoPasso`; simulação e guardas 31/47–55
+> intactas. Browser local: sem ficha **`h1 = 1`** + 2 CTAs; criar `CR27-101` e
+> voltar por SPA → **`h1 = 1`, aviso 0, 7 cards**. Gates **740/740**, `tsc` 0,
+> `eslint` 0 erros, `prettier` limpo. **47ª medição: repo Onda 56, ar Onda 55**
+> (3 marcadores exclusivos da 56 = 0), banco view `200 []` / 4 funções
+> `401 42501` / SQL SHA inalterado. Publicar a Onda 56 é a próxima ação do
+> dono. Detalhes em `ONDA-56-DIGITAL-TWIN-TEM-TITULO.md` e
+> `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (44ª e 45ª medições): "projeto publicado no lovable,
 > prossiga" — marco redundante e Onda 55 escolhida pelo risco.** A **44ª
@@ -497,11 +516,16 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     em produção: os 5 CTAs funcionam e 0 avisos sem saída. **Repo, ar e banco
     alinhados na Onda 54.** Aqui foi **só publicar**: o SQL já estava aplicado
     desde a 24ª medição.
-13. **Publicar a Onda 55.** O ar segue em `index-CgpxQvgj.js` (Onda 54). A 46ª
-    medição deve achar `Causa-raiz da CAPA`, `Novo porquê da CAPA`, `Eficácia
-verificada da CAPA`, `URL da evidência da CAPA` e `Nota da transição da
-CAPA` no bundle, e reabrir as 4 abas do drawer CAPA em produção medindo 0
-    campos sem nome. Publicar app **não aplica SQL**.
+13. **~~Publicar a Onda 55~~ — concluído (46ª medição), marco relatado e
+    validado.** Entry `index-BlLjcjGi.js` / `index-CfT3W1YT.js` com os 5
+    marcadores da 55; cliques reais em produção confirmaram 0 campos sem nome
+    nas 4 abas do drawer CAPA e validações preservadas. **Repo, ar e banco
+    alinhados na Onda 55.** Aqui foi **só publicar**: o SQL já estava aplicado
+    desde a 24ª medição.
+14. **Publicar a Onda 56.** O ar segue em `index-BlLjcjGi.js` (Onda 55). A 48ª
+    medição deve achar `cta-gemeo-sem-ficha`, `cta-gemeo-abrir-ficha` e
+    `Simulação What-If` no bundle, e medir `h1 = 1` em `/digital-twin` sem
+    ficha salva em produção. Publicar app **não aplica SQL**.
 
 ---
 
@@ -512,7 +536,7 @@ CAPA` no bundle, e reabrir as 4 abas do drawer CAPA em produção medindo 0
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 733 testes
+cd plm-use && npx vitest run            # 740 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -522,7 +546,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **733/733**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **740/740**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -571,5 +595,12 @@ medição: "projeto publicado" re-medido e considerado redundante** (mesmo entry
 e marcadores da 43ª). **45ª medição: Onda 55 escolhida pelo risco** (11 campos
 do drawer CAPA sem nome → 0 após 11 `aria-label`), gates **733/733**; ar ainda
 na Onda 54 (5 marcadores exclusivos da 55 = 0), banco re-medido e inalterado.
-Há **uma publicação pendente** (a 55). Medição por camada em
-`SINCRONIA-2026-11-05.md`.
+Há **uma publicação pendente** (a 55). **46ª medição: "lovable publicado"
+re-medido e validado** — entry `index-BlLjcjGi.js` / `index-CfT3W1YT.js`
+(223 chunks / 3.188.613 bytes), 5 marcadores da 55 = 1 e 0 campos sem nome nas
+4 abas do drawer CAPA por cliques reais em produção; **repo/ar/banco na Onda
+55**. **47ª medição: Onda 56 escolhida pelo risco** (única rota sem `<h1>` →
+`h1 = 1` com KPIs `—` e 2 CTAs; caminho normal intacto com 7 cards), gates
+**740/740**; ar ainda na Onda 55 (3 marcadores exclusivos da 56 = 0), banco
+re-medido e inalterado. Há **uma publicação pendente** (a 56). Medição por
+camada em `SINCRONIA-2026-11-05.md`.

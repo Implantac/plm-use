@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 45ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 47ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,31 +7,31 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (45ª medição, após fechar a Onda 55)
+## 1. O quadro (47ª medição, após fechar a Onda 56)
 
 | Camada                                         | Estado medido                       | Como foi medido                     |
 | ---------------------------------------------- | ----------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 55** — código + docs 44ª/45ª | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 54** — `index-CgpxQvgj.js`   | BFS (seção 2-M)                     |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 56** — código + docs 46ª/47ª | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 55** — `index-BlLjcjGi.js`   | BFS + cliques reais (seção 2-N)     |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**     | `200` na view · `42501` nas funções |
 
-O dono relatou **"projeto publicado no lovable"**. A **44ª medição** re-mediu e
-**não confirmou cegamente**: o ar segue com o **mesmo** entry
-`index-CgpxQvgj.js` / `index-CyHoINKY.js`, 223 chunks / 3.188.203 bytes e os
-mesmos 6 marcadores da Onda 54 — a publicação já havia sido detectada e
-validada na 43ª medição. Não houve nova publicação.
+A **46ª medição** re-mediu o marco "lovable publicado": entry novo
+`index-BlLjcjGi.js` / `index-CfT3W1YT.js` (223 chunks / 3.188.613 bytes) com os
+5 marcadores da Onda 55, e cliques reais em `/quality` confirmaram **0 campos
+sem nome nas 4 abas** do drawer CAPA, 2 `aria-invalid` e toast `CAPA aberta`.
+**Repo, ar e banco alinhados na Onda 55.**
 
-Com `prossiga`, a varredura de risco abriu os **drawers** (fora do alcance das
-Ondas 49 e 52) e achou o `CapaDrawer` de `/quality` com **11 campos sem nome
-acessível** em 4 abas. **Onda 55**: 11 `aria-label`, sem alterar estrutura,
-handlers, validações ou guardas anteriores. Re-medido com cliques: **0 campos
-sem nome nas 4 abas**.
+Com `prossiga`, a varredura de **títulos de página** das 43 rotas achou **1 rota
+sem `<h1>`: `/digital-twin`** — e corrigiu um diagnóstico antigo: não era
+timeout do crawler, era o retorno antecipado de vitrine que devolvia só um
+`<Card>` com `<h2>`. **Onda 56**: mesmo `<header>`/`<h1>` do caminho normal,
+KPIs em `—` e 2 saídas clicáveis, sem mexer na simulação ou nas guardas.
 
-O ar **não mudou**: **5 marcadores exclusivos da Onda 55 = 0** (`Responsável
-pela CAPA` = 1 é pré-existente da Onda 49). Repo e ar desalinhados em **uma
-onda, por publicação pendente** — não por defeito de código. O banco não
-precisava avançar: **publicar o app não aplica SQL**. Gates: `tsc` 0, `eslint`
-0 erros / 20 warnings, `prettier` limpo, **733/733**.
+O ar **não mudou** desde a 46ª: **3 marcadores exclusivos da Onda 56 = 0**
+(`Tiragem planejada` e o título já existiam no caminho normal). Repo e ar
+desalinhados em **uma onda, por publicação pendente** — não por defeito de
+código. O banco não precisava avançar: **publicar o app não aplica SQL**. Gates:
+`tsc` 0, `eslint` 0 erros / 20 warnings, `prettier` limpo, **740/740**.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -514,6 +514,45 @@ inalterados; **5 marcadores exclusivos da 55 = 0**. **Banco:** view `200 []`,
 
 ---
 
+## 2-N. 46ª e 47ª medições — publicação da 55 e Onda 56
+
+**46ª (publicação validada):** BFS → entry **`index-BlLjcjGi.js` /
+`index-CfT3W1YT.js`**, 223 chunks / **3.188.613 bytes**, 0 falhas;
+`index-CgpxQvgj.js` = 0. Os 5 marcadores exclusivos da 55 = **1**, marcadores
+54 e 48/49 intactos, `DEV000006` 20. Cliques reais em `/quality`: 0 campos sem
+nome na carga inicial, "Abrir CAPA" vazio → **2** `aria-invalid`, criação
+válida → `CAPA aberta`, drawer com **0 sem nome** em Investigação (7), Ações
+(5), Evidências (3) e Timeline (1). Banco view `200 []`, 4 funções `401 42501`,
+SHA inalterado. **Repo/ar/banco na Onda 55.**
+
+**Escolha por risco:** varredura de `<h1>` nas 43 rotas com espera fixa de
+2,5 s e sem `wait_for_selector` → **42 com `<h1>`, 1 sem: `/digital-twin`**.
+Medição dirigida: `h1 = 0`, `h2 = 1`, body ~1.034 caracteres, nenhum
+`pageerror`, só `gemeo-sem-ficha`. **Não era artefato do crawler** (registrado
+assim desde a Onda 31): sem ficha salva a rota devolvia apenas um `<Card>` com
+`<h2>`, sem o `<header>`/`<h1>` do caminho normal. A varredura de botões-ícone
+não achou novos drawers com campos sem nome.
+
+**Correção:** `src/routes/_authenticated.digital-twin.tsx` passa a renderizar o
+mesmo cabeçalho no estado de vitrine, KPIs `Simulação What-If — · Render IA — ·
+Tiragem planejada —`, o Link `/tech-sheet` original com
+`cta-gemeo-abrir-ficha` e um `CtaProximoPasso` `cta-gemeo-sem-ficha`. Caminho
+normal (`simulateDigitalTwinScenario`, select, 7 cards), guarda da Onda 31 e
+guardas 47–55 intactas; SQL SHA inalterado.
+
+**Cliques reais no browser local:** sem ficha → **`h1 = 1`**, aviso 1, 2 CTAs,
+3 travessões, Link → `/tech-sheet`. Promoção real: `/research` → converter
+briefing → `CR27-101` → sidebar **Digital Twin** (SPA) → **`h1 = 1`,
+`gemeo-sem-ficha = 0`, 7 cards e select de fichas**. Gates: `tsc` 0, `eslint`
+0/20, `prettier` limpo, **740/740** (733 + 7).
+
+**Ar (47ª):** mesmo entry, 223 chunks / 3.188.613 bytes; marcadores 48–55
+inalterados; **3 marcadores exclusivos da 56 = 0**. **Banco:** view `200 []`,
+4 funções `401 42501`, SQL SHA inalterado. Detalhe em
+`ONDA-56-DIGITAL-TWIN-TEM-TITULO.md`.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -533,10 +572,12 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   (Onda 52) — 224 chunks / 3.185.303 bytes, 6 marcadores da 53 = **0**
 - entry medido na 40ª e 41ª: `index-CFlhwbuy.js` / `index-CZvI_8s1.js`
   (Onda 53) — 224 chunks / 3.187.305 bytes, 6 marcadores da 54 = **0**
-- **entry medido na 43ª, 44ª e 45ª: `index-CgpxQvgj.js` /
-  `index-CyHoINKY.js` (Onda 54)** — 223 chunks / **3.188.203 bytes**, 0
-  falhas; 6 marcadores da 54 = **1** (`producao-sem-op` = 2), marcadores 53 e
-  48/49/50/51/52 intactos; **5 marcadores exclusivos da 55 = 0** na 45ª
+- entry medido na 43ª, 44ª e 45ª: `index-CgpxQvgj.js` / `index-CyHoINKY.js`
+  (Onda 54) — 223 chunks / 3.188.203 bytes, 5 marcadores da 55 = **0**
+- **entry medido na 46ª e 47ª: `index-BlLjcjGi.js` / `index-CfT3W1YT.js`
+  (Onda 55)** — 223 chunks / **3.188.613 bytes**, 0 falhas; 5 marcadores da
+  55 = **1**, 54 e 48/49 intactos; **3 marcadores exclusivos da 56 = 0** na
+  47ª (publicação pendente)
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -600,7 +641,7 @@ com `GRANT EXECUTE` apenas a `authenticated`/`service_role`. SHA-256 do arquivo
 `382f0f192e23eac143dfda995f69cdc740c258b2017c4f9b07c9dff8f20c254f`, guardado
 por teste.
 
-| Sonda (sem sessão, 45ª medição)            | Resposta     | Interpretação                                |
+| Sonda (sem sessão, 47ª medição)            | Resposta     | Interpretação                                |
 | ------------------------------------------ | ------------ | -------------------------------------------- |
 | `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
 | `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
@@ -648,9 +689,12 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 - ~~Se a Onda 54 funciona em produção~~ **medido na 43ª**: os 5 CTAs
   navegam/clonam corretamente e **0 avisos sem saída** com cliques reais contra
   `plmuse.lovable.app`. A prova local da 41ª deixou de ser a única evidência.
-- **Se a Onda 55 funciona em produção.** Ainda não foi publicada: os 5
-  marcadores exclusivos da 55 são **0** no bundle. A prova com cliques reais da
-  45ª foi **local** (`127.0.0.1:8080`, papel `admin` simulado); não é
+- ~~Se a Onda 55 funciona em produção~~ **medido na 46ª**: 0 campos sem nome
+  nas 4 abas do drawer CAPA e validações preservadas **com cliques reais contra
+  `plmuse.lovable.app`**.
+- **Se a Onda 56 funciona em produção.** Ainda não foi publicada: os 3
+  marcadores exclusivos da 56 são **0** no bundle. A prova com cliques reais da
+  47ª foi **local** (`127.0.0.1:8080`, papel `admin` simulado); não é
   evidência de comportamento do domínio publicado.
 - **Login de usuário real.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI. Sessão local simulada gera `401/403` e banner "Verifique
@@ -673,13 +717,14 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 | ~~Ar uma onda atrás (52)~~ **zerado**           | ~~publicar~~ concluído na **38ª medição** (`index-BEBmR4We.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (53)~~ **zerado**           | ~~publicar~~ concluído na **40ª medição** (`index-CFlhwbuy.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (54)~~ **zerado**           | ~~publicar~~ concluído na **43ª medição** (`index-CgpxQvgj.js`), sem marco relatado — achado por BFS + cliques   | dono do projeto |
-| **Ar uma onda atrás do repo (55)**              | **publicar a Onda 55** e refazer BFS + cliques em produção (46ª medição)                                         | dono do projeto |
+| ~~Ar uma onda atrás (55)~~ **zerado**           | ~~publicar~~ concluído na **46ª medição** (`index-BlLjcjGi.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
+| **Ar uma onda atrás do repo (56)**              | **publicar a Onda 56** e refazer BFS + cliques em produção (48ª medição)                                         | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                    | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                          | dono do projeto |
 
-SQL aplicado, Ondas 44/45/46/47/48/49/50/51/52/53/54 publicadas e **Onda 55
-fechada no repo**. Há **uma publicação pendente** (a 55). Restam duas ações que
-não são código: publicar a Onda 55 e dar a credencial de e2e (e, se houver,
+SQL aplicado, Ondas 44/45/46/47/48/49/50/51/52/53/54/55 publicadas e **Onda
+56 fechada no repo**. Há **uma publicação pendente** (a 56). Restam duas ações
+que não são código: publicar a Onda 56 e dar a credencial de e2e (e, se houver,
 revisar reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
@@ -741,5 +786,8 @@ lotes salvos`, `ticket médio de referência R$ 320` — **0 na 39ª, presentes 
 `producao-sem-op` — **0 na 41ª, 1 na 43ª**. Marcadores exclusivos da 55 =
 `Causa-raiz da CAPA`, `Novo porquê da CAPA`, `Eficácia verificada da CAPA`,
 `URL da evidência da CAPA`, `Nota da transição da CAPA` — **0 na 45ª**, logo a
-Onda 55 ainda não está no ar (`Responsável pela CAPA` = 1 é da Onda 49). A 45ª
-é a medição corrente: repo na Onda 55, ar na Onda 54, banco aplicado.
+Onda 55 publicada na 46ª (`Responsável pela CAPA` = 1 é da Onda 49).
+Marcadores exclusivos da 56 = `cta-gemeo-sem-ficha`, `cta-gemeo-abrir-ficha`,
+`Simulação What-If` — **0 na 47ª**, logo a Onda 56 ainda não está no ar
+(`Tiragem planejada` e o título já existiam no caminho normal). A 47ª é a
+medição corrente: repo na Onda 56, ar na Onda 55, banco aplicado.
