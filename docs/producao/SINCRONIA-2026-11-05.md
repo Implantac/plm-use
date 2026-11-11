@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 52ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 53ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,24 +7,27 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (52ª medição, após revisar o relato de deploy)
+## 1. O quadro (53ª medição, após fechar a Onda 59)
 
-| Camada                                         | Estado medido                     | Como foi medido                     |
-| ---------------------------------------------- | --------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 58** — `fae2a93`           | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + cliques reais (seção 2-Q)     |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
+| Camada                                         | Estado medido                     | Como foi medido                       |
+| ---------------------------------------------- | --------------------------------- | ------------------------------------- |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 59** — HEAD local = remoto | `git log` / `git ls-remote`           |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + 6 marcadores da 59 = `0` (§2-R) |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções   |
 
-O dono relatou **"lovable não recebeu esse commit"** e pediu revisão/atualização
-do GitHub com o token. A **52ª medição não confirmou o relato**: o repositório
-já estava com HEAD local/remoto `fae2a93`, working tree limpo e CI verde, e o
-ar havia avançado para um **entry novo** com todos os marcadores da Onda 58.
-**Repo, ar e banco alinhados na Onda 58 — nenhuma publicação pendente.**
+A 53ª medição **re-mediu as três camadas** (o turno anterior só havia
+reinstalado o ambiente) e escolheu a Onda 59 pelo risco: em `/influencers`,
+5 creators de fábrica geravam 434 "vendas atribuídas", ROI de 563%, 5 linhas de
+ROAS/CAC/CFOP e **5 guias A4 de remessa em bonificação habilitadas**, além de
+2 campos sem nome no diálogo que só aparece após 2 cliques. A correção rotulou
+a vitrine, bloqueou apuração/emissão, deu `—` com aviso/CTA e criou a promoção
+explícita ("Registrar creator real"). Detalhe e prova por cliques em
+`ONDA-59-A-VITRINE-NAO-EMITE-GUIA-FISCAL.md`.
 
-O que estava defasado era **este documento**, que ainda dizia "ar na Onda 57,
-publicação pendente". Esta atualização do GitHub corrige a sincronia e registra
-a revisão; não houve mudança de código porque não havia defeito a corrigir.
-Banco re-medido e inalterado; gates re-medidos **754/754**.
+**Repo na Onda 59, ar na Onda 58, banco inalterado — há uma publicação
+pendente (a 59), por deploy, não por defeito.** Publicar o app não aplica SQL.
+Gates **763/763** (754 + 9). A 52ª medição (§2-Q) continua válida como
+revisão do relato "lovable não recebeu esse commit", que **não se confirmou**.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -665,6 +668,49 @@ que também serve de novo commit caso o dono queira re-disparar o deploy.
 
 ---
 
+## 2-R. 53ª medição — Onda 59 escolhida pelo risco, vitrine não emite guia fiscal
+
+**Re-medição inicial (o turno anterior não havia concluído ar/banco):**
+repo `f551a83` local = remoto, limpo, token 0/0; ar
+`index-IvTyinWJ.js` / `index-pMXbg9-8.js` com **214 chunks / 3.183.607
+bytes**, 0 falhas e 6 marcadores da 58 = 1; banco view `200 []`, 4 funções
+`401 42501`, SQL SHA `382f0f19…` inalterado. **Repo/ar/banco na Onda 58.**
+
+**Risco medido por cliques em `/influencers` (ANTES):** 5 creators de fábrica
+sem selo → KPIs `5 / 6 / 434 / 8,6%`, ROI `563%`, **5 linhas** de
+custo/receita/ROAS/CAC/CFOP, **5 botões `Guia 6910` habilitados** e A4 com
+`NATUREZA FISCAL: REMESSA EM BONIFICAÇÃO · Marina Costa`; 0 avisos de vitrine;
+**2 campos sem nome acessível** no diálogo "Registrar envio" (card → "Novo
+envio"). Os mesmos seeds contaminavam `CollectionROI` e o contexto do
+copiloto (`resumoInfluencers`). Jargão sem glossário era a dívida mais visível,
+mas **nenhuma outra emitia documento fiscal a partir de demonstração**.
+
+**Correção:** `demo: true` nos 5 seeds, `influencersOperacionais()`,
+`podeEmitirGuiaBonificacao()` (salvo **e** com remessa),
+`linhasSeedingOperacionais()`, `—` + avisos/CTAs, diálogo de 11 campos para
+registrar creator real, filtro em `CollectionROI`, `resumoInfluencers()` e nas
+hidratações `cloud-sync`/`creative-sync`. As funções puras de cálculo e HTML
+seguem intactas; o teste antigo do cupom `USEMARINACO10` segue verde.
+
+**DEPOIS (mesmos cliques):** `434`/`563%` ausentes, 2 avisos + 2 CTAs, selo
+`demonstracao`, **0 linhas e 0 guias**, heat map 5× `—`, 5 selos
+"Demonstração", drawer da vitrine com "Novo envio" `disabled`, **0/2** campos
+sem nome no diálogo de envio e **0/11** no novo diálogo. Registrando
+`Ana Real` + `VT900`: 1 linha, 1 guia habilitada e A4 com `Ana Real`/`VT900`
+**sem `Marina Costa`**, 0 `pageerror`. Capturas `/home/user/medicao53-*.png`.
+
+| Camada | 53ª medição (depois)                                                                      |
+| ------ | ----------------------------------------------------------------------------------------- |
+| Repo   | **Onda 59** — HEAD local = remoto, limpo, token fora do config e dos arquivos             |
+| Ar     | **Onda 58** — mesmo entry/bytes; 6 marcadores da 59 = **0**; marcadores 58/57/47 intactos |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **763/763**                   |
+
+**Há uma publicação pendente (a 59).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -695,6 +741,10 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
 - **entry medido na 52ª: `index-IvTyinWJ.js` / `index-pMXbg9-8.js`
   (Onda 58)** — 214 chunks / **3.183.607 bytes**, 0 falhas; 9 marcadores da
   58 = **1**, marcadores 57 e 47 intactos, entry da 57 zerado
+- **entry re-medido na 53ª: o mesmo `index-IvTyinWJ.js` /
+  `index-pMXbg9-8.js` (Onda 58)** — 214 chunks / 3.183.607 bytes, 0 falhas;
+  **6 marcadores da 59 = 0** e 6 marcadores da 58 = 1. O repo já está na
+  Onda 59; **publicação pendente, não defeito**
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -921,5 +971,9 @@ libere o pedido aprovado para o PCP (Liberar p/ PCP)` — **0 na 49ª**; o texto
 antigo `Cria lote no Kanban do PCP` caiu a **0** na 50ª. Marcadores da 58 =
 `glossario-financial`, `glossario-analytics`, `glossario-security`,
 `glossario-launch`, `glossario-inventory`, `Lote econômico de compra`,
-`Estratégia de ida ao mercado` — **0 na 51ª, 1 na 52ª**. A 52ª é a medição
-corrente: **repo, ar e banco alinhados na Onda 58**.
+`Estratégia de ida ao mercado` — **0 na 51ª, 1 na 52ª**. Marcadores exclusivos
+da 59 = `influencer-so-vitrine`, `seeding-so-vitrine`,
+`dialogo-registrar-creator`, `btn-salvar-creator`, `cta-influencer-registrar`,
+`drawer-vitrine-sem-envio` — **0 na 53ª**, logo a Onda 59 ainda não está no ar.
+A 53ª é a medição corrente: **repo na Onda 59, ar na Onda 58 e banco com as
+migrações 21/24 aplicadas — uma publicação pendente**.

@@ -600,6 +600,14 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     58 e os glossários funcionando por cliques reais em produção. **Repo, ar
     e banco alinhados na Onda 58.** Relato não confirmado; nenhuma publicação
     pendente. Publicar app **não aplica SQL**.
+17. **Publicar a Onda 59 — PENDENTE (53ª medição).** O repo já tem a correção
+    de `/influencers` (vitrine não apura ROI/ROAS/CAC/CFOP nem emite Guia de
+    Remessa Bonificação A4; promoção explícita por "Registrar creator real";
+    0 campos sem nome nos 2 diálogos). O ar segue no entry
+    `index-IvTyinWJ.js` / `index-pMXbg9-8.js` (Onda 58), com os **6
+    marcadores da 59 = 0**. **Só publicar**: nenhuma migration foi escrita e
+    o SQL aplicado desde a 24ª medição permanece com SHA
+    `382f0f19…`. Gates **763/763**.
 
 ---
 
@@ -695,4 +703,16 @@ local/remoto `fae2a93`, CI verde, entry novo `index-IvTyinWJ.js` /
 `index-pMXbg9-8.js` com os 9 marcadores da 58 = 1 e 7 glossários validados
 por cliques reais em produção; gates **754/754**. **Repo, ar e banco alinhados
 na Onda 58, sem publicação pendente.** Medição por camada em
-`SINCRONIA-2026-11-05.md`.
+`SINCRONIA-2026-11-05.md`. **53ª medição: Onda 59 escolhida pelo risco e
+fechada no repo** — re-medição inicial confirmou repo/ar/banco na Onda 58;
+varredura por cliques achou em `/influencers` 5 guias fiscais A4 habilitadas
+sobre creators de demonstração (434 vendas, ROI 563%, 5 linhas de
+ROAS/CAC/CFOP) e 2 campos sem nome no diálogo oculto. Correção: `demo: true`
+nos 5 seeds, `influencersOperacionais()`, `podeEmitirGuiaBonificacao()`,
+`—` + avisos/CTAs, diálogo de 11 campos para registrar creator real, filtros
+em `CollectionROI`, copiloto e hidratações cloud. Prova por cliques: **5 → 0
+guias** na vitrine e, após registrar `Ana Real` + `VT900`, **1 guia A4 com o
+creator salvo e sem `Marina Costa`**; 0/2 e 0/11 campos sem nome. Gates
+**763/763**; SQL intacto; banco re-medido e inalterado. **Ar ainda na Onda
+58 (6 marcadores da 59 = 0): há uma publicação pendente, não um defeito.**
+Documento da onda: `ONDA-59-A-VITRINE-NAO-EMITE-GUIA-FISCAL.md`.

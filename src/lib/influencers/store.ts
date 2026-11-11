@@ -1,4 +1,9 @@
 // Store compartilhado de influencers — usado pela página /influencers e pelo Marketing AI.
+// Onda 59: os 5 creators de fábrica são VITRINE (`demo: true`). Antes a tela
+// somava 434 "vendas atribuídas", R$ de investimento, ROI 563%, ROAS/CAC e
+// emitia uma Guia de Remessa Bonificação CFOP 5910/6910 A4 como se fossem
+// apurações da empresa. A vitrine continua visível (com selo), mas só creator
+// salvo por ação explícita entra em número ou documento operacional.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -23,11 +28,57 @@ export type Influencer = {
   custoMedio: number;
   vendasGeradas: number;
   envios: Envio[];
+  /** `true` = exemplo de fábrica (vitrine); ausente/false = creator salvo. */
+  demo?: boolean;
 };
+
+/** Dados do formulário "Registrar creator" (ação explícita de promoção). */
+export type NovoCriador = {
+  nome: string;
+  handle: string;
+  regiao: string;
+  uf: string;
+  seguidores: number;
+  segmento: string;
+  perfil: Influencer["perfil"];
+  custoMedio: number;
+  vendasGeradas: number;
+  /** Primeira remessa real: sem ela não há guia de remessa a emitir. */
+  primeiraRef: string;
+  primeiraPeca: string;
+};
+
+export const CRIADOR_DEMO_LABEL =
+  "Creator de demonstração — não entra em número operacional nem em guia de remessa.";
+
+/**
+ * Os seeds antigos já podem ter sido persistidos sem `demo` (localStorage ou
+ * linha hidratada do banco, onde o id vira UUID). Reconhecê-los pelo handle
+ * impede que um reload promova a vitrine silenciosamente — e não classifica
+ * um creator real que por acaso tenha id `i1` (teste de round-trip antigo).
+ */
+const CRIADORES_VITRINE_HANDLES: readonly string[] = [
+  "@marinacosta",
+  "@juliapires",
+  "@camireis",
+  "@bealima",
+  "@helenasouto",
+];
+
+export function influencerEhVitrine(i: Influencer): boolean {
+  if (i.demo === true) return true;
+  return CRIADORES_VITRINE_HANDLES.includes((i.handle ?? "").trim().toLowerCase());
+}
+
+/** Só creators salvos pela empresa. A vitrine fica de fora de toda apuração. */
+export function influencersOperacionais(list: Influencer[]): Influencer[] {
+  return list.filter((i) => !influencerEhVitrine(i));
+}
 
 const SEED: Influencer[] = [
   {
     id: "i1",
+    demo: true,
     nome: "Marina Costa",
     handle: "@marinacosta",
     regiao: "Sudeste",
@@ -58,6 +109,7 @@ const SEED: Influencer[] = [
   },
   {
     id: "i2",
+    demo: true,
     nome: "Júlia Pires",
     handle: "@juliapires",
     regiao: "Sul",
@@ -80,6 +132,7 @@ const SEED: Influencer[] = [
   },
   {
     id: "i3",
+    demo: true,
     nome: "Camila Reis",
     handle: "@camireis",
     regiao: "Nordeste",
@@ -102,6 +155,7 @@ const SEED: Influencer[] = [
   },
   {
     id: "i4",
+    demo: true,
     nome: "Beatriz Lima",
     handle: "@bealima",
     regiao: "Sudeste",
@@ -123,6 +177,7 @@ const SEED: Influencer[] = [
   },
   {
     id: "i5",
+    demo: true,
     nome: "Helena Souto",
     handle: "@helenasouto",
     regiao: "Centro-Oeste",
@@ -148,6 +203,7 @@ const SEED: Influencer[] = [
 interface InfState {
   influencers: Influencer[];
   registrarEnvio(id: string, envio: Envio): void;
+  registrarCreator(dados: NovoCriador): void;
 }
 
 export const useInfluencersStore = create<InfState>()(
@@ -161,6 +217,35 @@ export const useInfluencersStore = create<InfState>()(
           ),
         }));
       },
+      registrarCreator(dados) {
+        // Ação explícita: creator salvo (`demo: false`) + primeira remessa real.
+        // Nenhum seed é plantado em formulário e nenhuma vitrine é promovida
+        // por efeito colateral de leitura, reload ou sincronização.
+        const stamp = Math.random().toString(36).slice(2, 10);
+        const novo: Influencer = {
+          id: `inf-${stamp}`,
+          demo: false,
+          nome: dados.nome.trim(),
+          handle: dados.handle.trim(),
+          regiao: dados.regiao,
+          uf: dados.uf.trim().toUpperCase(),
+          seguidores: dados.seguidores,
+          segmento: dados.segmento.trim(),
+          perfil: dados.perfil,
+          custoMedio: dados.custoMedio,
+          vendasGeradas: dados.vendasGeradas,
+          envios: [
+            {
+              id: `env-${stamp}`,
+              ref: dados.primeiraRef.trim().toUpperCase(),
+              nome: dados.primeiraPeca.trim(),
+              data: new Date().toISOString().slice(0, 10),
+              status: "Enviado",
+            },
+          ],
+        };
+        set((s) => ({ influencers: [...s.influencers, novo] }));
+      },
     }),
     { name: "use-moda:influencers" },
   ),
@@ -168,14 +253,20 @@ export const useInfluencersStore = create<InfState>()(
 
 export const REGIOES_BR = ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"] as const;
 
+/** Contexto do copiloto: nunca descreve a vitrine como operação da empresa. */
 export function resumoInfluencers(list: Influencer[]) {
-  const top = [...list].sort((a, b) => b.vendasGeradas - a.vendasGeradas).slice(0, 5);
+  const operacionais = influencersOperacionais(list);
+  if (operacionais.length === 0) {
+    return "Sem creators salvos pela empresa: vendas atribuídas e mapa por região não apurados. Os creators visíveis na vitrine são demonstração e não entram em número operacional.";
+  }
+  const top = [...operacionais].sort((a, b) => b.vendasGeradas - a.vendasGeradas).slice(0, 5);
   const linhas = top.map(
     (i) =>
       `${i.nome} (${i.handle}, ${i.uf}/${i.regiao}, ${i.perfil}): ${i.vendasGeradas} vendas, ${i.envios.length} envios, R$ ${i.custoMedio} médio.`,
   );
   const regiaoTotal: Record<string, number> = {};
-  for (const i of list) regiaoTotal[i.regiao] = (regiaoTotal[i.regiao] ?? 0) + i.vendasGeradas;
+  for (const i of operacionais)
+    regiaoTotal[i.regiao] = (regiaoTotal[i.regiao] ?? 0) + i.vendasGeradas;
   const regioes = Object.entries(regiaoTotal)
     .sort((a, b) => b[1] - a[1])
     .map(([r, v]) => `${r}: ${v}`)

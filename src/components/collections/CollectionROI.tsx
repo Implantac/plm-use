@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { TrendingUp, DollarSign, Megaphone, Target, AlertTriangle } from "lucide-react";
 import { lotesOperacionais, usePCPStore } from "@/lib/pcp/store";
-import { useInfluencersStore } from "@/lib/influencers/store";
+import { influencersOperacionais, useInfluencersStore } from "@/lib/influencers/store";
 import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 const brl = (n: number) =>
@@ -19,7 +19,10 @@ export function CollectionROI() {
   // lia `s.lotes` direto e apurava receita/ROI/ROAS sobre a vitrine.
   const lotesTodos = usePCPStore((s) => s.lotes);
   const lotes = useMemo(() => lotesOperacionais(lotesTodos), [lotesTodos]);
-  const influencers = useInfluencersStore((s) => s.influencers);
+  // Onda 59: os 5 creators de fábrica são vitrine. Sem este filtro, o
+  // investimento em influencers de um lote REAL era somado aos cachês dos seeds.
+  const influencersTodos = useInfluencersStore((s) => s.influencers);
+  const influencers = useMemo(() => influencersOperacionais(influencersTodos), [influencersTodos]);
 
   const rows = useMemo(() => {
     const colMap = new Map<string, { peças: number; produzidas: number; refs: Set<string> }>();

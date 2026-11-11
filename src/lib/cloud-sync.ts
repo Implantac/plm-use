@@ -3,7 +3,12 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useInfluencersStore, type Influencer, type Envio } from "@/lib/influencers/store";
+import {
+  influencerEhVitrine,
+  useInfluencersStore,
+  type Influencer,
+  type Envio,
+} from "@/lib/influencers/store";
 import { useQualityStore, type CapaAction } from "@/lib/quality/store";
 import { useTechSheetStore, type TechSheetData } from "@/lib/techsheet/store";
 import { deserializeTechSheetRow, serializeTechSheetDoc } from "@/lib/techsheet/server";
@@ -70,19 +75,25 @@ async function hydrateInfluencers() {
   if (error) return;
   hydrated.inf = true;
   if (!data || data.length === 0) return;
-  const mapped: Influencer[] = data.map((r) => ({
-    id: r.id,
-    nome: r.nome,
-    handle: r.handle,
-    regiao: r.regiao ?? "",
-    uf: r.uf ?? "",
-    seguidores: r.seguidores,
-    segmento: r.segmento ?? "",
-    perfil: (r.perfil as Influencer["perfil"]) ?? "Micro",
-    custoMedio: Number(r.custo_medio),
-    vendasGeradas: r.vendas_geradas,
-    envios: (r.envios as unknown as Envio[]) ?? [],
-  }));
+  const mapped: Influencer[] = data.map((r) => {
+    const inf: Influencer = {
+      id: r.id,
+      nome: r.nome,
+      handle: r.handle,
+      regiao: r.regiao ?? "",
+      uf: r.uf ?? "",
+      seguidores: r.seguidores,
+      segmento: r.segmento ?? "",
+      perfil: (r.perfil as Influencer["perfil"]) ?? "Micro",
+      custoMedio: Number(r.custo_medio),
+      vendasGeradas: r.vendas_geradas,
+      envios: (r.envios as unknown as Envio[]) ?? [],
+    };
+    // Onda 59: uma linha de seed que subiu para a nuvem em sessões antigas
+    // volta com UUID e sem `demo`. Reconhecê-la por handle impede que o reload
+    // promova a vitrine a "creator salvo" sem ação explícita.
+    return influencerEhVitrine(inf) ? { ...inf, demo: true } : inf;
+  });
   useInfluencersStore.setState({ influencers: mapped });
 }
 

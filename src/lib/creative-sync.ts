@@ -69,7 +69,12 @@ import {
   type Collection,
 } from "@/lib/collections/store";
 import { useQualityStore, type CapaAction } from "@/lib/quality/store";
-import { useInfluencersStore, type Envio, type Influencer } from "@/lib/influencers/store";
+import {
+  influencerEhVitrine,
+  useInfluencersStore,
+  type Envio,
+  type Influencer,
+} from "@/lib/influencers/store";
 import {
   listAnalyticsKpis,
   replaceAllAnalyticsKpis,
@@ -458,7 +463,7 @@ export function influencerToRow(i: Influencer, uid: string): QueryRow {
   };
 }
 export function influencerFromRow(r: QueryRow): Influencer {
-  return {
+  const inf: Influencer = {
     id: str(r.external_key),
     nome: str(r.nome),
     handle: str(r.handle),
@@ -473,6 +478,9 @@ export function influencerFromRow(r: QueryRow): Influencer {
     vendasGeradas: Number(r.vendas_geradas) || 0,
     envios: Array.isArray(r.envios) ? (r.envios as Envio[]) : [],
   };
+  // Onda 59: só marca `demo` nas linhas que realmente são a vitrine antiga.
+  // Creators salvos continuam idênticos (o teste de round-trip não muda).
+  return influencerEhVitrine(inf) ? { ...inf, demo: true } : inf;
 }
 
 // ids duplicados no mesmo debounce (dois `Date.now()` na mesma ms) não podem

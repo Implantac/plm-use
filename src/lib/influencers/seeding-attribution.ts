@@ -1,7 +1,36 @@
 // Motor de Atribuição de Seeding (Cupom / UTM), ROAS por Creator
 // e Romaneio Fiscal de Remessa em Bonificação / Mostruário (CFOP 5910 / 6910) A4.
 
-import type { Influencer } from "./store";
+import { influencerEhVitrine, influencersOperacionais, type Influencer } from "./store";
+
+/**
+ * Onda 59 — medido com cliques reais: os 5 creators `demo: true` geravam 5
+ * linhas de ROAS/CAC/CFOP e 5 botões "Guia 6910" habilitados, imprimindo A4
+ * com "NATUREZA FISCAL: REMESSA EM BONIFICAÇÃO". O gate fica no chamador de
+ * UI: `evaluateCreatorAttribution()` e `buildSeedingBonusDispatchHtml()`
+ * continuam funções puras e nenhuma asserção anterior é relaxada.
+ */
+export const SEEDING_DEMO_BLOQUEIO =
+  "Guia de remessa indisponível: registre um creator e uma remessa reais antes de emitir.";
+
+export function podeEmitirGuiaBonificacao(inf: Influencer): boolean {
+  return !influencerEhVitrine(inf) && inf.envios.length > 0;
+}
+
+/** Só linhas apuráveis: creators salvos, nunca a vitrine de demonstração. */
+export function linhasSeedingOperacionais(
+  influencers: Influencer[],
+  avgTicketBrl = 199.9,
+  unitCogsBrl = 42.5,
+  factoryUf = "SC",
+): CreatorAttributionRow[] {
+  return evaluateCreatorAttribution(
+    influencersOperacionais(influencers),
+    avgTicketBrl,
+    unitCogsBrl,
+    factoryUf,
+  );
+}
 
 export interface CreatorAttributionRow {
   influencer: Influencer;
