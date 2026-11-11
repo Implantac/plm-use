@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 32ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 33ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,26 +7,28 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (32ª medição, após a publicação da Onda 49)
+## 1. O quadro (33ª medição, após fechar a Onda 50)
 
 | Camada                                         | Estado medido                     | Como foi medido                     |
 | ---------------------------------------------- | --------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 49** — `6e9beb9`           | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 49** — `index--_hvA3Zc.js` | BFS + cliques reais (seção 2-B)     |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 50** — código + docs 33ª   | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 49** — `index--_hvA3Zc.js` | BFS (seção 2-C)                     |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
 
-O dono relatou **"publicado pelo lovable"**. A medição **não confirmou
-cegamente**: o BFS achou um entry **novo** (`index--_hvA3Zc.js` /
-`index-B-j1IXyJ.js`), os marcadores da Onda 49 passaram de **0 → 1**, os da
-Onda 48 permaneceram em **1**, e os cliques reais em produção mediram
-**0/66 campos expostos sem nome acessível**, `aria-required` **4 + 2**,
-validações preservadas e guardas das Ondas 47/48 intactas.
+Com `ok prossiga` e as três camadas alinhadas na Onda 49, **não foi suposto um
+tema**: a varredura de 44 rotas e cliques reais em 16 emissores em produção
+acharam o risco remanescente. `/ai-agents` e `/analytics` já emitiam A4
+protegidos; `/inventory` (CSV + A4 MRP) e `/planner` (A4 CRP) emitiam
+**`R$ 0,00` / `0 min` / `0%` apurados de uma carteira inexistente**, sem aviso
+nem CTA. **Onda 50**: `podeEmitirMrp()` / `podeEmitirCrp()`, gates nos 3
+emissores, botões `disabled`, KPIs `—`, avisos/CTA, e **funções puras de
+formatação preservadas**.
 
-**Repo, ar e banco alinhados na Onda 49.** Não há publicação pendente. O banco
-não precisava avançar: **publicar o app não aplica SQL** e o SQL está aplicado
-desde a 24ª medição (view `200 []`, 4 funções `401 42501`, SHA inalterado).
-Gates re-medidos nesta rodada: `tsc` 0, `eslint` 0 erros / 20 warnings,
-`prettier` limpo, **686/686**.
+O ar **não mudou** desde a 32ª: mesmo entry, 224 chunks / 3.176.611 bytes,
+**8 marcadores da Onda 50 = 0**. Repo e ar desalinhados em **uma onda, por
+publicação pendente** — não por defeito de código. O banco não precisava
+avançar: **publicar o app não aplica SQL**. Gates: `tsc` 0, `eslint` 0 erros /
+20 warnings, `prettier` limpo, **694/694**.
 
 ---
 
@@ -174,6 +176,49 @@ Capturas: `/home/user/medicao32-launch.png`, `medicao32-quality.png`,
 
 ---
 
+## 2-C. 33ª medição — risco medido, Onda 50 fechada no repo
+
+**Escolha por risco (cliques reais em produção, Onda 49):**
+
+| Emissor                            | Resultado                                                                    |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| `/ai-agents` `Imprimir Parecer A4` | ✅ `sem ficha salva · SAM médio —`                                           |
+| `/analytics` `Book S&OP A4`        | ✅ 6 travessões + aviso de pedidos/campanhas/OS de demonstração              |
+| `/inventory` `CSV Compras ERP`     | ❌ CSV só com cabeçalho + toast de **sucesso**                               |
+| `/inventory` `Requisição MRP A4`   | ❌ `ORÇAMENTO TOTAL R$ 0.00`, tabela vazia, sem aviso                        |
+| `/planner` `Mapa CRP A4`           | ❌ 4 setores `0 min` / `0%` + "Folga operacional disponível", fila EDD vazia |
+
+Documentos capturados: `/home/user/medicao33-doc-mrp.txt`,
+`medicao33-doc-crp.txt`, `medicao33-doc-sop.txt`, `medicao33-doc-parecer.txt`.
+Os demais emissores estavam `disabled` ou bloqueados por toast.
+
+**Correção:** funções puras de elegibilidade + gates nos handlers, botões
+`disabled` com `title`, `—` nos KPIs, avisos `mrp-sem-apuracao` / `crp-sem-op`
+com `CtaProximoPasso` (`cta-mrp-sem-pedido`, `cta-crp-sem-op`), tabelas vazias
+não renderizadas. `buildMrpCsv`, `buildMrpPurchaseRequisitionHtml` e
+`buildFiniteCapacityScheduleHtml` **não foram alterados** — o teste novo prova
+que, sem gate, ainda produziriam `R$ 0.00` (a decisão é do chamador).
+
+**Cliques reais no browser local:** sem carteira, os 3 emissores estão
+`disabled` e **0 popups / 0 downloads / 0 toasts mesmo com clique forçado**.
+Promoção real por cliques — `/research` converter briefing → `CR27-101`,
+`/orders` clonar → `PD-2026-803` (`demo: false`, ref `DEV000006`),
+`/tech-sheet` "Nova Ref." → duplicar para `DEV000006` — liberou os 3: CSV com
+**3 insumos**, A4 MRP com **8 linhas**, A4 CRP com **11 / 92 / 38 / 21 min**,
+ocupação **0,2–0,5%**, `0%` = **0 ocorrências** e fila EDD
+`1º PD-2026-803 · DEV000006`. O `R$ 0.00` que resta no A4 MRP **depois** da
+promoção é apuração real (saldo de referência do BOM cobre a necessidade), não
+ausência — antes vinha de `rows = []`. Detalhe em
+`ONDA-50-ZERO-APURADO-NAO-VIRA-DOCUMENTO.md`.
+
+**Ar (33ª):** entry `index--_hvA3Zc.js` / `index-B-j1IXyJ.js`, 224 chunks /
+3.176.611 bytes, 0 falhas; marcadores 48 e 49 inalterados; **8 marcadores da
+Onda 50 = 0**. **Banco:** view `200 []`, 4 funções `401 42501` (assinaturas
+corretas), SQL SHA inalterado. **Gates:** `tsc` 0, `eslint` 0/20, `prettier`
+limpo, **694/694** (686 + 8).
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -183,9 +228,10 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   `index-CPZSdWEg.js` = Ondas 44/45, `index-CeAMfFot.js` = Onda 46)
 - entry medido nas 30ª e 31ª: `index-DPV0JUG6.js` / `index-DnKqdFO4.js`
   (Onda 48) — 224 chunks / 3.175.104 bytes, 6 marcadores da 49 = **0**
-- **entry medido na 32ª: `index--_hvA3Zc.js` / `index-B-j1IXyJ.js`
-  (Onda 49)** — 224 chunks / **3.176.611 bytes**, 0 falhas; 6 marcadores da
-  48 = **1**, 10 marcadores da 49 = **1 ou 2**, `aria-required` = 13
+- entry medido na **32ª e 33ª: `index--_hvA3Zc.js` /
+  `index-B-j1IXyJ.js` (Onda 49)** — 224 chunks / **3.176.611 bytes**, 0
+  falhas; 6 marcadores da 48 = **1**, 10 da 49 = **1 ou 2**, `aria-required`
+  = 13; **8 marcadores da 50 = 0** na 33ª (publicação pendente)
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -249,7 +295,7 @@ com `GRANT EXECUTE` apenas a `authenticated`/`service_role`. SHA-256 do arquivo
 `382f0f192e23eac143dfda995f69cdc740c258b2017c4f9b07c9dff8f20c254f`, guardado
 por teste.
 
-| Sonda (sem sessão, 32ª medição)            | Resposta     | Interpretação                                |
+| Sonda (sem sessão, 33ª medição)            | Resposta     | Interpretação                                |
 | ------------------------------------------ | ------------ | -------------------------------------------- |
 | `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
 | `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
@@ -283,6 +329,10 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
   0/66** campos expostos, medidos com o mesmo critério antes/depois. O 31º
   elemento do levantamento bruto da 29ª era o `BubbleSelect` oculto do Radix
   (`aria-hidden="true"`), que nunca esteve exposto a leitor de tela.
+- **Se a Onda 50 funciona em produção.** Ainda não foi publicada: os 8
+  marcadores da 50 são **0** no bundle. A prova com cliques reais da 33ª foi
+  **local** (`127.0.0.1:8080`, papel `admin` simulado); não é evidência de
+  comportamento do domínio publicado.
 - **Login de usuário real.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI. Sessão local simulada gera `401/403` e banner "Verifique
   sua conexão": artefato da medição, não bug.
@@ -299,13 +349,14 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 | ~~Ar uma onda atrás (47)~~ **zerado**           | ~~republicar~~ concluído na **28ª medição** (`index-CdXaXBJP.js`)                                                | dono do projeto |
 | ~~Ar uma onda atrás (48)~~ **zerado**           | ~~publicar~~ concluído na **30ª medição** (`index-DPV0JUG6.js`), sem marco relatado — achado por BFS + cliques   | dono do projeto |
 | ~~Ar uma onda atrás (49)~~ **zerado**           | ~~publicar~~ concluído na **32ª medição** (`index--_hvA3Zc.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
+| **Ar uma onda atrás do repo (50)**              | **publicar a Onda 50** e refazer BFS + cliques em produção (34ª medição)                                         | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                    | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                          | dono do projeto |
 
-SQL aplicado e **Ondas 44/45/46/47/48/49 publicadas — repo, ar e banco
-alinhados na Onda 49**. Não há publicação pendente. Resta uma ação que não é
-código: dar a credencial de e2e (e, se houver, revisar reservas presas com
-`stock_reservation_aging.dias_ativa`).
+SQL aplicado, Ondas 44/45/46/47/48/49 publicadas e **Onda 50 fechada no
+repo**. Há **uma publicação pendente** (a 50). Restam duas ações que não são
+código: publicar a Onda 50 e dar a credencial de e2e (e, se houver, revisar
+reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
 
@@ -350,5 +401,8 @@ curl -s -X POST -H "apikey: $KEY" -H "Content-Type: application/json" \
 `PGRST205` na view e `PGRST202` nas RPCs = migrações 21/24 fora do ar.
 `200 []` na view e `401 42501` nas RPCs = migrações aplicadas e grants corretos.
 Marcadores da 48 diferentes de `0` = Onda 48 publicada. Marcadores da 49
-diferentes de `0` = Onda 49 publicada (**0 na 31ª, 1 na 32ª**). A 32ª é a
-medição corrente: repo/ar/banco alinhados na Onda 49.
+diferentes de `0` = Onda 49 publicada (**0 na 31ª, 1 na 32ª**). Marcadores da
+50 = `mrp-sem-apuracao`, `cta-mrp-sem-pedido`, `crp-sem-op`,
+`cta-crp-sem-op`, `podeEmitirMrp`, `podeEmitirCrp` — na **33ª são 0**, logo a
+Onda 50 ainda não está no ar. A 33ª é a medição corrente: repo na Onda 50, ar
+na Onda 49, banco aplicado.

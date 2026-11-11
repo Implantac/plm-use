@@ -156,7 +156,28 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 49 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 50 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (33ª medição): `ok prossiga` → Onda 50 escolhida
+> pelo risco, fechada no repo.** Com repo/ar/banco alinhados na Onda 49, a
+> varredura de 44 rotas + cliques reais em 16 emissores em produção mostraram
+> que `/ai-agents` e `/analytics` já emitiam A4 protegidos, mas **`/inventory`
+> baixava CSV só com cabeçalho e emitia "Requisição MRP A4" com `R$ 0,00`, e
+> `/planner` emitia "Mapa CRP A4" com 4 setores `0 min` / `0%`** — ausência
+> de carteira apurada como zero, sem aviso nem CTA. **Onda 50**:
+> `podeEmitirMrp()` / `podeEmitirCrp()`, gates nos 3 handlers, botões
+> `disabled` com `title`, KPIs `—`, avisos `mrp-sem-apuracao` / `crp-sem-op`
+> com CTA, tabelas vazias não renderizadas; formatadores puros preservados.
+> Browser local: sem carteira, **0 popups / 0 downloads mesmo com clique
+> forçado**; promoção real por cliques (briefing → `CR27-101`, clonar pedido →
+> `PD-2026-803`, "Nova Ref." → `DEV000006`) liberou CSV com 3 insumos, A4 MRP
+> com 8 linhas e A4 CRP com 11/92/38/21 min e fila EDD `PD-2026-803`.
+> Gates **694/694**, `tsc` 0, `eslint` 0 erros, `prettier` limpo. **33ª
+> medição: repo Onda 50, ar Onda 49** (mesmo entry, 8 marcadores da 50 = 0),
+> banco view `200 []` / 4 funções `401 42501` / SQL SHA inalterado. Publicar a
+> Onda 50 é a próxima ação do dono. Detalhes em
+> `ONDA-50-ZERO-APURADO-NAO-VIRA-DOCUMENTO.md` e
+> `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (32ª medição): "publicado pelo lovable" validado —
 > repo, ar e banco alinhados na Onda 49.** O dono relatou o marco; a medição
@@ -336,6 +357,10 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 7. **Fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`.** Sem a credencial os dois
    specs de e2e seguem `skipped` e não há prova de fluxo autenticado contra
    produção (baixa de material, cancelamento de reservas, sync CAD → ficha).
+8. **Publicar a Onda 50.** O ar segue em `index--_hvA3Zc.js` (Onda 49). A 34ª
+   medição deve achar `mrp-sem-apuracao`, `cta-mrp-sem-pedido`, `crp-sem-op` e
+   `cta-crp-sem-op` no bundle, confirmar os 3 botões `disabled` e repetir os
+   cliques em produção. Publicar app **não aplica SQL**.
 
 ---
 
@@ -346,7 +371,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 686 testes
+cd plm-use && npx vitest run            # 694 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -356,7 +381,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **686/686**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **694/694**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -368,5 +393,8 @@ as migrações 21/24 aplicadas desde a 24ª medição, view `200 []` e 4 funçõ
 medição validou** — entry `index--_hvA3Zc.js` / `index-B-j1IXyJ.js`
 (224 chunks / 3.176.611 bytes), marcadores da 49 = 1, `0/66` campos sem nome
 medidos **no ar** por cliques reais, guardas 47/48 intactas; gates
-**686/686**. **Repo, ar e banco alinhados na Onda 49**, sem publicação
-pendente. Medição por camada em `SINCRONIA-2026-11-05.md`.
+**686/686**. **33ª medição: Onda 50 fechada no repo por escolha de risco**
+(`R$ 0,00` / `0%` apurados de carteira vazia em `/inventory` e `/planner`),
+gates **694/694**; ar ainda na Onda 49 (8 marcadores da 50 = 0), banco
+re-medido e inalterado. Há **uma publicação pendente** (a 50). Medição por
+camada em `SINCRONIA-2026-11-05.md`.
