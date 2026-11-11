@@ -31,6 +31,7 @@ import {
 import { streamImage } from "@/lib/streamImage";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { simulateDigitalTwinScenario } from "@/lib/techsheet/digital-twin";
 
 export const Route = createFileRoute("/_authenticated/digital-twin")({
@@ -213,22 +214,66 @@ function DigitalTwinPage() {
   ];
 
   if (!doc || !sim) {
+    // Onda 56: antes este estado devolvia SÓ um Card com <h2>, sem o <h1> que
+    // o caminho normal renderiza no <header>. A página ficava sem título — e o
+    // crawler (e leitores de tela) acusavam "h1 = 0" desde a Onda 31. Mesmo
+    // cabeçalho do caminho normal, com KPIs em `—` e saída clicável.
     return (
-      <Card className="p-6 border-border bg-card space-y-3" data-testid="gemeo-sem-ficha">
-        <div>
-          <h2 className="text-sm font-semibold text-foreground">
-            Nenhuma ficha técnica salva — gêmeo digital não apurável
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-xl">
-            As referências de demonstração não têm BOM, BOP, cartela de cores nem tiragem próprias.
-            A simulação What-If, o render IA e a gravação da tiragem só existem para engenharia
-            registrada.
+      <div className="space-y-5 pb-8">
+        <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <Badge
+                variant="outline"
+                className="border-primary/30 bg-primary/10 text-primary text-2xs uppercase tracking-wider"
+              >
+                PLM Digital Twin · Tempo Real
+              </Badge>
+              <span className="text-2xs font-mono text-muted-foreground">
+                Sincronizado com BOM · BOP · Precificação · MRP
+              </span>
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Gêmeo Digital & Simulador What-If
+            </h1>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Inspecione o impacto físico, financeiro e fabril de cada decisão antes de liberar a
+              Ordem de Produção.
+            </p>
+          </div>
+        </header>
+        <Card className="p-6 border-border bg-card space-y-3" data-testid="gemeo-sem-ficha">
+          <div>
+            <h2 className="text-sm font-semibold text-foreground">
+              Nenhuma ficha técnica salva — gêmeo digital não apurável
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-xl">
+              As referências de demonstração não têm BOM, BOP, cartela de cores nem tiragem
+              próprias. A simulação What-If, o render IA e a gravação da tiragem só existem para
+              engenharia registrada.
+            </p>
+          </div>
+          <p className="text-2xs font-mono text-muted-foreground">
+            Simulação What-If <strong className="text-foreground">—</strong> · Render IA{" "}
+            <strong className="text-foreground">—</strong> · Tiragem planejada{" "}
+            <strong className="text-foreground">—</strong>
           </p>
-        </div>
-        <Link to="/tech-sheet" className="text-xs text-primary underline">
-          Abrir Ficha Técnica
-        </Link>
-      </Card>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/tech-sheet"
+              data-testid="cta-gemeo-abrir-ficha"
+              className="text-xs text-primary underline"
+            >
+              Abrir Ficha Técnica
+            </Link>
+            <CtaProximoPasso
+              passo="ficha"
+              label="Criar ficha técnica"
+              testId="cta-gemeo-sem-ficha"
+            />
+          </div>
+        </Card>
+      </div>
     );
   }
 
