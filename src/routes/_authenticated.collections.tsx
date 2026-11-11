@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
@@ -192,6 +193,8 @@ function CollectionsPage() {
             ]
       }
     >
+      {/* Onda 58: 4 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["ROI", "ROAS", "PCP", "BOM"]} testId="glossario-collections" />
       <div className="mb-4">
         <ModuleTabs group="collections" />
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { supabase } from "@/integrations/supabase/client";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -245,6 +246,11 @@ function FinancialPage() {
         },
       ]}
     >
+      {/* Onda 58: 7 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["OTB", "DRE", "BOM", "BOP", "EBITDA", "PV", "Mark-up"]}
+        testId="glossario-financial"
+      />
       {receber && receber.count > 0 && (
         <div className="mb-4 flex flex-wrap items-center gap-3 rounded-md border border-primary/30 bg-primary/[0.06] p-3 text-xs">
           <span className="font-semibold uppercase tracking-[0.04em] text-primary">

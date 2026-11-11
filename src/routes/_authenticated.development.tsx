@@ -3,6 +3,7 @@
 // Técnica (`useTechSheetStore`), exibindo variantes de cor, Custo Industrial,
 // PV por Mark-up Divisor, Margem Líquida, Encaixe CAD e atalho 1-clique ao Cockpit.
 import { useMemo, useState, type DragEvent } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -236,6 +237,8 @@ function DevelopmentPage() {
         },
       ]}
     >
+      {/* Onda 58: 5 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["SAM", "PV", "BOM", "BOP", "PCP"]} testId="glossario-development" />
       <DevelopmentReferenceJourney />
       <CentroDeDesenvolvimento />
 

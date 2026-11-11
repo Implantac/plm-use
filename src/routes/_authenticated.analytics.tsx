@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -202,6 +203,11 @@ function AnalyticsPage() {
         { label: "Giro", value: "7.1x", detail: "estoque anualizado" },
       ]}
     >
+      {/* Onda 58: 7 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["ROI", "ROAS", "S&OP", "GTM", "CRP", "MRP", "PCP"]}
+        testId="glossario-analytics"
+      />
       <LiveSopBoard />
 
       <div className="flex justify-end gap-4 mb-8">

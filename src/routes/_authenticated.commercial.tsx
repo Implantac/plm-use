@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -294,6 +295,11 @@ function CommercialPage() {
         },
       ]}
     >
+      {/* Onda 58: 6 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["CFOP", "XML", "NCM", "POM", "GTM", "NF-e"]}
+        testId="glossario-commercial"
+      />
       {/* Simulador de Expedição, Packing List & Pré-XML NFe 4.00 */}
       <Card className="rounded-xl border-border bg-card p-4 mb-6 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">

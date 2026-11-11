@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -227,6 +228,11 @@ function MarketingPage() {
         },
       ]}
     >
+      {/* Onda 58: 6 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["ROAS", "ESG", "GTM", "DPP", "SKU", "ROI"]}
+        testId="glossario-marketing"
+      />
       {soVitrine && (
         <div
           data-testid="gtm-so-vitrine"

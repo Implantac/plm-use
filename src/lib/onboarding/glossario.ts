@@ -194,6 +194,40 @@ export const TERMOS: readonly Termo[] = [
     explicacao:
       "A tabela de medidas como busto, cintura e comprimento usada na prova e na aprovação.",
   },
+  // Onda 58 — seis siglas medidas no texto de 20 rotas sem glossário.
+  {
+    sigla: "BOP",
+    nome: "Roteiro de produção",
+    explicacao: "A sequência de operações e máquinas necessárias para fabricar a peça, em ordem.",
+  },
+  {
+    sigla: "PV",
+    nome: "Preço de venda",
+    explicacao: "O valor pelo qual o produto será vendido, antes de impostos e descontos.",
+  },
+  {
+    sigla: "GTM",
+    nome: "Estratégia de ida ao mercado",
+    explicacao:
+      "O plano de lançamento: para quem vender, em qual canal, a que preço e com qual campanha.",
+  },
+  {
+    sigla: "CRP",
+    nome: "Planejamento de capacidade",
+    explicacao:
+      "O cálculo que compara a carga de trabalho das máquinas e equipes com o tempo disponível.",
+  },
+  {
+    sigla: "EDD",
+    nome: "Sequência por data de entrega",
+    explicacao: "Regra que prioriza na produção os pedidos com a data de entrega mais próxima.",
+  },
+  {
+    sigla: "LEC",
+    nome: "Lote econômico de compra",
+    explicacao:
+      "A quantidade ideal a pedir de cada vez para equilibrar custo de pedido e custo de estoque.",
+  },
 ] as const;
 
 /** Siglas que aparecem na primeira dobra do dashboard (medido no browser). */

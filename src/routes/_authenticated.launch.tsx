@@ -1,6 +1,7 @@
 // H9-10 · Lançamento — página com abas Waves / Itens / Handoffs / Performance.
 // Escritas passam por server functions (RLS + validação Zod).
 import { useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -152,6 +153,11 @@ function LaunchPage() {
       version="Launch v2.17"
       metrics={metrics}
     >
+      {/* Onda 58: 7 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["NCM", "GTIN", "EAN", "ABNT", "BOM", "BOP", "GTM"]}
+        testId="glossario-launch"
+      />
       <OmnichannelReadinessPanel />
 
       <Tabs defaultValue="waves">

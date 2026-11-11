@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
@@ -189,6 +190,8 @@ function InventoryPage() {
         { label: "Rastreabilidade", value: "100%", detail: "por lote" },
       ]}
     >
+      {/* Onda 58: MRP/LEC medidos nesta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["MRP", "LEC", "BOM"]} testId="glossario-inventory" />
       <div className="flex flex-wrap justify-end gap-3 mb-5">
         <Button
           variant="outline"

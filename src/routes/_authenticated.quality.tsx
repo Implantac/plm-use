@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -216,6 +217,8 @@ function QualityPage() {
         },
       ]}
     >
+      {/* Onda 58: 4 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["AQL", "CAPA", "PCP", "BOM"]} testId="glossario-quality" />
       {/* Inspeção de Recebimento de Lote / Facção — NBR 5426 / ISO 2859-1 (AQL 2,5 / 4,0) */}
       <Card className="glass-card rounded-lg p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   CheckCircle2,
@@ -162,6 +163,11 @@ function SecurityPage() {
         },
       ]}
     >
+      {/* Onda 58: 6 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["LGPD", "CFOP", "BOM", "AQL", "ABNT", "XML"]}
+        testId="glossario-security"
+      />
       {soVitrine && (
         <div
           data-testid="lgpd-so-vitrine"

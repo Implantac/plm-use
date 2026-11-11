@@ -6,6 +6,7 @@
 // reais, mostra o que está sem janela / atrasado e grava a programação em
 // `production_orders` (policy `pcp update` decide quem pode).
 import { useMemo, useState } from "react";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -116,6 +117,8 @@ function PlannerPage() {
         { label: "Atrasadas", value: String(atrasadas), detail: "fim já passou" },
       ]}
     >
+      {/* Onda 58: 5 siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["CRP", "EDD", "AQL", "Kanban", "PCP"]} testId="glossario-planner" />
       <FiniteCapacityPanel cloudOrders={rows} />
 
       <div className="space-y-4">
