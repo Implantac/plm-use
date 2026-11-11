@@ -632,7 +632,7 @@ inalterados; **7 marcadores da 58 = 0**. **Banco:** view `200 []`, 4 funções
 
 ## 2-Q. 52ª medição — "lovable não recebeu esse commit" não se confirma
 
-**Revisão por camada (token `ghp_1hjm…`, `GET /user` `200 Implantac`):**
+**Revisão por camada (com o token informado pelo dono, `GET /user` `200 Implantac`):**
 
 | Camada           | Medição                                                                                                                                                                                                                                        |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
