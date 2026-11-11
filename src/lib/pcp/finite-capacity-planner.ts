@@ -244,3 +244,30 @@ export function buildFiniteCapacityScheduleHtml(
 </body>
 </html>`;
 }
+
+/**
+ * Onda 50 — "zero apurado não vira documento".
+ *
+ * Medido em produção (33ª medição): sem OP/pedido salvo, `Mapa CRP A4` abria
+ * um documento com quatro setores a `0 min` / `0%` e a diretriz "Folga
+ * operacional disponível para encaixe de lotes rápidos", mais uma fila EDD
+ * vazia. Capacidade instalada é configuração de fábrica; carga `0` e ocupação
+ * `0%` são apuração de uma carteira inexistente.
+ *
+ * As funções puras (`evaluateFiniteSectorCapacity`, `sequenceOrdersEdd`,
+ * `buildFiniteCapacityScheduleHtml`) ficam intactas: o gate é do chamador.
+ */
+export interface EmissaoCrp {
+  pode: boolean;
+  motivo: string;
+}
+
+export const CRP_SEM_APURACAO =
+  "Sem OP ou pedido salvo: carga por setor e sequenciamento EDD não são apuráveis. O Mapa CRP A4 não pode sair com 0% de ocupação apurado.";
+
+export function podeEmitirCrp(slots: SequencedOrderSlot[]): EmissaoCrp {
+  if (slots.length === 0) {
+    return { pode: false, motivo: CRP_SEM_APURACAO };
+  }
+  return { pode: true, motivo: "" };
+}

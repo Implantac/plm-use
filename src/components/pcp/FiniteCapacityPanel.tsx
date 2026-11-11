@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
+  CRP_SEM_APURACAO,
   DEFAULT_FACTORY_SECTORS,
   buildFiniteCapacityScheduleHtml,
   evaluateFiniteSectorCapacity,
+  podeEmitirCrp,
   sequenceOrdersEdd,
   type SchedulableOrderInput,
 } from "@/lib/pcp/finite-capacity-planner";
@@ -17,6 +19,7 @@ import {
   sumNominalGrade,
   usePrivateLabelQueueStore,
 } from "@/lib/sales/private-label-queue";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 interface FiniteCapacityPanelProps {
   cloudOrders: Array<{
@@ -76,7 +79,15 @@ export function FiniteCapacityPanel({ cloudOrders }: FiniteCapacityPanelProps) {
     [combinedOrders, sewingOperators],
   );
 
+  // Onda 50: capacidade instalada é configuração; carga `0 min` e ocupação
+  // `0%` são apuração de uma carteira que não existe.
+  const emissao = useMemo(() => podeEmitirCrp(slots), [slots]);
+
   function handlePrintSchedule() {
+    if (!emissao.pode) {
+      toast.error(emissao.motivo);
+      return;
+    }
     const html = buildFiniteCapacityScheduleHtml(loads, slots);
     const w = window.open("", "_blank");
     if (!w) {
@@ -100,8 +111,18 @@ export function FiniteCapacityPanel({ cloudOrders }: FiniteCapacityPanelProps) {
               Planejamento Finito de Capacidade (CRP) & Sequenciamento EDD
             </h3>
             <p className="text-2xs text-muted-foreground mt-0.5">
-              Consolida OPs do banco + pedidos Private Label, calcula ocupação útil por setor e
-              sequencia pela data de entrega (Earliest Due Date).
+              {emissao.pode ? (
+                <>
+                  Consolida OPs do banco + pedidos Private Label, calcula ocupação útil por setor e
+                  sequencia pela data de entrega (Earliest Due Date).
+                </>
+              ) : (
+                <>
+                  Sem OP ou pedido salvo: ocupação por setor{" "}
+                  <strong className="text-foreground">—</strong> · fila EDD{" "}
+                  <strong className="text-foreground">—</strong>.
+                </>
+              )}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -122,6 +143,8 @@ export function FiniteCapacityPanel({ cloudOrders }: FiniteCapacityPanelProps) {
               size="sm"
               variant="outline"
               onClick={handlePrintSchedule}
+              disabled={!emissao.pode}
+              title={emissao.pode ? undefined : CRP_SEM_APURACAO}
               className="h-8 text-xs gap-1.5"
             >
               <FileText className="h-3.5 w-3.5 text-emerald-500" /> Mapa CRP A4
@@ -148,69 +171,98 @@ export function FiniteCapacityPanel({ cloudOrders }: FiniteCapacityPanelProps) {
                       : "border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-mono text-2xs"
                   }
                 >
-                  {l.utilizationPct}%
+                  {emissao.pode ? `${l.utilizationPct}%` : "—"}
                 </Badge>
               </div>
-              <Progress value={Math.min(100, l.utilizationPct)} className="h-1.5" />
+              {emissao.pode && (
+                <Progress value={Math.min(100, l.utilizationPct)} className="h-1.5" />
+              )}
               <div className="flex justify-between text-[11px] font-mono text-muted-foreground">
-                <span>Carga: {l.requiredMinutesWeek} min</span>
+                <span>Carga: {emissao.pode ? `${l.requiredMinutesWeek} min` : "—"}</span>
                 <span>Cap.: {l.availableMinutesWeek} min</span>
               </div>
               <p className="text-[11px] text-muted-foreground leading-snug flex items-start gap-1">
                 {l.overloaded && <AlertTriangle className="h-3.5 w-3.5 text-rose-500 shrink-0" />}
-                <span>{l.recommendation}</span>
+                <span>
+                  {emissao.pode
+                    ? l.recommendation
+                    : "Sem OP/pedido salvo: carga e ocupação não apuráveis."}
+                </span>
               </p>
             </div>
           ))}
         </div>
 
         {/* Fila Sequenciada EDD */}
-        <div className="overflow-x-auto rounded-lg border border-border/80 bg-background/60">
-          <table className="w-full text-xs">
-            <thead className="bg-muted/40 text-2xs uppercase text-muted-foreground">
-              <tr>
-                <th className="p-2.5 text-left">Seq. EDD</th>
-                <th className="p-2.5 text-left">Ordem / Pedido</th>
-                <th className="p-2.5 text-left">Produto</th>
-                <th className="p-2.5 text-right">Peças</th>
-                <th className="p-2.5 text-right">Tempo Padrão</th>
-                <th className="p-2.5 text-left">Janela Sugerida</th>
-                <th className="p-2.5 text-left">Status Prazo</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-              {slots.map((s) => (
-                <tr key={s.order.id}>
-                  <td className="p-2.5 font-mono font-bold text-primary">{s.rank}º</td>
-                  <td className="p-2.5 font-mono font-semibold text-foreground">
-                    {s.order.orderNumber}
-                  </td>
-                  <td className="p-2.5 text-foreground">{s.order.productName}</td>
-                  <td className="p-2.5 text-right font-mono">{s.order.pieces}</td>
-                  <td className="p-2.5 text-right font-mono text-muted-foreground">
-                    {s.totalStandardMinutes} min
-                  </td>
-                  <td className="p-2.5 font-mono text-2xs">
-                    {s.suggestedStartIso} → {s.suggestedEndIso}
-                  </td>
-                  <td className="p-2.5">
-                    <Badge
-                      variant="outline"
-                      className={
-                        s.onTime
-                          ? "border-emerald-500/40 text-emerald-600 dark:text-emerald-400 text-[10px]"
-                          : "border-rose-500/40 text-rose-500 text-[10px]"
-                      }
-                    >
-                      <Cpu className="h-3 w-3 mr-1" />
-                      {s.onTime ? `No prazo (${s.order.dueDate})` : `Atenção (${s.order.dueDate})`}
-                    </Badge>
-                  </td>
+        {!emissao.pode && (
+          <div
+            data-testid="crp-sem-op"
+            className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3"
+          >
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              <strong className="text-foreground">CRP não apurável.</strong> {CRP_SEM_APURACAO}{" "}
+              Cadastre uma OP ou um pedido com ficha salva para apurar carga, ocupação e a fila EDD
+              — só então o Mapa A4 será liberado.
+              <CtaProximoPasso
+                passo="pedido"
+                label="Cadastrar pedido com ficha salva"
+                testId="cta-crp-sem-op"
+              />
+            </p>
+          </div>
+        )}
+
+        {emissao.pode && (
+          <div className="overflow-x-auto rounded-lg border border-border/80 bg-background/60">
+            <table className="w-full text-xs">
+              <thead className="bg-muted/40 text-2xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="p-2.5 text-left">Seq. EDD</th>
+                  <th className="p-2.5 text-left">Ordem / Pedido</th>
+                  <th className="p-2.5 text-left">Produto</th>
+                  <th className="p-2.5 text-right">Peças</th>
+                  <th className="p-2.5 text-right">Tempo Padrão</th>
+                  <th className="p-2.5 text-left">Janela Sugerida</th>
+                  <th className="p-2.5 text-left">Status Prazo</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {slots.map((s) => (
+                  <tr key={s.order.id}>
+                    <td className="p-2.5 font-mono font-bold text-primary">{s.rank}º</td>
+                    <td className="p-2.5 font-mono font-semibold text-foreground">
+                      {s.order.orderNumber}
+                    </td>
+                    <td className="p-2.5 text-foreground">{s.order.productName}</td>
+                    <td className="p-2.5 text-right font-mono">{s.order.pieces}</td>
+                    <td className="p-2.5 text-right font-mono text-muted-foreground">
+                      {s.totalStandardMinutes} min
+                    </td>
+                    <td className="p-2.5 font-mono text-2xs">
+                      {s.suggestedStartIso} → {s.suggestedEndIso}
+                    </td>
+                    <td className="p-2.5">
+                      <Badge
+                        variant="outline"
+                        className={
+                          s.onTime
+                            ? "border-emerald-500/40 text-emerald-600 dark:text-emerald-400 text-[10px]"
+                            : "border-rose-500/40 text-rose-500 text-[10px]"
+                        }
+                      >
+                        <Cpu className="h-3 w-3 mr-1" />
+                        {s.onTime
+                          ? `No prazo (${s.order.dueDate})`
+                          : `Atenção (${s.order.dueDate})`}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

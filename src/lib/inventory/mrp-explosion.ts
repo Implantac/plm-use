@@ -273,3 +273,32 @@ export function buildMrpPurchaseRequisitionHtml(summary: MrpSummary): string {
 </body>
 </html>`;
 }
+
+/**
+ * Onda 50 — "zero apurado não vira documento".
+ *
+ * Medido em produção (33ª medição): com a carteira vazia, `CSV Compras ERP`
+ * baixava `mrp-ressuprimento-liquido.csv` só com o cabeçalho e `Requisição
+ * MRP A4` abria um documento com "ORÇAMENTO TOTAL R$ 0.00" e tabela vazia —
+ * sem nenhum aviso de que nada era apurável. O painel até avisava sobre saldo
+ * de almoxarifado, mas o documento saía como se `0` fosse um número apurado.
+ *
+ * Regra das Ondas 22/23/27–48: só pedido/ficha salvos entram em número ou
+ * documento operacional; ausência vira `—` com aviso/CTA, não zero apurado.
+ * As funções puras (`buildMrpCsv`, `buildMrpPurchaseRequisitionHtml`) ficam
+ * intactas — a decisão de emissão é do chamador, nunca do formatador.
+ */
+export interface EmissaoMrp {
+  pode: boolean;
+  motivo: string;
+}
+
+export const MRP_SEM_APURACAO =
+  "Sem pedido com ficha salva: necessidade bruta, ruptura e orçamento não são apuráveis. O CSV e a Requisição A4 não podem sair com R$ 0,00 apurado.";
+
+export function podeEmitirMrp(summary: MrpSummary): EmissaoMrp {
+  if (summary.rows.length === 0) {
+    return { pode: false, motivo: MRP_SEM_APURACAO };
+  }
+  return { pode: true, motivo: "" };
+}
