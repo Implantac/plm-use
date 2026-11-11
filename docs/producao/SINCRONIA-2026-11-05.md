@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 43ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 45ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,24 +7,31 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (43ª medição, após a publicação da Onda 54)
+## 1. O quadro (45ª medição, após fechar a Onda 55)
 
-| Camada                                         | Estado medido                     | Como foi medido                     |
-| ---------------------------------------------- | --------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 54** — `fb46267`           | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 54** — `index-CgpxQvgj.js` | BFS + cliques reais (seção 2-L)     |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
+| Camada                                         | Estado medido                       | Como foi medido                     |
+| ---------------------------------------------- | ----------------------------------- | ----------------------------------- |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 55** — código + docs 44ª/45ª | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 54** — `index-CgpxQvgj.js`   | BFS (seção 2-M)                     |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**     | `200` na view · `42501` nas funções |
 
-O pedido **"atualize o github"** foi respondido medindo, não apenas empurrando:
-o token novo validou (`GET /user` `200 Implantac`) e HEAD local/remoto já era
-`fb46267` — **não havia commit pendente**. A re-medição por camada, porém,
-achou uma publicação **não relatada**: o ar saiu de `index-CFlhwbuy.js` (Onda 53) para **`index-CgpxQvgj.js` / `index-CyHoINKY.js`** com os 6 marcadores da
-Onda 54. A **43ª medição** validou isso com cliques reais e é o que esta
-atualização de GitHub registra.
+O dono relatou **"projeto publicado no lovable"**. A **44ª medição** re-mediu e
+**não confirmou cegamente**: o ar segue com o **mesmo** entry
+`index-CgpxQvgj.js` / `index-CyHoINKY.js`, 223 chunks / 3.188.203 bytes e os
+mesmos 6 marcadores da Onda 54 — a publicação já havia sido detectada e
+validada na 43ª medição. Não houve nova publicação.
 
-**Repo, ar e banco alinhados na Onda 54. Não há publicação pendente.** O banco
-não precisava avançar: **publicar o app não aplica SQL**. Gates re-medidos:
-`tsc` 0, `eslint` 0 erros / 20 warnings, `prettier` limpo, **726/726**.
+Com `prossiga`, a varredura de risco abriu os **drawers** (fora do alcance das
+Ondas 49 e 52) e achou o `CapaDrawer` de `/quality` com **11 campos sem nome
+acessível** em 4 abas. **Onda 55**: 11 `aria-label`, sem alterar estrutura,
+handlers, validações ou guardas anteriores. Re-medido com cliques: **0 campos
+sem nome nas 4 abas**.
+
+O ar **não mudou**: **5 marcadores exclusivos da Onda 55 = 0** (`Responsável
+pela CAPA` = 1 é pré-existente da Onda 49). Repo e ar desalinhados em **uma
+onda, por publicação pendente** — não por defeito de código. O banco não
+precisava avançar: **publicar o app não aplica SQL**. Gates: `tsc` 0, `eslint`
+0 erros / 20 warnings, `prettier` limpo, **733/733**.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -468,6 +475,45 @@ inalterado. Gates re-medidos **726/726**.
 
 ---
 
+## 2-M. 44ª e 45ª medições — marco redundante e Onda 55
+
+**44ª (marco re-medido):** `projeto publicado no lovable` → entry, chunks,
+bytes e marcadores **idênticos** aos da 43ª medição; `index-CFlhwbuy.js` = 0.
+Repo `c2a2b5d` limpo; banco view `200 []`, 4 funções `401 42501`, SHA do SQL
+inalterado. **Repo, ar e banco alinhados na Onda 54** — nenhuma publicação nova.
+
+**Escolha por risco:** varredura genérica de drawers nas 44 rotas deu 0 (**falso
+negativo**: botões ícone). Medição dirigida ao `CapaDrawer` de `/quality`, com
+clique real para criar/abrir a CAPA em produção:
+
+| Aba          | Campos | Sem nome |
+| ------------ | ------ | -------- |
+| Investigação | 7      | **7**    |
+| Ações        | 5      | **5**    |
+| Evidências   | 3      | **3**    |
+| Timeline     | 1      | **1**    |
+
+Causa: `Field` renderiza `<label>` **irmão** do campo (sem `htmlFor`/`id`) e os
+campos avulsos não tinham `aria-label`. Correção: **11 `aria-label`** em
+`src/components/quality/CapaDrawer.tsx`; o `ActionField` usa `${label} da CAPA`
+e cobre 3 instâncias. **Não** se trocou `<div>` por `<label>` wrapper porque
+alguns `Field` contêm botões. Estrutura, `persistPatch`, `setLocal`, `onSave`,
+validações da Onda 49 e guardas 47–54 intactas; SQL SHA inalterado.
+
+**Cliques reais no browser local:** Investigação 7 / **0 sem nome**, Ações 5 /
+**0**, Evidências 3 / **0**, Timeline 1 / **0**; "Abrir CAPA" vazio continua
+com **2** `aria-invalid`; criar CAPA válida → toast `CAPA aberta`. Nota
+metodológica: `get_by_label` de campos de outras abas retorna 0 porque o
+`TabsContent` do Radix desmonta a aba inativa — a medição correta é por aba.
+
+Gates: `tsc` 0, `eslint` 0/20, `prettier` limpo, **733/733** (726 + 7).
+**Ar (45ª):** mesmo entry, 223 chunks / 3.188.203 bytes; marcadores 48–54
+inalterados; **5 marcadores exclusivos da 55 = 0**. **Banco:** view `200 []`,
+4 funções `401 42501`, SQL SHA inalterado. Detalhe em
+`ONDA-55-CAPA-DRAWER-TEM-NOME.md`.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -487,9 +533,10 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   (Onda 52) — 224 chunks / 3.185.303 bytes, 6 marcadores da 53 = **0**
 - entry medido na 40ª e 41ª: `index-CFlhwbuy.js` / `index-CZvI_8s1.js`
   (Onda 53) — 224 chunks / 3.187.305 bytes, 6 marcadores da 54 = **0**
-- **entry medido na 43ª: `index-CgpxQvgj.js` / `index-CyHoINKY.js`
-  (Onda 54)** — 223 chunks / **3.188.203 bytes**, 0 falhas; 6 marcadores da
-  54 = **1** (`producao-sem-op` = 2), marcadores 53 e 48/49/50/51/52 intactos
+- **entry medido na 43ª, 44ª e 45ª: `index-CgpxQvgj.js` /
+  `index-CyHoINKY.js` (Onda 54)** — 223 chunks / **3.188.203 bytes**, 0
+  falhas; 6 marcadores da 54 = **1** (`producao-sem-op` = 2), marcadores 53 e
+  48/49/50/51/52 intactos; **5 marcadores exclusivos da 55 = 0** na 45ª
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -553,7 +600,7 @@ com `GRANT EXECUTE` apenas a `authenticated`/`service_role`. SHA-256 do arquivo
 `382f0f192e23eac143dfda995f69cdc740c258b2017c4f9b07c9dff8f20c254f`, guardado
 por teste.
 
-| Sonda (sem sessão, 43ª medição)            | Resposta     | Interpretação                                |
+| Sonda (sem sessão, 45ª medição)            | Resposta     | Interpretação                                |
 | ------------------------------------------ | ------------ | -------------------------------------------- |
 | `GET /stock_reservation_aging?limit=1`     | **`200 []`** | view existe e é legível; sem reservas presas |
 | `POST /rpc/op_reserved_materials`          | `401 42501`  | função existe, `anon` barrado                |
@@ -601,6 +648,10 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 - ~~Se a Onda 54 funciona em produção~~ **medido na 43ª**: os 5 CTAs
   navegam/clonam corretamente e **0 avisos sem saída** com cliques reais contra
   `plmuse.lovable.app`. A prova local da 41ª deixou de ser a única evidência.
+- **Se a Onda 55 funciona em produção.** Ainda não foi publicada: os 5
+  marcadores exclusivos da 55 são **0** no bundle. A prova com cliques reais da
+  45ª foi **local** (`127.0.0.1:8080`, papel `admin` simulado); não é
+  evidência de comportamento do domínio publicado.
 - **Login de usuário real.** Exige credencial; `e2e-autenticado` segue
   `skipped` na CI. Sessão local simulada gera `401/403` e banner "Verifique
   sua conexão": artefato da medição, não bug.
@@ -622,13 +673,14 @@ que encerrou foi o `PGRST205`/`PGRST202` de "objeto não encontrado".
 | ~~Ar uma onda atrás (52)~~ **zerado**           | ~~publicar~~ concluído na **38ª medição** (`index-BEBmR4We.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (53)~~ **zerado**           | ~~publicar~~ concluído na **40ª medição** (`index-CFlhwbuy.js`), marco relatado e **validado** por BFS + cliques | dono do projeto |
 | ~~Ar uma onda atrás (54)~~ **zerado**           | ~~publicar~~ concluído na **43ª medição** (`index-CgpxQvgj.js`), sem marco relatado — achado por BFS + cliques   | dono do projeto |
+| **Ar uma onda atrás do repo (55)**              | **publicar a Onda 55** e refazer BFS + cliques em produção (46ª medição)                                         | dono do projeto |
 | E2E autenticado nunca roda                      | fornecer `PLM_E2E_EMAIL` / `PLM_E2E_PASSWORD`                                                                    | dono do projeto |
 | Cancelar reservas presas                        | só **depois** da migration, usando `stock_reservation_aging.dias_ativa`                                          | dono do projeto |
 
-SQL aplicado e **Ondas 44/45/46/47/48/49/50/51/52/53/54 publicadas —
-repo, ar e banco alinhados na Onda 54**. Não há publicação pendente. Resta uma
-ação que não é código: dar a credencial de e2e (e, se houver, revisar reservas
-presas com `stock_reservation_aging.dias_ativa`).
+SQL aplicado, Ondas 44/45/46/47/48/49/50/51/52/53/54 publicadas e **Onda 55
+fechada no repo**. Há **uma publicação pendente** (a 55). Restam duas ações que
+não são código: publicar a Onda 55 e dar a credencial de e2e (e, se houver,
+revisar reservas presas com `stock_reservation_aging.dias_ativa`).
 
 ---
 
@@ -686,5 +738,8 @@ Marcadores da 53 = `roi-sem-lote`, `cta-roi-sem-lote`,
 lotes salvos`, `ticket médio de referência R$ 320` — **0 na 39ª, presentes na
 40ª**. Marcadores da 54 = `cta-look-sem-ficha`, `cta-dpp-sem-ficha`,
 `cta-producao-sem-op`, `cta-ficha-cega-clonar`, `cta-line-sheet-sem-ficha`,
-`producao-sem-op` — **0 na 41ª, 1 na 43ª**. A 43ª é a medição corrente:
-repo, ar e banco alinhados na Onda 54.
+`producao-sem-op` — **0 na 41ª, 1 na 43ª**. Marcadores exclusivos da 55 =
+`Causa-raiz da CAPA`, `Novo porquê da CAPA`, `Eficácia verificada da CAPA`,
+`URL da evidência da CAPA`, `Nota da transição da CAPA` — **0 na 45ª**, logo a
+Onda 55 ainda não está no ar (`Responsável pela CAPA` = 1 é da Onda 49). A 45ª
+é a medição corrente: repo na Onda 55, ar na Onda 54, banco aplicado.

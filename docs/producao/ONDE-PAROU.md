@@ -156,7 +156,26 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 54 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 55 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (44ª e 45ª medições): "projeto publicado no lovable,
+> prossiga" — marco redundante e Onda 55 escolhida pelo risco.** A **44ª
+> medição re-mediu** o relato e **não confirmou cegamente**: o ar segue com o
+> mesmo entry `index-CgpxQvgj.js` / `index-CyHoINKY.js` (223 chunks /
+> 3.188.203 bytes) e os mesmos 6 marcadores da Onda 54 — a publicação já
+> havia sido detectada e validada na 43ª medição, não houve nova publicação.
+> A varredura de risco abriu os **drawers** (fora das Ondas 49/52): o
+> `CapaDrawer` de `/quality` tinha **11 campos sem nome acessível** em 4 abas
+> (Investigação 7/7, Ações 5/5, Evidências 3/3, Timeline 1/1), porque `Field`
+> renderiza `<label>` irmão sem `htmlFor`/`id`. **Onda 55**: 11 `aria-label`,
+> sem trocar `<div>` por `<label>` wrapper (alguns `Field` contêm botões) e sem
+> mexer em estrutura, handlers, validações ou guardas 47–54. Browser local:
+> **0 campos sem nome nas 4 abas**, 2 `aria-invalid` preservados, toast `CAPA
+aberta`. Gates **733/733**, `tsc` 0, `eslint` 0 erros, `prettier` limpo.
+> **45ª medição: repo Onda 55, ar Onda 54** (5 marcadores exclusivos da 55 =
+> 0), banco view `200 []` / 4 funções `401 42501` / SQL SHA inalterado.
+> Publicar a Onda 55 é a próxima ação do dono. Detalhes em
+> `ONDA-55-CAPA-DRAWER-TEM-NOME.md` e `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (43ª medição): "atualize o github" revelou uma
 > publicação não relatada da Onda 54.** O token novo validou (`GET /user` =
@@ -478,6 +497,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     em produção: os 5 CTAs funcionam e 0 avisos sem saída. **Repo, ar e banco
     alinhados na Onda 54.** Aqui foi **só publicar**: o SQL já estava aplicado
     desde a 24ª medição.
+13. **Publicar a Onda 55.** O ar segue em `index-CgpxQvgj.js` (Onda 54). A 46ª
+    medição deve achar `Causa-raiz da CAPA`, `Novo porquê da CAPA`, `Eficácia
+verificada da CAPA`, `URL da evidência da CAPA` e `Nota da transição da
+CAPA` no bundle, e reabrir as 4 abas do drawer CAPA em produção medindo 0
+    campos sem nome. Publicar app **não aplica SQL**.
 
 ---
 
@@ -488,7 +512,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 726 testes
+cd plm-use && npx vitest run            # 733 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -498,7 +522,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **726/726**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **733/733**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -542,5 +566,10 @@ inalterado. **42ª medição: push confirmado após troca de credencial** — to
 anterior `401`, novo PAT `200 Implantac`, push `1fb232b..8fa6b1d` e depois
 `8fa6b1d..fb46267`, `git ls-remote` = HEAD local. **43ª medição: publicação
 não relatada da Onda 54 detectada por BFS e validada por cliques reais**;
-repo, ar e banco alinhados na Onda 54, sem publicação pendente. Medição por
-camada em `SINCRONIA-2026-11-05.md`.
+repo, ar e banco alinhados na Onda 54, sem publicação pendente. **44ª
+medição: "projeto publicado" re-medido e considerado redundante** (mesmo entry
+e marcadores da 43ª). **45ª medição: Onda 55 escolhida pelo risco** (11 campos
+do drawer CAPA sem nome → 0 após 11 `aria-label`), gates **733/733**; ar ainda
+na Onda 54 (5 marcadores exclusivos da 55 = 0), banco re-medido e inalterado.
+Há **uma publicação pendente** (a 55). Medição por camada em
+`SINCRONIA-2026-11-05.md`.
