@@ -156,7 +156,29 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 52 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 53 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (38ª e 39ª medições): "lovable publicado, prossiga" —
+> marco validado e Onda 53 escolhida pelo risco.** A **38ª medição re-mediu**
+> o relato: entry novo `index-BEBmR4We.js` / `index-BLCmNzL8.js` (224 chunks /
+> 3.185.303 bytes) com os 7 marcadores exclusivos da Onda 52; reabertura dos
+> diálogos em produção → **15 diálogos, 0 campos sem nome acessível**.
+> **Repo, ar e banco alinhados na Onda 52.** A varredura de números de fábrica
+> nas 44 rotas achou **um** painel ainda apurando vitrine: o ROI de
+> `/collections` exibia `R$ 476.800 / 1.490 / 69% / 2,29×` sobre os 4 lotes
+> `demo: true` e constantes de referência; "Meta × Realizado" apurava as 3
+> coleções de vitrine. **Onda 53**: `lotesOperacionais()` (Onda 40) e
+> `colecoesOperacionais()` (Onda 51) aplicados aos dois painéis, `—` + avisos
+> `roi-sem-lote` / `performance-sem-colecao` com CTAs, tabelas/barras não
+> renderizadas e declaração permanente de estimativa (ticket médio R$ 320).
+> Browser local: 0 números de fábrica, 17 travessões; criar coleção libera o
+> painel de performance e mantém `roi-sem-lote` (correto, sem lote real).
+> Gates **718/718**, `tsc` 0, `eslint` 0 erros, `prettier` limpo. **39ª
+> medição: repo Onda 53, ar Onda 52** (6 marcadores da 53 = 0), banco view
+> `200 []` / 4 funções `401 42501` / SQL SHA inalterado. Publicar a Onda 53 é
+> a próxima ação do dono. Detalhes em
+> `ONDA-53-KPI-DE-COLECAO-NAO-NASCE-DA-VITRINE.md` e
+> `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (36ª e 37ª medições): "publicado, prossiga" — marco
 > validado e Onda 52 escolhida pelo risco.** A **36ª medição re-mediu** o
@@ -405,12 +427,15 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
    marcadores da 51; cliques reais em produção confirmaram `Exportar`
    `disabled`, 0 downloads/popups e 0 campos sem nome no diálogo. **Repo, ar e
    banco alinhados na Onda 51.**
-10. **Publicar a Onda 52.** O ar segue em `index-BVDv6rFg.js` (Onda 51). A 38ª
-    medição deve achar `Nome do look`, `Coleção do look`, `Cor do look`, `Tags
-do look, separadas por vírgula`, `Ocasião do look`, `Pontos de bordado
-(milhares)` e `Número de cores da aplicação` no bundle, e reabrir os
-    diálogos em produção medindo 0 campos sem nome. Publicar app **não aplica
-    SQL**.
+10. **~~Publicar a Onda 52~~ — concluído (38ª medição), marco relatado e
+    validado.** Entry `index-BEBmR4We.js` / `index-BLCmNzL8.js` com os 7
+    marcadores exclusivos da 52; 15 diálogos reabertos em produção com **0
+    campos sem nome**. **Repo, ar e banco alinhados na Onda 52.**
+11. **Publicar a Onda 53.** O ar segue em `index-BEBmR4We.js` (Onda 52). A 40ª
+    medição deve achar `roi-sem-lote`, `cta-roi-sem-lote`,
+    `performance-sem-colecao`, `cta-performance-sem-colecao` e `Estimativa
+sobre lotes salvos` no bundle, e repetir em produção a medição de `—` nos
+    KPIs de ROI e Meta × Realizado. Publicar app **não aplica SQL**.
 
 ---
 
@@ -421,7 +446,7 @@ do look, separadas por vírgula`, `Ocasião do look`, `Pontos de bordado
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 710 testes
+cd plm-use && npx vitest run            # 718 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -431,7 +456,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **710/710**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **718/718**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -458,6 +483,12 @@ validado** — entry `index-BVDv6rFg.js` / `index-VytO5e2k.js` (224 chunks /
 sem nome no diálogo por cliques reais em produção; **repo/ar/banco na Onda
 51**. **37ª medição: Onda 52 escolhida pelo risco** (107 campos sem nome em 19
 diálogos → 0 após 114 `aria-label`), gates **710/710**; ar ainda na Onda 51
-(7 marcadores exclusivos da 52 = 0), banco re-medido e inalterado. Há **uma
-publicação pendente** (a 52). Medição por camada em
+(7 marcadores exclusivos da 52 = 0), banco re-medido e inalterado. **38ª
+medição: "lovable publicado" re-medido e validado** — entry `index-BEBmR4We.js`
+/ `index-BLCmNzL8.js` (224 chunks / 3.185.303 bytes), 7 marcadores da 52 = 1,
+15 diálogos com 0 campos sem nome por cliques reais em produção;
+**repo/ar/banco na Onda 52**. **39ª medição: Onda 53 escolhida pelo risco**
+(KPIs de ROI/ROAS de coleção nascendo de lotes `demo: true`), gates
+**718/718**; ar ainda na Onda 52 (6 marcadores da 53 = 0), banco re-medido e
+inalterado. Há **uma publicação pendente** (a 53). Medição por camada em
 `SINCRONIA-2026-11-05.md`.
