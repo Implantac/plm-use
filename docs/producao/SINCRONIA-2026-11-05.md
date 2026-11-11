@@ -9,11 +9,11 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ## 1. O quadro (41ª medição, após fechar a Onda 54)
 
-| Camada                                         | Estado medido                      | Como foi medido                     |
-| ---------------------------------------------- | ---------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 54** — 2 commits **locais** | `git log` · push pendente (§ 1-A)   |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 53** — `index-CFlhwbuy.js`  | BFS + cliques reais (seção 2-J)     |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**    | `200` na view · `42501` nas funções |
+| Camada                                         | Estado medido                     | Como foi medido                     |
+| ---------------------------------------------- | --------------------------------- | ----------------------------------- |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 54** — `8fa6b1d`           | `git log` / `git ls-remote` (§ 1-A) |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 53** — `index-CFlhwbuy.js` | BFS + cliques reais (seção 2-J)     |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
 
 `lovable publicado, prossiga` são **dois comandos**. A **40ª medição** re-mediu
 o marco: entry novo `index-CFlhwbuy.js` / `index-CZvI_8s1.js` com os 6
@@ -34,19 +34,24 @@ publicação pendente** — não por defeito de código. O banco não precisava
 avançar: **publicar o app não aplica SQL**. Gates: `tsc` 0, `eslint` 0 erros /
 20 warnings, `prettier` limpo, **726/726**.
 
-### 1-A. Push da Onda 54 pendente por credencial (medido, não presumido)
+### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
-Ao empurrar, `GET /user` com o token em uso respondeu **`401 Bad
-credentials`** e o `git push` falhou com `could not read Password`.
-`git ls-remote https://github.com/Implantac/plm-use.git main` (leitura pública)
-mediu **`1fb232bf1d5ea81c994a6b0b6e380cd3b50cf0bc`** — o remoto ainda está na
-**Onda 53**. Localmente estão `a3eecd6` (código) e `b6b810f` (40ª/41ª + docs),
-working tree limpo. **Não há `git ls-remote` confirmando o push nem
-check-runs da Onda 54**: a onda está fechada no repo local, **não empurrada**.
-O token nunca foi gravado em `.git/config` nem em arquivo versionado
-(`grep -c ghp_ .git/config` = 0; `git grep -n ghp_ -- .` = 0). Assim que um
-token com permissão de push for fornecido, repetir push, `git ls-remote` e
-check-runs — e só então marcar como empurrada.
+O token então em uso expirou: `GET /user` → **`401 Bad credentials`** e o
+`git push` falhou com `could not read Password`. `git ls-remote` (leitura
+pública) mediu **`1fb232bf1d5ea81c994a6b0b6e380cd3b50cf0bc`** — remoto ainda
+na **Onda 53** — e a onda foi documentada como **não empurrada** enquanto se
+aguardava credencial. O dono forneceu um novo PAT; a re-medição confirmou
+`GET /user` **`200` · login `Implantac`**, e o push foi
+**`1fb232b..8fa6b1d  main -> main`**. `git ls-remote` passou a medir
+**`8fa6b1db785e1e87dcad7315f629adedf2932899`**, idêntico ao HEAD local, com
+working tree limpo.
+
+O token nunca foi gravado em `.git/config` nem em arquivo versionado: a
+verificação por prefixo de PAT retornou **0** em ambos depois de remover a
+única ocorrência, que era o **próprio comando de verificação citado** neste
+documento (falso positivo, não um segredo). Os commits `a3eecd6` (código) e
+`8fa6b1d` (40ª/41ª + docs) estão no remoto. **A Onda 54 está empurrada**; os
+check-runs do HEAD final são conferidos ao fim desta rodada.
 
 ---
 

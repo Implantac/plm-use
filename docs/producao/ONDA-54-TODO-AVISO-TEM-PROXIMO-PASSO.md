@@ -133,13 +133,13 @@ Repo e ar **desalinhados em uma onda, por publicação pendente** — não por
 defeito de código. Publicar a Onda 54 é a próxima ação do dono; **publicar o
 app não aplica SQL** e o SQL já está aplicado desde a 24ª medição.
 
-> **Push pendente por credencial:** `GET /user` com o token em uso respondeu
-> **`401 Bad credentials`** e o `git push` falhou. `git ls-remote` (leitura
-> pública) mediu `1fb232b` — remoto ainda na **Onda 53**; os commits
-> `a3eecd6` e `b6b810f` existem **apenas no repo local**. Não há check-runs
-> desta onda. Token fora de `.git/config` e dos arquivos versionados. Esta
-> onda **não está empurrada** até que um token válido seja fornecido e o
-> `git ls-remote` confirme.
+> **Push concluído após troca de credencial:** o token anterior expirou
+> (`GET /user` = `401 Bad credentials`) e `git ls-remote` media `1fb232b`
+> (remoto na Onda 53). Com o novo PAT fornecido pelo dono, `GET /user` passou a
+> **`200` · `Implantac`**, o push foi **`1fb232b..8fa6b1d  main -> main`** e
+> `git ls-remote` confirmou **`8fa6b1db785e1e87dcad7315f629adedf2932899`**,
+> idêntico ao HEAD local. Token fora de `.git/config` e dos arquivos
+> versionados (verificação por prefixo = 0). **A Onda 54 está empurrada.**
 
 ### Dívida que permanece
 

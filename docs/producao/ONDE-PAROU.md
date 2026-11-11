@@ -176,7 +176,10 @@ Nesta ordem, porque cada passo destrava o seguinte:
 > → **0 rotas com aviso sem saída**. Gates **726/726**, `tsc` 0, `eslint` 0
 > erros, `prettier` limpo. **41ª medição: repo Onda 54, ar Onda 53** (6
 > marcadores da 54 = 0), banco view `200 []` / 4 funções `401 42501` / SQL SHA
-> inalterado. Publicar a Onda 54 é a próxima ação do dono. **Pendência:** token GitHub expirou (`401 Bad credentials`), push falhou, `git ls-remote` = `1fb232b` (remoto na Onda 53) e os 2 commits da Onda 54 estão só no repo local, sem check-runs. Detalhes em
+> inalterado. Publicar a Onda 54 é a próxima ação do dono. **Push concluído:** o token
+> anterior expirou (`401`), o dono forneceu PAT novo (`GET /user` = `200 Implantac`),
+> push `1fb232b..8fa6b1d` e `git ls-remote` = `8fa6b1db785e1e87dcad7315f629adedf2932899`
+> = HEAD local; token fora do config e dos arquivos versionados. Detalhes em
 > `ONDA-54-TODO-AVISO-TEM-PROXIMO-PASSO.md` e `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (38ª e 39ª medições): "lovable publicado, prossiga" —
