@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Activity, BarChart3, TrendingUp } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, TrendingUp } from "lucide-react";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 type PerfCollection = {
   id: number;
@@ -48,6 +49,10 @@ export function CollectionPerformance({
     };
   }, [collections]);
 
+  // Onda 53: a rota passa só coleções operacionais. Vazio = vitrine, não zero
+  // apurado de mix/curva ABC de fábrica.
+  const apuravel = collections.length > 0;
+
   return (
     <Card className="glass-card rounded-lg">
       <CardHeader className="p-5 border-b border-border/60">
@@ -56,32 +61,57 @@ export function CollectionPerformance({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-5 space-y-5">
+        {!apuravel && (
+          <div
+            data-testid="performance-sem-colecao"
+            className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3"
+          >
+            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              <strong className="text-foreground">Meta × Realizado não apurável.</strong> Só há
+              coleções de demonstração na vitrine: mix, sell-through e curva ABC ficam em
+              <strong className="text-foreground"> — </strong>, não em números de fábrica. Cadastre
+              uma coleção para apurar.
+              <CtaProximoPasso
+                passo="ficha"
+                label="Cadastrar coleção"
+                testId="cta-performance-sem-colecao"
+              />
+            </p>
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-2">
-          <Metric label="Plan." value={totals.planned} />
-          <Metric label="Real." value={totals.realized} tone="emerald" />
-          <Metric label="Sell-Th." value={`${totals.sellThrough.toFixed(0)}%`} tone="primary" />
+          <Metric label="Plan." value={apuravel ? totals.planned : "—"} />
+          <Metric label="Real." value={apuravel ? totals.realized : "—"} tone="emerald" />
+          <Metric
+            label="Sell-Th."
+            value={apuravel ? `${totals.sellThrough.toFixed(0)}%` : "—"}
+            tone="primary"
+          />
         </div>
 
-        <div className="space-y-3">
-          {collections.map((c) => {
-            const st = c.plannedMix > 0 ? (c.realizedMix / c.plannedMix) * 100 : 0;
-            const tone =
-              st >= 85 ? "bg-status-approved" : st >= 60 ? "bg-primary" : "bg-status-progress";
-            return (
-              <div key={c.id} className="space-y-1.5">
-                <div className="flex items-center justify-between text-2xs">
-                  <span className="text-white/85 truncate pr-2">{c.name}</span>
-                  <span className="font-bold text-white tabular-nums">
-                    {c.realizedMix}/{c.plannedMix} · {st.toFixed(0)}%
-                  </span>
+        {apuravel && (
+          <div className="space-y-3">
+            {collections.map((c) => {
+              const st = c.plannedMix > 0 ? (c.realizedMix / c.plannedMix) * 100 : 0;
+              const tone =
+                st >= 85 ? "bg-status-approved" : st >= 60 ? "bg-primary" : "bg-status-progress";
+              return (
+                <div key={c.id} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-2xs">
+                    <span className="text-white/85 truncate pr-2">{c.name}</span>
+                    <span className="font-bold text-white tabular-nums">
+                      {c.realizedMix}/{c.plannedMix} · {st.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                    <div className={`h-full ${tone}`} style={{ width: `${Math.min(st, 100)}%` }} />
+                  </div>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                  <div className={`h-full ${tone}`} style={{ width: `${Math.min(st, 100)}%` }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="space-y-2 pt-2 border-t border-border/60">
           <div className="flex items-center justify-between text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
@@ -89,26 +119,30 @@ export function CollectionPerformance({
               <Activity className="h-3 w-3 text-primary" /> Curva ABC (média)
             </span>
             <span className="text-white">
-              {totals.a.toFixed(0)} / {totals.b.toFixed(0)} / {totals.c.toFixed(0)}
+              {apuravel
+                ? `${totals.a.toFixed(0)} / ${totals.b.toFixed(0)} / ${totals.c.toFixed(0)}`
+                : "—"}
             </span>
           </div>
-          <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="bg-status-approved"
-              style={{ width: `${totals.a}%` }}
-              title={`A ${totals.a.toFixed(0)}%`}
-            />
-            <div
-              className="bg-primary"
-              style={{ width: `${totals.b}%` }}
-              title={`B ${totals.b.toFixed(0)}%`}
-            />
-            <div
-              className="bg-status-progress"
-              style={{ width: `${totals.c}%` }}
-              title={`C ${totals.c.toFixed(0)}%`}
-            />
-          </div>
+          {apuravel && (
+            <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className="bg-status-approved"
+                style={{ width: `${totals.a}%` }}
+                title={`A ${totals.a.toFixed(0)}%`}
+              />
+              <div
+                className="bg-primary"
+                style={{ width: `${totals.b}%` }}
+                title={`B ${totals.b.toFixed(0)}%`}
+              />
+              <div
+                className="bg-status-progress"
+                style={{ width: `${totals.c}%` }}
+                title={`C ${totals.c.toFixed(0)}%`}
+              />
+            </div>
+          )}
           <div className="flex items-center justify-between text-2xs text-muted-foreground">
             <span>A · top giro</span>
             <span>B · médio</span>
@@ -119,9 +153,19 @@ export function CollectionPerformance({
         <div className="rounded-md border border-status-approved/20 bg-status-approved/[0.06] p-3 flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-status-approved" />
           <p className="text-2xs text-white/85 leading-snug">
-            Sell-through combinado de{" "}
-            <span className="font-bold text-status-approved">{totals.sellThrough.toFixed(0)}%</span>{" "}
-            sobre o mix planejado.
+            {apuravel ? (
+              <>
+                Sell-through combinado de{" "}
+                <span className="font-bold text-status-approved">
+                  {totals.sellThrough.toFixed(0)}%
+                </span>{" "}
+                sobre o mix planejado.
+              </>
+            ) : (
+              <>
+                Sell-through combinado: <strong>—</strong> (sem mix planejado salvo).
+              </>
+            )}
           </p>
         </div>
       </CardContent>

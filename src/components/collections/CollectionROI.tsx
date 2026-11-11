@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, DollarSign, Megaphone, Target } from "lucide-react";
-import { usePCPStore } from "@/lib/pcp/store";
+import { TrendingUp, DollarSign, Megaphone, Target, AlertTriangle } from "lucide-react";
+import { lotesOperacionais, usePCPStore } from "@/lib/pcp/store";
 import { useInfluencersStore } from "@/lib/influencers/store";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
@@ -14,7 +15,10 @@ const INVEST_BASE: Record<string, number> = {
 };
 
 export function CollectionROI() {
-  const lotes = usePCPStore((s) => s.lotes);
+  // Onda 53: os 4 lotes do seed são `demo: true` (Onda 40). Antes este painel
+  // lia `s.lotes` direto e apurava receita/ROI/ROAS sobre a vitrine.
+  const lotesTodos = usePCPStore((s) => s.lotes);
+  const lotes = useMemo(() => lotesOperacionais(lotesTodos), [lotesTodos]);
   const influencers = useInfluencersStore((s) => s.influencers);
 
   const rows = useMemo(() => {
@@ -58,6 +62,8 @@ export function CollectionROI() {
     });
   }, [lotes, influencers]);
 
+  const apuravel = rows.length > 0;
+
   return (
     <Card className="glass-card rounded-lg p-6 space-y-5 mt-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -68,65 +74,90 @@ export function CollectionROI() {
           Cruza PCP × Marketing × Influencers
         </span>
       </div>
-      <div className="rounded-lg border border-border/60 overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="border-b border-border/60 bg-muted/50 text-2xs uppercase tracking-widest text-muted-foreground">
-            <tr>
-              <th className="px-4 py-3">Coleção</th>
-              <th className="px-4 py-3">Refs</th>
-              <th className="px-4 py-3">Produzidas</th>
-              <th className="px-4 py-3">Receita</th>
-              <th className="px-4 py-3">Investimento</th>
-              <th className="px-4 py-3">Lucro</th>
-              <th className="px-4 py-3">ROI</th>
-              <th className="px-4 py-3">ROAS</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/70 text-xs text-white">
-            {rows.map((r) => (
-              <tr key={r.colecao} className="hover:bg-accent/50">
-                <td className="px-4 py-3 font-semibold">{r.colecao}</td>
-                <td className="px-4 py-3 text-muted-foreground">{r.refs.size}</td>
-                <td className="px-4 py-3">{r.produzidas.toLocaleString("pt-BR")}</td>
-                <td className="px-4 py-3 text-status-approved">{brl(r.receita)}</td>
-                <td
-                  className="px-4 py-3 text-status-progress"
-                  title={`Marketing ${brl(r.invest)} · Influencers ${brl(r.investInfluencer)}`}
-                >
-                  {brl(r.investTotal)}
-                </td>
-                <td
-                  className={`px-4 py-3 font-semibold ${r.lucro >= 0 ? "text-status-approved" : "text-status-rejected"}`}
-                >
-                  {brl(r.lucro)}
-                </td>
-                <td
-                  className={`px-4 py-3 font-semibold ${r.roi >= 0 ? "text-status-approved" : "text-status-rejected"}`}
-                >
-                  {r.roi.toFixed(0)}%
-                </td>
-                <td className="px-4 py-3 text-primary font-bold">{r.roas.toFixed(2)}×</td>
+      <p className="text-2xs text-muted-foreground leading-snug">
+        Estimativa sobre lotes salvos: receita a ticket médio de referência R$ 320, custo industrial
+        R$ 84/peça e investimento de marketing de referência. Não é dado de BI nem apuração fiscal.
+      </p>
+      {!apuravel && (
+        <div
+          data-testid="roi-sem-lote"
+          className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3"
+        >
+          <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+          <p className="text-[11px] leading-relaxed text-muted-foreground">
+            <strong className="text-foreground">ROI por coleção não apurável.</strong> Só há lotes
+            de demonstração na vitrine: produzidas, receita, investimento, lucro, ROI e ROAS ficam
+            em <strong className="text-foreground">—</strong>, não em números de fábrica. Registre
+            um lote/OP real para apurar.
+            <CtaProximoPasso
+              passo="pedido"
+              label="Ir para pedidos e OPs"
+              testId="cta-roi-sem-lote"
+            />
+          </p>
+        </div>
+      )}
+      {apuravel && (
+        <div className="rounded-lg border border-border/60 overflow-hidden">
+          <table className="w-full text-left">
+            <thead className="border-b border-border/60 bg-muted/50 text-2xs uppercase tracking-widest text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3">Coleção</th>
+                <th className="px-4 py-3">Refs</th>
+                <th className="px-4 py-3">Produzidas</th>
+                <th className="px-4 py-3">Receita</th>
+                <th className="px-4 py-3">Investimento</th>
+                <th className="px-4 py-3">Lucro</th>
+                <th className="px-4 py-3">ROI</th>
+                <th className="px-4 py-3">ROAS</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-border/70 text-xs text-white">
+              {rows.map((r) => (
+                <tr key={r.colecao} className="hover:bg-accent/50">
+                  <td className="px-4 py-3 font-semibold">{r.colecao}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.refs.size}</td>
+                  <td className="px-4 py-3">{r.produzidas.toLocaleString("pt-BR")}</td>
+                  <td className="px-4 py-3 text-status-approved">{brl(r.receita)}</td>
+                  <td
+                    className="px-4 py-3 text-status-progress"
+                    title={`Marketing ${brl(r.invest)} · Influencers ${brl(r.investInfluencer)}`}
+                  >
+                    {brl(r.investTotal)}
+                  </td>
+                  <td
+                    className={`px-4 py-3 font-semibold ${r.lucro >= 0 ? "text-status-approved" : "text-status-rejected"}`}
+                  >
+                    {brl(r.lucro)}
+                  </td>
+                  <td
+                    className={`px-4 py-3 font-semibold ${r.roi >= 0 ? "text-status-approved" : "text-status-rejected"}`}
+                  >
+                    {r.roi.toFixed(0)}%
+                  </td>
+                  <td className="px-4 py-3 text-primary font-bold">{r.roas.toFixed(2)}×</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-border/60">
         <KpiTile
           icon={<DollarSign />}
           label="Receita total"
-          value={brl(rows.reduce((a, r) => a + r.receita, 0))}
+          value={apuravel ? brl(rows.reduce((a, r) => a + r.receita, 0)) : "—"}
         />
         <KpiTile
           icon={<Megaphone />}
           label="Investido"
-          value={brl(rows.reduce((a, r) => a + r.investTotal, 0))}
+          value={apuravel ? brl(rows.reduce((a, r) => a + r.investTotal, 0)) : "—"}
           accent
         />
         <KpiTile
           icon={<TrendingUp />}
           label="Lucro acumulado"
-          value={brl(rows.reduce((a, r) => a + r.lucro, 0))}
+          value={apuravel ? brl(rows.reduce((a, r) => a + r.lucro, 0)) : "—"}
           positive
         />
       </div>

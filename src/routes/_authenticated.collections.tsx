@@ -359,7 +359,7 @@ function CollectionsPage() {
         )}
 
         <div className="space-y-6">
-          <CollectionPerformance collections={collections} />
+          <CollectionPerformance collections={operacionais} />
           <Card className="glass-card rounded-lg">
             <CardHeader className="p-5 border-b border-border/60">
               <CardTitle className="text-2xs font-semibold uppercase tracking-[0.05em] text-white">
