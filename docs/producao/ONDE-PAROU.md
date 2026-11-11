@@ -156,7 +156,28 @@ Nesta ordem, porque cada passo destrava o seguinte:
 
 ---
 
-## 7-A. Ondas 19 a 53 (04–06/11/2026) — o que mudou depois deste documento
+## 7-A. Ondas 19 a 54 (04–06/11/2026) — o que mudou depois deste documento
+
+> **Atualização de 06/11 (40ª e 41ª medições): "lovable publicado, prossiga" —
+> marco validado e Onda 54 escolhida pelo risco.** A **40ª medição re-mediu**
+> o relato: entry novo `index-CFlhwbuy.js` / `index-CZvI_8s1.js` (224 chunks /
+> 3.187.305 bytes) com os 6 marcadores da Onda 53; cliques reais em
+> `/collections` confirmaram avisos/CTA, **0 números de fábrica** e 17
+> travessões. **Repo, ar e banco alinhados na Onda 53.** Correção de
+> diagnóstico: `/orders → "Liberar p/ PCP"` já funciona (toast de liberação) e
+> o passo 8 do fluxo PCP é stepper de checklist — a limitação da Onda 53 era
+> **aviso sem saída clicável**, não fluxo quebrado. Varredura: 21 rotas com
+> aviso, 12 sem `CtaProximoPasso`, mas 9 já tinham saída própria (falsos
+> positivos descartados) → **5 avisos sem nenhuma ação**. **Onda 54**: 5 CTAs
+> (`looks`, `pieces-report`, `production`, `orders`, `collection-map`),
+> guardas 47/48 intactas, nenhum documento emitido nem vitrine promovida
+> automaticamente. Cliques reais: navegação para `/references` e `/orders`,
+> toast `Pedido clonado como PD-2026-803`; varredura final com contexto limpo
+> → **0 rotas com aviso sem saída**. Gates **726/726**, `tsc` 0, `eslint` 0
+> erros, `prettier` limpo. **41ª medição: repo Onda 54, ar Onda 53** (6
+> marcadores da 54 = 0), banco view `200 []` / 4 funções `401 42501` / SQL SHA
+> inalterado. Publicar a Onda 54 é a próxima ação do dono. **Pendência:** token GitHub expirou (`401 Bad credentials`), push falhou, `git ls-remote` = `1fb232b` (remoto na Onda 53) e os 2 commits da Onda 54 estão só no repo local, sem check-runs. Detalhes em
+> `ONDA-54-TODO-AVISO-TEM-PROXIMO-PASSO.md` e `SINCRONIA-2026-11-05.md`.
 
 > **Atualização de 06/11 (38ª e 39ª medições): "lovable publicado, prossiga" —
 > marco validado e Onda 53 escolhida pelo risco.** A **38ª medição re-mediu**
@@ -431,11 +452,15 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     validado.** Entry `index-BEBmR4We.js` / `index-BLCmNzL8.js` com os 7
     marcadores exclusivos da 52; 15 diálogos reabertos em produção com **0
     campos sem nome**. **Repo, ar e banco alinhados na Onda 52.**
-11. **Publicar a Onda 53.** O ar segue em `index-BEBmR4We.js` (Onda 52). A 40ª
-    medição deve achar `roi-sem-lote`, `cta-roi-sem-lote`,
-    `performance-sem-colecao`, `cta-performance-sem-colecao` e `Estimativa
-sobre lotes salvos` no bundle, e repetir em produção a medição de `—` nos
-    KPIs de ROI e Meta × Realizado. Publicar app **não aplica SQL**.
+11. **~~Publicar a Onda 53~~ — concluído (40ª medição), marco relatado e
+    validado.** Entry `index-CFlhwbuy.js` / `index-CZvI_8s1.js` com os 6
+    marcadores da 53; cliques reais em produção confirmaram avisos/CTA, 0
+    números de fábrica e 17 travessões. **Repo, ar e banco alinhados na Onda 53.**
+12. **Publicar a Onda 54.** O ar segue em `index-CFlhwbuy.js` (Onda 53). A 42ª
+    medição deve achar `cta-look-sem-ficha`, `cta-dpp-sem-ficha`,
+    `cta-producao-sem-op`, `cta-ficha-cega-clonar` e
+    `cta-line-sheet-sem-ficha` no bundle, e repetir em produção os cliques nos
+    5 CTAs medindo 0 avisos sem saída. Publicar app **não aplica SQL**.
 
 ---
 
@@ -446,7 +471,7 @@ sobre lotes salvos` no bundle, e repetir em produção a medição de `—` nos
 
 ```bash
 bash scripts/check-sync.sh                 # repo × app × banco (rotas e tabelas)
-cd plm-use && npx vitest run            # 718 testes
+cd plm-use && npx vitest run            # 726 testes
 DATABASE_URL=postgres://... scripts/certify-db.sh   # 148 asserções SQL
 git log --oneline -15                   # onde a história parou
 ```
@@ -456,7 +481,7 @@ Fonte das seções 1–7: código em `main@693ec16`, API REST do projeto
 04/11 18:00 UTC) e `npm audit`.
 Seção 7-A: código das Ondas 47/48/49 em `main` (`48f05c6` é a 47,
 `5af3964` a 48) + commits de medição, `docs/producao/ONDA-19..49-*.md` e os
-números das suítes (vitest **718/718**, SQL 163/163). 28ª medição: bundle
+números das suítes (vitest **726/726**, SQL 163/163). 28ª medição: bundle
 `index-CdXaXBJP.js` com 227 chunks e todos os marcadores da Onda 47 —
 repo/ar/banco alinhados. 29ª medição: os 6 marcadores da 48 = 0 (ar na 47).
 **30ª medição: publicação não relatada da Onda 48 detectada por BFS**
@@ -490,5 +515,11 @@ medição: "lovable publicado" re-medido e validado** — entry `index-BEBmR4We.
 **repo/ar/banco na Onda 52**. **39ª medição: Onda 53 escolhida pelo risco**
 (KPIs de ROI/ROAS de coleção nascendo de lotes `demo: true`), gates
 **718/718**; ar ainda na Onda 52 (6 marcadores da 53 = 0), banco re-medido e
-inalterado. Há **uma publicação pendente** (a 53). Medição por camada em
+inalterado. **40ª medição: "lovable publicado" re-medido e validado** — entry
+`index-CFlhwbuy.js` / `index-CZvI_8s1.js` (224 chunks / 3.187.305 bytes), 6
+marcadores da 53 presentes, avisos/CTA e 0 números de fábrica por cliques
+reais em produção; **repo/ar/banco na Onda 53**. **41ª medição: Onda 54
+escolhida pelo risco** (5 avisos de vitrine sem saída → 0 após 5 CTAs), gates
+**726/726**; ar ainda na Onda 53 (6 marcadores da 54 = 0), banco re-medido e
+inalterado. Há **uma publicação pendente** (a 54). Medição por camada em
 `SINCRONIA-2026-11-05.md`.
