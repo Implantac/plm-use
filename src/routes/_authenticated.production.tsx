@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -138,10 +139,18 @@ function ProductionPage() {
     >
       <div className="space-y-4">
         {isDemo && (
-          <div className="rounded-md border border-status-progress/30 bg-status-progress/10 px-4 py-2 text-xs text-status-progress">
+          <div
+            data-testid="producao-sem-op"
+            className="rounded-md border border-status-progress/30 bg-status-progress/10 px-4 py-2 text-xs text-status-progress"
+          >
             <strong>Demonstração:</strong> não há OP no banco — as colunas abaixo usam o seed de
             exemplo. Libere um pedido aprovado para o PCP (em <em>Pedidos → Liberar para PCP</em>) e
             esta tela passa a mostrar a produção real.
+            <CtaProximoPasso
+              passo="pedido"
+              label="Ir para Pedidos · Liberar para PCP"
+              testId="cta-producao-sem-op"
+            />
           </div>
         )}
         <div ref={flowRef}>

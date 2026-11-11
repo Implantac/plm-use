@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { useEffect, useMemo, useState } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
 import {
@@ -469,6 +470,11 @@ function LookDetail({ look }: { look: Look }) {
             </strong>{" "}
             ({fin.codesSemFicha.join(", ")}). Peça sem ficha não recebe preço estimado — o custo do
             conjunto e o kit B2B ficam em aberto até a ficha existir.
+            <CtaProximoPasso
+              passo="ficha"
+              label="Criar ficha técnica"
+              testId="cta-look-sem-ficha"
+            />
           </div>
         )}
         {look.items.length > 0 && (

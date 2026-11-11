@@ -456,12 +456,19 @@ function CollectionMapRoute() {
                   </Button>
                 </>
               ) : (
-                <span
-                  data-testid="line-sheet-bloqueado"
-                  title={LINE_SHEET_DEMO_BLOQUEIO}
-                  className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
-                >
-                  Line Sheet / CSV indisponíveis · sem ficha salva
+                <span className="inline-flex flex-wrap items-center gap-1">
+                  <span
+                    data-testid="line-sheet-bloqueado"
+                    title={LINE_SHEET_DEMO_BLOQUEIO}
+                    className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+                  >
+                    Line Sheet / CSV indisponíveis · sem ficha salva
+                  </span>
+                  <CtaProximoPasso
+                    passo="ficha"
+                    label="Cadastrar ficha"
+                    testId="cta-line-sheet-sem-ficha"
+                  />
                 </span>
               )}
             </div>

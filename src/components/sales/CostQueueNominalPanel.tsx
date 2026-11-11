@@ -239,12 +239,31 @@ export function CostQueueNominalPanel() {
                       <FileText className="h-3 w-3 text-emerald-500" /> Ficha Cega A4
                     </Button>
                   ) : (
-                    <span
-                      data-testid="ficha-cega-bloqueada"
-                      title={FICHA_CEGA_DEMO_BLOQUEIO}
-                      className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
-                    >
-                      Ficha Cega indisponível · clone para emitir
+                    <span className="inline-flex flex-wrap items-center gap-1">
+                      <span
+                        data-testid="ficha-cega-bloqueada"
+                        title={FICHA_CEGA_DEMO_BLOQUEIO}
+                        className="inline-flex h-7 items-center rounded-md border border-amber-500/40 px-2 text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+                      >
+                        Ficha Cega indisponível · clone para emitir
+                      </span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        data-testid="cta-ficha-cega-clonar"
+                        onClick={() => {
+                          const cloned = cloneOrder(o.id);
+                          if (cloned) {
+                            toast.success(
+                              `Pedido clonado como ${cloned.orderNumber} (Recompra B2B)!`,
+                            );
+                          }
+                        }}
+                        className="h-7 text-2xs gap-1"
+                      >
+                        <Copy className="h-3 w-3 text-primary" /> Clonar para emitir
+                      </Button>
                     </span>
                   )}
                   {o.status !== "Custo Aprovado" && o.status !== "Liberado PCP" ? (

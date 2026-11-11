@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
@@ -192,6 +193,7 @@ export function DppPassportPanel() {
                 o modelo de demonstração não assina nada. Abra a Ficha Técnica, preencha a
                 etiquetagem (NCM e composição ABNT) e salve.
               </p>
+              <CtaProximoPasso passo="ficha" label="Abrir Referências" testId="cta-dpp-sem-ficha" />
             </div>
           )}
         </div>
