@@ -1,6 +1,7 @@
 // Fluxo do PCP — visualização + stepper interativo (continuação da OP).
 // Baseado no fluxograma "CONTINUAÇÃO – PROCESSO PCP / ORDEM DE PRODUÇÃO (OP)".
 import { Card } from "@/components/ui/card";
+import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -143,13 +144,13 @@ const NODES: Node[] = [
   {
     id: "lancar",
     label: "8 · Lançar pedido",
-    detail: "Cria lote no Kanban do PCP",
+    detail: "Libere o pedido aprovado para o PCP: o lote nasce da OP real",
     kind: "step",
     icon: Send,
     checklist: [
-      "Criar lote no Kanban (setor Corte/Compras)",
-      "Distribuir para responsáveis",
-      "Notificar equipes",
+      "Em Pedidos, libere o pedido aprovado para o PCP (Liberar p/ PCP)",
+      "O Kanban passa a mostrar a OP convertida em lote (setor Corte/Compras)",
+      "Distribuir para responsáveis e notificar equipes",
     ],
   },
   {
@@ -314,6 +315,13 @@ export function PCPFlowDiagram({ activeId, refCode, onSelect, compact }: Props) 
               </li>
             ))}
           </ul>
+          {active.id === "lancar" && (
+            <CtaProximoPasso
+              passo="pedido"
+              label="Ir para Pedidos · Liberar para PCP"
+              testId="cta-lancar-pedido-pcp"
+            />
+          )}
           <div className="flex items-center justify-between pt-2 border-t border-border">
             <Button
               size="sm"

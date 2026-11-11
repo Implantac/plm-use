@@ -233,18 +233,12 @@ interface PCPState {
     observacao?: string;
   }): { ok: boolean; erro?: string };
 
-  criarLote(args: {
-    grupo: string;
-    colecao?: string;
-    prioridade?: Lote["prioridade"];
-    responsavel?: string;
-    referencia: {
-      ref: string;
-      nome: string;
-      qtd_programada: number;
-      grade?: Record<string, number>;
-    };
-  }): { ok: boolean; numero?: string; erro?: string };
+  /**
+   * Onda 57: removido `criarLote()`, que nunca foi chamado por nenhum
+   * componente nem teste. O lote operacional nasce da OP liberada em
+   * `/orders → Liberar p/ PCP` e chega ao Kanban por `usePcpLotes()`
+   * (`ordersToLotes`), não por uma escrita local neste store.
+   */
 }
 
 // ---------- Helpers ----------
@@ -411,51 +405,6 @@ export const usePCPStore = create<PCPState>((set, get) => ({
     );
 
     return { ok: true };
-  },
-
-  criarLote({ grupo, colecao, prioridade, responsavel, referencia }) {
-    if (!referencia.ref || referencia.qtd_programada <= 0) {
-      return { ok: false, erro: "Referência ou quantidade inválida" };
-    }
-    const numero = `LOTE ${2700 + Math.floor(Math.random() * 900)}`;
-    const hoje = new Date().toISOString().slice(0, 10);
-    const prazo = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
-    const novo: Lote = {
-      numero,
-      grupo,
-      colecao,
-      prioridade: prioridade ?? "Média",
-      data_abertura: hoje,
-      data_prevista: prazo,
-      responsavel: responsavel ?? "Planner AI",
-      referencias: [
-        {
-          ref: referencia.ref,
-          nome: referencia.nome,
-          qtd_programada: referencia.qtd_programada,
-          qtd_adicional: 0,
-          qtd_perdida: 0,
-          qtd_produzida: 0,
-          setor_atual: "Compras",
-          status: "Aguardando",
-          grade: referencia.grade,
-          passagens: [],
-          ocorrencias: [],
-        },
-      ],
-    };
-    set((state) => ({ lotes: [novo, ...state.lotes] }));
-    void import("@/lib/activity/log").then(({ logActivity }) =>
-      logActivity({
-        module: "PCP",
-        entity_type: "lote",
-        entity_id: numero,
-        action: "create",
-        message: `Lote ${numero} criado (${referencia.ref} · ${referencia.qtd_programada} pçs)`,
-        metadata: { grupo, colecao, prioridade },
-      }),
-    );
-    return { ok: true, numero };
   },
 }));
 
