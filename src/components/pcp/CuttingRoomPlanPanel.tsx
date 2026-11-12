@@ -128,6 +128,7 @@ export function CuttingRoomPlanPanel() {
                   Cor do Enfesto
                 </Label>
                 <Input
+                  aria-label="Cor do Enfesto"
                   value={colorName}
                   onChange={(e) => setColorName(e.target.value)}
                   className="h-9 w-40 text-xs"
@@ -141,6 +142,7 @@ export function CuttingRoomPlanPanel() {
                   type="number"
                   min={1}
                   max={2000}
+                  aria-label="Folhas Totais"
                   value={totalPlies}
                   onChange={(e) => setTotalPlies(Math.max(1, Number(e.target.value) || 60))}
                   className="h-9 w-24 font-mono text-xs"
@@ -154,6 +156,7 @@ export function CuttingRoomPlanPanel() {
                   type="number"
                   min={10}
                   max={250}
+                  aria-label="Máx. Folhas/Mesa"
                   value={maxPlies}
                   onChange={(e) => setMaxPlies(Math.max(10, Number(e.target.value) || 60))}
                   className="h-9 w-28 font-mono text-xs"
@@ -167,6 +170,7 @@ export function CuttingRoomPlanPanel() {
                   type="number"
                   min={0}
                   max={20}
+                  aria-label="Pontas (cm)"
                   value={endLossCm}
                   onChange={(e) => setEndLossCm(Math.max(0, Number(e.target.value) || 0))}
                   className="h-9 w-20 font-mono text-xs"

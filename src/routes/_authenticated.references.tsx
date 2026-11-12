@@ -94,7 +94,10 @@ function ReferencesPage() {
               value={statusFilter}
               onValueChange={(v) => setStatusFilter(v as ReferenceStatus | "TODOS")}
             >
-              <SelectTrigger className="w-[180px] bg-muted/50 text-xs">
+              <SelectTrigger
+                aria-label="Filtrar por status"
+                className="w-[180px] bg-muted/50 text-xs"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

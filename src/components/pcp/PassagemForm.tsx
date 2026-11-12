@@ -104,7 +104,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
                   if (v === "integral") setQtd(pendente);
                 }}
               >
-                <SelectTrigger className="">
+                <SelectTrigger className="" aria-label="Tipo">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -118,7 +118,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
                 Setor destino
               </Label>
               <Select value={destino} onValueChange={(v) => setDestino(v as SetorPCP)}>
-                <SelectTrigger className="">
+                <SelectTrigger className="" aria-label="Setor destino">
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
@@ -138,6 +138,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
         <div>
           <Label required>Tipo de defeito</Label>
           <Input
+            aria-label="Tipo de defeito"
             value={defeito}
             onChange={(e) => setDefeito(e.target.value)}
             placeholder="Ex: silk torto, peça manchada, costura aberta"
@@ -152,6 +153,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
           <Label>Quantidade</Label>
           <Input
             type="number"
+            aria-label="Quantidade"
             value={qtd}
             onChange={(e) => setQtd(Number(e.target.value))}
             disabled={linha === "1a" && tipo === "integral"}
@@ -160,6 +162,7 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
         <div>
           <Label required>Responsável</Label>
           <Input
+            aria-label="Responsável"
             value={resp}
             onChange={(e) => setResp(e.target.value)}
             placeholder="Nome do operador"
@@ -171,7 +174,12 @@ export function PassagemForm({ loteNumero, referencia, linha }: Props) {
 
       <div>
         <Label>Observação</Label>
-        <Textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={2} />
+        <Textarea
+          aria-label="Observação"
+          value={obs}
+          onChange={(e) => setObs(e.target.value)}
+          rows={2}
+        />
       </div>
 
       {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}

@@ -1372,6 +1372,7 @@ export function ProductStudio() {
                     Variações de cor
                   </p>
                   <Input
+                    aria-label="Variações de cor"
                     value={variationColors}
                     onChange={(e) => setVariationColors(e.target.value)}
                     placeholder="areia, azul, preto"
@@ -1452,7 +1453,7 @@ export function ProductStudio() {
                     <Field>
                       <Label>Posição na peça</Label>
                       <Select value={artworkPlacement} onValueChange={setArtworkPlacement}>
-                        <SelectTrigger>
+                        <SelectTrigger aria-label="Posição na peça">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1467,7 +1468,7 @@ export function ProductStudio() {
                     <Field>
                       <Label>Técnica</Label>
                       <Select value={artworkTechnique} onValueChange={setArtworkTechnique}>
-                        <SelectTrigger>
+                        <SelectTrigger aria-label="Técnica">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

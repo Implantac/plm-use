@@ -107,6 +107,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
           Criar nova versão
         </p>
         <Input
+          aria-label="Resumo da alteração"
           value={resumo}
           onChange={(e) => {
             setResumo(e.target.value);
@@ -118,6 +119,7 @@ export function TechSheetVersions({ refAtual }: { refAtual: string }) {
         />
         {resumoError && <FieldMessage variant="error">{resumoError}</FieldMessage>}
         <Input
+          aria-label="Alterações (separe por ; )"
           value={alteracoes}
           onChange={(e) => setAlteracoes(e.target.value)}
           placeholder="Alterações (separe por ; )"

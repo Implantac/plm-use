@@ -497,6 +497,7 @@ function InventoryPage() {
                   {label}
                 </Label>
                 <Input
+                  aria-label={label}
                   value={formData[key as keyof typeof formData]}
                   onChange={(event) => setFormData({ ...formData, [key]: event.target.value })}
                   className="focus:border-primary/40 focus:ring-0"

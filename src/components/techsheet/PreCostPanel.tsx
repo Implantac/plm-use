@@ -512,6 +512,7 @@ export function PreCostPanel({ refAtual }: { refAtual: string }) {
               <div className="col-span-2 md:col-span-1">
                 <Label className="text-2xs text-muted-foreground">Arquivo Molde CAD</Label>
                 <Input
+                  aria-label="Arquivo Molde CAD"
                   value={cad.arquivoMolde ?? ""}
                   placeholder="REF_v1.ADS"
                   onChange={(e) =>
@@ -591,6 +592,7 @@ function FieldNum({
         type="number"
         step={step}
         value={value}
+        aria-label={label}
         onChange={(e) => onChange(Math.max(0, Number(e.target.value) || 0))}
         className="h-8 text-xs font-mono mt-1"
       />

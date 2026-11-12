@@ -538,6 +538,7 @@ function AnalyticsPage() {
                 Nome do Indicador
               </Label>
               <Input
+                aria-label="Nome do Indicador"
                 value={formData.label}
                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                 className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
@@ -550,6 +551,7 @@ function AnalyticsPage() {
                   Valor Atual
                 </Label>
                 <Input
+                  aria-label="Valor Atual"
                   value={formData.value}
                   onChange={(e) => setFormData({ ...formData, value: e.target.value })}
                   className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"
@@ -561,6 +563,7 @@ function AnalyticsPage() {
                   Meta / Subtítulo
                 </Label>
                 <Input
+                  aria-label="Meta / Subtítulo"
                   value={formData.sub}
                   onChange={(e) => setFormData({ ...formData, sub: e.target.value })}
                   className="rounded-lg h-12 focus:border-primary/40 focus:ring-0"

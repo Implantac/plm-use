@@ -7,7 +7,7 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (54ª medição, após fechar a Onda 60)
+## 1. O quadro (55ª medição, após fechar a Onda 61)
 
 | Camada                                         | Estado medido                     | Como foi medido                       |
 | ---------------------------------------------- | --------------------------------- | ------------------------------------- |
@@ -15,18 +15,22 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + 6 marcadores da 60 = `0` (§2-S) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções   |
 
-A 54ª medição **re-mediu as três camadas** e escolheu a Onda 60 pelo risco:
-varredura com cliques nas 42 rotas achou **43 campos sem nome acessível** na
-carga inicial (`tech-sheet` 23, `supplier-portal` 16) e **180 na fonte**
-(critério das Ondas 49/52). A correção pôs `aria-label` derivado do rótulo
-visível (ou da coluna, com índice) em 8 arquivos — fonte cai para **78**,
-sendo 7 falso positivo de `<label>` envolvente em `materials`. Detalhe e prova
-por cliques em `ONDA-60-CAMPOS-TEM-NOME-SEQUENCIA.md`.
+A 55ª medição **re-mediu as três camadas** e achou uma **publicação não
+relatada**: o entry havia avançado para `index-BQ5zgD_R.js` com os marcadores
+das Ondas 59 **e** 60. Cliques em produção confirmaram — `/influencers` sem
+guias nem linhas de seeding (Onda 59) e `/supplier-portal` com o diálogo
+"Cadastrar fornecedor" **0/11** sem nome (Onda 60). A Onda 61 fechou o
+universo de campos sem nome: contagem estática classificou os 78 restantes
+em falsos positivos (`<label>` envolvente, comentários, definições,
+`aria-label` após `=>`) e **48 reais em 18 arquivos** — PCP, engenharia de
+rota, estúdio de IA, corte, financeiro, medidas, estoque, analytics e
+comentários. Detalhe e prova por cliques em
+`ONDA-61-CAMPOS-TEM-NOME-FECHAMENTO.md`.
 
-**Repo na Onda 60, ar na Onda 58, banco inalterado — há duas publicações
-pendentes (59 e 60), por deploy, não por defeito.** Publicar o app não aplica
-SQL. Gates **770/770** (763 + 7). A 53ª medição (§2-R) e a 52ª (§2-Q)
-continuam válidas.
+**Repo na Onda 61, ar na Onda 60, banco inalterado — há uma publicação
+pendente (61), por deploy, não por defeito.** Publicar o app não aplica SQL.
+Gates **777/777** (770 + 7). A 54ª medição (§2-S) e a 53ª (§2-R) continuam
+válidas.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -747,6 +751,50 @@ diálogo "Cadastrar fornecedor" **0/11** sem nome; `/showroom` **0/2**; 0
 | Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **770/770**                                                      |
 
 **Há duas publicações pendentes (59 e 60).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
+## 2-T. 55ª medição — Onda 61 escolhida pelo risco, fechamento dos campos sem nome
+
+**Re-medição inicial:** repo `f01ab51` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-BQ5zgD_R.js` / `index-Bt3hn52q.js` (**214 chunks /
+3.198.301 bytes**, 0 falhas) com 6 marcadores da 60 = **1**, 3 da 59 = 1,
+marcadores da 58 = 1 — **publicações das Ondas 59 e 60 ocorreram sem relato**
+e foram validadas por cliques em produção (`/influencers` sem guias/linhas,
+`/supplier-portal` diálogo 0/11); banco view `200 []`, 4 funções `401 42501`,
+SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** contagem estática na fonte (critério 49/52/60) — **78**
+campos sem nome no contador bruto; classificados um a um: falsos positivos
+de `<label>` envolvente (`materials` 7, `OpWorkspace` 3, `planner` 3, `looks`
+3, `compare` 2), comentários/definições e `aria-label` após `=>`, restando
+**48 reais em 18 arquivos**. Nenhum emissor de documento sem guarda foi
+achado. Escolhido o fechamento da acessibilidade em telas de operação (PCP,
+rota, corte, financeiro, estoque) em vez do jargão de menor densidade, que
+não impede a operação.
+
+**Correção:** `aria-label` derivado do `<Label>` visível (ou da coluna, com
+índice) em 18 arquivos — `PassagemForm` (6), `OcorrenciaForm` (5),
+`route-engineering` (4), `CuttingRoomPlanPanel` (4), `financial` (4),
+`measurements` (4), `ProductStudio` (3), `MovementDialog` (3), `analytics`
+(3), `CommentsPanel` (2), `PreCostPanel` (2), `TechSheetVersions` (2),
+`CostQueueNominalPanel`, `collection-map`, `inventory`, `launch`, `prints`,
+`references` (1 cada). Nenhum handler, validação ou store mudou.
+
+**DEPOIS (mesmos cliques):** fonte **78 → 30** no contador bruto, **0 reais**
+(18 arquivos zerados); DOM `/financial` **0/2**, `/measurements` **0/26**,
+`/references` **0/2** (filtro nomeado), `/analytics` **0/1**; 0 `pageerror`.
+Captura `/home/user/medicao55-references-depois.png`.
+
+| Camada | 55ª medição (depois)                                                                               |
+| ------ | -------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 61** — HEAD local = remoto, limpo, token fora do config e dos arquivos                      |
+| Ar     | **Onda 60** — mesmo entry/bytes; 6 marcadores da 60 = 1, 3 da 59 = 1; marcadores 58/57/47 intactos |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                           |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **777/777**                            |
+
+**Há uma publicação pendente (61).** Nenhuma migration foi escrita nem
 aplicada; publicar o app não aplica SQL.
 
 ---

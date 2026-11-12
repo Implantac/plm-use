@@ -248,6 +248,7 @@ function CellBalancingTab() {
                 type="number"
                 min={120}
                 max={960}
+                aria-label="Jornada (min/dia)"
                 value={jornadaMin}
                 onChange={(e) => setJornadaMin(Math.max(120, Number(e.target.value) || 480))}
                 className="h-9 w-28 font-mono text-xs"
@@ -261,6 +262,7 @@ function CellBalancingTab() {
                 type="number"
                 min={40}
                 max={100}
+                aria-label="Eficiência (%)"
                 value={eficienciaPct}
                 onChange={(e) =>
                   setEficienciaPct(Math.min(100, Math.max(40, Number(e.target.value) || 85)))
@@ -276,6 +278,7 @@ function CellBalancingTab() {
                 type="number"
                 min={20}
                 step={20}
+                aria-label="Meta Diária (pçs)"
                 value={metaDia}
                 onChange={(e) => setMetaDia(Math.max(20, Number(e.target.value) || 400))}
                 className="h-9 w-28 font-mono text-xs"
@@ -289,6 +292,7 @@ function CellBalancingTab() {
                 type="number"
                 step="0.05"
                 min="0.2"
+                aria-label="Custo Minuto (R$)"
                 value={custoMinuto}
                 onChange={(e) => setCustoMinuto(Math.max(0.2, Number(e.target.value) || 1.18))}
                 className="h-9 w-28 font-mono text-xs"

@@ -467,6 +467,7 @@ export function CostQueueNominalPanel() {
             </Label>
             <Textarea
               rows={9}
+              aria-label="Cole do Excel ou edite (1 peça por linha)"
               value={rosterPaste}
               onChange={(e) => setRosterPaste(e.target.value)}
               className="font-mono text-xs"

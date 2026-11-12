@@ -674,6 +674,7 @@ function SaveFilterDialog({
             Nome
           </Label>
           <Input
+            aria-label="Nome"
             value={name}
             onChange={(e) => {
               setName(e.target.value);

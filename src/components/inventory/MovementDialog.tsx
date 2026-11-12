@@ -209,7 +209,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
             <div className="space-y-2">
               <Label>Tipo</Label>
               <Select value={kind} onValueChange={(v) => setKind(v as Kind)}>
-                <SelectTrigger>
+                <SelectTrigger aria-label="Tipo">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border text-white">
@@ -249,6 +249,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
             <div className="space-y-2">
               <Label>Lote (opcional)</Label>
               <Input
+                aria-label="Lote (opcional)"
                 value={lotCode}
                 onChange={(e) => setLotCode(e.target.value)}
                 placeholder="LOTE-2601"
@@ -286,6 +287,7 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
             <div className="space-y-2">
               <Label required>Justificativa</Label>
               <Textarea
+                aria-label="Justificativa"
                 value={justification}
                 onChange={(e) => setJustification(e.target.value)}
                 rows={3}

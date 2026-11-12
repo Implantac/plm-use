@@ -87,7 +87,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
         <div>
           <Label className="text-2xs uppercase tracking-wider text-muted-foreground">Tipo</Label>
           <Select value={tipo} onValueChange={(v) => setTipo(v as TipoOcorrencia)}>
-            <SelectTrigger className="">
+            <SelectTrigger className="" aria-label="Tipo">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -103,6 +103,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
           </Label>
           <Input
             type="number"
+            aria-label="Quantidade"
             value={qtd}
             onChange={(e) => setQtd(Number(e.target.value))}
             className=""
@@ -113,6 +114,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       <div>
         <Label required>Motivo</Label>
         <Input
+          aria-label="Motivo"
           value={motivo}
           onChange={(e) => setMotivo(e.target.value)}
           placeholder="Ex: Aproveitamento de retalho, defeito de malha..."
@@ -123,6 +125,7 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       <div>
         <Label required>Responsável</Label>
         <Input
+          aria-label="Responsável"
           value={resp}
           onChange={(e) => setResp(e.target.value)}
           aria-invalid={!!errors.responsavel}
@@ -131,7 +134,12 @@ export function OcorrenciaForm({ loteNumero, referencia }: Props) {
       </div>
       <div>
         <Label>Observação</Label>
-        <Textarea value={obs} onChange={(e) => setObs(e.target.value)} rows={2} />
+        <Textarea
+          aria-label="Observação"
+          value={obs}
+          onChange={(e) => setObs(e.target.value)}
+          rows={2}
+        />
       </div>
 
       {errors.form && <FieldMessage variant="error">{errors.form}</FieldMessage>}

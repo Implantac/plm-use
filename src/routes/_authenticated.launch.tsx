@@ -357,7 +357,7 @@ function LaunchPage() {
               <div>
                 <Label>Wave destino</Label>
                 <Select value={selectedWave ?? ""} onValueChange={setSelectedWave}>
-                  <SelectTrigger>
+                  <SelectTrigger aria-label="Wave destino">
                     <SelectValue placeholder="Escolha uma wave" />
                   </SelectTrigger>
                   <SelectContent>

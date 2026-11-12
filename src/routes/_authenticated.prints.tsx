@@ -880,7 +880,7 @@ function NewVersionDialog({ printId }: { printId: string }) {
                 value={format}
                 onValueChange={(v) => setFormat(v as PrintAsset["fileFormat"])}
               >
-                <SelectTrigger>
+                <SelectTrigger aria-label="Formato">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

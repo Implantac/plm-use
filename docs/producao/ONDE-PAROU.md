@@ -608,14 +608,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     marcadores da 59 = 0**. **Só publicar**: nenhuma migration foi escrita e
     o SQL aplicado desde a 24ª medição permanece com SHA
     `382f0f19…`. Gates **763/763**.
-18. **Publicar as Ondas 59 e 60 — PENDENTE (54ª medição).** O repo já tem a
-    correção de campos sem nome em 8 arquivos (portal do fornecedor, ficha
-    técnica, showroom, OS de facção, pedido, reserva de estoque e medidas;
-    fonte **180 → 78**, os 8 arquivos zerados). O ar segue no entry
-    `index-IvTyinWJ.js` / `index-pMXbg9-8.js` (Onda 58), com os **6
-    marcadores exclusivos da 60 = 0** e os 6 da 59 = 0. **Só publicar**:
-    nenhuma migration foi escrita e o SQL aplicado desde a 24ª medição
-    permanece com SHA `382f0f19…`. Gates **770/770**.
+18. **Publicar as Ondas 59 e 60 — FEITO (55ª medição).** O entry avançou sem
+    relato para `index-BQ5zgD_R.js` / `index-Bt3hn52q.js` (214 chunks /
+    3.198.301 bytes) com os 6 marcadores da 60 = 1 e os 3 da 59 = 1; cliques
+    em produção confirmaram (`/influencers` sem guias/linhas,
+    `/supplier-portal` diálogo 0/11). Repo, ar e banco alinhados na Onda 60.
+19. **Publicar a Onda 61 — PENDENTE (55ª medição).** O repo já tem o
+    fechamento dos campos sem nome em 18 arquivos (PCP, engenharia de rota,
+    estúdio de IA, corte, financeiro, medidas, estoque, analytics,
+    comentários; fonte **78 → 30** no contador bruto, **0 reais**). O ar
+    segue no entry `index-BQ5zgD_R.js` / `index-Bt3hn52q.js` (Onda 60) —
+    entry e bytes inalterados, porque os `aria-label` duplicam o rótulo
+    visível. **Só publicar**: nenhuma migration foi escrita e o SQL aplicado
+    desde a 24ª medição permanece com SHA `382f0f19…`. Gates **777/777**.
 
 ---
 

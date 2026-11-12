@@ -607,6 +607,7 @@ function FinancialPage() {
             <div className="space-y-1.5">
               <Label className="text-2xs uppercase text-muted-foreground">Título / Categoria</Label>
               <Input
+                aria-label="Título / Categoria"
                 value={formData.label}
                 onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                 placeholder="Ex: Contas a Pagar Tecelagem"
@@ -616,6 +617,7 @@ function FinancialPage() {
               <div className="space-y-1.5">
                 <Label className="text-2xs uppercase text-muted-foreground">Fonte</Label>
                 <select
+                  aria-label="Fonte"
                   value={formData.source}
                   onChange={(e) =>
                     setFormData({ ...formData, source: e.target.value as TransactionSource })
@@ -632,6 +634,7 @@ function FinancialPage() {
               <div className="space-y-1.5">
                 <Label className="text-2xs uppercase text-muted-foreground">Valor</Label>
                 <Input
+                  aria-label="Valor"
                   value={formData.val}
                   onChange={(e) => setFormData({ ...formData, val: e.target.value })}
                   placeholder="Ex: R$ 15.000"
@@ -640,6 +643,7 @@ function FinancialPage() {
               <div className="space-y-1.5 col-span-2">
                 <Label className="text-2xs uppercase text-muted-foreground">Vencimento</Label>
                 <Input
+                  aria-label="Vencimento"
                   value={formData.due}
                   onChange={(e) => setFormData({ ...formData, due: e.target.value })}
                   placeholder="Ex: 28 DDL"

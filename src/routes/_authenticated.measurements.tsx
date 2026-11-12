@@ -460,6 +460,7 @@ function MeasurementsPage() {
                   Código
                 </Label>
                 <Input
+                  aria-label="Código"
                   value={newChart.code}
                   onChange={(e) => setNewChart({ ...newChart, code: e.target.value })}
                   placeholder="TM-BLU-03"
@@ -478,6 +479,7 @@ function MeasurementsPage() {
                   Nome
                 </Label>
                 <Input
+                  aria-label="Nome"
                   value={newChart.name}
                   onChange={(e) => setNewChart({ ...newChart, name: e.target.value })}
                   placeholder="Camisas Oversized"
@@ -495,6 +497,7 @@ function MeasurementsPage() {
                   Categoria
                 </Label>
                 <select
+                  aria-label="Categoria"
                   value={newChart.category}
                   onChange={(e) =>
                     setNewChart({
@@ -516,6 +519,7 @@ function MeasurementsPage() {
                   Segmento
                 </Label>
                 <select
+                  aria-label="Segmento"
                   value={newChart.segment}
                   onChange={(e) =>
                     setNewChart({

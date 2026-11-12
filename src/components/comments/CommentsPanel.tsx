@@ -430,6 +430,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
                 {isEditing ? (
                   <div className="mt-1 space-y-1.5">
                     <Textarea
+                      aria-label="Editar comentário"
                       value={editDraft}
                       onChange={(e) => setEditDraft(e.target.value)}
                       rows={2}
@@ -501,6 +502,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
 
       <div className="border-t border-border/60 p-3 space-y-2">
         <Textarea
+          aria-label="Escreva um comentário"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Escreva um comentário · use @nome para mencionar"
