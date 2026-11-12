@@ -1321,6 +1321,56 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AF. 67ª medição — Onda 73 escolhida pelo risco, indicadores fixos de canal, região, devolução e conector fora das telas
+
+**Re-medição inicial:** repo `112df5a` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-D_UpdGgf.js` / `index-DhLVnsAI.js` (**214 chunks /
+3.213.008 bytes**, 0 falhas) com marcadores da 72 = 3 avisos
+(`colors-demo`/`prints-demo`/`display-demo`) e 2 textos ("vitrine
+ilustrativa, não apurada", "sem preço apurado"), da 71 = 1, da 70 = 1, e
+**`DEV000006` 16** — **publicação da Onda 72 relatada pelo dono e validada
+por cliques em produção** (`/colors`, `/prints` e `/display` com aviso,
+métricas em `—` e "Total look — (vitrine ilustrativa, não apurada)", 0
+`pageerror`); banco view `200 []`, 4 funções `401 42501` (com parâmetros
+corretos), SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** o que sobrava **fora dos stores** — números escritos à mão
+no JSX, lidos como realizado. Em `/commercial`: a "Taxa de Devolução Fit"
+`2,4%`/`-0,8%`; o mix por canal com `R$ 540k`/`320k`/`210k`/`130k`; as `36`
+trocas abertas, `2,4%` de devoluções e `41%` de motivo fit; o diagnóstico do
+"USE AI" afirmando 41% em folga de cintura; e 4 conectores fiscais marcados
+**Ativo** sem nenhum código de integração. Em `/analytics`: a penetração por
+região fixa (Sudeste `42%`/`R$ 1.2M`, Sul `28%`/`R$ 840k`, Nordeste
+`15%`/`R$ 450k`); o mix de mídia `44/28/18/10%`; a performance por coleção
+(`R$ 189.000` ROI `5.01x`, `R$ 73.000` ROI `2.48x`); barras de previsto x
+realizado com largura fixa `62%`/`78%`; e o selo "Realizado" num painel sem
+campanha salva.
+
+**Correção:** as cinco listas nascem vazias e declaram a ausência com aviso e
+CTA para pedidos salvos (`commercial-canais-vazios`, `analytics-regioes-vazias`,
+`analytics-mix-vazio`, `analytics-performance-vazia`); devolução, trocas e
+motivo fit viram `—`; o texto do USE AI declara a ausência em vez de afirmar
+percentual; conectores passam a **Não conectado**; as barras refletem
+`marketingTotals` (0 sem campanha) e o selo vira "Sem campanha salva".
+Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** nenhum dos 15 valores fictícios aparece no DOM
+das duas telas; os 4 avisos renderizados; "NÃO CONECTADO"; 0 `pageerror`.
+Capturas `/home/user/medicao67-{commercial,analytics-regioes}-{antes,depois}.png`
+e `medicao67-analytics-depois.png`.
+
+| Camada | 67ª medição (depois)                                                                                                            |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 73** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                                   |
+| Ar     | **Onda 72** — entry novo `index-D_UpdGgf.js` / `index-DhLVnsAI.js`; marcadores 72=3 avisos/2 textos, 71=1, 70=1; `DEV000006` 16 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                                        |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **843/843**                                                         |
+
+**Há uma publicação pendente (73).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

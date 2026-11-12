@@ -135,6 +135,20 @@ function AnalyticsPage() {
   // das coleções (Onda 51) e dos creators (Onda 59).
   const marketingMetrics: MarketingMetric[] = [];
 
+  // Onda 73: a penetração por região era um vetor fixo ("Sudeste 42% / R$
+  // 1.2M", "Sul 28% / R$ 840k", "Nordeste 15% / R$ 450k"). Não há fonte real
+  // de receita por UF (o PLM não é ERP); até existir pedido salvo com UF, a
+  // resposta honesta é a lista vazia com `—` e aviso — nunca percentual
+  // inventado.
+  const regioesVenda: { region: string; val: string; count: string }[] = [];
+
+  // Onda 73: "Mix por canal" (44/28/18/10%) e "Performance por coleção"
+  // (R$ 189.000 ROI 5.01x / R$ 73.000 ROI 2.48x) eram vetores fixos lidos
+  // como realizado. Só campanha salva com investimento e coleção com receita
+  // apurada podem preencher — até lá, vazio declarado.
+  const mixCanal: { label: string; pct: number; tone: string }[] = [];
+  const performanceColecao: { name: string; revenue: number; roi: number }[] = [];
+
   const marketingTotals = (() => {
     const planned = marketingMetrics.reduce((s, m) => s + m.spendPlanned, 0);
     const real = marketingMetrics.reduce((s, m) => s + m.spendReal, 0);
@@ -142,6 +156,14 @@ function AnalyticsPage() {
     const roi = real > 0 ? revenue / real : 0;
     return { planned, real, revenue, roi };
   })();
+
+  // As barras tinham largura fixa (62%/78%) mesmo sem dado: agora refletem a
+  // proporção real do previsto x realizado (0 sem campanha salva).
+  const pctPrevisto = marketingTotals.planned > 0 ? 100 : 0;
+  const pctRealizado =
+    marketingTotals.planned > 0
+      ? Math.min(100, Math.round((marketingTotals.real / marketingTotals.planned) * 100))
+      : 0;
 
   const formatBRL = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -260,8 +282,12 @@ function AnalyticsPage() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
               <PieChart className="w-5 h-5 text-primary" /> Dashboard de Marketing
             </h3>
-            <span className="text-2xs font-semibold uppercase tracking-widest text-status-approved">
-              Realizado
+            <span
+              className={`text-2xs font-semibold uppercase tracking-widest ${
+                marketingMetrics.length > 0 ? "text-status-approved" : "text-muted-foreground"
+              }`}
+            >
+              {marketingMetrics.length > 0 ? "Realizado" : "Sem campanha salva"}
             </span>
           </div>
 
@@ -277,7 +303,7 @@ function AnalyticsPage() {
                     <span className="text-white">{formatBRL(marketingTotals.planned)}</span>
                   </div>
                   <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: "62%" }} />
+                    <div className="h-full bg-primary" style={{ width: `${pctPrevisto}%` }} />
                   </div>
                 </div>
                 <div>
@@ -286,7 +312,10 @@ function AnalyticsPage() {
                     <span className="text-white">{formatBRL(marketingTotals.real)}</span>
                   </div>
                   <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-status-approved" style={{ width: "78%" }} />
+                    <div
+                      className="h-full bg-status-approved"
+                      style={{ width: `${pctRealizado}%` }}
+                    />
                   </div>
                 </div>
               </div>
@@ -305,12 +334,16 @@ function AnalyticsPage() {
                 Mix por canal
               </p>
               <div className="mt-5 space-y-3">
-                {[
-                  { label: "Meta Ads", pct: 44, tone: "bg-primary" },
-                  { label: "Google Ads", pct: 28, tone: "bg-status-approved" },
-                  { label: "Instagram", pct: 18, tone: "bg-status-review" },
-                  { label: "TikTok Ads", pct: 10, tone: "bg-status-progress" },
-                ].map((row) => (
+                {mixCanal.length === 0 && (
+                  <p
+                    data-testid="analytics-mix-vazio"
+                    className="text-2xs leading-relaxed text-muted-foreground"
+                  >
+                    Nenhuma campanha salva com investimento por canal. O mix que aparecia aqui era
+                    de demonstração e foi removido.
+                  </p>
+                )}
+                {mixCanal.map((row) => (
                   <div key={row.label}>
                     <div className="flex justify-between text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
                       <span>{row.label}</span>
@@ -335,10 +368,16 @@ function AnalyticsPage() {
               </span>
             </div>
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                { name: "Verão 2027", revenue: 189000, roi: 5.01 },
-                { name: "Inverno 2026", revenue: 73000, roi: 2.48 },
-              ].map((c) => (
+              {performanceColecao.length === 0 && (
+                <p
+                  data-testid="analytics-performance-vazia"
+                  className="text-2xs leading-relaxed text-muted-foreground"
+                >
+                  Nenhuma coleção com receita apurada. Os números de receita/ROI por coleção que
+                  apareciam aqui eram de demonstração e foram removidos.
+                </p>
+              )}
+              {performanceColecao.map((c) => (
                 <div key={c.name} className="rounded-md border border-border bg-muted/60 p-4">
                   <p className="text-sm font-bold text-white">{c.name}</p>
                   <p className="mt-2 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -474,11 +513,22 @@ function AnalyticsPage() {
             </h3>
           </div>
           <div className="space-y-6">
-            {[
-              { region: "Sudeste", val: "42%", count: "R$ 1.2M" },
-              { region: "Sul", val: "28%", count: "R$ 840k" },
-              { region: "Nordeste", val: "15%", count: "R$ 450k" },
-            ].map((reg, i) => (
+            {regioesVenda.length === 0 && (
+              <div
+                data-testid="analytics-regioes-vazias"
+                className="rounded-md border border-amber-500/40 bg-amber-500/10 p-4 text-[11px] leading-relaxed text-muted-foreground space-y-2"
+              >
+                <p>
+                  <strong className="text-foreground">Nenhuma venda registrada por região.</strong>{" "}
+                  A penetração por região que aparecia aqui era de demonstração e foi removida — o
+                  PLM não é ERP e não apura receita por UF sem pedido salvo.
+                </p>
+                <Button size="sm" variant="outline" className="h-7 text-2xs" asChild>
+                  <a href="/orders">Ver pedidos salvos</a>
+                </Button>
+              </div>
+            )}
+            {regioesVenda.map((reg, i) => (
               <div key={i} className="flex items-center gap-6 group cursor-pointer">
                 <span className="text-2xs font-semibold uppercase tracking-widest text-muted-foreground w-24">
                   {reg.region}

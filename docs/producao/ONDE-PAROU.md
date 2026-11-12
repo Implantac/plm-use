@@ -668,15 +668,20 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     produção confirmaram (`/measurements` com o aviso `measurements-demo`,
     `TM-BLU-01` ilustrando e métricas em `—`, 0 `pageerror`). Repo, ar e
     banco alinhados na Onda 71.
-29. **Publicar a Onda 72 — PENDENTE (66ª medição).** O repo já tem a
-    vitrine criativa (paletas, estampas, coordenados e pranchas) fora das
-    métricas, das fichas e do banco (seeds `demo: true`; métricas `—`;
-    total do look não apura preço de vitrine; engine só sincroniza
-    operacionais; avisos `colors-demo`/`prints-demo`/`display-demo`). O ar
-    segue no entry `index-C3d8pptI.js` / `index-u4Iw8psQ.js` (Onda 71) —
-    entry e bytes inalterados. **Só publicar**: nenhuma migration foi
-    escrita e o SQL aplicado desde a 24ª medição permanece com SHA
-    `382f0f19…`. Gates **839/839**.
+29. **Publicar a Onda 72 — FEITO (67ª medição).** O entry avançou para
+    `index-D_UpdGgf.js` / `index-DhLVnsAI.js` (214 chunks / 3.213.008
+    bytes) e os marcadores da 72 passaram a 3 avisos + 2 textos no bundle;
+    cliques em produção confirmaram (`/colors`, `/prints` e `/display` com
+    aviso, métricas em `—` e "Total look —", 0 `pageerror`). Repo, ar e
+    banco alinhados na Onda 72.
+30. **Publicar a Onda 73 — PENDENTE (67ª medição).** O repo já tem os
+    indicadores fixos de canal, região, devolução e conector fora das
+    telas (listas vazias com aviso e CTA; `—` em devolução/trocas/fit;
+    "Não conectado" nos conectores; barras derivadas; selo "Sem campanha
+    salva"). O ar segue no entry `index-D_UpdGgf.js` / `index-DhLVnsAI.js`
+    (Onda 72) — entry e bytes inalterados. **Só publicar**: nenhuma
+    migration foi escrita e o SQL aplicado desde a 24ª medição permanece
+    com SHA `382f0f19…`. Gates **843/843**.
 
 ---
 

@@ -237,6 +237,10 @@ function CommercialPage() {
     setTimeout(() => w.print(), 250);
   }
 
+  // Onda 73: o mix por canal era um vetor fixo com receita inventada. Só
+  // pedido salvo por canal pode ratear receita; até lá, lista vazia + aviso.
+  const canaisVenda: { channel: string; val: string; perc: number }[] = [];
+
   const salesStats = [
     {
       label: "Carteira B2B Ativa",
@@ -256,7 +260,13 @@ function CommercialPage() {
       change: `${nfeSummary.grossWeightKg.toFixed(1)} kg bruto`,
       trend: "up",
     },
-    { label: "Taxa de Devolução Fit", value: "2,4%", change: "-0,8%", trend: "up" },
+    // Onda 73: "2,4% / -0,8%" era número de vitrine lido como KPI real.
+    {
+      label: "Taxa de Devolução Fit",
+      value: "—",
+      change: "sem devolução registrada",
+      trend: "down",
+    },
   ];
 
   return (
@@ -460,12 +470,22 @@ function CommercialPage() {
             <TrendingUp className="w-4 h-4 text-primary" /> Vendas por Canal Omnichannel
           </h3>
           <div className="space-y-4">
-            {[
-              { channel: "Atacado / Showroom B2B", val: "R$ 540k", perc: 45 },
-              { channel: "E-commerce Próprio", val: "R$ 320k", perc: 27 },
-              { channel: "Marketplaces", val: "R$ 210k", perc: 18 },
-              { channel: "Lojas Físicas Franquia", val: "R$ 130k", perc: 10 },
-            ].map((c) => (
+            {canaisVenda.length === 0 && (
+              <div
+                data-testid="commercial-canais-vazios"
+                className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground space-y-2"
+              >
+                <p>
+                  <strong className="text-foreground">Nenhuma venda registrada por canal.</strong> O
+                  mix por canal que aparecia aqui era de demonstração e foi removido — o PLM não é
+                  ERP e não rateia receita por canal sem pedido salvo.
+                </p>
+                <Button size="sm" variant="outline" className="h-7 text-2xs" asChild>
+                  <a href="/orders">Ver pedidos salvos</a>
+                </Button>
+              </div>
+            )}
+            {canaisVenda.map((c) => (
               <div key={c.channel} className="space-y-2">
                 <div className="flex justify-between items-end">
                   <p className="text-xs font-medium text-foreground">{c.channel}</p>
@@ -551,8 +571,10 @@ function CommercialPage() {
                   className="flex items-center justify-between rounded-md border border-border bg-muted/40 p-2.5"
                 >
                   <span className="text-xs font-medium text-foreground">{item}</span>
-                  <span className="text-2xs font-semibold uppercase text-status-approved">
-                    Ativo
+                  {/* Onda 73: nenhum destes conectores está integrado de fato —
+                      "Ativo" era afirmação de integração sem lastro. */}
+                  <span className="text-2xs font-semibold uppercase text-muted-foreground">
+                    Não conectado
                   </span>
                 </div>
               ),
@@ -566,9 +588,11 @@ function CommercialPage() {
           </h3>
           <div className="grid grid-cols-2 gap-2.5">
             {[
-              { label: "Trocas abertas", value: "36", icon: RefreshCcw },
-              { label: "Devoluções", value: "2,4%", icon: PackageX },
-              { label: "Motivo fit", value: "41%", icon: Users },
+              // Onda 73: 36 trocas / 2,4% devoluções / 41% de motivo fit eram
+              // números fixos lidos como logística reversa real.
+              { label: "Trocas abertas", value: "—", icon: RefreshCcw },
+              { label: "Devoluções", value: "—", icon: PackageX },
+              { label: "Motivo fit", value: "—", icon: Users },
               { label: "Lojas B2B", value: String(clients.length), icon: Store },
             ].map((item) => (
               <div key={item.label} className="rounded-md border border-border bg-muted/40 p-3">
@@ -586,8 +610,9 @@ function CommercialPage() {
               USE AI · Engenharia de Caimento
             </h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              41% das devoluções concentram-se em folga de cintura no tamanho M. Ajuste recomendado:
-              revisar tolerância POM na Tabela de Medidas e revalidar no Gêmeo Digital 3D.
+              Sem devolução registrada não há causa para inferir: o diagnóstico de caimento que
+              aparecia aqui era de demonstração e foi removido. Registre as trocas reais para o PLM
+              sugerir ajuste de tolerância POM e revalidar no Gêmeo Digital 3D.
             </p>
           </div>
           <Button
