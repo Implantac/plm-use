@@ -47,17 +47,12 @@ interface FinancialTransaction {
   source: TransactionSource;
 }
 
-const DEFAULT_TRANSACTIONS: FinancialTransaction[] = [
-  { id: 1, label: "Contas a Receber (B2B)", val: "R$ 342k", due: "15 dias", source: "vendas" },
-  {
-    id: 2,
-    label: "Contas a Pagar (Suppliers)",
-    val: "R$ 124k",
-    due: "08 dias",
-    source: "producao",
-  },
-  { id: 3, label: "Impostos/Fiscal", val: "R$ 42k", due: "02 dias", source: "outros" },
-];
+// Os títulos nascem vazios (Onda 67): os três lançamentos de demonstração
+// ("Contas a Receber (B2B) R$ 342k", "Contas a Pagar (Suppliers) R$ 124k",
+// "Impostos/Fiscal R$ 42k") davam para ler como fluxo de caixa real da
+// empresa. Só lançamento registrado pelo usuário entra no fluxo — mesmo
+// contrato dos parceiros (Onda 42) e das coleções (Onda 51).
+const DEFAULT_TRANSACTIONS: FinancialTransaction[] = [];
 
 function FinancialPage() {
   const sheetsMap = useTechSheetStore((s) => s.data);
@@ -535,6 +530,16 @@ function FinancialPage() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-foreground">
               Títulos & Fluxo em Transação
             </h3>
+            {transactions.length === 0 && (
+              <div
+                data-testid="financial-fluxo-vazio"
+                className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+              >
+                <strong className="text-foreground">Nenhum título lançado.</strong> O fluxo de caixa
+                nasce vazio — os valores de demonstração não são apurados como reais. O PLM não é
+                ERP: lance o título real para compor o fluxo.
+              </div>
+            )}
             <div className="space-y-2.5">
               {transactions.map((item) => (
                 <div

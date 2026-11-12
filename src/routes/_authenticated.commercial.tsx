@@ -52,40 +52,13 @@ interface B2bClient {
   total: string;
 }
 
-const DEFAULT_CLIENTS: B2bClient[] = [
-  {
-    id: 1,
-    name: "Luxury Boutique SP",
-    cnpj: "18.420.119/0001-44",
-    uf: "SP",
-    orders: 24,
-    total: "R$ 124k",
-  },
-  {
-    id: 2,
-    name: "Moda Carioca Store",
-    cnpj: "27.910.440/0001-12",
-    uf: "RJ",
-    orders: 18,
-    total: "R$ 92k",
-  },
-  {
-    id: 3,
-    name: "Urban Concept Curitiba",
-    cnpj: "09.112.880/0001-09",
-    uf: "PR",
-    orders: 12,
-    total: "R$ 54k",
-  },
-  {
-    id: 4,
-    name: "Style Hub BH",
-    cnpj: "33.501.200/0001-81",
-    uf: "MG",
-    orders: 8,
-    total: "R$ 38k",
-  },
-];
+// A carteira nasce vazia (Onda 67): os quatro lojistas de demonstração
+// (Luxury Boutique SP, Moda Carioca Store, Urban Concept Curitiba, Style
+// Hub BH) com CNPJ, pedidos e "R$ 124k" de faturamento fictícios davam
+// para expedir romaneio e pré-NFe para cliente que não existe. Só lojista
+// cadastrado pelo usuário entra na carteira — mesmo contrato dos parceiros
+// (Onda 42) e das coleções (Onda 51).
+const DEFAULT_CLIENTS: B2bClient[] = [];
 
 const MOTIVO_LABEL: Record<string, string> = {
   "sem-ficha": "sem ficha salva",
@@ -98,12 +71,13 @@ function CommercialPage() {
   const sheetsMap = useTechSheetStore((s) => s.data);
 
   const [clients, setClients] = useState<B2bClient[]>(DEFAULT_CLIENTS);
-  const [selectedClientId, setSelectedClientId] = useState<number>(1);
-  const [qtyByRef, setQtyByRef] = useState<Record<string, number>>({
-    DEV000006: 72,
-    "V24-001": 48,
-    "U25-014": 24,
-  });
+  const [selectedClientId, setSelectedClientId] = useState<number>(0);
+  // Quantidades de expedição nascem zeradas (Onda 67): o pré-preenchimento
+  // com DEV000006/V24-001/U25-014 (72/48/24 peças) era o mesmo vazamento
+  // de formulário das Ondas 64/66 — quantidade de demonstração esperando
+  // para virar romaneio. A expedição só oferece ficha salva de qualquer
+  // forma; sem quantidade digitada, nada entra no pré-NFe.
+  const [qtyByRef, setQtyByRef] = useState<Record<string, number>>({});
 
   useEffect(() => {
     try {
@@ -125,7 +99,7 @@ function CommercialPage() {
     }
   }, [clients]);
 
-  const activeClient = clients.find((c) => c.id === selectedClientId) ?? clients[0]!;
+  const activeClient = clients.find((c) => c.id === selectedClientId) ?? clients[0];
 
   // A expedição só oferece ficha salva. Antes plantava quatro referências de
   // demonstração e o romaneio / pré-NFe saía com dados delas.
@@ -175,7 +149,7 @@ function CommercialPage() {
       });
     } else {
       setEditingClient(null);
-      setFormData({ name: "", cnpj: "14.220.990/0001-55", uf: "SP", orders: "1", total: "R$ 18k" });
+      setFormData({ name: "", cnpj: "", uf: "SP", orders: "", total: "" });
     }
     setIsDialogOpen(true);
   };
@@ -220,6 +194,10 @@ function CommercialPage() {
   }
 
   function exportPreNfeXml() {
+    if (!activeClient) {
+      toast.error("Cadastre um lojista na carteira antes de exportar o Pré-XML NFe.");
+      return;
+    }
     if (bloqueioDeEmissao()) return;
     if (nfeSummary.lines.length === 0) {
       toast.error("Informe quantidade > 0 em ao menos uma referência para gerar o XML NFe.");
@@ -237,6 +215,10 @@ function CommercialPage() {
   }
 
   function printPackingList() {
+    if (!activeClient) {
+      toast.error("Cadastre um lojista na carteira antes de imprimir o Romaneio.");
+      return;
+    }
     if (bloqueioDeEmissao()) return;
     if (nfeSummary.lines.length === 0) {
       toast.error("Informe quantidade > 0 para emitir o Romaneio Packing List.");
@@ -511,6 +493,16 @@ function CommercialPage() {
               + Novo Lojista
             </Button>
           </div>
+          {clients.length === 0 && (
+            <div
+              data-testid="commercial-carteira-vazia"
+              className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+            >
+              <strong className="text-foreground">Carteira B2B vazia.</strong> Nenhum lojista
+              cadastrado — romaneio e pré-NFe não são emitidos para cliente de demonstração. O PLM
+              não é ERP: cadastre o lojista real para expedir.
+            </div>
+          )}
           <div className="space-y-2.5">
             {clients.map((client) => (
               <div

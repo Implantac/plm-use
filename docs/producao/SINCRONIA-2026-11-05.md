@@ -1040,6 +1040,56 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-Z. 61ª medição — Onda 67 escolhida pelo risco, carteira B2B, fluxo e sacola nascem vazios
+
+**Re-medição inicial:** repo `478df53` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index--0psZgO_.js` / `index-DXm9SpcR.js` (**214 chunks /
+3.206.452 bytes**, 0 falhas) com marcadores da 66 = 1/1/1, "só demonstração
+na lista" = 4, marcador da 65 = 1 e **`DEV000006` 18** — **publicação da
+Onda 66 relatada pelo dono e validada por cliques em produção**
+(`/pieces-report` com as 4 métricas em `—`, `/development` com filtros em
+`—`, 0 `pageerror`); banco view `200 []`, 4 funções `401 42501` (com
+parâmetros corretos), SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** as outras referências de demonstração — `U25-014` (8
+ocorrências), `I25-088` (5) fora de testes. Nas camadas de cálculo elas já
+estavam cobertas (GTM `demo: true`, OS `demo: true`, `cfo-dre` MODELO_REFS
+fora dos acumuladores, `resolveReferenceTechSheet` sem ficha inventada
+desde a Onda 32). Mas a varredura de **formulários pré-preenchidos** — o
+mesmo padrão das Ondas 64/66 — achou três vazamentos restantes, provados
+por cliques antes de corrigir: `/commercial` com 4 lojistas fictícios
+("Luxury Boutique SP", CNPJ, 24 pedidos, "R$ 124k") e `qtyByRef`
+pré-preenchido com `DEV000006: 72, V24-001: 48, U25-014: 24` (dava para
+exportar romaneio e pré-NFe para cliente que não existe); `/financial` com
+3 títulos fictícios ("Contas a Receber (B2B) R$ 342k" etc.) lidos como
+fluxo real; `/showroom` (aba B2B) com pack de `DEV000006` e comprador
+"Boutique Multimarcas Jardins" com CNPJ fictício no espelho B2B.
+
+**Correção:** mesmo contrato das Ondas 64/66 — carteira, títulos, sacola e
+comprador nascem vazios; sem lojista cadastrado, romaneio e pré-NFe não
+são emitidos; sem lojista digitado, o espelho B2B não é emitido; avisos
+`commercial-carteira-vazia` e `financial-fluxo-vazio` ("O PLM não é ERP").
+Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/commercial` com o aviso renderizado e sem
+lojistas fictícios; `/financial` com o aviso e sem títulos fictícios;
+`/showroom` (aba B2B) com inputs de lojista/CNPJ vazios; 0 `pageerror`.
+Capturas `/home/user/medicao61-commercial-depois.png`,
+`/home/user/medicao61-financial-depois.png` e
+`/home/user/medicao61-showroom-depois.png`.
+
+| Camada | 61ª medição (depois)                                                                                          |
+| ------ | ------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 67** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                 |
+| Ar     | **Onda 66** — entry novo `index--0psZgO_.js` / `index-DXm9SpcR.js`; marcadores 66=1/1/1, 65=1; `DEV000006` 18 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                      |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **814/814**                                       |
+
+**Há uma publicação pendente (67).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

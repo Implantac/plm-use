@@ -633,14 +633,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     bytes) e o marcador da 65 passou a 1 no bundle; cliques em produção
     confirmaram (`/launch` aba Performance com o aviso do mock de
     sell-through, 0 `pageerror`). Repo, ar e banco alinhados na Onda 65.
-23. **Publicar a Onda 66 — PENDENTE (60ª medição).** O repo já tem as
-    referências de demonstração rotuladas e fora das métricas operacionais
-    (seed `demo: true`; `/pieces-report` e Centro de Desenvolvimento com
-    métricas `—` e avisos; Kanban sem promoção a ficha). O ar segue no
-    entry `index-CIimYX9w.js` / `index-CkWW-tU5.js` (Onda 65) — entry e
-    bytes inalterados. **Só publicar**: nenhuma migration foi escrita e o
-    SQL aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
-    **809/809**.
+23. **Publicar a Onda 66 — FEITO (61ª medição).** O entry avançou para
+    `index--0psZgO_.js` / `index-DXm9SpcR.js` (214 chunks / 3.206.452
+    bytes) e os marcadores da 66 passaram a 1/1/1 no bundle; cliques em
+    produção confirmaram (`/pieces-report` com as 4 métricas em `—`,
+    `/development` com filtros em `—`, 0 `pageerror`). Repo, ar e banco
+    alinhados na Onda 66.
+24. **Publicar a Onda 67 — PENDENTE (61ª medição).** O repo já tem carteira
+    B2B, fluxo de caixa e sacola nascendo vazios (sem lojistas, títulos,
+    packs ou comprador fictícios; sem lojista não emite romaneio/pré-NFe/
+    espelho). O ar segue no entry `index--0psZgO_.js` /
+    `index-DXm9SpcR.js` (Onda 66) — entry e bytes inalterados. **Só
+    publicar**: nenhuma migration foi escrita e o SQL aplicado desde a
+    24ª medição permanece com SHA `382f0f19…`. Gates **814/814**.
 
 ---
 

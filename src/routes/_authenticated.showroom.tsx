@@ -660,9 +660,14 @@ function ShowroomB2bRackTab() {
   const sheetsMap = useTechSheetStore((s) => s.data);
   const materializadas = useTechSheetStore((s) => s.materializadas);
   const [selectedColorByRef, setSelectedColorByRef] = useState<Record<string, number>>({});
-  const [packsByKey, setPacksByKey] = useState<Record<string, number>>({ "DEV000006:0": 2 });
-  const [buyerName, setBuyerName] = useState("Boutique Multimarcas Jardins");
-  const [buyerCnpj, setBuyerCnpj] = useState("18.420.119/0001-44");
+  // Sacola e comprador nascem vazios (Onda 67): o pack pré-preenchido de
+  // DEV000006 e o lojista "Boutique Multimarcas Jardins" com CNPJ fictício
+  // davam para emitir espelho B2B para comprador que não existe. Só pack
+  // adicionado e lojista digitado pelo usuário entram no pedido — mesmo
+  // contrato das Ondas 64/66.
+  const [packsByKey, setPacksByKey] = useState<Record<string, number>>({});
+  const [buyerName, setBuyerName] = useState("");
+  const [buyerCnpj, setBuyerCnpj] = useState("");
   const [lightboxItem, setLightboxItem] = useState<{
     src: string;
     title: string;
@@ -730,6 +735,10 @@ function ShowroomB2bRackTab() {
   function printB2bOrder() {
     if (orderLines.length === 0) {
       statusToast.error("Adicione ao menos 1 pack na sacola B2B para emitir o espelho.");
+      return;
+    }
+    if (!buyerName.trim() || !buyerCnpj.trim()) {
+      statusToast.error("Informe o lojista e o CNPJ antes de emitir o espelho B2B.");
       return;
     }
     const html = buildShowroomOrderPrintableHtml(buyerName, buyerCnpj, orderLines);
