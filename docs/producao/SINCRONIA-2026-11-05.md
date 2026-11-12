@@ -1224,6 +1224,53 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AD. 65ª medição — Onda 71 escolhida pelo risco, tabelas de medidas de demonstração fora das métricas, da ficha e do banco
+
+**Re-medição inicial:** repo `74010a1` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-2dv7dmw9.js` / `index-DLRhaQ6f.js` (**214 chunks /
+3.208.700 bytes**, 0 falhas) com marcadores da 70 = 1/1, da 69 = 1, da 68 =
+1 e **`DEV000006` 16** — **publicação da Onda 70 relatada pelo dono e
+validada por cliques em produção** (`/analytics` com o aviso
+`analytics-demo`, `2.4M` ilustrando os cards, métricas em `—`, sem "R$ 84k"
+nem "Vestido Floral (Ref. 302)", 0 `pageerror`); banco view `200 []`, 4
+funções `401 42501` (com parâmetros corretos), SQL SHA `382f0f19…`
+inalterado.
+
+**Risco medido:** o `measurementsSeed` (biblioteca de tabelas de medidas) —
+3 tabelas fictícias sem nenhuma declaração de demonstração (`TM-BLU-01`
+"Blusas Slim Feminino" aprovada com 18 refs, `TM-CAL-02` "Calças
+Alfaiataria Feminino" aprovada com 9 refs, `TM-VES-01` "Vestidos Longos
+Premium" rascunho). A vitrine entrava em número operacional em quatro
+lugares: as métricas de `/measurements` ("Grades 3", "Aprovadas 2",
+"Rascunho 1", "Refs vinculadas 32"); o "Aplicar na Ficha" (aplicava
+POMs/medidas fictícias numa ficha salva, `setMedidas` + `linkedRefs + 1`);
+a importação na ficha técnica (`GradedMeasurementsPanel`); e o
+`creative-sync` (`listCharts` sincronizava o seed inteiro para a tabela
+`measurement_charts` do Supabase).
+
+**Correção:** mesmo contrato das coleções `demo: true` (Onda 51) e dos
+materiais (Onda 69) — o seed marca `demo: true`; as métricas viram `—`
+("só demonstração na lista"); "Aplicar na Ficha" e a importação na ficha
+ficam desabilitados para demonstração; o engine só sincroniza tabelas
+operacionais; a tela mostra o aviso `measurements-demo`. Nenhuma asserção
+antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/measurements` com o aviso renderizado,
+`TM-BLU-01` ilustrando a lista, métricas em `—`; 0 `pageerror`. Captura
+`/home/user/medicao65-measurements-depois.png`.
+
+| Camada | 65ª medição (depois)                                                                                              |
+| ------ | ----------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 71** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                     |
+| Ar     | **Onda 70** — entry novo `index-2dv7dmw9.js` / `index-DLRhaQ6f.js`; marcadores 70=1/1, 69=1, 68=1; `DEV000006` 16 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                          |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **833/833**                                                       |
+
+**Há uma publicação pendente (71).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

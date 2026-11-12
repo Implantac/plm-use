@@ -656,13 +656,20 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     bytes) e os marcadores da 69 passaram a 1/1 no bundle; cliques em
     produção confirmaram (`/materials` com o aviso `materials-demo` e
     métricas em `—`, 0 `pageerror`). Repo, ar e banco alinhados na Onda 69.
-27. **Publicar a Onda 70 — PENDENTE (64ª medição).** O repo já tem o BI de
-    demonstração fora das métricas e do banco (seed `demo: true`; métricas
-    `—`; dashboard de marketing vazio; engine só sincroniza operacionais;
-    aviso `analytics-demo`). O ar segue no entry `index-BAtJAsw_.js` /
-    `index-fMU01YJV.js` (Onda 69) — entry e bytes inalterados. **Só
-    publicar**: nenhuma migration foi escrita e o SQL aplicado desde a
-    24ª medição permanece com SHA `382f0f19…`. Gates **828/828**.
+27. **Publicar a Onda 70 — FEITO (65ª medição).** O entry avançou para
+    `index-2dv7dmw9.js` / `index-DLRhaQ6f.js` (214 chunks / 3.208.700
+    bytes) e os marcadores da 70 passaram a 1/1 no bundle; cliques em
+    produção confirmaram (`/analytics` com o aviso `analytics-demo`,
+    métricas em `—`, sem "R$ 84k" nem "Vestido Floral (Ref. 302)", 0
+    `pageerror`). Repo, ar e banco alinhados na Onda 70.
+28. **Publicar a Onda 71 — PENDENTE (65ª medição).** O repo já tem as
+    tabelas de medidas de demonstração fora das métricas, da ficha e do
+    banco (seed `demo: true`; métricas `—`; aplicar/importar desabilitados;
+    engine só sincroniza operacionais; aviso `measurements-demo`). O ar
+    segue no entry `index-2dv7dmw9.js` / `index-DLRhaQ6f.js` (Onda 70) —
+    entry e bytes inalterados. **Só publicar**: nenhuma migration foi
+    escrita e o SQL aplicado desde a 24ª medição permanece com SHA
+    `382f0f19…`. Gates **833/833**.
 
 ---
 

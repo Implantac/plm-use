@@ -33,6 +33,7 @@ import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operatio
 import {
   listCharts,
   subscribe,
+  tabelasOperacionais,
   upsertChart,
   deleteChart,
   type MeasurementChart,
@@ -118,14 +119,18 @@ function MeasurementsPage() {
     toast.success("Tabela de medidas criada");
   };
 
+  // Demonstração ilustra a biblioteca, mas não entra nas métricas —
+  // mesmo contrato das coleções (Onda 51) e dos creators (Onda 59).
+  const reais = useMemo(() => tabelasOperacionais(charts), [charts]);
+
   const totals = useMemo(
     () => ({
-      total: charts.length,
-      aprovadas: charts.filter((c) => c.status === "aprovada").length,
-      rascunho: charts.filter((c) => c.status === "rascunho").length,
-      arquivadas: charts.filter((c) => c.status === "arquivada").length,
+      total: reais.length,
+      aprovadas: reais.filter((c) => c.status === "aprovada").length,
+      rascunho: reais.filter((c) => c.status === "rascunho").length,
+      arquivadas: reais.filter((c) => c.status === "arquivada").length,
     }),
-    [charts],
+    [reais],
   );
 
   return (
@@ -136,18 +141,46 @@ function MeasurementsPage() {
       onAdd={() => setCreating(true)}
       searchPlaceholder="Buscar tabela, código ou categoria"
       metrics={[
-        { label: "Grades", value: String(totals.total), detail: "cadastradas" },
-        { label: "Aprovadas", value: String(totals.aprovadas), detail: "prontas para uso" },
-        { label: "Rascunho", value: String(totals.rascunho), detail: "em revisão" },
+        {
+          label: "Grades",
+          value: String(totals.total),
+          detail: totals.total > 0 ? "cadastradas" : "só demonstração na lista",
+          demo: totals.total === 0,
+        },
+        {
+          label: "Aprovadas",
+          value: String(totals.aprovadas),
+          detail: totals.aprovadas > 0 ? "prontas para uso" : "só demonstração na lista",
+          demo: totals.aprovadas === 0,
+        },
+        {
+          label: "Rascunho",
+          value: String(totals.rascunho),
+          detail: totals.rascunho > 0 ? "em revisão" : "só demonstração na lista",
+          demo: totals.rascunho === 0,
+        },
         {
           label: "Refs vinculadas",
-          value: String(charts.reduce((s, c) => s + c.linkedRefs, 0)),
-          detail: "fichas técnicas",
+          value: String(reais.reduce((s, c) => s + c.linkedRefs, 0)),
+          detail: reais.length > 0 ? "fichas técnicas" : "só demonstração na lista",
+          demo: reais.length === 0,
         },
       ]}
     >
       {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
       <GlossarioTermos siglas={["POM"]} testId="glossario-measurements" />
+      {charts.some((c) => c.demo) && (
+        <div
+          data-testid="measurements-demo"
+          className="mb-6 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+        >
+          <strong className="text-foreground">Tabelas de demonstração na biblioteca.</strong> As
+          tabelas marcadas como demonstração (seed do sistema) ilustram a lista, mas{" "}
+          <strong>não entram nas métricas</strong> acima nem podem ser aplicadas numa ficha salva —
+          só tabela cadastrada pelo usuário conta como biblioteca real. O PLM não é ERP: nenhuma
+          grade de vitrine é apurada como real.
+        </div>
+      )}
       <div className="flex flex-wrap gap-2 mb-6">
         {(["todos", "aprovada", "rascunho", "arquivada"] as const).map((s) => {
           const active = statusFilter === s;
@@ -350,7 +383,12 @@ function MeasurementsPage() {
                     type="button"
                     size="sm"
                     className="h-8 gap-1.5 text-xs"
-                    disabled={!targetRef}
+                    disabled={!targetRef || selected.demo}
+                    title={
+                      selected.demo
+                        ? "Tabela de demonstração — cadastre a tabela real para aplicar na ficha"
+                        : undefined
+                    }
                     onClick={() => {
                       if (!targetRef) return;
                       ensureSheet(targetRef);

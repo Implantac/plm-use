@@ -483,8 +483,14 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
               <button
                 key={c.id}
                 type="button"
+                disabled={c.demo}
+                title={
+                  c.demo
+                    ? "Tabela de demonstração — cadastre a tabela real em Medidas para importar"
+                    : undefined
+                }
                 onClick={() => importFromChart(c.id)}
-                className="w-full text-left rounded-lg border border-border p-3 hover:bg-accent/60 transition"
+                className="w-full text-left rounded-lg border border-border p-3 hover:bg-accent/60 transition disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground">
@@ -496,6 +502,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                 </div>
                 <p className="text-2xs text-muted-foreground mt-0.5">
                   {c.category} · {c.points.length} cotas POM cadastradas
+                  {c.demo ? " · demonstração" : ""}
                 </p>
               </button>
             ))}

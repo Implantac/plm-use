@@ -56,6 +56,7 @@ import {
 } from "@/lib/display/store";
 import {
   listCharts,
+  tabelasOperacionais,
   replaceAllCharts,
   subscribe as subscribeCharts,
   type MeasurementChart,
@@ -575,7 +576,9 @@ const MODULES: ModuleSpec[] = [
     key: "charts",
     table: "measurement_charts",
     label: "as tabelas de medida",
-    list: listCharts,
+    // Demonstração nunca sobe para o banco (Onda 71): só tabela
+    // cadastrada/editada pelo usuário é sincronizada.
+    list: () => tabelasOperacionais(listCharts()),
     toRow: (e, uid) => chartToRow(e as MeasurementChart, uid),
     apply: (rows) => replaceAllCharts(rows.map(chartFromRow)),
     subscribe: subscribeCharts,

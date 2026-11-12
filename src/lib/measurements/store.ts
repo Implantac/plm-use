@@ -30,8 +30,20 @@ export type MeasurementChart = {
   points: MeasurementPoint[];
   grade: MeasurementGradeRow[];
   notes?: string;
+  /**
+   * `true` = tabela de demonstração (seed da biblioteca, nunca cadastrada
+   * pela empresa). Ela ilustra a lista, mas **não** entra nas métricas da
+   * biblioteca nem pode ser aplicada numa ficha salva — mesmo contrato
+   * das coleções (`demo: true`, Onda 51) e dos creators (Onda 59).
+   */
+  demo?: boolean;
 };
 
+// As 3 tabelas abaixo são **demonstração** (`demo: true`, Onda 71): elas
+// ilustram a biblioteca, mas nunca entram nas métricas nem podem ser
+// aplicadas numa ficha salva. Só tabela cadastrada pelo usuário conta
+// como biblioteca real — mesmo contrato das coleções (Onda 51) e dos
+// creators (Onda 59).
 export const measurementsSeed: MeasurementChart[] = [
   {
     id: "tm-01",
@@ -43,6 +55,7 @@ export const measurementsSeed: MeasurementChart[] = [
     unit: "cm",
     brand: "Premium Luxe",
     linkedRefs: 18,
+    demo: true,
     status: "aprovada",
     updatedAt: "2026-06-22",
     updatedBy: "Modelagem",
@@ -72,6 +85,7 @@ export const measurementsSeed: MeasurementChart[] = [
     unit: "cm",
     brand: "Basic Chic",
     linkedRefs: 9,
+    demo: true,
     status: "aprovada",
     updatedAt: "2026-05-14",
     updatedBy: "Modelagem",
@@ -101,6 +115,7 @@ export const measurementsSeed: MeasurementChart[] = [
     unit: "cm",
     brand: "Premium Luxe",
     linkedRefs: 5,
+    demo: true,
     status: "rascunho",
     updatedAt: "2026-07-05",
     updatedBy: "Estilo",
@@ -182,6 +197,11 @@ export function deleteChart(id: string) {
 export function subscribe(l: Listener) {
   listeners.add(l);
   return () => listeners.delete(l);
+}
+
+/** Só tabelas cadastradas/editadas pela empresa. A vitrine fica de fora. */
+export function tabelasOperacionais(list: MeasurementChart[]): MeasurementChart[] {
+  return list.filter((c) => c.demo !== true);
 }
 
 // Repositor de hidratação (creative-sync) — ver colors/store.ts.
