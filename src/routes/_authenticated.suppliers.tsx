@@ -75,15 +75,15 @@ function SuppliersPage() {
     contactEmail: string;
   }>({
     name: "",
-    cnpj: "15.880.120/0001-40",
-    city: "Apucarana",
-    uf: "PR",
+    cnpj: "",
+    city: "",
+    uf: "",
     category: "Facção Costura",
-    compliance: "Certificado ABVTEX",
-    machinesSummary: "Retas Eletrônicas · Overloques 4F · Galoneiras",
-    capacityMinutesMonth: "75000",
-    leadTimeDays: "6",
-    contactEmail: "pcp@parceiro.ind.br",
+    compliance: "Em Auditoria",
+    machinesSummary: "",
+    capacityMinutesMonth: "",
+    leadTimeDays: "",
+    contactEmail: "",
   });
 
   const enriched = useMemo(() => {
@@ -144,15 +144,15 @@ function SuppliersPage() {
       setEditingPartner(null);
       setFormData({
         name: "",
-        cnpj: "15.880.120/0001-40",
-        city: "Apucarana",
-        uf: "PR",
+        cnpj: "",
+        city: "",
+        uf: "",
         category: "Facção Costura",
-        compliance: "Certificado ABVTEX",
-        machinesSummary: "Retas Eletrônicas · Overloques 4F · Galoneiras",
-        capacityMinutesMonth: "75000",
-        leadTimeDays: "6",
-        contactEmail: "pcp@parceiro.ind.br",
+        compliance: "Em Auditoria",
+        machinesSummary: "",
+        capacityMinutesMonth: "",
+        leadTimeDays: "",
+        contactEmail: "",
       });
     }
     setIsDialogOpen(true);
@@ -166,19 +166,19 @@ function SuppliersPage() {
     const next: IndustrialPartner = {
       id: editingPartner?.id ?? crypto.randomUUID(),
       name: formData.name.trim(),
-      cnpj: formData.cnpj.trim() || "00.000.000/0001-00",
-      city: formData.city.trim() || "Apucarana",
-      uf: (formData.uf.trim() || "PR").toUpperCase().slice(0, 2),
+      cnpj: formData.cnpj.trim(),
+      city: formData.city.trim(),
+      uf: formData.uf.trim().toUpperCase().slice(0, 2),
       category: formData.category,
       compliance: formData.compliance,
-      machinesSummary: formData.machinesSummary.trim() || "Parque industrial homologado",
-      capacityMinutesMonth: Math.max(1000, Number(formData.capacityMinutesMonth) || 60000),
+      machinesSummary: formData.machinesSummary.trim(),
+      capacityMinutesMonth: Math.max(1000, Number(formData.capacityMinutesMonth) || 0),
       qualityScore: editingPartner?.qualityScore ?? 92,
       otifScore: editingPartner?.otifScore ?? 90,
       costScore: editingPartner?.costScore ?? 86,
       reliabilityScore: editingPartner?.reliabilityScore ?? 90,
-      leadTimeDays: Math.max(1, Number(formData.leadTimeDays) || 6),
-      contactEmail: formData.contactEmail.trim() || "contato@fornecedor.ind.br",
+      leadTimeDays: Math.max(1, Number(formData.leadTimeDays) || 0),
+      contactEmail: formData.contactEmail.trim(),
     };
 
     upsertPartner(next);

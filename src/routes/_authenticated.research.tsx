@@ -81,16 +81,15 @@ function ResearchHub() {
   }>({
     title: "",
     capsule: "Alto Verão 2027",
-    imageUrl:
-      "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800",
-    fabricSuggestion: "Meia Malha Pima 170 g/m²",
-    gramaturaGm2: "170",
-    compositionFibra: "Algodão Pima",
+    imageUrl: "",
+    fabricSuggestion: "",
+    gramaturaGm2: "",
+    compositionFibra: "",
     silhouette: "camiseta_v",
-    colorName: "Off-White",
-    colorHex: "#F5F2EB",
-    targetPriceBrl: "189.90",
-    tags: "verao, pima, essencial",
+    colorName: "",
+    colorHex: "",
+    targetPriceBrl: "",
+    tags: "",
   });
 
   const filtered = useMemo(() => {
@@ -144,16 +143,15 @@ function ResearchHub() {
       setFormData({
         title: "",
         capsule: "Alto Verão 2027",
-        imageUrl:
-          "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=800",
-        fabricSuggestion: "Meia Malha Pima 170 g/m²",
-        gramaturaGm2: "170",
-        compositionFibra: "Algodão Pima",
+        imageUrl: "",
+        fabricSuggestion: "",
+        gramaturaGm2: "",
+        compositionFibra: "",
         silhouette: "camiseta_v",
-        colorName: "Off-White",
-        colorHex: "#F5F2EB",
-        targetPriceBrl: "189.90",
-        tags: "verao, pima, essencial",
+        colorName: "",
+        colorHex: "",
+        targetPriceBrl: "",
+        tags: "",
       });
     }
     setIsDialogOpen(true);
@@ -175,14 +173,14 @@ function ResearchHub() {
       title: formData.title.trim(),
       capsule: formData.capsule,
       imageUrl: formData.imageUrl.trim(),
-      fabricSuggestion: formData.fabricSuggestion.trim() || "Tecido Principal",
-      gramaturaGm2: Math.max(60, Number(formData.gramaturaGm2) || 165),
-      compositionFibra: formData.compositionFibra.trim() || "Algodão",
+      fabricSuggestion: formData.fabricSuggestion.trim(),
+      gramaturaGm2: Math.max(60, Number(formData.gramaturaGm2) || 0),
+      compositionFibra: formData.compositionFibra.trim(),
       silhouette: formData.silhouette,
-      colorName: formData.colorName.trim() || "Cor Base",
+      colorName: formData.colorName.trim(),
       colorHex: formData.colorHex.trim() || "#1D6B47",
-      targetPriceBrl: Math.max(29, Number(formData.targetPriceBrl) || 179.9),
-      confidencePct: editingItem?.confidencePct ?? 93,
+      targetPriceBrl: Math.max(29, Number(formData.targetPriceBrl) || 0),
+      confidencePct: editingItem?.confidencePct ?? 0,
       tags: tagArray.length > 0 ? tagArray : ["#colecao"],
       convertedRefCode: editingItem?.convertedRefCode,
     };

@@ -618,23 +618,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     com os 6 marcadores da 61 = 2 (rótulo + `aria-label`); cliques em
     produção confirmaram (`/references` filtro "Filtrar por status" nomeado,
     0 campos sem nome). Repo, ar e banco alinhados na Onda 61.
-20. **Publicar a Onda 62 — PENDENTE (57ª medição).** O repo já tem o
-    glossário completo (39 → **48 termos**) e `GlossarioTermos` nas 4 rotas
-    que usavam os termos novos sem tradução (materials, supplier-portal,
-    influencers, production; **20 rotas com glossário**). O ar segue no
-    entry `index-BOthbvNE.js` / `index-fT4j6Can.js` (Onda 61) — entry e
-    bytes inalterados, marcadores da 62 = 0. **Só publicar**: nenhuma
-    migration foi escrita e o SQL aplicado desde a 24ª medição permanece
-    com SHA `382f0f19…`. Gates **783/783**.
-21. **Publicar a Onda 63 — PENDENTE (57ª medição).** O repo já tem o
-    glossário em **todas** as rotas com jargão (48 → **51 termos**;
-    `GlossarioTermos` nas 12 rotas restantes — tech-sheet, approvals,
-    research, digital-twin, cad, catalog, flow, looks, measurements,
-    prototypes, references, showroom; **32 rotas com glossário**). O ar
-    segue no entry `index-BOthbvNE.js` / `index-fT4j6Can.js` (Onda 61).
-    **Só publicar** (junto com a 62): nenhuma migration foi escrita e o
+20. **Publicar as Ondas 62 e 63 — FEITO (58ª medição).** O entry avançou
+    para `index-B0uxa54F.js` / `index-CSDnutoy.js` (214 chunks /
+    3.204.004 bytes) com os marcadores das duas ondas; cliques em produção
+    confirmaram (`/materials` glossário MOQ/SKU, `/tech-sheet` 9 termos).
+    Repo, ar e banco alinhados na Onda 63.
+21. **Publicar a Onda 64 — PENDENTE (58ª medição).** O repo já tem a
+    auditoria `DEV000006` ponta a ponta (47/47 ocorrências classificadas)
+    e os 3 formulários corrigidos (marketing, suppliers, research —
+    padrões visíveis esvaziados, fallbacks neutralizados). O ar segue no
+    entry `index-B0uxa54F.js` / `index-CSDnutoy.js` (Onda 63) — entry e
+    bytes inalterados. **Só publicar**: nenhuma migration foi escrita e o
     SQL aplicado desde a 24ª medição permanece com SHA `382f0f19…`.
-    Gates **790/790**.
+    Gates **796/796**.
 
 ---
 

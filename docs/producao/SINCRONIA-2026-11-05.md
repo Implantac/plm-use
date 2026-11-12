@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 57ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 58ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,7 +7,7 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (57ª medição, após fechar a Onda 63)
+## 1. O quadro (58ª medição, após fechar a Onda 64)
 
 | Camada                                         | Estado medido                     | Como foi medido                     |
 | ---------------------------------------------- | --------------------------------- | ----------------------------------- |
@@ -15,19 +15,21 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 61** — `index-BOthbvNE.js` | BFS + marcadores da 62 = `0` (§2-V) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
 
-A 57ª medição **re-mediu as três camadas**: o ar segue na **Onda 61**
-(entry `index-BOthbvNE.js` / `index-fT4j6Can.js` idêntico ao início da
-56ª, marcadores da 62 = 0) — **a Onda 62 ainda não foi publicada**, por
-deploy, não por defeito. A Onda 63 fechou o jargão: re-varredura achou
-**12 rotas** com siglas no texto visível e sem glossário (tech-sheet 9,
-approvals 5, research 5, digital-twin 4, cad 2, 7 rotas com 1) e **3
-termos fora do dicionário** (B2B 15×, RLS 5×, RBAC 2×). Detalhe e prova
-por cliques em `ONDA-63-GLOSSARIO-TODAS-AS-ROTAS.md`.
+A 58ª medição **re-mediu as três camadas** e validou as **publicações
+relatadas das Ondas 62 e 63**: o entry avançou para `index-B0uxa54F.js` /
+`index-CSDnutoy.js` (214 chunks / 3.204.004 bytes) com os marcadores das
+duas ondas. Cliques em produção confirmaram — `/materials` com o glossário
+MOQ/SKU (62) e `/tech-sheet` com os 9 termos (63), 0 `pageerror`. A Onda
+64 auditou o `DEV000006` ponta a ponta (**47/47 ocorrências
+classificadas**) e achou **3 vazamentos** do padrão "formulário
+pré-preenchido com dado de demonstração" (marketing, suppliers, research)
+— provados por cliques antes de corrigir. Detalhe e prova em
+`ONDA-64-AUDITORIA-DEV000006.md`.
 
-**Repo na Onda 63, ar na Onda 61, banco inalterado — há duas publicações
-pendentes (62 e 63), por deploy, não por defeito.** Publicar o app não
-aplica SQL. Gates **790/790** (783 + 7). A 56ª medição (§2-U) e a 55ª
-(§2-T) continuam válidas.
+**Repo na Onda 64, ar na Onda 63, banco inalterado — há uma publicação
+pendente (64), por deploy, não por defeito.** Publicar o app não aplica
+SQL. Gates **796/796** (790 + 6). A 57ª medição (§2-V) e a 56ª (§2-U)
+continuam válidas.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -888,6 +890,53 @@ termos no estado vazio, `/approvals` 5, `/research` 5, `/digital-twin` 4,
 
 **Há duas publicações pendentes (62 e 63).** Nenhuma migration foi escrita
 nem aplicada; publicar o app não aplica SQL.
+
+---
+
+## 2-W. 58ª medição — Onda 64 escolhida pelo risco, auditoria DEV000006 ponta a ponta
+
+**Re-medição inicial:** repo `a714972` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-B0uxa54F.js` / `index-CSDnutoy.js` (**214 chunks /
+3.204.004 bytes**, 0 falhas) com 3 marcadores da 63 = **1**, 5 da 62 = 1,
+3 da 61 = 2 — **publicações das Ondas 62 e 63 relatadas pelo dono e
+validadas por cliques em produção** (`/materials` glossário MOQ/SKU,
+`/tech-sheet` 9 termos, 0 `pageerror`); banco view `200 []`, 4 funções
+`401 42501` (com parâmetros corretos), SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** auditoria das **47 ocorrências** de `DEV000006` na fonte
+(20 no bundle), classificadas uma a uma — ~20 em comentários, seeds com
+`demo: true` seladas/filtradas, `cfo-dre` fora dos acumuladores, tech-sheet
+e dashboard declarando, looks filtrando, research/marketing/showroom/
+commercial honestos. E **3 vazamentos** do padrão "formulário
+pré-preenchido com dado de demonstração": marketing (SKUs `DEV000006` +
+R$ 115.000 inventados → campanha operacional), suppliers (parceiro
+fictício → fornecedor homologado), research (briefing de exemplo →
+briefing operacional). Nenhum emissor de documento sem guarda foi achado.
+Escolhida a honestidade de dado em formulários em vez do cron mock (sem
+dado real para medir) ou de `dias_ativa` (view `200 []` é o correto).
+
+**Correção:** padrões visíveis esvaziados + fallbacks do save
+neutralizados nos 3 formulários (marketing: SKUs/números vazios; suppliers:
+campos vazios, compliance "Em Auditoria", fallbacks `""`/mínimos; research:
+campos vazios, fallbacks `""`/`0`). Nenhum handler, validação ou store
+mudou além disso. Campanha/briefing/fornecedor salvos pelo usuário
+continuam operacionais — com dado digitado, não de fábrica.
+
+**DEPOIS (mesmos cliques):** `/marketing` "Cadastrar Drop" só com
+data/coleção/canal/formato pré-preenchidos (SKUs e números **vazios**);
+`/suppliers` "Adicionar" **vazio**; 0 `pageerror`. Capturas
+`/home/user/medicao58-marketing-dialogo-antes.png` (vazamento) e
+`/home/user/medicao58-marketing-depois-salvar.png`.
+
+| Camada | 58ª medição (depois)                                                                                            |
+| ------ | --------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 64** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                   |
+| Ar     | **Onda 63** — mesmo entry/bytes; 3 marcadores da 63 = 1, 5 da 62 = 1, 3 da 61 = 2; marcadores 60/59/58 intactos |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                        |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **796/796**                                         |
+
+**Há uma publicação pendente (64).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
 
 ---
 

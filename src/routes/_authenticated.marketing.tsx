@@ -74,12 +74,12 @@ function MarketingPage() {
     channel: "Meta Ads + Reels",
     dropDate: "2026-11-28",
     status: "Planejada",
-    skuRefsText: "DEV000006, V24-001",
+    skuRefsText: "",
     creativeFormat: "Pack PNG Transparente + Reels",
     transparentStudioReady: true,
-    productionCostBrl: "12000",
-    mediaSpendBrl: "25000",
-    attributedSalesBrl: "115000",
+    productionCostBrl: "",
+    mediaSpendBrl: "",
+    attributedSalesBrl: "",
   });
 
   const filtered = useMemo(() => {
@@ -130,12 +130,12 @@ function MarketingPage() {
         channel: "Meta Ads + Reels",
         dropDate: "2026-11-28",
         status: "Planejada",
-        skuRefsText: "DEV000006, V24-001",
+        skuRefsText: "",
         creativeFormat: "Pack PNG Transparente + Reels",
         transparentStudioReady: true,
-        productionCostBrl: "12000",
-        mediaSpendBrl: "25000",
-        attributedSalesBrl: "115000",
+        productionCostBrl: "",
+        mediaSpendBrl: "",
+        attributedSalesBrl: "",
       });
     }
     setIsDialogOpen(true);
