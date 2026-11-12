@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 58ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 59ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,28 +7,28 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (58ª medição, após fechar a Onda 64)
+## 1. O quadro (59ª medição, após fechar a Onda 65)
 
 | Camada                                         | Estado medido                     | Como foi medido                     |
 | ---------------------------------------------- | --------------------------------- | ----------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 63** — HEAD local = remoto | `git log` / `git ls-remote`         |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 61** — `index-BOthbvNE.js` | BFS + marcadores da 62 = `0` (§2-V) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 65** — HEAD local = remoto | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 64** — `index-ClheCAuQ.js` | BFS + `DEV000006` `18` (§2-X)       |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
 
-A 58ª medição **re-mediu as três camadas** e validou as **publicações
-relatadas das Ondas 62 e 63**: o entry avançou para `index-B0uxa54F.js` /
-`index-CSDnutoy.js` (214 chunks / 3.204.004 bytes) com os marcadores das
-duas ondas. Cliques em produção confirmaram — `/materials` com o glossário
-MOQ/SKU (62) e `/tech-sheet` com os 9 termos (63), 0 `pageerror`. A Onda
-64 auditou o `DEV000006` ponta a ponta (**47/47 ocorrências
-classificadas**) e achou **3 vazamentos** do padrão "formulário
-pré-preenchido com dado de demonstração" (marketing, suppliers, research)
-— provados por cliques antes de corrigir. Detalhe e prova em
-`ONDA-64-AUDITORIA-DEV000006.md`.
+A 59ª medição **re-mediu as três camadas** e validou a **publicação
+relatada da Onda 64**: o entry avançou para `index-ClheCAuQ.js` /
+`index-O58aczOi.js` (214 chunks / 3.203.213 bytes) e `DEV000006` caiu de
+20 para **18** no bundle (os 2 padrões do formulário de marketing
+removidos). Cliques em produção confirmaram — `/marketing` "Cadastrar
+Drop" sem SKUs nem números inventados, 0 `pageerror`. A Onda 65 rotulou o
+mock do cron na tela que consome: o cron já emitia `sell_through_pct:
+null` com `fonte: "cron:mock"` (honesto), mas a aba Performance de
+`/launch` só descrevia os KPIs sem mostrar dado nem rotular o placeholder.
+Detalhe e prova em `ONDA-65-CRON-MOCK-ROTULADO.md`.
 
-**Repo na Onda 64, ar na Onda 63, banco inalterado — há uma publicação
-pendente (64), por deploy, não por defeito.** Publicar o app não aplica
-SQL. Gates **796/796** (790 + 6). A 57ª medição (§2-V) e a 56ª (§2-U)
+**Repo na Onda 65, ar na Onda 64, banco inalterado — há uma publicação
+pendente (65), por deploy, não por defeito.** Publicar o app não aplica
+SQL. Gates **801/801** (796 + 5). A 58ª medição (§2-W) e a 57ª (§2-V)
 continuam válidas.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
@@ -936,6 +936,55 @@ data/coleção/canal/formato pré-preenchidos (SKUs e números **vazios**);
 | Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **796/796**                                         |
 
 **Há uma publicação pendente (64).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
+## 2-X. 59ª medição — Onda 65 escolhida pelo risco, cron mock rotulado na tela que consome
+
+**Re-medição inicial:** repo `d4b1bb2` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-ClheCAuQ.js` / `index-O58aczOi.js` (**214 chunks /
+3.203.213 bytes**, 0 falhas) com 3 marcadores da 63 = **1**, 2 da 62 = 1,
+2 da 61 = 2 e **`DEV000006` 20 → 18** — **publicação da Onda 64 relatada
+pelo dono e validada por cliques em produção** (`/marketing` "Cadastrar
+Drop" sem SKUs nem números inventados, 0 `pageerror`); banco view
+`200 []`, 4 funções `401 42501` (com parâmetros corretos), SQL SHA
+`382f0f19…` inalterado.
+
+**Risco medido:** o único `TODO` real da fonte — o mock de sell-through do
+cron `launch-performance.ts`. O cron já era honesto no dado (emite
+`sell_through_pct: null` com `fonte: "cron:mock"`, nunca percentual
+inventado), mas a tela que consome (`/launch` aba Performance) só
+descrevia os KPIs ("`sell_through_D30`", "o cron alimenta esta aba
+diariamente") sem mostrar dado nenhum e sem rotular o placeholder; o mapa
+`performance` do `useLaunch` era buscado e nunca renderizado. Nenhum
+emissor de documento sem guarda foi achado. Escolhido o rótulo honesto na
+tela que consome em vez de `dias_ativa` (view `200 []` é o correto) ou de
+`CollectionROI` (estimativa já declarada). Nota: o `TODO` dizia
+"substituir por `ErpAdapter.getSellThrough`" — o PLM não é ERP, não há
+`ErpAdapter` para ligar; a correção correta é rotular, não inventar.
+
+**Correção:** a aba Performance agora renderiza o dado real do evento —
+aviso `performance-sellthrough-mock` ("Sell-through ainda não apurável…
+O PLM não é ERP: nenhum percentual é inventado aqui") e lista de waves com
+badge **"sell-through —"** (null) e fonte `cron:mock`. O mapa `performance`
+passou a ser consumido. O comentário do cron reflete o estado honesto
+atual. Nenhum número novo é emitido; quando houver integração real, o
+badge mostra o percentual sem mudar a tela.
+
+**DEPOIS (mesmos cliques):** `/launch` aba Performance com o aviso do mock
+renderizado, estado vazio honesto ("Nenhuma wave ainda"), **0 números de
+sell-through inventados**, 0 `pageerror`. Captura
+`/home/user/medicao59-launch-performance.png`.
+
+| Camada | 59ª medição (depois)                                                                              |
+| ------ | ------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 65** — HEAD local = remoto, limpo, token fora do config e dos arquivos                     |
+| Ar     | **Onda 64** — mesmo entry/bytes; 3 marcadores da 63 = 1, 2 da 62 = 1, 2 da 61 = 2; `DEV000006` 18 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                          |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **801/801**                           |
+
+**Há uma publicação pendente (65).** Nenhuma migration foi escrita nem
 aplicada; publicar o app não aplica SQL.
 
 ---

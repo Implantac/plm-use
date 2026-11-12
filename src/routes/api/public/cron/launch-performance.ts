@@ -36,8 +36,10 @@ export const Route = createFileRoute("/api/public/cron/launch-performance")({
           return Response.json({ ok: true, processed: 0 });
         }
 
-        // 2) Snapshot mock de sell-through (TODO: substituir por ErpAdapter.getSellThrough)
-        //    Aqui só emitimos o evento com placeholder para BI consumir.
+        // 2) Snapshot mock de sell-through. O PLM não é ERP: não há
+        //    ErpAdapter para ligar. Emitimos null (nunca um percentual
+        //    inventado) com fonte "cron:mock"; a aba Performance de
+        //    /launch rotula o placeholder e mostra "—".
         const events = waves.map((w) => ({
           entity_type: "launch_wave" as const,
           entity_id: w.id,

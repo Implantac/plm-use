@@ -48,7 +48,7 @@ export const Route = createFileRoute("/_authenticated/launch")({
 
 function LaunchPage() {
   const { openEntity } = useEntityDrawer();
-  const { waves, items, handoffs, itemsByWave, handoffsByWave, loading } = useLaunch();
+  const { waves, items, handoffs, itemsByWave, handoffsByWave, performance, loading } = useLaunch();
   const { decisions } = useShowroom();
 
   const create = useServerFn(createLaunchWave);
@@ -487,13 +487,55 @@ function LaunchPage() {
           </Card>
         </TabsContent>
 
-        {/* --- PERFORMANCE (placeholder até cron rodar) -------------------- */}
+        {/* --- PERFORMANCE (sell-through mock até integração) ------------- */}
         <TabsContent value="performance">
           <Card>
-            <CardContent className="pt-6 text-sm text-muted-foreground">
-              KPIs derivados de <code>entity_events</code>: <code>time_to_launch</code>,
-              <code> handoff_success_rate</code>, <code>sell_through_D30</code>. O cron
-              <code> /api/public/cron/launch-performance</code> alimenta esta aba diariamente.
+            <CardContent className="pt-6 space-y-4">
+              <div
+                data-testid="performance-sellthrough-mock"
+                className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs leading-relaxed text-muted-foreground"
+              >
+                <strong className="text-foreground">Sell-through ainda não apurável.</strong> O cron{" "}
+                <code>/api/public/cron/launch-performance</code> emite o evento diário com{" "}
+                <code>sell_through_pct: null</code> e <code>fonte: "cron:mock"</code> — placeholder
+                até a integração com o sistema de vendas. O PLM não é ERP: nenhum percentual é
+                inventado aqui.
+              </div>
+              {waves.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Nenhuma wave ainda. Crie a primeira na aba Waves.
+                </p>
+              ) : (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {waves.map((w) => {
+                    const perf = performance[w.id];
+                    return (
+                      <Card key={w.id}>
+                        <CardHeader className="flex flex-row items-start justify-between gap-2">
+                          <div>
+                            <CardTitle className="text-base">{w.codigo}</CardTitle>
+                            <p className="text-xs text-muted-foreground">
+                              {perf
+                                ? `janela ${perf.janela_dias ?? "—"} dias · fonte ${perf.fonte ?? "—"}`
+                                : "sem snapshot do cron"}
+                            </p>
+                          </div>
+                          <Badge variant="secondary">
+                            {perf?.sell_through_pct == null
+                              ? "sell-through —"
+                              : `${perf.sell_through_pct.toFixed(0)}%`}
+                          </Badge>
+                        </CardHeader>
+                        <CardContent className="text-xs text-muted-foreground">
+                          {perf?.sell_through_pct == null
+                            ? "Não apurável: o cron ainda emite placeholder (cron:mock)."
+                            : `Apurado em ${perf.calculado_em.slice(0, 10)}.`}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
