@@ -613,14 +613,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     3.198.301 bytes) com os 6 marcadores da 60 = 1 e os 3 da 59 = 1; cliques
     em produção confirmaram (`/influencers` sem guias/linhas,
     `/supplier-portal` diálogo 0/11). Repo, ar e banco alinhados na Onda 60.
-19. **Publicar a Onda 61 — PENDENTE (55ª medição).** O repo já tem o
-    fechamento dos campos sem nome em 18 arquivos (PCP, engenharia de rota,
-    estúdio de IA, corte, financeiro, medidas, estoque, analytics,
-    comentários; fonte **78 → 30** no contador bruto, **0 reais**). O ar
-    segue no entry `index-BQ5zgD_R.js` / `index-Bt3hn52q.js` (Onda 60) —
-    entry e bytes inalterados, porque os `aria-label` duplicam o rótulo
-    visível. **Só publicar**: nenhuma migration foi escrita e o SQL aplicado
-    desde a 24ª medição permanece com SHA `382f0f19…`. Gates **777/777**.
+19. **Publicar a Onda 61 — FEITO (56ª medição).** O entry avançou para
+    `index-BOthbvNE.js` / `index-fT4j6Can.js` (214 chunks / 3.199.677 bytes)
+    com os 6 marcadores da 61 = 2 (rótulo + `aria-label`); cliques em
+    produção confirmaram (`/references` filtro "Filtrar por status" nomeado,
+    0 campos sem nome). Repo, ar e banco alinhados na Onda 61.
+20. **Publicar a Onda 62 — PENDENTE (56ª medição).** O repo já tem o
+    glossário completo (39 → **48 termos**) e `GlossarioTermos` nas 4 rotas
+    que usavam os termos novos sem tradução (materials, supplier-portal,
+    influencers, production; **20 rotas com glossário**). O ar segue no
+    entry `index-BOthbvNE.js` / `index-fT4j6Can.js` (Onda 61) — entry e
+    bytes inalterados. **Só publicar**: nenhuma migration foi escrita e o
+    SQL aplicado desde a 24ª medição permanece com SHA `382f0f19…`.
+    Gates **783/783**.
 
 ---
 

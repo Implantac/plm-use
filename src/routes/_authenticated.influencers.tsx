@@ -6,6 +6,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -178,6 +179,8 @@ function InfluencersPage() {
         },
       ]}
     >
+      {/* Onda 62: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["UTM", "CAC", "ROAS", "CFOP"]} testId="glossario-influencers" />
       <SeedingAttributionPanel onRegistrar={() => setCriadorOpen(true)} />
 
       {soVitrine && (

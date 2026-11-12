@@ -8,6 +8,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRightLeft, ExternalLink, Layers, Library, Pencil, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -178,6 +179,8 @@ function MaterialsPage() {
         },
       ]}
     >
+      {/* Onda 62: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["MOQ", "SKU"]} testId="glossario-materials" />
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs uppercase tracking-[0.05em] text-muted-foreground flex items-center gap-2">
           <Library className="w-3.5 h-3.5 text-primary" /> catálogo · {visible.length} itens

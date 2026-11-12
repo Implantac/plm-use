@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -137,6 +138,8 @@ function ProductionPage() {
         { label: "Atrasados", value: String(lotesAtrasados), detail: "fora do prazo" },
       ]}
     >
+      {/* Onda 62: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["OP", "PCP"]} testId="glossario-production" />
       <div className="space-y-4">
         {isDemo && (
           <div

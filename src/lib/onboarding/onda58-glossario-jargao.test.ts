@@ -50,9 +50,10 @@ const ROTAS: ReadonlyArray<[string, readonly string[]]> = [
 
 describe("Onda 58 — glossário onde há jargão", () => {
   it("o dicionário passou de 33 para 39 termos, sem duplicatas", () => {
-    expect(TERMOS).toHaveLength(39);
+    // Onda 62: +9 termos (OP, MOQ, TCO, UTM, CAC, CMV, ABC, OS, ERP) → 48.
+    expect(TERMOS).toHaveLength(48);
     const siglas = TERMOS.map((t) => t.sigla.toLowerCase());
-    expect(new Set(siglas).size).toBe(39);
+    expect(new Set(siglas).size).toBe(48);
     for (const novo of ["BOP", "PV", "GTM", "CRP", "EDD", "LEC"]) {
       expect(explicacaoDe(novo), novo).not.toBeNull();
     }

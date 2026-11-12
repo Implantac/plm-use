@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,6 +135,11 @@ function SupplierPortalPage() {
       subtitle="Explosão MRP da BOM, mapa comparativo TCO de 3 cotações, adjudicação direta na Ficha Técnica e ordens/amostras."
       version="Sourcing v2.0"
     >
+      {/* Onda 62: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["MOQ", "TCO", "OP", "BOM", "OTIF", "RFQ"]}
+        testId="glossario-supplier-portal"
+      />
       <Tabs defaultValue="rfq-bom" className="w-full">
         <TabsList className="bg-muted/50 border border-border">
           <TabsTrigger value="rfq-bom">RFQ & Cotação BOM (PLM)</TabsTrigger>

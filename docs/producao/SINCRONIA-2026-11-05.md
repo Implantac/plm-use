@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 54ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 56ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -15,21 +15,20 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 | **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + 6 marcadores da 60 = `0` (§2-S) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções   |
 
-A 55ª medição **re-mediu as três camadas** e achou uma **publicação não
-relatada**: o entry havia avançado para `index-BQ5zgD_R.js` com os marcadores
-das Ondas 59 **e** 60. Cliques em produção confirmaram — `/influencers` sem
-guias nem linhas de seeding (Onda 59) e `/supplier-portal` com o diálogo
-"Cadastrar fornecedor" **0/11** sem nome (Onda 60). A Onda 61 fechou o
-universo de campos sem nome: contagem estática classificou os 78 restantes
-em falsos positivos (`<label>` envolvente, comentários, definições,
-`aria-label` após `=>`) e **48 reais em 18 arquivos** — PCP, engenharia de
-rota, estúdio de IA, corte, financeiro, medidas, estoque, analytics e
-comentários. Detalhe e prova por cliques em
-`ONDA-61-CAMPOS-TEM-NOME-FECHAMENTO.md`.
+A 56ª medição **re-mediu as três camadas** e validou a **publicação relatada
+da Onda 61**: o entry avançou para `index-BOthbvNE.js` / `index-fT4j6Can.js`
+(214 chunks / 3.199.677 bytes) com os 6 marcadores da 61 em **2×** (rótulo
+visível + `aria-label`). Cliques em produção confirmaram — `/references`
+com o filtro nomeado "Filtrar por status", 0 campos sem nome, 0 `pageerror`.
+A Onda 62 cobriu o jargão restante: varredura de siglas no texto visível
+achou **9 termos fora do glossário** (OP 32×, MOQ, TCO, UTM, CAC, CMV, ABC,
+OS, ERP) e **4 rotas** que os usavam sem `GlossarioTermos` (materials,
+supplier-portal, influencers, production). Detalhe e prova por cliques em
+`ONDA-62-GLOSSARIO-JARGAO-RESTANTE.md`.
 
-**Repo na Onda 61, ar na Onda 60, banco inalterado — há uma publicação
-pendente (61), por deploy, não por defeito.** Publicar o app não aplica SQL.
-Gates **777/777** (770 + 7). A 54ª medição (§2-S) e a 53ª (§2-R) continuam
+**Repo na Onda 62, ar na Onda 61, banco inalterado — há uma publicação
+pendente (62), por deploy, não por defeito.** Publicar o app não aplica SQL.
+Gates **783/783** (777 + 6). A 55ª medição (§2-T) e a 54ª (§2-S) continuam
 válidas.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
@@ -795,6 +794,54 @@ Captura `/home/user/medicao55-references-depois.png`.
 | Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **777/777**                            |
 
 **Há uma publicação pendente (61).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
+## 2-U. 56ª medição — Onda 62 escolhida pelo risco, glossário cobre o jargão restante
+
+**Re-medição inicial:** repo `c68c2c1` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-BOthbvNE.js` / `index-fT4j6Can.js` (**214 chunks /
+3.199.677 bytes**, 0 falhas) com 6 marcadores da 61 = **2** (rótulo visível
+
+- `aria-label`), 6 da 60 = 1, 3 da 59 = 1 — **publicação da Onda 61 relatada
+  pelo dono e validada por cliques em produção** (`/references` com o filtro
+  "Filtrar por status" nomeado, 0 campos sem nome, 0 `pageerror`); banco view
+  `200 []`, 4 funções `401 42501` (com parâmetros corretos — a primeira sonda
+  com `{}` devolveu `404 PGRST202`, erro da sonda), SQL SHA `382f0f19…`
+  inalterado.
+
+**Risco medido:** varredura de siglas no texto visível das 44 rotas —
+**OP 32×**, B2B 15×, ERP 9×, ABC 7×, OS 6×, MOQ 3×, RLS 5×, RBAC 2×, além
+dos 4 da dívida (MOQ/UTM/CAC/CMV) confirmados em texto visível. **9 termos
+fora do glossário** (OP, MOQ, TCO, UTM, CAC, CMV, ABC, OS, ERP) e **4 rotas**
+que os usavam sem `GlossarioTermos` (materials, supplier-portal,
+influencers, production). Nenhum emissor de documento sem guarda foi
+achado. Escolhido o jargão sem tradução em telas de operação em vez de
+`DEV000006`/`CollectionROI` (vitrine/estimativa já declaradas) ou de
+`dias_ativa` (view `200 []` é o comportamento correto sem reservas).
+
+**Correção:** +9 termos no `glossario.ts` (39 → **48**, sem duplicatas) e
+`GlossarioTermos` com `siglas` medidas por tela + `testId` próprio nas 4
+rotas — materials (`MOQ`, `SKU`), supplier-portal (`MOQ`, `TCO`, `OP`,
+`BOM`, `OTIF`, `RFQ`), influencers (`UTM`, `CAC`, `ROAS`, `CFOP`),
+production (`OP`, `PCP`). **20 rotas com glossário.** Nenhum rótulo de
+módulo, handler ou store mudou. O teste da Onda 58 só teve a contagem
+39 → 48 atualizada.
+
+**DEPOIS (mesmos cliques):** dicionário **39 → 48**; rotas com glossário
+**16 → 20**; `/materials` 2 termos, `/supplier-portal` 6, `/influencers` 4,
+`/production` 2; 0 `pageerror`. Captura
+`/home/user/medicao56-supplier-portal-glossario.png`.
+
+| Camada | 56ª medição (depois)                                                                                            |
+| ------ | --------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 62** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                   |
+| Ar     | **Onda 61** — mesmo entry/bytes; 6 marcadores da 61 = 2, 6 da 60 = 1, 3 da 59 = 1; marcadores 58/57/47 intactos |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                        |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **783/783**                                         |
+
+**Há uma publicação pendente (62).** Nenhuma migration foi escrita nem
 aplicada; publicar o app não aplica SQL.
 
 ---

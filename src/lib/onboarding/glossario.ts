@@ -228,6 +228,58 @@ export const TERMOS: readonly Termo[] = [
     explicacao:
       "A quantidade ideal a pedir de cada vez para equilibrar custo de pedido e custo de estoque.",
   },
+  {
+    sigla: "OP",
+    nome: "Ordem de produção",
+    explicacao:
+      "O documento que manda produzir uma quantidade de uma peça, com prazo e responsável definidos.",
+  },
+  {
+    sigla: "MOQ",
+    nome: "Quantidade mínima de pedido",
+    explicacao: "O menor número de unidades que o fornecedor aceita vender em um único pedido.",
+  },
+  {
+    sigla: "TCO",
+    nome: "Custo total de aquisição",
+    explicacao:
+      "O custo completo de comprar: preço, frete, impostos e prazo — não só o valor da peça.",
+  },
+  {
+    sigla: "UTM",
+    nome: "Parâmetros de rastreamento de link",
+    explicacao:
+      "Códigos no link que mostram de onde veio cada visita ou venda, para medir campanhas.",
+  },
+  {
+    sigla: "CAC",
+    nome: "Custo de aquisição de cliente",
+    explicacao: "Quanto a empresa gasta, em média, para conseguir um cliente novo.",
+  },
+  {
+    sigla: "CMV",
+    nome: "Custo da mercadoria vendida",
+    explicacao:
+      "Quanto custou fabricar ou comprar o que foi vendido, sem contar as despesas da empresa.",
+  },
+  {
+    sigla: "ABC",
+    nome: "Curva ABC de estoque",
+    explicacao:
+      "Classificação que separa os itens em A, B e C pelo valor de giro, para cuidar mais do que mais importa.",
+  },
+  {
+    sigla: "OS",
+    nome: "Ordem de serviço",
+    explicacao:
+      "O documento que pede um serviço externo, como costura ou acabamento feito por terceiros.",
+  },
+  {
+    sigla: "ERP",
+    nome: "Sistema de gestão empresarial",
+    explicacao:
+      "Software que integra vendas, estoque e financeiro; o PLM não é um ERP, ele cuida do produto.",
+  },
 ] as const;
 
 /** Siglas que aparecem na primeira dobra do dashboard (medido no browser). */
