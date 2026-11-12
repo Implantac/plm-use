@@ -12,6 +12,11 @@ import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operatio
 
 const STORAGE_KEY = "use-moda:fabric-rolls-v1";
 
+// Os 4 rolos abaixo são **demonstração** (`demo: true`, Onda 68): eles
+// ilustram a tabela, mas nunca entram no laudo de homogeneidade nem no
+// saldo vinculado à BOM. Só rolo registrado pelo usuário conta como
+// estoque real — mesmo contrato das coleções (Onda 51) e dos creators
+// (Onda 59).
 const SEED_ROLLS: FabricRollItem[] = [
   {
     id: "rl-1",
@@ -25,6 +30,7 @@ const SEED_ROLLS: FabricRollItem[] = [
     pesoLiquidoKg: 26.4,
     metragemM: 108.6,
     status: "Liberado",
+    demo: true,
   },
   {
     id: "rl-2",
@@ -38,6 +44,7 @@ const SEED_ROLLS: FabricRollItem[] = [
     pesoLiquidoKg: 25.8,
     metragemM: 104.8,
     status: "Liberado",
+    demo: true,
   },
   {
     id: "rl-3",
@@ -51,6 +58,7 @@ const SEED_ROLLS: FabricRollItem[] = [
     pesoLiquidoKg: 24.1,
     metragemM: 101.0,
     status: "Liberado",
+    demo: true,
   },
   {
     id: "rl-4",
@@ -64,6 +72,7 @@ const SEED_ROLLS: FabricRollItem[] = [
     pesoLiquidoKg: 28.5,
     metragemM: 73.7,
     status: "Reservado Corte",
+    demo: true,
   },
 ];
 
@@ -72,7 +81,9 @@ export function FabricRollsShadePanel() {
   const updateBomItem = useTechSheetStore((s) => s.updateBomItem);
 
   const [rolls, setRolls] = useState<FabricRollItem[]>(SEED_ROLLS);
-  const [selectedIds, setSelectedIds] = useState<string[]>(["rl-1", "rl-2"]);
+  // Seleção inicial vazia (Onda 68): antes vinha com rl-1/rl-2 marcados,
+  // e o laudo + o saldo de 52,2 kg já nasciam calculados sobre a vitrine.
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [targetRef, setTargetRef] = useSelectedRef(refOptions);
   const [newRollCode, setNewRollCode] = useState("");
   const [newPartida, setNewPartida] = useState("PT-8841");
@@ -99,8 +110,10 @@ export function FabricRollsShadePanel() {
     }
   }, [rolls]);
 
+  // Demonstração ilustra a tabela, mas não entra no laudo nem no saldo —
+  // mesmo contrato das coleções (Onda 51) e dos creators (Onda 59).
   const selectedRolls = useMemo(
-    () => rolls.filter((r) => selectedIds.includes(r.id)),
+    () => rolls.filter((r) => selectedIds.includes(r.id) && !r.demo),
     [rolls, selectedIds],
   );
   const report = useMemo(() => evaluateRollShadeBatch(selectedRolls), [selectedRolls]);
@@ -192,6 +205,19 @@ export function FabricRollsShadePanel() {
             </Button>
           </div>
         </div>
+
+        {rolls.some((r) => r.demo) && (
+          <div
+            data-testid="fabric-rolls-demo"
+            className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+          >
+            <strong className="text-foreground">Rolos de demonstração na tabela.</strong> Os rolos
+            marcados como demonstração (seed do sistema) ilustram o painel, mas{" "}
+            <strong>não entram no laudo de homogeneidade nem no saldo</strong> vinculado à BOM — só
+            rolo registrado pelo usuário conta como estoque. O PLM não é ERP: nenhum saldo de
+            vitrine é apurado como real.
+          </div>
+        )}
 
         {/* Laudo Espectrofotométrico de Homogeneidade do Enfesto */}
         <div

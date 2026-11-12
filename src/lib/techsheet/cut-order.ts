@@ -61,6 +61,13 @@ export interface FabricRollItem {
   pesoLiquidoKg: number;
   metragemM: number;
   status: "Liberado" | "Reservado Corte" | "Quarentena";
+  /**
+   * `true` = rolo de demonstração (seed do painel, nunca recebido pela
+   * empresa). Ele ilustra a tabela, mas **não** entra no laudo de
+   * homogeneidade nem no saldo vinculado à BOM — mesmo contrato das
+   * coleções (`demo: true`, Onda 51) e dos creators (Onda 59).
+   */
+  demo?: boolean;
 }
 
 export interface ShadeCompatibilityReport {

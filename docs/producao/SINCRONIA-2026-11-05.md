@@ -1090,6 +1090,51 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AA. 62ª medição — Onda 68 escolhida pelo risco, rolos de demonstração fora do laudo e do saldo
+
+**Re-medição inicial:** repo `221ebd5` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-CLjgwWOV.js` / `index-ycw9M82U.js` (**214 chunks /
+3.206.878 bytes**, 0 falhas) com marcadores da 67 = 1/1/1, marcador da 66
+= 1, da 65 = 1 e **`DEV000006` 18 → 16** — **publicação da Onda 67 relatada
+pelo dono e validada por cliques em produção** (`/commercial` com a
+carteira vazia, `/financial` com o fluxo vazio, 0 `pageerror`); banco view
+`200 []`, 4 funções `401 42501` (com parâmetros corretos), SQL SHA
+`382f0f19…` inalterado.
+
+**Risco medido:** os seeds restantes — os `INITIAL_*` em stores (todos já
+`demo: true`: GTM, outsourcing, governança, private-label) e o `SEED_ROLLS`
+do painel de rolos de tecido (`FabricRollsShadePanel`, em `/inventory`). O
+seed de 4 rolos era estoque de demonstração sem nenhuma declaração — e a
+seleção inicial vinha com `rl-1`/`rl-2` marcados, então o laudo de
+homogeneidade e o saldo de **52,2 kg** já nasciam calculados sobre a
+vitrine; "Vincular Saldo à BOM" gravava esse saldo fictício na ficha salva
+(`updateBomItem` com `estoqueDisponivel`). Contrapontos:
+`DEFAULT_FACTORY_SECTORS` é configuração (não dado apurado;
+`podeEmitirCrp` barra a emissão sem OP); `CollectionROI` já declara a
+estimativa e vira `—` sem lote real.
+
+**Correção:** mesmo contrato das coleções `demo: true` (Onda 51) e dos
+creators (Onda 59) — o seed marca `demo: true`; a seleção inicial nasce
+vazia; o laudo e o saldo só consideram rolos reais (`!r.demo`); a tabela
+mostra o aviso `fabric-rolls-demo`. Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/inventory` com o aviso renderizado, `RL-2601`
+ilustrando a tabela, laudo com "Selecione rolos para validar
+homogeneidade" e sem o saldo de 52,2 kg da vitrine; 0 `pageerror`. Captura
+`/home/user/medicao62-inventory-depois.png`.
+
+| Camada | 62ª medição (depois)                                                                                                |
+| ------ | ------------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 68** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                       |
+| Ar     | **Onda 67** — entry novo `index-CLjgwWOV.js` / `index-ycw9M82U.js`; marcadores 67=1/1/1, 66=1, 65=1; `DEV000006` 16 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                            |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **818/818**                                             |
+
+**Há uma publicação pendente (68).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
