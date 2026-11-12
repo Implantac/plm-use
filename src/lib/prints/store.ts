@@ -30,11 +30,19 @@ export type PrintAsset = {
   updatedAt: string;
   tags: string[];
   versions: PrintVersion[];
+  /**
+   * `true` = estampa de demonstração (seed do sistema, nunca cadastrada pela
+   * empresa). Ilustra a lista, mas **não** entra nas métricas, não pode ser
+   * usada numa ficha salva nem é sincronizada — mesmo contrato das coleções
+   * (`demo: true`, Onda 51) e dos materiais (Onda 69).
+   */
+  demo?: boolean;
 };
 
 export const printsSeed: PrintAsset[] = [
   {
     id: "est-01",
+    demo: true,
     code: "EST-0142",
     name: "Floral Amalfi",
     tecnica: "digital",
@@ -84,6 +92,7 @@ export const printsSeed: PrintAsset[] = [
   },
   {
     id: "est-02",
+    demo: true,
     code: "EST-0158",
     name: "Geo Concreto",
     tecnica: "rotativa",
@@ -123,6 +132,7 @@ export const printsSeed: PrintAsset[] = [
   },
   {
     id: "est-03",
+    demo: true,
     code: "EST-0163",
     name: "Denim Wash Texture",
     tecnica: "sublimacao",
@@ -153,6 +163,7 @@ export const printsSeed: PrintAsset[] = [
   },
   {
     id: "est-04",
+    demo: true,
     code: "EST-0170",
     name: "Botânica Tropical",
     tecnica: "localizada",
@@ -187,6 +198,11 @@ export const printsSeed: PrintAsset[] = [
 type Listener = () => void;
 const listeners = new Set<Listener>();
 let prints = [...printsSeed];
+
+/** Só estampas cadastradas/editadas pela empresa. A vitrine fica de fora. */
+export function estampasOperacionais(list: PrintAsset[]): PrintAsset[] {
+  return list.filter((p) => p.demo !== true);
+}
 
 export function listPrints(): PrintAsset[] {
   return prints;

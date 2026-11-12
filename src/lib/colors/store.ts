@@ -23,11 +23,19 @@ export type ColorPalette = {
   colors: ColorRef[];
   updatedAt: string; // ISO
   linkedRefs: number; // qtde de referências vinculadas
+  /**
+   * `true` = cartela de demonstração (seed do sistema, nunca cadastrada pela
+   * empresa). Ilustra a lista, mas **não** entra nas métricas, não pode ser
+   * usada como cor de ficha salva nem é sincronizada — mesmo contrato das
+   * coleções (`demo: true`, Onda 51) e dos materiais (Onda 69).
+   */
+  demo?: boolean;
 };
 
 export const palettesSeed: ColorPalette[] = [
   {
     id: "pal-01",
+    demo: true,
     name: "Amalfi Sunset",
     season: "Verão 25",
     brand: "Premium Luxe",
@@ -76,6 +84,7 @@ export const palettesSeed: ColorPalette[] = [
   },
   {
     id: "pal-02",
+    demo: true,
     name: "Urban Resort",
     season: "Alto Verão 25",
     brand: "Basic Chic",
@@ -94,6 +103,7 @@ export const palettesSeed: ColorPalette[] = [
   },
   {
     id: "pal-03",
+    demo: true,
     name: "Denim Blue Core",
     season: "Continuativo",
     brand: "Core",
@@ -137,6 +147,11 @@ export const palettesSeed: ColorPalette[] = [
 type Listener = () => void;
 const listeners = new Set<Listener>();
 let palettes = [...palettesSeed];
+
+/** Só cartelas cadastradas/editadas pela empresa. A vitrine fica de fora. */
+export function paletasOperacionais(list: ColorPalette[]): ColorPalette[] {
+  return list.filter((p) => p.demo !== true);
+}
 
 export function listPalettes(): ColorPalette[] {
   return palettes;

@@ -28,6 +28,7 @@ import {
 } from "@/lib/materials/store";
 import {
   listPalettes,
+  paletasOperacionais,
   replaceAllPalettes,
   subscribe as subscribePalettes,
   type ColorPalette,
@@ -35,6 +36,7 @@ import {
 } from "@/lib/colors/store";
 import {
   listPrints,
+  estampasOperacionais,
   replaceAllPrints,
   subscribe as subscribePrints,
   type PrintAsset,
@@ -42,6 +44,7 @@ import {
 } from "@/lib/prints/store";
 import {
   listLooks,
+  looksOperacionais,
   replaceAllLooks,
   subscribeLooks,
   type Look,
@@ -49,6 +52,7 @@ import {
 } from "@/lib/looks/store";
 import {
   listBoards,
+  pranchasOperacionais,
   replaceAllBoards,
   subscribe as subscribeBoards,
   type BoardItem,
@@ -540,7 +544,8 @@ const MODULES: ModuleSpec[] = [
     key: "palettes",
     table: "color_palettes",
     label: "as cartelas de cor",
-    list: listPalettes,
+    // Demonstração nunca sobe para o banco (Onda 72).
+    list: () => paletasOperacionais(listPalettes()),
     toRow: (e, uid) => paletteToRow(e as ColorPalette, uid),
     apply: (rows) => replaceAllPalettes(rows.map(paletteFromRow)),
     subscribe: subscribePalettes,
@@ -549,7 +554,8 @@ const MODULES: ModuleSpec[] = [
     key: "prints",
     table: "print_assets",
     label: "a biblioteca de estampas",
-    list: listPrints,
+    // Demonstração nunca sobe para o banco (Onda 72).
+    list: () => estampasOperacionais(listPrints()),
     toRow: (e, uid) => printToRow(e as PrintAsset, uid),
     apply: (rows) => replaceAllPrints(rows.map(printFromRow)),
     subscribe: subscribePrints,
@@ -558,7 +564,8 @@ const MODULES: ModuleSpec[] = [
     key: "looks",
     table: "looks",
     label: "os coordenados",
-    list: listLooks,
+    // Demonstração nunca sobe para o banco (Onda 72).
+    list: () => looksOperacionais(listLooks()),
     toRow: (e, uid) => lookToRow(e as Look, uid),
     apply: (rows) => replaceAllLooks(rows.map(lookFromRow)),
     subscribe: subscribeLooks,
@@ -567,7 +574,8 @@ const MODULES: ModuleSpec[] = [
     key: "boards",
     table: "display_boards",
     label: "os painéis de display",
-    list: listBoards,
+    // Demonstração nunca sobe para o banco (Onda 72).
+    list: () => pranchasOperacionais(listBoards()),
     toRow: (e, uid) => boardToRow(e as DisplayBoard, uid),
     apply: (rows) => replaceAllBoards(rows.map(boardFromRow)),
     subscribe: subscribeBoards,

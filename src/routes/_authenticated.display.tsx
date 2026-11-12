@@ -29,6 +29,7 @@ import { computeFullTechSheetPricing } from "@/lib/techsheet/pricing";
 import { useTechSheetStore, type TechSheetData } from "@/lib/techsheet/store";
 import {
   listBoards,
+  pranchasOperacionais,
   subscribe,
   upsertBoard,
   addItem,
@@ -76,6 +77,8 @@ interface PaletteRefEntry {
   colorHex: string;
   price: number;
   transparentCutout?: boolean;
+  /** `true` = vitrine: ilustra o canvas, mas o preço não é apurado. */
+  demo?: boolean;
 }
 
 function buildTechSheetPaletteItems(sheetsMap: Record<string, TechSheetData>): PaletteRefEntry[] {
@@ -126,30 +129,52 @@ function DisplayRoute() {
   const combinedCatalog = useMemo<PaletteRefEntry[]>(() => {
     const plmItems = buildTechSheetPaletteItems(sheetsMap);
     const existingCodes = new Set(plmItems.map((i) => i.code));
+    // Onda 72: o catálogo estático é vitrine (`demo: true`) — o preço dele
+    // não é apurado como real; a peça ilustra o canvas.
     const rest = refCatalog
       .filter((r) => !existingCodes.has(r.code))
-      .map((r) => ({ ...r, transparentCutout: isCutoutImage(r.image) }));
+      .map((r) => ({ ...r, demo: true, transparentCutout: isCutoutImage(r.image) }));
     return [...plmItems, ...rest];
   }, [sheetsMap]);
 
   const [selectedId, setSelectedId] = useState<string>(boards[0]?.id ?? "");
   const selected = boards.find((b) => b.id === selectedId) ?? boards[0];
 
+  // Demonstração ilustra a displayagem, mas não entra nas métricas — mesmo
+  // contrato das coleções (Onda 51) e dos materiais (Onda 69).
+  const reais = useMemo(() => pranchasOperacionais(boards), [boards]);
+
   const metrics = useMemo(() => {
-    const total = boards.length;
-    const approved = boards.filter((b) => b.status === "aprovada").length;
-    const items = boards.reduce((s, b) => s + b.items.length, 0);
+    const total = reais.length;
+    const approved = reais.filter((b) => b.status === "aprovada").length;
+    const items = reais.reduce((s, b) => s + b.items.length, 0);
     return [
-      { label: "Painéis ativos", value: String(total), detail: `${approved} aprovados` },
-      { label: "Looks montados", value: String(items), detail: "peças posicionadas" },
+      {
+        label: "Painéis ativos",
+        value: String(total),
+        detail: total ? `${approved} aprovados` : "só demonstração na lista",
+        demo: total === 0,
+      },
+      {
+        label: "Looks montados",
+        value: String(items),
+        detail: total ? "peças posicionadas" : "só demonstração na lista",
+        demo: total === 0,
+      },
       {
         label: "Peças/look",
-        value: total ? String(Math.round(items / total)) : "0",
-        detail: "média",
+        value: total ? String(Math.round(items / total)) : "—",
+        detail: total ? "média" : "só demonstração na lista",
+        demo: total === 0,
       },
-      { label: "Prontos p/ showroom", value: String(approved), detail: "publicáveis" },
+      {
+        label: "Prontos p/ showroom",
+        value: String(approved),
+        detail: total ? "publicáveis" : "só demonstração na lista",
+        demo: total === 0,
+      },
     ];
-  }, [boards]);
+  }, [reais]);
 
   return (
     <ModuleLayout
@@ -176,6 +201,17 @@ function DisplayRoute() {
         toast.success("Painel criado");
       }}
     >
+      {boards.some((b) => b.demo) && (
+        <div
+          data-testid="display-demo"
+          className="mb-5 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+        >
+          <strong className="text-foreground">Painéis de demonstração na lista.</strong> Os painéis
+          e as referências marcados como demonstração (seed do sistema) ilustram o canvas, mas{" "}
+          <strong>não entram nas métricas</strong> acima e o preço deles não é apurado no total do
+          look. O PLM não é ERP: nenhum preço de vitrine é apurado como real.
+        </div>
+      )}
       <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)_250px]">
         {/* Lista de painéis */}
         <div className="space-y-2">
@@ -274,6 +310,7 @@ function BoardCanvas({ board, catalog }: { board: DisplayBoard; catalog: Palette
       category: ref.category,
       colorHex: ref.colorHex,
       price: ref.price,
+      demo: ref.demo === true,
       x,
       y,
       w: 22,
@@ -281,7 +318,10 @@ function BoardCanvas({ board, catalog }: { board: DisplayBoard; catalog: Palette
     toast.success(`${ref.code} adicionada ao painel`);
   };
 
-  const totalPrice = board.items.reduce((s, i) => s + (i.price ?? 0), 0);
+  // Só peça real entra no total do look; vitrine não apura preço. Painel de
+  // demonstração inteiro é vitrine — nenhuma peça dele é apurada.
+  const itensReais = board.demo ? [] : board.items.filter((i) => i.demo !== true);
+  const totalPrice = itensReais.reduce((s, i) => s + (i.price ?? 0), 0);
 
   return (
     <div className="space-y-3">
@@ -295,8 +335,9 @@ function BoardCanvas({ board, catalog }: { board: DisplayBoard; catalog: Palette
           </div>
           <h2 className="text-xl font-bold text-white truncate">{board.name}</h2>
           <p className="text-xs text-muted-foreground">
-            Alvo: {board.target} · {board.items.length} peças · Total look R${" "}
-            {totalPrice.toLocaleString("pt-BR")}
+            Alvo: {board.target} · {board.items.length} peças · Total look{" "}
+            {itensReais.length > 0 ? `R$ ${totalPrice.toLocaleString("pt-BR")}` : "—"}{" "}
+            {board.items.length > itensReais.length ? "(vitrine ilustrativa, não apurada)" : ""}
           </p>
         </div>
         <div className="flex gap-2 items-center">
@@ -561,7 +602,7 @@ function RefPalette({ boardId, catalog }: { boardId: string; catalog: PaletteRef
                 <p className="text-2xs font-mono text-muted-foreground">{r.code}</p>
                 <p className="text-2xs font-semibold text-white truncate leading-tight">{r.name}</p>
                 <p className="text-2xs text-muted-foreground">
-                  {r.category} · R$ {r.price}
+                  {r.category} · {r.demo ? "demonstração · sem preço apurado" : `R$ ${r.price}`}
                 </p>
               </div>
             </div>

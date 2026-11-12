@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { FieldMessage } from "@/components/ui/field-message";
 import {
   listPalettes,
+  paletasOperacionais,
   subscribe,
   upsertPalette,
   addColorToPalette,
@@ -119,23 +120,43 @@ function ColorPaletteRoute() {
     [filteredPalettes, palettes, selectedId],
   );
 
+  // Demonstração ilustra a cartela, mas não entra nas métricas — mesmo
+  // contrato das coleções (Onda 51) e dos materiais (Onda 69).
+  const reais = useMemo(() => paletasOperacionais(palettes), [palettes]);
+
   const metrics = useMemo(() => {
-    const total = palettes.length;
-    const approved = palettes.filter((p) => p.status === "aprovada").length;
-    const uniqueColors = new Set(palettes.flatMap((p) => p.colors.map((c) => c.hex.toLowerCase())))
+    const total = reais.length;
+    const approved = reais.filter((p) => p.status === "aprovada").length;
+    const uniqueColors = new Set(reais.flatMap((p) => p.colors.map((c) => c.hex.toLowerCase())))
       .size;
-    const linked = palettes.reduce((sum, p) => sum + p.linkedRefs, 0);
+    const linked = reais.reduce((sum, p) => sum + p.linkedRefs, 0);
     return [
-      { label: "Paletas ativas", value: String(total), detail: `${approved} aprovadas` },
-      { label: "Cores únicas", value: String(uniqueColors), detail: "Pantone TCX" },
-      { label: "Referências vinculadas", value: String(linked), detail: "cruzadas" },
+      {
+        label: "Paletas ativas",
+        value: String(total),
+        detail: total ? `${approved} aprovadas` : "só demonstração na lista",
+        demo: total === 0,
+      },
+      {
+        label: "Cores únicas",
+        value: String(uniqueColors),
+        detail: total ? "Pantone TCX" : "só demonstração na lista",
+        demo: total === 0,
+      },
+      {
+        label: "Referências vinculadas",
+        value: String(linked),
+        detail: total ? "cruzadas" : "só demonstração na lista",
+        demo: total === 0,
+      },
       {
         label: "Cobertura",
-        value: total ? `${Math.round((approved / total) * 100)}%` : "0%",
-        detail: "prontas p/ mix",
+        value: total ? `${Math.round((approved / total) * 100)}%` : "—",
+        detail: total ? "prontas p/ mix" : "só demonstração na lista",
+        demo: total === 0,
       },
     ];
-  }, [palettes]);
+  }, [reais]);
 
   const handleAddPalette = useCallback(() => {
     const id = `pal-${Date.now()}`;
@@ -168,6 +189,17 @@ function ColorPaletteRoute() {
       metrics={metrics}
       onAdd={handleAddPalette}
     >
+      {palettes.some((p) => p.demo) && (
+        <div
+          data-testid="colors-demo"
+          className="mb-5 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+        >
+          <strong className="text-foreground">Cartelas de demonstração na lista.</strong> As
+          cartelas marcadas como demonstração (seed do sistema) ilustram a tela, mas{" "}
+          <strong>não entram nas métricas</strong> acima nem podem virar cor de ficha salva. O PLM
+          não é ERP: nenhuma cor de vitrine é apurada como real.
+        </div>
+      )}
       <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
         {/* Lista de paletas */}
         <div className="space-y-3">

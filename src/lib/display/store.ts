@@ -11,6 +11,11 @@ export type BoardItem = {
   category: string;
   colorHex?: string;
   price?: number;
+  /**
+   * `true` = peça de vitrine (catálogo de demonstração). Fica no canvas como
+   * ilustração, mas o preço dela **não** entra no total do look.
+   */
+  demo?: boolean;
   // percent position on the canvas (0-100) so it scales responsively
   x: number;
   y: number;
@@ -27,6 +32,12 @@ export type DisplayBoard = {
   updatedAt: string;
   bgColor: string; // canvas background
   items: BoardItem[];
+  /**
+   * `true` = painel de demonstração (seed do sistema). Ilustra o canvas, mas
+   * **não** entra nas métricas de displayagem nem é sincronizado — mesmo
+   * contrato das coleções (`demo: true`, Onda 51).
+   */
+  demo?: boolean;
 };
 
 // Pool of references available to drag onto the canvas.
@@ -37,11 +48,17 @@ export type RefCatalog = {
   image: string;
   colorHex: string;
   price: number;
+  /**
+   * `true` = referência do catálogo de demonstração: o preço do seed é
+   * fictício e nunca é apurado como real (aparece como "demonstração").
+   */
+  demo?: boolean;
 };
 
 export const refCatalog: RefCatalog[] = [
   {
     code: "V24-001",
+    demo: true,
     name: "Blusa Linho Amalfi",
     category: "Top",
     image:
@@ -51,6 +68,7 @@ export const refCatalog: RefCatalog[] = [
   },
   {
     code: "V24-014",
+    demo: true,
     name: "Calça Wide Terracota",
     category: "Bottom",
     image:
@@ -60,6 +78,7 @@ export const refCatalog: RefCatalog[] = [
   },
   {
     code: "V24-021",
+    demo: true,
     name: "Vestido Midi Botânica",
     category: "Dress",
     image:
@@ -69,6 +88,7 @@ export const refCatalog: RefCatalog[] = [
   },
   {
     code: "V24-032",
+    demo: true,
     name: "Camisa Oversized Cru",
     category: "Top",
     image:
@@ -78,6 +98,7 @@ export const refCatalog: RefCatalog[] = [
   },
   {
     code: "V24-045",
+    demo: true,
     name: "Saia Slip Âmbar",
     category: "Bottom",
     image:
@@ -87,6 +108,7 @@ export const refCatalog: RefCatalog[] = [
   },
   {
     code: "V24-052",
+    demo: true,
     name: "Blazer Alfaiataria Concreto",
     category: "Outerwear",
     image:
@@ -96,6 +118,7 @@ export const refCatalog: RefCatalog[] = [
   },
   {
     code: "V24-063",
+    demo: true,
     name: "Bolsa Estruturada Índigo",
     category: "Acessório",
     image:
@@ -105,6 +128,7 @@ export const refCatalog: RefCatalog[] = [
   },
   {
     code: "V24-071",
+    demo: true,
     name: "Sandália Trama Palha",
     category: "Calçado",
     image:
@@ -117,6 +141,7 @@ export const refCatalog: RefCatalog[] = [
 export const boardsSeed: DisplayBoard[] = [
   {
     id: "board-01",
+    demo: true,
     name: "Look Amalfi · Costa",
     season: "Verão 25",
     target: "Multimarcas RJ",
@@ -178,6 +203,7 @@ export const boardsSeed: DisplayBoard[] = [
   },
   {
     id: "board-02",
+    demo: true,
     name: "Urban Neutros · Hero E-com",
     season: "Alto Verão 25",
     target: "E-commerce hero",
@@ -218,6 +244,11 @@ export const boardsSeed: DisplayBoard[] = [
 type Listener = () => void;
 const listeners = new Set<Listener>();
 let boards = [...boardsSeed];
+
+/** Só painéis cadastrados/editados pela empresa. A vitrine fica de fora. */
+export function pranchasOperacionais(list: DisplayBoard[]): DisplayBoard[] {
+  return list.filter((b) => b.demo !== true);
+}
 
 export function listBoards(): DisplayBoard[] {
   return boards;

@@ -662,14 +662,21 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     produção confirmaram (`/analytics` com o aviso `analytics-demo`,
     métricas em `—`, sem "R$ 84k" nem "Vestido Floral (Ref. 302)", 0
     `pageerror`). Repo, ar e banco alinhados na Onda 70.
-28. **Publicar a Onda 71 — PENDENTE (65ª medição).** O repo já tem as
-    tabelas de medidas de demonstração fora das métricas, da ficha e do
-    banco (seed `demo: true`; métricas `—`; aplicar/importar desabilitados;
-    engine só sincroniza operacionais; aviso `measurements-demo`). O ar
-    segue no entry `index-2dv7dmw9.js` / `index-DLRhaQ6f.js` (Onda 70) —
+28. **Publicar a Onda 71 — FEITO (66ª medição).** O entry avançou para
+    `index-C3d8pptI.js` / `index-u4Iw8psQ.js` (214 chunks / 3.210.018
+    bytes) e os marcadores da 71 passaram a 1/1 no bundle; cliques em
+    produção confirmaram (`/measurements` com o aviso `measurements-demo`,
+    `TM-BLU-01` ilustrando e métricas em `—`, 0 `pageerror`). Repo, ar e
+    banco alinhados na Onda 71.
+29. **Publicar a Onda 72 — PENDENTE (66ª medição).** O repo já tem a
+    vitrine criativa (paletas, estampas, coordenados e pranchas) fora das
+    métricas, das fichas e do banco (seeds `demo: true`; métricas `—`;
+    total do look não apura preço de vitrine; engine só sincroniza
+    operacionais; avisos `colors-demo`/`prints-demo`/`display-demo`). O ar
+    segue no entry `index-C3d8pptI.js` / `index-u4Iw8psQ.js` (Onda 71) —
     entry e bytes inalterados. **Só publicar**: nenhuma migration foi
     escrita e o SQL aplicado desde a 24ª medição permanece com SHA
-    `382f0f19…`. Gates **833/833**.
+    `382f0f19…`. Gates **839/839**.
 
 ---
 

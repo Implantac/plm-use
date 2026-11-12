@@ -38,7 +38,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { listPalettes } from "@/lib/colors/store";
+import { listPalettes, paletasOperacionais } from "@/lib/colors/store";
 import {
   buildPhotorealisticGarmentPrompt,
   buildStudioPayloadFromTechSheet,
@@ -937,7 +937,7 @@ export function GarmentSketchStudio({
                 Atalho · Cartela Pantone TCX (/colors)
               </p>
               <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
-                {listPalettes()
+                {paletasOperacionais(listPalettes())
                   .flatMap((p) => p.colors)
                   .slice(0, 12)
                   .map((c) => (

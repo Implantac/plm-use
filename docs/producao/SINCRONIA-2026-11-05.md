@@ -1271,6 +1271,56 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AE. 66ª medição — Onda 72 escolhida pelo risco, vitrine criativa fora das métricas, das fichas e do banco
+
+**Re-medição inicial:** repo `83e3220` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-C3d8pptI.js` / `index-u4Iw8psQ.js` (**214 chunks /
+3.210.018 bytes**, 0 falhas) com marcadores da 71 = 1/1, da 70 = 1, da 69 =
+1, da 68 = 1 e **`DEV000006` 16** — **publicação da Onda 71 relatada pelo
+dono e validada por cliques em produção** (`/measurements` com o aviso
+`measurements-demo`, `TM-BLU-01` ilustrando e métricas em `—`, 0
+`pageerror`); banco view `200 []`, 4 funções `401 42501` (com parâmetros
+corretos), SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** os quatro módulos criativos que ainda subiam vitrine sem
+declaração no `creative-sync` — `palettesSeed` (3 cartelas), `printsSeed` (4
+estampas), `looksSeed` (3 coordenados), `boardsSeed` + `refCatalog` (2
+painéis e 8 referências com preço fixo R$ 289/429/599…). A vitrine entrava
+em número operacional em quatro lugares: as métricas de `/colors` ("Paletas
+3", "Cores únicas 13", "Refs 131", "Cobertura 67%"), de `/prints` ("Estampas
+4", "Em prova 1", "Refs 40", "Reutilização 10x") e de `/display` ("Painéis
+2", "Looks montados 6", "Peças/look 3" e o **"Total look R$ 1.576"**); a
+cor de cartela de demonstração virando colorway de ficha salva no
+`GarmentSketchStudio`; a estampa de demonstração sugerida como arte no
+`AplicacoesPanel`; e o `creative-sync` subindo os quatro seeds para
+`color_palettes`, `print_assets`, `looks` e `display_boards`.
+
+**Correção:** mesmo contrato das coleções `demo: true` (Onda 51) e dos
+materiais (Onda 69) — os quatro seeds marcam `demo: true`; as métricas das
+três telas viram `—` ("só demonstração na lista") sem item real; o preço de
+vitrine não entra no total do look (`Total look —`); cores e estampas de
+demonstração não são oferecidas em ficha salva; e o engine só sincroniza
+itens operacionais — **os 11 módulos do creative-sync agora são
+operacionais**. Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/colors`, `/prints` e `/display` com os
+avisos `colors-demo`/`prints-demo`/`display-demo` renderizados, a vitrine
+ilustrando as listas, as métricas em `—` e o total do look em `— (vitrine
+ilustrativa, não apurada)`; 0 `pageerror`. Capturas
+`/home/user/medicao66-{colors,prints,display}-depois.png`.
+
+| Camada | 66ª medição (depois)                                                                                                    |
+| ------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 72** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                           |
+| Ar     | **Onda 71** — entry novo `index-C3d8pptI.js` / `index-u4Iw8psQ.js`; marcadores 71=1/1, 70=1, 69=1, 68=1; `DEV000006` 16 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                                |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **839/839**                                                 |
+
+**Há uma publicação pendente (72).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

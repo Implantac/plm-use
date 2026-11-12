@@ -27,11 +27,18 @@ export type Look = {
   coverColor: string; // hex
   createdAt: string;
   updatedAt: string;
+  /**
+   * `true` = coordenado de demonstração (seed do sistema). Ilustra a lista,
+   * mas **não** entra nas métricas e não é sincronizado — mesmo contrato das
+   * coleções (`demo: true`, Onda 51).
+   */
+  demo?: boolean;
 };
 
 const seed: Look[] = [
   {
     id: "look-01",
+    demo: true,
     name: "Alfaiataria Fluida",
     season: "Alto Verão 26",
     occasion: "trabalho",
@@ -60,6 +67,7 @@ const seed: Look[] = [
   },
   {
     id: "look-02",
+    demo: true,
     name: "Resort Beira-Mar",
     season: "Alto Verão 26",
     occasion: "resort",
@@ -87,6 +95,7 @@ const seed: Look[] = [
   },
   {
     id: "look-03",
+    demo: true,
     name: "Street Neon Denim",
     season: "Inverno 26",
     occasion: "streetwear",
@@ -126,6 +135,11 @@ export function useLooks(): Look[] {
 }
 
 // API de snapshot para o creative-sync (mesma forma que os stores vizinhos).
+/** Só coordenados cadastrados/editados pela empresa. A vitrine fica de fora. */
+export function looksOperacionais(list: Look[]): Look[] {
+  return list.filter((l) => l.demo !== true);
+}
+
 export function listLooks(): Look[] {
   return looks;
 }

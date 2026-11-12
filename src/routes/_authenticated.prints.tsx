@@ -52,6 +52,7 @@ import { FieldMessage } from "@/components/ui/field-message";
 import { LocalHistoryButton } from "@/components/entity/LocalHistoryButton";
 import {
   listPrints,
+  estampasOperacionais,
   subscribe,
   upsertPrint,
   addVersion,
@@ -145,22 +146,42 @@ function PrintsRoute() {
     [prints, filtered, selectedId],
   );
 
+  // Demonstração ilustra a biblioteca, mas não entra nas métricas — mesmo
+  // contrato das coleções (Onda 51) e dos materiais (Onda 69).
+  const reais = useMemo(() => estampasOperacionais(prints), [prints]);
+
   const metrics = useMemo(() => {
-    const total = prints.length;
-    const approved = prints.filter((p) => p.status === "aprovada").length;
-    const inProof = prints.filter((p) => p.status === "em_prova").length;
-    const linked = prints.reduce((s, p) => s + p.linkedRefs, 0);
+    const total = reais.length;
+    const approved = reais.filter((p) => p.status === "aprovada").length;
+    const inProof = reais.filter((p) => p.status === "em_prova").length;
+    const linked = reais.reduce((s, p) => s + p.linkedRefs, 0);
     return [
-      { label: "Estampas ativas", value: String(total), detail: `${approved} aprovadas` },
-      { label: "Em prova", value: String(inProof), detail: "aguardando OK" },
-      { label: "Refs vinculadas", value: String(linked), detail: "em produção" },
+      {
+        label: "Estampas ativas",
+        value: String(total),
+        detail: total ? `${approved} aprovadas` : "só demonstração na lista",
+        demo: total === 0,
+      },
+      {
+        label: "Em prova",
+        value: String(inProof),
+        detail: total ? "aguardando OK" : "só demonstração na lista",
+        demo: total === 0,
+      },
+      {
+        label: "Refs vinculadas",
+        value: String(linked),
+        detail: total ? "em produção" : "só demonstração na lista",
+        demo: total === 0,
+      },
       {
         label: "Reutilização",
-        value: total ? `${Math.round((linked / Math.max(total, 1)) * 10) / 10}x` : "0x",
-        detail: "média por estampa",
+        value: total ? `${Math.round((linked / Math.max(total, 1)) * 10) / 10}x` : "—",
+        detail: total ? "média por estampa" : "só demonstração na lista",
+        demo: total === 0,
       },
     ];
-  }, [prints]);
+  }, [reais]);
 
   const handleAddPrint = useCallback(() => {
     const id = `est-${Date.now()}`;
@@ -205,6 +226,17 @@ function PrintsRoute() {
       metrics={metrics}
       onAdd={handleAddPrint}
     >
+      {prints.some((p) => p.demo) && (
+        <div
+          data-testid="prints-demo"
+          className="mb-5 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+        >
+          <strong className="text-foreground">Estampas de demonstração na biblioteca.</strong> As
+          estampas marcadas como demonstração (seed do sistema) ilustram a tela, mas{" "}
+          <strong>não entram nas métricas</strong> acima nem são sugeridas numa ficha salva. O PLM
+          não é ERP: nenhum ref vinculado de vitrine é apurado como real.
+        </div>
+      )}
       {/* Filtros de status */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {(["todas", "rascunho", "em_prova", "aprovada", "arquivada"] as const).map((f) => (

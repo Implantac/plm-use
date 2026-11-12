@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useTechSheetStore } from "@/lib/techsheet/store";
-import { listPrints } from "@/lib/prints/store";
+import { estampasOperacionais, listPrints } from "@/lib/prints/store";
 import {
   APLICACAO_POSICOES_SUGERIDAS,
   APLICACAO_TIPOS,
@@ -75,7 +75,9 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
     updatePreCost(refAtual, { tiragemPlanejada: Math.max(1, Math.round(next) || 1) });
   };
 
-  const artes = useMemo(() => listPrints(), []);
+  // Onda 72: estampa de demonstração não é sugerida numa ficha salva —
+  // o nome dela não pode virar "arte" de um documento operacional.
+  const artes = useMemo(() => estampasOperacionais(listPrints()), []);
   const pecasTotal = custoAplicacoesPecasTotal(apps);
   const setup = setupTotal(apps);
   const comSetup = custoPorPecaComSetup(apps, tiragem);
