@@ -773,7 +773,13 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
               <button
                 key={m.id}
                 type="button"
-                className="block w-full rounded-md border border-border px-3 py-2 text-left hover:bg-accent/60"
+                disabled={m.demo}
+                title={
+                  m.demo
+                    ? "Material de demonstração — cadastre o material real em Materiais para inserir no BOM"
+                    : undefined
+                }
+                className="block w-full rounded-md border border-border px-3 py-2 text-left hover:bg-accent/60 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={() => {
                   addBom(refAtual, {
                     tipo: m.tipo,
@@ -794,6 +800,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                 <span className="text-xs font-semibold text-foreground">{m.name}</span>
                 <span className="ml-2 text-2xs uppercase tracking-wide text-muted-foreground">
                   {m.tipo} · {m.supplier || "—"} · {brl(m.unitCost)}/{m.unit}
+                  {m.demo ? " · demonstração" : ""}
                 </span>
               </button>
             ))}

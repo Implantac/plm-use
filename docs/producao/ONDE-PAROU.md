@@ -645,13 +645,20 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     18 → 16); cliques em produção confirmaram (`/commercial` com a
     carteira vazia, `/financial` com o fluxo vazio, 0 `pageerror`). Repo,
     ar e banco alinhados na Onda 67.
-25. **Publicar a Onda 68 — PENDENTE (62ª medição).** O repo já tem os rolos
-    de demonstração fora do laudo e do saldo (seed `demo: true`; seleção
-    inicial vazia; aviso `fabric-rolls-demo`). O ar segue no entry
-    `index-CLjgwWOV.js` / `index-ycw9M82U.js` (Onda 67) — entry e bytes
+25. **Publicar a Onda 68 — FEITO (63ª medição).** O entry avançou para
+    `index-B7N3Kx8W.js` / `index-D5RjA1I7.js` (214 chunks / 3.207.507
+    bytes) e os marcadores da 68 passaram a 1/1 no bundle; cliques em
+    produção confirmaram (`/inventory` com o aviso `fabric-rolls-demo`,
+    sem o saldo de 52,2 kg da vitrine, 0 `pageerror`). Repo, ar e banco
+    alinhados na Onda 68.
+26. **Publicar a Onda 69 — PENDENTE (63ª medição).** O repo já tem os
+    materiais de demonstração fora das métricas, do BOM e do banco (seed
+    `demo: true`; métricas `—`; inserção no BOM desabilitada; engine só
+    sincroniza operacionais; aviso `materials-demo`). O ar segue no entry
+    `index-B7N3Kx8W.js` / `index-D5RjA1I7.js` (Onda 68) — entry e bytes
     inalterados. **Só publicar**: nenhuma migration foi escrita e o SQL
     aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
-    **818/818**.
+    **823/823**.
 
 ---
 

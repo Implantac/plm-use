@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   MATERIAL_TIPOS,
   listMaterials,
+  materiaisOperacionais,
   replaceAllMaterials,
   subscribeMaterials,
   type MaterialItem,
@@ -492,6 +493,9 @@ export function dedupeRows(rows: QueryRow[]): QueryRow[] {
 }
 
 export function materialToRow(m: MaterialItem, uid: string): QueryRow {
+  // Demonstração nunca sobe para o banco (Onda 69): o seed do catálogo é
+  // vitrine local, não cadastro da empresa. O engine só sincroniza o que
+  // foi cadastrado/editado pelo usuário.
   return {
     external_key: m.id,
     name: m.name,
@@ -624,7 +628,9 @@ const MODULES: ModuleSpec[] = [
     key: "materials",
     table: "materials",
     label: "a biblioteca de materiais",
-    list: listMaterials,
+    // Demonstração nunca sobe para o banco (Onda 69): só material
+    // cadastrado/editado pelo usuário é sincronizado.
+    list: () => materiaisOperacionais(listMaterials()),
     toRow: (e, uid) => materialToRow(e as MaterialItem, uid),
     apply: (rows) => replaceAllMaterials(rows.map(materialFromRow)),
     subscribe: subscribeMaterials,

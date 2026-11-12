@@ -24,6 +24,7 @@ import { ExportMenu } from "@/components/export/ExportMenu";
 import {
   MATERIAL_TIPOS,
   filterMaterials,
+  materiaisOperacionais,
   removeMaterial,
   upsertMaterial,
   useMaterials,
@@ -87,9 +88,11 @@ function MaterialsPage() {
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [impactMaterial, setImpactMaterial] = useState<MaterialItem | null>(null);
 
+  // Demonstração ilustra a biblioteca, mas não entra nas métricas do
+  // catálogo — mesmo contrato das coleções (Onda 51) e dos creators (Onda 59).
+  const reais = useMemo(() => materiaisOperacionais(materials), [materials]);
   const visible = useMemo(() => filterMaterials(materials, q), [materials, q]);
-  const avg =
-    materials.length === 0 ? 0 : materials.reduce((a, m) => a + m.unitCost, 0) / materials.length;
+  const avg = reais.length === 0 ? 0 : reais.reduce((a, m) => a + m.unitCost, 0) / reais.length;
 
   const usageMap = useMemo(() => {
     const out = new Map<string, ReturnType<typeof findMaterialWhereUsed>>();
@@ -165,12 +168,23 @@ function MaterialsPage() {
       searchPlaceholder="Buscar material, SKU ou fornecedor…"
       onSearch={setQ}
       metrics={[
-        { label: "Materiais", value: String(materials.length), detail: "no catálogo" },
-        { label: "Custo médio", value: brl(avg), detail: "por unidade" },
+        {
+          label: "Materiais",
+          value: String(reais.length),
+          detail: reais.length > 0 ? "no catálogo" : "só demonstração na lista",
+          demo: reais.length === 0,
+        },
+        {
+          label: "Custo médio",
+          value: brl(avg),
+          detail: reais.length > 0 ? "por unidade" : "só demonstração na lista",
+          demo: reais.length === 0,
+        },
         {
           label: "Tecidos",
-          value: String(materials.filter((m) => m.tipo === "Tecido").length),
-          detail: "de 6 categorias",
+          value: String(reais.filter((m) => m.tipo === "Tecido").length),
+          detail: reais.length > 0 ? "de 6 categorias" : "só demonstração na lista",
+          demo: reais.length === 0,
         },
         {
           label: "Vínculos BOM",
@@ -181,6 +195,18 @@ function MaterialsPage() {
     >
       {/* Onda 62: siglas medidas no texto desta tela, sem glossário até aqui. */}
       <GlossarioTermos siglas={["MOQ", "SKU"]} testId="glossario-materials" />
+      {materials.some((m) => m.demo) && (
+        <div
+          data-testid="materials-demo"
+          className="mb-4 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+        >
+          <strong className="text-foreground">Materiais de demonstração no catálogo.</strong> Os
+          materiais marcados como demonstração (seed do sistema) ilustram a biblioteca, mas{" "}
+          <strong>não entram nas métricas</strong> acima nem podem ser inseridos no BOM de uma ficha
+          salva — só material cadastrado pelo usuário conta como catálogo real. O PLM não é ERP:
+          nenhum custo de vitrine é apurado como real.
+        </div>
+      )}
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs uppercase tracking-[0.05em] text-muted-foreground flex items-center gap-2">
           <Library className="w-3.5 h-3.5 text-primary" /> catálogo · {visible.length} itens

@@ -1135,6 +1135,51 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AB. 63ª medição — Onda 69 escolhida pelo risco, materiais de demonstração fora das métricas, do BOM e do banco
+
+**Re-medição inicial:** repo `d78e4dd` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-B7N3Kx8W.js` / `index-D5RjA1I7.js` (**214 chunks /
+3.207.507 bytes**, 0 falhas) com marcadores da 68 = 1/1, da 67 = 1, da 66 =
+1 e **`DEV000006` 16** — **publicação da Onda 68 relatada pelo dono e
+validada por cliques em produção** (`/inventory` com o aviso
+`fabric-rolls-demo`, sem o saldo de 52,2 kg da vitrine, 0 `pageerror`);
+banco view `200 []`, 4 funções `401 42501` (com parâmetros corretos), SQL
+SHA `382f0f19…` inalterado.
+
+**Risco medido:** os seeds restantes — o `MoodBoard` (imagens/paleta/tecidos
+de referência: vitrine criativa, sem número operacional) e o
+`materialsSeed` (biblioteca de materiais, módulo 11 do creative-sync). O
+seed de 6 materiais era catálogo de demonstração sem nenhuma declaração —
+e entrava em número operacional em três lugares: as 4 métricas de
+`/materials` ("Materiais 6", "Custo médio R$ 22,97"), o diálogo "Inserir da
+Biblioteca" do `BomBopPanel` (inseria custo/fornecedor/SKU fictícios no BOM
+de ficha salva) e o `creative-sync` (`listMaterials` sincronizava o seed
+inteiro para a tabela `materials` do Supabase).
+
+**Correção:** mesmo contrato das coleções `demo: true` (Onda 51) e dos
+creators (Onda 59) — o seed marca `demo: true`; as métricas do catálogo
+ignoram `demo` (sem material real, viram `—`); o botão de inserção no BOM
+fica desabilitado para demonstração; o engine só sincroniza materiais
+operacionais; a biblioteca mostra o aviso `materials-demo`. Nenhuma
+asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/materials` com o aviso renderizado,
+`Linho Puro Off-White` ilustrando a biblioteca e as métricas em `—`
+("só demonstração na lista"); 0 `pageerror`. Captura
+`/home/user/medicao63-materials-depois.png`.
+
+| Camada | 63ª medição (depois)                                                                                              |
+| ------ | ----------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 69** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                     |
+| Ar     | **Onda 68** — entry novo `index-B7N3Kx8W.js` / `index-D5RjA1I7.js`; marcadores 68=1/1, 67=1, 66=1; `DEV000006` 16 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                          |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **823/823**                                           |
+
+**Há uma publicação pendente (69).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

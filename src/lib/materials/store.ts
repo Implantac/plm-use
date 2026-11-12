@@ -28,8 +28,20 @@ export interface MaterialItem {
   unitCost: number;
   sku: string;
   notes: string;
+  /**
+   * `true` = material de demonstração (seed do catálogo, nunca cadastrado
+   * pela empresa). Ele ilustra a biblioteca, mas **não** entra nas métricas
+   * do catálogo nem pode ser inserido no BOM de uma ficha salva — mesmo
+   * contrato das coleções (`demo: true`, Onda 51) e dos creators (Onda 59).
+   */
+  demo?: boolean;
 }
 
+// Os 6 materiais abaixo são **demonstração** (`demo: true`, Onda 69):
+// ilustram a biblioteca, mas nunca entram nas métricas do catálogo nem
+// podem ser inseridos no BOM de uma ficha salva. Só material cadastrado
+// pelo usuário conta como catálogo real — mesmo contrato das coleções
+// (Onda 51) e dos creators (Onda 59).
 export const materialsSeed: MaterialItem[] = [
   {
     id: "mat-01",
@@ -39,6 +51,7 @@ export const materialsSeed: MaterialItem[] = [
     unit: "m",
     unitCost: 42,
     sku: "TC-220",
+    demo: true,
     notes: "Lote de referência da coleção Verão.",
   },
   {
@@ -49,6 +62,7 @@ export const materialsSeed: MaterialItem[] = [
     unit: "un",
     unitCost: 3,
     sku: "AR-MP18",
+    demo: true,
     notes: "",
   },
   {
@@ -59,6 +73,7 @@ export const materialsSeed: MaterialItem[] = [
     unit: "m",
     unitCost: 0.0125,
     sku: "CC-120",
+    demo: true,
     notes: "Caixa de 5.000 m.",
   },
   {
@@ -69,6 +84,7 @@ export const materialsSeed: MaterialItem[] = [
     unit: "un",
     unitCost: 4.5,
     sku: "EP-LUX",
+    demo: true,
     notes: "",
   },
   {
@@ -79,6 +95,7 @@ export const materialsSeed: MaterialItem[] = [
     unit: "kg",
     unitCost: 39.8,
     sku: "DF-UV50",
+    demo: true,
     notes: "Largura útil 1,80 m · Gramatura 135 g/m² · Rendimento 4,12 m/kg.",
   },
   {
@@ -89,6 +106,7 @@ export const materialsSeed: MaterialItem[] = [
     unit: "kg",
     unitCost: 48.5,
     sku: "RB-105",
+    demo: true,
     notes: "Punho/gola retilínea bicolor de alta recuperação elástica.",
   },
 ];
@@ -127,6 +145,11 @@ export function upsertMaterial(next: MaterialItem) {
 export function removeMaterial(id: string) {
   items = items.filter((m) => m.id !== id);
   emit();
+}
+
+/** Só materiais cadastrados/editados pela empresa. A vitrine fica de fora. */
+export function materiaisOperacionais(list: MaterialItem[]): MaterialItem[] {
+  return list.filter((m) => m.demo !== true);
 }
 
 /** Repositor de hidratação (creative-sync) — ver colors/store.ts. */
