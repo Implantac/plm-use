@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -270,6 +271,8 @@ function FlowPage() {
 
   return (
     <div className="space-y-6 pb-12">
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["PCP"]} testId="glossario-flow" />
       {error && (
         <div
           role="alert"

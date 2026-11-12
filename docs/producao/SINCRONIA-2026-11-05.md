@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 56ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 57ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,29 +7,27 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (55ª medição, após fechar a Onda 61)
+## 1. O quadro (57ª medição, após fechar a Onda 63)
 
-| Camada                                         | Estado medido                     | Como foi medido                       |
-| ---------------------------------------------- | --------------------------------- | ------------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 60** — HEAD local = remoto | `git log` / `git ls-remote`           |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + 6 marcadores da 60 = `0` (§2-S) |
-| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções   |
+| Camada                                         | Estado medido                     | Como foi medido                     |
+| ---------------------------------------------- | --------------------------------- | ----------------------------------- |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 63** — HEAD local = remoto | `git log` / `git ls-remote`         |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 61** — `index-BOthbvNE.js` | BFS + marcadores da 62 = `0` (§2-V) |
+| **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções |
 
-A 56ª medição **re-mediu as três camadas** e validou a **publicação relatada
-da Onda 61**: o entry avançou para `index-BOthbvNE.js` / `index-fT4j6Can.js`
-(214 chunks / 3.199.677 bytes) com os 6 marcadores da 61 em **2×** (rótulo
-visível + `aria-label`). Cliques em produção confirmaram — `/references`
-com o filtro nomeado "Filtrar por status", 0 campos sem nome, 0 `pageerror`.
-A Onda 62 cobriu o jargão restante: varredura de siglas no texto visível
-achou **9 termos fora do glossário** (OP 32×, MOQ, TCO, UTM, CAC, CMV, ABC,
-OS, ERP) e **4 rotas** que os usavam sem `GlossarioTermos` (materials,
-supplier-portal, influencers, production). Detalhe e prova por cliques em
-`ONDA-62-GLOSSARIO-JARGAO-RESTANTE.md`.
+A 57ª medição **re-mediu as três camadas**: o ar segue na **Onda 61**
+(entry `index-BOthbvNE.js` / `index-fT4j6Can.js` idêntico ao início da
+56ª, marcadores da 62 = 0) — **a Onda 62 ainda não foi publicada**, por
+deploy, não por defeito. A Onda 63 fechou o jargão: re-varredura achou
+**12 rotas** com siglas no texto visível e sem glossário (tech-sheet 9,
+approvals 5, research 5, digital-twin 4, cad 2, 7 rotas com 1) e **3
+termos fora do dicionário** (B2B 15×, RLS 5×, RBAC 2×). Detalhe e prova
+por cliques em `ONDA-63-GLOSSARIO-TODAS-AS-ROTAS.md`.
 
-**Repo na Onda 62, ar na Onda 61, banco inalterado — há uma publicação
-pendente (62), por deploy, não por defeito.** Publicar o app não aplica SQL.
-Gates **783/783** (777 + 6). A 55ª medição (§2-T) e a 54ª (§2-S) continuam
-válidas.
+**Repo na Onda 63, ar na Onda 61, banco inalterado — há duas publicações
+pendentes (62 e 63), por deploy, não por defeito.** Publicar o app não
+aplica SQL. Gates **790/790** (783 + 7). A 56ª medição (§2-U) e a 55ª
+(§2-T) continuam válidas.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -843,6 +841,53 @@ módulo, handler ou store mudou. O teste da Onda 58 só teve a contagem
 
 **Há uma publicação pendente (62).** Nenhuma migration foi escrita nem
 aplicada; publicar o app não aplica SQL.
+
+---
+
+## 2-V. 57ª medição — Onda 63 escolhida pelo risco, glossário em todas as rotas com jargão
+
+**Re-medição inicial:** repo `d822c86` local = remoto, limpo, token 0/0; ar
+`index-BOthbvNE.js` / `index-fT4j6Can.js` com **214 chunks / 3.199.677
+bytes**, 0 falhas, 6 marcadores da 61 = **2**, 6 da 60 = 1, 3 da 59 = 1 e
+**marcadores da 62 = 0** (entry/bytes idênticos ao início da 56ª — a Onda
+62 ainda não foi publicada, por deploy); banco view `200 []`, 4 funções
+`401 42501` (com parâmetros corretos), SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** re-varredura de siglas no texto visível das 24 rotas sem
+glossário — **12 com jargão** (tech-sheet 9, approvals 5, research 5,
+digital-twin 4, cad 2, catalog/flow/looks/measurements/prototypes/
+references/showroom 1 cada) e **3 termos fora do dicionário** (B2B 15×,
+RLS 5×, RBAC 2×, em audit/security). Nenhum emissor de documento sem
+guarda foi achado. Escolhido o jargão sem tradução nas rotas de operação
+restantes em vez da auditoria `DEV000006` (guardas já existem, risco
+menor) ou do cron mock (fronteira do ERP, sem dado real para medir).
+
+**Correção:** +3 termos no `glossario.ts` (48 → **51**, sem duplicatas,
+respeitando a regra da Onda 45: sem "conforme o" nem "ver ") e
+`GlossarioTermos` com `siglas` medidas por tela + `testId` próprio nas 12
+rotas. B2B/RLS/RBAC somados aos arrays de audit e security. **32 rotas
+com glossário** — todas as rotas com jargão; as 12 restantes têm 0 siglas
+e não precisam. Detalhe: `/tech-sheet` tem retorno antecipado de estado
+vazio (`cockpit-sem-ficha`) — o glossário foi adicionado também nesse
+ramo, porque é a primeira tela de quem chega. Nenhum rótulo de módulo,
+handler ou store mudou. Os testes das Ondas 58 e 62 só tiveram a contagem
+48 → 51 atualizada.
+
+**DEPOIS (mesmos cliques):** dicionário **48 → 51**; rotas com glossário
+**20 → 32**; rotas com jargão sem glossário **12 → 0**; `/tech-sheet` 9
+termos no estado vazio, `/approvals` 5, `/research` 5, `/digital-twin` 4,
+8 rotas com 1–2; 0 `pageerror`. Captura
+`/home/user/medicao57-tech-sheet-glossario.png`.
+
+| Camada | 57ª medição (depois)                                                                                    |
+| ------ | ------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 63** — HEAD local = remoto, limpo, token fora do config e dos arquivos                           |
+| Ar     | **Onda 61** — mesmo entry/bytes; 6 marcadores da 61 = 2, 6 da 60 = 1, 3 da 59 = 1; marcadores da 62 = 0 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **790/790**                                 |
+
+**Há duas publicações pendentes (62 e 63).** Nenhuma migration foi escrita
+nem aplicada; publicar o app não aplica SQL.
 
 ---
 

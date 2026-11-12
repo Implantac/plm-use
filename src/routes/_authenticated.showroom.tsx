@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { statusToast } from "@/components/ui/status-presets";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import {
   CheckCircle2,
   FileText,
@@ -121,6 +122,8 @@ function ShowroomPage() {
       version="H9-09 · v0.1"
       metrics={metrics}
     >
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["CAPA"]} testId="glossario-showroom" />
       <Tabs defaultValue="b2b-rack" className="space-y-4">
         <TabsList>
           <TabsTrigger value="b2b-rack">Vitrine B2B & Pré-Pedido</TabsTrigger>

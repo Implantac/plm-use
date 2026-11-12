@@ -1,6 +1,7 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -145,6 +146,8 @@ function MeasurementsPage() {
         },
       ]}
     >
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["POM"]} testId="glossario-measurements" />
       <div className="flex flex-wrap gap-2 mb-6">
         {(["todos", "aprovada", "rascunho", "arquivada"] as const).map((s) => {
           const active = statusFilter === s;

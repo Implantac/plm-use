@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { onQuickAction } from "@/lib/nav/routes";
 import { Button } from "@/components/ui/button";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -290,6 +291,8 @@ function PrototypesPage() {
         },
       ]}
     >
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["POM"]} testId="glossario-prototypes" />
       {operacionais.length === 0 && (
         <div
           data-testid="prototipo-so-vitrine"

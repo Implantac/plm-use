@@ -280,6 +280,24 @@ export const TERMOS: readonly Termo[] = [
     explicacao:
       "Software que integra vendas, estoque e financeiro; o PLM não é um ERP, ele cuida do produto.",
   },
+  {
+    sigla: "B2B",
+    nome: "Venda entre empresas",
+    explicacao:
+      "A venda de uma empresa para outra empresa, em vez de vender direto para o consumidor final.",
+  },
+  {
+    sigla: "RLS",
+    nome: "Segurança em nível de linha",
+    explicacao:
+      "Regra do banco que limita cada usuário apenas às linhas de dados que ele tem permissão de acessar.",
+  },
+  {
+    sigla: "RBAC",
+    nome: "Controle de acesso por função",
+    explicacao:
+      "Sistema que dá permissões diferentes de acordo com o cargo da pessoa, como vendedor e gerente.",
+  },
 ] as const;
 
 /** Siglas que aparecem na primeira dobra do dashboard (medido no browser). */

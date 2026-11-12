@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { useEffect, useMemo, useState } from "react";
 import { onQuickAction } from "@/lib/nav/routes";
 import {
@@ -172,6 +173,8 @@ function LooksPage() {
 
   return (
     <div className="space-y-6">
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["PV"]} testId="glossario-looks" />
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Coordenados · Looks</h1>

@@ -465,6 +465,9 @@ function AuditScreen() {
         {/* Onda 47: 9 siglas medidas na primeira dobra desta tela. */}
         <GlossarioTermos
           siglas={[
+            "B2B",
+            "RLS",
+            "RBAC",
             "BOM",
             "PCP",
             "DPP",

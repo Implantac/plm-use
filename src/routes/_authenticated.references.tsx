@@ -5,6 +5,7 @@ import { onQuickAction } from "@/lib/nav/routes";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Search, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,6 +78,8 @@ function ReferencesPage() {
         { label: "Finalizadas", value: String(byStatus.FINALIZADA ?? 0), detail: "prontas" },
       ]}
     >
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["CAPA"]} testId="glossario-references" />
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-3 justify-between">
           <div className="flex items-center gap-2 flex-1 min-w-0">

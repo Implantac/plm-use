@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -249,6 +250,8 @@ function ResearchHub() {
         },
       ]}
     >
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["ABNT", "CAD", "DPP", "ESG", "OTB"]} testId="glossario-research" />
       {soVitrine && (
         <div
           data-testid="briefing-so-vitrine"

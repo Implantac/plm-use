@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -324,6 +325,12 @@ function TechSheetPage() {
         <Link to="/development" className="text-xs text-primary underline">
           Ir para a Esteira de Desenvolvimento
         </Link>
+        {/* Onda 63: o estado vazio é a primeira tela de quem chega — o
+            glossário também vive aqui (só um ramo renderiza por vez). */}
+        <GlossarioTermos
+          siglas={["ABNT", "BOM", "BOP", "CAD", "MRP", "NCM", "OP", "PV", "SKU"]}
+          testId="glossario-tech-sheet"
+        />
       </div>
     );
   }
@@ -334,6 +341,11 @@ function TechSheetPage() {
           nao pode ser um h1. Um h1 sr-only da o nome da pagina a leitores de
           tela sem alterar o cockpit. */}
       <h1 className="sr-only">Ficha técnica · {activeRef}</h1>
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos
+        siglas={["ABNT", "BOM", "BOP", "CAD", "MRP", "NCM", "OP", "PV", "SKU"]}
+        testId="glossario-tech-sheet"
+      />
       {!emitivel && (
         <SheetProvenanceNote
           provenance={provenance}

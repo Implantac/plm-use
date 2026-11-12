@@ -19,6 +19,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -220,6 +221,8 @@ function DigitalTwinPage() {
     // cabeçalho do caminho normal, com KPIs em `—` e saída clicável.
     return (
       <div className="space-y-5 pb-8">
+        {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+        <GlossarioTermos siglas={["BOM", "BOP", "MRP", "PV"]} testId="glossario-digital-twin" />
         <header className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">

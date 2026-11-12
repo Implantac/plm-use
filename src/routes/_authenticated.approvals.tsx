@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -140,6 +141,8 @@ function ApprovalsPage() {
 
   return (
     <div className="space-y-6 pb-12">
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["ABNT", "BOM", "BOP", "CAD", "POM"]} testId="glossario-approvals" />
       <header className="rounded-lg border border-border bg-muted/50 p-5 md:p-6">
         <div className="flex items-center gap-2 text-primary">
           <ShieldCheck className="h-4 w-4" />

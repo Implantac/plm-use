@@ -6,6 +6,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, ExternalLink, Link2, PenTool, Scissors, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -203,6 +204,8 @@ function CadPage() {
         },
       ]}
     >
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["BOM", "CAD"]} testId="glossario-cad" />
       {operacionais.length === 0 && (
         <div
           data-testid="cad-so-vitrine"

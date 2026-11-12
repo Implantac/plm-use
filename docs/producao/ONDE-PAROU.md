@@ -618,14 +618,23 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     com os 6 marcadores da 61 = 2 (rótulo + `aria-label`); cliques em
     produção confirmaram (`/references` filtro "Filtrar por status" nomeado,
     0 campos sem nome). Repo, ar e banco alinhados na Onda 61.
-20. **Publicar a Onda 62 — PENDENTE (56ª medição).** O repo já tem o
+20. **Publicar a Onda 62 — PENDENTE (57ª medição).** O repo já tem o
     glossário completo (39 → **48 termos**) e `GlossarioTermos` nas 4 rotas
     que usavam os termos novos sem tradução (materials, supplier-portal,
     influencers, production; **20 rotas com glossário**). O ar segue no
     entry `index-BOthbvNE.js` / `index-fT4j6Can.js` (Onda 61) — entry e
-    bytes inalterados. **Só publicar**: nenhuma migration foi escrita e o
+    bytes inalterados, marcadores da 62 = 0. **Só publicar**: nenhuma
+    migration foi escrita e o SQL aplicado desde a 24ª medição permanece
+    com SHA `382f0f19…`. Gates **783/783**.
+21. **Publicar a Onda 63 — PENDENTE (57ª medição).** O repo já tem o
+    glossário em **todas** as rotas com jargão (48 → **51 termos**;
+    `GlossarioTermos` nas 12 rotas restantes — tech-sheet, approvals,
+    research, digital-twin, cad, catalog, flow, looks, measurements,
+    prototypes, references, showroom; **32 rotas com glossário**). O ar
+    segue no entry `index-BOthbvNE.js` / `index-fT4j6Can.js` (Onda 61).
+    **Só publicar** (junto com a 62): nenhuma migration foi escrita e o
     SQL aplicado desde a 24ª medição permanece com SHA `382f0f19…`.
-    Gates **783/783**.
+    Gates **790/790**.
 
 ---
 

@@ -165,7 +165,7 @@ function SecurityPage() {
     >
       {/* Onda 58: 6 siglas medidas no texto desta tela, sem glossário até aqui. */}
       <GlossarioTermos
-        siglas={["LGPD", "CFOP", "BOM", "AQL", "ABNT", "XML"]}
+        siglas={["LGPD", "CFOP", "BOM", "AQL", "ABNT", "XML", "RLS", "RBAC"]}
         testId="glossario-security"
       />
       {soVitrine && (

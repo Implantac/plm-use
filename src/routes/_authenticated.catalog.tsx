@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -152,6 +153,8 @@ function CatalogPage() {
       searchPlaceholder="Buscar produto ou código"
       metrics={metrics}
     >
+      {/* Onda 63: siglas medidas no texto desta tela, sem glossário até aqui. */}
+      <GlossarioTermos siglas={["PCP"]} testId="glossario-catalog" />
       {fatal && (
         <div className="mb-6 flex items-start gap-3 rounded-md border border-status-progress/30 bg-status-progress/10 p-4">
           <AlertTriangle className="w-4 h-4 text-status-progress mt-0.5 shrink-0" />
