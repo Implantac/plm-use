@@ -989,6 +989,57 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-Y. 60ª medição — Onda 66 escolhida pelo risco, demonstração rotulada e fora das métricas
+
+**Re-medição inicial:** repo `ad54a8f` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-CIimYX9w.js` / `index-CkWW-tU5.js` (**214 chunks /
+3.204.381 bytes**, 0 falhas) com marcador da 65 = 1, da 64 = 6, da 63 = 1,
+da 62 = 1 e **`DEV000006` 18** — **publicação da Onda 65 relatada pelo dono
+e validada por cliques em produção** (`/launch` aba Performance com o aviso
+do mock de sell-through, 0 `pageerror`); banco view `200 []`, 4 funções
+`401 42501` (com parâmetros corretos), SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** as outras referências de demonstração — `V24-001` (18
+ocorrências), `U25-014` (8), `I25-088` (5) fora de testes. O seed de ciclo
+de vida (`src/lib/reference/store.ts`, 6 referências de demonstração)
+alimentava três superfícies operacionais sem nenhuma declaração de
+demonstração: `/pieces-report` (as 6 refs entravam nas 4 métricas do topo
+como peças reais), o Centro de Desenvolvimento de `/development` (contagens
+dos filtros contavam a demonstração como referência real) e o Kanban da
+esteira (a ref de demonstração podia ser promovida a "ficha salva" se
+existisse documento com o mesmo código; a timeline do `ReferenciaDrawer`
+mostrava progresso de demonstração sem rótulo). Contrapontos: `/references`
+usa `useReferences` (Supabase), não o seed; `collection-map` declara
+vitrine; `cad/store.ts` marca `demo: true`.
+
+**Correção:** mesmo contrato das coleções `demo: true` (Onda 51) e dos
+creators (Onda 59) — o seed marca `demo: true`; as métricas e contagens
+operacionais ignoram `demo`; sem peça real, a métrica vira **`—`** com
+detalhe "só demonstração na lista" (nunca zero apurado; `ModuleLayout`
+ganhou o campo `demo` na métrica); a demonstração continua ilustrando a
+lista com aviso visível (`pieces-report-demo`,
+`centro-desenvolvimento-demo`, `referencia-drawer-demo`); e a ref de
+demonstração nunca vira ficha nem avança de estágio (`buildKanbanRefItems`
+força `doc: undefined` para `demo`). Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/pieces-report` com o aviso renderizado e as 4
+métricas em `—`; `/development` com o aviso do Centro, filtros em `—` e
+`V24-001` ilustrando a esteira como cartão sem ficha (não arrastável);
+0 `pageerror`. Capturas `/home/user/medicao60-pieces-report-depois.png` e
+`/home/user/medicao60-development-depois.png`.
+
+| Camada | 60ª medição (depois)                                                                                                  |
+| ------ | --------------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 66** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                         |
+| Ar     | **Onda 65** — entry novo `index-CIimYX9w.js` / `index-CkWW-tU5.js`; marcadores 65=1, 64=6, 63=1, 62=1; `DEV000006` 18 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                              |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **809/809**                                               |
+
+**Há uma publicação pendente (66).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -628,13 +628,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     bytes) e `DEV000006` caiu de 20 para 18 no bundle; cliques em produção
     confirmaram (`/marketing` "Cadastrar Drop" sem SKUs nem números
     inventados). Repo, ar e banco alinhados na Onda 64.
-22. **Publicar a Onda 65 — PENDENTE (59ª medição).** O repo já tem o mock
-    do cron rotulado na tela que consome (aba Performance de `/launch`
-    renderiza o dado real com "sell-through —" e aviso `cron:mock`; nenhum
-    percentual inventado). O ar segue no entry `index-ClheCAuQ.js` /
-    `index-O58aczOi.js` (Onda 64) — entry e bytes inalterados. **Só
-    publicar**: nenhuma migration foi escrita e o SQL aplicado desde a
-    24ª medição permanece com SHA `382f0f19…`. Gates **801/801**.
+22. **Publicar a Onda 65 — FEITO (60ª medição).** O entry avançou para
+    `index-CIimYX9w.js` / `index-CkWW-tU5.js` (214 chunks / 3.204.381
+    bytes) e o marcador da 65 passou a 1 no bundle; cliques em produção
+    confirmaram (`/launch` aba Performance com o aviso do mock de
+    sell-through, 0 `pageerror`). Repo, ar e banco alinhados na Onda 65.
+23. **Publicar a Onda 66 — PENDENTE (60ª medição).** O repo já tem as
+    referências de demonstração rotuladas e fora das métricas operacionais
+    (seed `demo: true`; `/pieces-report` e Centro de Desenvolvimento com
+    métricas `—` e avisos; Kanban sem promoção a ficha). O ar segue no
+    entry `index-CIimYX9w.js` / `index-CkWW-tU5.js` (Onda 65) — entry e
+    bytes inalterados. **Só publicar**: nenhuma migration foi escrita e o
+    SQL aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
+    **809/809**.
 
 ---
 

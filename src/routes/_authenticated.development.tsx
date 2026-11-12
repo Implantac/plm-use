@@ -101,6 +101,7 @@ function DevelopmentPage() {
         nome: lc.nome,
         colecao: lc.colecao,
         pct: percentualLifecycle(lc),
+        demo: lc.demo,
       })),
       dbRefs: dbRefs.map((r) => ({
         code: r.code,
@@ -624,9 +625,13 @@ function CentroDeDesenvolvimento() {
   const lifecycles = useReferenceStore((s) => s.lifecycles);
   const [filter, setFilter] = useState<DevFilter>("todos");
 
+  // Demonstração ilustra a lista, mas não entra nas contagens operacionais —
+  // mesmo contrato das coleções (Onda 51) e dos creators (Onda 59).
+  const reais = useMemo(() => lifecycles.filter((lc) => !lc.demo), [lifecycles]);
+
   const counts = useMemo(() => {
     const out: Record<DevFilter, number> = {
-      todos: lifecycles.length,
+      todos: reais.length,
       pilotos_pendentes: 0,
       sem_ficha: 0,
       aguardando_aprovacao: 0,
@@ -635,12 +640,12 @@ function CentroDeDesenvolvimento() {
     };
     for (const f of FILTERS) {
       if (f.id === "todos") continue;
-      out[f.id] = filtrarLifecycles(lifecycles, f.id).length;
+      out[f.id] = filtrarLifecycles(reais, f.id).length;
     }
     return out;
-  }, [lifecycles]);
+  }, [reais]);
 
-  const filtered = useMemo(() => filtrarLifecycles(lifecycles, filter), [lifecycles, filter]);
+  const filtered = useMemo(() => filtrarLifecycles(reais, filter), [reais, filter]);
 
   return (
     <section className="mb-8 space-y-5">
@@ -652,9 +657,23 @@ function CentroDeDesenvolvimento() {
           <h2 className="text-lg font-bold text-foreground">Visão única da coleção</h2>
         </div>
         <p className="text-2xs uppercase tracking-[0.05em] text-muted-foreground">
-          {filtered.length} {filtered.length === 1 ? "referência" : "referências"}
+          {reais.length === 0
+            ? "—"
+            : `${filtered.length} ${filtered.length === 1 ? "referência" : "referências"}`}
         </p>
       </div>
+
+      {lifecycles.some((lc) => lc.demo) && (
+        <div
+          data-testid="centro-desenvolvimento-demo"
+          className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs leading-relaxed text-muted-foreground"
+        >
+          <strong className="text-foreground">Referências de demonstração no radar.</strong> As
+          referências marcadas como demonstração (seed do sistema) ilustram a esteira, mas{" "}
+          <strong>não entram nas contagens</strong> acima — só referência salva pelo usuário conta
+          como peça em desenvolvimento.
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {FILTERS.map((f) => {
@@ -678,7 +697,7 @@ function CentroDeDesenvolvimento() {
                   active ? "bg-muted text-foreground" : "bg-muted text-muted-foreground"
                 }`}
               >
-                {count}
+                {count === 0 ? "—" : count}
               </span>
             </button>
           );

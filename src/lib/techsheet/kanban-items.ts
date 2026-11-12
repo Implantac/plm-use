@@ -28,6 +28,8 @@ export interface KanbanLifecycleRef {
   nome: string;
   colecao?: string | null;
   pct: number;
+  /** `true` = referência de demonstração (seed): ilustra, mas não avança. */
+  demo?: boolean;
 }
 
 export interface KanbanDbRef {
@@ -77,7 +79,9 @@ export function buildKanbanRefItems(input: {
       category: "Coleção",
       collection: lc.colecao ?? "Verão 2027",
       stage: mapPercentToStage(lc.pct),
-      doc: techDocs[code],
+      // Demonstração nunca vira ficha: sem `doc`, o cartão não é arrastável
+      // nem avança de estágio (`canAdvanceStage` exige `doc`).
+      doc: lc.demo ? undefined : techDocs[code],
     });
   }
 

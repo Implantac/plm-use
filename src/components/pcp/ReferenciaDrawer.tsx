@@ -163,6 +163,16 @@ function ReferenciaTabs({
       </TabsContent>
 
       <TabsContent value="timeline" className="mt-4">
+        {lifecycle.demo && (
+          <div
+            data-testid="referencia-drawer-demo"
+            className="mb-3 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs leading-relaxed text-muted-foreground"
+          >
+            <strong className="text-foreground">Referência de demonstração.</strong> Este ciclo de
+            vida é do seed do sistema e ilustra a tela — não é progresso real de uma peça salva pelo
+            usuário. O PLM não é ERP: nenhum estágio aqui é apurado como real.
+          </div>
+        )}
         <ReferenceTimeline lifecycle={lifecycle} compact />
       </TabsContent>
 

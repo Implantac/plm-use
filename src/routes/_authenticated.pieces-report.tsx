@@ -40,6 +40,11 @@ function PiecesReportPage() {
   const lifecycles = useReferenceStore((s) => s.lifecycles);
   const [sort, setSort] = useState<SortMode>("atrasadas");
 
+  // Referências de demonstração (seed do store, `demo: true`) ilustram a
+  // lista, mas nunca entram nas métricas operacionais — mesmo contrato das
+  // coleções (Onda 51) e dos creators (Onda 59).
+  const reais = useMemo(() => lifecycles.filter((lc) => !lc.demo), [lifecycles]);
+
   const enriched = useMemo(() => {
     return lifecycles.map((lc) => {
       const pct = percentualLifecycle(lc);
@@ -67,11 +72,11 @@ function PiecesReportPage() {
   }, [enriched, sort]);
 
   const metrics = useMemo(() => {
-    const atrasadas = enriched.filter((e) => e.atrasada).length;
-    const emPiloto = filtrarLifecycles(lifecycles, "pilotos_pendentes").length;
-    const totalRep = enriched.reduce((s, e) => s + e.rep, 0);
+    const atrasadas = enriched.filter((e) => e.atrasada && !e.lc.demo).length;
+    const emPiloto = filtrarLifecycles(reais, "pilotos_pendentes").length;
+    const totalRep = enriched.filter((e) => !e.lc.demo).reduce((s, e) => s + e.rep, 0);
     return { atrasadas, emPiloto, totalRep };
-  }, [enriched, lifecycles]);
+  }, [enriched, reais]);
 
   const SORT_OPTIONS: { id: SortMode; label: string; icon: typeof Clock }[] = [
     { id: "atrasadas", label: "Atrasadas", icon: AlertTriangle },
@@ -89,27 +94,44 @@ function PiecesReportPage() {
       metrics={[
         {
           label: "Peças em desenvolvimento",
-          value: String(enriched.length),
-          detail: "no radar",
+          value: String(reais.length),
+          detail: reais.length > 0 ? "no radar" : "só demonstração na lista",
+          demo: reais.length === 0,
         },
         {
           label: "Atrasadas",
           value: String(metrics.atrasadas),
-          detail: "prazo estourado",
+          detail: metrics.atrasadas > 0 ? "prazo estourado" : "só demonstração na lista",
+          demo: metrics.atrasadas === 0,
         },
         {
           label: "Em piloto",
           value: String(metrics.emPiloto),
-          detail: "aguardando avaliação",
+          detail: metrics.emPiloto > 0 ? "aguardando avaliação" : "só demonstração na lista",
+          demo: metrics.emPiloto === 0,
         },
         {
           label: "Repilotagens",
           value: String(metrics.totalRep),
-          detail: "somadas na coleção",
+          detail: metrics.totalRep > 0 ? "somadas na coleção" : "só demonstração na lista",
+          demo: metrics.totalRep === 0,
         },
       ]}
     >
       <DppPassportPanel />
+
+      {lifecycles.some((lc) => lc.demo) && (
+        <div
+          data-testid="pieces-report-demo"
+          className="mb-6 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs leading-relaxed text-muted-foreground"
+        >
+          <strong className="text-foreground">Referências de demonstração na lista.</strong> As
+          referências marcadas como demonstração (seed do sistema) ilustram o relatório, mas{" "}
+          <strong>não entram nas métricas</strong> acima — só peça salva pelo usuário conta como
+          peça em desenvolvimento. O PLM não é ERP: nenhum atraso ou repilotagem de vitrine é
+          apurado como real.
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2 mb-6">
         {SORT_OPTIONS.map((opt) => {

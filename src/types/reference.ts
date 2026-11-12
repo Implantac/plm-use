@@ -35,6 +35,13 @@ export interface ReferenceLifecycle {
   prioridade?: "Baixa" | "Média" | "Alta" | "Urgente";
   prazo?: string; // ISO
   stages: Stage[];
+  /**
+   * `true` = referência de demonstração (seed do store, nunca salva pelo
+   * usuário). Ela pode ilustrar a tela, mas **não** conta como peça real em
+   * métrica operacional nem avança de estágio — mesmo contrato das coleções
+   * (`demo: true`, Onda 51) e dos creators (Onda 59).
+   */
+  demo?: boolean;
 }
 
 export const STAGE_ORDER: { id: StageId; label: string }[] = [

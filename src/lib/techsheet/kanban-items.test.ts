@@ -82,6 +82,29 @@ describe("Onda 30 — a esteira não fabrica ficha técnica", () => {
     expect(averageKanbanMargin(items)).toBe(esperado);
   });
 
+  it("Onda 66 — referência de demonstração nunca vira ficha nem avança", () => {
+    // A ref de demonstração (seed do store) não pode ser promovida a ficha
+    // salva: sem `doc`, o cartão não é arrastável e `canAdvanceStage` é
+    // falso — mesmo que exista documento salvo com o mesmo código.
+    const doc = seedFor("V24-001");
+    const items = buildKanbanRefItems({
+      techDocs: {},
+      lifecycles: [{ ref: "V24-001", nome: "Blusa Linho Amalfi", pct: 90, demo: true }],
+      dbRefs: [{ code: "V24-001", name: "Blusa Linho Amalfi" }],
+    });
+    expect(items[0]?.doc).toBeUndefined();
+    expect(canAdvanceStage(items, "V24-001")).toBe(false);
+    // Sem a marca de demonstração, a mesma entrada continua sem documento
+    // (Onda 30) — a guarda nova não relaxa a antiga.
+    const semDemo = buildKanbanRefItems({
+      techDocs: { "V24-001": doc },
+      lifecycles: [{ ref: "V24-001", nome: "Blusa Linho Amalfi", pct: 90 }],
+      dbRefs: [],
+    });
+    expect(semDemo[0]?.doc).toBe(doc);
+    expect(canAdvanceStage(semDemo, "V24-001")).toBe(true);
+  });
+
   it("código vindo em minúsculas encontra a ficha e não duplica o cartão", () => {
     const items = buildKanbanRefItems({
       techDocs: { abc123: seedFor("ABC123") },

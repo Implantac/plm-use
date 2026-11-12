@@ -1,5 +1,11 @@
 // Store de ciclo de vida das referências.
-// Mock realista; futuro alvo de migração para Supabase sem refactor de UI.
+//
+// As 6 referências abaixo são **demonstração** (`demo: true`, Onda 66): elas
+// ilustram a esteira e o relatório, mas nunca são contadas como peça real
+// (métricas de `/pieces-report` e do Centro de Desenvolvimento ignoram
+// `demo`) e nunca avançam de estágio. Só referência salva pelo usuário —
+// criada no formulário da esteira ou migrada do Supabase — entra em número
+// operacional. Futuro alvo de migração para Supabase sem refactor de UI.
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
@@ -37,7 +43,7 @@ function build(
       };
     return s;
   });
-  return { ...base, ...patch };
+  return { ...base, ...patch, demo: true };
 }
 
 const seed: ReferenceLifecycle[] = [

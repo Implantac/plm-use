@@ -26,6 +26,13 @@ interface ModuleLayoutProps {
     label: string;
     value: string;
     detail?: string;
+    /**
+     * `true` = a métrica é de demonstração (seed/vitrine) e não entra em
+     * número operacional: o valor renderiza como `—` com o detalhe
+     * explicando. Mesmo contrato das coleções (Onda 51) e dos creators
+     * (Onda 59) — ausência/vitrine vira `—` com aviso, não zero apurado.
+     */
+    demo?: boolean;
   }>;
 }
 
@@ -79,7 +86,9 @@ export function ModuleLayout({
                 <p className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                   {metric.label}
                 </p>
-                <p className="mt-2 text-xl font-bold tracking-tight text-white">{metric.value}</p>
+                <p className="mt-2 text-xl font-bold tracking-tight text-white">
+                  {metric.demo ? "—" : metric.value}
+                </p>
                 {metric.detail && (
                   <p className="mt-1 text-2xs text-muted-foreground">{metric.detail}</p>
                 )}
