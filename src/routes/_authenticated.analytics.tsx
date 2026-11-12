@@ -129,52 +129,11 @@ function AnalyticsPage() {
     return "bg-primary/10 border-primary/20 text-primary";
   };
 
-  const marketingMetrics: MarketingMetric[] = [
-    {
-      collection: "Verão 2027",
-      product: "Vestido Floral (Ref. 302)",
-      color: "Vermelho",
-      category: "Vestidos",
-      channel: "Meta Ads",
-      spendPlanned: 22000,
-      spendReal: 26000,
-      revenueGenerated: 148000,
-      roi: 5.69,
-    },
-    {
-      collection: "Verão 2027",
-      product: "Blusa Listrada (Ref. 811)",
-      color: "Azul",
-      category: "Blusas",
-      channel: "Google Ads",
-      spendPlanned: 12000,
-      spendReal: 9500,
-      revenueGenerated: 41000,
-      roi: 4.32,
-    },
-    {
-      collection: "Inverno 2026",
-      product: "Calça Linho (Ref. 441)",
-      color: "Off-White",
-      category: "Calças",
-      channel: "Instagram",
-      spendPlanned: 16000,
-      spendReal: 18000,
-      revenueGenerated: 52000,
-      roi: 2.89,
-    },
-    {
-      collection: "Inverno 2026",
-      product: "Casaco Estruturado (Ref. 902)",
-      color: "Preto",
-      category: "Outwear",
-      channel: "TikTok Ads",
-      spendPlanned: 9000,
-      spendReal: 10200,
-      revenueGenerated: 21000,
-      roi: 2.06,
-    },
-  ];
+  // Dashboard de Marketing de demonstração (Onda 70): os 4 produtos com
+  // spend/receita/ROI fictícios davam para ler como marketing real da
+  // empresa. Sem campanha salva, o painel nasce vazio — mesmo contrato
+  // das coleções (Onda 51) e dos creators (Onda 59).
+  const marketingMetrics: MarketingMetric[] = [];
 
   const marketingTotals = (() => {
     const planned = marketingMetrics.reduce((s, m) => s + m.spendPlanned, 0);
@@ -196,11 +155,16 @@ function AnalyticsPage() {
       searchPlaceholder="Buscar KPI, relatório ou coleção"
       onSearch={setQ}
       metrics={[
-        { label: "Investimento (real)", value: "R$ 84k", detail: "pago vs previsto" },
-        { label: "ROI médio", value: "3.4x", detail: "coleções ativas" },
-        { label: "ROAS", value: "5.8x", detail: "marketing moda" },
-        { label: "Ruptura", value: "4.2%", detail: "SKUs críticos" },
-        { label: "Giro", value: "7.1x", detail: "estoque anualizado" },
+        {
+          label: "Investimento (real)",
+          value: "—",
+          detail: "sem campanha salva",
+          demo: true,
+        },
+        { label: "ROI médio", value: "—", detail: "sem campanha salva", demo: true },
+        { label: "ROAS", value: "—", detail: "sem campanha salva", demo: true },
+        { label: "Ruptura", value: "—", detail: "sem campanha salva", demo: true },
+        { label: "Giro", value: "—", detail: "sem campanha salva", demo: true },
       ]}
     >
       {/* Onda 58: 7 siglas medidas no texto desta tela, sem glossário até aqui. */}
@@ -209,6 +173,16 @@ function AnalyticsPage() {
         testId="glossario-analytics"
       />
       <LiveSopBoard />
+
+      <div
+        data-testid="analytics-demo"
+        className="mb-6 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+      >
+        <strong className="text-foreground">BI de demonstração.</strong> Os KPIs estratégicos, o
+        dashboard de marketing e a penetração por região abaixo são do seed do sistema e ilustram a
+        tela — <strong>não são apurados como reais</strong>. Só KPI e campanha salvos pelo usuário
+        entram no BI. O PLM não é ERP: nenhum ROI, ROAS ou receita de vitrine é apurado como real.
+      </div>
 
       <div className="flex justify-end gap-4 mb-8">
         <ExportMenu

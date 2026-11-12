@@ -77,6 +77,7 @@ import {
   type Influencer,
 } from "@/lib/influencers/store";
 import {
+  kpisOperacionais,
   listAnalyticsKpis,
   replaceAllAnalyticsKpis,
   subscribeAnalyticsKpis,
@@ -592,7 +593,9 @@ const MODULES: ModuleSpec[] = [
     key: "analytics_kpis",
     table: "analytics_kpis",
     label: "os KPIs do BI",
-    list: listAnalyticsKpis,
+    // Demonstração nunca sobe para o banco (Onda 70): só KPI
+    // cadastrado/editado pelo usuário é sincronizado.
+    list: () => kpisOperacionais(listAnalyticsKpis()),
     toRow: (e, uid) => analyticsKpiToRow(e as AnalyticsKpi, uid),
     apply: (rows) => replaceAllAnalyticsKpis(rows.map(analyticsKpiFromRow)),
     subscribe: subscribeAnalyticsKpis,

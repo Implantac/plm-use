@@ -17,8 +17,19 @@ export interface AnalyticsKpi {
   progress?: number; // 0..100; ausente = KPI sem barra
   iconName: "target" | "trending-up" | "zap" | "bar-chart";
   tone: string; // classe de cor (emerald|amber|primary|…)
+  /**
+   * `true` = KPI de demonstração (seed do BI, nunca cadastrado pela
+   * empresa). Ele ilustra o dashboard, mas **não** entra na exportação nem
+   * sobe para o banco — mesmo contrato das coleções (`demo: true`, Onda 51)
+   * e dos creators (Onda 59).
+   */
+  demo?: boolean;
 }
 
+// Os 3 KPIs abaixo são **demonstração** (`demo: true`, Onda 70): eles
+// ilustram o BI Executivo, mas nunca entram na exportação nem sobem para o
+// banco. Só KPI cadastrado pelo usuário conta como indicador real — mesmo
+// contrato das coleções (Onda 51) e dos creators (Onda 59).
 export const analyticsKpisSeed: AnalyticsKpi[] = [
   {
     id: 1,
@@ -27,6 +38,7 @@ export const analyticsKpisSeed: AnalyticsKpi[] = [
     sub: "4M",
     progress: 60,
     iconName: "target",
+    demo: true,
     tone: "primary",
   },
   {
@@ -35,6 +47,7 @@ export const analyticsKpisSeed: AnalyticsKpi[] = [
     value: "+24.8%",
     sub: "vs mercado: +12%",
     iconName: "trending-up",
+    demo: true,
     tone: "emerald",
   },
   {
@@ -43,6 +56,7 @@ export const analyticsKpisSeed: AnalyticsKpi[] = [
     value: "94.2%",
     sub: "ciclo: 32 dias",
     iconName: "zap",
+    demo: true,
     tone: "amber",
   },
 ];
@@ -81,6 +95,11 @@ export function upsertAnalyticsKpi(next: AnalyticsKpi) {
 export function removeAnalyticsKpi(id: number) {
   kpis = kpis.filter((k) => k.id !== id);
   emit();
+}
+
+/** Só KPIs cadastrados/editados pela empresa. A vitrine fica de fora. */
+export function kpisOperacionais(list: AnalyticsKpi[]): AnalyticsKpi[] {
+  return list.filter((k) => k.demo !== true);
 }
 
 // Repositor de hidratação (creative-sync) — ver colors/store.ts.
