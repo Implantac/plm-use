@@ -718,6 +718,7 @@ export function GarmentSketchStudio({
                 <Input
                   type="number"
                   step="0.5"
+                  aria-label="Impostos %"
                   value={divParams.impostosPct}
                   onChange={(e) =>
                     updatePreCost(refAtual, {
@@ -737,6 +738,7 @@ export function GarmentSketchStudio({
                 <Input
                   type="number"
                   step="0.5"
+                  aria-label="Comissão %"
                   value={divParams.comissaoPct}
                   onChange={(e) =>
                     updatePreCost(refAtual, {
@@ -756,6 +758,7 @@ export function GarmentSketchStudio({
                 <Input
                   type="number"
                   step="0.5"
+                  aria-label="Lucro Alvo %"
                   value={divParams.margemLiquidaAlvoPct}
                   onChange={(e) =>
                     updatePreCost(refAtual, {
@@ -968,6 +971,7 @@ export function GarmentSketchStudio({
                 <Label className="text-xs">Código Cor</Label>
                 <Input
                   placeholder="VD-OURO"
+                  aria-label="Código Cor"
                   value={newCw.code}
                   onChange={(e) => setNewCw((s) => ({ ...s, code: e.target.value }))}
                 />
@@ -976,6 +980,7 @@ export function GarmentSketchStudio({
                 <Label className="text-xs">Nome Comercial da Cor</Label>
                 <Input
                   placeholder="Verde Bandeira / Ouro"
+                  aria-label="Nome Comercial da Cor"
                   value={newCw.name}
                   onChange={(e) => setNewCw((s) => ({ ...s, name: e.target.value }))}
                 />
@@ -987,11 +992,13 @@ export function GarmentSketchStudio({
                 <div className="flex items-center gap-2 mt-1">
                   <input
                     type="color"
+                    aria-label="Cor Principal (Corpo)"
                     value={newCw.hex}
                     onChange={(e) => setNewCw((s) => ({ ...s, hex: e.target.value }))}
                     className="h-9 w-12 rounded border border-border cursor-pointer bg-transparent"
                   />
                   <Input
+                    aria-label="Cor Principal (Corpo)"
                     value={newCw.hex}
                     onChange={(e) => setNewCw((s) => ({ ...s, hex: e.target.value }))}
                     className="font-mono text-xs"
@@ -1003,11 +1010,13 @@ export function GarmentSketchStudio({
                 <div className="flex items-center gap-2 mt-1">
                   <input
                     type="color"
+                    aria-label="Cor Contraste (Gola/Recorte)"
                     value={newCw.secondaryHex}
                     onChange={(e) => setNewCw((s) => ({ ...s, secondaryHex: e.target.value }))}
                     className="h-9 w-12 rounded border border-border cursor-pointer bg-transparent"
                   />
                   <Input
+                    aria-label="Cor Contraste (Gola/Recorte)"
                     value={newCw.secondaryHex}
                     onChange={(e) => setNewCw((s) => ({ ...s, secondaryHex: e.target.value }))}
                     className="font-mono text-xs"
@@ -1032,7 +1041,7 @@ export function GarmentSketchStudio({
             <DialogTitle>Pinos e Detalhes Construtivos do Croqui ({refAtual})</DialogTitle>
           </DialogHeader>
           <div className="space-y-2.5 py-2 max-h-[340px] overflow-y-auto">
-            {callouts.map((pin) => (
+            {callouts.map((pin, pinIdx) => (
               <div
                 key={pin.id}
                 className="grid grid-cols-12 gap-2 items-center rounded border border-border/70 p-2 bg-muted/20"
@@ -1041,6 +1050,7 @@ export function GarmentSketchStudio({
                   <Label className="text-[10px]">Nº</Label>
                   <Input
                     type="number"
+                    aria-label={`Nº do callout ${pinIdx + 1}`}
                     value={pin.num}
                     onChange={(e) =>
                       updateCallout(pin.id, { num: Math.max(1, Number(e.target.value) || 1) })
@@ -1051,6 +1061,7 @@ export function GarmentSketchStudio({
                 <div className="col-span-6">
                   <Label className="text-[10px]">Especificação Construtiva</Label>
                   <Input
+                    aria-label={`Especificação do callout ${pinIdx + 1}`}
                     value={pin.label}
                     onChange={(e) => updateCallout(pin.id, { label: e.target.value })}
                     className="h-7 text-xs"
@@ -1059,6 +1070,7 @@ export function GarmentSketchStudio({
                 <div className="col-span-3">
                   <Label className="text-[10px]">Vista</Label>
                   <select
+                    aria-label={`Vista do callout ${pinIdx + 1}`}
                     value={pin.view}
                     onChange={(e) =>
                       updateCallout(pin.id, { view: e.target.value as "frente" | "costas" })
@@ -1102,6 +1114,7 @@ export function GarmentSketchStudio({
               <div>
                 <Label className="text-xs">Classificação Fiscal (NCM)</Label>
                 <Input
+                  aria-label="Classificação Fiscal (NCM)"
                   value={etiquetagem.ncm}
                   onChange={(e) =>
                     setEtiquetagem(refAtual, { ...etiquetagem, ncm: e.target.value })
@@ -1112,6 +1125,7 @@ export function GarmentSketchStudio({
               <div>
                 <Label className="text-xs">País de Origem</Label>
                 <Input
+                  aria-label="País de Origem"
                   value={etiquetagem.paisOrigem}
                   onChange={(e) =>
                     setEtiquetagem(refAtual, { ...etiquetagem, paisOrigem: e.target.value })
@@ -1131,6 +1145,7 @@ export function GarmentSketchStudio({
               {etiquetagem.composicao.map((f, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <Input
+                    aria-label={`Fibra ${idx + 1} da composição têxtil`}
                     value={f.fibra}
                     onChange={(e) => updateFibra(idx, "fibra", e.target.value)}
                     placeholder="Ex.: Poliéster, Algodão, Elastano"
@@ -1138,6 +1153,7 @@ export function GarmentSketchStudio({
                   />
                   <Input
                     type="number"
+                    aria-label={`Percentual da fibra ${idx + 1}`}
                     value={f.pct}
                     onChange={(e) => updateFibra(idx, "pct", e.target.value)}
                     className="h-8 text-xs w-20 font-mono text-right"
@@ -1165,6 +1181,7 @@ export function GarmentSketchStudio({
             <div>
               <Label className="text-xs">Instruções Complementares na Etiqueta</Label>
               <Input
+                aria-label="Instruções Complementares na Etiqueta"
                 value={etiquetagem.instrucoesExtras ?? ""}
                 onChange={(e) =>
                   setEtiquetagem(refAtual, { ...etiquetagem, instrucoesExtras: e.target.value })
@@ -1189,6 +1206,7 @@ export function GarmentSketchStudio({
             <Label className="text-xs">URL https:// da imagem (piloto fotografado ou render)</Label>
             <Input
               placeholder="https://..."
+              aria-label="URL da imagem (piloto fotografado ou render)"
               value={fotoInput}
               onChange={(e) => setFotoInput(e.target.value)}
             />

@@ -488,6 +488,7 @@ export function OutsourcingServiceOrderPanel() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Referência SKU</Label>
                 <select
+                  aria-label="Referência SKU"
                   value={draft.refCode}
                   onChange={(e) => setDraft({ ...draft, refCode: e.target.value })}
                   className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
@@ -503,6 +504,7 @@ export function OutsourcingServiceOrderPanel() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">OP de Origem</Label>
                 <Input
+                  aria-label="OP de Origem"
                   value={draft.opNumber}
                   onChange={(e) => setDraft({ ...draft, opNumber: e.target.value })}
                   className="mt-1 h-9"
@@ -516,6 +518,7 @@ export function OutsourcingServiceOrderPanel() {
                   Terceiro Homologado
                 </Label>
                 <select
+                  aria-label="Terceiro Homologado"
                   value={draft.partnerId}
                   onChange={(e) => setDraft({ ...draft, partnerId: e.target.value })}
                   className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2.5 text-xs text-foreground"
@@ -530,6 +533,7 @@ export function OutsourcingServiceOrderPanel() {
               <div>
                 <Label className="text-2xs uppercase text-muted-foreground">Tipo de Serviço</Label>
                 <select
+                  aria-label="Tipo de Serviço"
                   value={draft.serviceType}
                   onChange={(e) =>
                     setDraft({ ...draft, serviceType: e.target.value as ExternalServiceType })
@@ -548,6 +552,7 @@ export function OutsourcingServiceOrderPanel() {
                 Receita de Lavanderia / Instrução Operacional de Facção
               </Label>
               <Input
+                aria-label="Receita de Lavanderia / Instrução Operacional de Facção"
                 value={draft.processRecipe}
                 onChange={(e) => setDraft({ ...draft, processRecipe: e.target.value })}
                 className="mt-1 h-9"
@@ -560,6 +565,7 @@ export function OutsourcingServiceOrderPanel() {
                 <Input
                   type="number"
                   min={1}
+                  aria-label="Qtd. Peças"
                   value={draft.qtySent}
                   onChange={(e) => setDraft({ ...draft, qtySent: e.target.value })}
                   className="mt-1 h-9 font-mono"
@@ -570,6 +576,7 @@ export function OutsourcingServiceOrderPanel() {
                 <Input
                   type="number"
                   step="0.1"
+                  aria-label="M.O. R$/pç"
                   value={draft.unitLaborBrl}
                   onChange={(e) => setDraft({ ...draft, unitLaborBrl: e.target.value })}
                   className="mt-1 h-9 font-mono"
@@ -580,6 +587,7 @@ export function OutsourcingServiceOrderPanel() {
                 <Input
                   type="number"
                   step="0.5"
+                  aria-label="Franquia %"
                   value={draft.lossTolerancePct}
                   onChange={(e) => setDraft({ ...draft, lossTolerancePct: e.target.value })}
                   className="mt-1 h-9 font-mono"
@@ -589,6 +597,7 @@ export function OutsourcingServiceOrderPanel() {
                 <Label className="text-2xs uppercase text-muted-foreground">Prazo</Label>
                 <Input
                   type="date"
+                  aria-label="Prazo"
                   value={draft.dueDate}
                   onChange={(e) => setDraft({ ...draft, dueDate: e.target.value })}
                   className="mt-1 h-9"

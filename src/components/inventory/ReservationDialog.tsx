@@ -146,7 +146,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
           <div className="space-y-2">
             <Label required>Insumo</Label>
             <Select value={itemId} onValueChange={setItemId}>
-              <SelectTrigger aria-invalid={!!errors.itemId}>
+              <SelectTrigger aria-label="Insumo" aria-invalid={!!errors.itemId}>
                 <SelectValue placeholder="Selecione o insumo" />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border text-white max-h-72">
@@ -164,7 +164,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
             <div className="space-y-2">
               <Label required>Armazém</Label>
               <Select value={warehouseId} onValueChange={setWarehouseId}>
-                <SelectTrigger aria-invalid={!!errors.warehouseId}>
+                <SelectTrigger aria-label="Armazém" aria-invalid={!!errors.warehouseId}>
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border text-white">
@@ -182,6 +182,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
             <div className="space-y-2">
               <Label required>Quantidade</Label>
               <Input
+                aria-label="Quantidade"
                 value={qty}
                 onChange={(e) => setQty(e.target.value)}
                 type="number"
@@ -197,7 +198,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
             <div className="space-y-2">
               <Label>Tipo</Label>
               <Select value={refType} onValueChange={(v) => setRefType(v as RefType)}>
-                <SelectTrigger>
+                <SelectTrigger aria-label="Tipo">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border text-white">
@@ -211,14 +212,15 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
               <Label required>Referência</Label>
               {refType === "op" ? (
                 <Input
+                  aria-label="Referência"
                   value={refId}
                   onChange={(e) => setRefId(e.target.value)}
                   placeholder="UUID da OP"
                   aria-invalid={!!errors.refId}
                 />
               ) : (
-                <Select value={refId} onValueChange={setRefId}>
-                  <SelectTrigger aria-invalid={!!errors.refId}>
+                <Select aria-label="Referência" value={refId} onValueChange={setRefId}>
+                  <SelectTrigger aria-label="Referência" aria-invalid={!!errors.refId}>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-border text-white max-h-72">
@@ -244,6 +246,7 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
               Observações
             </Label>
             <Textarea
+              aria-label="Observações"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}

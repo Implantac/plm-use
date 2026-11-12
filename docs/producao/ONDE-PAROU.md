@@ -608,6 +608,14 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     marcadores da 59 = 0**. **Só publicar**: nenhuma migration foi escrita e
     o SQL aplicado desde a 24ª medição permanece com SHA
     `382f0f19…`. Gates **763/763**.
+18. **Publicar as Ondas 59 e 60 — PENDENTE (54ª medição).** O repo já tem a
+    correção de campos sem nome em 8 arquivos (portal do fornecedor, ficha
+    técnica, showroom, OS de facção, pedido, reserva de estoque e medidas;
+    fonte **180 → 78**, os 8 arquivos zerados). O ar segue no entry
+    `index-IvTyinWJ.js` / `index-pMXbg9-8.js` (Onda 58), com os **6
+    marcadores exclusivos da 60 = 0** e os 6 da 59 = 0. **Só publicar**:
+    nenhuma migration foi escrita e o SQL aplicado desde a 24ª medição
+    permanece com SHA `382f0f19…`. Gates **770/770**.
 
 ---
 
@@ -715,4 +723,18 @@ guias** na vitrine e, após registrar `Ana Real` + `VT900`, **1 guia A4 com o
 creator salvo e sem `Marina Costa`**; 0/2 e 0/11 campos sem nome. Gates
 **763/763**; SQL intacto; banco re-medido e inalterado. **Ar ainda na Onda
 58 (6 marcadores da 59 = 0): há uma publicação pendente, não um defeito.**
-Documento da onda: `ONDA-59-A-VITRINE-NAO-EMITE-GUIA-FISCAL.md`.
+Documento da onda: `ONDA-59-A-VITRINE-NAO-EMITE-GUIA-FISCAL.md`. **54ª
+medição: Onda 60 escolhida pelo risco e fechada no repo** — re-medição
+inicial confirmou repo na 59, ar na 58 (6 marcadores da 59 = 0) e banco
+inalterado; varredura com cliques nas 42 rotas achou **43 campos sem nome
+acessível** na carga inicial e **180 na fonte**. Correção: `aria-label`
+derivado do rótulo visível (ou da coluna, com índice) em 8 arquivos
+(`supplier-portal`, `BomBopPanel`, `GarmentSketchStudio`, `showroom`,
+`OutsourcingServiceOrderPanel`, `OrderDetail`, `ReservationDialog`,
+`GradedMeasurementsPanel`); fonte **180 → 78** (7 de `materials` são falso
+positivo de `<label>` envolvente). Prova por cliques: diálogo "Cadastrar
+fornecedor" **0/11** sem nome, showroom **0/2**, 0 `pageerror`. Gates
+**770/770**; SQL intacto; banco re-medido e inalterado. **Ar ainda na Onda
+58 (6 marcadores exclusivos da 60 = 0): há duas publicações pendentes (59 e
+60), não um defeito.** Documento da onda:
+`ONDA-60-CAMPOS-TEM-NOME-SEQUENCIA.md`.

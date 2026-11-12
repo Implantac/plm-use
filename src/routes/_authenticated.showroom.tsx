@@ -302,7 +302,7 @@ function RequestSampleCard({
           <div className="md:col-span-2">
             <Label>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger>
+              <SelectTrigger aria-label="Referência da peça-mãe">
                 <SelectValue placeholder="Escolha uma referência aprovada…" />
               </SelectTrigger>
               <SelectContent>
@@ -316,17 +316,28 @@ function RequestSampleCard({
           </div>
           <div>
             <Label>Grade</Label>
-            <Input value={grade} onChange={(e) => setGrade(e.target.value)} placeholder="P-M-G" />
+            <Input
+              aria-label="Grade"
+              value={grade}
+              onChange={(e) => setGrade(e.target.value)}
+              placeholder="P-M-G"
+            />
           </div>
           <div>
             <Label>Cor</Label>
-            <Input value={cor} onChange={(e) => setCor(e.target.value)} placeholder="Off-white" />
+            <Input
+              aria-label="Cor"
+              value={cor}
+              onChange={(e) => setCor(e.target.value)}
+              placeholder="Off-white"
+            />
           </div>
           <div>
             <Label>Qtd</Label>
             <Input
               type="number"
               min={1}
+              aria-label="Qtd"
               value={qtd}
               onChange={(e) => setQtd(Math.max(1, Number(e.target.value) || 1))}
             />
@@ -392,7 +403,7 @@ function FeedbackCard({
           <div className="md:col-span-2 space-y-1.5">
             <Label required>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger aria-invalid={!refId}>
+              <SelectTrigger aria-label="Referência avaliada" aria-invalid={!refId}>
                 <SelectValue placeholder="Escolha…" />
               </SelectTrigger>
               <SelectContent>
@@ -410,7 +421,7 @@ function FeedbackCard({
           <div>
             <Label>Dimensão</Label>
             <Select value={dim} onValueChange={(v) => setDim(v as ShowroomFeedbackDimension)}>
-              <SelectTrigger>
+              <SelectTrigger aria-label="Dimensão">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -428,6 +439,7 @@ function FeedbackCard({
               type="number"
               min={1}
               max={5}
+              aria-label="Nota (1–5)"
               value={nota}
               onChange={(e) => setNota(Math.min(5, Math.max(1, Number(e.target.value) || 1)))}
             />
@@ -435,7 +447,7 @@ function FeedbackCard({
           <div>
             <Label>Autor</Label>
             <Select value={autorTipo} onValueChange={(v) => setAutorTipo(v as typeof autorTipo)}>
-              <SelectTrigger>
+              <SelectTrigger aria-label="Autor">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -448,12 +460,18 @@ function FeedbackCard({
           </div>
           <div>
             <Label>Rota</Label>
-            <Input value={rota} onChange={(e) => setRota(e.target.value)} placeholder="SP-01" />
+            <Input
+              aria-label="Rota"
+              value={rota}
+              onChange={(e) => setRota(e.target.value)}
+              placeholder="SP-01"
+            />
           </div>
         </div>
         <div className="mt-3">
           <Label>Comentário</Label>
           <Textarea
+            aria-label="Comentário"
             value={comentario}
             onChange={(e) => setComentario(e.target.value)}
             placeholder="Ex.: caimento excelente no busto, folgou na cintura no tamanho M."
@@ -573,7 +591,7 @@ function DecisionCard({
           <div className="space-y-1.5">
             <Label required>Referência</Label>
             <Select value={refId} onValueChange={setRefId}>
-              <SelectTrigger aria-invalid={missingRef}>
+              <SelectTrigger aria-label="Referência para decisão" aria-invalid={missingRef}>
                 <SelectValue placeholder="Escolha…" />
               </SelectTrigger>
               <SelectContent>
@@ -594,6 +612,7 @@ function DecisionCard({
           <div className="space-y-1.5">
             <Label required>Justificativa</Label>
             <Input
+              aria-label="Justificativa"
               value={justificativa}
               onChange={(e) => setJustificativa(e.target.value)}
               placeholder="Ex.: feedback ≥ 4, cobertura de grade ok, sem CAPA aberta."

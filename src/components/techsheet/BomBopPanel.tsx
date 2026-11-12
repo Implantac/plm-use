@@ -350,7 +350,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/50">
-                    {data.bom.map((b) => {
+                    {data.bom.map((b, idx) => {
                       const rend = calcRendimentoMporKg(b.larguraM, b.gramaturaGm2);
                       const custoLinha = bomItemCustoEfetivo(b);
                       const avail = resolveAvailableStock(b);
@@ -363,6 +363,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                         <tr key={b.id} className="hover:bg-muted/20 align-middle">
                           <td className="p-1.5">
                             <select
+                              aria-label={`Tipo do item BOM ${idx + 1}`}
                               value={b.tipo}
                               onChange={(e) =>
                                 updateBom(refAtual, b.id, {
@@ -381,6 +382,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
 
                           <td className="p-1.5">
                             <Input
+                              aria-label={`Material do item BOM ${idx + 1}`}
                               value={b.material}
                               onChange={(e) =>
                                 updateBom(refAtual, b.id, { material: e.target.value })
@@ -389,6 +391,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                             />
                             <div className="flex items-center gap-1.5 mt-0.5">
                               <input
+                                aria-label={`Fornecedor do item BOM ${idx + 1}`}
                                 value={b.fornecedor}
                                 onChange={(e) =>
                                   updateBom(refAtual, b.id, { fornecedor: e.target.value })
@@ -402,6 +405,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                           <td className="p-1.5">
                             <div className="flex items-center gap-1">
                               <Input
+                                aria-label={`Consumo do item BOM ${idx + 1}`}
                                 value={b.consumo}
                                 onChange={(e) =>
                                   updateBom(refAtual, b.id, { consumo: e.target.value })
@@ -424,6 +428,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                               <Input
                                 type="number"
                                 step="0.5"
+                                aria-label={`Perda (%) do item BOM ${idx + 1}`}
                                 value={b.perdaPct ?? 0}
                                 onChange={(e) =>
                                   updateBom(refAtual, b.id, {
@@ -459,6 +464,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                             <Input
                               type="number"
                               step="0.01"
+                              aria-label={`Custo unitário do item BOM ${idx + 1}`}
                               value={b.custoUnitario ?? b.custo}
                               onChange={(e) => {
                                 const val = Math.max(0, Number.parseFloat(e.target.value) || 0);
@@ -658,11 +664,12 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                 <tbody className="divide-y divide-border/50">
                   {[...data.bop]
                     .sort((a, b) => a.seq - b.seq)
-                    .map((s: BopStep) => (
+                    .map((s: BopStep, sIdx) => (
                       <tr key={s.id} className="hover:bg-muted/20">
                         <td className="p-1.5">
                           <Input
                             type="number"
+                            aria-label={`Sequência da etapa BOP ${sIdx + 1}`}
                             value={s.seq}
                             onChange={(e) =>
                               updateBop(refAtual, s.id, {
@@ -674,6 +681,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                         </td>
                         <td className="p-1.5">
                           <Input
+                            aria-label={`Etapa BOP ${sIdx + 1}`}
                             value={s.etapa}
                             onChange={(e) => updateBop(refAtual, s.id, { etapa: e.target.value })}
                             className="h-7 text-xs font-medium"
@@ -681,6 +689,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                         </td>
                         <td className="p-1.5">
                           <Input
+                            aria-label={`Setor da etapa BOP ${sIdx + 1}`}
                             value={s.setor}
                             onChange={(e) => updateBop(refAtual, s.id, { setor: e.target.value })}
                             className="h-7 text-xs"
@@ -688,6 +697,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                         </td>
                         <td className="p-1.5">
                           <Input
+                            aria-label={`Máquina da etapa BOP ${sIdx + 1}`}
                             value={s.maquina ?? ""}
                             placeholder="Ex.: Overloque 4 fios"
                             onChange={(e) => updateBop(refAtual, s.id, { maquina: e.target.value })}
@@ -698,6 +708,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                           <Input
                             type="number"
                             step="0.1"
+                            aria-label={`Tempo (min) da etapa BOP ${sIdx + 1}`}
                             value={s.tempoMin}
                             onChange={(e) =>
                               updateBop(refAtual, s.id, {
@@ -711,6 +722,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                           <Input
                             type="number"
                             step="0.05"
+                            aria-label={`Custo da etapa BOP ${sIdx + 1}`}
                             value={s.custo}
                             onChange={(e) =>
                               updateBop(refAtual, s.id, {
@@ -747,6 +759,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
           </DialogHeader>
           <Input
             placeholder="Buscar por nome, SKU ou fornecedor…"
+            aria-label="Buscar material por nome, SKU ou fornecedor"
             value={catalogQ}
             onChange={(e) => setCatalogQ(e.target.value)}
           />
@@ -807,6 +820,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
               placeholder={
                 "Tecido\tMalha Algodão 30.1\tMenegotti\t0,24\tkg\t6\t42,90\nAviamento\tEtiqueta Cetim\tHaco\t1\tun\t2\t0,45"
               }
+              aria-label="Colar linhas do Excel (BOM)"
               value={excelText}
               onChange={(e) => setExcelText(e.target.value)}
               className="font-mono text-xs"
@@ -853,6 +867,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
             <div className="flex items-center gap-2">
               <input
                 type="color"
+                aria-label="Cor da variante"
                 value={cwColorText.match(/#[0-9a-fA-F]{6}/)?.[0] ?? "#1D6B47"}
                 onChange={(e) => {
                   const rest = cwColorText.replace(/#[0-9a-fA-F]{6}\s*·?\s*/, "").trim();
@@ -861,6 +876,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                 className="h-9 w-12 rounded border border-border cursor-pointer bg-transparent"
               />
               <Input
+                aria-label="Cor da variante (texto)"
                 value={cwColorText}
                 onChange={(e) => setCwColorText(e.target.value)}
                 placeholder="#1D6B47 · Verde Bandeira Lote 42"
@@ -904,6 +920,7 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                 <Input
                   type="number"
                   step="1"
+                  aria-label="Quantidade Disponível"
                   value={stockEdit.val}
                   onChange={(e) => setStockEdit({ ...stockEdit, val: e.target.value })}
                   className="font-mono text-xs"
@@ -984,6 +1001,7 @@ function YieldCalculatorBody({
         <div>
           <Label className="text-xs">Largura Útil do Rolo (m)</Label>
           <Input
+            aria-label="Largura Útil do Rolo (m)"
             value={largura}
             onChange={(e) => setLargura(e.target.value)}
             className="font-mono text-xs"
@@ -992,6 +1010,7 @@ function YieldCalculatorBody({
         <div>
           <Label className="text-xs">Gramatura (g/m²)</Label>
           <Input
+            aria-label="Gramatura (g/m²)"
             value={gramatura}
             onChange={(e) => setGramatura(e.target.value)}
             className="font-mono text-xs"
@@ -1020,6 +1039,7 @@ function YieldCalculatorBody({
         <Label className="text-xs">Converter comprimento do risco (m/peça → kg/peça)</Label>
         <div className="flex items-center gap-2">
           <Input
+            aria-label="Consumo do risco (m/peça)"
             value={consumoM}
             onChange={(e) => setConsumoM(e.target.value)}
             className="font-mono text-xs"

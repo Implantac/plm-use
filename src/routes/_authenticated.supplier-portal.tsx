@@ -217,6 +217,7 @@ function SuppliersTab() {
                 <div>
                   <Label className="text-2xs uppercase">Código</Label>
                   <Input
+                    aria-label="Código"
                     value={form.code}
                     onChange={(e) => setForm({ ...form, code: e.target.value })}
                   />
@@ -224,6 +225,7 @@ function SuppliersTab() {
                 <div>
                   <Label className="text-2xs uppercase">Tipo</Label>
                   <Input
+                    aria-label="Tipo"
                     value={form.tipo}
                     onChange={(e) => setForm({ ...form, tipo: e.target.value })}
                     placeholder="confeccao, tecelagem…"
@@ -233,6 +235,7 @@ function SuppliersTab() {
               <div>
                 <Label className="text-2xs uppercase">Nome</Label>
                 <Input
+                  aria-label="Nome"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
@@ -241,6 +244,7 @@ function SuppliersTab() {
                 <div>
                   <Label className="text-2xs uppercase">Cidade</Label>
                   <Input
+                    aria-label="Cidade"
                     value={form.cidade}
                     onChange={(e) => setForm({ ...form, cidade: e.target.value })}
                   />
@@ -248,6 +252,7 @@ function SuppliersTab() {
                 <div>
                   <Label className="text-2xs uppercase">UF</Label>
                   <Input
+                    aria-label="UF"
                     value={form.uf}
                     onChange={(e) => setForm({ ...form, uf: e.target.value })}
                   />
@@ -256,6 +261,7 @@ function SuppliersTab() {
               <div>
                 <Label className="text-2xs uppercase">Contato · nome</Label>
                 <Input
+                  aria-label="Contato · nome"
                   value={form.contato_nome}
                   onChange={(e) => setForm({ ...form, contato_nome: e.target.value })}
                 />
@@ -264,6 +270,7 @@ function SuppliersTab() {
                 <Label className="text-2xs uppercase">Contato · e-mail</Label>
                 <Input
                   type="email"
+                  aria-label="Contato · e-mail"
                   value={form.contato_email}
                   onChange={(e) => setForm({ ...form, contato_email: e.target.value })}
                 />
@@ -396,6 +403,7 @@ function OrdersTab() {
                 <Label className="text-2xs uppercase">Fornecedor</Label>
                 <select
                   className="w-full h-9 rounded-md border border-border bg-muted/50 text-xs px-2"
+                  aria-label="Fornecedor"
                   value={form.supplier_id}
                   onChange={(e) => setForm({ ...form, supplier_id: e.target.value })}
                 >
@@ -411,6 +419,7 @@ function OrdersTab() {
                 <div>
                   <Label className="text-2xs uppercase">Código OP</Label>
                   <Input
+                    aria-label="Código OP"
                     value={form.codigo}
                     onChange={(e) => setForm({ ...form, codigo: e.target.value })}
                   />
@@ -419,6 +428,7 @@ function OrdersTab() {
                   <Label className="text-2xs uppercase">Prazo</Label>
                   <Input
                     type="date"
+                    aria-label="Prazo"
                     value={form.prazo}
                     onChange={(e) => setForm({ ...form, prazo: e.target.value })}
                   />
@@ -427,6 +437,7 @@ function OrdersTab() {
               <div>
                 <Label className="text-2xs uppercase">Descrição</Label>
                 <Input
+                  aria-label="Descrição"
                   value={form.descricao}
                   onChange={(e) => setForm({ ...form, descricao: e.target.value })}
                 />
@@ -436,6 +447,7 @@ function OrdersTab() {
                   <Label className="text-2xs uppercase">Quantidade</Label>
                   <Input
                     type="number"
+                    aria-label="Quantidade"
                     value={form.quantidade}
                     onChange={(e) => setForm({ ...form, quantidade: Number(e.target.value) })}
                   />
@@ -443,6 +455,7 @@ function OrdersTab() {
                 <div>
                   <Label className="text-2xs uppercase">Unidade</Label>
                   <Input
+                    aria-label="Unidade"
                     value={form.unidade}
                     onChange={(e) => setForm({ ...form, unidade: e.target.value })}
                   />
@@ -451,6 +464,7 @@ function OrdersTab() {
               <div>
                 <Label className="text-2xs uppercase">Observações</Label>
                 <Textarea
+                  aria-label="Observações"
                   value={form.observacoes}
                   onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
                   rows={2}
@@ -773,6 +787,7 @@ function RfqBomTab() {
                 type="number"
                 min={10}
                 step={50}
+                aria-label="Tiragem Planejada (peças)"
                 value={doc?.preCost.tiragemPlanejada ?? 300}
                 disabled={!doc}
                 onChange={(e) => {
@@ -877,7 +892,7 @@ function RfqBomTab() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {scoredQuotes.map((q) => (
+            {scoredQuotes.map((q, qIdx) => (
               <Card
                 key={q.id}
                 className={`p-4 space-y-3 transition-all ${
@@ -889,6 +904,7 @@ function RfqBomTab() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1">
                     <Input
+                      aria-label={`Fornecedor da cotação ${qIdx + 1}`}
                       value={q.fornecedor}
                       onChange={(e) => patchQuote(q.id, { fornecedor: e.target.value })}
                       className="h-8 text-xs font-semibold"
@@ -915,6 +931,7 @@ function RfqBomTab() {
                       type="number"
                       step="0.1"
                       min="0.05"
+                      aria-label={`Preço R$/unidade da cotação ${qIdx + 1}`}
                       value={q.precoUnitario}
                       onChange={(e) =>
                         patchQuote(q.id, {
@@ -932,6 +949,7 @@ function RfqBomTab() {
                       type="number"
                       step="10"
                       min="1"
+                      aria-label={`MOQ da cotação ${qIdx + 1}`}
                       value={q.moq}
                       onChange={(e) =>
                         patchQuote(q.id, { moq: Math.max(1, Number(e.target.value) || 1) })
@@ -946,6 +964,7 @@ function RfqBomTab() {
                     <Input
                       type="number"
                       min="1"
+                      aria-label={`Lead Time (dias) da cotação ${qIdx + 1}`}
                       value={q.leadTimeDias}
                       onChange={(e) =>
                         patchQuote(q.id, { leadTimeDias: Math.max(1, Number(e.target.value) || 1) })
@@ -959,6 +978,7 @@ function RfqBomTab() {
                       type="number"
                       min="50"
                       max="100"
+                      aria-label={`OTIF (%) da cotação ${qIdx + 1}`}
                       value={q.otifPct}
                       onChange={(e) =>
                         patchQuote(q.id, {

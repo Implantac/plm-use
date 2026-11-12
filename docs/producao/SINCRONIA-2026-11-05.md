@@ -1,4 +1,4 @@
-# Sincronia repo × ar × banco — 53ª medição, 06/11/2026
+# Sincronia repo × ar × banco — 54ª medição, 06/11/2026
 
 Este documento é uma **medição**, não um plano. Cada linha foi obtida executando
 o comando indicado no fim. Se algo divergir do que você vê na tela, refaça a
@@ -7,27 +7,26 @@ que **um marco relatado pelo dono precisa ser medido antes de virar fato**.
 
 ---
 
-## 1. O quadro (53ª medição, após fechar a Onda 59)
+## 1. O quadro (54ª medição, após fechar a Onda 60)
 
 | Camada                                         | Estado medido                     | Como foi medido                       |
 | ---------------------------------------------- | --------------------------------- | ------------------------------------- |
-| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 59** — HEAD local = remoto | `git log` / `git ls-remote`           |
-| **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + 6 marcadores da 59 = `0` (§2-R) |
+| **Repositório** (`Implantac/plm-use`, `main`)  | **Onda 60** — HEAD local = remoto | `git log` / `git ls-remote`           |
+| **App publicado** (`plmuse.lovable.app`)       | **Onda 58** — `index-IvTyinWJ.js` | BFS + 6 marcadores da 60 = `0` (§2-S) |
 | **Banco de produção** (`njmniwsqwohmigroswnl`) | **migrações 21 e 24 APLICADAS**   | `200` na view · `42501` nas funções   |
 
-A 53ª medição **re-mediu as três camadas** (o turno anterior só havia
-reinstalado o ambiente) e escolheu a Onda 59 pelo risco: em `/influencers`,
-5 creators de fábrica geravam 434 "vendas atribuídas", ROI de 563%, 5 linhas de
-ROAS/CAC/CFOP e **5 guias A4 de remessa em bonificação habilitadas**, além de
-2 campos sem nome no diálogo que só aparece após 2 cliques. A correção rotulou
-a vitrine, bloqueou apuração/emissão, deu `—` com aviso/CTA e criou a promoção
-explícita ("Registrar creator real"). Detalhe e prova por cliques em
-`ONDA-59-A-VITRINE-NAO-EMITE-GUIA-FISCAL.md`.
+A 54ª medição **re-mediu as três camadas** e escolheu a Onda 60 pelo risco:
+varredura com cliques nas 42 rotas achou **43 campos sem nome acessível** na
+carga inicial (`tech-sheet` 23, `supplier-portal` 16) e **180 na fonte**
+(critério das Ondas 49/52). A correção pôs `aria-label` derivado do rótulo
+visível (ou da coluna, com índice) em 8 arquivos — fonte cai para **78**,
+sendo 7 falso positivo de `<label>` envolvente em `materials`. Detalhe e prova
+por cliques em `ONDA-60-CAMPOS-TEM-NOME-SEQUENCIA.md`.
 
-**Repo na Onda 59, ar na Onda 58, banco inalterado — há uma publicação
-pendente (a 59), por deploy, não por defeito.** Publicar o app não aplica SQL.
-Gates **763/763** (754 + 9). A 52ª medição (§2-Q) continua válida como
-revisão do relato "lovable não recebeu esse commit", que **não se confirmou**.
+**Repo na Onda 60, ar na Onda 58, banco inalterado — há duas publicações
+pendentes (59 e 60), por deploy, não por defeito.** Publicar o app não aplica
+SQL. Gates **770/770** (763 + 7). A 53ª medição (§2-R) e a 52ª (§2-Q)
+continuam válidas.
 
 ### 1-A. Push da Onda 54: credencial trocada e envio confirmado
 
@@ -711,6 +710,47 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-S. 54ª medição — Onda 60 escolhida pelo risco, campos de sequência nomeados
+
+**Re-medição inicial:** repo `8c7f6a6` local = remoto, limpo, token 0/0; ar
+`index-IvTyinWJ.js` / `index-pMXbg9-8.js` com **214 chunks / 3.183.607
+bytes**, 0 falhas, 6 marcadores da 59 = **0** (publicação da 59 ainda
+pendente, sem publicação não relatada); banco view `200 []`, 4 funções
+`401 42501`, SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** varredura com cliques nas 42 rotas — **43 campos sem nome
+acessível** na carga inicial (`tech-sheet` 23/29, `supplier-portal` 16/17,
+`looks` 3/9, `references` 1/2) e **180 na fonte** (critério 49/52). Nenhum
+emissor de documento sem guarda foi achado (todos os `window.open`/print
+medidos têm guarda ou leem dado real). Os 7 de `materials` são falso positivo
+(`<label>` envolve o campo). Escolhida a acessibilidade em telas de operação
+(portal do fornecedor, ficha técnica, reserva de estoque, OS de facção) em vez
+do jargão de menor densidade, que não impede a operação.
+
+**Correção:** `aria-label` derivado do rótulo visível (ou da coluna, com
+índice da linha) em 8 arquivos — `supplier-portal` (20), `BomBopPanel` (18),
+`GarmentSketchStudio` (16), `showroom` (12),
+`OutsourcingServiceOrderPanel` (9), `OrderDetail` (8), `ReservationDialog`
+(7), `GradedMeasurementsPanel` (7). Nenhum handler, validação ou store mudou.
+Um `aria-label` duplicado no input inline de NCM foi removido antes dos gates.
+
+**DEPOIS (mesmos cliques):** fonte **180 → 78** (8 arquivos zerados; 71
+restantes em outros arquivos, candidatos à Onda 61); DOM `/supplier-portal`
+diálogo "Cadastrar fornecedor" **0/11** sem nome; `/showroom` **0/2**; 0
+`pageerror`. Capturas `/home/user/medicao54-*.png`.
+
+| Camada | 54ª medição (depois)                                                                                                         |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 60** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                                |
+| Ar     | **Onda 58** — mesmo entry/bytes; 6 marcadores exclusivos da 60 = **0**; 6 marcadores da 59 = 0; marcadores 58/57/47 intactos |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                                     |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **770/770**                                                      |
+
+**Há duas publicações pendentes (59 e 60).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
@@ -745,6 +785,10 @@ todos os chunks e contar **texto de tela** (nunca comentário) em todo o bundle.
   `index-pMXbg9-8.js` (Onda 58)** — 214 chunks / 3.183.607 bytes, 0 falhas;
   **6 marcadores da 59 = 0** e 6 marcadores da 58 = 1. O repo já está na
   Onda 59; **publicação pendente, não defeito**
+- **entry re-medido na 54ª: o mesmo `index-IvTyinWJ.js` /
+  `index-pMXbg9-8.js` (Onda 58)** — 214 chunks / 3.183.607 bytes, 0 falhas;
+  **6 marcadores exclusivos da 60 = 0** e 6 marcadores da 59 = 0. O repo já
+  está na Onda 60; **duas publicações pendentes (59 e 60), não defeito**
 - `DEV000006` **20×**
 
 | Onda   | Marcador procurado                                                                             | Ocorrências | Leitura          |
@@ -975,5 +1019,8 @@ antigo `Cria lote no Kanban do PCP` caiu a **0** na 50ª. Marcadores da 58 =
 da 59 = `influencer-so-vitrine`, `seeding-so-vitrine`,
 `dialogo-registrar-creator`, `btn-salvar-creator`, `cta-influencer-registrar`,
 `drawer-vitrine-sem-envio` — **0 na 53ª**, logo a Onda 59 ainda não está no ar.
-A 53ª é a medição corrente: **repo na Onda 59, ar na Onda 58 e banco com as
-migrações 21/24 aplicadas — uma publicação pendente**.
+Marcadores exclusivos da 60 = `Fornecedor da cotação`, `Tipo do item BOM`,
+`Etapa BOP`, `Nº do callout`, `Referência da peça-mãe`, `Código do ponto` —
+**0 na 54ª**, logo a Onda 60 ainda não está no ar. A 54ª é a medição
+corrente: **repo na Onda 60, ar na Onda 58 e banco com as migrações 21/24
+aplicadas — duas publicações pendentes**.

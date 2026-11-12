@@ -281,6 +281,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                   <tr key={row.id} className="hover:bg-muted/20 align-middle">
                     <td className="p-1.5">
                       <Input
+                        aria-label={`Código do ponto ${rIdx + 1}`}
                         value={row.codigo}
                         onChange={(e) =>
                           updateRow(row.id, { codigo: e.target.value.toUpperCase() })
@@ -290,11 +291,13 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                     </td>
                     <td className="p-1.5">
                       <Input
+                        aria-label={`Nome do ponto ${rIdx + 1}`}
                         value={row.nome}
                         onChange={(e) => updateRow(row.id, { nome: e.target.value })}
                         className="h-7 text-xs font-semibold"
                       />
                       <input
+                        aria-label={`Como medir o ponto ${rIdx + 1}`}
                         value={row.comoMedir ?? ""}
                         onChange={(e) => updateRow(row.id, { comoMedir: e.target.value })}
                         placeholder="Como medir (ex.: 2cm abaixo da cava)"
@@ -310,6 +313,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                         <Input
                           type="number"
                           step="0.25"
+                          aria-label={`Regra de graduação (cm) do ponto ${rIdx + 1}`}
                           value={row.regraGraduacaoCm}
                           onChange={(e) =>
                             updateRow(row.id, {
@@ -349,6 +353,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                           <Input
                             type="number"
                             step="0.5"
+                            aria-label={`Medida ${tam} do ponto ${rIdx + 1}`}
                             value={val}
                             onChange={(e) => setCellOverride(row, tam, e.target.value)}
                             style={
@@ -378,6 +383,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                         <Input
                           type="number"
                           step="0.1"
+                          aria-label={`Tolerância (cm) do ponto ${rIdx + 1}`}
                           value={row.toleranciaCm}
                           onChange={(e) =>
                             updateRow(row.id, {
@@ -419,6 +425,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
               Tamanhos separados por vírgula (ex.: PP, P, M, G, GG, XG ou 36, 38, 40, 42, 44)
             </Label>
             <Input
+              aria-label="Tamanhos separados por vírgula"
               value={gradesText}
               onChange={(e) => setGradesText(e.target.value)}
               className="font-mono text-xs"
@@ -450,6 +457,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
             <Textarea
               rows={5}
               placeholder={"E\tLargura Barra\t52\t2,0\t1,0\nF\tCava Retilínea\t23\t1,0\t0,5"}
+              aria-label="Colar medidas do Excel / Audaces"
               value={excelText}
               onChange={(e) => setExcelText(e.target.value)}
               className="font-mono text-xs"

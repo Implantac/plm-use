@@ -1431,6 +1431,7 @@ function AddItemDialog({
           <div className="space-y-2">
             <Label>Produto validado</Label>
             <select
+              aria-label="Produto validado"
               value={productId}
               onChange={(e) => pickProduct(e.target.value)}
               className="h-10 w-full rounded-md border border-border bg-black/30 px-3 text-sm text-white"
@@ -1453,11 +1454,16 @@ function AddItemDialog({
           <div className="grid gap-3 md:grid-cols-2">
             <div className="space-y-2">
               <Label>Descrição no pedido</Label>
-              <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+              <Input
+                aria-label="Descrição no pedido"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label>Cor / acabamento</Label>
               <Input
+                aria-label="Cor / acabamento"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 placeholder="Ex.: Preto"
@@ -1468,6 +1474,7 @@ function AddItemDialog({
               <Input
                 type="number"
                 min={1}
+                aria-label="Quantidade"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
@@ -1476,6 +1483,7 @@ function AddItemDialog({
               <Label>Preço unitário (R$)</Label>
               <Input
                 inputMode="decimal"
+                aria-label="Preço unitário (R$)"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="0,00"
@@ -1506,6 +1514,7 @@ function AddItemDialog({
                     <Input
                       type="number"
                       min={0}
+                      aria-label="Quantidade do tamanho"
                       value={sizes[size] ?? ""}
                       onChange={(e) => setSizes({ ...sizes, [size]: e.target.value })}
                       className="h-9"
@@ -1557,6 +1566,7 @@ function AddItemDialog({
                           <Input
                             type="number"
                             min={1}
+                            aria-label="Quantidade da opção no item"
                             value={state.qty}
                             onChange={(e) =>
                               setOptions({ ...options, [o.id]: { ...state, qty: e.target.value } })
@@ -1567,6 +1577,7 @@ function AddItemDialog({
                           {needsSpec && (
                             <Input
                               inputMode="decimal"
+                              aria-label="Detalhe da opção no item"
                               value={state.spec}
                               onChange={(e) =>
                                 setOptions({
