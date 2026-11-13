@@ -1534,6 +1534,44 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AK. 72ª medição — Onda 78 escolhida pelo risco, estado vazio sem papel explica em vez de sumir
+
+**Re-medição inicial:** repo `40865ec` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-Ch3jaE6q.js` / `index-D_PLqD8X.js` (**215 chunks /
+3.215.270 bytes**, 0 falhas) — **publicação da Onda 77 relatada pelo dono e
+validada por cliques em produção** (`/dashboard`, `/collections`,
+`/analytics` renderizam com 35–53 botões, 0 `pageerror`); banco view
+`200 []`, 4 funções `401 42501`, SQL SHA `382f0f19…` inalterado.
+
+**Risco medido (continuação do relato "telas sem ações"):** auditoria de
+CTAs de criação em 14 módulos — todos têm saída acionável, **exceto** quando
+o usuário não tem o papel exigido. Em `/orders` (`canSell`) e `/catalog`
+(`canEdit`), o botão de criação sumia em silêncio sem o papel: o estado
+vazio ficava sem CTA e sem explicação, e o `/catalog` ainda mostrava
+"Cadastre o produto…" para quem não pode cadastrar. O padrão correto já
+existia (`admin.users`, `planner` explicam a falta de permissão).
+
+**Correção:** os dois estados vazios mostram aviso de permissão sem o
+papel (`orders-sem-permissao`, `catalog-sem-permissao`), no mesmo tom dos
+existentes. Com o papel, o botão continua igual. Nenhuma asserção antiga
+relaxada.
+
+**DEPOIS (mesmos cliques):** `/orders` e `/catalog` com os avisos visíveis
+(sessão sem papéis); 0 `pageerror`. Capturas
+`/home/user/medicao72-{orders,catalog}-depois.png`.
+
+| Camada | 72ª medição (depois)                                                                                |
+| ------ | --------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 78** — HEAD local = remoto, limpo, token fora do config e dos arquivos                       |
+| Ar     | **Onda 77** — entry novo `index-Ch3jaE6q.js` / `index-D_PLqD8X.js`; bytes idênticos (só teste/docs) |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                            |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **857/857**                                         |
+
+**Há uma publicação pendente (78).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -699,14 +699,18 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     bytes) com o código do feed de atividade; clique em produção confirmou
     (botão de atividade abre o popover, 0 `pageerror`). Repo, ar e banco
     alinhados na Onda 76.
-34. **Publicar a Onda 77 — PENDENTE (71ª medição).** O repo já tem a
-    auditoria estendida de controles travada como regressão automática
-    (teste estrutural: Select com `onValueChange`, Switch com
-    `onCheckedChange`, TabsTrigger com TabsContent). O ar segue no entry
-    `index-BM7DVjzB.js` / `index-CcdnHn4d.js` (Onda 76) — entry e bytes
-    inalterados. **Só publicar**: nenhuma migration foi escrita e o SQL
-    aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
-    **854/854**.
+34. **Publicar a Onda 77 — FEITO (72ª medição).** O entry avançou para
+    `index-Ch3jaE6q.js` / `index-D_PLqD8X.js` (215 chunks / 3.215.270
+    bytes, idênticos — a onda foi só teste/docs); cliques em produção
+    confirmaram (`/dashboard`, `/collections`, `/analytics` renderizam,
+    0 `pageerror`). Repo, ar e banco alinhados na Onda 77.
+35. **Publicar a Onda 78 — PENDENTE (72ª medição).** O repo já tem os
+    estados vazios sem papel explicando a falta de permissão
+    (`orders-sem-permissao`, `catalog-sem-permissao`), no padrão de
+    `admin.users`/`planner`. O ar segue no entry `index-Ch3jaE6q.js` /
+    `index-D_PLqD8X.js` (Onda 77) — entry e bytes inalterados. **Só
+    publicar**: nenhuma migration foi escrita e o SQL aplicado desde a 24ª
+    medição permanece com SHA `382f0f19…`. Gates **857/857**.
 
 ---
 

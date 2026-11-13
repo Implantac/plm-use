@@ -277,6 +277,17 @@ function OrdersPage() {
               <Plus className="w-4 h-4" /> Novo pedido
             </Button>
           )}
+          {/* Onda 78: sem o papel de comercial, o botão sumia em silêncio e
+              a tela virava beco sem saída. Explica, como admin.users/planner. */}
+          {!canSell && (
+            <p
+              data-testid="orders-sem-permissao"
+              className="text-xs text-muted-foreground max-w-md mx-auto"
+            >
+              Você não tem o papel de <strong>comercial</strong> para criar pedidos. Solicite a um
+              gestor ou admin.
+            </p>
+          )}
         </Card>
       ) : (
         <Card className="glass-card rounded-lg overflow-hidden">

@@ -183,14 +183,28 @@ function CatalogPage() {
         <Card className="glass-card rounded-lg p-10 text-center space-y-3">
           <Boxes className="w-6 h-6 text-primary mx-auto" />
           <p className="text-sm text-white">Nenhum produto no catálogo.</p>
-          <p className="text-xs text-muted-foreground max-w-md mx-auto">
-            Cadastre o produto (com quantidade mínima e grade), crie as opções de personalização e
-            clique em <strong>Validar</strong> — só então ele aparece para o vendedor.
-          </p>
-          {canEdit && (
-            <Button onClick={() => setEditing("new")} className="text-2xs tracking-[0.04em] gap-2">
-              <Plus className="w-4 h-4" /> Novo produto
-            </Button>
+          {canEdit ? (
+            <>
+              <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                Cadastre o produto (com quantidade mínima e grade), crie as opções de personalização
+                e clique em <strong>Validar</strong> — só então ele aparece para o vendedor.
+              </p>
+              <Button
+                onClick={() => setEditing("new")}
+                className="text-2xs tracking-[0.04em] gap-2"
+              >
+                <Plus className="w-4 h-4" /> Novo produto
+              </Button>
+            </>
+          ) : (
+            // Onda 78: sem permissão, o texto mandava "Cadastre o produto"
+            // mas o botão sumia em silêncio. Explica, como admin.users/planner.
+            <p
+              data-testid="catalog-sem-permissao"
+              className="text-xs text-muted-foreground max-w-md mx-auto"
+            >
+              Você não tem permissão para cadastrar produtos. Solicite a um gestor ou admin.
+            </p>
           )}
         </Card>
       ) : (
