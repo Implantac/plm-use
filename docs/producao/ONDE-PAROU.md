@@ -694,13 +694,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     confirmaram (`/analytics` "Adicionar" → URL `/marketing`,
     `/collections` sem "Visualizar", 0 `pageerror`). Repo, ar e banco
     alinhados na Onda 75.
-33. **Publicar a Onda 76 — PENDENTE (70ª medição).** O repo já tem o flake
-    de CI corrigido (hook `useActivityFeed` fora de `log.ts`, que ficou
-    sem React; `.catch()` nas importações dinâmicas dos stores). O ar
-    segue no entry `index-CrfM-y0A.js` / `index-Ders0_Vm.js` (Onda 75) —
-    entry e bytes inalterados. **Só publicar**: nenhuma migration foi
-    escrita e o SQL aplicado desde a 24ª medição permanece com SHA
-    `382f0f19…`. Gates **851/851**.
+33. **Publicar a Onda 76 — FEITO (71ª medição).** O entry avançou para
+    `index-BM7DVjzB.js` / `index-CcdnHn4d.js` (215 chunks / 3.215.270
+    bytes) com o código do feed de atividade; clique em produção confirmou
+    (botão de atividade abre o popover, 0 `pageerror`). Repo, ar e banco
+    alinhados na Onda 76.
+34. **Publicar a Onda 77 — PENDENTE (71ª medição).** O repo já tem a
+    auditoria estendida de controles travada como regressão automática
+    (teste estrutural: Select com `onValueChange`, Switch com
+    `onCheckedChange`, TabsTrigger com TabsContent). O ar segue no entry
+    `index-BM7DVjzB.js` / `index-CcdnHn4d.js` (Onda 76) — entry e bytes
+    inalterados. **Só publicar**: nenhuma migration foi escrita e o SQL
+    aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
+    **854/854**.
 
 ---
 

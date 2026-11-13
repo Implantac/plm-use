@@ -1494,6 +1494,46 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AJ. 71ª medição — Onda 77 escolhida pelo risco, auditoria estendida de controles: nenhum controle morto
+
+**Re-medição inicial:** repo `5241bcd` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-BM7DVjzB.js` / `index-CcdnHn4d.js` (**215 chunks /
+3.215.270 bytes**, 0 falhas) com o código do feed de atividade
+(`activity-live-`) — **publicação da Onda 76 relatada pelo dono e validada
+por cliques em produção** (botão de atividade no header abre o popover, 0
+`pageerror`); banco view `200 []`, 4 funções `401 42501`, SQL SHA
+`382f0f19…` inalterado.
+
+**Risco medido (relato do dono, continuação da Onda 75):** "muitas telas e
+botões sem ações". Auditoria estendida em 3 camadas cobrindo **todos** os
+controles — botões (554 handlers, ~1.200 cliques, 0 mortos), abas (44
+`TabsTrigger` clicadas uma a uma, todas trocam de painel), selects (todos
+com `onValueChange`), switches (todos com `onCheckedChange`), filtros de
+busca (ligados ao estado) e botões desabilitados (todos por validação com
+explicação próxima). **Nenhum controle morto além dos 8 botões toast-only
+já corrigidos na Onda 75.**
+
+**Correção:** como não havia controle morto, a onda **trava a auditoria
+como regressão automática** — teste estrutural que falha se um Select sem
+`onValueChange`, um Switch sem `onCheckedChange` ou um `TabsTrigger` sem
+`TabsContent` for introduzido. Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** abas de `/launch` (4) e `/showroom` (5)
+trocam de painel; busca de `/references` recebe valor e filtra; 0
+`pageerror`.
+
+| Camada | 71ª medição (depois)                                                                            |
+| ------ | ----------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 77** — HEAD local = remoto, limpo, token fora do config e dos arquivos                   |
+| Ar     | **Onda 76** — entry novo `index-BM7DVjzB.js` / `index-CcdnHn4d.js`; feed de atividade no bundle |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                        |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **854/854**                                     |
+
+**Há uma publicação pendente (77).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
