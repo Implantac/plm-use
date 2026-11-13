@@ -1572,6 +1572,43 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AL. 73ª medição — Onda 79 escolhida pelo risco, fluxo operacional de ponta a ponta verificado com cliques reais
+
+**Re-medição inicial:** repo `e0a38ff` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-BrSbSsMk.js` / `index-Xk9-f91r.js` (**215 chunks /
+3.215.751 bytes**, 0 falhas) com os marcadores da 78
+(`orders-sem-permissao`, `catalog-sem-permissao`) — **publicação da Onda 78
+relatada pelo dono e validada por cliques em produção** (`/orders` e
+`/catalog` com os avisos de permissão, 0 `pageerror`); banco view `200 []`,
+4 funções `401 42501`, SQL SHA `382f0f19…` inalterado.
+
+**Risco medido (requisito do dono):** "certifique-se de que o fluxo
+operacional está 100% funcional" — provar executando. Verificação de ponta
+a ponta com cliques reais: criar creator em `/influencers` (diálogo,
+validação, salva `demo: false`, aparece na lista e **persiste após reload**
+via localStorage); criar referência/coleção (diálogos respondem; a
+persistência é Supabase/sync — 401 na sessão simulada, limitação do
+ambiente, não bug); falha de persistência mostra toast sem perder os dados.
+
+**Correção:** a onda **trava a lógica do fluxo como regressão** — teste que
+criar um creator o adiciona como operacional e ele entra na lista
+operacional. Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** "Creator Fluxo Teste E2E" criado, na lista e
+após reload; 0 `pageerror`. Capturas `/home/user/auditoria/creator-criado.png`.
+
+| Camada | 73ª medição (depois)                                                                        |
+| ------ | ------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 79** — HEAD local = remoto, limpo, token fora do config e dos arquivos               |
+| Ar     | **Onda 78** — entry novo `index-BrSbSsMk.js` / `index-Xk9-f91r.js`; marcadores 78 presentes |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                    |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **858/858**                                 |
+
+**Há uma publicação pendente (79).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
