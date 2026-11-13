@@ -688,14 +688,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     e sem "HOMOLOGADO", `/marketing` com 3× "Não conectado", `/inventory`
     com "— · sem insumo cadastrado", 0 `pageerror`). Repo, ar e banco
     alinhados na Onda 74.
-32. **Publicar a Onda 75 — PENDENTE (69ª medição).** O repo já tem os
-    botões que prometiam ação e só mostravam toast corrigidos ("Adicionar"
-    do analytics navega para `/marketing`; "Visualizar" saiu dos menus de
-    KPI, coleção e item financeiro). O ar segue no entry
-    `index-BD66Tt8V.js` / `index-BvWpaUVG.js` (Onda 74) — entry e bytes
-    inalterados. **Só publicar**: nenhuma migration foi escrita e o SQL
-    aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
-    **848/848**.
+32. **Publicar a Onda 75 — FEITO (70ª medição).** O entry avançou para
+    `index-CrfM-y0A.js` / `index-Ders0_Vm.js` (215 chunks / 3.215.352
+    bytes) com o toast antigo "Registrar: " em 0; cliques em produção
+    confirmaram (`/analytics` "Adicionar" → URL `/marketing`,
+    `/collections` sem "Visualizar", 0 `pageerror`). Repo, ar e banco
+    alinhados na Onda 75.
+33. **Publicar a Onda 76 — PENDENTE (70ª medição).** O repo já tem o flake
+    de CI corrigido (hook `useActivityFeed` fora de `log.ts`, que ficou
+    sem React; `.catch()` nas importações dinâmicas dos stores). O ar
+    segue no entry `index-CrfM-y0A.js` / `index-Ders0_Vm.js` (Onda 75) —
+    entry e bytes inalterados. **Só publicar**: nenhuma migration foi
+    escrita e o SQL aplicado desde a 24ª medição permanece com SHA
+    `382f0f19…`. Gates **851/851**.
 
 ---
 

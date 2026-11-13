@@ -393,16 +393,21 @@ export const usePCPStore = create<PCPState>((set, get) => ({
       return { lotes: promoverLotes(lotes, lote) };
     });
 
-    void import("@/lib/activity/log").then(({ logActivity }) =>
-      logActivity({
-        module: "PCP",
-        entity_type: "ocorrencia",
-        entity_id: `${lote}/${ref}`,
-        action: "occurrence",
-        message: `Ocorrência ${tipo} em ${ref} (${lote}): ${motivo} · qtd ${qtd}`,
-        metadata: { tipo, qtd, motivo, responsavel },
-      }),
-    );
+    // Onda 76: `.catch()` — é efeito colateral best-effort; se o módulo não
+    // carregar (ex.: ambiente de teste já desmontado), não pode virar
+    // rejeição não tratada.
+    void import("@/lib/activity/log")
+      .then(({ logActivity }) =>
+        logActivity({
+          module: "PCP",
+          entity_type: "ocorrencia",
+          entity_id: `${lote}/${ref}`,
+          action: "occurrence",
+          message: `Ocorrência ${tipo} em ${ref} (${lote}): ${motivo} · qtd ${qtd}`,
+          metadata: { tipo, qtd, motivo, responsavel },
+        }),
+      )
+      .catch(() => {});
 
     return { ok: true };
   },

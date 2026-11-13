@@ -59,16 +59,21 @@ export const useQualityStore = create<State>()(
       capa: SEED,
       addCapa(c) {
         set((s) => ({ capa: [{ id: uid(), criada: today(), status: "Aberta", ...c }, ...s.capa] }));
-        void import("@/lib/activity/log").then(({ logActivity }) =>
-          logActivity({
-            module: "Qualidade",
-            entity_type: "capa",
-            entity_id: c.ref ?? c.lote ?? null,
-            action: "capa",
-            message: `CAPA ${c.tipo} aberta: ${c.defeito} (${c.setor})`,
-            metadata: { responsavel: c.responsavel, prazo: c.prazo },
-          }),
-        );
+        // Onda 76: `.catch()` — efeito colateral best-effort; se o módulo não
+        // carregar (ex.: ambiente de teste já desmontado), não pode virar
+        // rejeição não tratada.
+        void import("@/lib/activity/log")
+          .then(({ logActivity }) =>
+            logActivity({
+              module: "Qualidade",
+              entity_type: "capa",
+              entity_id: c.ref ?? c.lote ?? null,
+              action: "capa",
+              message: `CAPA ${c.tipo} aberta: ${c.defeito} (${c.setor})`,
+              metadata: { responsavel: c.responsavel, prazo: c.prazo },
+            }),
+          )
+          .catch(() => {});
       },
       updateStatus(id, status) {
         set((s) => ({ capa: s.capa.map((x) => (x.id === id ? { ...x, status } : x)) }));

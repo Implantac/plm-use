@@ -1456,6 +1456,44 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AI. 70ª medição — Onda 76 escolhida pelo risco, flake de CI por importação dinâmica que puxava o React
+
+**Re-medição inicial:** repo `5f700ae` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-CrfM-y0A.js` / `index-Ders0_Vm.js` (**215 chunks /
+3.215.352 bytes**, 0 falhas) com o toast antigo "Registrar: " **em 0** —
+**publicação da Onda 75 relatada pelo dono e validada por cliques em
+produção** (`/analytics` "Adicionar" → **URL `/marketing`**; `/collections`
+sem "Visualizar" no DOM; 0 `pageerror`); banco view `200 []`, 4 funções
+`401 42501`, SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** o CI da Onda 75 falhou na primeira execução no `quality`
+com `EnvironmentTeardownError` (os 848 testes passaram; a rejeição não
+tratada derrubou o exit code). Causa raiz: `pcp/store.ts` e
+`quality/store.ts` importam `@/lib/activity/log` dinamicamente
+(fire-and-forget) e `log.ts` importava `react` no nível do módulo — quando
+um teste terminava antes de a importação resolver, a carga tardia do React
+derrubava o ambiente desmontado.
+
+**Correção:** o hook `useActivityFeed` mora em `use-activity-feed.ts` e
+`log.ts` fica sem React; as duas importações dinâmicas ganham `.catch()`
+(o log é best-effort). Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `onda40-chao-de-fabrica.test.ts` 5× seguidas
+sem o erro; botão de atividade no header abre o popover, 0 `pageerror`.
+Captura `/home/user/medicao70-dashboard-depois.png`.
+
+| Camada | 70ª medição (depois)                                                                  |
+| ------ | ------------------------------------------------------------------------------------- |
+| Repo   | **Onda 76** — HEAD local = remoto, limpo, token fora do config e dos arquivos         |
+| Ar     | **Onda 75** — entry novo `index-CrfM-y0A.js` / `index-Ders0_Vm.js`; toast antigo em 0 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                              |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **851/851**                           |
+
+**Há uma publicação pendente (76).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -1,5 +1,7 @@
-// Activity log helpers + realtime feed hook.
-import { useEffect, useState } from "react";
+// Activity log helpers. Onda 76: sem import de `react` aqui — o hook
+// `useActivityFeed` mora em `./use-activity-feed`. Os stores importam este
+// módulo dinamicamente (fire-and-forget) só para `logActivity`; com o React
+// fora da cadeia, a carga tardia não derruba mais o ambiente de teste.
 import { supabase } from "@/integrations/supabase/client";
 
 export type ActivityEntry = {
@@ -40,40 +42,4 @@ export async function logActivity(input: LogInput) {
     message: input.message,
     metadata: (input.metadata ?? {}) as unknown as never,
   });
-}
-
-export function useActivityFeed(limit = 30) {
-  const [items, setItems] = useState<ActivityEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      const { data } = await supabase
-        .from("activity_log")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(limit);
-      if (cancelled) return;
-      setItems((data ?? []) as ActivityEntry[]);
-      setLoading(false);
-    };
-    void load();
-    const channel = supabase
-      .channel(`activity-live-${Math.random().toString(36).slice(2, 10)}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "activity_log" },
-        (payload) => {
-          setItems((prev) => [payload.new as ActivityEntry, ...prev].slice(0, limit));
-        },
-      )
-      .subscribe();
-    return () => {
-      cancelled = true;
-      void supabase.removeChannel(channel);
-    };
-  }, [limit]);
-
-  return { items, loading };
 }

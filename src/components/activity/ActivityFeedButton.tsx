@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Activity, X } from "lucide-react";
-import { useActivityFeed } from "@/lib/activity/log";
+import { useActivityFeed } from "@/lib/activity/use-activity-feed";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
