@@ -187,7 +187,14 @@ function InventoryPage() {
           detail: "reposição sugerida",
         },
         { label: "Reservado", value: totalReserved.toFixed(0), detail: "em OPs abertas" },
-        { label: "Rastreabilidade", value: "100%", detail: "por lote" },
+        // Onda 74: "100% por lote" era afirmação fixa — sem insumo cadastrado
+        // não há lote rastreado, e o PLM não apura percentual por vitrine.
+        {
+          label: "Rastreabilidade",
+          value: items.length > 0 ? "100%" : "—",
+          detail: items.length > 0 ? "por lote" : "sem insumo cadastrado",
+          demo: items.length === 0,
+        },
       ]}
     >
       {/* Onda 58: MRP/LEC medidos nesta tela, sem glossário até aqui. */}

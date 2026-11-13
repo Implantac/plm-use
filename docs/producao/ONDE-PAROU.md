@@ -674,14 +674,21 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     cliques em produção confirmaram (`/colors`, `/prints` e `/display` com
     aviso, métricas em `—` e "Total look —", 0 `pageerror`). Repo, ar e
     banco alinhados na Onda 72.
-30. **Publicar a Onda 73 — PENDENTE (67ª medição).** O repo já tem os
-    indicadores fixos de canal, região, devolução e conector fora das
-    telas (listas vazias com aviso e CTA; `—` em devolução/trocas/fit;
-    "Não conectado" nos conectores; barras derivadas; selo "Sem campanha
-    salva"). O ar segue no entry `index-D_UpdGgf.js` / `index-DhLVnsAI.js`
-    (Onda 72) — entry e bytes inalterados. **Só publicar**: nenhuma
+30. **Publicar a Onda 73 — FEITO (68ª medição).** O entry avançou para
+    `index-B3N8wckQ.js` / `index-BOENdFiM.js` (214 chunks / 3.214.460
+    bytes) e os marcadores da 73 passaram a 4 avisos no bundle, com os
+    valores fictícios (`R$ 540k`, `R$ 1.2M`) em 0; cliques em produção
+    confirmaram (`/analytics` com os 3 avisos, `/commercial` com o aviso
+    de canais, nenhum valor fictício no DOM, 0 `pageerror`). Repo, ar e
+    banco alinhados na Onda 73.
+31. **Publicar a Onda 74 — PENDENTE (68ª medição).** O repo já tem os
+    selos de integração e o status sem lastro fora das telas (painel CAD
+    vira "Formatos CAD registrados por molde" com "sem conector";
+    conectores de mídia em "Não conectado"; rastreabilidade `—` sem
+    insumo). O ar segue no entry `index-B3N8wckQ.js` / `index-BOENdFiM.js`
+    (Onda 73) — entry e bytes inalterados. **Só publicar**: nenhuma
     migration foi escrita e o SQL aplicado desde a 24ª medição permanece
-    com SHA `382f0f19…`. Gates **843/843**.
+    com SHA `382f0f19…`. Gates **846/846**.
 
 ---
 

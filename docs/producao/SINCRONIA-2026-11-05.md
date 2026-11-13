@@ -1371,6 +1371,50 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AG. 68ª medição — Onda 74 escolhida pelo risco, selos de integração e status sem lastro fora das telas
+
+**Re-medição inicial:** repo `7ef59ad` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-B3N8wckQ.js` / `index-BOENdFiM.js` (**214 chunks /
+3.214.460 bytes**, 0 falhas) com os marcadores da 73 = 4 avisos + "Não
+conectado", os valores fictícios da 73 (`R$ 540k`, `R$ 1.2M`) **em 0**, e os
+marcadores das 72/71/70 = 1 cada — **publicação da Onda 73 relatada pelo dono
+e validada por cliques em produção** (`/analytics` com os 3 avisos,
+`/commercial` com o aviso de canais, nenhum valor fictício no DOM, 0
+`pageerror`; o "ATIVO" que sobra é o chip global "MULTIEMPRESA ATIVO"); banco
+view `200 []`, 4 funções `401 42501`, SQL SHA `382f0f19…` inalterado.
+
+**Risco medido:** a mesma classe da Onda 73, na forma de **selo de
+homologação/conexão**. `/cad` listava 4 softwares CAD com check verde —
+Audaces, Lectra e Gerber como **Homologado**, CLO3D/Browzwear como
+**Conectado** — sem nenhum conector (só existe o campo `sistemaCad` do
+molde). `/marketing` listava Meta Ads, TikTok Shop e GA4/ROAS como **Ativo**,
+sem uma única chamada a `graph.facebook`/`tiktok`/`gtag`/`measurement_id` no
+repositório. `/inventory` exibia "Rastreabilidade **100%** · por lote" mesmo
+com a própria tela medindo "Insumos ativos **0** · de 0 cadastrados".
+
+**Correção:** o painel CAD vira "Formatos CAD registrados por molde" com
+"Formato registrado · sem conector" e aviso `cad-formatos-aviso`; os três
+conectores de mídia passam a "Não conectado" em cor neutra; a rastreabilidade
+vira `—` "sem insumo cadastrado" sem insumo real (`demo` no `ModuleLayout`).
+Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/cad` sem nenhuma ocorrência de "HOMOLOGADO" e
+com "Sem conector CAD."; `/marketing` com 3× "Não conectado"; `/inventory`
+com "— · sem insumo cadastrado"; 0 `pageerror`. Capturas
+`/home/user/medicao68-{cad,marketing,inventory}-{antes,depois}.png`.
+
+| Camada | 68ª medição (depois)                                                                                                   |
+| ------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 74** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                          |
+| Ar     | **Onda 73** — entry novo `index-B3N8wckQ.js` / `index-BOENdFiM.js`; marcadores 73=4 avisos, 72/71/70=1; `DEV000006` 16 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                               |
+| Gates  | `tsc` 0 · `eslint` 0 erros/20 warnings · `prettier` limpo · **846/846**                                                |
+
+**Há uma publicação pendente (74).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

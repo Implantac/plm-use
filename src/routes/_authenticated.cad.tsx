@@ -3,7 +3,7 @@
 // e sincroniza tanto os metadados CAD quanto o consumo do tecido principal no BOM.
 import { useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CheckCircle2, ExternalLink, Link2, PenTool, Scissors, Trash2 } from "lucide-react";
+import { ExternalLink, Link2, PenTool, PlugZap, Scissors, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
@@ -33,11 +33,32 @@ export const Route = createFileRoute("/_authenticated/cad")({
   component: CadPage,
 });
 
+// Onda 74: este painel dizia "Homologado" (3×) e "Conectado" (1×) para
+// softwares CAD — afirmação de integração **sem nenhum conector no código**
+// (o PLM guarda o arquivo e o nome do sistema CAD do molde; não abre sessão
+// com Audaces/Lectra/Gerber/CLO3D). O que existe de verdade é o **formato**
+// de arquivo registrado por molde. O status passa a dizer isso.
 const integrations = [
-  { name: "Audaces Vestuário / Moldes", mode: ".ADS · Risco & Encaixe", status: "Homologado" },
-  { name: "Lectra Modaris / Diamino", mode: ".DXF / .MDL · Encaixe", status: "Homologado" },
-  { name: "Gerber AccuMark", mode: ".DXF / .PLT · Plotter", status: "Homologado" },
-  { name: "CLO3D / Browzwear", mode: "Prova 3D & Gêmeo Têxtil", status: "Conectado" },
+  {
+    name: "Audaces Vestuário / Moldes",
+    mode: ".ADS · Risco & Encaixe",
+    status: "Formato registrado · sem conector",
+  },
+  {
+    name: "Lectra Modaris / Diamino",
+    mode: ".DXF / .MDL · Encaixe",
+    status: "Formato registrado · sem conector",
+  },
+  {
+    name: "Gerber AccuMark",
+    mode: ".DXF / .PLT · Plotter",
+    status: "Formato registrado · sem conector",
+  },
+  {
+    name: "CLO3D / Browzwear",
+    mode: "Prova 3D & Gêmeo Têxtil",
+    status: "Formato registrado · sem conector",
+  },
 ];
 
 function calcMarkerConsumption(m: CadMarkerItem): { mPorPeca: number; kgPorPeca: number | null } {
@@ -339,10 +360,20 @@ function CadPage() {
           <Card className="glass-card rounded-lg">
             <CardHeader className="p-4 border-b border-border/60">
               <CardTitle className="text-xs font-semibold uppercase tracking-wider text-foreground flex items-center gap-2">
-                <PenTool className="w-4 h-4 text-primary" /> Ecossistema CAD Homologado
+                <PenTool className="w-4 h-4 text-primary" /> Formatos CAD registrados por molde
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-2.5">
+              <div
+                data-testid="cad-formatos-aviso"
+                className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-[11px] leading-relaxed text-muted-foreground"
+              >
+                <strong className="text-foreground">Sem conector CAD.</strong> O PLM registra o
+                arquivo do molde e o sistema de origem; ele <strong>não</strong> abre sessão com
+                Audaces, Lectra, Gerber ou CLO3D. O status abaixo diz apenas o formato aceito — os
+                selos de homologação e conexão que apareciam aqui eram afirmação de integração sem
+                lastro e foram removidos.
+              </div>
               {integrations.map((integration) => (
                 <div
                   key={integration.name}
@@ -351,8 +382,11 @@ function CadPage() {
                   <div>
                     <p className="text-xs font-semibold text-foreground">{integration.name}</p>
                     <p className="text-2xs text-muted-foreground mt-0.5">{integration.mode}</p>
+                    <p className="text-2xs font-mono uppercase text-muted-foreground mt-1">
+                      {integration.status}
+                    </p>
                   </div>
-                  <CheckCircle2 className="h-4 w-4 text-status-approved shrink-0" />
+                  <PlugZap className="h-4 w-4 text-muted-foreground shrink-0" />
                 </div>
               ))}
             </CardContent>

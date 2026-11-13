@@ -439,10 +439,13 @@ function MarketingPage() {
             <h3 className="text-2xs font-semibold uppercase tracking-[0.06em] text-foreground">
               Integrações de Mídia & Atribuição
             </h3>
+            {/* Onda 74: os 3 conectores de mídia diziam "Ativo" sem nenhum
+                conector no código (não há chamada a Meta/TikTok/GA4 em lugar
+                nenhum). O status passa a dizer o que é. */}
             {[
-              { label: "Meta Ads & Catálogo Dinâmico", status: "Ativo", icon: Instagram },
-              { label: "TikTok Shop & Creators", status: "Ativo", icon: PlayCircle },
-              { label: "Google Analytics 4 / ROAS", status: "Ativo", icon: BarChart3 },
+              { label: "Meta Ads & Catálogo Dinâmico", status: "Não conectado", icon: Instagram },
+              { label: "TikTok Shop & Creators", status: "Não conectado", icon: PlayCircle },
+              { label: "Google Analytics 4 / ROAS", status: "Não conectado", icon: BarChart3 },
             ].map((sync) => (
               <div
                 key={sync.label}
@@ -452,7 +455,7 @@ function MarketingPage() {
                   <sync.icon className="w-3.5 h-3.5 text-primary" />
                   {sync.label}
                 </span>
-                <span className="text-2xs font-semibold uppercase text-status-approved">
+                <span className="text-2xs font-semibold uppercase text-muted-foreground">
                   {sync.status}
                 </span>
               </div>
