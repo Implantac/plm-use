@@ -681,14 +681,21 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     confirmaram (`/analytics` com os 3 avisos, `/commercial` com o aviso
     de canais, nenhum valor fictício no DOM, 0 `pageerror`). Repo, ar e
     banco alinhados na Onda 73.
-31. **Publicar a Onda 74 — PENDENTE (68ª medição).** O repo já tem os
-    selos de integração e o status sem lastro fora das telas (painel CAD
-    vira "Formatos CAD registrados por molde" com "sem conector";
-    conectores de mídia em "Não conectado"; rastreabilidade `—` sem
-    insumo). O ar segue no entry `index-B3N8wckQ.js` / `index-BOENdFiM.js`
-    (Onda 73) — entry e bytes inalterados. **Só publicar**: nenhuma
-    migration foi escrita e o SQL aplicado desde a 24ª medição permanece
-    com SHA `382f0f19…`. Gates **846/846**.
+31. **Publicar a Onda 74 — FEITO (69ª medição).** O entry avançou para
+    `index-BD66Tt8V.js` / `index-BvWpaUVG.js` (215 chunks / 3.215.513
+    bytes) com os marcadores da 74 e o texto antigo "Ecossistema CAD
+    Homologado" em 0; cliques em produção confirmaram (`/cad` com o aviso
+    e sem "HOMOLOGADO", `/marketing` com 3× "Não conectado", `/inventory`
+    com "— · sem insumo cadastrado", 0 `pageerror`). Repo, ar e banco
+    alinhados na Onda 74.
+32. **Publicar a Onda 75 — PENDENTE (69ª medição).** O repo já tem os
+    botões que prometiam ação e só mostravam toast corrigidos ("Adicionar"
+    do analytics navega para `/marketing`; "Visualizar" saiu dos menus de
+    KPI, coleção e item financeiro). O ar segue no entry
+    `index-BD66Tt8V.js` / `index-BvWpaUVG.js` (Onda 74) — entry e bytes
+    inalterados. **Só publicar**: nenhuma migration foi escrita e o SQL
+    aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
+    **848/848**.
 
 ---
 

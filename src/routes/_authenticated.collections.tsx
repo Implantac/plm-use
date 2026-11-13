@@ -287,7 +287,8 @@ function CollectionsPage() {
                       <ModuleActionMenu
                         onEdit={() => handleOpenDialog(collection)}
                         onDelete={() => handleDelete(collection.id)}
-                        onView={() => toast.info(`Abrindo ${collection.name}`)}
+                        // Onda 75: "Visualizar" só mostrava toast ("Abrindo X")
+                        // sem abrir nada. O card já exibe a coleção; sai do menu.
                       />
                     </div>
 

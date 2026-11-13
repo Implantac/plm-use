@@ -550,7 +550,8 @@ function FinancialPage() {
                     <ModuleActionMenu
                       onEdit={() => handleOpenDialog(item)}
                       onDelete={() => handleDelete(item.id)}
-                      onView={() => toast.info(`${item.label} · ${item.val} (${item.due})`)}
+                      // Onda 75: "Visualizar" só mostrava toast com os dados do
+                      // item — promessa sem ação. O card já exibe o item; sai do menu.
                     />
                   </div>
                   <div className="flex justify-between items-center mb-1 pr-6">

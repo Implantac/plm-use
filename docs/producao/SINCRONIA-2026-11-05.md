@@ -1415,6 +1415,47 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AH. 69ª medição — Onda 75 escolhida pelo risco, botões que prometem ação e só mostram toast
+
+**Re-medição inicial:** repo `ca379f3` local = remoto, limpo, token 0/0; ar
+com entry **novo** `index-BD66Tt8V.js` / `index-BvWpaUVG.js` (**215 chunks /
+3.215.513 bytes**, 0 falhas) com os marcadores da 74 (`cad-formatos-aviso`,
+"Formato registrado · sem conector" ×4, "Sem conector CAD") e o texto antigo
+"Ecossistema CAD Homologado" **em 0** — **publicação da Onda 74 relatada pelo
+dono e validada por cliques em produção** (`/cad` com o aviso e sem
+"HOMOLOGADO", `/marketing` com 3× "Não conectado", `/inventory` com
+"— · sem insumo cadastrado", 0 `pageerror`); banco view `200 []`, 4 funções
+`401 42501`, SQL SHA `382f0f19…` inalterado.
+
+**Risco medido (relato do dono):** "muitas telas e botões sem ações".
+Auditoria em 3 camadas — estática (554 handlers, nenhum vazio/`href="#"`),
+dinâmica (~1.200 cliques em 46 rotas, **zero botões mortos**; os aparentes
+eram falsos positivos re-verificados) e produção (0 `pageerror`). O que
+sobra: botões que **prometem ação e só mostram toast** — 5 "Adicionar" no
+painel Controle de Investimentos do `/analytics` (`toast.info("Registrar:
+X")` sem registrar nada) e 3 "Visualizar" de menu (`/analytics` KPI,
+`/collections`, `/financial`) que só repetiam o nome em toast.
+
+**Correção:** os "Adicionar" navegam para `/marketing`, onde o investimento
+é registrado como campanha; os "Visualizar" saem do menu (o card já exibe a
+informação; Editar/Excluir são reais). Nenhuma asserção antiga relaxada.
+
+**DEPOIS (mesmos cliques):** `/analytics` "Adicionar" (painel de
+investimentos) → **URL `/marketing`**; `/collections` sem "Visualizar" no
+DOM; 0 `pageerror`. Capturas `/home/user/medicao69-{analytics,collections}-depois.png`.
+
+| Camada | 69ª medição (depois)                                                                                           |
+| ------ | -------------------------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 75** — HEAD local = remoto, limpo, token fora do config e dos arquivos                                  |
+| Ar     | **Onda 74** — entry novo `index-BD66Tt8V.js` / `index-BvWpaUVG.js`; marcadores 74 presentes, texto antigo em 0 |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado                                                       |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **848/848**                                                    |
+
+**Há uma publicação pendente (75).** Nenhuma migration foi escrita nem
+aplicada; publicar o app não aplica SQL.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

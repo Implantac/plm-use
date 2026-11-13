@@ -230,7 +230,8 @@ function AnalyticsPage() {
               <ModuleActionMenu
                 onEdit={() => handleOpenDialog(kpi)}
                 onDelete={() => handleDelete(kpi.id)}
-                onView={() => toast.info(`Relatório analítico de ${kpi.label}`)}
+                // Onda 75: "Visualizar" só mostrava toast com o nome do KPI —
+                // promessa sem ação. O card já exibe o KPI; o item sai do menu.
               />
             </div>
             <div className="space-y-4">
@@ -414,7 +415,10 @@ function AnalyticsPage() {
                     <span className="text-sm font-bold text-white/90">{x}</span>
                     <button
                       className="rounded-md border border-border bg-black/20 px-3 py-1 text-2xs font-semibold uppercase tracking-widest text-primary"
-                      onClick={() => toast.info(`Registrar: ${x}`)}
+                      // Onda 75: "Adicionar" só mostrava toast ("Registrar: X")
+                      // sem registrar nada. O investimento é registrado como
+                      // campanha em /marketing — o botão leva para lá.
+                      onClick={() => navigate({ to: "/marketing" })}
                     >
                       Adicionar
                     </button>
