@@ -709,7 +709,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     bytes) com os marcadores da 78; cliques em produção confirmaram
     (`/orders` e `/catalog` com os avisos de permissão, 0 `pageerror`).
     Repo, ar e banco alinhados na Onda 78.
-36. **Publicar a Onda 79 — PENDENTE (73ª medição).** O repo já tem o fluxo
+36. **Publicar as Ondas 79 e 80 — PENDENTE (74ª medição).** Na 74ª o ar
+    seguia na Onda 78 (`index-BrSbSsMk.js`). A Onda 80 fechou a dívida
+    `dias_ativa` pela semântica do PostgreSQL (sem mudança de SQL) e travou
+    com teste; varredura demo limpa. Gates **861/861**. Só publicar.
+    (Texto original do item 36 abaixo.)
+    **Publicar a Onda 79 — PENDENTE (73ª medição).** O repo já tem o fluxo
     operacional de ponta a ponta verificado e travado como regressão
     (teste do fluxo de criação no store local). O ar segue no entry
     `index-BrSbSsMk.js` / `index-Xk9-f91r.js` (Onda 78) — entry e bytes

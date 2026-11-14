@@ -1609,6 +1609,30 @@ aplicada; publicar o app não aplica SQL.
 
 ---
 
+## 2-AM. 74ª medição — Onda 80: dívida `dias_ativa` fechada pela semântica do PostgreSQL + varredura demo limpa
+
+**Re-medição inicial:** repo `49c74cc` (Onda 79) local = remoto; ar com entry
+`index-BrSbSsMk.js` / `index-Xk9-f91r.js` (215 chunks / 3.215.751 bytes)
+**idêntico à 73ª — Onda 79 ainda não publicada**; banco view `200 []`,
+4 funções `401 42501`, SHA `382f0f19…` inalterado.
+
+**Risco escolhido:** única dívida técnica aberta com impacto em número
+operacional (`dias_ativa`). Documentação oficial do PostgreSQL: `timestamp -
+timestamp` gera intervalo justificado em dias (`63 days 15:00:00`), nunca
+meses — só `age()` gera. `date_part('day', …)` é o total de dias; limiar
+`>= 30` correto; **SQL não muda**. Trava de regressão em
+`onda80-dias-ativa-semantica.test.ts` (3 testes). Varredura de vazamento
+demo nos 4 arquivos sem helper próprio: todos filtram no consumidor.
+
+| Camada | 74ª medição                                                    |
+| ------ | -------------------------------------------------------------- |
+| Repo   | **Onda 80** — HEAD local = remoto, limpo, token fora do config |
+| Ar     | **Onda 78** — Ondas 79 e 80 pendentes de publicação            |
+| Banco  | view `200 []`, 4 funções `401 42501`, SQL SHA inalterado       |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **861/861**    |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
