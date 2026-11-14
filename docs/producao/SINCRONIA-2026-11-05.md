@@ -1695,6 +1695,27 @@ a dizer o motivo real; regra de negócio separada; chamadores não sobrepõem.
 
 ---
 
+## 2-AQ. 77ª medição — Onda 82 no ar; Onda 83: sync com motivo e sem vitrine no banco
+
+**Ar:** entry novo `index-BO5EmpVR.js` / `index-C26yoeGn.js` (215 /
+3.217.104, 0 falhas), marcador "mover o CAPA" presente — Onda 82 publicada
+(medido). Banco inalterado.
+
+**Onda 83:** `pcp/sync.pushAllLotes` ignorava o erro do upsert **e subia
+lotes `demo: true` para `pcp_lots`** (vitrine no banco); `cad/store`
+engolia tudo num `catch {}`. Agora: só `lotesOperacionais` sobem; erro
+vira toast com motivo (anti-spam `avisoUnico` 60 s); CAD silencioso só
+para tabela ausente; `42P01/PGRST205` descritos como migration pendente.
+
+| Camada | 77ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 83** — local = remoto                                |
+| Ar     | **Onda 82** (`index-BO5EmpVR.js`) — **Onda 83 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **871/871** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

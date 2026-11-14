@@ -2,6 +2,9 @@
 // localmente com Zustand persist e sincroniza oportunisticamente com `public.cad_markers`
 // quando a migration opcional estiver aplicada no banco (degrada sem erro em bancos pré-migration).
 import { create } from "zustand";
+import { toast } from "sonner";
+import { isMissingTable } from "@/lib/sales/api";
+import { avisoUnico, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { persist } from "zustand/middleware";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -83,10 +86,13 @@ async function tryUpsertDb(item: CadMarkerItem) {
   try {
     const db = supabase as unknown as {
       from(t: string): {
-        upsert(r: unknown, o?: { onConflict?: string }): Promise<{ error: unknown }>;
+        upsert(
+          r: unknown,
+          o?: { onConflict?: string },
+        ): Promise<{ error: { code?: string; message?: string } | null }>;
       };
     };
-    await db.from("cad_markers").upsert(
+    const { error } = await db.from("cad_markers").upsert(
       {
         external_key: item.id,
         ref_code: item.refCode,
@@ -104,8 +110,14 @@ async function tryUpsertDb(item: CadMarkerItem) {
       },
       { onConflict: "external_key" },
     );
+    // Onda 83: silencioso só quando a tabela opcional cad_markers ainda não
+    // existe; qualquer outro motivo (permissão, sessão) é dito ao usuário.
+    if (error && !isMissingTable(error as Parameters<typeof isMissingTable>[0])) {
+      const msg = descreverErroSupabase(error, "sincronizar o molde na nuvem");
+      if (avisoUnico(msg)) toast.error(msg);
+    }
   } catch {
-    // Silencioso se a tabela opcional cad_markers ainda não foi aplicada em produção.
+    // Rede indisponível: o molde continua salvo localmente (persist).
   }
 }
 

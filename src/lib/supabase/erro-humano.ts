@@ -36,6 +36,9 @@ export function descreverErroSupabase(
   if (code === "PGRST301" || lower.includes("jwt expired") || lower.includes("invalid jwt")) {
     return `Não foi possível ${acao}: sua sessão expirou. Entre novamente e repita a ação.`;
   }
+  if (code === "42P01" || code === "PGRST205" || lower.includes("schema cache")) {
+    return `Não foi possível ${acao}: a tabela ainda não foi aplicada no banco (migration pendente). Avise o admin.`;
+  }
   if (code === "23505") {
     return `Não foi possível ${acao}: já existe um registro com esse código. Use outro código.`;
   }
@@ -53,4 +56,18 @@ export function descreverErroSupabase(
     return `Não foi possível ${acao}: sem conexão com o servidor. Verifique a rede e tente de novo.`;
   }
   return msg ? `Não foi possível ${acao}: ${msg}` : `Não foi possível ${acao}.`;
+}
+
+const ultimosAvisos = new Map<string, number>();
+
+/**
+ * Para sincronizações debounced (que disparam a cada alteração do store):
+ * devolve `true` no máximo uma vez por `janelaMs` para a mesma mensagem, para
+ * o usuário ser avisado do porquê sem receber uma enxurrada de toasts.
+ */
+export function avisoUnico(mensagem: string, janelaMs = 60_000, agora = Date.now()): boolean {
+  const ultimo = ultimosAvisos.get(mensagem);
+  if (ultimo !== undefined && agora - ultimo < janelaMs) return false;
+  ultimosAvisos.set(mensagem, agora);
+  return true;
 }
