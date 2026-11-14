@@ -709,29 +709,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     bytes) com os marcadores da 78; cliques em produção confirmaram
     (`/orders` e `/catalog` com os avisos de permissão, 0 `pageerror`).
     Repo, ar e banco alinhados na Onda 78.
-36. **Publicar a Onda 82 — PENDENTE (76ª medição).** Todas as gravações
-    Supabase dos hooks dizem o motivo real (CAPA, piloto, showroom,
-    referência). Código de produto: entry vai mudar de `index-CD4lF0IV.js`.
-    Gates **867/867**. Só publicar.
-37. **Publicar a Onda 81 — FEITO (76ª medição).** Entry `index-CD4lF0IV.js`;
-    clique em produção confirmou o toast com motivo. Item original (36) abaixo.
-38. **Publicar a Onda 81 — PENDENTE (75ª medição).** Falha de gravação no
-    Supabase agora diz o porquê (`erro-humano.ts`, `useReferences.create`).
-    Código de produto mudou: o entry **vai mudar** de `index-BrSbSsMk.js`.
-    Nenhuma migration. Gates **864/864**. Só publicar.
-39. **Publicar as Ondas 79 e 80 — FEITO (75ª medição).** Bundle idêntico ao da 78 por construção (só testes/docs); fluxo da 79 validado por cliques em produção (creator criado, persiste após reload, 0 `pageerror`). Item original abaixo.
-    **Publicar as Ondas 79 e 80 — PENDENTE (74ª medição).** Na 74ª o ar
-    seguia na Onda 78 (`index-BrSbSsMk.js`). A Onda 80 fechou a dívida
-    `dias_ativa` pela semântica do PostgreSQL (sem mudança de SQL) e travou
-    com teste; varredura demo limpa. Gates **861/861**. Só publicar.
-    (Texto original do item 36 abaixo.)
-    **Publicar a Onda 79 — PENDENTE (73ª medição).** O repo já tem o fluxo
-    operacional de ponta a ponta verificado e travado como regressão
-    (teste do fluxo de criação no store local). O ar segue no entry
-    `index-BrSbSsMk.js` / `index-Xk9-f91r.js` (Onda 78) — entry e bytes
-    inalterados. **Só publicar**: nenhuma migration foi escrita e o SQL
-    aplicado desde a 24ª medição permanece com SHA `382f0f19…`. Gates
-    **858/858**.
+36. **Publicar as Ondas 79 e 80 — FEITO (75ª medição).** Bundle idêntico ao
+    da 78 por construção (só testes/docs); fluxo da 79 validado por cliques
+    em produção (creator criado, persiste após reload, 0 `pageerror`).
+37. **Publicar a Onda 81 — FEITO (76ª medição).** Entry `index-CD4lF0IV.js` /
+    `index-VnNIuK1b.js`; clique em produção em `/references` confirmou o
+    toast com motivo ("sua sessão expirou…"), 0 `pageerror`.
+38. **Publicar a Onda 82 — FEITO (77ª medição).** Entry `index-BO5EmpVR.js` /
+    `index-C26yoeGn.js`, marcador "mover o CAPA" presente, texto genérico
+    ausente.
+39. **Publicar a Onda 83 — PENDENTE (77ª medição).** Sync de lotes/moldes
+    explica o porquê e só sobe lote operacional (vitrine nunca vira linha em
+    `pcp_lots`). Código de produto: entry vai mudar de `index-BO5EmpVR.js`.
+    Nenhuma migration. Gates **871/871**. Só publicar.
 
 ---
 
