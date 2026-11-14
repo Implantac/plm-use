@@ -1,5 +1,7 @@
 // V5 · Hook de leitura/criação para a entidade Piloto.
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -110,7 +112,10 @@ export function useCreatePiloto() {
         } as never)
         .select("*")
         .single();
-      if (error) return null;
+      if (error) {
+        toast.error(descreverErroSupabase(error, "criar o piloto"));
+        return null;
+      }
       return data as Piloto;
     },
     [user],

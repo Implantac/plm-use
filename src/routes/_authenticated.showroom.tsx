@@ -142,8 +142,8 @@ function ShowroomPage() {
             references={references}
             onSubmit={async (payload) => {
               const created = await requestSample(payload);
+              // Onda 82: a falha já vem com o motivo pelo hook.
               if (created) statusToast.success("Peça-mãe solicitada");
-              else statusToast.error("Falha ao solicitar peça-mãe");
             }}
           />
 
@@ -221,7 +221,6 @@ function ShowroomPage() {
             onSubmit={async (payload) => {
               const created = await captureFeedback(payload);
               if (created) statusToast.success("Feedback registrado");
-              else statusToast.error("Falha ao registrar feedback");
             }}
           />
           <FeedbackList feedbackByRef={feedbackByReference} referenceById={referenceById} />

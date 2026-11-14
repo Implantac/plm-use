@@ -2,6 +2,8 @@
 // feedback e decisões de lançamento. Segue o padrão de use-references:
 // carga inicial + realtime + ações via supabase respeitando RLS.
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Database } from "@/integrations/supabase/types";
@@ -160,7 +162,10 @@ export function useShowroom() {
         .insert({ ...input, created_by: user.id, updated_by: user.id })
         .select()
         .single();
-      if (error || !data) return null;
+      if (error || !data) {
+        toast.error(descreverErroSupabase(error, "solicitar a peça-mãe"));
+        return null;
+      }
       return data as ShowroomSampleRow;
     },
     [user],
@@ -189,7 +194,10 @@ export function useShowroom() {
         })
         .select()
         .single();
-      if (error || !data) return null;
+      if (error || !data) {
+        toast.error(descreverErroSupabase(error, "registrar o feedback"));
+        return null;
+      }
       return data as ShowroomFeedbackRow;
     },
     [user],

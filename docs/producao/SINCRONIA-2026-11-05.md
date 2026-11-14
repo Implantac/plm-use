@@ -1674,6 +1674,27 @@ Entre novamente…", diálogo aberto, 0 `pageerror`.
 
 ---
 
+## 2-AP. 76ª medição — Onda 81 publicada e validada; Onda 82 estende o motivo a todos os hooks
+
+**Ar:** entry novo `index-CD4lF0IV.js` / `index-VnNIuK1b.js` (215 / 3.216.846,
+0 falhas), marcadores da 81 presentes; clique em produção em `/references`
+mostrou o toast com motivo ("sua sessão expirou…"), diálogo aberto,
+0 `pageerror`. Banco inalterado.
+
+**Onda 82:** 6 gravações nos hooks (`use-capa` ×2 + `remove`, `use-pilotos`,
+`use-showroom` ×2, `use-references.upsertByCode`) ainda engoliam o erro; no
+CAPA a falha de banco aparecia como "Transição não permitida". Todas passam
+a dizer o motivo real; regra de negócio separada; chamadores não sobrepõem.
+
+| Camada | 76ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 82** — local = remoto                                |
+| Ar     | **Onda 81** (`index-CD4lF0IV.js`) — **Onda 82 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **867/867** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

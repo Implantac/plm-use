@@ -1,6 +1,8 @@
 // CAPA workflow — Supabase-backed com timeline de eventos e realtime.
 // Estados: Aberta → Investigação → Ação → Verificação → Concluída (ou Reprovada).
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Database } from "@/integrations/supabase/types";
@@ -310,7 +312,10 @@ export function useCapa() {
 
   const transition = useCallback(
     async (capa: Capa, to: CapaStatus, note?: string) => {
-      if (!canTransition(capa.status, to)) return false;
+      if (!canTransition(capa.status, to)) {
+        toast.error(`Transição não permitida: ${capa.status} → ${to}.`);
+        return false;
+      }
       const patch: CapaUpdate = { status: to };
       if (to === "Concluída") {
         patch.verificado_em = new Date().toISOString();
@@ -318,7 +323,11 @@ export function useCapa() {
         if (!capa.eficacia) patch.eficacia = "Eficaz";
       }
       const { error } = await supabase.from("quality_capa").update(patch).eq("id", capa.id);
-      if (error) return false;
+      if (error) {
+        // Onda 82: motivo real (permissão/sessão), não "transição não permitida".
+        toast.error(descreverErroSupabase(error, "mover o CAPA"));
+        return false;
+      }
       await logEvent(capa.id, `Transição → ${to}`, capa.status, to, note);
       return true;
     },
@@ -348,7 +357,10 @@ export function useCapa() {
         if (k in patch) (remap as Record<string, unknown>)[k] = patch[k as keyof Capa];
       if (Object.keys(remap).length === 0) return true;
       const { error } = await supabase.from("quality_capa").update(remap).eq("id", id);
-      if (error) return false;
+      if (error) {
+        toast.error(descreverErroSupabase(error, "salvar o CAPA"));
+        return false;
+      }
       await logEvent(id, "Edição", null, null, note ?? Object.keys(remap).join(", "));
       return true;
     },
@@ -356,7 +368,8 @@ export function useCapa() {
   );
 
   const remove = useCallback(async (id: string) => {
-    await supabase.from("quality_capa").delete().eq("id", id);
+    const { error } = await supabase.from("quality_capa").delete().eq("id", id);
+    if (error) toast.error(descreverErroSupabase(error, "excluir o CAPA"));
   }, []);
 
   const eventsOf = useCallback(

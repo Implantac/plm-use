@@ -76,7 +76,8 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
 
   async function doTransition(to: CapaStatus) {
     const ok = await transition(local!, to, note || undefined);
-    if (!ok) return statusToast.error("Transição não permitida");
+    // Onda 82: se falhou, o hook já disse o porquê (permissão, sessão…).
+    if (!ok) return;
     statusToast.success(`Movido para ${to}`);
     setNote("");
   }

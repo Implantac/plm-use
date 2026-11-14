@@ -211,7 +211,10 @@ export function useReferences() {
         .upsert({ ...input, created_by: user.id, updated_by: user.id }, { onConflict: "code" })
         .select()
         .single();
-      if (error || !data) return null;
+      if (error || !data) {
+        toast.error(descreverErroSupabase(error, "salvar a referência"));
+        return null;
+      }
       return data as ReferenceRow;
     },
     [user],
