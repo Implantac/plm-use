@@ -1,5 +1,7 @@
 // Núcleo do PLM — Referência unificada com máquina de estados e realtime.
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Database } from "@/integrations/supabase/types";
@@ -122,13 +124,21 @@ export function useReferences() {
     async (
       input: Omit<ReferenceInsert, "created_by" | "updated_by" | "id">,
     ): Promise<ReferenceRow | null> => {
-      if (!user) return null;
+      if (!user) {
+        toast.error("Não foi possível criar a referência: você não está autenticado.");
+        return null;
+      }
       const { data, error } = await supabase
         .from("references")
         .insert({ ...input, created_by: user.id, updated_by: user.id })
         .select()
         .single();
-      if (error || !data) return null;
+      if (error || !data) {
+        // Onda 81: o porquê vem do erro real (permissão, sessão, duplicidade…),
+        // nunca de um texto genérico. Único toast — os chamadores não repetem.
+        toast.error(descreverErroSupabase(error, "criar a referência"));
+        return null;
+      }
       return data as ReferenceRow;
     },
     [user],

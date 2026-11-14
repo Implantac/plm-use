@@ -709,7 +709,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     bytes) com os marcadores da 78; cliques em produção confirmaram
     (`/orders` e `/catalog` com os avisos de permissão, 0 `pageerror`).
     Repo, ar e banco alinhados na Onda 78.
-36. **Publicar as Ondas 79 e 80 — FEITO (75ª medição).** Bundle idêntico ao da 78 por construção (só testes/docs); fluxo da 79 validado por cliques em produção (creator criado, persiste após reload, 0 `pageerror`). Item original abaixo.
+36. **Publicar a Onda 81 — PENDENTE (75ª medição).** Falha de gravação no
+    Supabase agora diz o porquê (`erro-humano.ts`, `useReferences.create`).
+    Código de produto mudou: o entry **vai mudar** de `index-BrSbSsMk.js`.
+    Nenhuma migration. Gates **864/864**. Só publicar.
+37. **Publicar as Ondas 79 e 80 — FEITO (75ª medição).** Bundle idêntico ao da 78 por construção (só testes/docs); fluxo da 79 validado por cliques em produção (creator criado, persiste após reload, 0 `pageerror`). Item original abaixo.
     **Publicar as Ondas 79 e 80 — PENDENTE (74ª medição).** Na 74ª o ar
     seguia na Onda 78 (`index-BrSbSsMk.js`). A Onda 80 fechou a dívida
     `dias_ativa` pela semântica do PostgreSQL (sem mudança de SQL) e travou

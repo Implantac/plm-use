@@ -742,7 +742,7 @@ export function ProductStudio() {
           .from("use-moda-assets")
           .remove(savedImages.map((image) => image.storagePath));
       }
-      toast.error("Não foi possível salvar o rascunho da referência.");
+      // Onda 81: o motivo da falha já foi exibido pelo hook `useReferences`.
       return;
     }
 

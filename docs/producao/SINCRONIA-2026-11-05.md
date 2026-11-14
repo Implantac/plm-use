@@ -1655,6 +1655,25 @@ Captura `medicao74-prod-influencers.png`. Banco: view `200 []`, 4 funções
 
 ---
 
+## 2-AO. 75ª medição — Onda 81: falha de gravação no Supabase explica o porquê
+
+**Risco:** na Onda 79 a criação de referência em produção falhou com "Falha
+ao criar referência" sem motivo (era JWT inválido). Nenhum tratamento humano
+de erro Supabase existia no app. **Correção:** `descreverErroSupabase`
+(permissão / sessão expirada / duplicidade / vínculo / obrigatório / rede;
+desconhecido repassa a mensagem), usado em `useReferences.create`, toast
+único; chamadores não repetem. **Prova local:** toast "…sua sessão expirou.
+Entre novamente…", diálogo aberto, 0 `pageerror`.
+
+| Camada | 75ª medição (depois)                                          |
+| ------ | ------------------------------------------------------------- |
+| Repo   | **Onda 81** — local = remoto                                  |
+| Ar     | Ondas 79+80 (bundle = 78); **Onda 81 pendente — hash mudará** |
+| Banco  | inalterado                                                    |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **864/864**   |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

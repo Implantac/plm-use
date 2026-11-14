@@ -134,8 +134,9 @@ export function NovaReferenciaDialog({
       status: comPiloto ? "PILOTO" : status,
     });
     if (!created) {
+      // Onda 81: o motivo real (permissão, sessão expirada, código duplicado…)
+      // já foi exibido pelo hook; o diálogo fica aberto para não perder o preenchido.
       setBusy(false);
-      toast.error("Falha ao criar referência");
       return;
     }
     if (comPiloto) {
