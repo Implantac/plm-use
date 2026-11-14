@@ -1633,6 +1633,28 @@ demo nos 4 arquivos sem helper próprio: todos filtram no consumidor.
 
 ---
 
+## 2-AN. 75ª medição — "ok publicado" (Ondas 79 + 80) re-medido
+
+**Ar:** entry `index-BrSbSsMk.js` / `index-Xk9-f91r.js`, 215 chunks /
+3.215.751 bytes, 0 falhas — **mesmo entry da 73ª/74ª**. Isso é o esperado:
+`git diff e0a38ff..0ce7259 -- src ':!*.test.*'` é **vazio** (Ondas 79 e 80
+só adicionaram testes e docs; o hash do entry é de conteúdo). Portanto o
+bundle não distingue "publicado" de "não publicado" nesta rodada, e a
+validação foi **funcional**: Playwright em produção com sessão simulada em
+`/influencers` → "Adicionar" abre diálogo (9 inputs) → creator
+"Creator Prod 74a" criado → aparece na lista e na tabela de atribuição
+(`USEPROD7410`, CFOP 6910) → **persiste após reload**; 0 `pageerror`.
+Captura `medicao74-prod-influencers.png`. Banco: view `200 []`, 4 funções
+`401 42501`, SHA `382f0f19…`.
+
+| Camada | 75ª medição                                                          |
+| ------ | -------------------------------------------------------------------- |
+| Repo   | **Onda 80** (`0ce7259`) — local = remoto                             |
+| Ar     | bundle idêntico ao da 78 por construção; fluxo 79 provado por clique |
+| Banco  | inalterado                                                           |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
