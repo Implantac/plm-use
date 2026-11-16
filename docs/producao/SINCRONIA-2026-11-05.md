@@ -1789,6 +1789,27 @@ toast, botão travado. **Correção:** `chamarServidor` nos 5 chamadores +
 
 ---
 
+## 2-AV. 80ª medição — "publicado" (Onda 86) re-medido: o botão deixou de travar em produção
+
+**Ar:** entry novo `index-96F5hQc4.js` / `index-B6rhnYs9.js` (215 chunks /
+3.218.601 bytes, 0 falhas); marcador "sessão expirou ou é inválida" = 1.
+**Mesmo clique da 79ª em produção** (`/inventory` → Adicionar → Cadastrar,
+sessão inválida): ANTES `pageerror: Unauthorized: Invalid token`, sem toast,
+botão travado; **AGORA** toast "Não foi possível salvar o insumo: sua sessão
+expirou ou é inválida. Entre novamente e repita a ação.", botão liberado,
+0 `pageerror` (`medicao80-prod-insumo.png`). **Banco:** view `200 []`,
+SHA `382f0f19…`.
+
+| Camada | 80ª medição                                  |
+| ------ | -------------------------------------------- |
+| Repo   | **Onda 86** (`db53b16`) — local = remoto     |
+| Ar     | **Onda 86** (`index-96F5hQc4.js`) — alinhado |
+| Banco  | inalterado                                   |
+
+Repo, ar e banco alinhados. Nenhuma publicação pendente.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
