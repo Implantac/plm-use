@@ -6,6 +6,7 @@
 // para o caso manual (ajuste de contagem, material devolvido), não como único
 // caminho — antes eram.
 import { useCallback, useEffect, useState } from "react";
+import { chamarServidor } from "@/lib/supabase/erro-humano";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
@@ -73,7 +74,9 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
 
   const act = async (id: string, status: "consumida" | "cancelada") => {
     setBusyId(id);
-    const res = await updateReservationStatus({ data: { id, status } });
+    const res = await chamarServidor("atualizar a reserva", () =>
+      updateReservationStatus({ data: { id, status } }),
+    );
     setBusyId(null);
     if (!res.ok) return toast.error(res.reason);
     toast.success(status === "consumida" ? "Reserva consumida" : "Reserva cancelada");

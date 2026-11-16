@@ -725,7 +725,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 41. **Publicar a Onda 85 — FEITO (79ª medição).** Entry `index-BIKP6IRR.js` /
     `index-HYwVX8nu.js`; clique em produção em `/route-engineering` confirmou
     o toast com motivo em português, 0 `pageerror`. Repo, ar e banco
-    alinhados na Onda 85. **Nenhuma publicação pendente.**
+    alinhados na Onda 85.
+42. **Publicar a Onda 86 — PENDENTE (79ª medição).** Server functions do
+    almoxarifado: motivo legível e UI que não trava em sessão inválida (bug
+    reproduzido em produção). Código de produto: entry vai mudar de
+    `index-BIKP6IRR.js`. Nenhuma migration. Gates **878/878**. Só publicar.
 
 ---
 

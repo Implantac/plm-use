@@ -1,5 +1,6 @@
 // Doc 06.2 · Almoxarifado — dialog de movimentação (entrada/saída/ajuste/transferência).
 import { useEffect, useState } from "react";
+import { chamarServidor } from "@/lib/supabase/erro-humano";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { registerMovement } from "@/lib/inventory/inventory.functions";
@@ -121,18 +122,20 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
     setErrors({});
 
     setBusy(true);
-    const res = await registerMovement({
-      data: {
-        item_id: itemId,
-        warehouse_id: warehouseId,
-        kind,
-        qty: q,
-        lot_code: lotCode.trim() || undefined,
-        justification: justification.trim() || undefined,
-        ref_type: refId && kind === "out" ? "op" : undefined,
-        ref_id: refId && kind === "out" ? refId : undefined,
-      },
-    });
+    const res = await chamarServidor("registrar a movimentação", () =>
+      registerMovement({
+        data: {
+          item_id: itemId,
+          warehouse_id: warehouseId,
+          kind,
+          qty: q,
+          lot_code: lotCode.trim() || undefined,
+          justification: justification.trim() || undefined,
+          ref_type: refId && kind === "out" ? "op" : undefined,
+          ref_id: refId && kind === "out" ? refId : undefined,
+        },
+      }),
+    );
     setBusy(false);
     if (!res.ok) return toast.error(res.reason);
     toast.success("Movimentação registrada.");

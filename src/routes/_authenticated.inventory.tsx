@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
+import { chamarServidor, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -123,26 +123,28 @@ function InventoryPage() {
 
   const handleSave = async () => {
     setBusy(true);
-    const res = await upsertStockItem({
-      data: {
-        ...(editingItem ? { id: editingItem.id } : {}),
-        code: formData.code.trim(),
-        name: formData.name.trim(),
-        category: formData.category as
-          "tecido" | "aviamento" | "embalagem" | "acabado" | "insumo" | "etiqueta",
-        unit: formData.unit || "un",
-        lead_time_days: Math.max(0, Math.round(Number(formData.lead_time_days) || 0)),
-        demand_avg_daily: Number(formData.demand_avg_daily) || 0,
-        demand_stddev: Number(formData.demand_stddev) || 0,
-        service_factor: Number(formData.service_factor) || 1.65,
-        annual_qty: Number(formData.annual_qty) || 0,
-        annual_revenue: Number(formData.annual_revenue) || 0,
-        unit_price: Number(formData.unit_price) || 0,
-        order_cost: Number(formData.order_cost) || 0,
-        holding_cost_unit: Number(formData.holding_cost_unit) || 0,
-        is_active: true,
-      },
-    });
+    const res = await chamarServidor("salvar o insumo", () =>
+      upsertStockItem({
+        data: {
+          ...(editingItem ? { id: editingItem.id } : {}),
+          code: formData.code.trim(),
+          name: formData.name.trim(),
+          category: formData.category as
+            "tecido" | "aviamento" | "embalagem" | "acabado" | "insumo" | "etiqueta",
+          unit: formData.unit || "un",
+          lead_time_days: Math.max(0, Math.round(Number(formData.lead_time_days) || 0)),
+          demand_avg_daily: Number(formData.demand_avg_daily) || 0,
+          demand_stddev: Number(formData.demand_stddev) || 0,
+          service_factor: Number(formData.service_factor) || 1.65,
+          annual_qty: Number(formData.annual_qty) || 0,
+          annual_revenue: Number(formData.annual_revenue) || 0,
+          unit_price: Number(formData.unit_price) || 0,
+          order_cost: Number(formData.order_cost) || 0,
+          holding_cost_unit: Number(formData.holding_cost_unit) || 0,
+          is_active: true,
+        },
+      }),
+    );
     setBusy(false);
     if (!res.ok) return toast.error(res.reason);
     toast.success(editingItem ? "Insumo atualizado" : "Insumo cadastrado");
@@ -162,7 +164,7 @@ function InventoryPage() {
 
   const handleClassifyAbc = async () => {
     setBusy(true);
-    const result = await runAbcClassification();
+    const result = await chamarServidor("recalcular a curva ABC", () => runAbcClassification());
     setBusy(false);
     if (!result.ok) return toast.error(result.reason);
     toast.success("Curva ABC recalculada");

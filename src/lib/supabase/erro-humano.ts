@@ -71,3 +71,28 @@ export function avisoUnico(mensagem: string, janelaMs = 60_000, agora = Date.now
   ultimosAvisos.set(mensagem, agora);
   return true;
 }
+
+/**
+ * Envolve a chamada a uma server function (`createServerFn`): se ela lançar
+ * (sessão inválida → `Unauthorized: …` do middleware, rede, 500), devolve
+ * `{ ok: false, reason }` com o motivo em linguagem do usuário em vez de
+ * virar rejeição não tratada — e o chamador sempre consegue liberar o
+ * estado `busy` no caminho normal.
+ */
+export async function chamarServidor<T extends { ok: boolean }>(
+  acao: string,
+  fn: () => Promise<T>,
+): Promise<T | { ok: false; reason: string }> {
+  try {
+    return await fn();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/unauthorized|invalid token|no token|jwt/i.test(msg)) {
+      return {
+        ok: false,
+        reason: `Não foi possível ${acao}: sua sessão expirou ou é inválida. Entre novamente e repita a ação.`,
+      };
+    }
+    return { ok: false, reason: descreverErroSupabase({ message: msg }, acao) };
+  }
+}

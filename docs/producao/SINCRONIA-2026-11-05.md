@@ -1772,6 +1772,23 @@ Repo, ar e banco alinhados. Nenhuma publicação pendente.
 
 ---
 
+## 2-AU. 79ª medição (cont.) — Onda 86: server functions do almoxarifado
+
+**Bug reproduzido em produção (Onda 85 no ar):** `/inventory` → Cadastrar
+insumo com sessão inválida → `pageerror: Unauthorized: Invalid token`, sem
+toast, botão travado. **Correção:** `chamarServidor` nos 5 chamadores +
+`reason` traduzido no servidor (sem `error.message` cru nem "forbidden").
+**Depois (local):** toast, botão liberado, 0 `pageerror`.
+
+| Camada | 79ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 86** — local = remoto                                |
+| Ar     | **Onda 85** (`index-BIKP6IRR.js`) — **Onda 86 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **878/878** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

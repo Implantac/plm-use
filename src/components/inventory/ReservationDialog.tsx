@@ -1,5 +1,6 @@
 // Doc 06.2 · Almoxarifado — dialog para criar reservas contra pcp_lot / piloto / op.
 import { useEffect, useState } from "react";
+import { chamarServidor } from "@/lib/supabase/erro-humano";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { createReservation } from "@/lib/inventory/inventory.functions";
@@ -114,16 +115,18 @@ export function ReservationDialog({ open, onOpenChange, items, onDone }: Props) 
     setErrors({});
 
     setBusy(true);
-    const res = await createReservation({
-      data: {
-        item_id: itemId,
-        warehouse_id: warehouseId,
-        qty: q,
-        ref_type: refType,
-        ref_id: refId,
-        notes: notes.trim() || undefined,
-      },
-    });
+    const res = await chamarServidor("criar a reserva", () =>
+      createReservation({
+        data: {
+          item_id: itemId,
+          warehouse_id: warehouseId,
+          qty: q,
+          ref_type: refType,
+          ref_id: refId,
+          notes: notes.trim() || undefined,
+        },
+      }),
+    );
     setBusy(false);
     if (!res.ok) return toast.error(res.reason);
     toast.success("Reserva criada.");

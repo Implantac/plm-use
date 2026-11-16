@@ -3,6 +3,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 // ---------- listStockItems --------------------------------------------------
 export const listStockItems = createServerFn({ method: "GET" })
@@ -13,7 +14,12 @@ export const listStockItems = createServerFn({ method: "GET" })
       .from("stock_item")
       .select("*")
       .order("annual_revenue", { ascending: false });
-    if (error) return { ok: false as const, reason: error.message, items: [] };
+    if (error)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(error, "listar os insumos"),
+        items: [],
+      };
     return { ok: true as const, items: data ?? [] };
   });
 
@@ -26,7 +32,12 @@ export const listStockBalance = createServerFn({ method: "GET" })
       .from("stock_balance")
       .select("*")
       .order("item_name", { ascending: true });
-    if (error) return { ok: false as const, reason: error.message, balances: [] };
+    if (error)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(error, "consultar o saldo"),
+        balances: [],
+      };
     return { ok: true as const, balances: data ?? [] };
   });
 
@@ -63,7 +74,8 @@ export const upsertStockItem = createServerFn({ method: "POST" })
         .eq("id", data.id)
         .select("*")
         .single();
-      if (error) return { ok: false as const, reason: error.message };
+      if (error)
+        return { ok: false as const, reason: descreverErroSupabase(error, "salvar o insumo") };
       return { ok: true as const, item: row };
     }
     const { data: row, error } = await supabase
@@ -71,7 +83,8 @@ export const upsertStockItem = createServerFn({ method: "POST" })
       .insert({ ...data, created_by: userId, updated_by: userId })
       .select("*")
       .single();
-    if (error) return { ok: false as const, reason: error.message };
+    if (error)
+      return { ok: false as const, reason: descreverErroSupabase(error, "salvar o insumo") };
     return { ok: true as const, item: row };
   });
 
@@ -116,7 +129,11 @@ export const registerMovement = createServerFn({ method: "POST" })
       .insert({ ...data, created_by: userId })
       .select("*")
       .single();
-    if (error) return { ok: false as const, reason: error.message };
+    if (error)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(error, "registrar a movimentação"),
+      };
     return { ok: true as const, movement: row };
   });
 
@@ -140,7 +157,8 @@ export const createReservation = createServerFn({ method: "POST" })
       .insert({ ...data, created_by: userId })
       .select("*")
       .single();
-    if (error) return { ok: false as const, reason: error.message };
+    if (error)
+      return { ok: false as const, reason: descreverErroSupabase(error, "criar a reserva") };
     return { ok: true as const, reservation: row };
   });
 
@@ -168,7 +186,8 @@ export const updateReservationStatus = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .select("*")
       .single();
-    if (error) return { ok: false as const, reason: error.message };
+    if (error)
+      return { ok: false as const, reason: descreverErroSupabase(error, "atualizar a reserva") };
     return { ok: true as const, reservation: row };
   });
 
@@ -185,18 +204,34 @@ export const runAbcClassification = createServerFn({ method: "POST" })
       .from("user_roles")
       .select("role")
       .eq("user_id", userId);
-    if (roleError) return { ok: false as const, reason: roleError.message, changes: [] };
+    if (roleError)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(roleError, "verificar seu papel"),
+        changes: [],
+      };
     const allowed = (roles ?? []).some((r: { role: string }) =>
       ["admin", "manager", "almoxarifado"].includes(r.role),
     );
-    if (!allowed) return { ok: false as const, reason: "forbidden", changes: [] };
+    if (!allowed)
+      return {
+        ok: false as const,
+        reason:
+          "Não foi possível recalcular a curva ABC: requer papel de admin, gestor ou almoxarifado. Solicite a um admin.",
+        changes: [],
+      };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin.rpc("classify_abc", {
       _a_threshold: 0.8,
       _b_threshold: 0.95,
     });
-    if (error) return { ok: false as const, reason: error.message, changes: [] };
+    if (error)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(error, "recalcular a curva ABC"),
+        changes: [],
+      };
     return { ok: true as const, changes: data ?? [] };
   });
 
@@ -206,6 +241,11 @@ export const listWarehouses = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase } = context;
     const { data, error } = await supabase.from("warehouse").select("*").order("code");
-    if (error) return { ok: false as const, reason: error.message, warehouses: [] };
+    if (error)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(error, "listar os almoxarifados"),
+        warehouses: [],
+      };
     return { ok: true as const, warehouses: data ?? [] };
   });
