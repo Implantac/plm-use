@@ -4,6 +4,7 @@
 // digitando item por item, sem relação com a OP. A reserva ficava ativa para
 // sempre e o consumo nunca era atribuído a uma ordem.
 import { useCallback, useEffect, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { toast } from "sonner";
 import { AlertTriangle, PackageMinus, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,7 +83,7 @@ export function OpMaterialsTab({ orderId, orderNumber }: { orderId: string; orde
       if (isMissingDatabaseObject(error as { code?: string; message?: string })) {
         setErro({ pendente: true, mensagem: error.message });
       } else {
-        toast.error(error.message);
+        toast.error(descreverErroSupabase(error, "registrar o consumo de material"));
       }
       return;
     }

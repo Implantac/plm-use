@@ -5,6 +5,7 @@
 // (produto validado, mínimo, grade = quantidade, preço) rodam no Postgres e a
 // mensagem de erro dele é o que o usuário lê.
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
@@ -200,7 +201,7 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
     const res = await fn();
     setBusy(null);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "atualizar o pedido"));
       return false;
     }
     toast.success(ok);
@@ -1403,7 +1404,7 @@ function AddItemDialog({
     });
     setSaving(false);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "salvar o item do pedido"));
       return;
     }
     toast.success("Item adicionado.");

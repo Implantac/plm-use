@@ -1734,6 +1734,24 @@ falha (anti-spam 60 s) e o push por diff de influencers pula `demo: true`.
 
 ---
 
+## 2-AS. 78ª medição (cont.) — Onda 84 no ar; Onda 85 elimina mensagem crua do banco
+
+**Ar:** entry novo `index-DB6yClmz.js` / `index-Dv383hxY.js` (215 /
+3.217.742, 0 falhas), genérico "Tente novamente" = 0 — Onda 84 publicada.
+
+**Onda 85:** 18 pontos em rotas/componentes mostravam `error.message` cru
+(ex.: RLS em inglês ao vendedor criar pedido). Todos passam por
+`descreverErroSupabase` com a ação. Prova local em `/route-engineering`.
+
+| Camada | 78ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 85** — local = remoto                                |
+| Ar     | **Onda 84** (`index-DB6yClmz.js`) — **Onda 85 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **875/875** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

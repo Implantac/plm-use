@@ -1,6 +1,7 @@
 // Painel de comentários com @mentions, edição, histórico de revisões e anexos.
 // Realtime via Supabase channel — mensagens novas aparecem ao vivo.
 import { useEffect, useMemo, useRef, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import {
   Send,
   Trash2,
@@ -362,13 +363,13 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
       await supabase.storage.from(BUCKET).remove(list.map((a) => a.storage_path));
     }
     const { error } = await supabase.from("comments").delete().eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(descreverErroSupabase(error, "excluir o comentário"));
   };
 
   const removeAttachment = async (a: Attachment) => {
     await supabase.storage.from(BUCKET).remove([a.storage_path]);
     const { error } = await supabase.from("comment_attachments").delete().eq("id", a.id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(descreverErroSupabase(error, "remover o anexo"));
     clearAttachmentUrlCache(a.storage_path);
   };
 
@@ -386,7 +387,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
       .from("comments")
       .update({ message: editDraft.trim(), mentions: extractMentions(editDraft) })
       .eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(descreverErroSupabase(error, "salvar o comentário"));
     cancelEdit();
   };
 

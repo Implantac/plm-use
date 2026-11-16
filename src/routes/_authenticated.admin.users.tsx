@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useUserRoles, type AppRole } from "@/hooks/use-auth";
@@ -120,11 +121,11 @@ function AdminUsersPage() {
         .delete()
         .eq("user_id", uid)
         .eq("role", role);
-      if (error) toast.error(error.message);
+      if (error) toast.error(descreverErroSupabase(error, "remover o papel"));
       else toast.success(`Removido: ${role}`);
     } else {
       const { error } = await supabase.from("user_roles").insert({ user_id: uid, role });
-      if (error) toast.error(error.message);
+      if (error) toast.error(descreverErroSupabase(error, "conceder o papel"));
       else toast.success(`Concedido: ${role}`);
     }
 

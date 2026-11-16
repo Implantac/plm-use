@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -154,7 +155,7 @@ function InventoryPage() {
       .from("stock_item" as never)
       .update({ is_active: !item.is_active } as never)
       .eq("id", item.id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(descreverErroSupabase(error, "alterar o insumo"));
     toast.success(item.is_active ? "Insumo inativado" : "Insumo reativado");
     void refetch();
   };

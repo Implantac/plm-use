@@ -8,6 +8,7 @@
 // A visão de custo é GATE por papel (can_cost): a RLS devolve zero linhas para
 // quem não é de custo — esconder botão aqui é conveniência, não proteção.
 import { useEffect, useMemo, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AlertTriangle, Plus, RefreshCw, ShoppingBag, UserPlus } from "lucide-react";
 import { toast } from "sonner";
@@ -421,7 +422,7 @@ function NewOrderDialog({
     });
     setSaving(false);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "criar o pedido"));
       return;
     }
     toast.success(`Pedido ${res.data?.number} criado.`);
@@ -561,7 +562,7 @@ function NewCustomerDialog({
     const res = await createCustomer({ name, taxId, city, state, segment });
     setSaving(false);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "cadastrar o cliente"));
       return;
     }
     toast.success("Cliente cadastrado.");

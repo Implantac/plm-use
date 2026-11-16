@@ -1,5 +1,6 @@
 // Modelos oficiais — tabela de medidas + desenho técnico reais usados como referência pela IA.
 import { useEffect, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileUp, ImageUp, LoaderCircle, Plus, Ruler, Trash2 } from "lucide-react";
@@ -158,7 +159,7 @@ function OfficialModelsPage() {
 
   async function remove(m: OfficialModel) {
     const { error } = await supabase.from("official_models").delete().eq("id", m.id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(descreverErroSupabase(error, "excluir o modelo oficial"));
     if (m.sketch_path) await supabase.storage.from(OFFICIAL_BUCKET).remove([m.sketch_path]);
     if (form.id === m.id) setForm(EMPTY);
     await qc.invalidateQueries({ queryKey: ["official-models"] });

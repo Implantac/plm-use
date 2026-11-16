@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -62,7 +63,7 @@ function RouteEngineering() {
 
   const run = async (p: PromiseLike<{ error: { message: string } | null }>, ok?: string) => {
     const { error } = p ? await p : { error: null };
-    if (error) toast.error(error.message);
+    if (error) toast.error(descreverErroSupabase(error, "salvar a rota"));
     else {
       if (ok) toast.success(ok);
       await refresh();

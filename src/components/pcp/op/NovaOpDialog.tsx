@@ -1,5 +1,6 @@
 // Criação de OP: peça, cor, quantidade e rota. Saldo inicial na 1ª etapa vem do trigger init_item_balance.
 import { useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
@@ -109,7 +110,7 @@ export function NovaOpDialog({
     setSaving(false);
     if (e2) {
       await supabase.from("production_orders").delete().eq("id", op.id);
-      toast.error(e2.message);
+      toast.error(descreverErroSupabase(e2, "criar a OP"));
       return;
     }
     toast.success(`${number} criada.`);

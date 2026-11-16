@@ -5,6 +5,7 @@
 // produto e as OPÇÕES que carregam custeio (driver, custo unitário, setup e
 // consumo delta) — é o que permite o pedido chegar pronto na ficha.
 import { useEffect, useMemo, useState } from "react";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   AlertTriangle,
@@ -134,7 +135,7 @@ function CatalogPage() {
   async function validate(product: CatalogProduct, status: CatalogProduct["status"]) {
     const res = await setCatalogStatus(product.id, status);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "alterar o status no catálogo"));
       return;
     }
     toast.success(
@@ -382,7 +383,7 @@ function ProductDialog({
     });
     setSaving(false);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "salvar o produto"));
       return;
     }
     toast.success(product ? "Produto atualizado." : "Produto criado — crie as opções e valide.");
@@ -575,7 +576,7 @@ function OptionsDialog({
     });
     setSaving(false);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "salvar o grupo de opções"));
       return;
     }
     toast.success("Grupo criado.");
@@ -607,7 +608,7 @@ function OptionsDialog({
     });
     setSaving(false);
     if (res.error) {
-      toast.error(res.error.message);
+      toast.error(descreverErroSupabase(res.error, "salvar a opção"));
       return;
     }
     toast.success("Opção criada — ela entra sozinha na ficha do pedido.");

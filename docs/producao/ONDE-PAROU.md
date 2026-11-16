@@ -720,10 +720,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     ausente.
 39. **Publicar a Onda 83 — FEITO (78ª medição).** Entry `index-BZ0mwsTv.js` /
     `index-CwB9f4iz.js`, marcador "sincronizar os lotes" presente.
-40. **Publicar a Onda 84 — PENDENTE (78ª medição).** `cloud-sync` e
-    `creative-sync` dizem o motivo real; diff de influencers não sobe vitrine.
-    Código de produto: entry vai mudar de `index-BZ0mwsTv.js`. Nenhuma
-    migration. Gates **873/873**. Só publicar.
+40. **Publicar a Onda 84 — FEITO (78ª medição).** Entry `index-DB6yClmz.js` /
+    `index-Dv383hxY.js`, genérico "Tente novamente" = 0.
+41. **Publicar a Onda 85 — PENDENTE (78ª medição).** 18 pontos deixam de
+    mostrar a mensagem crua do banco (pedidos, catálogo, OP, estoque, papéis,
+    comentários, rotas). Código de produto: entry vai mudar de
+    `index-DB6yClmz.js`. Nenhuma migration. Gates **875/875**. Só publicar.
 
 ---
 
