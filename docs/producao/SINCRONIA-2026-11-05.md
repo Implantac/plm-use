@@ -1989,6 +1989,26 @@ E2E do CommentsPanel fortalecidos para o texto completo. Prova local:
 
 ---
 
+## 2-BF. 87ª medição — Onda 93 publicada; Onda 94: provedor de imagens com motivo
+
+**Ar (87ª, publicado sem aviso):** entry `index-BU9Gx2ky.js` / `index-De8UbPLl.js`.
+`/orders` em produção com sessão inválida → inline "Não foi possível carregar
+os pedidos: sua sessão expirou ou é inválida…", 0 `pageerror`
+(`medicao87-prod-orders.png`). Banco intacto.
+
+**Onda 94 (repo):** `/api/generate-image` traduz recusas do provedor por
+classe (texto cru só no log) e ganha `try/catch` externo — prova local: com
+token, antes HTML "This page didn't load" 500, depois JSON com motivo.
+
+| Camada | 87ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 94** — local = remoto                                |
+| Ar     | **Onda 93** (`index-BU9Gx2ky.js`) — **Onda 94 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **907/907** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

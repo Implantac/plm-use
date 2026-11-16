@@ -753,10 +753,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 48. **Publicar a Onda 92 — FEITO (86ª medição).** Entry `index-Bo_cfDll.js`;
     "Cadastrar fornecedor" em produção mostra o motivo de sessão, 0 `pageerror`.
 
-49. **Publicar a Onda 93 — PENDENTE (86ª medição).** 20 erros inline
-    (`setError/setFatal/setHint`) com motivo via `descreverErroSupabase`;
-    `MIGRATION_HINT` preservado. Nenhuma migration. Gates **904/904**.
-    Validação: `/orders` com sessão inválida → inline com motivo.
+49. **Publicar a Onda 93 — FEITO (87ª medição).** Entry `index-BU9Gx2ky.js`;
+    `/orders` em produção mostra o motivo inline, 0 `pageerror`.
+
+50. **Publicar a Onda 94 — PENDENTE (87ª medição).** `/api/generate-image`:
+    recusas do provedor traduzidas por classe; `try/catch` externo (JSON em
+    vez de HTML "This page didn't load"). Nenhuma migration. Gates
+    **907/907**. Validação: `curl` sem token / token inválido → 401 JSON.
 
 ---
 
