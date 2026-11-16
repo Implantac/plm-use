@@ -24,6 +24,7 @@ import {
 import type { SalesOrderItem } from "@/lib/sales/types";
 import { BaseSnapshotPanel } from "./ProductionDetails";
 import { ItemConsumptionEditor } from "./ItemConsumptionEditor";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 type DetailMode = "commercial" | "cost";
 const groupText = (group: TechnicalDetailGroup, mode: DetailMode) =>
@@ -83,7 +84,7 @@ export function ItemTechnicalDetailsDialog({
       if (!alive) return;
       setLoading(false);
       if (res.error || !res.data) {
-        setError(res.error?.message ?? "Não foi possível carregar os detalhes.");
+        setError(descreverErroSupabase(res.error, "carregar os detalhes"));
         return;
       }
       const groups = Array.isArray(res.data.groups) ? res.data.groups : [];
@@ -127,7 +128,7 @@ export function ItemTechnicalDetailsDialog({
     });
     setSaving(false);
     if (res.error || !res.data) {
-      setError(res.error?.message ?? "Não foi possível salvar. Seu texto continua na tela.");
+      setError(`${descreverErroSupabase(res.error, "salvar")} Seu texto continua na tela.`);
       return;
     }
     const saved = res.data;
@@ -162,7 +163,7 @@ export function ItemTechnicalDetailsDialog({
     const res = await save({ itemId, groupId: null, name, detail: "", revision: 0 });
     setSaving(false);
     if (res.error || !res.data) {
-      setError(res.error?.message ?? "Não foi possível criar o grupo.");
+      setError(descreverErroSupabase(res.error, "criar o grupo"));
       return;
     }
     const created = res.data;
@@ -195,7 +196,7 @@ export function ItemTechnicalDetailsDialog({
     });
     setSaving(false);
     if (res.error) {
-      setError(res.error.message);
+      setError(descreverErroSupabase(res.error, "remover o grupo"));
       return;
     }
     const remaining = groups.filter((group) => group.id !== selected.id);

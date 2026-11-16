@@ -1,7 +1,7 @@
 // Núcleo do PLM — Referência unificada com máquina de estados e realtime.
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
+import { descreverErroSupabase, motivoDe } from "@/lib/supabase/erro-humano";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Database } from "@/integrations/supabase/types";
@@ -59,7 +59,7 @@ export function useReferences() {
       .then(([refs, trs]) => {
         if (cancelled) return;
         if (refs.error) {
-          setError(refs.error.message);
+          setError(descreverErroSupabase(refs.error, "carregar as referências"));
         } else {
           setItems(refs.data ?? []);
           setError(null);
@@ -69,7 +69,7 @@ export function useReferences() {
       })
       .catch((cause: unknown) => {
         if (cancelled) return;
-        setError(cause instanceof Error ? cause.message : "Falha ao carregar referências.");
+        setError(motivoDe(cause, "carregar as referências"));
         setLoading(false);
       });
 

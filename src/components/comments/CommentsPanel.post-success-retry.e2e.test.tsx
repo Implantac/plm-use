@@ -5,6 +5,8 @@
 // assinada do cache. Novos mounts do mesmo path NÃO disparam novas chamadas
 // de createSignedUrl (cache HIT), e como o botão de retry não existe mais,
 // não há como o usuário forçar novas chamadas para o mesmo item.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -61,7 +63,7 @@ describe("CommentsPanel E2E — pós-sucesso não gera novas chamadas", () => {
     await flush();
 
     // 1) Falha inicial visível — 1 chamada.
-    expect(screen.getByText("falha inicial")).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: falha inicial")).toBeDefined();
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH)).toHaveLength(1);
 
     // 2) Clique em "Tentar novamente" → sucesso.
@@ -69,7 +71,7 @@ describe("CommentsPanel E2E — pós-sucesso não gera novas chamadas", () => {
     await flush();
 
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH)).toHaveLength(2);
-    expect(screen.queryByText("falha inicial")).toBeNull();
+    expect(screen.queryByText("Não foi possível carregar a prévia: falha inicial")).toBeNull();
     expect(screen.queryByRole("button", { name: /tentar novamente/i })).toBeNull();
     expect(screen.getByAltText("x.png").getAttribute("src")).toBe(SUCCESS_URL);
 

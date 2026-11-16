@@ -4,6 +4,8 @@
 // dispara um NOVO createSignedUrl (nenhuma resposta corrompida é cacheada).
 // Só quando uma tentativa finalmente sucede o item passa a exibir a URL
 // assinada; a partir daí, novos mounts são cache HIT.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -62,7 +64,7 @@ describe("CommentsPanel E2E — retries repetidos até recuperar", () => {
     await flush();
 
     // Primeira falha visível.
-    expect(screen.getByText(failures[0])).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: " + failures[0])).toBeDefined();
     expect(screen.queryByAltText("x.png")).toBeNull();
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH)).toHaveLength(1);
 
@@ -70,15 +72,15 @@ describe("CommentsPanel E2E — retries repetidos até recuperar", () => {
     fireEvent.click(screen.getByRole("button", { name: /tentar novamente/i }));
     await flush();
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH)).toHaveLength(2);
-    expect(screen.queryByText(failures[0])).toBeNull();
-    expect(screen.getByText(failures[1])).toBeDefined();
+    expect(screen.queryByText("Não foi possível carregar a prévia: " + failures[0])).toBeNull();
+    expect(screen.getByText("Não foi possível carregar a prévia: " + failures[1])).toBeDefined();
     expect(screen.queryByAltText("x.png")).toBeNull();
 
     // Clique 2 → falha #3.
     fireEvent.click(screen.getByRole("button", { name: /tentar novamente/i }));
     await flush();
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH)).toHaveLength(3);
-    expect(screen.getByText(failures[2])).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: " + failures[2])).toBeDefined();
     expect(screen.queryByAltText("x.png")).toBeNull();
 
     // Clique 3 → sucesso.
@@ -87,7 +89,8 @@ describe("CommentsPanel E2E — retries repetidos até recuperar", () => {
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH)).toHaveLength(4);
 
     // Erro/retry sumiram; <img> renderizado com a URL de sucesso.
-    for (const msg of failures) expect(screen.queryByText(msg)).toBeNull();
+    for (const msg of failures)
+      expect(screen.queryByText("Não foi possível carregar a prévia: " + msg)).toBeNull();
     expect(screen.queryByRole("button", { name: /tentar novamente/i })).toBeNull();
     expect(screen.getByAltText("x.png").getAttribute("src")).toBe(SUCCESS_URL);
 

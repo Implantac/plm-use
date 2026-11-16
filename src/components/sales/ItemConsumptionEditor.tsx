@@ -9,6 +9,7 @@ import {
   type BaseMaterial,
   type ItemMaterialConsumption,
 } from "@/lib/sales/technical-details-api";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 type Values = { consumption: string; waste: string; unitCost: string };
 type NewMaterial = Values & { kind: string; material: string; unit: string };
@@ -93,7 +94,7 @@ export function ItemConsumptionEditor({
       setLoading(false);
       if (res.error || !res.data) {
         setLoadFailed(true);
-        setError(res.error?.message ?? "Não foi possível carregar os materiais do item.");
+        setError(descreverErroSupabase(res.error, "carregar os materiais do item"));
         return;
       }
       setRows(res.data);
@@ -151,8 +152,7 @@ export function ItemConsumptionEditor({
     setBusy(false);
     if (res.error || !res.data) {
       setError(
-        res.error?.message ??
-          "Não foi possível salvar o consumo. Seu preenchimento continua na tela.",
+        `${descreverErroSupabase(res.error, "salvar o consumo")} Seu preenchimento continua na tela.`,
       );
       return;
     }
@@ -189,8 +189,7 @@ export function ItemConsumptionEditor({
     setBusy(false);
     if (res.error || !res.data) {
       setError(
-        res.error?.message ??
-          "Não foi possível adicionar o material. Seu preenchimento continua na tela.",
+        `${descreverErroSupabase(res.error, "adicionar o material")} Seu preenchimento continua na tela.`,
       );
       return;
     }
@@ -212,7 +211,7 @@ export function ItemConsumptionEditor({
     const res = await deleteItemConsumption({ itemId, materialId: row.id, revision: row.revision });
     setBusy(false);
     if (res.error) {
-      setError(res.error.message);
+      setError(descreverErroSupabase(res.error, "remover o material"));
       return;
     }
     setRows((current) => current.filter((r) => r.id !== row.id));

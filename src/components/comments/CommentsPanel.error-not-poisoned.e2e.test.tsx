@@ -4,6 +4,8 @@
 // verificar que (1) nenhuma entrada corrompida é gravada no cache e
 // (2) clicar em "Tentar novamente" nos itens afetados gera URLs novas e
 // válidas — sem reaproveitar qualquer resultado do fetch que falhou.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -91,7 +93,7 @@ describe("CommentsPanel E2E — erro em createSignedUrl não envenena o cache", 
     // 1 fetch por path, todos falhos.
     for (const p of PATHS) {
       expect(createSignedUrl.mock.calls.filter(([x]) => x === p)).toHaveLength(1);
-      expect(screen.getByText(`falha ${p}`)).toBeDefined();
+      expect(screen.getByText(`Não foi possível carregar a prévia: falha ${p}`)).toBeDefined();
     }
     expect(screen.queryAllByRole("img")).toHaveLength(0);
     const retries = screen.getAllByRole("button", { name: /tentar novamente/i });

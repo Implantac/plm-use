@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { getTechnicalSheet } from "@/lib/sales/api";
 import { TechnicalSheetItemView, type SheetItem } from "./TechnicalSheetDialog";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 /** A OP consulta a ficha sem custo do pedido de origem, sem duplicar instruções. */
 export function OrderProductionDetails({ orderId }: { orderId: string }) {
@@ -17,7 +18,7 @@ export function OrderProductionDetails({ orderId }: { orderId: string }) {
       if (!alive) return;
       setLoading(false);
       if (res.error) {
-        setError(res.error.message);
+        setError(descreverErroSupabase(res.error, "carregar os detalhes de produção"));
         return;
       }
       const value = res.data as { items?: SheetItem[] } | null;

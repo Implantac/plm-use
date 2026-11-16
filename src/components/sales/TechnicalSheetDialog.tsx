@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { getTechnicalSheet, type Row } from "@/lib/sales/api";
 import type { ProductionDetail, TechnicalBaseSnapshot } from "@/lib/sales/technical-details-api";
 import { ProductionDetails } from "./ProductionDetails";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 type SheetOrder = {
   number?: string;
@@ -97,7 +98,7 @@ export function TechnicalSheetDialog({
       if (!alive) return;
       setLoading(false);
       if (res.error) {
-        setError(res.error.message);
+        setError(descreverErroSupabase(res.error, "carregar a ficha técnica"));
         return;
       }
       setSheet((res.data ?? null) as { order?: SheetOrder; items?: SheetItem[] } | null);

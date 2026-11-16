@@ -5,6 +5,8 @@
 // falha, APENAS o path daquele item dispara nova chamada de
 // createSignedUrl — os demais paths não são refeitos e seguem exibindo
 // suas URLs originais.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -92,7 +94,7 @@ describe("CommentsPanel E2E — retry isolado não afeta outros items OK", () =>
     for (const p of OK_PATHS) {
       expect(createSignedUrl.mock.calls.filter(([q]) => q === p)).toHaveLength(1);
     }
-    expect(screen.getByText("falha isolada")).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: falha isolada")).toBeDefined();
     for (let i = 0; i < OK_PATHS.length; i++) {
       expect(screen.getByAltText(`ok-${i + 1}.png`).getAttribute("src")).toBe(OK_URLS[OK_PATHS[i]]);
     }
@@ -116,7 +118,7 @@ describe("CommentsPanel E2E — retry isolado não afeta outros items OK", () =>
     }
 
     // Estado final: item que falhou agora exibe a nova URL; OK inalterados.
-    expect(screen.queryByText("falha isolada")).toBeNull();
+    expect(screen.queryByText("Não foi possível carregar a prévia: falha isolada")).toBeNull();
     expect(screen.queryByRole("button", { name: /tentar novamente/i })).toBeNull();
     expect(screen.getByAltText("fail.png").getAttribute("src")).toBe(FAIL_RETRY_URL);
     for (let i = 0; i < OK_PATHS.length; i++) {

@@ -5,6 +5,8 @@
 // (dedup via inflight). Quando essa tentativa falha, nenhuma entrada
 // corrompida deve ficar em cache — cliques posteriores em "Tentar novamente"
 // disparam um NOVO createSignedUrl.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -99,7 +101,7 @@ describe("CommentsPanel E2E — falha concorrente e ausência de cache corrompid
     });
     await flush();
 
-    const errors = screen.getAllByText("assinatura expirada");
+    const errors = screen.getAllByText("Não foi possível carregar a prévia: assinatura expirada");
     expect(errors).toHaveLength(N);
     const retries = screen.getAllByRole("button", { name: /tentar novamente/i });
     expect(retries).toHaveLength(N);

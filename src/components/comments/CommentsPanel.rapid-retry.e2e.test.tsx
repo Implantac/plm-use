@@ -4,6 +4,8 @@
 // no mesmo item (enquanto a nova tentativa ainda está em voo) devem disparar
 // exatamente 1 novo createSignedUrl — os cliques subsequentes caem no mesmo
 // inflight. Só depois que a URL assinada resolve o item passa a exibi-la.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -67,7 +69,7 @@ describe("CommentsPanel E2E — cliques rápidos em 'Tentar novamente'", () => {
     pending.shift()!.resolve({ data: null, error: { message: "falha inicial" } });
     await flush();
 
-    expect(screen.getByText("falha inicial")).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: falha inicial")).toBeDefined();
     const callsBefore = createSignedUrl.mock.calls.length;
 
     // 2) 5 cliques RÁPIDOS em "Tentar novamente" sem flush entre eles.
@@ -94,7 +96,7 @@ describe("CommentsPanel E2E — cliques rápidos em 'Tentar novamente'", () => {
     pending.shift()!.resolve({ data: { signedUrl: SUCCESS_URL }, error: null });
     await flush();
 
-    expect(screen.queryByText("falha inicial")).toBeNull();
+    expect(screen.queryByText("Não foi possível carregar a prévia: falha inicial")).toBeNull();
     expect(screen.queryByRole("button", { name: /tentar novamente/i })).toBeNull();
     expect(screen.getByAltText("x.png").getAttribute("src")).toBe(SUCCESS_URL);
   });

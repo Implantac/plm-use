@@ -1,7 +1,7 @@
 // Painel de comentários com @mentions, edição, histórico de revisões e anexos.
 // Realtime via Supabase channel — mensagens novas aparecem ao vivo.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
+import { descreverErroSupabase, motivoDe } from "@/lib/supabase/erro-humano";
 import {
   Send,
   Trash2,
@@ -169,7 +169,7 @@ async function downloadAttachment(storage_path: string, file_name: string): Prom
     window.open(url, "_blank");
     return null;
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Falha ao gerar link de download";
+    const msg = motivoDe(e, "gerar o link de download");
     toast.error(msg);
     return msg;
   }
@@ -683,7 +683,7 @@ export function AttachmentItem({
         setLoading(false);
       })
       .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : "Falha ao carregar prévia");
+        setError(motivoDe(e, "carregar a prévia"));
         setLoading(false);
       });
   };
@@ -709,7 +709,7 @@ export function AttachmentItem({
       })
       .catch((e: unknown) => {
         if (cancelled) return;
-        setError(e instanceof Error ? e.message : "Falha ao carregar prévia");
+        setError(motivoDe(e, "carregar a prévia"));
         setLoading(false);
       });
     return () => {

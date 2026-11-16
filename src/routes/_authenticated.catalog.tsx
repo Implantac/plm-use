@@ -91,7 +91,11 @@ function CatalogPage() {
       setLoading(true);
       const [res, cfg] = await Promise.all([listCatalog(), listConfigurations()]);
       if (res.error) {
-        setFatal(isMissingTable(res.error) ? MIGRATION_HINT : res.error.message);
+        setFatal(
+          isMissingTable(res.error)
+            ? MIGRATION_HINT
+            : descreverErroSupabase(res.error, "carregar o catálogo"),
+        );
         setProducts([]);
       } else {
         setProducts(res.data ?? []);

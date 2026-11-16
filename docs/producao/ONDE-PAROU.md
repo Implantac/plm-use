@@ -750,10 +750,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 47. **Publicar a Onda 91 — FEITO (85ª medição).** Entry `index-Csu-ARgZ.js`;
     `/ai-agents` em produção com um único toast traduzido, 0 `pageerror`.
 
-48. **Publicar a Onda 92 — PENDENTE (85ª medição).** 21 toasts crus →
-    `motivoDe(erro, ação)`; nunca "[object Object]"/"Falha" sem motivo. Nenhuma
-    migration. Gates **902/902**. Validação: `/supplier-portal` → Cadastrar
-    fornecedor com sessão inválida → toast com motivo.
+48. **Publicar a Onda 92 — FEITO (86ª medição).** Entry `index-Bo_cfDll.js`;
+    "Cadastrar fornecedor" em produção mostra o motivo de sessão, 0 `pageerror`.
+
+49. **Publicar a Onda 93 — PENDENTE (86ª medição).** 20 erros inline
+    (`setError/setFatal/setHint`) com motivo via `descreverErroSupabase`;
+    `MIGRATION_HINT` preservado. Nenhuma migration. Gates **904/904**.
+    Validação: `/orders` com sessão inválida → inline com motivo.
 
 ---
 

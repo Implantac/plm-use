@@ -4,6 +4,8 @@
 // "Tentar novamente" em itens de paths diferentes NÃO devem compartilhar
 // o mesmo inflight — cada path gera seu próprio createSignedUrl com URL
 // distinta. Deduplicação é POR chave, nunca cross-key.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -80,8 +82,8 @@ describe("CommentsPanel E2E — retries concorrentes em paths distintos", () => 
     popPending(PATH_B).resolve({ data: null, error: { message: "erro B" } });
     await flush();
 
-    expect(screen.getByText("erro A")).toBeDefined();
-    expect(screen.getByText("erro B")).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: erro A")).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: erro B")).toBeDefined();
     const retries = screen.getAllByRole("button", { name: /tentar novamente/i });
     expect(retries).toHaveLength(2);
 

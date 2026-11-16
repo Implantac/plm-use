@@ -4,6 +4,8 @@
 // sucesso na primeira tentativa. Ao clicar em "Tentar novamente" em A,
 // SOMENTE A dispara um novo createSignedUrl — B não é refeito e continua
 // exibindo sua URL original a partir do cache.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -84,7 +86,7 @@ describe("CommentsPanel E2E — retry isolado por path", () => {
     // Estado inicial: 1 chamada por path.
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH_A)).toHaveLength(1);
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH_B)).toHaveLength(1);
-    expect(screen.getByText("falha só em A")).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: falha só em A")).toBeDefined();
     expect(screen.getByAltText("b.png").getAttribute("src")).toBe(URL_B_FIRST);
     const retries = screen.getAllByRole("button", { name: /tentar novamente/i });
     expect(retries).toHaveLength(1); // só A mostra retry
@@ -99,7 +101,7 @@ describe("CommentsPanel E2E — retry isolado por path", () => {
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH_B)).toHaveLength(1);
 
     // 4) A agora renderiza a nova URL; B continua com a URL original.
-    expect(screen.queryByText("falha só em A")).toBeNull();
+    expect(screen.queryByText("Não foi possível carregar a prévia: falha só em A")).toBeNull();
     expect(screen.queryByRole("button", { name: /tentar novamente/i })).toBeNull();
     expect(screen.getByAltText("a.png").getAttribute("src")).toBe(URL_A_RETRY);
     expect(screen.getByAltText("b.png").getAttribute("src")).toBe(URL_B_FIRST);

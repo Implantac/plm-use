@@ -147,7 +147,11 @@ export function OrderDetail({ orderId, canSell, canCost, canPlan, onClose }: Pro
       listOrderEvents(orderId),
     ]);
     if (o.error) {
-      setFatal(isMissingTable(o.error) ? MIGRATION_HINT : o.error.message);
+      setFatal(
+        isMissingTable(o.error)
+          ? MIGRATION_HINT
+          : descreverErroSupabase(o.error, "carregar o pedido"),
+      );
       setLoading(false);
       return;
     }
@@ -1341,7 +1345,11 @@ function AddItemDialog({
     if (!open) return;
     void listCatalog().then((res) => {
       if (res.error) {
-        setHint(isMissingTable(res.error) ? MIGRATION_HINT : res.error.message);
+        setHint(
+          isMissingTable(res.error)
+            ? MIGRATION_HINT
+            : descreverErroSupabase(res.error, "carregar os itens"),
+        );
         return;
       }
       const valid = (res.data ?? []).filter((p) => p.status === "validado");

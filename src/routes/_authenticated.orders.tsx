@@ -116,7 +116,11 @@ function OrdersPage() {
       setLoading(true);
       const [o, c] = await Promise.all([listOrders(), listCustomers()]);
       if (o.error) {
-        setFatal(isMissingTable(o.error) ? MIGRATION_HINT : o.error.message);
+        setFatal(
+          isMissingTable(o.error)
+            ? MIGRATION_HINT
+            : descreverErroSupabase(o.error, "carregar os pedidos"),
+        );
         setOrders([]);
       } else {
         setOrders(o.data ?? []);

@@ -5,6 +5,8 @@
 // a URL assinada nova. O erro desaparece, o botão de retry some, e o
 // <img> renderizado usa EXATAMENTE a URL do segundo fetch — não há
 // reaproveitamento de dados corrompidos da tentativa que falhou.
+// Onda 93 — o erro inline sai com a ação na frente (descreverErroSupabase/motivoDe);
+// a asserção passou a exigir o texto completo, não só o motivo.
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent, act } from "@testing-library/react";
 
@@ -62,7 +64,7 @@ describe("CommentsPanel E2E — retry após falha recupera com nova URL", () => 
     await flush();
 
     // 2) Estado de erro: mensagem visível, botão de retry, sem <img>.
-    expect(screen.getByText("falha temporária")).toBeDefined();
+    expect(screen.getByText("Não foi possível carregar a prévia: falha temporária")).toBeDefined();
     const retryBtn = screen.getByRole("button", { name: /tentar novamente/i });
     expect(retryBtn).toBeDefined();
     expect(screen.queryByAltText("x.png")).toBeNull();
@@ -75,7 +77,7 @@ describe("CommentsPanel E2E — retry após falha recupera com nova URL", () => 
     expect(createSignedUrl.mock.calls.filter(([p]) => p === PATH)).toHaveLength(2);
 
     // 4) Erro sumiu, botão de retry sumiu, <img> renderizado com a URL nova.
-    expect(screen.queryByText("falha temporária")).toBeNull();
+    expect(screen.queryByText("Não foi possível carregar a prévia: falha temporária")).toBeNull();
     expect(screen.queryByRole("button", { name: /tentar novamente/i })).toBeNull();
 
     const img = screen.getByAltText("x.png");

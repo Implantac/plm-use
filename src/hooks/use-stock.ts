@@ -1,6 +1,7 @@
 // Doc 06.2 · Almoxarifado — hooks de leitura (RLS aplicada como usuário).
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 export interface StockItem {
   id: string;
@@ -56,7 +57,7 @@ export function useStockBalancesByName() {
     setLoading(true);
     const { data, error: err } = await supabase.from("stock_balance" as never).select("*");
     if (err) {
-      setError(err.message);
+      setError(descreverErroSupabase(err, "carregar o saldo de estoque"));
       setBalances({});
       setLoading(false);
       return;

@@ -1968,6 +1968,27 @@ que a mutation lança objeto, não Error). Prova local: "Cadastrar fornecedor"
 
 ---
 
+## 2-BE. 86ª medição — Onda 92 publicada; Onda 93: erro inline com motivo
+
+**Ar (86ª, publicado sem aviso):** entry `index-Bo_cfDll.js` / `index-BwdKQnO2.js`.
+"Cadastrar fornecedor" em produção com sessão inválida → toast com motivo de
+sessão (antes: "Falha"), 0 `pageerror` (`medicao86-prod-fornecedor.png`).
+Banco intacto.
+
+**Onda 93 (repo):** 20 `setError/setFatal/setHint(res.error.message)` crus →
+`descreverErroSupabase`/`motivoDe` com ação; `MIGRATION_HINT` preservado; 9
+E2E do CommentsPanel fortalecidos para o texto completo. Prova local:
+`/orders` inline com motivo de sessão, 0 `pageerror`.
+
+| Camada | 86ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 93** — local = remoto                                |
+| Ar     | **Onda 92** (`index-Bo_cfDll.js`) — **Onda 93 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **904/904** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
