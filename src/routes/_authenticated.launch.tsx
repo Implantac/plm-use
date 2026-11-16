@@ -1,6 +1,7 @@
 // H9-10 · Lançamento — página com abas Waves / Itens / Handoffs / Performance.
 // Escritas passam por server functions (RLS + validação Zod).
 import { useMemo, useState } from "react";
+import { chamarServidor } from "@/lib/supabase/erro-humano";
 import { GlossarioTermos } from "@/components/onboarding/GlossarioTermos";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -105,7 +106,7 @@ function LaunchPage() {
       return;
     }
     setWaveErrors({});
-    const res = await create({ data: form });
+    const res = await chamarServidor("criar a wave", () => create({ data: form }));
     if (!res.ok) return statusToast.error(res.reason ?? "Falha ao criar wave");
     statusToast.success(`Wave ${form.codigo} criada`);
     setForm({ codigo: "", colecao: "", janela_inicio: "", janela_fim: "", notas: "" });
@@ -117,30 +118,38 @@ function LaunchPage() {
       return;
     }
     setPromoteError(null);
-    const res = await promote({ data: { wave_id: selectedWave, decision_ids: pickedDecisions } });
+    const res = await chamarServidor("promover as decisões", () =>
+      promote({ data: { wave_id: selectedWave, decision_ids: pickedDecisions } }),
+    );
     if (!res.ok) return statusToast.error(res.reason ?? "Falha ao promover");
     statusToast.success(`${res.created} item(ns) adicionado(s)`);
     setPickedDecisions([]);
   }
 
   async function handleTransitionWave(id: string, from: LaunchWaveStatus, to: LaunchWaveStatus) {
-    const res = await transition({
-      data: { entity_type: "launch_wave", entity_id: id, from_status: from, to_status: to },
-    });
+    const res = await chamarServidor("mover a wave", () =>
+      transition({
+        data: { entity_type: "launch_wave", entity_id: id, from_status: from, to_status: to },
+      }),
+    );
     if (!res.ok) return statusToast.error(res.reason ?? "Transição negada");
     statusToast.success(`Wave → ${WAVE_STATUS_LABEL[to]}`);
   }
 
   async function handleTransitionItem(id: string, from: LaunchItemStatus, to: LaunchItemStatus) {
-    const res = await transition({
-      data: { entity_type: "launch_item", entity_id: id, from_status: from, to_status: to },
-    });
+    const res = await chamarServidor("mover a wave", () =>
+      transition({
+        data: { entity_type: "launch_item", entity_id: id, from_status: from, to_status: to },
+      }),
+    );
     if (!res.ok) return statusToast.error(res.reason ?? "Transição negada");
     statusToast.success(`Item → ${ITEM_STATUS_LABEL[to]}`);
   }
 
   async function handleHandoff(wave_id: string, destino: "pcp" | "comercial") {
-    const res = await handoff({ data: { wave_id, destino } });
+    const res = await chamarServidor("enviar o handoff", () =>
+      handoff({ data: { wave_id, destino } }),
+    );
     if (!res.ok) return statusToast.error(res.reason ?? "Handoff falhou");
     if ("deduped" in res && res.deduped) toast.info("Handoff já enviado (idempotente)");
     else statusToast.success(`Handoff ${destino} enviado`);

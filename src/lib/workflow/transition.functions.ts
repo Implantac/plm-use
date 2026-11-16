@@ -2,6 +2,7 @@
 // na tabela alvo (RLS aplica como o usuário) e registra evento status_changed em entity_events.
 // Aditivo: não substitui triggers existentes (references já loga sozinho via trigger).
 import { createServerFn } from "@tanstack/react-start";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -47,7 +48,7 @@ export const performTransition = createServerFn({ method: "POST" })
     if (rpcErr) {
       return {
         ok: false,
-        reason: `Erro validando transição: ${rpcErr.message}`,
+        reason: descreverErroSupabase(rpcErr, "validar a transição"),
         from_status: data.from_status,
         to_status: data.to_status,
       };
@@ -80,7 +81,7 @@ export const performTransition = createServerFn({ method: "POST" })
     if (upErr) {
       return {
         ok: false,
-        reason: `Falha ao atualizar ${table}: ${upErr.message}`,
+        reason: descreverErroSupabase(upErr, "atualizar o status"),
         from_status: data.from_status,
         to_status: data.to_status,
       };

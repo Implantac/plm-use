@@ -2,6 +2,7 @@
 // Todas escrevem sob RLS via requireSupabaseAuth (RLS aplica como o usuário).
 // Handoff ao ERP é idempotente: chave determinística wave:{id}:destino:{d}:v1.
 import { createServerFn } from "@tanstack/react-start";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -34,7 +35,7 @@ export const createLaunchWave = createServerFn({ method: "POST" })
       })
       .select("*")
       .single();
-    if (error) return { ok: false as const, reason: error.message };
+    if (error) return { ok: false as const, reason: descreverErroSupabase(error, "criar a wave") };
     return { ok: true as const, wave: row };
   });
 
@@ -54,7 +55,12 @@ export const promoteShowroomDecisions = createServerFn({ method: "POST" })
       .from("showroom_decision")
       .select("id, reference_id, decision")
       .in("id", data.decision_ids);
-    if (dErr) return { ok: false as const, reason: dErr.message, created: 0 };
+    if (dErr)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(dErr, "ler as decisões do showroom"),
+        created: 0,
+      };
 
     const approved = (decs ?? []).filter((d) => d.decision === "aprovada");
     if (approved.length === 0) {
@@ -77,7 +83,12 @@ export const promoteShowroomDecisions = createServerFn({ method: "POST" })
       .from("launch_item")
       .upsert(rows, { onConflict: "wave_id,reference_id", ignoreDuplicates: true })
       .select("id");
-    if (iErr) return { ok: false as const, reason: iErr.message, created: 0 };
+    if (iErr)
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(iErr, "promover as decisões"),
+        created: 0,
+      };
 
     return { ok: true as const, created: inserted?.length ?? 0 };
   });
@@ -105,7 +116,8 @@ export const transitionLaunch = createServerFn({ method: "POST" })
         _to: data.to_status,
       } as never,
     );
-    if (rpcErr) return { ok: false as const, reason: rpcErr.message };
+    if (rpcErr)
+      return { ok: false as const, reason: descreverErroSupabase(rpcErr, "validar a transição") };
     if (!allowed) {
       return {
         ok: false as const,
@@ -118,7 +130,7 @@ export const transitionLaunch = createServerFn({ method: "POST" })
       .update({ status: data.to_status, updated_by: userId } as never)
       .eq("id", data.entity_id)
       .eq("status", data.from_status);
-    if (upErr) return { ok: false as const, reason: upErr.message };
+    if (upErr) return { ok: false as const, reason: descreverErroSupabase(upErr, "mover a wave") };
 
     return { ok: true as const };
   });
@@ -180,7 +192,8 @@ export const sendLaunchHandoff = createServerFn({ method: "POST" })
       })
       .select("id")
       .single();
-    if (iErr || !inserted) return { ok: false as const, reason: iErr?.message ?? "insert falhou" };
+    if (iErr || !inserted)
+      return { ok: false as const, reason: descreverErroSupabase(iErr, "registrar o handoff") };
 
     // 4) Simular confirmação do ERP (mock). Substituir por chamada real do ErpAdapter.
     const erp_source = "mock-erp";
@@ -195,7 +208,12 @@ export const sendLaunchHandoff = createServerFn({ method: "POST" })
       })
       .eq("id", inserted.id);
     if (cErr) {
-      return { ok: true as const, handoff_id: inserted.id, confirmed: false, reason: cErr.message };
+      return {
+        ok: true as const,
+        handoff_id: inserted.id,
+        confirmed: false,
+        reason: descreverErroSupabase(cErr, "confirmar o handoff"),
+      };
     }
 
     return { ok: true as const, handoff_id: inserted.id, confirmed: true, erp_id };

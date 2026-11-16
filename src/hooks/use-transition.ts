@@ -1,6 +1,7 @@
 // V8 · Hook para acionar performTransition com toast + invalidação de queries.
 // Renomeado para useWorkflowTransition para não conflitar com React.useTransition.
 import { useCallback, useState } from "react";
+import { chamarServidor } from "@/lib/supabase/erro-humano";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -58,8 +59,12 @@ export function useWorkflowTransition(entityType: WorkflowEntityType) {
 
         return res;
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "Erro desconhecido";
-        toast.error(`Falha na transição (${label}): ${msg}`);
+        // Onda 87: lançamento da server fn (sessão inválida, rede, 500) vira
+        // motivo em linguagem do usuário, não a mensagem crua.
+        const r = await chamarServidor(`concluir a transição ${label}`, async () => {
+          throw err;
+        });
+        toast.error((r as { reason: string }).reason);
         return null;
       } finally {
         setPending(false);

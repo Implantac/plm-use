@@ -1810,6 +1810,23 @@ Repo, ar e banco alinhados. Nenhuma publicação pendente.
 
 ---
 
+## 2-AW. 80ª medição (cont.) — Onda 87: launch e workflow
+
+**Bug reproduzido em produção (Onda 86 no ar):** `/launch` → Criar wave com
+sessão inválida → `pageerror: Unauthorized: Invalid token`, sem toast.
+**Correção:** `chamarServidor` nas 5 chamadas de `/launch`; `reason`
+traduzido em `launch.functions` (7) e `transition.functions` (2);
+`use-transition` traduz o lançamento. **Depois (local):** toast, 0 `pageerror`.
+
+| Camada | 80ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 87** — local = remoto                                |
+| Ar     | **Onda 86** (`index-96F5hQc4.js`) — **Onda 87 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **881/881** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

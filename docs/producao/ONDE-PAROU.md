@@ -729,7 +729,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 42. **Publicar a Onda 86 — FEITO (80ª medição).** Entry `index-96F5hQc4.js` /
     `index-B6rhnYs9.js`; o clique que travava em produção agora mostra o
     motivo e libera o botão, 0 `pageerror`. Repo, ar e banco alinhados na
-    Onda 86. **Nenhuma publicação pendente.**
+    Onda 86.
+43. **Publicar a Onda 87 — PENDENTE (80ª medição).** `/launch` e workflow:
+    server functions com motivo e UI que não trava (bug reproduzido em
+    produção). Código de produto: entry vai mudar de `index-96F5hQc4.js`.
+    Nenhuma migration. Gates **881/881**. Só publicar.
 
 ---
 
