@@ -2009,6 +2009,27 @@ token, antes HTML "This page didn't load" 500, depois JSON com motivo.
 
 ---
 
+## 2-BG. 88ª medição — Onda 94 (servidor) indistinguível por fora; Onda 95: páginas de falha pt-BR
+
+**Ar (88ª):** entry **inalterada** `index-BU9Gx2ky.js`. `/api/generate-image`
+em produção: sem token 401 e token inválido 401, ambos JSON em português
+(caminhos já traduzidos antes da 94). A Onda 94 só muda comportamento em
+recusa do provedor/exceção interna — não exercitável de fora sem chave;
+**não dá para afirmar que está publicada**: item 50 segue PENDENTE até a
+entry mudar. Banco intacto.
+
+**Onda 95 (repo):** 404, ErrorComponent e `renderErrorPage` traduzidos
+(antes "Page not found · Go home" em produção, medido por Playwright).
+
+| Camada | 88ª medição                                                     |
+| ------ | --------------------------------------------------------------- |
+| Repo   | **Onda 95** — local = remoto                                    |
+| Ar     | **Onda 93** (`index-BU9Gx2ky.js`) — **Ondas 94 e 95 pendentes** |
+| Banco  | inalterado                                                      |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **909/909**     |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

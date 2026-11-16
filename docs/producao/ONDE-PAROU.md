@@ -761,6 +761,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     vez de HTML "This page didn't load"). Nenhuma migration. Gates
     **907/907**. Validação: `curl` sem token / token inválido → 401 JSON.
 
+51. **Publicar a Onda 95 — PENDENTE (88ª medição).** Páginas de falha (404,
+    erro de rota, erro catastrófico) em pt-BR. Nenhuma migration. Gates
+    **909/909**. Validação: `/rota-que-nao-existe` em produção → "Página não
+    encontrada · Ir para o início".
+
 ---
 
 ## 8. Como reverificar isto
