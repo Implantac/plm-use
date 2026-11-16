@@ -1926,6 +1926,28 @@ resposta "(Sem IA — …)". Prova local Playwright: toast + marca + 0 `pageerro
 
 ---
 
+## 2-BC. 84ª medição — Onda 90 publicada; Onda 91: sessão inválida traduzida
+
+**Ar (84ª):** entry `index-B_CdsnmZ.js` / `index-CCWFnTK2.js`. `/ai-agents`
+(PCP) em produção → toast "Não foi possível consultar o agente: sua sessão
+expirou ou é inválida…" + chat "(Sem IA — …)", 0 `pageerror`
+(`medicao84-prod-ia.png`). Banco intacto. **Resíduo achado:** 2º toast cru
+"Unauthorized: Invalid token" (contexto de eventos) → Onda 91.
+
+**Onda 91 (repo):** `descreverErroSupabase` traduz o Unauthorized do
+middleware (chamarServidor delega); `/ai-agents` um toast por falha;
+`publish-catalog` 3 mensagens cruas → motivo; `live-context` sem
+`error.message` no prompt. Prova local: um toast, 0 `pageerror`.
+
+| Camada | 84ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 91** — local = remoto                                |
+| Ar     | **Onda 90** (`index-B_CdsnmZ.js`) — **Onda 91 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **899/899** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

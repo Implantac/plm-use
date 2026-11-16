@@ -56,7 +56,7 @@ export const fetchLiveContext = createServerFn({ method: "POST" })
         generated_at: new Date().toISOString(),
         counters: {},
         recent_events: [],
-        as_prompt: `(sem acesso ao stream de eventos: ${error.message})`,
+        as_prompt: "(sem acesso ao stream de eventos recentes neste momento)",
       };
     }
 

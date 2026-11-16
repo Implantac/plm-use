@@ -14,6 +14,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { CostDriver } from "@/lib/sales/types";
 import { isMissingTable, MIGRATION_HINT, type Err } from "@/lib/sales/api";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { areaCm2, type Aplicacao } from "./aplicacoes";
 import { driverDaAplicacao } from "./aplicacao-order-bridge";
 import { computeFullTechSheetPricing } from "./pricing";
@@ -312,7 +313,7 @@ export async function publishTechSheetToCatalog(
   if (prodRes.error || !prodRes.data) {
     const msg = isMissingTable(prodRes.error)
       ? MIGRATION_HINT
-      : (prodRes.error?.message ?? "Falha ao publicar produto no catálogo.");
+      : descreverErroSupabase(prodRes.error, "publicar o produto no catálogo");
     return { error: msg };
   }
 
@@ -341,7 +342,7 @@ export async function publishTechSheetToCatalog(
         productId,
         code: plan.product.code,
         optionsSynced,
-        error: grpRes.error?.message ?? `Falha ao sincronizar grupo ${grp.name}.`,
+        error: descreverErroSupabase(grpRes.error, `sincronizar o grupo ${grp.name}`),
       };
     }
 
@@ -376,7 +377,7 @@ export async function publishTechSheetToCatalog(
           productId,
           code: plan.product.code,
           optionsSynced,
-          error: optRes.error.message,
+          error: descreverErroSupabase(optRes.error, `sincronizar a opção do grupo ${grp.name}`),
         };
       }
       optionsSynced += 1;

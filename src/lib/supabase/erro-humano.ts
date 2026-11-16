@@ -33,8 +33,14 @@ export function descreverErroSupabase(
   ) {
     return `Não foi possível ${acao}: sua sessão não tem permissão para gravar aqui. Solicite o papel adequado a um gestor ou admin, ou entre novamente.`;
   }
-  if (code === "PGRST301" || lower.includes("jwt expired") || lower.includes("invalid jwt")) {
-    return `Não foi possível ${acao}: sua sessão expirou. Entre novamente e repita a ação.`;
+  if (
+    code === "PGRST301" ||
+    lower.includes("jwt expired") ||
+    lower.includes("invalid jwt") ||
+    // Onda 91 — `Unauthorized: Invalid token` / `No token` do requireSupabaseAuth
+    /unauthorized|invalid token|no token|\bjwt\b/.test(lower)
+  ) {
+    return `Não foi possível ${acao}: sua sessão expirou ou é inválida. Entre novamente e repita a ação.`;
   }
   if (code === "42P01" || code === "PGRST205" || lower.includes("schema cache")) {
     return `Não foi possível ${acao}: a tabela ainda não foi aplicada no banco (migration pendente). Avise o admin.`;
@@ -87,12 +93,6 @@ export async function chamarServidor<T extends { ok: boolean }>(
     return await fn();
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    if (/unauthorized|invalid token|no token|jwt/i.test(msg)) {
-      return {
-        ok: false,
-        reason: `Não foi possível ${acao}: sua sessão expirou ou é inválida. Entre novamente e repita a ação.`,
-      };
-    }
     return { ok: false, reason: descreverErroSupabase({ message: msg }, acao) };
   }
 }

@@ -743,10 +743,14 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     (`validator` não existe no stub de cliente); clique "Criar wave" em
     produção segue com motivo, 0 `pageerror`. Repo, ar e banco alinhados.
 
-46. **Publicar a Onda 90 — PENDENTE (83ª medição).** Agentes de IA com motivo
-    real: `reason` traduzido no servidor, telas via `chamarServidor`, fallback
-    local avisado "(Sem IA — …)". Nenhuma migration. Gates **892/892**.
-    Validação: `/ai-agents` (PCP) com sessão inválida → toast com motivo.
+46. **Publicar a Onda 90 — FEITO (84ª medição).** Entry `index-B_CdsnmZ.js`;
+    `/ai-agents` em produção mostra o motivo de sessão e marca "(Sem IA — …)",
+    0 `pageerror`. Resíduo (toast cru do contexto) tratado na Onda 91.
+
+47. **Publicar a Onda 91 — PENDENTE (84ª medição).** "Unauthorized: Invalid
+    token" traduzido em `descreverErroSupabase`; um toast por falha em
+    `/ai-agents`; `publish-catalog` e `live-context` sem mensagem crua. Nenhuma
+    migration. Gates **899/899**. Validação: `/ai-agents` (PCP) → um toast.
 
 ---
 

@@ -176,6 +176,7 @@ function AIAgentsPage() {
             ? (["reference", "tech_sheet"] as const)
             : undefined;
       let liveText = "";
+      let motivoLive: string | null = null;
       try {
         const live = await fetchLive({
           data: {
@@ -188,8 +189,7 @@ function AIAgentsPage() {
       } catch (e) {
         // Sem sessão cloud ativa: seguimos com o contexto local auditável, avisando.
         const msg = e instanceof Error ? e.message : String(e);
-        const motivo = descreverErroSupabase({ message: msg }, "ler os eventos recentes");
-        if (avisoUnico(motivo)) toast.warning(`${motivo} O agente usará só o contexto local.`);
+        motivoLive = descreverErroSupabase({ message: msg }, "ler os eventos recentes");
       }
 
       const localCtx =
@@ -209,8 +209,12 @@ function AIAgentsPage() {
         ask({ data: { agent, message: msg, context } }),
       );
       if (res.ok) {
+        // IA respondeu, mas sem o stream de eventos: avisa (uma vez) o porquê.
+        if (motivoLive && avisoUnico(motivoLive))
+          toast.warning(`${motivoLive} O agente usou só o contexto local.`);
         setChat((c) => [...c, { role: "ai", text: res.reply }]);
       } else {
+        // IA falhou: um único toast — a causa (sessão, papel, créditos) já é a mesma.
         // Fallback determinístico mantido — mas o usuário sabe POR QUE a IA não respondeu.
         const motivo = res.reason ?? "O agente de IA não respondeu.";
         toast.warning(`${motivo} Resposta abaixo gerada localmente, sem IA.`);
