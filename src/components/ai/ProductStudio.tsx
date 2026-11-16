@@ -22,6 +22,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { chamarServidor } from "@/lib/supabase/erro-humano";
 import { askAgent } from "@/lib/ai/agents.functions";
 import { nativeProposal } from "@/lib/ai/native-agent";
 import { nativeVisualPng } from "@/lib/ai/native-visual";
@@ -461,16 +462,18 @@ export function ProductStudio() {
     setProposal(null);
     setProposalText("");
     try {
-      const result = await ask({
-        data: {
-          agent: "fashion",
-          message:
-            buildConceptPrompt(briefing) +
-            (official ? `\n\n${officialMeasuresBlock(official)}` : ""),
-        },
-      });
+      const result = await chamarServidor("gerar a proposta", () =>
+        ask({
+          data: {
+            agent: "fashion",
+            message:
+              buildConceptPrompt(briefing) +
+              (official ? `\n\n${officialMeasuresBlock(official)}` : ""),
+          },
+        }),
+      );
       if (!result.ok) {
-        toast.error(result.error);
+        toast.error(result.reason ?? "Não foi possível gerar a proposta.");
         return;
       }
 
@@ -485,8 +488,6 @@ export function ProductStudio() {
           "A proposta chegou em formato livre. Revise e informe um nome antes de salvar.",
         );
       }
-    } catch {
-      toast.error("Não foi possível gerar a proposta. Tente novamente.");
     } finally {
       setGenerating(false);
     }

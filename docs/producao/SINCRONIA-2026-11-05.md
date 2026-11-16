@@ -1904,6 +1904,28 @@ clique em `/launch` chega ao `_serverFn`, 0 `pageerror`, Vite sem avisos.
 
 ---
 
+## 2-BB. 83ª medição — Onda 89 publicada; Onda 90: IA com motivo real
+
+**Ar (83ª):** entry **inalterada** `index-BEJGD7jp.js` — o compilador do Start
+remove o `.validator(` do stub de cliente (`createServerFn().middleware().handler(rpc)`),
+logo a Onda 89 é invisível no bundle; IDs das server fns iguais. Sem
+regressão: clique "Criar wave" em produção → toast de motivo, 0 `pageerror`
+(`medicao83-prod-wave.png`); cross-site segue 403; banco intacto.
+
+**Onda 90 (repo):** `askAgent` devolvia erro cru e `/ai-agents` caía no
+fallback local em silêncio. Agora `responderAgente` (módulo puro) devolve
+`reason` traduzido; telas usam `chamarServidor`, avisam o motivo e marcam a
+resposta "(Sem IA — …)". Prova local Playwright: toast + marca + 0 `pageerror`.
+
+| Camada | 83ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 90** — local = remoto                                |
+| Ar     | **Onda 89** (`index-BEJGD7jp.js`) — **Onda 90 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **892/892** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -739,10 +739,14 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     passava); same-origin e clique real em `/launch` seguem chegando ao
     handler, 0 `pageerror`. Repo, ar e banco alinhados na Onda 88.
 
-45. **Publicar a Onda 89 — PENDENTE (82ª medição).** `inputValidator()` →
-    `validator()` em 11 server functions (alias deprecado). Nenhuma migration.
-    Gates **887/887**. Validação pós-publicação: clique "Criar wave" em
-    produção com toast de motivo e 0 `pageerror`. Só publicar.
+45. **Publicar a Onda 89 — FEITO (83ª medição).** Entry inalterada
+    (`validator` não existe no stub de cliente); clique "Criar wave" em
+    produção segue com motivo, 0 `pageerror`. Repo, ar e banco alinhados.
+
+46. **Publicar a Onda 90 — PENDENTE (83ª medição).** Agentes de IA com motivo
+    real: `reason` traduzido no servidor, telas via `chamarServidor`, fallback
+    local avisado "(Sem IA — …)". Nenhuma migration. Gates **892/892**.
+    Validação: `/ai-agents` (PCP) com sessão inválida → toast com motivo.
 
 ---
 

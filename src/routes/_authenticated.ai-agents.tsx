@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { toast } from "sonner";
+import { avisoUnico, chamarServidor, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { Badge } from "@/components/ui/badge";
@@ -184,8 +185,11 @@ function AIAgentsPage() {
           },
         });
         liveText = live.as_prompt;
-      } catch {
-        // Sem sessão cloud ativa: seguimos com o contexto local auditável.
+      } catch (e) {
+        // Sem sessão cloud ativa: seguimos com o contexto local auditável, avisando.
+        const msg = e instanceof Error ? e.message : String(e);
+        const motivo = descreverErroSupabase({ message: msg }, "ler os eventos recentes");
+        if (avisoUnico(motivo)) toast.warning(`${motivo} O agente usará só o contexto local.`);
       }
 
       const localCtx =
@@ -201,17 +205,18 @@ function AIAgentsPage() {
             : "";
 
       const context = [liveText, localCtx].filter(Boolean).join("\n\n");
-      const res = await ask({ data: { agent, message: msg, context } });
+      const res = await chamarServidor("consultar o agente", () =>
+        ask({ data: { agent, message: msg, context } }),
+      );
       if (res.ok) {
         setChat((c) => [...c, { role: "ai", text: res.reply }]);
       } else {
-        // Fallback determinístico resiliente quando a chave cloud externa não estiver configurada
+        // Fallback determinístico mantido — mas o usuário sabe POR QUE a IA não respondeu.
+        const motivo = res.reason ?? "O agente de IA não respondeu.";
+        toast.warning(`${motivo} Resposta abaixo gerada localmente, sem IA.`);
         const fallback = computeLocalDeterministic(msg);
-        setChat((c) => [...c, { role: "ai", text: fallback }]);
+        setChat((c) => [...c, { role: "ai", text: `(Sem IA — ${motivo})\n\n${fallback}` }]);
       }
-    } catch {
-      const fallback = computeLocalDeterministic(msg);
-      setChat((c) => [...c, { role: "ai", text: fallback }]);
     } finally {
       setLoading(false);
     }

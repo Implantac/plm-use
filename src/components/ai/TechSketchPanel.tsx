@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Download, LoaderCircle, PencilRuler } from "lucide-react";
 import { toast } from "sonner";
+import { chamarServidor, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { askAgent } from "@/lib/ai/agents.functions";
@@ -70,14 +71,16 @@ export function TechSketchPanel({
     setIsFinal(false);
     setSpec(null);
     try {
-      const specPromise = ask({
-        data: {
-          agent: "fashion",
-          message: official
-            ? `Você é modelista. A tabela de medidas desta peça é a tabela OFICIAL abaixo e não deve ser alterada. Liste apenas os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, botões, entretela, acabamento de barra), coerentes com essas medidas. Responda SOMENTE JSON: {"measures":[],"details":["..."]}\n\n${officialMeasuresBlock(official)}\n\nPeça: ${summary}`
-            : `Você é modelista. Para a peça abaixo, tamanho ${size}, monte a TABELA DE MEDIDAS DA PEÇA PRONTA (não do corpo) partindo das medidas corporais da norma ABNT NBR 16060 (feminino) / NBR 16933 (masculino) para esse tamanho e somando a folga adequada à silhueta. Use os pontos de medida reais desta peça (ex.: 1/2 busto a 2,5 cm da cava, 1/2 cintura, 1/2 barra, comprimento total do ponto mais alto do ombro, largura de ombro, comprimento de manga, 1/2 punho, altura e circunferência de gola, profundidade de cava). Para cada medida informe valor em cm, tolerância (±) e como medir. Liste os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, quantidade e diâmetro de botões, entretela, acabamento de barra). Responda SOMENTE JSON: {"measures":[{"point":"1/2 busto","value":"52 cm","tolerance":"±1 cm","how":"2,5 cm abaixo da cava, de lado a lado"}],"details":["..."]}\n\nPeça: ${summary}`,
-        },
-      });
+      const specPromise = chamarServidor("gerar as medidas", () =>
+        ask({
+          data: {
+            agent: "fashion",
+            message: official
+              ? `Você é modelista. A tabela de medidas desta peça é a tabela OFICIAL abaixo e não deve ser alterada. Liste apenas os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, botões, entretela, acabamento de barra), coerentes com essas medidas. Responda SOMENTE JSON: {"measures":[],"details":["..."]}\n\n${officialMeasuresBlock(official)}\n\nPeça: ${summary}`
+              : `Você é modelista. Para a peça abaixo, tamanho ${size}, monte a TABELA DE MEDIDAS DA PEÇA PRONTA (não do corpo) partindo das medidas corporais da norma ABNT NBR 16060 (feminino) / NBR 16933 (masculino) para esse tamanho e somando a folga adequada à silhueta. Use os pontos de medida reais desta peça (ex.: 1/2 busto a 2,5 cm da cava, 1/2 cintura, 1/2 barra, comprimento total do ponto mais alto do ombro, largura de ombro, comprimento de manga, 1/2 punho, altura e circunferência de gola, profundidade de cava). Para cada medida informe valor em cm, tolerância (±) e como medir. Liste os detalhes construtivos com especificações (tipo e largura de costura/pesponto em mm, quantidade e diâmetro de botões, entretela, acabamento de barra). Responda SOMENTE JSON: {"measures":[{"point":"1/2 busto","value":"52 cm","tolerance":"±1 cm","how":"2,5 cm abaixo da cava, de lado a lado"}],"details":["..."]}\n\nPeça: ${summary}`,
+          },
+        }),
+      );
       const reference = official?.sketch_path ? await sketchDataUrl(official.sketch_path) : null;
       const imagePromise = streamImage(
         "/api/generate-image",
@@ -94,7 +97,10 @@ export function TechSketchPanel({
       const [specResult] = await Promise.allSettled([specPromise, imagePromise]).then((r) => {
         if (r[1].status === "rejected")
           toast.error(
-            r[1].reason instanceof Error ? r[1].reason.message : "Falha ao gerar o desenho.",
+            descreverErroSupabase(
+              { message: r[1].reason instanceof Error ? r[1].reason.message : String(r[1].reason) },
+              "gerar o desenho",
+            ),
           );
         return [r[0]];
       });
@@ -113,7 +119,7 @@ export function TechSketchPanel({
             });
           else if (parsed) setSpec(parsed);
           else toast.warning("As medidas vieram em formato inesperado.");
-        } else toast.error(specResult.value.error);
+        } else toast.error(specResult.value.reason ?? "Não foi possível gerar as medidas.");
       } else toast.error("Não foi possível gerar as medidas.");
     } finally {
       setBusy(false);
