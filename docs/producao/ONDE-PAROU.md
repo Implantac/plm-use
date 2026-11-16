@@ -739,6 +739,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     passava); same-origin e clique real em `/launch` seguem chegando ao
     handler, 0 `pageerror`. Repo, ar e banco alinhados na Onda 88.
 
+45. **Publicar a Onda 89 — PENDENTE (82ª medição).** `inputValidator()` →
+    `validator()` em 11 server functions (alias deprecado). Nenhuma migration.
+    Gates **887/887**. Validação pós-publicação: clique "Criar wave" em
+    produção com toast de motivo e 0 `pageerror`. Só publicar.
+
 ---
 
 ## 8. Como reverificar isto

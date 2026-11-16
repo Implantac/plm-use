@@ -1887,6 +1887,23 @@ db-certification success.
 
 ---
 
+## 2-BA. 82ª medição (cont.) — Onda 89: `validator()` nas server functions
+
+**Risco:** 11 usos do alias deprecado `inputValidator` em 5 arquivos; upgrade
+que remova o alias derruba todas as server fns com entrada. **Correção:**
+troca para `.validator(` + trava (nenhum uso antigo; toda fn que lê `data`
+valida; validator de `createLaunchWave` recusa inválido). **Prova local:**
+clique em `/launch` chega ao `_serverFn`, 0 `pageerror`, Vite sem avisos.
+
+| Camada | 82ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 89** — local = remoto                                |
+| Ar     | **Onda 88** (`index-BEJGD7jp.js`) — **Onda 89 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **887/887** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

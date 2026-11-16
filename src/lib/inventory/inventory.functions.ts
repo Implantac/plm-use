@@ -64,7 +64,7 @@ const UpsertItemInput = z.object({
 
 export const upsertStockItem = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => UpsertItemInput.parse(input))
+  .validator((input: unknown) => UpsertItemInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     if (data.id) {
@@ -102,7 +102,7 @@ const MovementInput = z.object({
 
 export const registerMovement = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => MovementInput.parse(input))
+  .validator((input: unknown) => MovementInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
@@ -149,7 +149,7 @@ const ReservationInput = z.object({
 
 export const createReservation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => ReservationInput.parse(input))
+  .validator((input: unknown) => ReservationInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: row, error } = await supabase
@@ -170,7 +170,7 @@ const UpdateResInput = z.object({
 
 export const updateReservationStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => UpdateResInput.parse(input))
+  .validator((input: unknown) => UpdateResInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const nowIso = new Date().toISOString();

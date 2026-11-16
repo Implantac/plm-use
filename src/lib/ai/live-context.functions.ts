@@ -33,7 +33,7 @@ export type LiveContext = {
 
 export const fetchLiveContext = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => ScopeInput.parse(input ?? {}))
+  .validator((input: unknown) => ScopeInput.parse(input ?? {}))
   .handler(async ({ data, context }): Promise<LiveContext> => {
     const { supabase } = context;
     const since = new Date(Date.now() - data.since_hours * 3600 * 1000).toISOString();

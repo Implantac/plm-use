@@ -32,7 +32,7 @@ export type TransitionResult = {
 
 export const performTransition = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => Input.parse(input))
+  .validator((input: unknown) => Input.parse(input))
   .handler(async ({ data, context }): Promise<TransitionResult> => {
     const { supabase, userId, claims } = context;
 

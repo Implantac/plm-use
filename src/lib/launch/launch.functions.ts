@@ -18,7 +18,7 @@ const CreateWaveInput = z.object({
 
 export const createLaunchWave = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => CreateWaveInput.parse(input))
+  .validator((input: unknown) => CreateWaveInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: row, error } = await supabase
@@ -48,7 +48,7 @@ const PromoteInput = z.object({
 
 export const promoteShowroomDecisions = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => PromoteInput.parse(input))
+  .validator((input: unknown) => PromoteInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: decs, error: dErr } = await supabase
@@ -103,7 +103,7 @@ const TransitionInput = z.object({
 
 export const transitionLaunch = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => TransitionInput.parse(input))
+  .validator((input: unknown) => TransitionInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const table = data.entity_type; // both tables share their name with entity_type
@@ -145,7 +145,7 @@ const HandoffInput = z.object({
 
 export const sendLaunchHandoff = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => HandoffInput.parse(input))
+  .validator((input: unknown) => HandoffInput.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 

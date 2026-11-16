@@ -21,7 +21,7 @@ const SYSTEM_PROMPTS: Record<string, string> = {
 
 export const askAgent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => AgentInput.parse(input))
+  .validator((input: unknown) => AgentInput.parse(input))
   .handler(async ({ data, context }) => {
     // Só membros da confecção (algum papel em user_roles) podem gastar créditos.
     const { supabase, userId } = context;
