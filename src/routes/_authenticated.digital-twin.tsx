@@ -34,6 +34,7 @@ import { useTechSheetStore } from "@/lib/techsheet/store";
 import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { simulateDigitalTwinScenario } from "@/lib/techsheet/digital-twin";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export const Route = createFileRoute("/_authenticated/digital-twin")({
   head: () => ({
@@ -181,7 +182,7 @@ function DigitalTwinPage() {
       );
       toast.success("Gêmeo Digital renderizado em alta definição com fundo PNG transparente!");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Falha ao renderizar Gêmeo IA.");
+      toast.error(motivoDe(err, "renderizar o Gêmeo IA"));
     } finally {
       setAiBusy(false);
     }

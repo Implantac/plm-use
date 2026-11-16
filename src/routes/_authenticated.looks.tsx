@@ -59,6 +59,7 @@ import {
 } from "@/lib/techsheet/linesheet";
 import { operationalCodes, resolveSheet } from "@/lib/techsheet/provenance";
 import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export const Route = createFileRoute("/_authenticated/looks")({
   component: LooksPage,
@@ -384,7 +385,7 @@ function LookDetail({ look }: { look: Look }) {
       );
       toast.success("Coordenado completo renderizado em PNG transparente!");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Falha ao renderizar look.");
+      toast.error(motivoDe(err, "renderizar o look"));
     } finally {
       setRenderBusy(false);
     }

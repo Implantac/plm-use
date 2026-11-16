@@ -747,10 +747,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `/ai-agents` em produção mostra o motivo de sessão e marca "(Sem IA — …)",
     0 `pageerror`. Resíduo (toast cru do contexto) tratado na Onda 91.
 
-47. **Publicar a Onda 91 — PENDENTE (84ª medição).** "Unauthorized: Invalid
-    token" traduzido em `descreverErroSupabase`; um toast por falha em
-    `/ai-agents`; `publish-catalog` e `live-context` sem mensagem crua. Nenhuma
-    migration. Gates **899/899**. Validação: `/ai-agents` (PCP) → um toast.
+47. **Publicar a Onda 91 — FEITO (85ª medição).** Entry `index-Csu-ARgZ.js`;
+    `/ai-agents` em produção com um único toast traduzido, 0 `pageerror`.
+
+48. **Publicar a Onda 92 — PENDENTE (85ª medição).** 21 toasts crus →
+    `motivoDe(erro, ação)`; nunca "[object Object]"/"Falha" sem motivo. Nenhuma
+    migration. Gates **902/902**. Validação: `/supplier-portal` → Cadastrar
+    fornecedor com sessão inválida → toast com motivo.
 
 ---
 

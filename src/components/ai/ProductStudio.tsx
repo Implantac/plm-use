@@ -69,6 +69,7 @@ import {
   normalizeProductProposal,
   type ProductBriefingInput,
 } from "./product-studio.utils";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 const ProposalSchema = z.object({
   name: z.string(),
@@ -581,7 +582,7 @@ export function ProductStudio() {
         toast.warning("Visual gerado, mas não foi possível salvá-lo no armazenamento.");
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Não foi possível gerar a imagem.");
+      toast.error(motivoDe(error, "gerar a imagem"));
     } finally {
       setImageBusy(false);
     }
@@ -663,7 +664,7 @@ export function ProductStudio() {
       else toast.warning("Arte aplicada, mas não foi possível salvar o visual no armazenamento.");
     } catch (error) {
       setImageSource(sourceGarment);
-      toast.error(error instanceof Error ? error.message : "Não foi possível aplicar a arte.");
+      toast.error(motivoDe(error, "aplicar a arte"));
     } finally {
       setImageBusy(false);
     }

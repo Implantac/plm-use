@@ -40,6 +40,7 @@ import {
 } from "@/lib/techsheet/sourcing-rfq";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 import { operationalCodes } from "@/lib/techsheet/provenance";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export const Route = createFileRoute("/_authenticated/supplier-portal")({
   component: SupplierPortalPage,
@@ -202,7 +203,7 @@ function SuppliersTab() {
       });
       qc.invalidateQueries({ queryKey: ["suppliers"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha"),
+    onError: (e) => toast.error(motivoDe(e, "cadastrar o fornecedor")),
   });
 
   return (
@@ -370,7 +371,7 @@ function OrdersTab() {
       });
       qc.invalidateQueries({ queryKey: ["supplier_orders"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha"),
+    onError: (e) => toast.error(motivoDe(e, "criar o pedido ao fornecedor")),
   });
 
   const transition = useMutation({
@@ -383,7 +384,7 @@ function OrdersTab() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["supplier_orders"] }),
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha"),
+    onError: (e) => toast.error(motivoDe(e, "mover o pedido")),
   });
 
   const supplierName = useMemo(() => {
@@ -592,7 +593,7 @@ function SamplesTab() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["supplier_samples"] }),
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha"),
+    onError: (e) => toast.error(motivoDe(e, "registrar a decisão da amostra")),
   });
 
   const orderCode = useMemo(() => {

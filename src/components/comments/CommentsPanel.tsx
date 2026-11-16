@@ -310,7 +310,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         .from(BUCKET)
         .upload(path, file, { contentType: file.type, upsert: false });
       if (upErr) {
-        toast.error(`Falha ao enviar ${file.name}: ${upErr.message}`);
+        toast.error(descreverErroSupabase(upErr, `enviar o anexo ${file.name}`));
         continue;
       }
       const { error: insErr } = await supabase.from("comment_attachments").insert({
@@ -322,7 +322,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
         uploaded_by: user.id,
       });
       if (insErr) {
-        toast.error(insErr.message);
+        toast.error(descreverErroSupabase(insErr, `registrar o anexo ${file.name}`));
         void supabase.storage.from(BUCKET).remove([path]);
       }
     }
@@ -346,7 +346,7 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
       .single();
     if (error || !data) {
       setSending(false);
-      toast.error(error?.message ?? "Erro ao enviar");
+      toast.error(descreverErroSupabase(error, "enviar o comentário"));
       return;
     }
     if (pendingFiles.length > 0) {

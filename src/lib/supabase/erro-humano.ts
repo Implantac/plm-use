@@ -64,6 +64,28 @@ export function descreverErroSupabase(
   return msg ? `Não foi possível ${acao}: ${msg}` : `Não foi possível ${acao}.`;
 }
 
+/**
+ * Onda 92 — normaliza qualquer coisa lançada (Error, objeto de erro do
+ * PostgREST/Storage com `code`/`message`, string) e devolve o motivo em
+ * linguagem do usuário. Evita o "[object Object]" de `String(e)`.
+ */
+export function motivoDe(erro: unknown, acao: string): string {
+  if (erro instanceof Error) return descreverErroSupabase({ message: erro.message }, acao);
+  if (erro && typeof erro === "object") {
+    const o = erro as { code?: unknown; message?: unknown; status?: unknown; details?: unknown };
+    return descreverErroSupabase(
+      {
+        code: typeof o.code === "string" ? o.code : null,
+        message: typeof o.message === "string" ? o.message : null,
+        status: typeof o.status === "number" ? o.status : null,
+        details: typeof o.details === "string" ? o.details : null,
+      },
+      acao,
+    );
+  }
+  return descreverErroSupabase({ message: erro == null ? null : String(erro) }, acao);
+}
+
 const ultimosAvisos = new Map<string, number>();
 
 /**

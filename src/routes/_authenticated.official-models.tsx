@@ -1,6 +1,6 @@
 // Modelos oficiais — tabela de medidas + desenho técnico reais usados como referência pela IA.
 import { useEffect, useState } from "react";
-import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
+import { descreverErroSupabase, motivoDe } from "@/lib/supabase/erro-humano";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FileUp, ImageUp, LoaderCircle, Plus, Ruler, Trash2 } from "lucide-react";
@@ -75,7 +75,7 @@ function OfficialModelsPage() {
       toast.success(`"${m.nome}" agora é a tabela oficial de ${m.colecao}.`);
       await qc.invalidateQueries({ queryKey: ["official-models"] });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Falha ao trocar a tabela.");
+      toast.error(motivoDe(e, "trocar a tabela"));
     }
   }
 
@@ -151,7 +151,7 @@ function OfficialModelsPage() {
       setSketchFile(null);
       await qc.invalidateQueries({ queryKey: ["official-models"] });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Falha ao salvar.");
+      toast.error(motivoDe(e, "salvar o modelo oficial"));
     } finally {
       setSaving(false);
     }

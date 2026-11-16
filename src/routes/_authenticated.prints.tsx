@@ -67,6 +67,7 @@ import { useTechSheetStore } from "@/lib/techsheet/store";
 import { SemFichaSalva } from "@/components/techsheet/SemFichaSalva";
 import { useOperationalRefs, useSelectedRef } from "@/lib/techsheet/use-operational-refs";
 import { streamImage } from "@/lib/streamImage";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export const Route = createFileRoute("/_authenticated/prints")({
   head: () => ({
@@ -639,7 +640,7 @@ function PrintAiDialog({
         toast.success(`Nova versão v${nextNum} gerada em PNG transparente e salva no histórico!`);
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Falha ao gerar variante IA.");
+      toast.error(motivoDe(err, "gerar a variante IA"));
     } finally {
       setBusy(false);
     }

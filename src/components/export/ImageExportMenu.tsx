@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EXPORT_FORMATS, exportImage, type ExportFormat } from "@/lib/export/image-export";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export function ImageExportMenu({ src, baseName }: { src: string; baseName: string }) {
   const [busy, setBusy] = useState(false);
@@ -19,7 +20,7 @@ export function ImageExportMenu({ src, baseName }: { src: string; baseName: stri
     try {
       await exportImage(src, baseName, f);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Falha ao exportar.");
+      toast.error(motivoDe(e, "exportar a imagem"));
     } finally {
       setBusy(false);
     }

@@ -1948,6 +1948,26 @@ middleware (chamarServidor delega); `/ai-agents` um toast por falha;
 
 ---
 
+## 2-BD. 85ª medição — Onda 91 publicada; Onda 92: toasts crus zerados
+
+**Ar (85ª):** entry `index-Csu-ARgZ.js` / `index-DSykfdyB.js`. `/ai-agents`
+(PCP) em produção → **um** toast com motivo de sessão, sem "Unauthorized",
+0 `pageerror` (`medicao85-prod-ia.png`). Banco intacto.
+
+**Onda 92 (repo):** 21 `toast.error(e.message)` crus → `motivoDe(e, ação)`;
+helper normaliza Error/objeto PostgREST/string (a prova por clique revelou
+que a mutation lança objeto, não Error). Prova local: "Cadastrar fornecedor"
+→ motivo de sessão, 0 `pageerror`.
+
+| Camada | 85ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 92** — local = remoto                                |
+| Ar     | **Onda 91** (`index-Csu-ARgZ.js`) — **Onda 92 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **902/902** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

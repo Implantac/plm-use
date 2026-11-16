@@ -12,6 +12,7 @@ import {
   type LightingPresetId,
 } from "@/lib/ai/photorealism";
 import { toast } from "sonner";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }) {
   const [prompt, setPrompt] = useState("");
@@ -66,7 +67,7 @@ export function AiCroquiPanel({ onSave }: { onSave?: (dataUrl: string) => void }
         );
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Falha ao gerar");
+      toast.error(motivoDe(e, "gerar o croqui"));
     } finally {
       setBusy(false);
     }

@@ -95,7 +95,7 @@ export function NovaOpDialog({
       .single();
     if (error || !op) {
       setSaving(false);
-      toast.error(error?.message ?? "Falha ao criar OP.");
+      toast.error(descreverErroSupabase(error, "criar a OP"));
       return;
     }
     const { error: e2 } = await supabase.from("production_order_items").insert({

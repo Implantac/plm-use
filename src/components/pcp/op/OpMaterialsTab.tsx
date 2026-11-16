@@ -59,7 +59,7 @@ export function OpMaterialsTab({ orderId, orderNumber }: { orderId: string; orde
       const pendente = isMissingDatabaseObject(error as { code?: string; message?: string });
       setErro({ pendente, mensagem: error.message });
       setRows([]);
-      if (!pendente) toast.error(`Não foi possível ler as reservas da OP: ${error.message}`);
+      if (!pendente) toast.error(descreverErroSupabase(error, "ler as reservas da OP"));
       return;
     }
     setErro(null);

@@ -34,6 +34,7 @@ import {
   type ProdRoute,
   type ProductionOrder,
 } from "@/hooks/use-production-orders";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 interface Row {
   key: string;
@@ -153,7 +154,7 @@ export function OpWorkspace({
       toast.success(`${moves.length} movimento(s) registrado(s).`);
       reset();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Falha ao registrar passagem.");
+      toast.error(motivoDe(e, "registrar a passagem"));
     }
   };
 
@@ -477,8 +478,7 @@ function AltRouteForm({
           setReason("");
           setRouteId("");
         },
-        onError: (e) =>
-          toast.error(e instanceof Error ? e.message : "Não foi possível trocar a rota."),
+        onError: (e) => toast.error(motivoDe(e, "trocar a rota")),
       },
     );
   };

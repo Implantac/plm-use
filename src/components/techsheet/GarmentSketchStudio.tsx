@@ -63,6 +63,7 @@ import {
   type TechSheetColorway,
 } from "@/lib/techsheet/textile";
 import { computeFullTechSheetPricing, resolveDivisorParams } from "@/lib/techsheet/pricing";
+import { motivoDe } from "@/lib/supabase/erro-humano";
 
 const brl = (n: number) =>
   (Number.isFinite(n) ? n : 0).toLocaleString("pt-BR", {
@@ -187,7 +188,7 @@ export function GarmentSketchStudio({
         toast.success("Foto realista HD gerada a partir da engenharia da ficha!");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Falha ao renderizar foto realista.");
+      toast.error(motivoDe(err, "renderizar a foto realista"));
     } finally {
       setAiPhotoBusy(false);
     }
