@@ -1752,6 +1752,26 @@ falha (anti-spam 60 s) e o push por diff de influencers pula `demo: true`.
 
 ---
 
+## 2-AT. 79ª medição — "publicado" (Onda 85) re-medido e validado por clique
+
+**Ar:** entry novo `index-BIKP6IRR.js` / `index-HYwVX8nu.js` (215 chunks /
+3.218.132 bytes, 0 falhas); "salvar a rota" = 1, "criar o pedido" = 2,
+genérico = 0. **Clique em produção:** `/route-engineering` → Rotas
+Produtivas → "Nova rota" → toast "Não foi possível salvar a rota: sua sessão
+expirou. Entre novamente e repita a ação.", 0 `pageerror`
+(`medicao79-prod-rota.png`). **Banco:** view `200 []`, `stock_on_hand`
+`401 42501`, SHA `382f0f19…`.
+
+| Camada | 79ª medição                                  |
+| ------ | -------------------------------------------- |
+| Repo   | **Onda 85** (`46bb459`) — local = remoto     |
+| Ar     | **Onda 85** (`index-BIKP6IRR.js`) — alinhado |
+| Banco  | inalterado                                   |
+
+Repo, ar e banco alinhados. Nenhuma publicação pendente.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

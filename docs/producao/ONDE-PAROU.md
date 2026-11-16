@@ -722,10 +722,10 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `index-CwB9f4iz.js`, marcador "sincronizar os lotes" presente.
 40. **Publicar a Onda 84 — FEITO (78ª medição).** Entry `index-DB6yClmz.js` /
     `index-Dv383hxY.js`, genérico "Tente novamente" = 0.
-41. **Publicar a Onda 85 — PENDENTE (78ª medição).** 18 pontos deixam de
-    mostrar a mensagem crua do banco (pedidos, catálogo, OP, estoque, papéis,
-    comentários, rotas). Código de produto: entry vai mudar de
-    `index-DB6yClmz.js`. Nenhuma migration. Gates **875/875**. Só publicar.
+41. **Publicar a Onda 85 — FEITO (79ª medição).** Entry `index-BIKP6IRR.js` /
+    `index-HYwVX8nu.js`; clique em produção em `/route-engineering` confirmou
+    o toast com motivo em português, 0 `pageerror`. Repo, ar e banco
+    alinhados na Onda 85. **Nenhuma publicação pendente.**
 
 ---
 
