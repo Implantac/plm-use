@@ -1865,6 +1865,28 @@ origem 403; aviso sumiu do log.
 
 ---
 
+## 2-AZ. 82ª medição — Onda 88 publicada e validada em produção
+
+**Publicação pela Lovable confirmada.** Entry `index-BEJGD7jp.js` /
+`index-DsR2wrI6.js`. **Medido em produção (depois):** POST cross-site ao
+`_serverFn/b6ddfd0d…` (createLaunchWave) → **403**
+`{"ok":false,"reason":"Requisição recusada: origem não reconhecida…"}`
+(2×); sem `Origin` → 403; same-origin via `curl` passa a trava (500 Seroval
+por payload genérico, idêntico ao antes); clique real "Criar wave" em
+`/launch` via Playwright → toast de sessão inválida (chegou ao handler, não
+foi barrado), 0 `pageerror` (`medicao82-prod-wave.png`). Banco inalterado
+(view 200, SQL `382f0f19`). CI `d0abd97`: quality/smoke-publico/
+db-certification success.
+
+| Camada | 82ª medição                                       |
+| ------ | ------------------------------------------------- |
+| Repo   | **Onda 88** — local = remoto                      |
+| Ar     | **Onda 88** (`index-BEJGD7jp.js`) — alinhado      |
+| Banco  | inalterado                                        |
+| Gates  | `tsc` 0 · `eslint` 0 · `prettier` limpo · 884/884 |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
