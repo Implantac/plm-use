@@ -1847,6 +1847,24 @@ Repo, ar e banco alinhados. Nenhuma publicação pendente.
 
 ---
 
+## 2-AY. 81ª medição (cont.) — Onda 88: trava CSRF nas server functions
+
+**Medido em produção:** POST cross-site ao `_serverFn` real passa e chega ao
+handler. **Impacto real:** auth por header Bearer (não cookie) → não
+explorável hoje; a trava é defesa em profundidade e remove o aviso do
+framework. **Correção:** `createCsrfMiddleware` (filtro `serverFn`), recusa
+403 JSON com motivo. **Prova local:** same-origin 200; cross-site 403; sem
+origem 403; aviso sumiu do log.
+
+| Camada | 81ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 88** — local = remoto                                |
+| Ar     | **Onda 87** (`index-CGbr0jKE.js`) — **Onda 88 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **884/884** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

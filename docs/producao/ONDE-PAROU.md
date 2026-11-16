@@ -733,7 +733,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 43. **Publicar a Onda 87 — FEITO (81ª medição).** Entry `index-CGbr0jKE.js` /
     `index-DfC521Vj.js`; o clique "Criar wave" que dava `pageerror` em
     produção agora mostra o motivo, 0 `pageerror`. Repo, ar e banco alinhados
-    na Onda 87. **Nenhuma publicação pendente.**
+    na Onda 87.
+44. **Publicar a Onda 88 — PENDENTE (81ª medição).** Trava CSRF nas server
+    functions (defesa em profundidade; auth é Bearer, não cookie). Validação
+    pós-publicação: `curl` cross-site ao `_serverFn` de produção deve dar
+    **403** com motivo. Nenhuma migration. Gates **884/884**. Só publicar.
 
 ---
 
