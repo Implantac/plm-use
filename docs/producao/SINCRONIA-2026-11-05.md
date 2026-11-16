@@ -1827,6 +1827,26 @@ traduzido em `launch.functions` (7) e `transition.functions` (2);
 
 ---
 
+## 2-AX. 81ª medição — "publicado" (Onda 87) re-medido e validado por clique
+
+**Ar:** entry novo `index-CGbr0jKE.js` / `index-DfC521Vj.js` (215 chunks /
+3.218.727 bytes, 0 falhas); "criar a wave" = 1, "enviar o handoff" = 1.
+**Mesmo clique da 80ª em produção** (`/launch` → Criar wave, sessão
+inválida): ANTES `pageerror` sem toast; **AGORA** toast "Não foi possível
+criar a wave: sua sessão expirou ou é inválida. Entre novamente e repita a
+ação.", 0 `pageerror` (`medicao81-prod-wave.png`). **Banco:** view `200 []`,
+SHA `382f0f19…`.
+
+| Camada | 81ª medição                                  |
+| ------ | -------------------------------------------- |
+| Repo   | **Onda 87** (`85dd018`) — local = remoto     |
+| Ar     | **Onda 87** (`index-CGbr0jKE.js`) — alinhado |
+| Banco  | inalterado                                   |
+
+Repo, ar e banco alinhados. Nenhuma publicação pendente.
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
