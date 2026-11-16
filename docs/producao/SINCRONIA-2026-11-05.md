@@ -1716,6 +1716,24 @@ para tabela ausente; `42P01/PGRST205` descritos como migration pendente.
 
 ---
 
+## 2-AR. 78ª medição — Onda 83 no ar; Onda 84 fecha a família de sync
+
+**Ar:** entry novo `index-BZ0mwsTv.js` / `index-CwB9f4iz.js` (215 /
+3.217.738, 0 falhas), marcador "sincronizar os lotes" presente — Onda 83
+publicada (medido). Banco inalterado.
+
+**Onda 84:** `cloud-sync` e `creative-sync` passam a dizer o motivo real da
+falha (anti-spam 60 s) e o push por diff de influencers pula `demo: true`.
+
+| Camada | 78ª medição (depois)                                        |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 84** — local = remoto                                |
+| Ar     | **Onda 83** (`index-BZ0mwsTv.js`) — **Onda 84 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **873/873** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

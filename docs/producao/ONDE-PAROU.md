@@ -718,10 +718,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 38. **Publicar a Onda 82 — FEITO (77ª medição).** Entry `index-BO5EmpVR.js` /
     `index-C26yoeGn.js`, marcador "mover o CAPA" presente, texto genérico
     ausente.
-39. **Publicar a Onda 83 — PENDENTE (77ª medição).** Sync de lotes/moldes
-    explica o porquê e só sobe lote operacional (vitrine nunca vira linha em
-    `pcp_lots`). Código de produto: entry vai mudar de `index-BO5EmpVR.js`.
-    Nenhuma migration. Gates **871/871**. Só publicar.
+39. **Publicar a Onda 83 — FEITO (78ª medição).** Entry `index-BZ0mwsTv.js` /
+    `index-CwB9f4iz.js`, marcador "sincronizar os lotes" presente.
+40. **Publicar a Onda 84 — PENDENTE (78ª medição).** `cloud-sync` e
+    `creative-sync` dizem o motivo real; diff de influencers não sobe vitrine.
+    Código de produto: entry vai mudar de `index-BZ0mwsTv.js`. Nenhuma
+    migration. Gates **873/873**. Só publicar.
 
 ---
 

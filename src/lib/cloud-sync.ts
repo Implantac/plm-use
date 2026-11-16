@@ -1,6 +1,7 @@
 // Lovable Cloud sync para módulos colaborativos (influencers, quality CAPA, tech sheets).
 // Padrão: hidrata uma vez por sessão; subscribes empurram debounced upserts.
 import { useEffect } from "react";
+import { avisoUnico, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -25,8 +26,11 @@ async function pushOrWarn(
 ): Promise<boolean> {
   const { error } = await supabase.from(table).upsert(rows as never, { onConflict });
   if (error) {
+    // Onda 84: o porquê vem do erro real (permissão, sessão, tabela ausente…);
+    // aviso único por minuto porque o push é debounced a cada alteração.
     console.error(`[cloud-sync] falha ao salvar ${label}:`, error.message);
-    toast.error(`Não foi possível salvar ${label} na nuvem. Tente novamente.`);
+    const msg = descreverErroSupabase(error, `salvar ${label} na nuvem`);
+    if (avisoUnico(msg)) toast.error(msg);
     return false;
   }
   return true;
@@ -197,6 +201,8 @@ export function useModulesCloudSync(enabled: boolean) {
             // upsert apenas os que mudaram (referência diferente)
             const prevMap = new Map(prev.influencers.map((i) => [i.id, i]));
             for (const i of s.influencers) {
+              // Onda 84: vitrine (`demo: true`) nunca sobe — só creator salvo.
+              if (i.demo) continue;
               if (prevMap.get(i.id) !== i) void pushInfluencer(i, uid);
             }
           });

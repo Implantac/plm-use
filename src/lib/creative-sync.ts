@@ -15,6 +15,7 @@
 // depois do `db push`); até lá o acesso passa pelo cliente frouxo abaixo,
 // tipado só no que usamos.
 import { useEffect } from "react";
+import { avisoUnico, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -698,7 +699,9 @@ async function pushModule(spec: ModuleSpec, uid: string) {
     const { error } = await db.from(spec.table).upsert(rows, { onConflict: "external_key" });
     if (error) {
       console.error(`[creative-sync] falha ao salvar ${spec.label}:`, error.message);
-      toast.error(`Não foi possível salvar ${spec.label} na nuvem. Tente novamente.`);
+      // Onda 84: motivo real + aviso único por minuto (push debounced).
+      const msg = descreverErroSupabase(error, `salvar ${spec.label} na nuvem`);
+      if (avisoUnico(msg)) toast.error(msg);
       return;
     }
   }
