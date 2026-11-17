@@ -772,11 +772,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     PNG de 16 MB em produção → "Não foi possível enviar foto.png: Arquivo
     excede 15 MB.".
 
-55. **Publicar a Onda 99 — PENDENTE (92ª medição).** Transição de referência
-    com motivo real (`ResultadoGravacao`); `/flow` e drawer mostram o porquê;
-    CAPA sem toast duplicado. Nenhuma migration. Gates **923/923**. Validação
-    no ar exige login real (`PLM_E2E_EMAIL/PASSWORD`): "Avançar etapa" com
-    falha deve mostrar o motivo, nunca "Não foi possível avançar a referência.".
+55. **Publicar a Onda 99 — FEITO (93ª medição).** Entry `index-DOs7OLZd.js`;
+    `/flow` 0 `pageerror`; clique real pendente de `PLM_E2E_EMAIL/PASSWORD`.
+
+56. **Publicar a Onda 100 — PENDENTE (93ª medição).** Gates (`/flow`,
+    `/approvals`), showroom, timeline, vínculos e piloto com motivo real;
+    zero `return !error` em `src/hooks`. Nenhuma migration. Gates **930/930**.
 
 ---
 

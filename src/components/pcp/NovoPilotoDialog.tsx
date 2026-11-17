@@ -121,10 +121,8 @@ export function NovoPilotoDialog({
       observacoes: parsed.data.observacoes ?? null,
     });
     setPending(false);
-    if (!p) {
-      toast.error("Falha ao criar piloto");
-      return;
-    }
+    // Onda 100: o hook já mostrou o motivo real — não empilhar um toast genérico.
+    if (!p) return;
     toast.success(`Piloto rodada ${p.rodada} criado (${p.status})`);
     setOpen(false);
     reset();

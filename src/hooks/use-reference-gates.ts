@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import type { Database } from "@/integrations/supabase/types";
-import type { ReferenceStatus } from "@/hooks/use-references";
+import type { ReferenceStatus, ResultadoGravacao } from "@/hooks/use-references";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 export type ReferenceGateRow = Database["public"]["Tables"]["reference_gate"]["Row"];
 export type GateStatus = "pendente" | "aprovado" | "reprovado" | "dispensado";
@@ -108,8 +109,14 @@ export function useReferenceGates(referenceId?: string | null) {
 
   /** Abre (ou reaproveita) o gate de uma referência. */
   const openGate = useCallback(
-    async (referenceIdArg: string, gate: string, dueDate?: string | null) => {
-      if (!user) return false;
+    async (
+      referenceIdArg: string,
+      gate: string,
+      dueDate?: string | null,
+    ): Promise<ResultadoGravacao> => {
+      // Onda 100: falha de gravação devolve o motivo real; a tela mostra um único toast.
+      if (!user)
+        return { ok: false, reason: "Não foi possível abrir o gate: você não está autenticado." };
       const { error } = await supabase.from("reference_gate").upsert(
         {
           reference_id: referenceIdArg,
@@ -121,16 +128,22 @@ export function useReferenceGates(referenceId?: string | null) {
         },
         { onConflict: "reference_id,gate", ignoreDuplicates: true },
       );
-      if (!error) await load();
-      return !error;
+      if (error) return { ok: false, reason: descreverErroSupabase(error, "abrir o gate") };
+      await load();
+      return { ok: true };
     },
     [user, load],
   );
 
   /** Registra a decisão do gate — data e evento são gravados no banco. */
   const decide = useCallback(
-    async (id: string, status: GateStatus, parecer?: string | null) => {
-      if (!user) return false;
+    async (id: string, status: GateStatus, parecer?: string | null): Promise<ResultadoGravacao> => {
+      if (!user) {
+        return {
+          ok: false,
+          reason: "Não foi possível registrar a decisão do gate: você não está autenticado.",
+        };
+      }
       const { error } = await supabase
         .from("reference_gate")
         .update({
@@ -141,8 +154,10 @@ export function useReferenceGates(referenceId?: string | null) {
           decided_at: status === "pendente" ? null : new Date().toISOString(),
         })
         .eq("id", id);
-      if (!error) await load();
-      return !error;
+      if (error)
+        return { ok: false, reason: descreverErroSupabase(error, "registrar a decisão do gate") };
+      await load();
+      return { ok: true };
     },
     [user, load],
   );

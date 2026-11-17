@@ -82,7 +82,10 @@ export function useCreatePiloto() {
       status?: string;
       observacoes?: string | null;
     }): Promise<Piloto | null> => {
-      if (!user) return null;
+      if (!user) {
+        toast.error("Não foi possível criar o piloto: você não está autenticado.");
+        return null;
+      }
 
       // Próxima rodada automática se não informada
       let rodada = input.rodada;

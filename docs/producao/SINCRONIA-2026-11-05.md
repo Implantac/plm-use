@@ -2110,6 +2110,25 @@ toast duplicado; `validateRemote` morto removido.
 
 ---
 
+## 2-BL. 93ª medição — Onda 99 publicada (sem aviso); Onda 100: gates com motivo
+
+**Ar (93ª):** entry `index-DOs7OLZd.js` / `index-DkYmi_8J.js`. `/flow` 0
+`pageerror`; prova da 98 mantida (PNG 16 MB → "Não foi possível enviar
+foto.png: Arquivo excede 15 MB."). Prova de clique em "Avançar etapa" exige
+login real. Banco intacto.
+
+**Onda 100 (repo):** zero `return !error` em `src/hooks` — gates, showroom,
+timeline, vínculos e piloto explicam o porquê; trava global.
+
+| Camada | 93ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 100** — local = remoto                               |
+| Ar     | **Onda 99** (`index-DOs7OLZd.js`) — **Onda 100 pendente**   |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **930/930** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -218,10 +218,10 @@ function FlowPage() {
 
   const handleOpenGate = async (ref: ReferenceRow, gateId: string) => {
     setBusyId(ref.id);
-    const ok = await openGate(ref.id, gateId);
+    const res = await openGate(ref.id, gateId);
     setBusyId(null);
-    if (ok) toast.success(`Gate aberto para ${ref.code}.`);
-    else toast.error("Não foi possível abrir o gate.");
+    if (res.ok) toast.success(`Gate aberto para ${ref.code}.`);
+    else toast.error(res.reason);
   };
 
   const active = useMemo(

@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import type { Database } from "@/integrations/supabase/types";
 import type { EntityType } from "@/hooks/use-entity-events";
 
@@ -46,7 +48,12 @@ export function useEntityRelations(entityType: EntityType | null, entityId: stri
       relation: string;
       metadata?: Record<string, unknown>;
     }) => {
-      if (!user || !entityType || !entityId) return false;
+      // Onda 100: falha ao vincular/desvincular diz o porquê (toast único no hook).
+      if (!user) {
+        toast.error("Não foi possível criar o vínculo: você não está autenticado.");
+        return false;
+      }
+      if (!entityType || !entityId) return false;
       const { error } = await supabase.from("entity_relations").insert({
         from_type: entityType,
         from_id: entityId,
@@ -57,16 +64,25 @@ export function useEntityRelations(entityType: EntityType | null, entityId: stri
         metadata: (input.metadata ?? {}) as never,
         created_by: user.id,
       });
-      if (!error) await load();
-      return !error;
+      if (error) {
+        toast.error(descreverErroSupabase(error, "criar o vínculo"));
+        return false;
+      }
+      await load();
+      return true;
     },
     [user, entityType, entityId, load],
   );
 
   const unlink = useCallback(
     async (id: string) => {
-      await supabase.from("entity_relations").delete().eq("id", id);
+      const { error } = await supabase.from("entity_relations").delete().eq("id", id);
+      if (error) {
+        toast.error(descreverErroSupabase(error, "remover o vínculo"));
+        return false;
+      }
       await load();
+      return true;
     },
     [load],
   );

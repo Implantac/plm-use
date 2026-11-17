@@ -173,11 +173,19 @@ export function useShowroom() {
 
   const transitionSample = useCallback(
     async (id: string, to: ShowroomSampleStatus, motivo?: string) => {
-      if (!user) return false;
+      // Onda 100: a tela dizia "Transição bloqueada" para qualquer falha — aqui vai o motivo real.
+      if (!user) {
+        toast.error("Não foi possível mover a amostra: você não está autenticado.");
+        return false;
+      }
       const patch: Partial<ShowroomSampleRow> = { status: to, updated_by: user.id };
       if (motivo) patch.motivo = motivo;
       const { error } = await supabase.from("showroom_sample").update(patch).eq("id", id);
-      return !error;
+      if (error) {
+        toast.error(descreverErroSupabase(error, "mover a amostra"));
+        return false;
+      }
+      return true;
     },
     [user],
   );
@@ -210,7 +218,10 @@ export function useShowroom() {
       justificativa: string,
       publication_id?: string | null,
     ) => {
-      if (!user) return false;
+      if (!user) {
+        toast.error("Não foi possível registrar a decisão: você não está autenticado.");
+        return false;
+      }
       const { error } = await supabase.from("showroom_decision").upsert(
         {
           reference_id,
@@ -223,7 +234,11 @@ export function useShowroom() {
         },
         { onConflict: "reference_id,publication_id" },
       );
-      return !error;
+      if (error) {
+        toast.error(descreverErroSupabase(error, "registrar a decisão"));
+        return false;
+      }
+      return true;
     },
     [user],
   );

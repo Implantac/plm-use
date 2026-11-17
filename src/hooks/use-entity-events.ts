@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import type { Database } from "@/integrations/supabase/types";
 
 export type EntityType = Database["public"]["Enums"]["entity_type"];
@@ -94,7 +96,15 @@ export function useEventEmitter() {
         actor: user.id,
         actor_name: actorName,
       });
-      return !error;
+      // Onda 100: a ação principal já foi salva; se a timeline não registrou,
+      // o usuário fica sabendo em vez de descobrir um histórico com buracos.
+      if (error) {
+        toast.warning(
+          `${descreverErroSupabase(error, "registrar o evento na linha do tempo")} A ação em si foi salva.`,
+        );
+        return false;
+      }
+      return true;
     },
     [user, actorName],
   );

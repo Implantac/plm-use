@@ -187,8 +187,8 @@ function ShowroomPage() {
                             variant="secondary"
                             onClick={async () => {
                               const ok = await transitionSample(s.id, to);
+                              // Onda 100: se falhou, o hook já disse o porquê.
                               if (ok) statusToast.success(`→ ${SAMPLE_STATUS_LABEL[to]}`);
-                              else statusToast.error("Transição bloqueada");
                             }}
                           >
                             {to === "aprovada" && <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
@@ -232,8 +232,9 @@ function ShowroomPage() {
             decisionByRef={decisionByRef}
             onDecide={async (reference_id, decision, justificativa) => {
               const ok = await recordDecision(reference_id, decision, justificativa);
+              // Onda 100: o hook já mostrou o motivo real da falha.
               if (ok) statusToast.success(`Decisão registrada: ${DECISION_LABEL[decision]}`);
-              else throw new Error("Falha ao registrar decisão (justificativa obrigatória).");
+              return ok;
             }}
           />
         </TabsContent>
@@ -561,7 +562,7 @@ function DecisionCard({
     reference_id: string,
     decision: Exclude<ShowroomDecision, "pendente">,
     justificativa: string,
-  ) => Promise<void>;
+  ) => Promise<boolean>;
 }) {
   const eligible = references.filter((r) => ["APROVACAO", "ENGENHARIA"].includes(r.status));
   const [refId, setRefId] = useState("");
@@ -575,12 +576,11 @@ function DecisionCard({
   const submit = async (decision: Exclude<ShowroomDecision, "pendente">) => {
     if (!canSubmit) return;
     setSubmitError(null);
-    try {
-      await onDecide(refId, decision, justificativa);
-      setJustificativa("");
-    } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Falha ao registrar decisão.");
-    }
+    // Onda 100: o motivo real já foi mostrado pelo hook; aqui só preservamos a
+    // justificativa digitada e sinalizamos inline que nada foi gravado.
+    const ok = await onDecide(refId, decision, justificativa);
+    if (ok) setJustificativa("");
+    else setSubmitError("A decisão não foi registrada — veja o aviso acima e tente de novo.");
   };
 
   return (

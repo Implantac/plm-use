@@ -121,22 +121,22 @@ function ApprovalsPage() {
 
   const handleDecide = async (id: string, status: GateStatus) => {
     setBusy(id);
-    const ok = await decide(id, status, parecer[id] ?? null);
+    const res = await decide(id, status, parecer[id] ?? null);
     setBusy(null);
-    if (ok) {
+    if (res.ok) {
       toast.success(`Gate marcado como ${GATE_STATUS_LABEL[status].toLowerCase()}.`);
       setParecer((p) => ({ ...p, [id]: "" }));
     } else {
-      toast.error("Não foi possível registrar a decisão do gate.");
+      toast.error(res.reason);
     }
   };
 
   const handleOpen = async (referenceId: string, gate: string) => {
     setBusy(`${referenceId}:${gate}`);
-    const ok = await openGate(referenceId, gate);
+    const res = await openGate(referenceId, gate);
     setBusy(null);
-    if (ok) toast.success("Gate aberto para aprovação.");
-    else toast.error("Não foi possível abrir o gate.");
+    if (res.ok) toast.success("Gate aberto para aprovação.");
+    else toast.error(res.reason);
   };
 
   return (
