@@ -2030,6 +2030,25 @@ entry mudar. Banco intacto.
 
 ---
 
+## 2-BH. 89ª medição — Ondas 94 e 95 publicadas; Onda 96: primitivos de UI pt-BR
+
+**Ar (89ª, publicado sem aviso):** entry `index-79prUS3_.js` / `index-ZRBdbIoV.js`.
+`/rota-que-nao-existe` em produção → "404 · Página não encontrada", 0
+`pageerror` (`medicao89-prod-404.png`) — Onda 95 no ar; a 94 vai junto (mesmo
+build). Banco intacto.
+
+**Onda 96 (repo):** rótulos de acessibilidade dos primitivos shadcn
+traduzidos (produção hoje: botão "Close" no diálogo, medido por Playwright).
+
+| Camada | 89ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 96** — local = remoto                                |
+| Ar     | **Onda 95** (`index-79prUS3_.js`) — **Onda 96 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **911/911** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -216,7 +216,7 @@ describe("detalhamento por grupo do item", () => {
     fireEvent.change(screen.getByLabelText("Detalhes de Detalhes"), {
       target: { value: "Não perder" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
     expect(window.confirm).toHaveBeenCalled();
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -266,7 +266,7 @@ describe("detalhamento por grupo do item", () => {
     );
     const consumption = await screen.findByLabelText("Consumo por peça de Malha");
     fireEvent.change(consumption, { target: { value: "2" } });
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
     expect(confirm).toHaveBeenCalled();
     expect(close).not.toHaveBeenCalled();
     expect((consumption as HTMLInputElement).value).toBe("2");

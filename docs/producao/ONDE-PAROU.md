@@ -756,15 +756,16 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 49. **Publicar a Onda 93 — FEITO (87ª medição).** Entry `index-BU9Gx2ky.js`;
     `/orders` em produção mostra o motivo inline, 0 `pageerror`.
 
-50. **Publicar a Onda 94 — PENDENTE (87ª medição).** `/api/generate-image`:
-    recusas do provedor traduzidas por classe; `try/catch` externo (JSON em
-    vez de HTML "This page didn't load"). Nenhuma migration. Gates
-    **907/907**. Validação: `curl` sem token / token inválido → 401 JSON.
+50. **Publicar a Onda 94 — FEITO (89ª medição).** Publicada no mesmo build da
+    95 (entry `index-79prUS3_.js`); caminhos 401 seguem JSON em português.
 
-51. **Publicar a Onda 95 — PENDENTE (88ª medição).** Páginas de falha (404,
-    erro de rota, erro catastrófico) em pt-BR. Nenhuma migration. Gates
-    **909/909**. Validação: `/rota-que-nao-existe` em produção → "Página não
-    encontrada · Ir para o início".
+51. **Publicar a Onda 95 — FEITO (89ª medição).** `/rota-que-nao-existe` em
+    produção → "Página não encontrada · Ir para o início", 0 `pageerror`.
+
+52. **Publicar a Onda 96 — PENDENTE (89ª medição).** Rótulos de acessibilidade
+    dos primitivos de UI em pt-BR ("Fechar", "Anterior/Próxima", "Alternar
+    menu lateral"). Nenhuma migration. Gates **911/911**. Validação: diálogo
+    "Cadastrar fornecedor" em produção → botão "Fechar".
 
 ---
 

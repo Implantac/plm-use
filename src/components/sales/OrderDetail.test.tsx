@@ -383,7 +383,7 @@ describe("OrderDetail", () => {
     fireEvent.click(screen.getByRole("button", { name: "Salvar consumo de Malha" }));
     await waitFor(() => expect(detailsApi.saveItemConsumption).toHaveBeenCalled());
     await screen.findByText("Consumo de Malha salvo e custo recalculado.");
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fechar" }));
     await waitFor(() => expect(api.getOrder).toHaveBeenCalledTimes(2));
     expect(api.listCosts).toHaveBeenCalledTimes(2);
   });
