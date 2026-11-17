@@ -42,6 +42,8 @@ export const REFERENCE_STATUS_LABEL: Record<ReferenceStatus, string> = {
 
 type TransitionRow = Database["public"]["Tables"]["reference_transitions"]["Row"];
 
+export type ResultadoGravacao = { ok: true } | { ok: false; reason: string };
+
 export function useReferences() {
   const { user } = useAuth();
   const [items, setItems] = useState<ReferenceRow[]>([]);
@@ -144,23 +146,36 @@ export function useReferences() {
     [user],
   );
 
+  // Onda 99: gravação nunca falha em silêncio — quem chama recebe o motivo real
+  // (permissão, sessão, regra do banco) e o mostra num único toast.
   const update = useCallback(
-    async (id: string, patch: ReferenceUpdate) => {
-      if (!user) return false;
+    async (id: string, patch: ReferenceUpdate): Promise<ResultadoGravacao> => {
+      if (!user) {
+        return {
+          ok: false,
+          reason: "Não foi possível salvar a referência: você não está autenticado.",
+        };
+      }
       const { error } = await supabase
         .from("references")
         .update({ ...patch, updated_by: user.id })
         .eq("id", id);
-      return !error;
+      if (error) return { ok: false, reason: descreverErroSupabase(error, "salvar a referência") };
+      return { ok: true };
     },
     [user],
   );
 
   const transition = useCallback(
-    async (ref: ReferenceRow, to: ReferenceStatus, note?: string) => {
-      if (!canTransition(ref.status, to)) return false;
-      const ok = await update(ref.id, { status: to });
-      if (!ok) return false;
+    async (ref: ReferenceRow, to: ReferenceStatus, note?: string): Promise<ResultadoGravacao> => {
+      if (!canTransition(ref.status, to)) {
+        return {
+          ok: false,
+          reason: `A transição de ${REFERENCE_STATUS_LABEL[ref.status]} para ${REFERENCE_STATUS_LABEL[to]} não é permitida pelo fluxo.`,
+        };
+      }
+      const salvo = await update(ref.id, { status: to });
+      if (!salvo.ok) return salvo;
 
       // Registra evento de negócio (adicional ao trigger de status_change)
       if (user) {
@@ -179,8 +194,13 @@ export function useReferences() {
 
       // Workflow automático: APROVACAO → ENGENHARIA (piloto aprovado abre engenharia)
       if (to === "APROVACAO" && (transitionsMap.get("APROVACAO") ?? []).includes("ENGENHARIA")) {
-        await update(ref.id, { status: "ENGENHARIA" });
-        if (user) {
+        const auto = await update(ref.id, { status: "ENGENHARIA" });
+        if (!auto.ok) {
+          toast.warning(
+            `Piloto aprovado, mas a engenharia não foi aberta automaticamente. ${auto.reason}`,
+          );
+        }
+        if (auto.ok && user) {
           await supabase.from("entity_events").insert({
             entity_type: "reference",
             entity_id: ref.id,
@@ -194,7 +214,7 @@ export function useReferences() {
           });
         }
       }
-      return true;
+      return { ok: true };
     },
     [canTransition, update, transitionsMap, user],
   );

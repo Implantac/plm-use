@@ -189,8 +189,8 @@ function ReferenceBody({ id }: { id: string }) {
     : [];
 
   const doTransition = async (to: typeof row.status) => {
-    const ok = await transition(row, to);
-    if (ok) {
+    const res = await transition(row, to);
+    if (res.ok) {
       await emit({
         entity_type: "reference",
         entity_id: row.id,
@@ -201,7 +201,7 @@ function ReferenceBody({ id }: { id: string }) {
       });
       toast.success(`Status → ${REFERENCE_STATUS_LABEL[to]}`);
     } else {
-      toast.error("Transição não permitida");
+      toast.error(res.reason);
     }
   };
 

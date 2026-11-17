@@ -768,10 +768,15 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 53. **Publicar a Onda 97 — FEITO (91ª medição).** `/financial` em produção
     com chave corrompida → toast com motivo, 0 `pageerror`.
 
-54. **Publicar a Onda 98 — PENDENTE (91ª medição).** Uploads com motivo
-    (`ResultadoUpload`); MoodBoard/ProductStudio/GarmentSketchStudio dizem o
-    porquê. Nenhuma migration. Gates **918/918**. Validação: PNG de 16 MB no
-    MoodBoard → "Não foi possível enviar foto.png: Arquivo excede 15 MB.".
+54. **Publicar a Onda 98 — FEITO (92ª medição).** Entry `index-CvWAjd_u.js`;
+    PNG de 16 MB em produção → "Não foi possível enviar foto.png: Arquivo
+    excede 15 MB.".
+
+55. **Publicar a Onda 99 — PENDENTE (92ª medição).** Transição de referência
+    com motivo real (`ResultadoGravacao`); `/flow` e drawer mostram o porquê;
+    CAPA sem toast duplicado. Nenhuma migration. Gates **923/923**. Validação
+    no ar exige login real (`PLM_E2E_EMAIL/PASSWORD`): "Avançar etapa" com
+    falha deve mostrar o motivo, nunca "Não foi possível avançar a referência.".
 
 ---
 

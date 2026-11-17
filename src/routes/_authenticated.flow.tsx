@@ -257,12 +257,13 @@ function FlowPage() {
       return;
     }
     setBusyId(ref.id);
-    const ok = await transition(ref, target, "Avanço pelo Fluxo do Produto");
+    const res = await transition(ref, target, "Avanço pelo Fluxo do Produto");
     setBusyId(null);
-    if (ok) {
+    if (res.ok) {
       toast.success(`${ref.code} avançou para ${REFERENCE_STATUS_LABEL[target]}.`);
     } else {
-      toast.error("Não foi possível avançar a referência.");
+      // Onda 99: o motivo real (permissão, sessão, regra do fluxo), nunca genérico.
+      toast.error(res.reason);
     }
   };
 

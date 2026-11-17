@@ -84,7 +84,8 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
 
   async function persistPatch(patch: Partial<Capa>, msg?: string) {
     const ok = await update(local!.id, patch, msg);
-    if (!ok) return statusToast.error("Falha ao salvar");
+    // Onda 99: o hook já mostrou o motivo real — não repetir um "Falha ao salvar" genérico.
+    if (!ok) return;
     setLocal({ ...local!, ...patch });
     statusToast.success("Salvo");
   }

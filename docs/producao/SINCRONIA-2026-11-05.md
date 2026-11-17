@@ -2090,6 +2090,26 @@ produção "Falha no upload", local "…Arquivo excede 15 MB.".
 
 ---
 
+## 2-BK. 92ª medição — Onda 98 publicada; Onda 99: transição com motivo
+
+**Ar (92ª, "publicado"):** entry `index-CvWAjd_u.js` / `index-snBhWGGc.js`.
+MoodBoard com PNG de 16 MB → toast **"Não foi possível enviar foto.png:
+Arquivo excede 15 MB."** (`auditoria/upload98-prod-depois.png`; antes:
+"Falha no upload"); 0 `pageerror`. Banco intacto.
+
+**Onda 99 (repo):** `useReferences.update/transition` devolvem
+`{ ok | reason }`; `/flow` e `EntityDrawer` mostram o motivo real; CAPA sem
+toast duplicado; `validateRemote` morto removido.
+
+| Camada | 92ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 99** — local = remoto                                |
+| Ar     | **Onda 98** (`index-CvWAjd_u.js`) — **Onda 99 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **923/923** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

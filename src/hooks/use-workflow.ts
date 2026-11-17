@@ -51,22 +51,6 @@ export function useWorkflow(entityType: WorkflowEntityType) {
     [defs],
   );
 
-  const validateRemote = useCallback(
-    async (from: string, to: string): Promise<boolean> => {
-      const { data, error } = await supabase.rpc(
-        "can_transition" as never,
-        {
-          _entity_type: entityType,
-          _from: from,
-          _to: to,
-        } as never,
-      );
-      if (error) return false;
-      return Boolean(data);
-    },
-    [entityType],
-  );
-
   const graph = useMemo(() => {
     const map = new Map<string, string[]>();
     for (const d of defs) {
@@ -77,5 +61,5 @@ export function useWorkflow(entityType: WorkflowEntityType) {
     return map;
   }, [defs]);
 
-  return { defs, loading, nextStatuses, canTransition, validateRemote, graph };
+  return { defs, loading, nextStatuses, canTransition, graph };
 }
