@@ -69,16 +69,26 @@ export async function signedUrl(
   path: string,
   expiresIn = 3600,
   bucket = BUCKET,
-): Promise<string | null> {
+): Promise<{ url: string | null; reason: string | null }> {
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
-  if (error || !data) return null;
-  return data.signedUrl;
+  if (error || !data?.signedUrl) {
+    return { url: null, reason: descreverErroSupabase(error, "carregar a imagem") };
+  }
+  return { url: data.signedUrl, reason: null };
 }
 
-export async function signedUrls(paths: string[], expiresIn = 3600) {
-  if (paths.length === 0) return [] as string[];
-  const { data } = await supabase.storage.from(BUCKET).createSignedUrls(paths, expiresIn);
-  return (data ?? []).map((d) => d.signedUrl).filter(Boolean) as string[];
+// Onda 101: o erro ao assinar URLs chega ao chamador — imagens salvas que
+// "sumiram" do mood board precisam de um porquê, não de silêncio.
+export async function signedUrls(
+  paths: string[],
+  expiresIn = 3600,
+): Promise<{ urls: string[]; reason: string | null }> {
+  if (paths.length === 0) return { urls: [], reason: null };
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrls(paths, expiresIn);
+  if (error) {
+    return { urls: [], reason: descreverErroSupabase(error, "carregar as imagens salvas") };
+  }
+  return { urls: (data ?? []).map((d) => d.signedUrl).filter(Boolean) as string[], reason: null };
 }
 
 // ---------------------------------------------------------------------------

@@ -2129,6 +2129,24 @@ timeline, vínculos e piloto explicam o porquê; trava global.
 
 ---
 
+## 2-BM. 94ª medição — Onda 100 publicada (sem aviso); Onda 101: mood board honesto
+
+**Ar (94ª):** entry `index-CTZMuUXI.js` / `index-DkUhbQ17.js`. Provas 96 e 98
+mantidas em produção (diálogo `['Cadastrar','Fechar']`; PNG 16 MB → motivo);
+0 `pageerror`. Gates/showroom exigem login real para clique. Banco intacto.
+
+**Onda 101 (repo):** `/research` → "Adicionar" URL dizia "Referência fixada"
+sem gravar; listagem/URLs assinadas silenciosas; `OptimizedImage` sem motivo.
+
+| Camada | 94ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 101** — local = remoto                               |
+| Ar     | **Onda 100** (`index-CTZMuUXI.js`) — **Onda 101 pendente**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **934/934** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

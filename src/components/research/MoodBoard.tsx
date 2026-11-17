@@ -7,6 +7,7 @@ import { Palette, Layers, Upload, Plus, Sparkles, Loader2 } from "lucide-react";
 import { uploadAsset, signedUrls } from "@/lib/storage/assets";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 const REFS = [
   "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=600",
@@ -52,15 +53,26 @@ export function MoodBoard() {
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      const { data } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from("use-moda-assets")
         .list(`moodboard/${u.user.id}`, { sortBy: { column: "created_at", order: "desc" } });
-      if (!data || data.length === 0 || cancelled) return;
+      if (cancelled) return;
+      // Onda 101: imagem salva que não aparece tem motivo — nunca some em silêncio.
+      if (error) {
+        toast.error(descreverErroSupabase(error, "carregar as imagens salvas do mood board"));
+        return;
+      }
+      if (!data || data.length === 0) return;
       const paths = data
         .filter((f) => f.name && !f.name.startsWith("."))
         .map((f) => `moodboard/${u.user!.id}/${f.name}`);
-      const urls = await signedUrls(paths, 3600);
-      if (!cancelled && urls.length > 0) setImgs((prev) => [...urls, ...prev]);
+      const { urls, reason } = await signedUrls(paths, 3600);
+      if (cancelled) return;
+      if (reason) {
+        toast.error(reason);
+        return;
+      }
+      if (urls.length > 0) setImgs((prev) => [...urls, ...prev]);
     })();
     return () => {
       cancelled = true;
@@ -73,11 +85,18 @@ export function MoodBoard() {
     setUploading(false);
     if (!upload.path) return toast.error(upload.reason);
     const path = upload.path;
-    const { data } = await supabase.storage.from("use-moda-assets").createSignedUrl(path, 3600);
-    if (data?.signedUrl) {
-      setImgs((arr) => [data.signedUrl, ...arr]);
-      toast.success("Imagem enviada ao Cloud");
+    const { data, error } = await supabase.storage
+      .from("use-moda-assets")
+      .createSignedUrl(path, 3600);
+    if (error || !data?.signedUrl) {
+      // Onda 101: o arquivo foi salvo; só a exibição falhou — dizer exatamente isso.
+      toast.warning(
+        `Imagem salva, mas não foi possível exibi-la agora: ${descreverErroSupabase(error, "gerar o link da imagem")} Recarregue a página para vê-la.`,
+      );
+      return;
     }
+    setImgs((arr) => [data.signedUrl, ...arr]);
+    toast.success("Imagem enviada ao Cloud");
   };
 
   return (
@@ -146,7 +165,10 @@ export function MoodBoard() {
             if (novo.trim()) {
               setImgs([novo.trim(), ...imgs]);
               setNovo("");
-              toast.success("Referência fixada no Mood Board");
+              // Onda 101: a URL não é gravada em lugar nenhum — o toast diz a verdade.
+              toast.info(
+                "Referência adicionada só nesta sessão: ela some ao recarregar. Para guardar no mood board, use Upload.",
+              );
             }
           }}
         >

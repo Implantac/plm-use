@@ -21,10 +21,13 @@ export const OptimizedImage = ({
 }: OptimizedImageProps) => {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [resolvedSrc, setResolvedSrc] = React.useState(src);
+  // Onda 101: "Imagem indisponível" vem com o porquê (permissão, sessão, arquivo ausente).
+  const [motivo, setMotivo] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     let cancelled = false;
     setIsLoaded(false);
+    setMotivo(null);
     if (!src.startsWith("storage://")) {
       setResolvedSrc(src);
       return () => {
@@ -36,14 +39,17 @@ export const OptimizedImage = ({
     const separator = asset.indexOf("/");
     if (separator < 1) {
       setResolvedSrc("");
+      setMotivo("O endereço da imagem está incompleto (sem bucket).");
       return () => {
         cancelled = true;
       };
     }
     const bucket = asset.slice(0, separator);
     const path = asset.slice(separator + 1);
-    void signedUrl(path, 3600, bucket).then((url) => {
-      if (!cancelled) setResolvedSrc(url ?? "");
+    void signedUrl(path, 3600, bucket).then(({ url, reason }) => {
+      if (cancelled) return;
+      setResolvedSrc(url ?? "");
+      setMotivo(reason);
     });
     return () => {
       cancelled = true;
@@ -93,8 +99,13 @@ export const OptimizedImage = ({
         </div>
       )}
       {!resolvedSrc && (
-        <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
-          Imagem indisponível
+        <div
+          className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground px-2 text-center"
+          title={motivo ?? undefined}
+          role="img"
+          aria-label={motivo ? `Imagem indisponível: ${motivo}` : "Imagem indisponível"}
+        >
+          {motivo ? `Imagem indisponível: ${motivo}` : "Imagem indisponível"}
         </div>
       )}
     </div>

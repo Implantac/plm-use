@@ -775,9 +775,14 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 55. **Publicar a Onda 99 — FEITO (93ª medição).** Entry `index-DOs7OLZd.js`;
     `/flow` 0 `pageerror`; clique real pendente de `PLM_E2E_EMAIL/PASSWORD`.
 
-56. **Publicar a Onda 100 — PENDENTE (93ª medição).** Gates (`/flow`,
-    `/approvals`), showroom, timeline, vínculos e piloto com motivo real;
-    zero `return !error` em `src/hooks`. Nenhuma migration. Gates **930/930**.
+56. **Publicar a Onda 100 — FEITO (94ª medição).** Entry `index-CTZMuUXI.js`;
+    provas 96/98 mantidas; 0 `pageerror`.
+
+57. **Publicar a Onda 101 — PENDENTE (94ª medição).** Mood board honesto:
+    URL adicionada avisa que é só desta sessão; listagem/links assinados com
+    motivo; `OptimizedImage` com motivo. Nenhuma migration. Gates **934/934**.
+    Validação: `/research` → colar URL → Adicionar → toast "Referência
+    adicionada só nesta sessão…" (antes "Referência fixada no Mood Board").
 
 ---
 
