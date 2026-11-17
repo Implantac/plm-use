@@ -2069,6 +2069,27 @@ toast, local com toast.
 
 ---
 
+## 2-BJ. 91ª medição — Ondas 96 e 97 publicadas; Onda 98: upload com motivo
+
+**Ar (91ª, publicado sem aviso):** entry `index-CZq1d3mM.js` / `index-DI6kJgea.js`.
+Diálogo "Cadastrar fornecedor" → botões `['Cadastrar', 'Fechar']`
+(`medicao91-prod-a11y.png`); `/financial` com chave corrompida → toast
+"Os dados do painel financeiro guardados neste navegador estavam
+corrompidos…" (`medicao91-prod-storage.png`); 0 `pageerror`. Banco intacto.
+
+**Onda 98 (repo):** uploads devolvem `{ path | reason }`; MoodBoard,
+ProductStudio e GarmentSketchStudio mostram o motivo. Prova: PNG de 16 MB —
+produção "Falha no upload", local "…Arquivo excede 15 MB.".
+
+| Camada | 91ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 98** — local = remoto                                |
+| Ar     | **Onda 97** (`index-CZq1d3mM.js`) — **Onda 98 pendente**    |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **918/918** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

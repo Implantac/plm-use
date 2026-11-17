@@ -762,15 +762,16 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 51. **Publicar a Onda 95 — FEITO (89ª medição).** `/rota-que-nao-existe` em
     produção → "Página não encontrada · Ir para o início", 0 `pageerror`.
 
-52. **Publicar a Onda 96 — PENDENTE (89ª medição).** Rótulos de acessibilidade
-    dos primitivos de UI em pt-BR ("Fechar", "Anterior/Próxima", "Alternar
-    menu lateral"). Nenhuma migration. Gates **911/911**. Validação: diálogo
-    "Cadastrar fornecedor" em produção → botão "Fechar".
+52. **Publicar a Onda 96 — FEITO (91ª medição).** Entry `index-CZq1d3mM.js`;
+    diálogo em produção com botão "Fechar".
 
-53. **Publicar a Onda 97 — PENDENTE (90ª medição).** Nenhum `catch {}`
-    silencioso em gravação: molde CAD e localStorage (financeiro, comercial,
-    rolos) avisam com motivo. Nenhuma migration. Gates **914/914**. Validação:
-    `/financial` com chave `use-moda:financial-cfo-v2` corrompida → toast.
+53. **Publicar a Onda 97 — FEITO (91ª medição).** `/financial` em produção
+    com chave corrompida → toast com motivo, 0 `pageerror`.
+
+54. **Publicar a Onda 98 — PENDENTE (91ª medição).** Uploads com motivo
+    (`ResultadoUpload`); MoodBoard/ProductStudio/GarmentSketchStudio dizem o
+    porquê. Nenhuma migration. Gates **918/918**. Validação: PNG de 16 MB no
+    MoodBoard → "Não foi possível enviar foto.png: Arquivo excede 15 MB.".
 
 ---
 

@@ -1,13 +1,28 @@
 // Helpers para upload de imagens no bucket privado use-moda-assets.
 import { supabase } from "@/integrations/supabase/client";
+import { descreverErroSupabase, motivoDe } from "@/lib/supabase/erro-humano";
+
+// Onda 98 — upload nunca falha em silêncio: devolve o caminho ou o motivo.
+export type ResultadoUpload = { path: string; reason?: undefined } | { path: null; reason: string };
 
 const BUCKET = "use-moda-assets";
 
-export async function uploadGeneratedImage(dataUrl: string): Promise<string | null> {
+export async function uploadGeneratedImage(dataUrl: string): Promise<ResultadoUpload> {
   try {
     const { data: authData } = await supabase.auth.getUser();
     const userId = authData.user?.id;
-    if (!userId || !dataUrl.startsWith("data:image/png;base64,")) return null;
+    if (!userId)
+      return {
+        path: null,
+        reason:
+          "Não foi possível salvar a imagem: sua sessão expirou ou é inválida. Entre novamente e repita a ação.",
+      };
+    if (!dataUrl.startsWith("data:image/png;base64,"))
+      return {
+        path: null,
+        reason:
+          "Não foi possível salvar a imagem: o provedor devolveu um formato inesperado (não PNG).",
+      };
 
     const base64 = dataUrl.slice("data:image/png;base64,".length);
     const bytes = Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
@@ -19,14 +34,14 @@ export async function uploadGeneratedImage(dataUrl: string): Promise<string | nu
       contentType: "image/png",
       upsert: false,
     });
-    if (error) {
-      console.error("generated image upload failed", error);
-      return null;
-    }
-    return path;
+    if (error)
+      return {
+        path: null,
+        reason: descreverErroSupabase(error, "salvar a imagem no armazenamento"),
+      };
+    return { path };
   } catch (error) {
-    console.error("generated image upload failed", error);
-    return null;
+    return { path: null, reason: motivoDe(error, "salvar a imagem no armazenamento") };
   }
 }
 
@@ -34,12 +49,9 @@ export function storageAssetSource(path: string): string {
   return `storage://${BUCKET}/${path}`;
 }
 
-export async function uploadAsset(file: File, folder = "uploads"): Promise<string | null> {
+export async function uploadAsset(file: File, folder = "uploads"): Promise<ResultadoUpload> {
   const invalid = validateAssetFile(file);
-  if (invalid) {
-    console.error("upload rejeitado:", invalid);
-    return null;
-  }
+  if (invalid) return { path: null, reason: `Não foi possível enviar ${file.name}: ${invalid}` };
   folder = sanitizeAssetFolder(folder);
   const { data: u } = await supabase.auth.getUser();
   const uid = u.user?.id ?? "anon";
@@ -49,11 +61,8 @@ export async function uploadAsset(file: File, folder = "uploads"): Promise<strin
     cacheControl: "3600",
     upsert: false,
   });
-  if (error) {
-    console.error("upload error", error);
-    return null;
-  }
-  return path;
+  if (error) return { path: null, reason: descreverErroSupabase(error, `enviar ${file.name}`) };
+  return { path };
 }
 
 export async function signedUrl(

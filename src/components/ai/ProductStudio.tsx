@@ -564,7 +564,8 @@ export function ProductStudio() {
           },
         );
       }
-      const storagePath = await uploadGeneratedImage(latestImage);
+      const upload = await uploadGeneratedImage(latestImage);
+      const storagePath = upload.path;
       const createdAt = new Date().toISOString();
       setGeneratedImages((current) => [
         {
@@ -579,7 +580,7 @@ export function ProductStudio() {
       if (storagePath) {
         toast.success(`Visual ${viewLabel} gerado e salvo no armazenamento.`);
       } else {
-        toast.warning("Visual gerado, mas não foi possível salvá-lo no armazenamento.");
+        toast.warning(`Visual gerado, mas não salvo. ${upload.reason}`);
       }
     } catch (error) {
       toast.error(motivoDe(error, "gerar a imagem"));
@@ -647,7 +648,8 @@ export function ProductStudio() {
           inputFidelity: "high",
         },
       );
-      const storagePath = await uploadGeneratedImage(latestImage);
+      const upload = await uploadGeneratedImage(latestImage);
+      const storagePath = upload.path;
       const createdAt = new Date().toISOString();
       setGeneratedImages((current) => [
         {
@@ -661,7 +663,7 @@ export function ProductStudio() {
         ...current,
       ]);
       if (storagePath) toast.success("Arte aplicada e visual salvo no armazenamento.");
-      else toast.warning("Arte aplicada, mas não foi possível salvar o visual no armazenamento.");
+      else toast.warning(`Arte aplicada, mas visual não salvo. ${upload.reason}`);
     } catch (error) {
       setImageSource(sourceGarment);
       toast.error(motivoDe(error, "aplicar a arte"));

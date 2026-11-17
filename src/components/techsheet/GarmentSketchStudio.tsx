@@ -178,14 +178,17 @@ export function GarmentSketchStudio({
         { background: "transparent", size: plan.size, inputFidelity: "high" },
       );
       if (finalDataUrl) {
-        const storagePath = await uploadGeneratedImage(finalDataUrl);
-        if (storagePath) {
-          const publicUrl = storageAssetSource(storagePath);
+        const upload = await uploadGeneratedImage(finalDataUrl);
+        if (upload.path) {
+          const publicUrl = storageAssetSource(upload.path);
           if (publicUrl.startsWith("https://")) {
             setSheetImage(refAtual, publicUrl);
           }
+          toast.success("Foto realista HD gerada a partir da engenharia da ficha!");
+        } else {
+          // Onda 98 — a foto existe na tela, mas NÃO ficou na ficha: dizer o porquê.
+          toast.warning(`Foto realista gerada, mas não salva na ficha. ${upload.reason}`);
         }
-        toast.success("Foto realista HD gerada a partir da engenharia da ficha!");
       }
     } catch (err) {
       toast.error(motivoDe(err, "renderizar a foto realista"));

@@ -69,9 +69,10 @@ export function MoodBoard() {
 
   const handleUpload = async (file: File) => {
     setUploading(true);
-    const path = await uploadAsset(file, "moodboard");
+    const upload = await uploadAsset(file, "moodboard");
     setUploading(false);
-    if (!path) return toast.error("Falha no upload");
+    if (!upload.path) return toast.error(upload.reason);
+    const path = upload.path;
     const { data } = await supabase.storage.from("use-moda-assets").createSignedUrl(path, 3600);
     if (data?.signedUrl) {
       setImgs((arr) => [data.signedUrl, ...arr]);
