@@ -4,7 +4,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
 import { isMissingTable } from "@/lib/sales/api";
-import { avisoUnico, descreverErroSupabase } from "@/lib/supabase/erro-humano";
+import { avisoUnico, descreverErroSupabase, motivoDe } from "@/lib/supabase/erro-humano";
 import { persist } from "zustand/middleware";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -116,8 +116,11 @@ async function tryUpsertDb(item: CadMarkerItem) {
       const msg = descreverErroSupabase(error, "sincronizar o molde na nuvem");
       if (avisoUnico(msg)) toast.error(msg);
     }
-  } catch {
-    // Rede indisponível: o molde continua salvo localmente (persist).
+  } catch (e) {
+    // Onda 97 — rede indisponível: o molde continua salvo localmente (persist),
+    // mas o usuário precisa saber que a nuvem NÃO recebeu.
+    const msg = `${motivoDe(e, "sincronizar o molde na nuvem")} O molde continua salvo neste navegador.`;
+    if (avisoUnico(msg)) toast.error(msg);
   }
 }
 

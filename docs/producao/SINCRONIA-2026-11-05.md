@@ -2049,6 +2049,26 @@ traduzidos (produção hoje: botão "Close" no diálogo, medido por Playwright).
 
 ---
 
+## 2-BI. 90ª medição — Onda 96 empurrada (token novo); Onda 97: catch silencioso zero
+
+**Ar (90ª):** entry inalterada `index-79prUS3_.js` (Onda 95) — 96 ainda não
+publicada. Banco intacto. Push da 96 (`b5b8a1f`) feito com token novo após
+dois 401.
+
+**Onda 97 (repo):** 7 `catch {}` silenciosos em gravação (molde CAD na nuvem;
+localStorage de financeiro, comercial e rolos de tecido) passam a avisar com
+motivo e aviso único. Prova: `/financial` com chave corrompida — produção sem
+toast, local com toast.
+
+| Camada | 90ª medição                                                     |
+| ------ | --------------------------------------------------------------- |
+| Repo   | **Onda 97** — local = remoto                                    |
+| Ar     | **Onda 95** (`index-79prUS3_.js`) — **Ondas 96 e 97 pendentes** |
+| Banco  | inalterado                                                      |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **914/914**     |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

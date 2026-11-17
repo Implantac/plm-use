@@ -118,3 +118,22 @@ export async function chamarServidor<T extends { ok: boolean }>(
     return { ok: false, reason: descreverErroSupabase({ message: msg }, acao) };
   }
 }
+
+/**
+ * Onda 97 — armazenamento local (localStorage) falhou. Gravação: o usuário
+ * precisa saber que o que está na tela se perde ao recarregar. Leitura: o que
+ * estava guardado veio corrompido e foi ignorado. Sempre aviso único.
+ */
+export function motivoArmazenamentoLocal(
+  oQue: string,
+  modo: "gravar" | "ler",
+  erro?: unknown,
+): string {
+  const nome = erro instanceof Error ? erro.name : "";
+  if (modo === "ler")
+    return `Os dados ${oQue.replace(/^o /, "do ").replace(/^a /, "da ").replace(/^os /, "dos ").replace(/^as /, "das ")} guardados neste navegador estavam corrompidos e foram ignorados. Confira o que está na tela antes de continuar.`;
+  const causa = /quota/i.test(nome)
+    ? "o armazenamento do navegador está cheio"
+    : "o navegador bloqueou o armazenamento local (modo privado ou política)";
+  return `Não foi possível guardar ${oQue} neste navegador: ${causa}. Os dados continuam na tela, mas serão perdidos ao recarregar.`;
+}

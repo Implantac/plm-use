@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, Disc, Plus, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { avisoUnico, motivoArmazenamentoLocal } from "@/lib/supabase/erro-humano";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -97,16 +98,18 @@ export function FabricRollsShadePanel() {
         const parsed = JSON.parse(raw) as FabricRollItem[];
         if (Array.isArray(parsed) && parsed.length > 0) setRolls(parsed);
       }
-    } catch {
-      // ignore
+    } catch (e) {
+      const msg = motivoArmazenamentoLocal("os rolos e nuances de tecido", "ler", e);
+      if (avisoUnico(msg)) toast.warning(msg);
     }
   }, []);
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(rolls));
-    } catch {
-      // ignore
+    } catch (e) {
+      const msg = motivoArmazenamentoLocal("os rolos e nuances de tecido", "gravar", e);
+      if (avisoUnico(msg)) toast.error(msg);
     }
   }, [rolls]);
 

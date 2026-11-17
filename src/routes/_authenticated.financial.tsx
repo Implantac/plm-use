@@ -28,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { avisoUnico, motivoArmazenamentoLocal } from "@/lib/supabase/erro-humano";
 import { buildDrePrintableHtml, computeCollectionDreSummary } from "@/lib/techsheet/cfo-dre";
 import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { useTechSheetStore } from "@/lib/techsheet/store";
@@ -78,8 +79,9 @@ function FinancialPage() {
         if (Array.isArray(parsed.transactions) && parsed.transactions.length > 0)
           setTransactions(parsed.transactions);
       }
-    } catch {
-      // ignore corrupted storage
+    } catch (e) {
+      const msg = motivoArmazenamentoLocal("o painel financeiro", "ler", e);
+      if (avisoUnico(msg)) toast.warning(msg);
     }
   }, []);
 
@@ -89,8 +91,9 @@ function FinancialPage() {
         STORAGE_KEY,
         JSON.stringify({ fixedOverheadBrl, otbBudgetBrl, transactions }),
       );
-    } catch {
-      // ignore storage quota
+    } catch (e) {
+      const msg = motivoArmazenamentoLocal("o painel financeiro", "gravar", e);
+      if (avisoUnico(msg)) toast.error(msg);
     }
   }, [fixedOverheadBrl, otbBudgetBrl, transactions]);
 

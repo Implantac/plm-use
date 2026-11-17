@@ -767,6 +767,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     menu lateral"). Nenhuma migration. Gates **911/911**. Validação: diálogo
     "Cadastrar fornecedor" em produção → botão "Fechar".
 
+53. **Publicar a Onda 97 — PENDENTE (90ª medição).** Nenhum `catch {}`
+    silencioso em gravação: molde CAD e localStorage (financeiro, comercial,
+    rolos) avisam com motivo. Nenhuma migration. Gates **914/914**. Validação:
+    `/financial` com chave `use-moda:financial-cfo-v2` corrompida → toast.
+
 ---
 
 ## 8. Como reverificar isto

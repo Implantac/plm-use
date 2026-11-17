@@ -29,6 +29,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { avisoUnico, motivoArmazenamentoLocal } from "@/lib/supabase/erro-humano";
 import {
   buildPackingListPrintableHtml,
   buildPreNfeXml400,
@@ -86,16 +87,18 @@ function CommercialPage() {
         const parsed = JSON.parse(raw) as B2bClient[];
         if (Array.isArray(parsed) && parsed.length > 0) setClients(parsed);
       }
-    } catch {
-      // ignore
+    } catch (e) {
+      const msg = motivoArmazenamentoLocal("a carteira de clientes B2B", "ler", e);
+      if (avisoUnico(msg)) toast.warning(msg);
     }
   }, []);
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
-    } catch {
-      // ignore
+    } catch (e) {
+      const msg = motivoArmazenamentoLocal("a carteira de clientes B2B", "gravar", e);
+      if (avisoUnico(msg)) toast.error(msg);
     }
   }, [clients]);
 
