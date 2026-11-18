@@ -2275,6 +2275,21 @@ rotas: **TOTAL sem nome: 0**, 0 pageerror.
 
 ---
 
+## 2-BU. 102ª medição — Onda 108 publicada
+
+**Ar (102ª, "lovable publicado"):** entry `index-DK_4aCjo.js` / `index-W9uIJUY8.js`.
+`auditoria_nomes.py` em produção, 45 rotas autenticadas: **TOTAL sem nome: 0**
+(101ª: 60), 0 pageerror.
+
+| Camada | 102ª medição                                                |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 108** — local = remoto                               |
+| Ar     | **Onda 108** (`index-DK_4aCjo.js`) — alinhado               |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **956/956** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

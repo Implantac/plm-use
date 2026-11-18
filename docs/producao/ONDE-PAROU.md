@@ -795,11 +795,9 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `prova_remocao.py` → toast `success` "Lançamento removido."
     (`auditoria/remocao107-prod-depois.png`).
 
-64. **Publicar a Onda 108 — PENDENTE (101ª medição).** Todo controle só com
-    ícone tem nome acessível (sino de alertas, remover/editar, enviar,
-    fechar). Nenhuma migration. Gates **956/956**. Validação:
-    `python scripts/auditoria_nomes.py https://plmuse.lovable.app x.png`
-    → `TOTAL sem nome: 0`.
+64. **Publicar a Onda 108 — FEITO (102ª medição).** Em produção
+    (`index-DK_4aCjo.js`), `auditoria_nomes.py` nas 45 rotas →
+    `TOTAL sem nome: 0`, 0 pageerror (`auditoria/nomes108-prod-depois.png`).
 
 ---
 
