@@ -350,7 +350,7 @@ function MarketingPage() {
                         onEdit={() => handleOpenDialog(camp)}
                         onDelete={() => {
                           deleteCampaign(camp.id);
-                          toast.error("Campanha removida.");
+                          toast.success("Campanha removida.");
                         }}
                         onView={podeEmitirMediaKit(camp) ? () => printMediaKit(camp) : undefined}
                       />

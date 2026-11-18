@@ -286,7 +286,7 @@ function MeasurementsPage() {
                     className="text-status-rejected hover:text-status-rejected"
                     onClick={() => {
                       deleteChart(selected.id);
-                      toast.error("Tabela removida");
+                      toast.success("Tabela removida.");
                       setSelectedId(null);
                     }}
                   >

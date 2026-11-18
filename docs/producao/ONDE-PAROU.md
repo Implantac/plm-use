@@ -788,9 +788,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 
 61. **Publicar a Onda 105 — FEITO (99ª medição).** Entry `index-BkcwACDy.js`; contrato por teste; sem migration.
 
-62. **Publicar a Onda 106 — PENDENTE (99ª medição).** `/dashboard` e `/flow`
-    mostram o motivo real (não "verifique sua conexão"). Nenhuma migration.
-    Gates **951/951**. Validação: `prova_alertas.py` em produção.
+62. **Publicar a Onda 106 — FEITO (100ª medição).** Entry `index-CJcBsLW2.js`;
+    `/dashboard` e `/flow` mostram o motivo real.
+
+63. **Publicar a Onda 107 — PENDENTE (100ª medição).** Remoções anunciam
+    com `success`; menu de ações com rótulo. Nenhuma migration. Gates
+    **954/954**. Validação: `prova_remocao.py` → `success`.
 
 ---
 

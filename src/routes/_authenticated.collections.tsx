@@ -154,7 +154,7 @@ function CollectionsPage() {
     if (!window.confirm('Excluir a coleção "' + (alvo?.name ?? id) + '"? Ela some para todos.'))
       return;
     removeCollection(id);
-    toast.error("Coleção removida");
+    toast.success("Coleção removida.");
   };
 
   return (

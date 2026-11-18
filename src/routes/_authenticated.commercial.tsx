@@ -184,7 +184,7 @@ function CommercialPage() {
 
   const handleDelete = (id: number) => {
     setClients(clients.filter((c) => c.id !== id));
-    toast.error("Cliente removido da carteira");
+    toast.success("Cliente removido da carteira.");
   };
 
   function bloqueioDeEmissao(): boolean {

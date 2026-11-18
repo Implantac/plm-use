@@ -126,6 +126,7 @@ export function ModuleActionMenu({
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Ações do item"
           className="text-muted-foreground hover:text-primary transition-colors"
         >
           <MoreVertical className="w-4 h-4" />

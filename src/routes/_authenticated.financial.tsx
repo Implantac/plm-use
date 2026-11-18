@@ -174,7 +174,7 @@ function FinancialPage() {
 
   const handleDelete = (id: number) => {
     setTransactions(transactions.filter((t) => t.id !== id));
-    toast.error("Lançamento removido");
+    toast.success("Lançamento removido.");
   };
 
   function printDreReport() {

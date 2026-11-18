@@ -200,7 +200,7 @@ function SuppliersPage() {
   const handleDelete = async (id: string) => {
     const target = partners.find((s) => s.id === id);
     deletePartner(id);
-    toast.error("Parceiro removido da base homologada");
+    toast.success("Parceiro removido da base homologada.");
     if (target) {
       await emit({
         entity_type: "supplier",

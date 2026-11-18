@@ -118,7 +118,7 @@ function AnalyticsPage() {
     const alvo = allKpis.find((k) => k.id === id);
     if (!window.confirm('Remover o KPI "' + (alvo?.label ?? id) + '" do dashboard?')) return;
     removeAnalyticsKpi(id);
-    toast.error("Indicador removido do BI");
+    toast.success("Indicador removido do BI.");
   };
 
   const toneClass = (tone: string) => {

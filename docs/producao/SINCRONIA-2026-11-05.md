@@ -2234,6 +2234,24 @@ pelo motivo real do hook; blocos secundários apontam para o topo.
 
 ---
 
+## 2-BS. 100ª medição — Onda 106 publicada; Onda 107: remoção não é erro
+
+**Ar (100ª, "publicado"):** entry `index-CJcBsLW2.js` / `index-CrQFqdYA.js`.
+`/dashboard` e `/flow` com sessão inválida mostram o motivo real (106 ok).
+Medido também: Excluir lançamento → toast `error` "Lançamento removido".
+
+**Onda 107 (repo):** sete remoções bem-sucedidas passam a `toast.success`;
+`aria-label` no menu de ações.
+
+| Camada | 100ª medição                                                |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 107** — local = remoto                               |
+| Ar     | **Onda 106** (`index-CJcBsLW2.js`) — **Onda 107 pendente**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **954/954** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
