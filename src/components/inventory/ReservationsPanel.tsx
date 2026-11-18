@@ -6,7 +6,7 @@
 // para o caso manual (ajuste de contagem, material devolvido), não como único
 // caminho — antes eram.
 import { useCallback, useEffect, useState } from "react";
-import { chamarServidor } from "@/lib/supabase/erro-humano";
+import { chamarServidor, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
@@ -35,14 +35,23 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
   const [rows, setRows] = useState<Reservation[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [opMeta, setOpMeta] = useState<Record<string, { id: string; number: string }>>({});
+  // Onda 102: falha de leitura não vira "Sem reservas ativas".
+  const [erroLeitura, setErroLeitura] = useState<string | null>(null);
 
   const refetch = useCallback(async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("stock_reservation" as never)
       .select("id, item_id, warehouse_id, qty, ref_type, ref_id, status, created_at")
       .eq("status", "ativa")
       .order("created_at", { ascending: false })
       .limit(20);
+    if (error) {
+      setErroLeitura(descreverErroSupabase(error, "carregar as reservas"));
+      setRows([]);
+      setOpMeta({});
+      return;
+    }
+    setErroLeitura(null);
     const rows = (data ?? []) as unknown as Reservation[];
     setRows(rows);
     // ref_id de reserva 'op' é uuid pelado na tela; resolvemos para o número
@@ -120,7 +129,14 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
         )}
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
-        {rows.length === 0 && <p className="text-xs text-muted-foreground">Sem reservas ativas.</p>}
+        {erroLeitura && (
+          <p role="alert" className="text-xs text-destructive">
+            {erroLeitura}
+          </p>
+        )}
+        {!erroLeitura && rows.length === 0 && (
+          <p className="text-xs text-muted-foreground">Sem reservas ativas.</p>
+        )}
         {rows.map((r) => (
           <div
             key={r.id}

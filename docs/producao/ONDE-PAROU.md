@@ -784,6 +784,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     Validação: `/research` → colar URL → Adicionar → toast "Referência
     adicionada só nesta sessão…" (antes "Referência fixada no Mood Board").
 
+58. **Publicar a Onda 102 — PENDENTE (95ª medição).** Leitura que falha
+    mostra motivo inline (comentários, reservas, atividade). Nenhuma
+    migration. Gates **937/937**. Validação: sino "Atividade do time" com
+    sessão inválida → motivo, não "Nenhuma atividade ainda".
+
 ---
 
 ## 8. Como reverificar isto

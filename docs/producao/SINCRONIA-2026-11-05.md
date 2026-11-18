@@ -2147,6 +2147,23 @@ sem gravar; listagem/URLs assinadas silenciosas; `OptimizedImage` sem motivo.
 
 ---
 
+## 2-BN. 95ª medição — Onda 101 ainda não publicada; Onda 102: leitura falha ≠ vazio
+
+**Ar (95ª):** entry `index-CTZMuUXI.js` (= Onda 100). Com sessão inválida o
+painel "Atividade do time" diz "Nenhuma atividade ainda" (consulta falhou).
+
+**Onda 102 (repo):** comentários/anexos/histórico, reservas e atividade
+mostram o motivo inline (`role="alert"`) em vez do texto de vazio.
+
+| Camada | 95ª medição                                                  |
+| ------ | ------------------------------------------------------------ |
+| Repo   | **Onda 102** — local = remoto                                |
+| Ar     | **Onda 100** (`index-CTZMuUXI.js`) — **101 e 102 pendentes** |
+| Banco  | inalterado                                                   |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **937/937**  |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

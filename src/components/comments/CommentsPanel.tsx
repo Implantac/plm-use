@@ -187,6 +187,8 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
   const [items, setItems] = useState<CommentRow[]>([]);
   const [attachments, setAttachments] = useState<Record<string, Attachment[]>>({});
   const [loading, setLoading] = useState(true);
+  // Onda 102: leitura que falha não vira "Seja o primeiro a comentar".
+  const [erroLeitura, setErroLeitura] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [sending, setSending] = useState(false);
@@ -199,28 +201,39 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
     let cancelled = false;
     setLoading(true);
     void (async () => {
-      const { data: rows } = await supabase
+      const { data: rows, error: erroRows } = await supabase
         .from("comments")
         .select("*")
         .eq("entity_type", entityType)
         .eq("entity_id", entityId)
         .order("created_at", { ascending: true });
       if (cancelled) return;
+      if (erroRows) {
+        setErroLeitura(descreverErroSupabase(erroRows, "carregar os comentários"));
+        setLoading(false);
+        return;
+      }
+      setErroLeitura(null);
       const list = (rows ?? []) as CommentRow[];
       setItems(list);
       if (list.length > 0) {
-        const { data: atts } = await supabase
+        const { data: atts, error: erroAtts } = await supabase
           .from("comment_attachments")
           .select("*")
           .in(
             "comment_id",
             list.map((c) => c.id),
           );
-        const grouped: Record<string, Attachment[]> = {};
-        for (const a of (atts ?? []) as Attachment[]) {
-          (grouped[a.comment_id] ??= []).push(a);
+        if (cancelled) return;
+        if (erroAtts) {
+          setErroLeitura(descreverErroSupabase(erroAtts, "carregar os anexos dos comentários"));
+        } else {
+          const grouped: Record<string, Attachment[]> = {};
+          for (const a of (atts ?? []) as Attachment[]) {
+            (grouped[a.comment_id] ??= []).push(a);
+          }
+          setAttachments(grouped);
         }
-        if (!cancelled) setAttachments(grouped);
       }
       setLoading(false);
     })();
@@ -406,7 +419,15 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
             <Loader2 className="w-4 h-4 animate-spin" />
           </div>
         )}
-        {!loading && items.length === 0 && (
+        {!loading && erroLeitura && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+          >
+            {erroLeitura}
+          </div>
+        )}
+        {!loading && !erroLeitura && items.length === 0 && (
           <div className="text-center py-8 text-2xs uppercase tracking-[0.04em] text-muted-foreground">
             Seja o primeiro a comentar
           </div>
@@ -583,16 +604,19 @@ export function CommentsPanel({ entityType, entityId, title = "Comentários", cl
 function HistoryButton({ commentId }: { commentId: string }) {
   const [revisions, setRevisions] = useState<Revision[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
   const load = async () => {
     if (revisions !== null) return;
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("comment_revisions")
       .select("id, previous_message, previous_attachments, edited_at")
       .eq("comment_id", commentId)
       .order("edited_at", { ascending: false });
-    setRevisions((data ?? []) as unknown as Revision[]);
+    // Onda 102: falha de leitura não vira "Sem revisões anteriores".
+    if (error) setErro(descreverErroSupabase(error, "carregar o histórico do comentário"));
+    else setRevisions((data ?? []) as unknown as Revision[]);
     setLoading(false);
   };
 
@@ -616,7 +640,12 @@ function HistoryButton({ commentId }: { commentId: string }) {
             <Loader2 className="w-4 h-4 animate-spin" />
           </div>
         )}
-        {!loading && revisions && revisions.length === 0 && (
+        {!loading && erro && (
+          <div role="alert" className="text-xs text-destructive">
+            {erro}
+          </div>
+        )}
+        {!loading && !erro && revisions && revisions.length === 0 && (
           <div className="text-xs text-muted-foreground">Sem revisões anteriores.</div>
         )}
         {!loading && revisions && revisions.length > 0 && (

@@ -8,22 +8,29 @@
 // verdes). O hook mora aqui; `log.ts` fica sem React.
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import type { ActivityEntry } from "./log";
 
 export function useActivityFeed(limit = 30) {
   const [items, setItems] = useState<ActivityEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  // Onda 102: falha de leitura não vira "Nenhuma atividade ainda".
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const { data } = await supabase
+      const { data, error: erro } = await supabase
         .from("activity_log")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(limit);
       if (cancelled) return;
-      setItems((data ?? []) as ActivityEntry[]);
+      if (erro) setError(descreverErroSupabase(erro, "carregar a atividade recente"));
+      else {
+        setError(null);
+        setItems((data ?? []) as ActivityEntry[]);
+      }
       setLoading(false);
     };
     void load();
@@ -43,5 +50,5 @@ export function useActivityFeed(limit = 30) {
     };
   }, [limit]);
 
-  return { items, loading };
+  return { items, loading, error };
 }

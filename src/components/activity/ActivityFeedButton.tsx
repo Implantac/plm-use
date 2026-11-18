@@ -22,7 +22,7 @@ const actionColor: Record<string, string> = {
 
 export function ActivityFeedButton() {
   const [open, setOpen] = useState(false);
-  const { items, loading } = useActivityFeed(40);
+  const { items, loading, error } = useActivityFeed(40);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -63,7 +63,12 @@ export function ActivityFeedButton() {
                 Carregando...
               </div>
             )}
-            {!loading && items.length === 0 && (
+            {!loading && error && (
+              <div role="alert" className="px-4 py-6 text-xs text-destructive">
+                {error}
+              </div>
+            )}
+            {!loading && !error && items.length === 0 && (
               <div className="px-4 py-10 text-center text-2xs uppercase tracking-[0.04em] text-muted-foreground">
                 Nenhuma atividade ainda
               </div>
