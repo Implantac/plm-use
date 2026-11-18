@@ -85,8 +85,13 @@ function OfficialModelsPage() {
       setPreview(url);
       return () => URL.revokeObjectURL(url);
     }
-    if (form.sketch_path) void sketchSignedUrl(form.sketch_path).then(setPreview);
-    else setPreview(null);
+    if (form.sketch_path) {
+      void sketchSignedUrl(form.sketch_path).then(({ url, reason }) => {
+        setPreview(url);
+        // Onda 104: prévia ausente tem motivo (permissão, arquivo removido…).
+        if (reason) toast.error(reason);
+      });
+    } else setPreview(null);
   }, [sketchFile, form.sketch_path]);
 
   function edit(m: OfficialModel) {

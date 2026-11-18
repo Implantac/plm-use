@@ -161,21 +161,31 @@ export const sendLaunchHandoff = createServerFn({ method: "POST" })
     }
 
     // 2) Snapshot de itens para hash de payload.
-    const { data: items } = await supabase
+    const { data: items, error: itErr } = await supabase
       .from("launch_item")
       .select("id, reference_id, prioridade, meta_unidades")
       .eq("wave_id", data.wave_id);
+    // Onda 104: sem os itens o handoff sairia vazio (hash e dedupe errados) em silêncio.
+    if (itErr) {
+      return { ok: false as const, reason: descreverErroSupabase(itErr, "ler os itens da wave") };
+    }
 
     const payload = { wave: wave.codigo, colecao: wave.colecao, itens: items ?? [] };
     const payload_hash = await sha256(JSON.stringify(payload));
     const idempotency_key = `wave:${data.wave_id}:destino:${data.destino}:v1`;
 
     // 3) Upsert por idempotency_key.
-    const { data: existing } = await supabase
+    const { data: existing, error: exErr } = await supabase
       .from("launch_handoff")
       .select("id, synced_at")
       .eq("idempotency_key", idempotency_key)
       .maybeSingle();
+    if (exErr) {
+      return {
+        ok: false as const,
+        reason: descreverErroSupabase(exErr, "verificar se o handoff já existia"),
+      };
+    }
     if (existing) {
       return { ok: true as const, handoff_id: existing.id, deduped: true };
     }

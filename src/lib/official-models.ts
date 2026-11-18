@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 export type OfficialMeasure = { point: string; value: string; tolerance?: string; how?: string };
 export type OfficialModel = {
@@ -50,19 +51,37 @@ export function parseMeasureTable(text: string): OfficialMeasure[] {
     }));
 }
 
-export async function sketchSignedUrl(path: string): Promise<string | null> {
-  const { data } = await supabase.storage.from(OFFICIAL_BUCKET).createSignedUrl(path, 3600);
-  return data?.signedUrl ?? null;
+export async function sketchSignedUrl(
+  path: string,
+): Promise<{ url: string | null; reason: string | null }> {
+  const { data, error } = await supabase.storage.from(OFFICIAL_BUCKET).createSignedUrl(path, 3600);
+  if (error || !data?.signedUrl) {
+    return { url: null, reason: descreverErroSupabase(error, "carregar o desenho oficial") };
+  }
+  return { url: data.signedUrl, reason: null };
 }
 
 /** Baixa o desenho oficial e devolve data URL para usar como imagem de referência. */
-export async function sketchDataUrl(path: string): Promise<string | null> {
+export async function sketchDataUrl(
+  path: string,
+): Promise<{ dataUrl: string | null; reason: string | null }> {
   const { data, error } = await supabase.storage.from(OFFICIAL_BUCKET).download(path);
-  if (error || !data) return null;
+  if (error || !data) {
+    return { dataUrl: null, reason: descreverErroSupabase(error, "baixar o desenho oficial") };
+  }
   return await new Promise((resolve) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : null);
-    reader.onerror = () => resolve(null);
+    reader.onload = () =>
+      resolve(
+        typeof reader.result === "string"
+          ? { dataUrl: reader.result, reason: null }
+          : { dataUrl: null, reason: "O desenho oficial baixado não pôde ser lido como imagem." },
+      );
+    reader.onerror = () =>
+      resolve({
+        dataUrl: null,
+        reason: "O desenho oficial baixado não pôde ser lido como imagem.",
+      });
     reader.readAsDataURL(data);
   });
 }

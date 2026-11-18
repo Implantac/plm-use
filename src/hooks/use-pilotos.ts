@@ -90,13 +90,18 @@ export function useCreatePiloto() {
       // Próxima rodada automática se não informada
       let rodada = input.rodada;
       if (!rodada) {
-        const { data: last } = await supabase
+        const { data: last, error: lastErr } = await supabase
           .from("pilotos" as never)
           .select("rodada")
           .eq("reference_id", input.reference_id)
           .order("rodada", { ascending: false })
           .limit(1)
           .maybeSingle();
+        // Onda 104: se a leitura falhar, não inventar "rodada 1" por cima das existentes.
+        if (lastErr) {
+          toast.error(descreverErroSupabase(lastErr, "descobrir a próxima rodada do piloto"));
+          return null;
+        }
         rodada = ((last as { rodada?: number } | null)?.rodada ?? 0) + 1;
       }
 

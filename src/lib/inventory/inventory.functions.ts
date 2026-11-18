@@ -112,12 +112,16 @@ export const registerMovement = createServerFn({ method: "POST" })
 
     // Valida saldo suficiente para saídas
     if (["out", "transfer_out"].includes(data.kind)) {
-      const { data: bal } = await supabase
+      const { data: bal, error: balErr } = await supabase
         .from("stock_balance")
         .select("qty_on_hand, qty_reserved")
         .eq("item_id", data.item_id)
         .eq("warehouse_id", data.warehouse_id)
         .maybeSingle();
+      // Onda 104: falha ao ler o saldo não pode virar "Saldo insuficiente (0 disponível)".
+      if (balErr) {
+        return { ok: false as const, reason: descreverErroSupabase(balErr, "consultar o saldo") };
+      }
       const onHand = Number(bal?.qty_on_hand ?? 0);
       if (onHand < data.qty) {
         return { ok: false as const, reason: `Saldo insuficiente (${onHand} disponível).` };

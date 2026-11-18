@@ -2182,6 +2182,24 @@ motivo; varredura global: zero `.then(({ data }) =>` descartando erro.
 
 ---
 
+## 2-BP. 97ª medição — ar = Onda 100; Onda 104: leitura prévia não inventa dado
+
+**Ar (97ª):** entry `index-CTZMuUXI.js` (= Onda 100); 101–103 não publicadas.
+Token GitHub expirado: Onda 104 commitada localmente, **push pendente**.
+
+**Onda 104 (repo local):** saldo/itens da wave/handoff existente/última
+rodada/desenho oficial — leitura falha devolve motivo em vez de decidir com
+zero/vazio/nulo.
+
+| Camada | 97ª medição                                                   |
+| ------ | ------------------------------------------------------------- |
+| Repo   | **Onda 104 local** — remoto em `fe8d563` (103) até novo token |
+| Ar     | **Onda 100** (`index-CTZMuUXI.js`) — **101–104 pendentes**    |
+| Banco  | inalterado                                                    |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **944/944**   |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

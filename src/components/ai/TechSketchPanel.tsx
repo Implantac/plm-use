@@ -81,7 +81,17 @@ export function TechSketchPanel({
           },
         }),
       );
-      const reference = official?.sketch_path ? await sketchDataUrl(official.sketch_path) : null;
+      // Onda 104: se o desenho oficial não vier, a IA não finge que partiu dele.
+      let reference: string | null = null;
+      if (official?.sketch_path) {
+        const base = await sketchDataUrl(official.sketch_path);
+        reference = base.dataUrl;
+        if (!base.dataUrl) {
+          toast.warning(
+            `O desenho será gerado sem o desenho oficial como base. ${base.reason ?? ""}`.trim(),
+          );
+        }
+      }
       const imagePromise = streamImage(
         "/api/generate-image",
         reference
