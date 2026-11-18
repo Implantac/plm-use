@@ -72,7 +72,7 @@ export function NovaReferenciaDialog({
   onCreated,
 }: Props) {
   const { create: createPiloto } = useCreatePiloto();
-  const { items: suppliers } = useSuppliers();
+  const { items: suppliers, error: suppliersError } = useSuppliers();
 
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
@@ -333,6 +333,11 @@ export function NovaReferenciaDialog({
                     ))}
                   </SelectContent>
                 </Select>
+                {suppliersError && (
+                  <p role="alert" className="text-xs text-destructive">
+                    {suppliersError}
+                  </p>
+                )}
               </div>
             </div>
 

@@ -789,6 +789,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     migration. Gates **937/937**. Validação: sino "Atividade do time" com
     sessão inválida → motivo, não "Nenhuma atividade ainda".
 
+59. **Publicar a Onda 103 — PENDENTE (96ª medição).** Listas de seleção e
+    leituras com motivo (fornecedores, transições, timeline, pilotos,
+    armazéns/OPs/lotes). Nenhuma migration. Gates **941/941**. Validação:
+    `/inventory` → Movimentação com sessão inválida → alerta com motivo.
+
 ---
 
 ## 8. Como reverificar isto

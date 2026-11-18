@@ -3,6 +3,7 @@
 // Aditivo: não substitui use-references, apenas complementa para outras entidades.
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 
 export type WorkflowEntityType =
   "reference" | "lote" | "tech_sheet" | "piloto" | "capa" | "engenharia" | "facao_order";
@@ -21,6 +22,8 @@ export interface WorkflowDefinition {
 export function useWorkflow(entityType: WorkflowEntityType) {
   const [defs, setDefs] = useState<WorkflowDefinition[]>([]);
   const [loading, setLoading] = useState(true);
+  // Onda 103: sem definições por falha de leitura ≠ "nenhuma transição disponível".
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,9 +33,13 @@ export function useWorkflow(entityType: WorkflowEntityType) {
       .select("*")
       .eq("entity_type", entityType)
       .eq("is_active", true)
-      .then(({ data }) => {
+      .then(({ data, error: erro }) => {
         if (cancelled) return;
-        setDefs((data as WorkflowDefinition[] | null) ?? []);
+        if (erro) setError(descreverErroSupabase(erro, "carregar as transições do fluxo"));
+        else {
+          setError(null);
+          setDefs((data as WorkflowDefinition[] | null) ?? []);
+        }
         setLoading(false);
       });
     return () => {
@@ -61,5 +68,5 @@ export function useWorkflow(entityType: WorkflowEntityType) {
     return map;
   }, [defs]);
 
-  return { defs, loading, nextStatuses, canTransition, graph };
+  return { defs, loading, error, nextStatuses, canTransition, graph };
 }

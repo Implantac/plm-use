@@ -67,7 +67,7 @@ export function NovoPilotoDialog({
   trigger,
 }: Props) {
   const { create } = useCreatePiloto();
-  const { items: suppliers, loading: loadingSuppliers } = useSuppliers();
+  const { items: suppliers, loading: loadingSuppliers, error: suppliersError } = useSuppliers();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [tipo, setTipo] = useState<"prova" | "ajuste" | "final">(defaultTipo);
@@ -208,8 +208,10 @@ export function NovoPilotoDialog({
                 ))}
               </SelectContent>
             </Select>
-            <FieldMessage variant={errors.supplier_id ? "error" : "helper"}>
-              {errors.supplier_id ?? "Quem vai costurar a peça piloto. Pode ser definido depois."}
+            <FieldMessage variant={errors.supplier_id || suppliersError ? "error" : "helper"}>
+              {errors.supplier_id ??
+                suppliersError ??
+                "Quem vai costurar a peça piloto. Pode ser definido depois."}
             </FieldMessage>
           </div>
 

@@ -1,6 +1,6 @@
 // Doc 06.2 · Almoxarifado — dialog de movimentação (entrada/saída/ajuste/transferência).
 import { useEffect, useState } from "react";
-import { chamarServidor } from "@/lib/supabase/erro-humano";
+import { chamarServidor, descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { registerMovement } from "@/lib/inventory/inventory.functions";
@@ -62,6 +62,10 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
   const [orders, setOrders] = useState<OpenOrder[]>([]);
   const [refId, setRefId] = useState("");
   const [busy, setBusy] = useState(false);
+  // Onda 103: falhas de carga das listas do formulário — um aviso inline por motivo.
+  const [loadErrors, setLoadErrors] = useState<string[]>([]);
+  const addLoadError = (msg: string) =>
+    setLoadErrors((prev) => (prev.includes(msg) ? prev : [...prev, msg]));
   const [errors, setErrors] = useState<{
     itemId?: string;
     warehouseId?: string;
@@ -71,13 +75,20 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
 
   useEffect(() => {
     if (!open) return;
+    setLoadErrors([]);
     setItemId(preselectItemId ?? "");
     supabase
       .from("warehouse" as never)
       .select("id, code, name")
       .eq("is_active", true)
       .order("code")
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        // Onda 103: armazéns que não carregam têm motivo — senão o formulário
+        // trava em "Selecione o armazém" sem opção nenhuma.
+        if (error) {
+          addLoadError(descreverErroSupabase(error, "carregar os armazéns"));
+          return;
+        }
         const list = (data ?? []) as unknown as Warehouse[];
         setWarehouses(list);
         if (list.length > 0) setWarehouseId((prev) => prev || list[0].id);
@@ -88,7 +99,11 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
       .in("status", ["planejada", "em_producao"])
       .order("number", { ascending: false })
       .limit(50)
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) {
+          addLoadError(descreverErroSupabase(error, "carregar as ordens de produção abertas"));
+          return;
+        }
         setOrders((data ?? []) as unknown as OpenOrder[]);
       });
     setRefId("");
@@ -154,6 +169,16 @@ export function MovementDialog({ open, onOpenChange, items, preselectItemId, onD
             Nova movimentação
           </DialogTitle>
         </DialogHeader>
+        {loadErrors.length > 0 && (
+          <div
+            role="alert"
+            className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive space-y-1"
+          >
+            {loadErrors.map((m) => (
+              <p key={m}>{m}</p>
+            ))}
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-4 py-4">
           <div className="space-y-2">
             <Label required htmlFor="movement-item">

@@ -33,11 +33,12 @@ export function WorkflowStatusMenu({
   variant = "outline",
   label,
 }: Props) {
-  const { nextStatuses, loading: defsLoading } = useWorkflow(entityType);
+  const { nextStatuses, loading: defsLoading, error: defsError } = useWorkflow(entityType);
   const { transition, pending } = useWorkflowTransition(entityType);
 
   const options = nextStatuses(currentStatus);
-  const disabled = defsLoading || pending || options.length === 0;
+  // Onda 103: com erro de leitura o botão continua clicável para mostrar o porquê.
+  const disabled = defsLoading || pending || (options.length === 0 && !defsError);
 
   const handleClick = async (to: string) => {
     const res = await transition({
@@ -62,7 +63,11 @@ export function WorkflowStatusMenu({
           Próximo status
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {options.length === 0 ? (
+        {defsError ? (
+          <DropdownMenuItem disabled className="whitespace-normal text-xs text-destructive">
+            {defsError}
+          </DropdownMenuItem>
+        ) : options.length === 0 ? (
           <DropdownMenuItem disabled>Nenhuma transição disponível</DropdownMenuItem>
         ) : (
           options.map((to) => (

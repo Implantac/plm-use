@@ -2164,6 +2164,24 @@ mostram o motivo inline (`role="alert"`) em vez do texto de vazio.
 
 ---
 
+## 2-BO. 96ª medição — 101/102 ainda não publicadas; Onda 103: listas de seleção com motivo
+
+**Ar (96ª):** entry `index-CTZMuUXI.js` (= Onda 100). "Movimentação" em
+`/inventory` com sessão inválida: armazém sem opção nem aviso.
+
+**Onda 103 (repo):** hooks de leitura expõem `error`; timeline, menu de
+status, painel de pilotos, diálogos de piloto/referência/estoque mostram o
+motivo; varredura global: zero `.then(({ data }) =>` descartando erro.
+
+| Camada | 96ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 103** — local = remoto                               |
+| Ar     | **Onda 100** (`index-CTZMuUXI.js`) — **101–103 pendentes**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **941/941** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

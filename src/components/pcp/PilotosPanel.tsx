@@ -11,6 +11,7 @@ import { usePilotos } from "@/hooks/use-pilotos";
 import { WorkflowStatusMenu } from "@/components/workflow/WorkflowStatusMenu";
 import { NovoPilotoDialog } from "./NovoPilotoDialog";
 import { toast } from "sonner";
+import { descreverErroSupabase } from "@/lib/supabase/erro-humano";
 import { STATUS_BADGE_CLASS, STATUS_TOAST_CLASS } from "@/components/ui/status-presets";
 
 // Compat: mesmos nomes/valores, agora derivados dos presets compartilhados.
@@ -29,6 +30,8 @@ interface Props {
 
 export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
   const [referenceId, setReferenceId] = useState<string | null>(null);
+  // Onda 103: falha na consulta ≠ referência não cadastrada.
+  const [resolveError, setResolveError] = useState<string | null>(null);
   const [resolving, setResolving] = useState(true);
   const [pcpDialogOpen, setPcpDialogOpen] = useState(false);
 
@@ -40,9 +43,15 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
       .select("id")
       .eq("code", referenciaRef)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (cancelled) return;
-        setReferenceId((data as { id: string } | null)?.id ?? null);
+        if (error) {
+          setResolveError(descreverErroSupabase(error, "localizar a referência"));
+          setReferenceId(null);
+        } else {
+          setResolveError(null);
+          setReferenceId((data as { id: string } | null)?.id ?? null);
+        }
         setResolving(false);
       });
     return () => {
@@ -120,6 +129,18 @@ export function PilotosPanel({ referenciaRef, referenciaNome }: Props) {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Loader2 className="h-3 w-3 animate-spin" /> Resolvendo referência…
+      </div>
+    );
+  }
+
+  if (resolveError) {
+    return (
+      <div
+        role="alert"
+        className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-xs text-destructive"
+      >
+        {resolveError} Não dá para afirmar se a referência{" "}
+        <span className="font-mono">{referenciaRef}</span> está cadastrada.
       </div>
     );
   }

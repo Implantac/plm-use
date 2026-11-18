@@ -16,6 +16,8 @@ export function useEntityTimeline(
 ) {
   const [items, setItems] = useState<EntityEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  // Onda 103: timeline vazia por falha de leitura tem motivo.
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!entityType || !entityId) {
@@ -32,9 +34,13 @@ export function useEntityTimeline(
       .eq("entity_id", entityId)
       .order("created_at", { ascending: false })
       .limit(limit)
-      .then(({ data }) => {
+      .then(({ data, error: erro }) => {
         if (cancelled) return;
-        setItems((data ?? []) as EntityEvent[]);
+        if (erro) setError(descreverErroSupabase(erro, "carregar a linha do tempo"));
+        else {
+          setError(null);
+          setItems((data ?? []) as EntityEvent[]);
+        }
         setLoading(false);
       });
 
@@ -62,7 +68,7 @@ export function useEntityTimeline(
     };
   }, [entityType, entityId, limit]);
 
-  return { items, loading };
+  return { items, loading, error };
 }
 
 export function useEventEmitter() {

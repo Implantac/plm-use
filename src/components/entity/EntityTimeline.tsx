@@ -59,7 +59,7 @@ export function EntityTimeline({
   active?: boolean;
   onNewCountChange?: (count: number) => void;
 }) {
-  const { items, loading } = useEntityTimeline(entityType, entityId);
+  const { items, loading, error } = useEntityTimeline(entityType, entityId);
   const baselineIdsRef = useRef<Set<string> | null>(null);
 
   // Dedupe by id defensively — subscription reconnects/replays could deliver
@@ -98,6 +98,18 @@ export function EntityTimeline({
     return (
       <div className="rounded-md border border-dashed border-border bg-muted/40 p-6 text-center text-xs text-muted-foreground">
         Carregando eventos…
+      </div>
+    );
+  }
+
+  // Onda 103: falha de leitura não vira "Sem eventos registrados ainda".
+  if (error) {
+    return (
+      <div
+        role="alert"
+        className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-center text-xs text-destructive"
+      >
+        {error}
       </div>
     );
   }
