@@ -2200,6 +2200,20 @@ zero/vazio/nulo.
 
 ---
 
+## 2-BQ. 98ª medição — Onda 104 empurrada (token novo); Onda 105: stores locais com motivo
+
+**Repo:** `78b6e31` (104) empurrado e CI verde; agora Onda 105.
+**Ar (98ª):** entry `index-CTZMuUXI.js` (= Onda 100); 101–105 pendentes.
+
+| Camada | 98ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 105** — local = remoto                               |
+| Ar     | **Onda 100** (`index-CTZMuUXI.js`) — **101–105 pendentes**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **949/949** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

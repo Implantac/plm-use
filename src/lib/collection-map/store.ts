@@ -1,3 +1,4 @@
+import { gravarLocal, lerLocal } from "@/lib/armazenamento-local";
 // Collection map store (Mapa de Coleção)
 // Matrix view: model × color × size grade. In-memory mock; migrate to
 // server fn + `collection_matrix` when schema lands.
@@ -223,12 +224,11 @@ export const collectionMap: CollectionMap = {
 const LS_KEY = "use-moda:collection-filters";
 
 function loadFilters(): SavedFilter[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(window.localStorage.getItem(LS_KEY) ?? "[]");
-  } catch {
-    return [];
-  }
+  return lerLocal<SavedFilter[]>(LS_KEY, "os filtros salvos do mapa", [], Array.isArray);
+}
+
+function persistFilters() {
+  gravarLocal(LS_KEY, "os filtros salvos do mapa", filters);
 }
 
 let filters = loadFilters();
@@ -240,17 +240,13 @@ export function listFilters(): SavedFilter[] {
 
 export function saveFilter(f: SavedFilter) {
   filters = [f, ...filters.filter((x) => x.id !== f.id)];
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(LS_KEY, JSON.stringify(filters));
-  }
+  persistFilters();
   listeners.forEach((l) => l());
 }
 
 export function removeFilter(id: string) {
   filters = filters.filter((f) => f.id !== id);
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(LS_KEY, JSON.stringify(filters));
-  }
+  persistFilters();
   listeners.forEach((l) => l());
 }
 
@@ -263,9 +259,7 @@ export function subscribeFilters(l: () => void) {
 // localStorage vira cache de sessão (fonte da verdade passa a ser a tabela).
 export function replaceAllFilters(next: SavedFilter[]) {
   filters = next;
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(LS_KEY, JSON.stringify(filters));
-  }
+  persistFilters();
   listeners.forEach((l) => l());
 }
 

@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { mirrorEvent } from "./mirror";
+import { gravarLocal, lerLocal } from "@/lib/armazenamento-local";
 
 export type LocalEntityType =
   | "color_palette"
@@ -46,24 +47,11 @@ const listeners = new Set<Listener>();
 let events: LocalEvent[] = load();
 
 function load(): LocalEvent[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as LocalEvent[]) : [];
-  } catch {
-    return [];
-  }
+  return lerLocal<LocalEvent[]>(STORAGE_KEY, "o histórico local de eventos", [], Array.isArray);
 }
 
 function persist() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(events.slice(0, MAX_EVENTS)));
-  } catch {
-    /* quota */
-  }
+  gravarLocal(STORAGE_KEY, "o histórico local de eventos", events.slice(0, MAX_EVENTS));
 }
 
 export function emitLocalEvent(

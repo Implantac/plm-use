@@ -58,10 +58,12 @@ export function ReservationsPanel({ items }: { items: StockItem[] }) {
     // da OP com link ao kanban. Falha de leitura não quebra o painel.
     const opIds = [...new Set(rows.filter((r) => r.ref_type === "op").map((r) => r.ref_id))];
     if (opIds.length) {
-      const { data: pos } = await supabase
+      const { data: pos, error: posErr } = await supabase
         .from("production_orders")
         .select("id, number")
         .in("id", opIds);
+      // Onda 105: o painel continua, mas diz por que as OPs aparecem só como id.
+      if (posErr) setErroLeitura(descreverErroSupabase(posErr, "resolver os números das OPs"));
       const map: Record<string, { id: string; number: string }> = {};
       for (const p of (pos ?? []) as { id: string; number: string }[]) map[p.id] = p;
       setOpMeta(map);

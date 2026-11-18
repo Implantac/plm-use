@@ -1,25 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { gravarLocal, lerLocal } from "@/lib/armazenamento-local";
 
 const RECENTS_KEY = "use-moda-recent-routes";
 const FAVORITES_KEY = "use-moda-favorite-routes";
 const MAX_RECENTS = 8;
 
+const O_QUE: Record<string, string> = {
+  [RECENTS_KEY]: "as rotas recentes",
+  [FAVORITES_KEY]: "as rotas favoritas",
+};
+
 function readList(key: string): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === "string") : [];
-  } catch {
-    return [];
-  }
+  const parsed = lerLocal<unknown[]>(key, O_QUE[key] ?? "a navegação", [], Array.isArray);
+  return parsed.filter((v): v is string => typeof v === "string");
 }
 
 function writeList(key: string, list: string[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(list));
+  gravarLocal(key, O_QUE[key] ?? "a navegação", list);
 }
 
 export function useRecentRoutes() {

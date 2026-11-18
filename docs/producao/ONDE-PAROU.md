@@ -794,10 +794,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     armazéns/OPs/lotes). Nenhuma migration. Gates **941/941**. Validação:
     `/inventory` → Movimentação com sessão inválida → alerta com motivo.
 
-60. **Empurrar e publicar a Onda 104 — PENDENTE (97ª medição).** Leitura
-    prévia com motivo (saldo, itens da wave, handoff, rodada do piloto,
-    desenho oficial). Nenhuma migration. Gates **944/944**. **Push exige token
-    GitHub novo.**
+60. **Publicar a Onda 104 — PENDENTE (98ª medição).** Empurrada em
+    `78b6e31` (CI verde). Leitura prévia com motivo (saldo, itens da wave,
+    handoff, rodada do piloto, desenho oficial). Nenhuma migration.
+
+61. **Publicar a Onda 105 — PENDENTE (98ª medição).** Stores locais
+    (eventos, filtros do mapa, rotas recentes) com `lerLocal`/`gravarLocal`.
+    Nenhuma migration. Gates **949/949**.
 
 ---
 
