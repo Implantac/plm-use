@@ -392,10 +392,8 @@ function Dashboard() {
         >
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-status-rejected" />
           <div>
-            <p className="font-medium text-white">Não foi possível atualizar as referências.</p>
-            <p className="mt-1 text-muted-foreground">
-              Verifique sua conexão e tente novamente mais tarde.
-            </p>
+            {/* Onda 106: o motivo real vem do hook — não diagnosticar "conexão" por padrão. */}
+            <p className="font-medium text-white">{error}</p>
           </div>
         </div>
       )}
@@ -588,7 +586,7 @@ function Dashboard() {
             <ReferenceJourney
               references={nextStepReferences}
               loading={loading}
-              error={Boolean(error)}
+              error={error ? "Referências indisponíveis — veja o aviso no topo da página." : null}
               onOpen={(reference) =>
                 openEntity({
                   type: "reference",

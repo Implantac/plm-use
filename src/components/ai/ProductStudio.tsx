@@ -777,8 +777,8 @@ export function ProductStudio() {
           role="alert"
           className="rounded-md border border-status-rejected/30 bg-status-rejected/5 p-3 text-sm text-muted-foreground"
         >
-          Não foi possível carregar referências existentes para validar códigos. Tente novamente
-          antes de salvar.
+          {/* Onda 106: motivo real + consequência prática. */}
+          {referencesError} Sem essa lista, os códigos não podem ser validados antes de salvar.
         </p>
       )}
 

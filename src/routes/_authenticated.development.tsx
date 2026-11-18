@@ -598,7 +598,7 @@ function DevelopmentReferenceJourney() {
       title="Referências do ciclo real"
       references={items}
       loading={loading}
-      error={Boolean(error)}
+      error={error}
       limit={6}
       onOpen={(reference) =>
         openEntity({

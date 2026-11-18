@@ -778,29 +778,19 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 56. **Publicar a Onda 100 — FEITO (94ª medição).** Entry `index-CTZMuUXI.js`;
     provas 96/98 mantidas; 0 `pageerror`.
 
-57. **Publicar a Onda 101 — PENDENTE (94ª medição).** Mood board honesto:
-    URL adicionada avisa que é só desta sessão; listagem/links assinados com
-    motivo; `OptimizedImage` com motivo. Nenhuma migration. Gates **934/934**.
-    Validação: `/research` → colar URL → Adicionar → toast "Referência
-    adicionada só nesta sessão…" (antes "Referência fixada no Mood Board").
+57. **Publicar a Onda 101 — FEITO (99ª medição).** Entry `index-BkcwACDy.js`; URL no mood board → toast honesto.
 
-58. **Publicar a Onda 102 — PENDENTE (95ª medição).** Leitura que falha
-    mostra motivo inline (comentários, reservas, atividade). Nenhuma
-    migration. Gates **937/937**. Validação: sino "Atividade do time" com
-    sessão inválida → motivo, não "Nenhuma atividade ainda".
+58. **Publicar a Onda 102 — FEITO (99ª medição).** Entry `index-BkcwACDy.js`; sino de atividade → motivo.
 
-59. **Publicar a Onda 103 — PENDENTE (96ª medição).** Listas de seleção e
-    leituras com motivo (fornecedores, transições, timeline, pilotos,
-    armazéns/OPs/lotes). Nenhuma migration. Gates **941/941**. Validação:
-    `/inventory` → Movimentação com sessão inválida → alerta com motivo.
+59. **Publicar a Onda 103 — FEITO (99ª medição).** Entry `index-BkcwACDy.js`; Movimentação → alerta com motivo.
 
-60. **Publicar a Onda 104 — PENDENTE (98ª medição).** Empurrada em
-    `78b6e31` (CI verde). Leitura prévia com motivo (saldo, itens da wave,
-    handoff, rodada do piloto, desenho oficial). Nenhuma migration.
+60. **Publicar a Onda 104 — FEITO (99ª medição).** Entry `index-BkcwACDy.js`; contrato por teste; sem migration.
 
-61. **Publicar a Onda 105 — PENDENTE (98ª medição).** Stores locais
-    (eventos, filtros do mapa, rotas recentes) com `lerLocal`/`gravarLocal`.
-    Nenhuma migration. Gates **949/949**.
+61. **Publicar a Onda 105 — FEITO (99ª medição).** Entry `index-BkcwACDy.js`; contrato por teste; sem migration.
+
+62. **Publicar a Onda 106 — PENDENTE (99ª medição).** `/dashboard` e `/flow`
+    mostram o motivo real (não "verifique sua conexão"). Nenhuma migration.
+    Gates **951/951**. Validação: `prova_alertas.py` em produção.
 
 ---
 

@@ -2214,6 +2214,26 @@ zero/vazio/nulo.
 
 ---
 
+## 2-BR. 99ª medição — Ondas 101–105 publicadas; Onda 106: motivo real no inline
+
+**Ar (99ª, "publicado"):** entry `index-BkcwACDy.js` / `index-CaMDHWSC.js`.
+Validado em produção: 101 (URL no mood board → "Referência adicionada só nesta
+sessão…"), 102 (sino de atividade → motivo em vez de "Nenhuma atividade
+ainda"), 103 (Movimentação → alerta "Não foi possível carregar os
+armazéns…"); 0 `pageerror`. 104/105 cobertas por testes (sem clique real).
+
+**Onda 106 (repo):** `/dashboard` e `/flow` trocam "Verifique sua conexão"
+pelo motivo real do hook; blocos secundários apontam para o topo.
+
+| Camada | 99ª medição                                                 |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 106** — local = remoto                               |
+| Ar     | **Onda 105** (`index-BkcwACDy.js`) — **Onda 106 pendente**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **951/951** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

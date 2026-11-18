@@ -23,7 +23,8 @@ const STEP_LABEL: Record<ReferenceStatus, string> = {
 interface ReferenceJourneyProps {
   references: ReferenceRow[];
   loading: boolean;
-  error?: boolean;
+  /** Onda 106: motivo real da falha (string) — `true` legado vira texto genérico. */
+  error?: string | boolean | null;
   onOpen: (reference: ReferenceRow) => void;
   title?: string;
   limit?: number;
@@ -32,7 +33,7 @@ interface ReferenceJourneyProps {
 export function ReferenceJourney({
   references,
   loading,
-  error = false,
+  error = null,
   onOpen,
   title = "Próximas etapas",
   limit = 4,
@@ -56,7 +57,7 @@ export function ReferenceJourney({
         <p className="py-4 text-sm text-muted-foreground">Carregando referências…</p>
       ) : error ? (
         <p role="alert" className="py-4 text-sm text-muted-foreground">
-          Não foi possível carregar as referências. Tente novamente mais tarde.
+          {typeof error === "string" ? error : "Não foi possível carregar as referências."}
         </p>
       ) : visibleReferences.length === 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border py-4">

@@ -279,8 +279,8 @@ function FlowPage() {
           role="alert"
           className="rounded-md border border-status-rejected/30 bg-status-rejected/5 p-4 text-sm text-muted-foreground"
         >
-          Não foi possível carregar as referências. Verifique sua conexão e tente novamente mais
-          tarde.
+          {/* Onda 106: motivo real do hook, não "verifique sua conexão". */}
+          {error}
         </div>
       )}
       {!loading && !error && items.length === 0 && (
@@ -432,8 +432,8 @@ function FlowPage() {
             </p>
           )}
           {error && (
-            <p role="alert" className="py-6 text-center text-xs text-muted-foreground">
-              Não foi possível carregar as referências desta etapa.
+            <p className="py-6 text-center text-xs text-muted-foreground">
+              Etapa sem dados — veja o aviso no topo da página.
             </p>
           )}
           {!loading && !error && selectedItems.length === 0 && (
