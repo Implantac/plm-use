@@ -284,6 +284,7 @@ function MeasurementsPage() {
                     variant="ghost"
                     size="sm"
                     className="text-status-rejected hover:text-status-rejected"
+                    aria-label={`Remover tabela ${selected.code}`}
                     onClick={() => {
                       deleteChart(selected.id);
                       toast.success("Tabela removida.");

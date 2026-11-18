@@ -440,6 +440,7 @@ function AIAgentsPage() {
               />
               <Button
                 type="button"
+                aria-label="Enviar pergunta"
                 onClick={() => void enviar()}
                 disabled={loading || !input.trim()}
                 className="self-end"

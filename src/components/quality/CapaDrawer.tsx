@@ -166,6 +166,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                   })
                 }
                 className="text-muted-foreground"
+                aria-label="Abrir no painel da entidade"
               >
                 <Network className="h-4 w-4" />
               </Button>
@@ -173,6 +174,7 @@ export function CapaDrawer({ capa, open, onClose }: Props) {
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
+                aria-label="Fechar"
                 className="text-muted-foreground"
               >
                 <X className="h-4 w-4" />

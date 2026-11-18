@@ -791,9 +791,15 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
 62. **Publicar a Onda 106 — FEITO (100ª medição).** Entry `index-CJcBsLW2.js`;
     `/dashboard` e `/flow` mostram o motivo real.
 
-63. **Publicar a Onda 107 — PENDENTE (100ª medição).** Remoções anunciam
-    com `success`; menu de ações com rótulo. Nenhuma migration. Gates
-    **954/954**. Validação: `prova_remocao.py` → `success`.
+63. **Publicar a Onda 107 — FEITO (101ª medição).** Em produção,
+    `prova_remocao.py` → toast `success` "Lançamento removido."
+    (`auditoria/remocao107-prod-depois.png`).
+
+64. **Publicar a Onda 108 — PENDENTE (101ª medição).** Todo controle só com
+    ícone tem nome acessível (sino de alertas, remover/editar, enviar,
+    fechar). Nenhuma migration. Gates **956/956**. Validação:
+    `python scripts/auditoria_nomes.py https://plmuse.lovable.app x.png`
+    → `TOTAL sem nome: 0`.
 
 ---
 

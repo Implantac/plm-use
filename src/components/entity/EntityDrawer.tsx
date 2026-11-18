@@ -88,7 +88,13 @@ function DrawerBody({ entity, onClose }: { entity: EntityRef; onClose: () => voi
               <p className="text-xs text-muted-foreground mt-0.5">{entity.subtitle}</p>
             )}
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} className="w-8 p-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="w-8 p-0"
+            aria-label="Fechar"
+          >
             <X className="h-4 w-4" />
           </Button>
         </div>

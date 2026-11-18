@@ -2252,6 +2252,29 @@ Medido também: Excluir lançamento → toast `error` "Lançamento removido".
 
 ---
 
+## 2-BT. 101ª medição — Onda 107 publicada; Onda 108: controles com nome
+
+**Ar (101ª, "publicado"):** entry `index-B11W5MCG.js` / `index-UDb_p94Q.js`.
+`prova_remocao.py` em produção: `/financial` → Ações do item → Excluir →
+toast `success` "Lançamento removido." (107 ok). Medido também com
+`auditoria_nomes.py` (45 rotas autenticadas): **60 controles visíveis sem
+nome acessível** — 45 = sino de alertas do header (em toda rota), 12 Trash2
+em `/materials`, 2 em `/cad`, 1 em `/measurements`, 1 Send em `/ai-agents`.
+
+**Onda 108 (repo):** `aria-label` no sino (com contagem de não lidos), nos
+botões editar/remover de materiais, remover molde, remover tabela, enviar
+pergunta e fechar/abrir dos drawers (Entity, CAPA). Auditor local nas 45
+rotas: **TOTAL sem nome: 0**, 0 pageerror.
+
+| Camada | 101ª medição                                                |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 108** — local = remoto                               |
+| Ar     | **Onda 107** (`index-B11W5MCG.js`) — **Onda 108 pendente**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **956/956** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

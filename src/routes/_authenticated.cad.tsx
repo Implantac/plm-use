@@ -342,6 +342,7 @@ function CadPage() {
                             size="icon"
                             variant="ghost"
                             className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            aria-label={`Remover molde ${m.refCode}`}
                             onClick={() => removeMarker(m.id)}
                           >
                             <Trash2 className="w-3.5 h-3.5" />

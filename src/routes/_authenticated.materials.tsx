@@ -308,6 +308,7 @@ function MaterialsPage() {
                         size="icon"
                         variant="ghost"
                         className="h-8 w-8"
+                        aria-label={`Editar material ${m.name}`}
                         onClick={() => {
                           setDraft(toDraft(m));
                           setOpen(true);
@@ -319,6 +320,7 @@ function MaterialsPage() {
                         size="icon"
                         variant="ghost"
                         className="h-8 w-8 text-status-rejected"
+                        aria-label={`Remover material ${m.name}`}
                         onClick={() => remove(m)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />

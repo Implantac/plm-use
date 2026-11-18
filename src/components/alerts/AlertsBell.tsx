@@ -106,6 +106,9 @@ export function AlertsBell() {
         <Button
           variant="ghost"
           size="icon"
+          aria-label={
+            unreadCount > 0 ? `Alertas: ${unreadCount} não lido(s)` : "Alertas do sistema"
+          }
           className="w-10 bg-muted/50 border hover:bg-accent relative group"
         >
           <Bell className="w-4 h-4 text-muted-foreground group-hover:text-white" />

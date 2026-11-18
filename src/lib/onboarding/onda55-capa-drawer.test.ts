@@ -33,9 +33,9 @@ const ler = (rel: string) => readFileSync(resolve(raiz, rel), "utf8");
 const CAPA = "src/components/quality/CapaDrawer.tsx";
 
 describe("Onda 55 — todo campo do drawer CAPA tem nome acessível", () => {
-  it("11 rótulos novos, um por ponto do código", () => {
+  it("11 rótulos da onda 55 + 2 do cabeçalho (onda 108)", () => {
     const fonte = ler(CAPA);
-    expect((fonte.match(/aria-label=/g) ?? []).length).toBe(11);
+    expect((fonte.match(/aria-label=/g) ?? []).length).toBe(13);
   });
 
   it("os rótulos das 4 abas estão presentes", () => {
