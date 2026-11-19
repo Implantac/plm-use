@@ -799,6 +799,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     (`index-DK_4aCjo.js`), `auditoria_nomes.py` nas 45 rotas →
     `TOTAL sem nome: 0`, 0 pageerror (`auditoria/nomes108-prod-depois.png`).
 
+65. **Publicar a Onda 109 — PENDENTE (103ª medição).** Selects de `/looks`
+    e do comparador de coleções associados ao rótulo; tiragem do pré-custo
+    com `aria-label`. Nenhuma migration. Gates **958/958**. Validação:
+    `python scripts/auditoria_campos.py https://plmuse.lovable.app x.png`
+    → `TOTAL sem nome: 0` (antes: 3 em `/looks`).
+
 ---
 
 ## 8. Como reverificar isto

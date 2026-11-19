@@ -225,12 +225,14 @@ function LooksPage() {
             />
           </div>
           <div className="w-40">
-            <label className="uppercase-label text-muted-foreground">Status</label>
+            <label htmlFor="looks-filtro-status" className="uppercase-label text-muted-foreground">
+              Status
+            </label>
             <Select
               value={statusFilter}
               onValueChange={(v) => setStatusFilter(v as LookStatus | "all")}
             >
-              <SelectTrigger>
+              <SelectTrigger id="looks-filtro-status">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -244,12 +246,14 @@ function LooksPage() {
             </Select>
           </div>
           <div className="w-40">
-            <label className="uppercase-label text-muted-foreground">Ocasião</label>
+            <label htmlFor="looks-filtro-ocasiao" className="uppercase-label text-muted-foreground">
+              Ocasião
+            </label>
             <Select
               value={occasionFilter}
               onValueChange={(v) => setOccasionFilter(v as LookOccasion | "all")}
             >
-              <SelectTrigger>
+              <SelectTrigger id="looks-filtro-ocasiao">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -568,7 +572,7 @@ function LookDetail({ look }: { look: Look }) {
                 toast.success(`Look marcado como ${STATUS_LABEL[v as LookStatus]}`);
               }}
             >
-              <SelectTrigger className="text-xs">
+              <SelectTrigger className="text-xs" aria-label={`Status do look ${look.name}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

@@ -247,6 +247,7 @@ export function AplicacoesPanel({ refAtual }: { refAtual: string }) {
                             value={tiragem}
                             onChange={(e) => setTiragem(num(e.target.value) ?? 1)}
                             className="ml-2 inline-block h-6 w-20 bg-background text-2xs"
+                            aria-label="Tiragem planejada (peças)"
                             title="Tiragem planejada sincronizada com o Pré-Custo da ficha"
                           />
                         )}

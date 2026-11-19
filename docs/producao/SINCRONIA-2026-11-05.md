@@ -2290,6 +2290,23 @@ rotas: **TOTAL sem nome: 0**, 0 pageerror.
 
 ---
 
+## 2-BV. 103ª medição — Onda 109: campos com nome
+
+**Ar (103ª):** Onda 108 (`index-DK_4aCjo.js`). `auditoria_campos.py` (estrito,
+abre diálogos) nas 45 rotas: **3 selects sem nome em `/looks`**; demais 0.
+
+**Onda 109 (repo):** `htmlFor`/`id` nos filtros de looks e no comparador de
+coleções; `aria-label` no status por look e na tiragem do pré-custo. Local: 0.
+
+| Camada | 103ª medição                                                |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 109** — local = remoto                               |
+| Ar     | **Onda 108** (`index-DK_4aCjo.js`) — **Onda 109 pendente**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **958/958** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

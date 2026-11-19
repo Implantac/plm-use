@@ -184,11 +184,14 @@ function CompareCollectionsPage() {
       </div>
       <div className="mb-6 flex items-end gap-4 flex-wrap">
         <div className="min-w-[240px] flex-1 space-y-2">
-          <label className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
+          <label
+            htmlFor="compare-colecao-a"
+            className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground"
+          >
             Coleção A
           </label>
           <Select value={String(leftId)} onValueChange={(v) => setLeftId(Number(v))}>
-            <SelectTrigger className="">
+            <SelectTrigger id="compare-colecao-a">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -212,11 +215,14 @@ function CompareCollectionsPage() {
         </Button>
 
         <div className="min-w-[240px] flex-1 space-y-2">
-          <label className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
+          <label
+            htmlFor="compare-colecao-b"
+            className="text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground"
+          >
             Coleção B
           </label>
           <Select value={String(rightId)} onValueChange={(v) => setRightId(Number(v))}>
-            <SelectTrigger className="">
+            <SelectTrigger id="compare-colecao-b">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
