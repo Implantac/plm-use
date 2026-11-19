@@ -62,6 +62,7 @@ type MarketingMetric = {
 };
 
 export const Route = createFileRoute("/_authenticated/analytics")({
+  head: () => ({ meta: [{ title: "BI executivo · USE MODA PLM" }] }),
   component: AnalyticsPage,
   validateSearch: parseQSearch,
 });

@@ -44,6 +44,7 @@ import {
 import { useShowroom } from "@/hooks/use-showroom";
 
 export const Route = createFileRoute("/_authenticated/launch")({
+  head: () => ({ meta: [{ title: "Lançamento · USE MODA PLM" }] }),
   component: LaunchPage,
 });
 

@@ -45,6 +45,7 @@ import {
 } from "@/hooks/use-references";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  head: () => ({ meta: [{ title: "Painel · USE MODA PLM" }] }),
   component: Dashboard,
 });
 

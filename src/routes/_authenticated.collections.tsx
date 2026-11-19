@@ -52,6 +52,7 @@ import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { CollectionPerformance } from "@/components/collections/CollectionPerformance";
 
 export const Route = createFileRoute("/_authenticated/collections")({
+  head: () => ({ meta: [{ title: "Coleções · USE MODA PLM" }] }),
   component: CollectionsPage,
   validateSearch: collectionsValidateSearch,
 });

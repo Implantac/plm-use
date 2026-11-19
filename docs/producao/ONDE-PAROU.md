@@ -817,6 +817,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     Validação: `scripts/regressao-producao.sh` → 16/16 `pageerror: 0`, e
     `auditoria_console.py` → 0 avisos em `/suppliers`.
 
+67. **Publicar a Onda 111 — PENDENTE (106ª medição).** 29 rotas ganharam
+    `<title>` próprio (antes: genérico do index.html). Nenhuma migration.
+    Gates **963/963**. Validação:
+    `python scripts/provas/auditoria_titulos.py https://plmuse.lovable.app x.png`
+    → `TOTAL rotas com problema: 0`.
+
 ---
 
 ## 8. Como reverificar isto

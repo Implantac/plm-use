@@ -53,6 +53,7 @@ import {
 } from "@/lib/techsheet/kanban-items";
 
 export const Route = createFileRoute("/_authenticated/development")({
+  head: () => ({ meta: [{ title: "Esteira de desenvolvimento · USE MODA PLM" }] }),
   component: DevelopmentPage,
 });
 

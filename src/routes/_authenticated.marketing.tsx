@@ -43,6 +43,7 @@ import { useTechSheetStore } from "@/lib/techsheet/store";
 import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 
 export const Route = createFileRoute("/_authenticated/marketing")({
+  head: () => ({ meta: [{ title: "Marketing · USE MODA PLM" }] }),
   component: MarketingPage,
 });
 

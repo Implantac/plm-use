@@ -28,6 +28,7 @@ import {
 } from "@/hooks/use-references";
 
 export const Route = createFileRoute("/_authenticated/references")({
+  head: () => ({ meta: [{ title: "Referências · USE MODA PLM" }] }),
   component: ReferencesPage,
 });
 

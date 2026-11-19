@@ -39,6 +39,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { runAbcClassification, upsertStockItem } from "@/lib/inventory/inventory.functions";
 
 export const Route = createFileRoute("/_authenticated/inventory")({
+  head: () => ({ meta: [{ title: "Almoxarifado · USE MODA PLM" }] }),
   component: InventoryPage,
 });
 

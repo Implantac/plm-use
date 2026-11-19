@@ -41,6 +41,7 @@ import {
 } from "@/lib/security/rbac-governance";
 
 export const Route = createFileRoute("/_authenticated/security")({
+  head: () => ({ meta: [{ title: "Governança e LGPD · USE MODA PLM" }] }),
   component: SecurityPage,
 });
 

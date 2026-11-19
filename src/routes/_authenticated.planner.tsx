@@ -21,6 +21,7 @@ import { useAuth, useUserRoles } from "@/hooks/use-auth";
 import { opPermissions } from "@/lib/pcp/op-permissions";
 
 export const Route = createFileRoute("/_authenticated/planner")({
+  head: () => ({ meta: [{ title: "Programação de OPs · USE MODA PLM" }] }),
   component: PlannerPage,
 });
 

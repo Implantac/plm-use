@@ -1,7 +1,7 @@
 # Auditoria Onda 108: controles visíveis sem nome acessível, por rota autenticada.
 import asyncio, json, time, base64, sys
 from playwright.async_api import async_playwright
-BASE=sys.argv[1]; SHOT=sys.argv[2]; ROTAS=(open(sys.argv[3]).read().split() if len(sys.argv)>3 else [r.removeprefix("_authenticated.").removesuffix(".tsx").replace(".","/") for r in sorted(__import__("os").listdir(__import__("os").path.join(__import__("os").path.dirname(__file__),"../../src/routes"))) if r.startswith("_authenticated.") and r!="_authenticated.index.tsx"])
+BASE=sys.argv[1]; SHOT=sys.argv[2]; ROTAS=(open(sys.argv[3]).read().split() if len(sys.argv)>3 else [r.removeprefix("_authenticated.").removesuffix(".tsx").replace(".","/") for r in sorted(__import__("os").listdir(__import__("os").path.join(__import__("os").path.dirname(__file__),"../../src/routes"))) if r.startswith("_authenticated.") and r not in ("_authenticated.index.tsx","_authenticated.tsx")])
 KEY="sb-njmniwsqwohmigroswnl-auth-token"; exp=int(time.time())+3600
 def b64(o): return base64.urlsafe_b64encode(json.dumps(o).encode()).decode().rstrip("=")
 tok=f"{b64({'alg':'HS256'})}.{b64({'sub':'00000000-0000-0000-0000-000000000001','email':'e2e@plm.local','role':'authenticated','exp':exp,'aud':'authenticated'})}.x"

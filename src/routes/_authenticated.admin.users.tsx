@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { ShieldOff, Loader2, Plus, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
+  head: () => ({ meta: [{ title: "Administração de usuários · USE MODA PLM" }] }),
   component: AdminUsersPage,
 });
 

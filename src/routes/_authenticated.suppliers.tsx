@@ -45,6 +45,7 @@ import {
 import { useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/suppliers")({
+  head: () => ({ meta: [{ title: "Fornecedores · USE MODA PLM" }] }),
   component: SuppliersPage,
 });
 

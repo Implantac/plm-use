@@ -62,6 +62,7 @@ import { seedFor, useTechSheetStore } from "@/lib/techsheet/store";
 import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export const Route = createFileRoute("/_authenticated/looks")({
+  head: () => ({ meta: [{ title: "Coordenados e looks · USE MODA PLM" }] }),
   component: LooksPage,
 });
 

@@ -45,6 +45,7 @@ import { useCreatePiloto } from "@/hooks/use-pilotos";
 import { useReferences } from "@/hooks/use-references";
 
 export const Route = createFileRoute("/_authenticated/prototypes")({
+  head: () => ({ meta: [{ title: "Pilotagem · USE MODA PLM" }] }),
   component: PrototypesPage,
 });
 

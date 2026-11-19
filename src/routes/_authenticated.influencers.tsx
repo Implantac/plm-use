@@ -40,6 +40,7 @@ import {
 } from "@/lib/influencers/store";
 
 export const Route = createFileRoute("/_authenticated/influencers")({
+  head: () => ({ meta: [{ title: "Influencer Center · USE MODA PLM" }] }),
   component: InfluencersPage,
 });
 

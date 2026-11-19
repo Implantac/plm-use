@@ -43,6 +43,7 @@ import { operationalCodes } from "@/lib/techsheet/provenance";
 import { motivoDe } from "@/lib/supabase/erro-humano";
 
 export const Route = createFileRoute("/_authenticated/supplier-portal")({
+  head: () => ({ meta: [{ title: "Portal do fornecedor · USE MODA PLM" }] }),
   component: SupplierPortalPage,
 });
 

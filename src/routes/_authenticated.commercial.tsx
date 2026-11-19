@@ -39,6 +39,7 @@ import {
 import { useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/commercial")({
+  head: () => ({ meta: [{ title: "Comercial e expedição · USE MODA PLM" }] }),
   component: CommercialPage,
 });
 

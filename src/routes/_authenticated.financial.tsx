@@ -34,6 +34,7 @@ import { DataProvenanceBadge } from "@/components/common/DataProvenanceBadge";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 
 export const Route = createFileRoute("/_authenticated/financial")({
+  head: () => ({ meta: [{ title: "Financeiro · USE MODA PLM" }] }),
   component: FinancialPage,
 });
 

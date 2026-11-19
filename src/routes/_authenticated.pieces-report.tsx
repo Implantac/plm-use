@@ -9,6 +9,7 @@ import { useReferenceStore, filtrarLifecycles } from "@/lib/reference/store";
 import { percentualLifecycle, stageAtual, type ReferenceLifecycle } from "@/types/reference";
 
 export const Route = createFileRoute("/_authenticated/pieces-report")({
+  head: () => ({ meta: [{ title: "Relatório de peças · USE MODA PLM" }] }),
   component: PiecesReportPage,
 });
 

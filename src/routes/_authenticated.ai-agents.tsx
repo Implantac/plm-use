@@ -42,6 +42,7 @@ import {
 } from "@/types/pcp";
 
 export const Route = createFileRoute("/_authenticated/ai-agents")({
+  head: () => ({ meta: [{ title: "Agentes de IA · USE MODA PLM" }] }),
   component: AIAgentsPage,
 });
 

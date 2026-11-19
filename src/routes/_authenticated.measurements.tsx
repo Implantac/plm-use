@@ -40,6 +40,7 @@ import {
 } from "@/lib/measurements/store";
 
 export const Route = createFileRoute("/_authenticated/measurements")({
+  head: () => ({ meta: [{ title: "Tabela de medidas · USE MODA PLM" }] }),
   component: MeasurementsPage,
 });
 

@@ -36,6 +36,7 @@ import { useTechSheetStore } from "@/lib/techsheet/store";
 import { findMaterialWhereUsed } from "@/lib/techsheet/mrp";
 
 export const Route = createFileRoute("/_authenticated/materials")({
+  head: () => ({ meta: [{ title: "Materiais · USE MODA PLM" }] }),
   component: MaterialsPage,
 });
 

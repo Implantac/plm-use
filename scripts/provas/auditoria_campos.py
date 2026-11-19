@@ -1,7 +1,7 @@
 # Auditoria Onda 109 (campos de formulário, inclusive em diálogos abertos): controles visíveis sem nome acessível, por rota autenticada.
 import asyncio, json, time, base64, sys
 from playwright.async_api import async_playwright
-BASE=sys.argv[1]; SHOT=sys.argv[2]; ROTAS=(open(sys.argv[3]).read().split() if len(sys.argv)>3 else [r.removeprefix("_authenticated.").removesuffix(".tsx").replace(".","/") for r in sorted(__import__("os").listdir(__import__("os").path.join(__import__("os").path.dirname(__file__),"../../src/routes"))) if r.startswith("_authenticated.") and r!="_authenticated.index.tsx"])
+BASE=sys.argv[1]; SHOT=sys.argv[2]; ROTAS=(open(sys.argv[3]).read().split() if len(sys.argv)>3 else [r.removeprefix("_authenticated.").removesuffix(".tsx").replace(".","/") for r in sorted(__import__("os").listdir(__import__("os").path.join(__import__("os").path.dirname(__file__),"../../src/routes"))) if r.startswith("_authenticated.") and r not in ("_authenticated.index.tsx","_authenticated.tsx")])
 import re
 ABRE=re.compile(r"^(Nov[ao]\b|Adicionar\b|Criar\b|Registrar\b|Cadastrar\b|Movimentar\b)")
 KEY="sb-njmniwsqwohmigroswnl-auth-token"; exp=int(time.time())+3600

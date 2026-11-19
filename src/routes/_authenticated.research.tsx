@@ -42,6 +42,7 @@ import {
 import type { GarmentSilhouette } from "@/lib/techsheet/textile";
 
 export const Route = createFileRoute("/_authenticated/research")({
+  head: () => ({ meta: [{ title: "Pesquisa criativa · USE MODA PLM" }] }),
   component: ResearchHub,
 });
 

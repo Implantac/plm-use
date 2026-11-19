@@ -35,6 +35,7 @@ import {
 } from "@/hooks/use-capa";
 
 export const Route = createFileRoute("/_authenticated/quality")({
+  head: () => ({ meta: [{ title: "Qualidade e CAPA · USE MODA PLM" }] }),
   component: QualityPage,
 });
 

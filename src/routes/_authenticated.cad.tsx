@@ -30,6 +30,7 @@ import { useTechSheetStore } from "@/lib/techsheet/store";
 import { converterMetroParaKg, round4 } from "@/lib/techsheet/textile";
 
 export const Route = createFileRoute("/_authenticated/cad")({
+  head: () => ({ meta: [{ title: "CAD, risco e consumo · USE MODA PLM" }] }),
   component: CadPage,
 });
 

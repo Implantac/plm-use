@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { countByEntityType, feedItemsFromRows, type FeedEventRow } from "@/lib/feed/items";
 
 export const Route = createFileRoute("/_authenticated/feed")({
+  head: () => ({ meta: [{ title: "Atividade · USE MODA PLM" }] }),
   component: FeedPage,
 });
 

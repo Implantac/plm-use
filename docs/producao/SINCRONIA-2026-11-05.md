@@ -2343,6 +2343,23 @@ campos 0, `provas com falha: 0`.
 
 ---
 
+## 2-BY. 106ª medição — Onda 111: título por rota
+
+**Ar (106ª):** Onda 110 (`index-BpXlPMXn.js`). `auditoria_titulos.py` nas 44
+rotas: **29 com título genérico**; h1/lang/main corretos em todas.
+
+**Onda 111 (repo):** `head()` com título próprio nas 29 rotas; auditores deixam
+de contar o layout como rota. Local: 0 genéricos.
+
+| Camada | 106ª medição                                                |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 111** — local = remoto                               |
+| Ar     | **Onda 110** (`index-BpXlPMXn.js`) — **Onda 111 pendente**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **963/963** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

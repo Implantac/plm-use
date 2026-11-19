@@ -52,6 +52,7 @@ interface PCPSearch {
 }
 
 export const Route = createFileRoute("/_authenticated/production")({
+  head: () => ({ meta: [{ title: "PCP · USE MODA PLM" }] }),
   component: ProductionPage,
   validateSearch: (search: Record<string, unknown>): PCPSearch => {
     const step = search.pcpStep;

@@ -54,6 +54,7 @@ import {
 } from "@/hooks/use-showroom";
 
 export const Route = createFileRoute("/_authenticated/showroom")({
+  head: () => ({ meta: [{ title: "Mostruário · USE MODA PLM" }] }),
   component: ShowroomPage,
 });
 

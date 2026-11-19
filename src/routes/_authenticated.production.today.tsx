@@ -19,6 +19,7 @@ import {
 } from "@/types/pcp";
 
 export const Route = createFileRoute("/_authenticated/production/today")({
+  head: () => ({ meta: [{ title: "Produção do dia · USE MODA PLM" }] }),
   component: ProductionTodayPage,
 });
 
