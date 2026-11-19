@@ -2326,6 +2326,23 @@ provas em produção: **16/16 `pageerror: 0`**. `auditoria_console.py`: 1 aviso
 
 ---
 
+## 2-BX. 105ª medição — Ondas 109 e 110 publicadas
+
+**Ar (105ª, "publicado"):** entry `index-BpXlPMXn.js` / `index-Cbjh4YWn.js`.
+`auditoria_console.py` (suppliers, materials, looks, comparador): **0 avisos**
+(104ª: 1). `auditoria_campos.py`: **0** (103ª: 3). `scripts/regressao-producao.sh`
+completo em produção: **16/16 provas com `pageerror: 0`**, auditoria de nomes 0,
+campos 0, `provas com falha: 0`.
+
+| Camada | 105ª medição                                                |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 110** — local = remoto                               |
+| Ar     | **Onda 110** (`index-BpXlPMXn.js`) — alinhado               |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **961/961** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

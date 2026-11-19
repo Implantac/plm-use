@@ -14,7 +14,9 @@ falhas=0
 for p in "$DIR"/prova_*.py; do
   n="$(basename "$p" .py)"
   echo "=== $n"
-  if ! timeout 300 "$PY" "$p" "$BASE" "$OUT/$n.png" 2>&1 | grep -v "SyntaxWarning\|^  if\|^<" | tail -6 | tee "$OUT/$n.log" | grep -q "pageerror: 0"; then
+  timeout 300 "$PY" "$p" "$BASE" "$OUT/$n.png" 2>&1 | grep -v "SyntaxWarning\|^  if\|^<" | tail -6 > "$OUT/$n.log"
+  cat "$OUT/$n.log"
+  if ! grep -q "pageerror: 0" "$OUT/$n.log"; then
     echo "!!! $n sem 'pageerror: 0'"; falhas=$((falhas+1))
   fi
 done

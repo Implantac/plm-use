@@ -799,13 +799,18 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     (`index-DK_4aCjo.js`), `auditoria_nomes.py` nas 45 rotas →
     `TOTAL sem nome: 0`, 0 pageerror (`auditoria/nomes108-prod-depois.png`).
 
-65. **Publicar a Onda 109 — PENDENTE (103ª medição).** Selects de `/looks`
+65. **Publicar a Onda 109 — FEITO (105ª medição).** Em produção
+    (`index-BpXlPMXn.js`), `auditoria_campos.py` → `TOTAL sem nome: 0`.
+    Descrição original: Selects de `/looks`
     e do comparador de coleções associados ao rótulo; tiragem do pré-custo
     com `aria-label`. Nenhuma migration. Gates **958/958**. Validação:
     `python scripts/auditoria_campos.py https://plmuse.lovable.app x.png`
     → `TOTAL sem nome: 0` (antes: 3 em `/looks`).
 
-66. **Publicar a Onda 110 — PENDENTE (104ª medição).** Dialog/Sheet sem
+66. **Publicar a Onda 110 — FEITO (105ª medição).** Em produção,
+    `auditoria_console.py` → 0 avisos (`/suppliers` incluído) e
+    `scripts/regressao-producao.sh` → 16/16 `pageerror: 0`, nomes 0, campos 0.
+    Descrição original: Dialog/Sheet sem
     Description não avisam mais no console (59 sites, corrigido no wrapper);
     bateria de provas versionada em `scripts/provas/` com
     `scripts/regressao-producao.sh`. Nenhuma migration. Gates **961/961**.
