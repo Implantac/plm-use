@@ -2307,6 +2307,25 @@ coleções; `aria-label` no status por look e na tiragem do pré-custo. Local: 0
 
 ---
 
+## 2-BW. 104ª medição — regressão em produção 16/16; Onda 110
+
+**Ar (104ª):** Onda 108 (`index-DK_4aCjo.js`); 109 pendente. Bateria de 16
+provas em produção: **16/16 `pageerror: 0`**. `auditoria_console.py`: 1 aviso
+(`/suppliers`, DialogContent sem Description) — 59 sites no código.
+
+**Onda 110 (repo):** wrapper `DialogContent`/`SheetContent` só expõe
+`aria-describedby` quando há Description; provas versionadas em
+`scripts/provas/` + `scripts/regressao-producao.sh`.
+
+| Camada | 104ª medição                                                       |
+| ------ | ------------------------------------------------------------------ |
+| Repo   | **Onda 110** — local = remoto                                      |
+| Ar     | **Onda 108** (`index-DK_4aCjo.js`) — **Ondas 109 e 110 pendentes** |
+| Banco  | inalterado                                                         |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **961/961**        |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

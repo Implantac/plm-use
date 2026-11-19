@@ -805,6 +805,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `python scripts/auditoria_campos.py https://plmuse.lovable.app x.png`
     → `TOTAL sem nome: 0` (antes: 3 em `/looks`).
 
+66. **Publicar a Onda 110 — PENDENTE (104ª medição).** Dialog/Sheet sem
+    Description não avisam mais no console (59 sites, corrigido no wrapper);
+    bateria de provas versionada em `scripts/provas/` com
+    `scripts/regressao-producao.sh`. Nenhuma migration. Gates **961/961**.
+    Validação: `scripts/regressao-producao.sh` → 16/16 `pageerror: 0`, e
+    `auditoria_console.py` → 0 avisos em `/suppliers`.
+
 ---
 
 ## 8. Como reverificar isto
