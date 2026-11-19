@@ -75,7 +75,7 @@ function FeedPage() {
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
         <h1 className="text-xl font-semibold tracking-tight text-foreground mb-2">Atividade</h1>
         <p className="text-muted-foreground text-sm font-light italic lowercase">
-          o pulso real da sua marca — eventos gravados pelo pc p, fichas, amostras e lançamentos, ao
+          o pulso real da sua marca — eventos gravados pelo PCP, fichas, amostras e lançamentos, ao
           vivo do banco.
         </p>
       </motion.div>
@@ -138,9 +138,9 @@ function FeedPage() {
             </p>
             <Link
               to="/production"
-              className="text-xs text-white/70 underline underline-offset-4 hover:text-white flex items-center gap-1"
+              className="text-xs text-white/70 underline underline-offset-4 hover:text-white inline-flex min-h-11 items-center gap-1"
             >
-              acompanhar o pc p <ArrowRight className="h-3 w-3" />
+              Acompanhar o PCP <ArrowRight className="h-3 w-3" />
             </Link>
           </CardContent>
         </Card>

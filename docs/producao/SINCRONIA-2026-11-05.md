@@ -2360,6 +2360,24 @@ de contar o layout como rota. Local: 0 genéricos.
 
 ---
 
+## 2-BZ. 107ª medição — Onda 112: menu off-canvas no celular
+
+**Ar (107ª):** Onda 110 (`index-BpXlPMXn.js`); 111 pendente. Em 390px o menu
+lateral nasce aberto e o conteúdo fica com **114px** em todas as 44 rotas;
+header cobre o botão de menu. Sem achados em overflow-x, alt, noopener, foco.
+
+**Onda 112 (repo):** menu recolhido por padrão abaixo de 1024px, off-canvas
+com backdrop, fecha ao navegar; header responsivo; 3 CTAs com `min-h-11`.
+
+| Camada | 107ª medição                                                       |
+| ------ | ------------------------------------------------------------------ |
+| Repo   | **Onda 112** — local = remoto                                      |
+| Ar     | **Onda 110** (`index-BpXlPMXn.js`) — **Ondas 111 e 112 pendentes** |
+| Banco  | inalterado                                                         |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **967/967**        |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

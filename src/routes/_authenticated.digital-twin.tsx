@@ -266,7 +266,7 @@ function DigitalTwinPage() {
             <Link
               to="/tech-sheet"
               data-testid="cta-gemeo-abrir-ficha"
-              className="text-xs text-primary underline"
+              className="text-xs text-primary underline inline-flex min-h-11 items-center"
             >
               Abrir Ficha Técnica
             </Link>

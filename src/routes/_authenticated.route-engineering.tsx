@@ -212,7 +212,10 @@ function CellBalancingTab() {
           As referências de demonstração não têm BOP próprio. A Folha de Balanceamento A4 e a
           sincronização de custo/minuto só saem com engenharia registrada.
         </p>
-        <Link to="/tech-sheet" className="text-2xs text-primary underline mt-2 inline-block">
+        <Link
+          to="/tech-sheet"
+          className="text-2xs text-primary underline mt-1 inline-flex min-h-11 items-center"
+        >
           Abrir Ficha Técnica
         </Link>
       </Card>

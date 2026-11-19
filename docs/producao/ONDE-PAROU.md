@@ -823,6 +823,14 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `python scripts/provas/auditoria_titulos.py https://plmuse.lovable.app x.png`
     → `TOTAL rotas com problema: 0`.
 
+68. **Publicar a Onda 112 — PENDENTE (107ª medição).** No celular o menu
+    lateral nasce fechado e abre por cima do conteúdo (antes o conteúdo ficava
+    com 114px); header sem estouro; CTAs com alvo de 44px. Nenhuma migration.
+    Gates **967/967**. Validação:
+    `python scripts/provas/prova_mobile_menu.py https://plmuse.lovable.app x.png`
+    → `inicial: aside visível: False | main: 390 px` e
+    `auditoria_mobile.py` → `TOTAL rotas com problema: 0`.
+
 ---
 
 ## 8. Como reverificar isto

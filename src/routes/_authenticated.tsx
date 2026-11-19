@@ -37,6 +37,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+const NARROW_QUERY = "(max-width: 1023px)";
+
 export const Route = createFileRoute("/_authenticated")({
   // Guard de rota: barra a navegação ANTES do render, em vez de redirecionar
   // depois de montar (o que fazia o layout piscar antes de cair no /login).
@@ -107,10 +109,24 @@ function AuthenticatedLayout() {
     return window.localStorage.getItem("use-moda-sidebar-collapsed") === "true";
   });
 
+  // Onda 112 — em telas estreitas (< 1024px) o menu começa recolhido e, quando
+  // aberto, sobrepõe o conteúdo (off-canvas) em vez de espremê-lo; fecha ao navegar.
+  const [isNarrow, setIsNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(NARROW_QUERY);
+    const apply = () => {
+      setIsNarrow(mq.matches);
+      if (mq.matches) setSidebarCollapsed(true);
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => {
       const next = !prev;
-      if (typeof window !== "undefined") {
+      if (typeof window !== "undefined" && !isNarrow) {
         window.localStorage.setItem("use-moda-sidebar-collapsed", String(next));
       }
       return next;
@@ -150,6 +166,9 @@ function AuthenticatedLayout() {
   }, [showLabs]);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => {
+    if (isNarrow) setSidebarCollapsed(true);
+  }, [pathname, isNarrow]);
 
   const bestMatchHref = useMemo(() => {
     const allHrefs = navSections.flatMap((s) => s.items.map((it) => it.href));
@@ -232,8 +251,17 @@ function AuthenticatedLayout() {
 
   return (
     <div className="flex h-dvh bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
+      {!sidebarCollapsed && isNarrow && (
+        <button
+          type="button"
+          aria-label="Fechar menu lateral"
+          onClick={() => setSidebarCollapsed(true)}
+          className="fixed inset-0 z-20 bg-black/50 lg:hidden"
+        />
+      )}
       <aside
-        className={`${sidebarCollapsed ? "hidden" : "w-[276px] flex"} glass-sidebar flex-col z-30 relative shrink-0 transition-all`}
+        data-testid="app-sidebar"
+        className={`${sidebarCollapsed ? "hidden" : "w-[276px] flex"} glass-sidebar flex-col z-30 shrink-0 transition-all fixed inset-y-0 left-0 lg:relative lg:inset-auto`}
       >
         {/* Ambient ember glow no topo da sidebar */}
         <div
@@ -430,8 +458,10 @@ function AuthenticatedLayout() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 shrink-0">
-            <PresenceBar />
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <div className="hidden md:block">
+              <PresenceBar />
+            </div>
             <ActivityFeedButton />
             <AlertsBell />
             <Button
@@ -448,16 +478,16 @@ function AuthenticatedLayout() {
               size="sm"
               className="gap-2-label text-primary-foreground active:scale-[0.98]"
             >
-              <Link to="/ai-center">
+              <Link to="/ai-center" aria-label="AI Product Studio">
                 <Sparkles className="w-4 h-4" />
-                AI Product Studio
+                <span className="hidden sm:inline">AI Product Studio</span>
               </Link>
             </Button>
           </div>
         </header>
 
         <ScrollArea className="relative flex-1">
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <Outlet />
           </div>
         </ScrollArea>
