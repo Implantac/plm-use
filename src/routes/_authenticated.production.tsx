@@ -166,7 +166,7 @@ function ProductionPage() {
         </div>
 
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="inline-flex rounded-full border border-border bg-muted/50 p-1">
+          <div className="inline-flex max-w-full overflow-x-auto rounded-full border border-border bg-muted/50 p-1">
             <button
               onClick={() => setView("kanban")}
               className={`px-3 py-1.5 rounded-full text-2xs font-semibold uppercase tracking-wider flex items-center gap-1.5 transition ${

@@ -284,8 +284,8 @@ function SuppliersPage() {
               />
             </div>
 
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3.5">
+            <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
+              <div className="flex min-w-0 items-center gap-3.5">
                 <div className="w-12 h-12 rounded-lg bg-muted/50 border border-border/60 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                   <Users className="w-5 h-5 text-primary" />
                 </div>
@@ -312,7 +312,7 @@ function SuppliersPage() {
                   </p>
                 </div>
               </div>
-              <div className="text-right pr-10">
+              <div className="text-right pr-10 shrink-0">
                 <div className="flex items-center justify-end gap-1 text-amber-500 mb-0.5">
                   <Star className="w-3.5 h-3.5 fill-current" />
                   <span className="text-sm font-bold text-foreground font-mono">
@@ -329,7 +329,10 @@ function SuppliersPage() {
               </div>
             </div>
 
-            <p className="text-2xs text-muted-foreground mb-4 truncate" title={sup.machinesSummary}>
+            <p
+              className="text-2xs text-muted-foreground mb-4 min-w-0 truncate"
+              title={sup.machinesSummary}
+            >
               Parque fabril: <strong className="text-foreground">{sup.machinesSummary}</strong>
             </p>
 

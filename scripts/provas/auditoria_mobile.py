@@ -28,6 +28,14 @@ JS2=r"""() => {
       if (r.right > w+8 && r.width>40 && getComputedStyle(el).position!=='fixed') { const c=el.cloneNode(false); out.push('  largo: '+c.outerHTML.slice(0,100)+' right='+Math.round(r.right)); if (out.length>6) break; }
     }
   }
+  // conteúdo cortado: elemento dentro do main que ultrapassa a viewport sem um ancestral rolável horizontal
+  const scrollable=(el)=>{for(let a=el.parentElement;a&&a.tagName!=='MAIN';a=a.parentElement){const o=getComputedStyle(a).overflowX;if(o==='auto'||o==='scroll')return true; if((o==='hidden'||o==='clip')&&a.getBoundingClientRect().right<=de.clientWidth+8)return true; /* truncate intencional */}return false;};
+  let cortados=0, ex=[];
+  for (const el of document.querySelectorAll('main *')) {
+    const r=el.getBoundingClientRect(); if (r.width<40||r.height<10) continue;
+    if (r.right > de.clientWidth+8 && !scrollable(el) && getComputedStyle(el).position!=='fixed') { cortados++; if (ex.length<3) ex.push(el.tagName+'.'+String(el.className).slice(0,50)+' right='+Math.round(r.right)); }
+  }
+  if (cortados) out.push('cortados: '+cortados+' ex: '+ex.join(' | '));
   const m=document.querySelector('main'); if (m) { const mw=m.getBoundingClientRect().width; if (mw < de.clientWidth*0.8) out.push('main-estreito: '+Math.round(mw)+'px de '+de.clientWidth); }
   let small=0;
   for (const el of document.querySelectorAll('main button, main a[href], main [role=button]')) {
@@ -49,7 +57,7 @@ async def main():
         total=0; por={}
         for rota in ROTAS:
             try:
-                await pg.goto(BASE+"/"+rota, wait_until="domcontentloaded"); await pg.wait_for_timeout(4000)
+                await pg.goto(BASE+"/"+rota, wait_until="domcontentloaded"); await pg.wait_for_selector("main", timeout=60000); await pg.wait_for_timeout(3500)
                 l=await pg.evaluate(JS2)
             except Exception as e:
                 l=["ERRO "+str(e)[:60]]

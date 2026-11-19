@@ -2378,6 +2378,24 @@ com backdrop, fecha ao navegar; header responsivo; 3 CTAs com `min-h-11`.
 
 ---
 
+## 2-CA. 108ª medição — Onda 113: conteúdo sem corte no celular
+
+**Ar (108ª):** Onda 110 (`index-BpXlPMXn.js`); 111 e 112 pendentes. Medição
+local (build 112) em 390px: **18 rotas com conteúdo cortado** (até 3136px de
+largura em `/production`) por causa do `display:table` do ScrollArea.
+
+**Onda 113 (repo):** viewport do ScrollArea como bloco; abas roláveis; ajustes
+pontuais em PCP, estampas, qualidade e fornecedores. Local: 0/44.
+
+| Camada | 108ª medição                                                     |
+| ------ | ---------------------------------------------------------------- |
+| Repo   | **Onda 113** — local = remoto                                    |
+| Ar     | **Onda 110** (`index-BpXlPMXn.js`) — **Ondas 111–113 pendentes** |
+| Banco  | inalterado                                                       |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **970/970**      |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

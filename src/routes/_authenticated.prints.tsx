@@ -256,9 +256,9 @@ function PrintsRoute() {
         ))}
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         {/* Grid de estampas */}
-        <div className="grid grid-cols-2 gap-3 content-start">
+        <div className="grid grid-cols-1 gap-3 content-start sm:grid-cols-2">
           {filtered.map((p) => {
             const active = selected?.id === p.id;
             return (

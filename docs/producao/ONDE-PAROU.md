@@ -831,6 +831,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     → `inicial: aside visível: False | main: 390 px` e
     `auditoria_mobile.py` → `TOTAL rotas com problema: 0`.
 
+69. **Publicar a Onda 113 — PENDENTE (108ª medição).** Conteúdo deixa de ser
+    cortado no celular (viewport do ScrollArea era `display:table` e crescia até
+    o filho mais largo; abas/tabelas rolam). Nenhuma migration. Gates
+    **970/970**. Validação: `auditoria_mobile.py` em produção → 0 "cortados".
+
 ---
 
 ## 8. Como reverificar isto

@@ -396,15 +396,15 @@ function QualityPage() {
           <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
             <ClipboardList className="w-4 h-4 text-primary" /> CAPA · workflow
           </h3>
-          <div className="flex items-center gap-2">
-            <div className="relative">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative w-full sm:w-auto">
               <Search className="w-3.5 h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
                 aria-label="Buscar defeito, referência ou lote"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder="Buscar defeito, ref, lote..."
-                className="pl-7 w-64 text-xs"
+                className="pl-7 w-full sm:w-64 text-xs"
               />
             </div>
             <select
@@ -509,7 +509,7 @@ function QualityPage() {
           )}
         </div>
 
-        <div className="rounded-lg border border-border/60 overflow-hidden">
+        <div className="rounded-lg border border-border/60 overflow-x-auto">
           <table className="w-full text-left">
             <thead className="border-b border-border/60 bg-muted/50 text-2xs uppercase tracking-widest text-muted-foreground">
               <tr>
@@ -581,7 +581,7 @@ function QualityPage() {
           <h3 className="text-xs font-semibold uppercase tracking-[0.06em] text-white flex items-center gap-3">
             <AlertTriangle className="w-4 h-4 text-status-progress" /> Defeitos registrados (PCP)
           </h3>
-          <div className="rounded-lg border border-border/60 overflow-hidden max-h-[420px] overflow-y-auto">
+          <div className="rounded-lg border border-border/60 max-h-[420px] overflow-auto">
             <table className="w-full text-left">
               <thead className="border-b border-border/60 bg-muted/50 text-2xs uppercase tracking-widest text-muted-foreground sticky top-0">
                 <tr>
