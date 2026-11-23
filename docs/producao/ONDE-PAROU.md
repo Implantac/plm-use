@@ -841,6 +841,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     em telas de toque. Nenhuma migration. Gates **972/972**. Validação:
     `auditoria_dialogos_mobile.py` em produção → `com problema: 0`.
 
+71. **Publicar a Onda 115 — PENDENTE (110ª medição).** Login/redefinição/404
+    com título próprio; `autocomplete` de e-mail e senha (gerenciadores de
+    senha e autofill do celular). Nenhuma migration. Gates **975/975**.
+    Validação: `auditoria_publicas.py` em produção → títulos próprios e
+    nenhum campo com `'ac': None`.
+
 ---
 
 ## 8. Como reverificar isto

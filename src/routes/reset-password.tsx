@@ -20,6 +20,7 @@ import { validateEmailForm, validatePasswordForm } from "@/lib/auth-form";
 // Deploy: adicionar `${SITE_URL}/reset-password` ao Redirect URLs permitido e
 // conferir o template "Recovery" no painel de Auth do Supabase.
 export const Route = createFileRoute("/reset-password")({
+  head: () => ({ meta: [{ title: "Redefinir senha · USE MODA PLM" }] }),
   ssr: false, // consome ?code= no location — client-only por natureza
   component: ResetPassword,
 });
@@ -153,6 +154,7 @@ function ResetPassword() {
               <Input
                 id="password"
                 type="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="mínimo de 8 caracteres"
@@ -173,6 +175,7 @@ function ResetPassword() {
               <Input
                 id="confirm"
                 type="password"
+                autoComplete="new-password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 aria-invalid={!!errors.confirm}

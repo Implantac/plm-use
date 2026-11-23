@@ -2430,6 +2430,20 @@ de cadastro 0/18 com problema (114). 0 pageerror em todas.
 
 ---
 
+## 2-CD. Onda 115 (repo) — páginas públicas
+
+Após a 110ª medição: login sem `autocomplete`, títulos genéricos em login,
+redefinição e 404. Corrigido no repo; local verificado em 390/1400 px.
+
+| Camada | após a 115                                                  |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 115** — local = remoto                               |
+| Ar     | **Onda 114** (`index-C7REUo3v.js`) — **Onda 115 pendente**  |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **975/975** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

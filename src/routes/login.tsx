@@ -11,6 +11,7 @@ import { Building2, Fingerprint, KeyRound, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/login")({
+  head: () => ({ meta: [{ title: "Entrar · USE MODA PLM" }] }),
   ssr: false, // tela client-only (framer-motion + supabase.auth), evita hydration mismatch
   component: Login,
 });
@@ -226,6 +227,7 @@ function Login() {
               </Label>
               <Input
                 id="fullName"
+                autoComplete="name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Seu nome"
@@ -248,6 +250,8 @@ function Login() {
             <Input
               id="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
@@ -269,6 +273,7 @@ function Login() {
             <Input
               id="password"
               type="password"
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               minLength={6}

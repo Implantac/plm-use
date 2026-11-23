@@ -16,6 +16,14 @@ import { EntityDrawerProvider } from "../components/entity/EntityContext";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
+  // Onda 115 — a aba diz o que aconteceu (não há head() para notFoundComponent).
+  useEffect(() => {
+    const anterior = document.title;
+    document.title = "Página não encontrada · USE MODA PLM";
+    return () => {
+      document.title = anterior;
+    };
+  }, []);
   return (
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
