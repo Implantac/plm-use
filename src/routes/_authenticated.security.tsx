@@ -331,7 +331,7 @@ function SecurityPage() {
                   {filteredAudit.length} registros
                 </span>
               </div>
-              <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+              <div tabIndex={0} className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
                 {filteredAudit.map((ev) => (
                   <div
                     key={ev.id}

@@ -165,9 +165,10 @@
  * Superfícies de grafite com jade como cor de ação e coral só para destaque.
  * ------------------------------------------------------------------------ */
 .dark {
-  --success-500: 173 36% 42%;
+  --success-500: 173 42% 54%;
+  --danger-500: 4 70% 66%; /* Onda 118: vermelho legível como texto no escuro (antes 2.7:1) */ /* Onda 118: ≥4.5:1 como texto sobre cards escuros (antes 3.1–3.8) */
   --warning-500: 48 34% 52%; /* Onda 117: mantém o tom original no escuro */
-  --brand-500: 188 46% 48%;
+  --brand-500: 188 50% 56%; /* Onda 118: texto primário ≥4.5:1 no escuro (antes 4.1) */
   --brand-700: 194 68% 62%;
   --brand-900: 196 78% 78%;
   /* Paleta Azul-Marinho Ardósia & Petróleo Oceânico (fiel 1:1 à referência visual:
@@ -190,7 +191,7 @@
   --input: var(--border);
 
   --primary: var(--brand-500);
-  --primary-foreground: var(--ink-0);
+  --primary-foreground: 200 40% 10%; /* Onda 118: texto escuro no botão primário (branco dava 2.8:1) */
   --primary-glow: var(--brand-700);
   --secondary: var(--surface-elevated);
   --secondary-foreground: var(--foreground);

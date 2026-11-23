@@ -26,6 +26,8 @@ async def main():
         pg=await (await b.new_context(viewport={"width":1400,"height":900})).new_page()
         await pg.goto(BASE, wait_until="domcontentloaded")
         await pg.evaluate(f"localStorage.setItem({json.dumps(KEY)}, {json.dumps(json.dumps(sess))})")
+        if os.environ.get("TEMA")=="dark":  # Onda 118: mesma auditoria no tema escuro
+            await pg.evaluate("localStorage.setItem('use-moda-theme','dark')")
         total={}; rotas_ruins=0
         for rota in ROTAS:
             try:

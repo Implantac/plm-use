@@ -2478,6 +2478,23 @@ Local: 5/44.
 
 ---
 
+## 2-CG. 113ª medição — Ondas 115–116 no ar; Onda 118 (tema escuro)
+
+**Ar:** Onda 116 (`index-B0bKkUmL.js`). 115 e 116 validadas em produção.
+Tema escuro: 43/44 rotas com violação séria no axe (contraste 259).
+
+**Onda 118 (repo):** tokens do `.dark` (primary-foreground, brand-500,
+success-500, danger-500). Local escuro: 3/44.
+
+| Camada | 113ª medição                                                     |
+| ------ | ---------------------------------------------------------------- |
+| Repo   | **Onda 118** — local = remoto                                    |
+| Ar     | **Onda 116** (`index-B0bKkUmL.js`) — **Ondas 117–118 pendentes** |
+| Banco  | inalterado                                                       |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **986/986**      |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

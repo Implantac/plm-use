@@ -193,7 +193,7 @@ function PiecesReportPage() {
                     </td>
                     <td className="p-3 text-muted-foreground">
                       {lc.colecao ?? "—"}
-                      <div className="text-2xs uppercase tracking-wider opacity-70">
+                      <div className="text-2xs uppercase tracking-wider text-muted-foreground">
                         {lc.designer ?? "—"}
                       </div>
                     </td>

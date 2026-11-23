@@ -841,13 +841,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     em telas de toque. Nenhuma migration. Gates **972/972**. Validação:
     `auditoria_dialogos_mobile.py` em produção → `com problema: 0`.
 
-71. **Publicar a Onda 115 — PENDENTE (110ª medição).** Login/redefinição/404
+71. **Publicar a Onda 115 — FEITO (113ª medição: validado em produção).** Login/redefinição/404
     com título próprio; `autocomplete` de e-mail e senha (gerenciadores de
     senha e autofill do celular). Nenhuma migration. Gates **975/975**.
     Validação: `auditoria_publicas.py` em produção → títulos próprios e
     nenhum campo com `'ac': None`.
 
-72. **Publicar a Onda 116 — PENDENTE (111ª medição).** "Pular para o
+72. **Publicar a Onda 116 — FEITO (113ª medição: validado em produção).** "Pular para o
     conteúdo" (1 Tab em vez de 56–64), menu off-canvas com foco e Escape,
     favoritos visíveis no foco. Nenhuma migration. Gates **978/978**.
     Validação: `auditoria_teclado.py` em produção.
@@ -856,6 +856,10 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     rotas com violação séria (contraste dos tokens, nome das barras de
     progresso, regiões roláveis focáveis). Nenhuma migration. Gates **983/983**.
     Validação: `auditoria_axe.py` em produção.
+
+74. **Publicar a Onda 118 — PENDENTE (113ª medição).** Tema escuro: botão
+    primário e tokens de status com contraste AA (43/44 → 3/44 no axe escuro).
+    Nenhuma migration. Gates **986/986**. Validação: `TEMA=dark auditoria_axe.py`.
 
 ---
 
