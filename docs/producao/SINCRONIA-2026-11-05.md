@@ -2396,6 +2396,24 @@ pontuais em PCP, estampas, qualidade e fornecedores. Local: 0/44.
 
 ---
 
+## 2-CB. 109ª medição — Onda 114: diálogos no celular
+
+**Ar (109ª):** Onda 110 (`index-BpXlPMXn.js`); 111–113 pendentes. Local
+(build 113), 390px: 18 diálogos de cadastro, **18 com problema** — insumo
+com 1244px sem rolagem (botão fora da tela) e campos < 16px em todos.
+
+**Onda 114 (repo):** `DialogContent` com altura máxima + rolagem; campos a
+16px em telas de toque via CSS global. Local: 0/18.
+
+| Camada | 109ª medição                                                     |
+| ------ | ---------------------------------------------------------------- |
+| Repo   | **Onda 114** — local = remoto                                    |
+| Ar     | **Onda 110** (`index-BpXlPMXn.js`) — **Ondas 111–114 pendentes** |
+| Banco  | inalterado                                                       |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **972/972**      |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

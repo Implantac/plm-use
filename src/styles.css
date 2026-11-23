@@ -598,3 +598,14 @@
 #lovable-badge {
   display: none !important;
 }
+
+/* Onda 114 — campos de formulário em telas de toque: 16px evita o zoom automático
+   do iOS ao focar. Fora de @layer para vencer utilitários como text-xs. */
+@media (max-width: 767px) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select,
+  [role="combobox"] {
+    font-size: max(16px, 1em);
+  }
+}

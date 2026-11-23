@@ -836,6 +836,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     o filho mais largo; abas/tabelas rolam). Nenhuma migration. Gates
     **970/970**. Validação: `auditoria_mobile.py` em produção → 0 "cortados".
 
+70. **Publicar a Onda 114 — PENDENTE (109ª medição).** Diálogos rolam no
+    celular (o "Cadastrar" de insumo ficava fora da tela) e campos têm 16px
+    em telas de toque. Nenhuma migration. Gates **972/972**. Validação:
+    `auditoria_dialogos_mobile.py` em produção → `com problema: 0`.
+
 ---
 
 ## 8. Como reverificar isto
