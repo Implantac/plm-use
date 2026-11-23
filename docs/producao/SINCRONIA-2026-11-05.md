@@ -2414,6 +2414,22 @@ com 1244px sem rolagem (botão fora da tela) e campos < 16px em todos.
 
 ---
 
+## 2-CC. 110ª medição — Ondas 111–114 publicadas
+
+**Ar (110ª):** entry `index-C7REUo3v.js` / `index-DMKCtwVK.js`. Executado em
+produção: títulos 0/44 com problema (111); menu off-canvas no celular,
+`main: 390 px`, fecha ao navegar (112); conteúdo cortado 0/44 (113); diálogos
+de cadastro 0/18 com problema (114). 0 pageerror em todas.
+
+| Camada | 110ª medição                                                |
+| ------ | ----------------------------------------------------------- |
+| Repo   | **Onda 114** — local = remoto                               |
+| Ar     | **Onda 114** (`index-C7REUo3v.js`) — alinhado               |
+| Banco  | inalterado                                                  |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **972/972** |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -817,13 +817,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     Validação: `scripts/regressao-producao.sh` → 16/16 `pageerror: 0`, e
     `auditoria_console.py` → 0 avisos em `/suppliers`.
 
-67. **Publicar a Onda 111 — PENDENTE (106ª medição).** 29 rotas ganharam
+67. **Publicar a Onda 111 — FEITO (110ª medição).** Produção (`index-C7REUo3v.js`): `auditoria_titulos.py` → 0 rotas com problema. Descrição original: 29 rotas ganharam
     `<title>` próprio (antes: genérico do index.html). Nenhuma migration.
     Gates **963/963**. Validação:
     `python scripts/provas/auditoria_titulos.py https://plmuse.lovable.app x.png`
     → `TOTAL rotas com problema: 0`.
 
-68. **Publicar a Onda 112 — PENDENTE (107ª medição).** No celular o menu
+68. **Publicar a Onda 112 — FEITO (110ª medição).** Produção: `prova_mobile_menu.py` → `inicial: aside visível: False | main: 390 px`, backdrop 1, fecha ao navegar. Descrição original: No celular o menu
     lateral nasce fechado e abre por cima do conteúdo (antes o conteúdo ficava
     com 114px); header sem estouro; CTAs com alvo de 44px. Nenhuma migration.
     Gates **967/967**. Validação:
@@ -831,12 +831,12 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     → `inicial: aside visível: False | main: 390 px` e
     `auditoria_mobile.py` → `TOTAL rotas com problema: 0`.
 
-69. **Publicar a Onda 113 — PENDENTE (108ª medição).** Conteúdo deixa de ser
+69. **Publicar a Onda 113 — FEITO (110ª medição).** Produção: `auditoria_mobile.py` → `TOTAL rotas com problema: 0`. Descrição original: Conteúdo deixa de ser
     cortado no celular (viewport do ScrollArea era `display:table` e crescia até
     o filho mais largo; abas/tabelas rolam). Nenhuma migration. Gates
     **970/970**. Validação: `auditoria_mobile.py` em produção → 0 "cortados".
 
-70. **Publicar a Onda 114 — PENDENTE (109ª medição).** Diálogos rolam no
+70. **Publicar a Onda 114 — FEITO (110ª medição).** Produção: `auditoria_dialogos_mobile.py` → 18 abertos, `com problema: 0`. Descrição original: Diálogos rolam no
     celular (o "Cadastrar" de insumo ficava fora da tela) e campos têm 16px
     em telas de toque. Nenhuma migration. Gates **972/972**. Validação:
     `auditoria_dialogos_mobile.py` em produção → `com problema: 0`.
