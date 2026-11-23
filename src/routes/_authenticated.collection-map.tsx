@@ -473,7 +473,7 @@ function CollectionMapRoute() {
               )}
             </div>
 
-            <div className="overflow-x-auto">
+            <div tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
                 <thead>
                   <tr className="text-2xs uppercase tracking-widest text-muted-foreground border-b border-border">

@@ -852,6 +852,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     favoritos visíveis no foco. Nenhuma migration. Gates **978/978**.
     Validação: `auditoria_teclado.py` em produção.
 
+73. **Publicar a Onda 117 — PENDENTE (112ª medição).** axe-core: 43/44 → 5/44
+    rotas com violação séria (contraste dos tokens, nome das barras de
+    progresso, regiões roláveis focáveis). Nenhuma migration. Gates **983/983**.
+    Validação: `auditoria_axe.py` em produção.
+
 ---
 
 ## 8. Como reverificar isto

@@ -93,7 +93,7 @@ const AGENTS: Record<
     label: "Marketing & Drops AI",
     desc: "ROAS, drops, influencers e GTIN.",
     icon: Megaphone,
-    color: "text-amber-500",
+    color: "text-amber-600 dark:text-amber-400",
     sugestoes: [
       "Qual drop ativo projeta maior ROAS e faturamento?",
       "Como distribuir orçamento de mídia entre os lançamentos?",

@@ -15,7 +15,7 @@ const fieldMessageVariants = cva(
   {
     variants: {
       variant: {
-        helper: "text-muted-foreground/80",
+        helper: "text-muted-foreground",
         // text-danger-text (não text-destructive): --destructive é a cor de
         // *background* dos botões; como texto pequeno sobre superfície escura
         // fica em ~3.3–4.2:1 e reprova WCAG AA. --danger-text é a variante

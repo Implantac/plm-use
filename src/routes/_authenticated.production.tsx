@@ -295,7 +295,7 @@ function ProductionPage() {
           <OpKanban initialOpenId={search.pcpOp ?? null} />
         ) : view === "kanban" ? (
           <Card className="glass-card rounded-lg">
-            <CardContent className="p-4 overflow-x-auto">
+            <CardContent tabIndex={0} className="p-4 overflow-x-auto">
               <div className="flex gap-4 min-w-max pb-2">
                 {SETORES_PCP.map((s) => (
                   <KanbanColumn

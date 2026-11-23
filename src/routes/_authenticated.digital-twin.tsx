@@ -626,7 +626,7 @@ function DigitalTwinPage() {
           )}
 
           {layer === "fabrics" && (
-            <div className="overflow-x-auto">
+            <div tabIndex={0} className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border text-left text-2xs uppercase text-muted-foreground">

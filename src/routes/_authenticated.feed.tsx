@@ -82,7 +82,7 @@ function FeedPage() {
 
       {failed && (
         <Card className="glass-card rounded-full p-6 border-status-progress/20">
-          <CardContent className="p-0 flex items-start gap-3 text-sm text-status-progress/90">
+          <CardContent className="p-0 flex items-start gap-3 text-sm text-status-progress">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
             <span>
               A trilha de atividade está inacessível no momento — o restante do sistema segue
@@ -176,7 +176,7 @@ function FeedPage() {
                       )}
                     </p>
                     {item.note && (
-                      <p className="mt-1.5 text-xs text-muted-foreground/90 line-clamp-2">
+                      <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2">
                         {item.note}
                       </p>
                     )}

@@ -529,7 +529,9 @@ export function BomBopPanel({ refAtual, mode = "both" }: BomBopPanelProps) {
                                 <>
                                   <Package
                                     className={`w-3 h-3 ${
-                                      avail > 0 ? "text-teal-500" : "text-amber-500"
+                                      avail > 0
+                                        ? "text-teal-500"
+                                        : "text-amber-600 dark:text-amber-400"
                                     }`}
                                   />
                                   <span

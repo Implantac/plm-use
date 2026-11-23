@@ -274,7 +274,7 @@ export function OutsourcingServiceOrderPanel() {
             <span className="text-2xs uppercase text-muted-foreground block">
               Glosa Quebra Acima Franquia
             </span>
-            <strong className="font-mono text-base text-rose-500">
+            <strong className="font-mono text-base text-rose-700 dark:text-rose-300">
               {fmtBrl(totals.glosaTotalBrl)}
             </strong>
             <span className="text-2xs text-muted-foreground block">desconto matéria-prima</span>
@@ -286,7 +286,7 @@ export function OutsourcingServiceOrderPanel() {
             data-testid="os-sem-ficha"
             className="rounded-lg border border-rose-500/40 bg-rose-500/5 p-3 mb-3 text-xs"
           >
-            <strong className="text-rose-600 dark:text-rose-300">
+            <strong className="text-rose-700 dark:text-rose-300">
               {osSemFicha.length} Ordem(ns) de Serviço fora das métricas — sem ficha técnica salva
             </strong>
             <p className="text-2xs text-muted-foreground mt-1 leading-relaxed">

@@ -199,7 +199,7 @@ export function FiniteCapacityPanel({ cloudOrders }: FiniteCapacityPanelProps) {
             data-testid="crp-sem-op"
             className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3"
           >
-            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
             <p className="text-[11px] leading-relaxed text-muted-foreground">
               <strong className="text-foreground">CRP não apurável.</strong> {CRP_SEM_APURACAO}{" "}
               Cadastre uma OP ou um pedido com ficha salva para apurar carga, ocupação e a fila EDD

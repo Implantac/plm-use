@@ -54,9 +54,9 @@
      areia-dourado e coral contido). */
   --info-500: 196 72% 46%;
   --info-700: 198 76% 33%;
-  --success-500: 173 36% 37%;
+  --success-500: 173 40% 31%; /* Onda 117: ≥4.5:1 sobre fundo claro (antes 4.4) */
   --success-700: 174 42% 26%;
-  --warning-500: 48 34% 48%;
+  --warning-500: 48 40% 34%; /* Onda 117: ≥4.5:1 como texto sobre fundo claro (antes 2.6) */
   --warning-700: 45 42% 33%;
   --danger-500: 4 52% 49%;
   --danger-700: 4 58% 35%;
@@ -165,6 +165,8 @@
  * Superfícies de grafite com jade como cor de ação e coral só para destaque.
  * ------------------------------------------------------------------------ */
 .dark {
+  --success-500: 173 36% 42%;
+  --warning-500: 48 34% 52%; /* Onda 117: mantém o tom original no escuro */
   --brand-500: 188 46% 48%;
   --brand-700: 194 68% 62%;
   --brand-900: 196 78% 78%;
@@ -345,7 +347,7 @@
   --color-amber-300: #d4cca2;
   --color-amber-400: #b9b184;
   --color-amber-500: #a19b77;
-  --color-amber-600: #837d5b;
+  --color-amber-600: #6f6a4c; /* Onda 117: ≥4.5:1 sobre fundo claro (antes 3.98) */
   --color-amber-700: #656044;
   --color-amber-800: #4a4631;
   --color-amber-900: #333021;

@@ -403,7 +403,7 @@ function MarketingPage() {
                           ROAS
                         </span>
                         <strong
-                          className={`font-mono ${roas >= 3 ? "text-status-approved" : "text-amber-500"}`}
+                          className={`font-mono ${roas >= 3 ? "text-status-approved" : "text-amber-600 dark:text-amber-400"}`}
                         >
                           {roas.toFixed(2)}x
                         </strong>

@@ -542,7 +542,7 @@ function RefPalette({ boardId, catalog }: { boardId: string; catalog: PaletteRef
             className="text-xs"
           />
         </div>
-        <div className="grid grid-cols-2 gap-2 max-h-[520px] overflow-y-auto pr-1">
+        <div tabIndex={0} className="grid grid-cols-2 gap-2 max-h-[520px] overflow-y-auto pr-1">
           {filtered.map((r) => (
             <div
               key={r.code}

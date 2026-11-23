@@ -225,7 +225,7 @@ function ApprovalsPage() {
                   className={
                     report.scorePct >= 80
                       ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 text-2xs"
-                      : "border-amber-500/40 bg-amber-500/10 text-amber-500 text-2xs"
+                      : "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-2xs"
                   }
                 >
                   Prontidão {report.scorePct}%

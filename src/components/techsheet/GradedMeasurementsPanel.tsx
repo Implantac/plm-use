@@ -327,7 +327,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
                             type="button"
                             onClick={() => clearOverrides(row)}
                             title="Restaurar graduação linear automática nesta linha"
-                            className="p-1 rounded text-amber-500 hover:bg-amber-500/15"
+                            className="p-1 rounded text-amber-600 dark:text-amber-400 hover:bg-amber-500/15"
                           >
                             <RotateCcw className="w-3 h-3" />
                           </button>

@@ -19,7 +19,7 @@ export function AppBreadcrumb() {
       {crumbs.map((c) => (
         <span key={c} className="flex items-center gap-3 shrink-0">
           <ChevronRight className="w-3.5 h-3.5 opacity-40" />
-          <span className="text-muted-foreground/80">{c}</span>
+          <span className="text-muted-foreground">{c}</span>
         </span>
       ))}
       <ChevronRight className="w-3.5 h-3.5 opacity-40 shrink-0" />

@@ -11,6 +11,8 @@ const Progress = React.forwardRef<
 >(({ className, value, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
+    // Onda 117: toda barra tem nome acessível; quem passa aria-label/aria-labelledby sobrescreve.
+    aria-label={props["aria-labelledby"] ? undefined : `Progresso: ${Math.round(value ?? 0)}%`}
     className={cn("relative h-2 w-full overflow-hidden rounded-full bg-primary/20", className)}
     {...props}
   >

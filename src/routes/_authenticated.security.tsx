@@ -264,7 +264,7 @@ function SecurityPage() {
               Postgres RLS Ativo
             </Badge>
           </CardHeader>
-          <div className="overflow-x-auto">
+          <div tabIndex={0} className="overflow-x-auto">
             <table className="w-full min-w-[700px] text-left text-xs">
               <thead className="border-b border-border/60 bg-muted/40 text-2xs uppercase text-muted-foreground">
                 <tr>

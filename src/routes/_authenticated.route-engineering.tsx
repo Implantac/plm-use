@@ -359,7 +359,7 @@ function CellBalancingTab() {
               className={`font-mono text-base block mt-0.5 ${
                 res.capacidadeRealPecasDia >= metaDia
                   ? "text-emerald-600 dark:text-emerald-400"
-                  : "text-amber-500"
+                  : "text-amber-600 dark:text-amber-400"
               }`}
             >
               {res.capacidadeRealPecasDia} pçs/dia
@@ -398,7 +398,7 @@ function CellBalancingTab() {
               {res.gargaloCicloMin.toFixed(2)} min)
             </Badge>
           </div>
-          <div className="overflow-x-auto">
+          <div tabIndex={0} className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead className="bg-muted/50 text-2xs uppercase tracking-wider text-muted-foreground">
                 <tr>

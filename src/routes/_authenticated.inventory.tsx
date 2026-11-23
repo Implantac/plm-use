@@ -276,7 +276,7 @@ function InventoryPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
         <Card className="glass-card rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
+          <div tabIndex={0} className="overflow-x-auto">
             <table className="w-full min-w-[1080px] text-left">
               <thead className="border-b border-border/60 bg-muted/50">
                 <tr>

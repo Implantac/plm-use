@@ -350,7 +350,7 @@ function MeasurementsPage() {
                               }}
                               className="h-7 w-16 rounded border border-border/70 bg-background px-1.5 text-right font-mono text-xs text-foreground"
                             />{" "}
-                            <span className="text-2xs opacity-60">{selected.unit}</span>
+                            <span className="text-2xs text-muted-foreground">{selected.unit}</span>
                           </td>
                         ))}
                       </tr>

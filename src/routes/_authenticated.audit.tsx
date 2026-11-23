@@ -375,7 +375,7 @@ function TaskRow({
           ? deadText
           : "Sondando…";
   return (
-    <div className="rounded-md border border-border bg-black/20 p-3">
+    <div className="rounded-md border border-border bg-muted/40 p-3">
       <p className="flex items-center gap-2 text-2xs font-semibold uppercase tracking-widest text-white">
         <Icon
           className={`h-3.5 w-3.5 shrink-0 ${meta.tone} ${probe === "checking" ? "animate-spin" : ""}`}
@@ -401,7 +401,7 @@ function OperatorTasks() {
     }
   };
   return (
-    <div className="rounded-lg border border-border bg-muted/60 p-5">
+    <div className="rounded-lg border border-border bg-muted/40 p-5">
       <h2 className="flex items-center justify-between text-2xs font-semibold uppercase tracking-[0.05em] text-white">
         <span className="flex items-center gap-2">
           <Database className="h-4 w-4 text-primary" />
@@ -443,7 +443,7 @@ function OperatorTasks() {
           deadText="O endpoint de cron não respondeu a esta sonda."
         />
       </div>
-      <p className="mt-3 text-2xs leading-relaxed text-muted-foreground/80">
+      <p className="mt-3 text-2xs leading-relaxed text-muted-foreground">
         Cada linha vem de uma sonda feita agora contra o deploy real — não de nota de commit. Sondas
         só leem; nada muda no mundo ao abrir este painel.
       </p>
@@ -489,7 +489,7 @@ function AuditScreen() {
           ]}
           testId="glossario-audit"
         />
-        <header className="rounded-lg border border-border bg-muted/60 p-6 md:p-8">
+        <header className="rounded-lg border border-border bg-muted/40 p-6 md:p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <Button
@@ -525,7 +525,7 @@ function AuditScreen() {
                   icon: CheckCircle2,
                 },
               ].map((item) => (
-                <div key={item.label} className="rounded-md border border-border bg-black/20 p-4">
+                <div key={item.label} className="rounded-md border border-border bg-muted/40 p-4">
                   <item.icon className="h-4 w-4 text-primary" />
                   <p className="mt-3 text-2xs font-semibold uppercase tracking-[0.04em] text-muted-foreground">
                     {item.label}
@@ -582,7 +582,7 @@ function AuditScreen() {
 
           <div className="space-y-6">
             <OperatorTasks />
-            <div className="rounded-lg border border-border bg-muted/60 p-5">
+            <div className="rounded-lg border border-border bg-muted/40 p-5">
               <h2 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
                 <Activity className="h-4 w-4 text-primary" />
                 Atividade recente
@@ -601,7 +601,7 @@ function AuditScreen() {
                   <p className="text-xs text-muted-foreground">Nenhum evento registrado ainda.</p>
                 )}
                 {(events ?? []).slice(0, 12).map((e) => (
-                  <div key={e.id} className="rounded-md border border-border bg-black/20 p-3">
+                  <div key={e.id} className="rounded-md border border-border bg-muted/40 p-3">
                     <p className="text-xs font-bold text-white">
                       {e.event_type}{" "}
                       <span className="text-muted-foreground font-normal">
@@ -625,14 +625,14 @@ function AuditScreen() {
               </div>
             </div>
 
-            <div className="rounded-lg border border-border bg-muted/60 p-5">
+            <div className="rounded-lg border border-border bg-muted/40 p-5">
               <h2 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
                 <Layers3 className="h-4 w-4 text-primary" />
                 Stack real
               </h2>
               <div className="mt-5 space-y-3">
                 {stack.map((item) => (
-                  <div key={item} className="rounded-md border border-border bg-black/20 p-3">
+                  <div key={item} className="rounded-md border border-border bg-muted/40 p-3">
                     <p className="text-sm leading-relaxed text-white/85">{item}</p>
                   </div>
                 ))}
@@ -652,7 +652,7 @@ function AuditScreen() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-border bg-muted/60 p-5">
+            <div className="rounded-lg border border-border bg-muted/40 p-5">
               <h2 className="text-2xs font-semibold uppercase tracking-[0.05em] text-white flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
                 Por dentro do espelho

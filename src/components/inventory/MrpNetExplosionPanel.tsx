@@ -137,7 +137,7 @@ export function MrpNetExplosionPanel({ cloudBalancesByName }: MrpNetExplosionPan
           }
         >
           {semSaldoReal ? (
-            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
           ) : (
             <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
           )}
@@ -198,7 +198,7 @@ export function MrpNetExplosionPanel({ cloudBalancesByName }: MrpNetExplosionPan
             data-testid="mrp-sem-apuracao"
             className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3"
           >
-            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
             <p className="text-[11px] leading-relaxed text-muted-foreground">
               <strong className="text-foreground">MRP não apurável.</strong> {MRP_SEM_APURACAO}{" "}
               Cadastre um pedido com ficha técnica salva para apurar necessidade bruta, ruptura e

@@ -296,7 +296,7 @@ function OrdersPage() {
         </Card>
       ) : (
         <Card className="glass-card rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
+          <div tabIndex={0} className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
                 <tr className="text-left text-2xs uppercase tracking-[0.04em] text-muted-foreground border-b border-border">

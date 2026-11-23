@@ -365,7 +365,7 @@ function AuthenticatedLayout() {
                     type="button"
                     onClick={() => toggleSection(section.id)}
                     aria-expanded={open}
-                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-semibold uppercase tracking-wide transition-colors ${sectionActive ? "text-foreground" : "text-muted-foreground/70 hover:text-foreground"}`}
+                    className={`w-full flex items-center justify-between px-2 py-1 text-2xs font-semibold uppercase tracking-wide transition-colors ${sectionActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                   >
                     <span className="flex items-center gap-1.5">
                       <span>{section.label}</span>

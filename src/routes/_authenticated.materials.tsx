@@ -263,7 +263,7 @@ function MaterialsPage() {
                   </div>
 
                   {m.notes && (
-                    <p className="text-xs text-muted-foreground/90 line-clamp-2">{m.notes}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{m.notes}</p>
                   )}
 
                   {/* Badge de Rastreabilidade Onde Usado (Where-Used BOM) */}

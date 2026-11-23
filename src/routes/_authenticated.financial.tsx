@@ -422,7 +422,7 @@ function FinancialPage() {
                 {stat.trend === "up" ? (
                   <ArrowUpRight className="w-3.5 h-3.5 text-status-approved" />
                 ) : (
-                  <ArrowDownRight className="w-3.5 h-3.5 text-amber-500" />
+                  <ArrowDownRight className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 )}
                 <span className="text-2xs font-mono text-muted-foreground">{stat.change}</span>
               </div>

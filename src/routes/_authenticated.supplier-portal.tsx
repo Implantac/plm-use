@@ -865,7 +865,7 @@ function RfqBomTab() {
                     </td>
                     <td className="p-2.5 text-right font-mono font-semibold">
                       {r.compraLiquidaNecessaria > 0 ? (
-                        <span className="text-amber-500">
+                        <span className="text-amber-600 dark:text-amber-400">
                           {r.compraLiquidaNecessaria.toFixed(1)} {r.unidade}
                         </span>
                       ) : (

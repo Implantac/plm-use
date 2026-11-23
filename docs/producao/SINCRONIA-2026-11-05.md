@@ -2461,6 +2461,23 @@ visíveis no foco. Local: 1 Tab; foco no menu; Escape fecha.
 
 ---
 
+## 2-CF. 112ª medição — Onda 117: axe-core
+
+**Ar (112ª):** Onda 114; 115–116 pendentes. axe: 43/44 rotas com violação
+séria (contraste 172, progressbar sem nome 28, roláveis sem foco 6).
+
+**Onda 117 (repo):** tokens de contraste, Progress com nome, roláveis focáveis.
+Local: 5/44.
+
+| Camada | 112ª medição                                                     |
+| ------ | ---------------------------------------------------------------- |
+| Repo   | **Onda 117** — local = remoto                                    |
+| Ar     | **Onda 114** (`index-C7REUo3v.js`) — **Ondas 115–117 pendentes** |
+| Banco  | inalterado                                                       |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **983/983**      |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

@@ -313,7 +313,7 @@ function SuppliersPage() {
                 </div>
               </div>
               <div className="text-right pr-10 shrink-0">
-                <div className="flex items-center justify-end gap-1 text-amber-500 mb-0.5">
+                <div className="flex items-center justify-end gap-1 text-amber-600 dark:text-amber-400 mb-0.5">
                   <Star className="w-3.5 h-3.5 fill-current" />
                   <span className="text-sm font-bold text-foreground font-mono">
                     {m.apuravel ? `${m.overallScore} (${m.tier})` : "—"}

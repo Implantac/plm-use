@@ -151,7 +151,7 @@ export function OpKanban({ initialOpenId = null }: { initialOpenId?: string | nu
         <p className="text-sm text-muted-foreground">Carregando ordens de produção…</p>
       ) : (
         <Card className="glass-card rounded-lg">
-          <CardContent className="p-4 overflow-x-auto">
+          <CardContent tabIndex={0} className="p-4 overflow-x-auto">
             <div className="flex gap-4 min-w-max pb-2">
               {columns.length === 0 && (
                 <p className="text-sm text-muted-foreground">Nenhuma OP encontrada.</p>
