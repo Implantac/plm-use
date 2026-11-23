@@ -61,10 +61,13 @@ describe("Onda 60 — campos de diálogo/painel têm nome acessível", () => {
       'aria-label="Fornecedor"',
       'aria-label="Código OP"',
       'aria-label="Tiragem Planejada (peças)"',
-      "Fornecedor da cotação",
-      "MOQ da cotação",
-      "OTIF (%) da cotação",
-      "qIdx",
+      // Onda 119: os campos da cotação passaram a ter id + htmlFor (Label visível).
+      'htmlFor="rfq-fornecedor"',
+      'htmlFor="rfq-preco"',
+      'htmlFor="rfq-moq"',
+      'htmlFor="rfq-lead"',
+      'htmlFor="rfq-otif"',
+      "htmlFor={`mc-preco-${row.id}`}",
     ]) {
       expect(f, m).toContain(m);
     }

@@ -861,6 +861,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     primário e tokens de status com contraste AA (43/44 → 3/44 no axe escuro).
     Nenhuma migration. Gates **986/986**. Validação: `TEMA=dark auditoria_axe.py`.
 
+75. **Publicar a Onda 119 — PENDENTE, COM MIGRATION.** Cotação (RFQ) de
+    verdade: tabela `rfq_quotes` (RLS por fornecedor), convite pelo portal,
+    resposta do fornecedor, comparativo TCO, adjudicação gera OC e atualiza a
+    BOM. Removidos os três fornecedores inventados. **Aplicar
+    `20261121120000_rfq_quotes_persistidas.sql` antes de publicar.** Gates
+    **991/991**. Validação: fluxo completo em produção (doc da onda, §Pendente).
+
 ---
 
 ## 8. Como reverificar isto

@@ -2495,6 +2495,20 @@ success-500, danger-500). Local escuro: 3/44.
 
 ---
 
+## 2-CH. Onda 119 — cotação de verdade (primeira migration desde a 110)
+
+RFQ deixou de inventar fornecedores/preços em memória: `rfq_quotes` persistida,
+fornecedor responde pelo portal, adjudicar gera `supplier_orders` e atualiza a BOM.
+
+| Camada | após a 119                                                                      |
+| ------ | ------------------------------------------------------------------------------- |
+| Repo   | **Onda 119** — local = remoto                                                   |
+| Ar     | **Onda 116** (`index-B0bKkUmL.js`) — **Ondas 117–119 pendentes**                |
+| Banco  | **pendente**: `20261121120000_rfq_quotes_persistidas.sql` (tabela `rfq_quotes`) |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **991/991**                     |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

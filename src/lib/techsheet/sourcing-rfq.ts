@@ -104,42 +104,7 @@ export function explodeBomRequirements(doc: TechSheetData): BomMrpRequirement[] 
   });
 }
 
-export function buildDefaultQuotesForItem(req: BomMrpRequirement): RfqSupplierQuote[] {
-  const base = Math.max(0.5, req.custoUnitarioAtual);
-  const minLot = Math.max(50, Math.round(req.necessidadeBrutaLote * 0.8));
-  return [
-    {
-      id: `${req.itemId}-q1`,
-      fornecedor: req.fornecedorAtual || "Têxtil Santa Catarina",
-      uf: "SC",
-      precoUnitario: round2(base),
-      moq: minLot,
-      leadTimeDias: 18,
-      otifPct: 94,
-      condicaoPagamento: "28/56 DDL",
-    },
-    {
-      id: `${req.itemId}-q2`,
-      fornecedor: "Malharia Vale do Itajaí S.A.",
-      uf: "SC",
-      precoUnitario: round2(base * 0.92),
-      moq: Math.round(minLot * 1.15),
-      leadTimeDias: 14,
-      otifPct: 97,
-      condicaoPagamento: "28/56/84 DDL",
-    },
-    {
-      id: `${req.itemId}-q3`,
-      fornecedor: "Fiação & Tecelagem Paraná",
-      uf: "PR",
-      precoUnitario: round2(base * 0.96),
-      moq: Math.round(minLot * 0.75),
-      leadTimeDias: 9,
-      otifPct: 92,
-      condicaoPagamento: "30/60 DDL",
-    },
-  ];
-}
+// Onda 119: o gerador de propostas de demonstração foi removido — propostas vêm de `rfq_quotes`.
 
 export function scoreRfqProposals(
   quotes: RfqSupplierQuote[],

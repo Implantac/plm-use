@@ -32,12 +32,17 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  buildDefaultQuotesForItem,
   buildPurchaseOrderPrintableHtml,
   explodeBomRequirements,
   scoreRfqProposals,
-  type RfqSupplierQuote,
 } from "@/lib/techsheet/sourcing-rfq";
+import {
+  codigoOrdemCompra,
+  convitesPendentes,
+  quotesComparaveis,
+  validarResposta,
+  type RfqQuoteRow,
+} from "@/lib/suppliers/rfq-quotes";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 import { operationalCodes } from "@/lib/techsheet/provenance";
 import { motivoDe } from "@/lib/supabase/erro-humano";
@@ -130,13 +135,53 @@ function useSamples() {
   });
 }
 
+// Onda 119 — cotações persistidas por item da BOM.
+function useRfqQuotes(referenceCode: string, bomItemId: string) {
+  return useQuery({
+    queryKey: ["rfq_quotes", referenceCode, bomItemId],
+    enabled: Boolean(referenceCode && bomItemId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rfq_quotes")
+        .select("*")
+        .eq("reference_code", referenceCode)
+        .eq("bom_item_id", bomItemId)
+        .order("created_at");
+      if (error) throw error;
+      return data as RfqQuoteRow[];
+    },
+  });
+}
+
+// Fornecedor logado no portal: a qual fornecedor pertence (ou nenhum, se é usuário interno).
+function useMeuFornecedor() {
+  return useQuery({
+    queryKey: ["meu_fornecedor"],
+    queryFn: async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      const uid = auth.user?.id;
+      if (!uid) return null;
+      const { data, error } = await supabase
+        .from("supplier_users")
+        .select("supplier_id")
+        .eq("user_id", uid)
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data?.supplier_id ?? null;
+    },
+  });
+}
+
 function SupplierPortalPage() {
   return (
     <ModuleLayout
       title="Portal do Fornecedor & Sourcing RFQ"
-      subtitle="Explosão MRP da BOM, mapa comparativo TCO de 3 cotações, adjudicação direta na Ficha Técnica e ordens/amostras."
+      subtitle="Explosão MRP da BOM, cotações reais com fornecedores cadastrados (o fornecedor responde pelo portal), comparativo TCO, adjudicação que gera a ordem de compra e atualiza a Ficha Técnica."
       version="Sourcing v2.0"
     >
+      <MinhasCotacoesPanel />
       {/* Onda 62: siglas medidas no texto desta tela, sem glossário até aqui. */}
       <GlossarioTermos
         siglas={["MOQ", "TCO", "OP", "BOM", "OTIF", "RFQ"]}
@@ -691,35 +736,90 @@ function RfqBomTab() {
   const activeReq =
     requirements.find((r) => r.itemId === selectedItemId) ?? requirements[0] ?? null;
 
-  const [quotesByKey, setQuotesByKey] = useState<Record<string, RfqSupplierQuote[]>>({});
-  const quoteKey = activeReq ? `${selectedRef}:${activeReq.itemId}` : "";
-  const activeQuotes = useMemo(() => {
-    if (!activeReq) return [];
-    return quotesByKey[quoteKey] ?? buildDefaultQuotesForItem(activeReq);
-  }, [activeReq, quoteKey, quotesByKey]);
+  const qc = useQueryClient();
+  const suppliersQ = useSuppliers();
+  const rfqQ = useRfqQuotes(selectedRef, activeReq?.itemId ?? "");
+  const rows = useMemo(() => rfqQ.data ?? [], [rfqQ.data]);
+  const supplierLites = useMemo(
+    () => (suppliersQ.data ?? []).map((sp) => ({ id: sp.id, name: sp.name, uf: sp.uf ?? null })),
+    [suppliersQ.data],
+  );
+  const activeQuotes = useMemo(() => quotesComparaveis(rows, supplierLites), [rows, supplierLites]);
+  const pendentes = useMemo(() => convitesPendentes(rows), [rows]);
+  const invalidar = () =>
+    qc.invalidateQueries({ queryKey: ["rfq_quotes", selectedRef, activeReq?.itemId ?? ""] });
 
   const scoredQuotes = useMemo(
     () => (activeReq ? scoreRfqProposals(activeQuotes, activeReq) : []),
     [activeQuotes, activeReq],
   );
-  const winner = scoredQuotes.find((q) => q.winner) ?? null;
+  const adjudicada = rows.find((r) => r.status === "adjudicada") ?? null;
+  const winner =
+    (adjudicada ? scoredQuotes.find((q) => q.id === adjudicada.id) : null) ??
+    scoredQuotes.find((q) => q.winner) ??
+    null;
 
-  function patchQuote(quoteId: string, patch: Partial<RfqSupplierQuote>) {
-    if (!activeReq) return;
-    const next = activeQuotes.map((q) => (q.id === quoteId ? { ...q, ...patch } : q));
-    setQuotesByKey((prev) => ({ ...prev, [quoteKey]: next }));
-  }
-
+  const awardMut = useMutation({
+    mutationFn: async (q: (typeof scoredQuotes)[number]) => {
+      if (!activeReq || !doc) throw new Error("Selecione um insumo da BOM.");
+      const row = rows.find((r) => r.id === q.id);
+      if (!row) throw new Error("Proposta não encontrada.");
+      const need =
+        activeReq.compraLiquidaNecessaria > 0
+          ? activeReq.compraLiquidaNecessaria
+          : activeReq.necessidadeBrutaLote;
+      const prazo = new Date();
+      prazo.setDate(prazo.getDate() + q.leadTimeDias);
+      const { data: oc, error: e1 } = await supabase
+        .from("supplier_orders")
+        .insert({
+          supplier_id: row.supplier_id,
+          codigo: codigoOrdemCompra(selectedRef, activeReq.material),
+          descricao: `${activeReq.material} — ficha ${selectedRef} (cotação adjudicada)`,
+          quantidade: Math.max(need, q.moq),
+          unidade: activeReq.unidade,
+          prazo: prazo.toISOString().slice(0, 10),
+          status: "enviada",
+          observacoes: `R$ ${q.precoUnitario.toFixed(2)}/${activeReq.unidade} · MOQ ${q.moq} · ${q.condicaoPagamento || "pagamento a combinar"}`,
+        })
+        .select("id")
+        .single();
+      if (e1) throw e1;
+      const { error: e2 } = await supabase
+        .from("rfq_quotes")
+        .update({ status: "adjudicada", supplier_order_id: oc.id })
+        .eq("id", row.id);
+      if (e2) throw e2;
+      const outros = rows.filter((r) => r.id !== row.id && r.status !== "perdida").map((r) => r.id);
+      if (outros.length) {
+        const { error: e3 } = await supabase
+          .from("rfq_quotes")
+          .update({ status: "perdida" })
+          .in("id", outros);
+        if (e3) throw e3;
+      }
+      updateBomItem(selectedRef, activeReq.itemId, {
+        fornecedor: q.fornecedor,
+        custoUnitario: q.precoUnitario,
+        custo: Number((q.precoUnitario * activeReq.consumoBrutoUnit).toFixed(2)),
+      });
+      return q;
+    },
+    onSuccess: (q) => {
+      invalidar();
+      qc.invalidateQueries({ queryKey: ["supplier_orders"] });
+      toast.success(
+        `Adjudicado para ${q.fornecedor} — ordem de compra criada e BOM de ${selectedRef} atualizada.`,
+      );
+    },
+    onError: (e) => toast.error(motivoDe(e, "adjudicar a proposta")),
+  });
   function awardWinner(q: (typeof scoredQuotes)[number]) {
-    if (!activeReq || !doc) return;
-    updateBomItem(selectedRef, activeReq.itemId, {
-      fornecedor: q.fornecedor,
-      custoUnitario: q.precoUnitario,
-      custo: Number((q.precoUnitario * activeReq.consumoBrutoUnit).toFixed(2)),
-    });
-    toast.success(
-      `Adjudicado para ${q.fornecedor} (R$ ${q.precoUnitario.toFixed(2)}/${activeReq.unidade}) — BOM de ${selectedRef} atualizada!`,
-    );
+    if (adjudicada) {
+      toast.info("Este insumo já tem proposta adjudicada.");
+      return;
+    }
+    awardMut.mutate(q);
   }
 
   function printOc() {
@@ -796,7 +896,7 @@ function RfqBomTab() {
                 min={10}
                 step={50}
                 aria-label="Tiragem Planejada (peças)"
-                value={doc?.preCost.tiragemPlanejada ?? 300}
+                value={doc?.preCost.tiragemPlanejada || 300}
                 disabled={!doc}
                 onChange={(e) => {
                   if (!doc) return;
@@ -881,166 +981,576 @@ function RfqBomTab() {
         </div>
       </Card>
 
-      {/* Mapa Comparativo TCO (3 propostas) */}
+      {!activeReq && doc && (
+        <Card
+          className="p-5 border-dashed border-border bg-muted/30 text-xs text-muted-foreground"
+          data-testid="rfq-bom-vazia"
+        >
+          A ficha {selectedRef} ainda não tem insumos na BOM. Abra a Ficha Técnica, adicione os
+          materiais e volte aqui para cotar.
+        </Card>
+      )}
       {activeReq && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Scale className="h-4 w-4 text-primary" />
-              Mapa Comparativo TCO · {activeReq.material} (Lote{" "}
-              {(activeReq.compraLiquidaNecessaria > 0
-                ? activeReq.compraLiquidaNecessaria
-                : activeReq.necessidadeBrutaLote
-              ).toFixed(1)}{" "}
-              {activeReq.unidade})
-            </h3>
-            <span className="text-2xs text-muted-foreground">
-              Pesos TCO: 60% Preço Efetivo (c/ MOQ) · 25% Lead Time · 15% OTIF
-            </span>
-          </div>
+        <RfqQuotesPanel
+          referenceCode={selectedRef}
+          req={activeReq}
+          rows={rows}
+          scored={scoredQuotes}
+          pendentes={pendentes}
+          suppliers={supplierLites}
+          adjudicada={Boolean(adjudicada)}
+          carregando={rfqQ.isLoading}
+          erro={rfqQ.isError ? motivoDe(rfqQ.error, "carregar as propostas") : null}
+          onChanged={invalidar}
+          onAward={awardWinner}
+          fmtBrl={fmtBrl}
+        />
+      )}
+    </div>
+  );
+}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {scoredQuotes.map((q, qIdx) => (
+// ---------------------------------------------------------------------------
+// Onda 119 — propostas persistidas: convidar fornecedor cadastrado, registrar a
+// proposta recebida (telefone/e-mail) e comparar lado a lado. Nada é inventado:
+// sem proposta, o comparativo fica vazio e diz o que fazer.
+// ---------------------------------------------------------------------------
+type ScoredQuote = ReturnType<typeof scoreRfqProposals>[number];
+type Requirement = ReturnType<typeof explodeBomRequirements>[number];
+
+function RfqQuotesPanel(props: {
+  referenceCode: string;
+  req: Requirement;
+  rows: RfqQuoteRow[];
+  scored: ScoredQuote[];
+  pendentes: RfqQuoteRow[];
+  suppliers: { id: string; name: string; uf: string | null }[];
+  adjudicada: boolean;
+  carregando: boolean;
+  erro: string | null;
+  onChanged: () => void;
+  onAward: (q: ScoredQuote) => void;
+  fmtBrl: (v: number) => string;
+}) {
+  const { referenceCode, req, rows, scored, pendentes, suppliers, adjudicada, fmtBrl } = props;
+  const need =
+    req.compraLiquidaNecessaria > 0 ? req.compraLiquidaNecessaria : req.necessidadeBrutaLote;
+  const jaConvidados = new Set(rows.map((r) => r.supplier_id));
+  const disponiveis = suppliers.filter((sp) => !jaConvidados.has(sp.id));
+
+  const [supplierId, setSupplierId] = useState("");
+  const [modo, setModo] = useState<"convidar" | "registrar">("convidar");
+  const [form, setForm] = useState({ preco: "", moq: "", lead: "", pgto: "", otif: "" });
+
+  const addMut = useMutation({
+    mutationFn: async () => {
+      if (!supplierId) throw new Error("Escolha um fornecedor cadastrado.");
+      const base = {
+        reference_code: referenceCode,
+        bom_item_id: req.itemId,
+        material: req.material,
+        unidade: req.unidade,
+        quantidade: need,
+        supplier_id: supplierId,
+      };
+      if (modo === "convidar") {
+        const { error } = await supabase
+          .from("rfq_quotes")
+          .insert({ ...base, origem: "fornecedor" });
+        if (error) throw error;
+        return "Convite registrado — o fornecedor vê a cotação ao entrar no portal.";
+      }
+      const resposta = {
+        precoUnitario: Number(String(form.preco).replace(",", ".")),
+        moq: Number(form.moq) || Math.round(need),
+        leadTimeDias: Number(form.lead) || 1,
+      };
+      const erro = validarResposta(resposta);
+      if (erro) throw new Error(erro);
+      const { error } = await supabase.from("rfq_quotes").insert({
+        ...base,
+        origem: "comprador",
+        status: "respondida",
+        preco_unitario: resposta.precoUnitario,
+        moq: resposta.moq,
+        lead_time_dias: resposta.leadTimeDias,
+        otif_pct: Math.min(100, Math.max(0, Number(form.otif) || 0)),
+        condicao_pagamento: form.pgto || null,
+        respondido_em: new Date().toISOString(),
+      });
+      if (error) throw error;
+      return "Proposta registrada.";
+    },
+    onSuccess: (msg) => {
+      toast.success(msg);
+      setSupplierId("");
+      setForm({ preco: "", moq: "", lead: "", pgto: "", otif: "" });
+      props.onChanged();
+    },
+    onError: (e) => toast.error(motivoDe(e, "salvar a cotação")),
+  });
+
+  const removeMut = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("rfq_quotes").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => props.onChanged(),
+    onError: (e) => toast.error(motivoDe(e, "remover a proposta")),
+  });
+
+  const nome = (id: string) => suppliers.find((sp) => sp.id === id)?.name ?? "Fornecedor";
+
+  return (
+    <div className="space-y-3" data-testid="rfq-propostas">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+          <Scale className="h-4 w-4 text-primary" />
+          Propostas · {req.material} (lote {need.toFixed(1)} {req.unidade})
+        </h3>
+        <span className="text-2xs text-muted-foreground">
+          Pesos TCO: 60% preço efetivo (com MOQ) · 25% prazo · 15% OTIF
+        </span>
+      </div>
+
+      {!adjudicada && (
+        <Card className="p-4 border-border bg-card space-y-3">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="min-w-[220px]">
+              <Label
+                htmlFor="rfq-fornecedor"
+                className="text-2xs uppercase text-muted-foreground block mb-1"
+              >
+                Fornecedor cadastrado
+              </Label>
+              <select
+                id="rfq-fornecedor"
+                value={supplierId}
+                onChange={(e) => setSupplierId(e.target.value)}
+                className="h-9 w-full rounded-md border border-border bg-background px-3 text-xs text-foreground"
+              >
+                <option value="">Selecione…</option>
+                {disponiveis.map((sp) => (
+                  <option key={sp.id} value={sp.id}>
+                    {sp.name}
+                    {sp.uf ? ` · ${sp.uf}` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex rounded-md border border-border overflow-hidden text-xs">
+              {(["convidar", "registrar"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setModo(m)}
+                  aria-pressed={modo === m}
+                  className={`px-3 h-9 ${modo === m ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:text-foreground"}`}
+                >
+                  {m === "convidar" ? "Convidar pelo portal" : "Já tenho a proposta"}
+                </button>
+              ))}
+            </div>
+            {modo === "registrar" && (
+              <>
+                <div>
+                  <Label
+                    htmlFor="rfq-preco"
+                    className="text-2xs uppercase text-muted-foreground block mb-1"
+                  >
+                    Preço/{req.unidade} (R$)
+                  </Label>
+                  <Input
+                    id="rfq-preco"
+                    inputMode="decimal"
+                    value={form.preco}
+                    onChange={(e) => setForm({ ...form, preco: e.target.value })}
+                    className="h-9 w-28 font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="rfq-moq"
+                    className="text-2xs uppercase text-muted-foreground block mb-1"
+                  >
+                    Lote mínimo
+                  </Label>
+                  <Input
+                    id="rfq-moq"
+                    type="number"
+                    min={1}
+                    value={form.moq}
+                    placeholder={String(Math.round(need))}
+                    onChange={(e) => setForm({ ...form, moq: e.target.value })}
+                    className="h-9 w-24 font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="rfq-lead"
+                    className="text-2xs uppercase text-muted-foreground block mb-1"
+                  >
+                    Prazo (dias)
+                  </Label>
+                  <Input
+                    id="rfq-lead"
+                    type="number"
+                    min={1}
+                    value={form.lead}
+                    onChange={(e) => setForm({ ...form, lead: e.target.value })}
+                    className="h-9 w-20 font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="rfq-pgto"
+                    className="text-2xs uppercase text-muted-foreground block mb-1"
+                  >
+                    Pagamento
+                  </Label>
+                  <Input
+                    id="rfq-pgto"
+                    value={form.pgto}
+                    placeholder="28/56 DDL"
+                    onChange={(e) => setForm({ ...form, pgto: e.target.value })}
+                    className="h-9 w-28 text-xs"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="rfq-otif"
+                    className="text-2xs uppercase text-muted-foreground block mb-1"
+                  >
+                    OTIF %
+                  </Label>
+                  <Input
+                    id="rfq-otif"
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={form.otif}
+                    placeholder="0"
+                    onChange={(e) => setForm({ ...form, otif: e.target.value })}
+                    className="h-9 w-20 font-mono text-xs"
+                  />
+                </div>
+              </>
+            )}
+            <Button
+              type="button"
+              size="sm"
+              className="gap-1.5 min-h-11 sm:min-h-9"
+              disabled={addMut.isPending || !supplierId}
+              onClick={() => addMut.mutate()}
+            >
+              {modo === "convidar" ? (
+                <Send className="h-3.5 w-3.5" />
+              ) : (
+                <PackagePlus className="h-3.5 w-3.5" />
+              )}
+              {modo === "convidar" ? "Convidar" : "Registrar proposta"}
+            </Button>
+          </div>
+          {suppliers.length === 0 && (
+            <p className="text-2xs text-amber-600 dark:text-amber-400">
+              Nenhum fornecedor cadastrado — cadastre na aba Fornecedores para cotar.
+            </p>
+          )}
+        </Card>
+      )}
+
+      {pendentes.length > 0 && (
+        <div
+          className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"
+          data-testid="rfq-pendentes"
+        >
+          <Clock className="h-3.5 w-3.5" />
+          Aguardando resposta:
+          {pendentes.map((p) => (
+            <Badge key={p.id} variant="outline" className="gap-1.5 font-normal">
+              {nome(p.supplier_id)}
+              {!adjudicada && (
+                <button
+                  type="button"
+                  aria-label={`Cancelar convite de ${nome(p.supplier_id)}`}
+                  className="text-muted-foreground hover:text-foreground"
+                  onClick={() => removeMut.mutate(p.id)}
+                >
+                  <XCircle className="h-3 w-3" />
+                </button>
+              )}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {props.erro ? (
+        <Card
+          className="p-4 border-status-rejected/40 bg-status-rejected/5 text-xs text-foreground"
+          data-testid="rfq-erro"
+        >
+          {props.erro} As propostas ficam salvas no banco — recarregue a página ou tente de novo.
+        </Card>
+      ) : props.carregando ? (
+        <p className="text-xs text-muted-foreground">Carregando propostas…</p>
+      ) : scored.length === 0 ? (
+        <Card
+          className="p-5 border-dashed border-border bg-muted/30 text-xs text-muted-foreground"
+          data-testid="rfq-sem-propostas"
+        >
+          Nenhuma proposta para este insumo ainda. Convide um fornecedor pelo portal ou registre a
+          proposta que você já recebeu — o comparativo aparece aqui.
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {scored.map((q) => {
+            const row = rows.find((r) => r.id === q.id);
+            const ganhou = row?.status === "adjudicada";
+            return (
               <Card
                 key={q.id}
-                className={`p-4 space-y-3 transition-all ${
-                  q.winner
-                    ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
-                    : "border-border bg-card"
-                }`}
+                className={`p-4 space-y-3 border ${ganhou ? "border-primary ring-1 ring-primary/40" : q.winner && !adjudicada ? "border-primary/50" : "border-border"} bg-card`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <Input
-                      aria-label={`Fornecedor da cotação ${qIdx + 1}`}
-                      value={q.fornecedor}
-                      onChange={(e) => patchQuote(q.id, { fornecedor: e.target.value })}
-                      className="h-8 text-xs font-semibold"
-                    />
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{q.fornecedor}</p>
+                    <p className="text-2xs text-muted-foreground">
+                      {q.uf || "—"} ·{" "}
+                      {row?.origem === "fornecedor"
+                        ? "respondeu pelo portal"
+                        : "proposta registrada pelo comprador"}
+                    </p>
                   </div>
-                  <Badge
-                    variant="outline"
-                    className={
-                      q.winner
-                        ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-2xs gap-1"
-                        : "text-2xs"
-                    }
+                  {ganhou ? (
+                    <Badge className="gap-1">
+                      <Award className="h-3 w-3" /> Adjudicada
+                    </Badge>
+                  ) : q.winner && !adjudicada ? (
+                    <Badge variant="outline" className="gap-1 border-primary/50 text-primary">
+                      Melhor TCO
+                    </Badge>
+                  ) : null}
+                </div>
+                <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                  <dt className="text-muted-foreground">Preço/{req.unidade}</dt>
+                  <dd className="font-mono text-right font-semibold">{fmtBrl(q.precoUnitario)}</dd>
+                  <dt className="text-muted-foreground">Lote mínimo</dt>
+                  <dd className="font-mono text-right">
+                    {q.moq} {req.unidade}
+                    {q.excessoMoq > 0 ? (
+                      <span className="text-amber-600 dark:text-amber-400">
+                        {" "}
+                        (+{q.excessoMoq.toFixed(1)} além da necessidade)
+                      </span>
+                    ) : null}
+                  </dd>
+                  <dt className="text-muted-foreground">Prazo</dt>
+                  <dd className="font-mono text-right">{q.leadTimeDias} dias</dd>
+                  <dt className="text-muted-foreground">Pagamento</dt>
+                  <dd className="text-right">{q.condicaoPagamento || "—"}</dd>
+                  <dt className="text-muted-foreground">OTIF</dt>
+                  <dd className="font-mono text-right">{q.otifPct}%</dd>
+                  <dt className="text-muted-foreground">Total do pedido</dt>
+                  <dd className="font-mono text-right font-semibold">
+                    {fmtBrl(q.valorTotalPedido)}
+                  </dd>
+                  <dt className="text-muted-foreground">Versus custo atual</dt>
+                  <dd
+                    className={`font-mono text-right font-semibold ${q.savingLote >= 0 ? "text-status-approved" : "text-status-rejected"}`}
                   >
-                    {q.winner && <Award className="h-3 w-3" />} TCO {q.scoreTco.toFixed(1)}
-                  </Badge>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <Label className="text-2xs uppercase text-muted-foreground">
-                      Preço R$/{activeReq.unidade}
-                    </Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      min="0.05"
-                      aria-label={`Preço R$/unidade da cotação ${qIdx + 1}`}
-                      value={q.precoUnitario}
-                      onChange={(e) =>
-                        patchQuote(q.id, {
-                          precoUnitario: Math.max(0.05, Number(e.target.value) || 0),
-                        })
-                      }
-                      className="h-8 font-mono text-xs"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-2xs uppercase text-muted-foreground">
-                      MOQ ({activeReq.unidade})
-                    </Label>
-                    <Input
-                      type="number"
-                      step="10"
-                      min="1"
-                      aria-label={`MOQ da cotação ${qIdx + 1}`}
-                      value={q.moq}
-                      onChange={(e) =>
-                        patchQuote(q.id, { moq: Math.max(1, Number(e.target.value) || 1) })
-                      }
-                      className="h-8 font-mono text-xs"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-2xs uppercase text-muted-foreground">
-                      Lead Time (d)
-                    </Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      aria-label={`Lead Time (dias) da cotação ${qIdx + 1}`}
-                      value={q.leadTimeDias}
-                      onChange={(e) =>
-                        patchQuote(q.id, { leadTimeDias: Math.max(1, Number(e.target.value) || 1) })
-                      }
-                      className="h-8 font-mono text-xs"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-2xs uppercase text-muted-foreground">OTIF (%)</Label>
-                    <Input
-                      type="number"
-                      min="50"
-                      max="100"
-                      aria-label={`OTIF (%) da cotação ${qIdx + 1}`}
-                      value={q.otifPct}
-                      onChange={(e) =>
-                        patchQuote(q.id, {
-                          otifPct: Math.min(100, Math.max(0, Number(e.target.value) || 90)),
-                        })
-                      }
-                      className="h-8 font-mono text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-md border border-border/70 bg-muted/30 p-2.5 text-2xs space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Pedido (c/ MOQ):</span>
-                    <strong className="font-mono text-foreground">
-                      {fmtBrl(q.valorTotalPedido)}
-                    </strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Excesso Lote Mínimo:</span>
-                    <span className="font-mono">
-                      {q.excessoMoq.toFixed(1)} {activeReq.unidade}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Saving no Lote:</span>
-                    <strong
-                      className={`font-mono ${
-                        q.savingLote >= 0
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-rose-500"
-                      }`}
+                    {q.savingLote >= 0 ? "+" : ""}
+                    {fmtBrl(q.savingLote)} ({q.savingPct.toFixed(1)}%)
+                  </dd>
+                  <dt className="text-muted-foreground">Score TCO</dt>
+                  <dd className="font-mono text-right">{q.scoreTco.toFixed(1)}</dd>
+                </dl>
+                {!adjudicada && (
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={q.winner ? "default" : "outline"}
+                      onClick={() => props.onAward(q)}
+                      className="flex-1 gap-1.5 text-xs min-h-11 sm:min-h-9"
                     >
-                      {q.savingLote >= 0 ? "+" : ""}
-                      {fmtBrl(q.savingLote)} ({q.savingPct.toFixed(1)}%)
-                    </strong>
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Adjudicar e gerar OC
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      aria-label={`Remover proposta de ${q.fornecedor}`}
+                      onClick={() => removeMut.mutate(q.id)}
+                      className="min-h-11 sm:min-h-9"
+                    >
+                      <XCircle className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
-                </div>
-
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={q.winner ? "default" : "outline"}
-                  onClick={() => awardWinner(q)}
-                  className="w-full gap-1.5 text-xs"
-                >
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  Adjudicar & Atualizar BOM
-                </Button>
+                )}
+                {ganhou && row?.supplier_order_id && (
+                  <p className="text-2xs text-muted-foreground">
+                    Ordem de compra criada — acompanhe na aba Ordens de Produção.
+                  </p>
+                )}
               </Card>
-            ))}
-          </div>
+            );
+          })}
         </div>
       )}
     </div>
+  );
+}
+
+// Fornecedor logado: cotações que a marca pediu e ainda não foram respondidas.
+function MinhasCotacoesPanel() {
+  const meu = useMeuFornecedor();
+  const qc = useQueryClient();
+  const q = useQuery({
+    queryKey: ["minhas_cotacoes", meu.data],
+    enabled: Boolean(meu.data),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rfq_quotes")
+        .select("*")
+        .eq("supplier_id", meu.data as string)
+        .in("status", ["convidada", "respondida"])
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as RfqQuoteRow[];
+    },
+  });
+  const [drafts, setDrafts] = useState<
+    Record<string, { preco: string; moq: string; lead: string; pgto: string }>
+  >({});
+  const responder = useMutation({
+    mutationFn: async (row: RfqQuoteRow) => {
+      const d = drafts[row.id] ?? { preco: "", moq: "", lead: "", pgto: "" };
+      const resposta = {
+        precoUnitario: Number(String(d.preco).replace(",", ".")),
+        moq: Number(d.moq) || Math.round(Number(row.quantidade)) || 1,
+        leadTimeDias: Number(d.lead) || 0,
+      };
+      const erro = validarResposta(resposta);
+      if (erro) throw new Error(erro);
+      const { error } = await supabase
+        .from("rfq_quotes")
+        .update({
+          status: "respondida",
+          preco_unitario: resposta.precoUnitario,
+          moq: resposta.moq,
+          lead_time_dias: resposta.leadTimeDias,
+          condicao_pagamento: d.pgto || null,
+          respondido_em: new Date().toISOString(),
+        })
+        .eq("id", row.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Proposta enviada à marca.");
+      qc.invalidateQueries({ queryKey: ["minhas_cotacoes"] });
+    },
+    onError: (e) => toast.error(motivoDe(e, "enviar a proposta")),
+  });
+  if (!meu.data || !q.data || q.data.length === 0) return null;
+  const pendentes = q.data.filter((r) => r.status === "convidada");
+  return (
+    <Card className="p-4 border-primary/40 bg-primary/5 space-y-3" data-testid="minhas-cotacoes">
+      <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+        <Send className="h-4 w-4 text-primary" />
+        Cotações para você responder ({pendentes.length})
+      </h2>
+      {pendentes.length === 0 && (
+        <p className="text-xs text-muted-foreground">
+          Todas respondidas — a marca está comparando as propostas.
+        </p>
+      )}
+      {pendentes.map((row) => {
+        const d = drafts[row.id] ?? { preco: "", moq: "", lead: "", pgto: "" };
+        const set = (patch: Partial<typeof d>) =>
+          setDrafts({ ...drafts, [row.id]: { ...d, ...patch } });
+        return (
+          <div key={row.id} className="rounded-md border border-border bg-card p-3 space-y-2">
+            <p className="text-xs font-medium text-foreground">
+              {row.material} · {Number(row.quantidade).toFixed(1)} {row.unidade} · ficha{" "}
+              {row.reference_code}
+            </p>
+            <div className="flex flex-wrap items-end gap-2">
+              <div>
+                <Label
+                  htmlFor={`mc-preco-${row.id}`}
+                  className="text-2xs uppercase text-muted-foreground block mb-1"
+                >
+                  Preço/{row.unidade} (R$)
+                </Label>
+                <Input
+                  id={`mc-preco-${row.id}`}
+                  inputMode="decimal"
+                  value={d.preco}
+                  onChange={(e) => set({ preco: e.target.value })}
+                  className="h-9 w-28 font-mono text-xs"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor={`mc-moq-${row.id}`}
+                  className="text-2xs uppercase text-muted-foreground block mb-1"
+                >
+                  Lote mínimo
+                </Label>
+                <Input
+                  id={`mc-moq-${row.id}`}
+                  type="number"
+                  min={1}
+                  value={d.moq}
+                  placeholder={String(Math.round(Number(row.quantidade)))}
+                  onChange={(e) => set({ moq: e.target.value })}
+                  className="h-9 w-24 font-mono text-xs"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor={`mc-lead-${row.id}`}
+                  className="text-2xs uppercase text-muted-foreground block mb-1"
+                >
+                  Prazo (dias)
+                </Label>
+                <Input
+                  id={`mc-lead-${row.id}`}
+                  type="number"
+                  min={1}
+                  value={d.lead}
+                  onChange={(e) => set({ lead: e.target.value })}
+                  className="h-9 w-20 font-mono text-xs"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor={`mc-pgto-${row.id}`}
+                  className="text-2xs uppercase text-muted-foreground block mb-1"
+                >
+                  Pagamento
+                </Label>
+                <Input
+                  id={`mc-pgto-${row.id}`}
+                  value={d.pgto}
+                  placeholder="28/56 DDL"
+                  onChange={(e) => set({ pgto: e.target.value })}
+                  className="h-9 w-28 text-xs"
+                />
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                className="gap-1.5 min-h-11 sm:min-h-9"
+                disabled={responder.isPending}
+                onClick={() => responder.mutate(row)}
+              >
+                <Send className="h-3.5 w-3.5" /> Enviar proposta
+              </Button>
+            </div>
+          </div>
+        );
+      })}
+    </Card>
   );
 }

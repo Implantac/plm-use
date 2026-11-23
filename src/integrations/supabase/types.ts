@@ -2455,6 +2455,86 @@ export type Database = {
         }
         Relationships: []
       }
+      rfq_quotes: {
+        Row: {
+          bom_item_id: string
+          condicao_pagamento: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          lead_time_dias: number
+          material: string
+          moq: number
+          observacoes: string | null
+          origem: string
+          otif_pct: number
+          preco_unitario: number | null
+          quantidade: number
+          reference_code: string
+          respondido_em: string | null
+          status: string
+          supplier_id: string
+          supplier_order_id: string | null
+          unidade: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          bom_item_id: string
+          condicao_pagamento?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_time_dias?: number
+          material: string
+          moq?: number
+          observacoes?: string | null
+          origem?: string
+          otif_pct?: number
+          preco_unitario?: number | null
+          quantidade?: number
+          reference_code: string
+          respondido_em?: string | null
+          status?: string
+          supplier_id: string
+          supplier_order_id?: string | null
+          unidade?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          bom_item_id?: string
+          condicao_pagamento?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_time_dias?: number
+          material?: string
+          moq?: number
+          observacoes?: string | null
+          origem?: string
+          otif_pct?: number
+          preco_unitario?: number | null
+          quantidade?: number
+          reference_code?: string
+          respondido_em?: string | null
+          status?: string
+          supplier_id?: string
+          supplier_order_id?: string | null
+          unidade?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfq_quotes_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sales_order_item_costs: {
         Row: {
           approved_at: string | null

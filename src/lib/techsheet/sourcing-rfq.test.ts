@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { MeasurementChart } from "@/lib/measurements/store";
 import { seedFor } from "./store";
 import {
-  buildDefaultQuotesForItem,
   buildShowroomCatalogItem,
   buildShowroomOrderPrintableHtml,
   explodeBomRequirements,
@@ -19,7 +18,38 @@ describe("Sourcing Industrial RFQ, Tabelas POM & Showroom B2B", () => {
     const first = reqs[0]!;
     expect(first.necessidadeBrutaLote).toBeGreaterThan(0);
 
-    const quotes = buildDefaultQuotesForItem(first);
+    const quotes = [
+      {
+        id: "a",
+        fornecedor: "A",
+        uf: "SC",
+        precoUnitario: first.custoUnitarioAtual,
+        moq: 50,
+        leadTimeDias: 18,
+        otifPct: 94,
+        condicaoPagamento: "28 DDL",
+      },
+      {
+        id: "b",
+        fornecedor: "B",
+        uf: "SC",
+        precoUnitario: first.custoUnitarioAtual * 0.92,
+        moq: 60,
+        leadTimeDias: 14,
+        otifPct: 97,
+        condicaoPagamento: "28/56 DDL",
+      },
+      {
+        id: "c",
+        fornecedor: "C",
+        uf: "SP",
+        precoUnitario: first.custoUnitarioAtual * 1.05,
+        moq: 30,
+        leadTimeDias: 10,
+        otifPct: 90,
+        condicaoPagamento: "à vista",
+      },
+    ];
     const scored = scoreRfqProposals(quotes, first);
     expect(scored).toHaveLength(3);
     expect(scored.filter((q) => q.winner)).toHaveLength(1);
