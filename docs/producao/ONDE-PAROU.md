@@ -847,6 +847,11 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     Validação: `auditoria_publicas.py` em produção → títulos próprios e
     nenhum campo com `'ac': None`.
 
+72. **Publicar a Onda 116 — PENDENTE (111ª medição).** "Pular para o
+    conteúdo" (1 Tab em vez de 56–64), menu off-canvas com foco e Escape,
+    favoritos visíveis no foco. Nenhuma migration. Gates **978/978**.
+    Validação: `auditoria_teclado.py` em produção.
+
 ---
 
 ## 8. Como reverificar isto

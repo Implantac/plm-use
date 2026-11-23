@@ -2444,6 +2444,23 @@ redefinição e 404. Corrigido no repo; local verificado em 390/1400 px.
 
 ---
 
+## 2-CE. 111ª medição — Onda 116: teclado
+
+**Ar (111ª):** Onda 114 (`index-C7REUo3v.js`); 115 pendente. Desktop: 56–64
+Tabs até o conteúdo; celular: menu aberto por teclado sem foco e sem Escape.
+
+**Onda 116 (repo):** skip link, foco e Escape no menu estreito, favoritos
+visíveis no foco. Local: 1 Tab; foco no menu; Escape fecha.
+
+| Camada | 111ª medição                                                       |
+| ------ | ------------------------------------------------------------------ |
+| Repo   | **Onda 116** — local = remoto                                      |
+| Ar     | **Onda 114** (`index-C7REUo3v.js`) — **Ondas 115 e 116 pendentes** |
+| Banco  | inalterado                                                         |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **978/978**        |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

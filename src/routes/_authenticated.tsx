@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { AlertsBell } from "@/components/alerts/AlertsBell";
 import { PresenceBar } from "@/components/presence/PresenceBar";
 import { ActivityFeedButton } from "@/components/activity/ActivityFeedButton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronDown,
   Menu,
@@ -122,6 +122,24 @@ function AuthenticatedLayout() {
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
   }, []);
+
+  // Onda 116 — teclado: Escape fecha o menu off-canvas; ao abrir em tela estreita o
+  // foco entra no menu e, ao fechar, volta ao botão que o abriu.
+  const asideRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!isNarrow || sidebarCollapsed) return;
+    const first = asideRef.current?.querySelector<HTMLElement>("a[href], button, input");
+    first?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSidebarCollapsed(true);
+        toggleRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isNarrow, sidebarCollapsed]);
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => {
@@ -251,6 +269,16 @@ function AuthenticatedLayout() {
 
   return (
     <div className="flex h-dvh bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
+      <a
+        href="#conteudo"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("conteudo")?.focus();
+        }}
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      >
+        Pular para o conteúdo
+      </a>
       {!sidebarCollapsed && isNarrow && (
         <button
           type="button"
@@ -260,6 +288,7 @@ function AuthenticatedLayout() {
         />
       )}
       <aside
+        ref={asideRef}
         data-testid="app-sidebar"
         className={`${sidebarCollapsed ? "hidden" : "w-[276px] flex"} glass-sidebar flex-col z-30 shrink-0 transition-all fixed inset-y-0 left-0 lg:relative lg:inset-auto`}
       >
@@ -376,7 +405,7 @@ function AuthenticatedLayout() {
                                 toggleFavorite(item.href);
                               }}
                               aria-label={fav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-                              className={`ml-1 p-1 rounded transition-opacity ${fav ? "opacity-100 text-primary" : "opacity-0 group-hover/nav:opacity-60 hover:opacity-100 text-muted-foreground"}`}
+                              className={`ml-1 p-1 rounded transition-opacity ${fav ? "opacity-100 text-primary" : "opacity-0 group-hover/nav:opacity-60 hover:opacity-100 focus-visible:opacity-100 text-muted-foreground"}`}
                             >
                               <Star className={`w-3 h-3 ${fav ? "fill-primary" : ""}`} />
                             </button>
@@ -428,12 +457,17 @@ function AuthenticatedLayout() {
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden">
+      <main
+        id="conteudo"
+        tabIndex={-1}
+        className="flex-1 flex flex-col min-w-0 bg-background relative overflow-hidden outline-none"
+      >
         {/* Ambient oceanic slate wash — sutil halo petróleo sobre o canvas #192236 */}
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-95 bg-forge" />
         <header className="relative h-14 border-b border-border flex items-center justify-between gap-4 px-4 lg:px-6 bg-surface-sunken/95 backdrop-blur-xl z-20">
           <div className="flex items-center gap-2.5 min-w-0">
             <Button
+              ref={toggleRef}
               variant="ghost"
               size="icon"
               onClick={toggleSidebar}
