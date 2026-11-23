@@ -71,3 +71,41 @@ export function useUserRoles(userId: string | undefined) {
 export async function signOut() {
   await supabase.auth.signOut();
 }
+
+/**
+ * Onda 120 — modo fornecedor: usuário sem papel interno que pertence a um
+ * fornecedor (`supplier_users`). Ele só deve ver o Portal do Fornecedor.
+ */
+export function useModoFornecedor(userId: string | undefined) {
+  const { roles, loading: loadingRoles } = useUserRoles(userId);
+  const [supplierId, setSupplierId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId) {
+      setSupplierId(null);
+      setLoading(false);
+      return;
+    }
+    let active = true;
+    setLoading(true);
+    supabase
+      .from("supplier_users")
+      .select("supplier_id")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!active) return;
+        setSupplierId(data?.supplier_id ?? null);
+        setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [userId]);
+
+  const modoFornecedor = !loadingRoles && !loading && roles.length === 0 && Boolean(supplierId);
+  return { modoFornecedor, supplierId, loading: loading || loadingRoles };
+}

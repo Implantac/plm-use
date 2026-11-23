@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { AppBreadcrumb } from "@/components/nav/AppBreadcrumb";
 import { useRecentRoutes } from "@/hooks/use-recent-routes";
-import { useAuth, signOut } from "@/hooks/use-auth";
+import { useAuth, signOut, useModoFornecedor } from "@/hooks/use-auth";
 import { usePCPCloudSync } from "@/lib/pcp/sync";
 import { useModulesCloudSync } from "@/lib/cloud-sync";
 import { useCreativeCloudSync } from "@/lib/creative-sync";
@@ -69,6 +69,8 @@ function AuthenticatedLayout() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const { isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
+  // Onda 120 — fornecedor logado vê só o portal dele (menu e rotas).
+  const { modoFornecedor } = useModoFornecedor(user?.id);
   usePCPCloudSync(isAuthenticated);
   useModulesCloudSync(isAuthenticated);
   useCreativeCloudSync(isAuthenticated);
@@ -175,15 +177,25 @@ function AuthenticatedLayout() {
       .map((g) => ({
         id: g as string,
         label: NAV_GROUPS[g].label,
-        items: ROUTE_REGISTRY.filter((r) => r.group === g && (showLabs || !r.vitrine)).map((r) => {
+        items: ROUTE_REGISTRY.filter(
+          (r) =>
+            r.group === g &&
+            (showLabs || !r.vitrine) &&
+            (!modoFornecedor || r.path === "/supplier-portal"),
+        ).map((r) => {
           const Icon = NAV_ICON_COMPONENTS[r.icon];
           return { href: r.path, label: r.label, icon: <Icon className="w-4 h-4" /> };
         }),
       }))
       .filter((s) => s.items.length > 0);
-  }, [showLabs]);
+  }, [showLabs, modoFornecedor]);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => {
+    if (modoFornecedor && !pathname.startsWith("/supplier-portal")) {
+      void navigate({ to: "/supplier-portal", replace: true });
+    }
+  }, [modoFornecedor, pathname, navigate]);
   useEffect(() => {
     if (isNarrow) setSidebarCollapsed(true);
   }, [pathname, isNarrow]);

@@ -852,21 +852,27 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     favoritos visíveis no foco. Nenhuma migration. Gates **978/978**.
     Validação: `auditoria_teclado.py` em produção.
 
-73. **Publicar a Onda 117 — PENDENTE (112ª medição).** axe-core: 43/44 → 5/44
+73. **Publicar a Onda 117 — FEITO (114ª medição: axe claro 3/44 em produção).** axe-core: 43/44 → 5/44
     rotas com violação séria (contraste dos tokens, nome das barras de
     progresso, regiões roláveis focáveis). Nenhuma migration. Gates **983/983**.
     Validação: `auditoria_axe.py` em produção.
 
-74. **Publicar a Onda 118 — PENDENTE (113ª medição).** Tema escuro: botão
+74. **Publicar a Onda 118 — FEITO (114ª medição: axe escuro 1/44 em produção).** Tema escuro: botão
     primário e tokens de status com contraste AA (43/44 → 3/44 no axe escuro).
     Nenhuma migration. Gates **986/986**. Validação: `TEMA=dark auditoria_axe.py`.
 
-75. **Publicar a Onda 119 — PENDENTE, COM MIGRATION.** Cotação (RFQ) de
+75. **Onda 119 — CÓDIGO NO AR, MIGRATION PENDENTE (114ª medição: `rfq_quotes` → PGRST205).** Cotação (RFQ) de
     verdade: tabela `rfq_quotes` (RLS por fornecedor), convite pelo portal,
     resposta do fornecedor, comparativo TCO, adjudicação gera OC e atualiza a
     BOM. Removidos os três fornecedores inventados. **Aplicar
     `20261121120000_rfq_quotes_persistidas.sql` antes de publicar.** Gates
     **991/991**. Validação: fluxo completo em produção (doc da onda, §Pendente).
+
+76. **Publicar a Onda 120 — PENDENTE.** Acesso do fornecedor ao portal
+    (convidar e-mail, listar, revogar — servidor com service role, só gestão)
+    e modo fornecedor (menu/rotas/abas só do portal). Depende da migration da
+    119 para a cotação. Gates **994/994**. Validação: convidar e-mail de teste
+    e entrar com ele.
 
 ---
 

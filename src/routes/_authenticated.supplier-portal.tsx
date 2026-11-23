@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
@@ -43,6 +44,11 @@ import {
   validarResposta,
   type RfqQuoteRow,
 } from "@/lib/suppliers/rfq-quotes";
+import {
+  concederAcessoFornecedor,
+  listarAcessosFornecedor,
+  revogarAcessoFornecedor,
+} from "@/lib/suppliers/acesso-portal.functions";
 import { useTechSheetStore } from "@/lib/techsheet/store";
 import { operationalCodes } from "@/lib/techsheet/provenance";
 import { motivoDe } from "@/lib/supabase/erro-humano";
@@ -158,8 +164,8 @@ function useMeuFornecedor() {
   return useQuery({
     queryKey: ["meu_fornecedor"],
     queryFn: async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const uid = auth.user?.id;
+      const { data: auth } = await supabase.auth.getSession();
+      const uid = auth.session?.user?.id;
       if (!uid) return null;
       const { data, error } = await supabase
         .from("supplier_users")
@@ -175,10 +181,16 @@ function useMeuFornecedor() {
 }
 
 function SupplierPortalPage() {
+  const meuFornecedor = useMeuFornecedor();
+  const soFornecedor = Boolean(meuFornecedor.data);
   return (
     <ModuleLayout
-      title="Portal do Fornecedor & Sourcing RFQ"
-      subtitle="Explosão MRP da BOM, cotações reais com fornecedores cadastrados (o fornecedor responde pelo portal), comparativo TCO, adjudicação que gera a ordem de compra e atualiza a Ficha Técnica."
+      title={soFornecedor ? "Portal do Fornecedor" : "Portal do Fornecedor & Sourcing RFQ"}
+      subtitle={
+        soFornecedor
+          ? "Suas cotações, pedidos e amostras com a marca — tudo num só lugar."
+          : "Explosão MRP da BOM, cotações reais com fornecedores cadastrados (o fornecedor responde pelo portal), comparativo TCO, adjudicação que gera a ordem de compra e atualiza a Ficha Técnica."
+      }
       version="Sourcing v2.0"
     >
       <MinhasCotacoesPanel />
@@ -187,10 +199,14 @@ function SupplierPortalPage() {
         siglas={["MOQ", "TCO", "OP", "BOM", "OTIF", "RFQ"]}
         testId="glossario-supplier-portal"
       />
-      <Tabs defaultValue="rfq-bom" className="w-full">
+      <Tabs
+        key={soFornecedor ? "forn" : "int"}
+        defaultValue={soFornecedor ? "orders" : "rfq-bom"}
+        className="w-full"
+      >
         <TabsList className="bg-muted/50 border border-border">
-          <TabsTrigger value="rfq-bom">RFQ & Cotação BOM (PLM)</TabsTrigger>
-          <TabsTrigger value="suppliers">Fornecedores</TabsTrigger>
+          {!soFornecedor && <TabsTrigger value="rfq-bom">RFQ & Cotação BOM (PLM)</TabsTrigger>}
+          {!soFornecedor && <TabsTrigger value="suppliers">Fornecedores</TabsTrigger>}
           <TabsTrigger value="orders">Ordens de Produção</TabsTrigger>
           <TabsTrigger value="samples">Amostras</TabsTrigger>
         </TabsList>
@@ -201,7 +217,7 @@ function SupplierPortalPage() {
           <SuppliersTab />
         </TabsContent>
         <TabsContent value="orders" className="mt-4">
-          <OrdersTab />
+          <OrdersTab somenteLeitura={soFornecedor} />
         </TabsContent>
         <TabsContent value="samples" className="mt-4">
           <SamplesTab />
@@ -361,9 +377,12 @@ function SuppliersTab() {
                   {s.contato_nome ? ` · ${s.contato_nome}` : ""}
                 </p>
               </div>
-              <Badge variant="outline" className="text-2xs uppercase">
-                {s.status}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <AcessoPortalDialog supplierId={s.id} supplierName={s.name} />
+                <Badge variant="outline" className="text-2xs uppercase">
+                  {s.status}
+                </Badge>
+              </div>
             </Card>
           ))}
         </div>
@@ -373,7 +392,7 @@ function SuppliersTab() {
 }
 
 // -------- Ordens --------
-function OrdersTab() {
+function OrdersTab({ somenteLeitura = false }: { somenteLeitura?: boolean }) {
   const { data: suppliers } = useSuppliers();
   const { data: orders, isLoading } = useOrders();
   const qc = useQueryClient();
@@ -441,99 +460,101 @@ function OrdersTab() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="gap-1" disabled={!suppliers?.length}>
-              <Send className="w-3.5 h-3.5" /> Nova OP
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Nova ordem de produção</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-3">
-              <div>
-                <Label className="text-2xs uppercase">Fornecedor</Label>
-                <select
-                  className="w-full h-9 rounded-md border border-border bg-muted/50 text-xs px-2"
-                  aria-label="Fornecedor"
-                  value={form.supplier_id}
-                  onChange={(e) => setForm({ ...form, supplier_id: e.target.value })}
-                >
-                  <option value="">Selecione…</option>
-                  {(suppliers ?? []).map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.code} · {s.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label className="text-2xs uppercase">Código OP</Label>
-                  <Input
-                    aria-label="Código OP"
-                    value={form.codigo}
-                    onChange={(e) => setForm({ ...form, codigo: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="text-2xs uppercase">Prazo</Label>
-                  <Input
-                    type="date"
-                    aria-label="Prazo"
-                    value={form.prazo}
-                    onChange={(e) => setForm({ ...form, prazo: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label className="text-2xs uppercase">Descrição</Label>
-                <Input
-                  aria-label="Descrição"
-                  value={form.descricao}
-                  onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label className="text-2xs uppercase">Quantidade</Label>
-                  <Input
-                    type="number"
-                    aria-label="Quantidade"
-                    value={form.quantidade}
-                    onChange={(e) => setForm({ ...form, quantidade: Number(e.target.value) })}
-                  />
-                </div>
-                <div>
-                  <Label className="text-2xs uppercase">Unidade</Label>
-                  <Input
-                    aria-label="Unidade"
-                    value={form.unidade}
-                    onChange={(e) => setForm({ ...form, unidade: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label className="text-2xs uppercase">Observações</Label>
-                <Textarea
-                  aria-label="Observações"
-                  value={form.observacoes}
-                  onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
-                  rows={2}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                onClick={() => create.mutate()}
-                disabled={!form.supplier_id || !form.codigo || create.isPending}
-              >
-                Enviar OP
+        {!somenteLeitura && (
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="gap-1" disabled={!suppliers?.length}>
+                <Send className="w-3.5 h-3.5" /> Nova OP
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Nova ordem de produção</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-3">
+                <div>
+                  <Label className="text-2xs uppercase">Fornecedor</Label>
+                  <select
+                    className="w-full h-9 rounded-md border border-border bg-muted/50 text-xs px-2"
+                    aria-label="Fornecedor"
+                    value={form.supplier_id}
+                    onChange={(e) => setForm({ ...form, supplier_id: e.target.value })}
+                  >
+                    <option value="">Selecione…</option>
+                    {(suppliers ?? []).map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.code} · {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-2xs uppercase">Código OP</Label>
+                    <Input
+                      aria-label="Código OP"
+                      value={form.codigo}
+                      onChange={(e) => setForm({ ...form, codigo: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-2xs uppercase">Prazo</Label>
+                    <Input
+                      type="date"
+                      aria-label="Prazo"
+                      value={form.prazo}
+                      onChange={(e) => setForm({ ...form, prazo: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-2xs uppercase">Descrição</Label>
+                  <Input
+                    aria-label="Descrição"
+                    value={form.descricao}
+                    onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-2xs uppercase">Quantidade</Label>
+                    <Input
+                      type="number"
+                      aria-label="Quantidade"
+                      value={form.quantidade}
+                      onChange={(e) => setForm({ ...form, quantidade: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-2xs uppercase">Unidade</Label>
+                    <Input
+                      aria-label="Unidade"
+                      value={form.unidade}
+                      onChange={(e) => setForm({ ...form, unidade: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-2xs uppercase">Observações</Label>
+                  <Textarea
+                    aria-label="Observações"
+                    value={form.observacoes}
+                    onChange={(e) => setForm({ ...form, observacoes: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={() => create.mutate()}
+                  disabled={!form.supplier_id || !form.codigo || create.isPending}
+                >
+                  Enviar OP
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {isLoading ? (
@@ -1552,5 +1573,146 @@ function MinhasCotacoesPanel() {
         );
       })}
     </Card>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Onda 120 — Acesso do fornecedor ao portal: convidar e-mail, listar, revogar.
+// ---------------------------------------------------------------------------
+function AcessoPortalDialog({
+  supplierId,
+  supplierName,
+}: {
+  supplierId: string;
+  supplierName: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const listar = useServerFn(listarAcessosFornecedor);
+  const conceder = useServerFn(concederAcessoFornecedor);
+  const revogar = useServerFn(revogarAcessoFornecedor);
+  const q = useQuery({
+    queryKey: ["acessos_fornecedor", supplierId],
+    enabled: open,
+    queryFn: () => listar({ data: { supplierId } }),
+  });
+  const concederMut = useMutation({
+    mutationFn: () => conceder({ data: { supplierId, email } }),
+    onSuccess: (r) => {
+      toast.success(r.mensagem);
+      setEmail("");
+      void q.refetch();
+    },
+    onError: (e) => toast.error(motivoDe(e, "dar acesso ao fornecedor")),
+  });
+  const revogarMut = useMutation({
+    mutationFn: (acessoId: string) => revogar({ data: { acessoId } }),
+    onSuccess: () => {
+      toast.success("Acesso revogado.");
+      void q.refetch();
+    },
+    onError: (e) => toast.error(motivoDe(e, "revogar o acesso")),
+  });
+  const ativos = (q.data ?? []).filter((a) => a.is_active);
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="gap-1.5 text-xs min-h-11 sm:min-h-9"
+        >
+          <Send className="h-3.5 w-3.5" /> Acesso ao portal
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Acesso ao portal · {supplierName}</DialogTitle>
+        </DialogHeader>
+        <p className="text-xs text-muted-foreground">
+          Quem entra com um destes e-mails vê só as cotações, pedidos e amostras deste fornecedor. O
+          convite chega por e-mail com o link para criar a senha.
+        </p>
+        <form
+          className="flex flex-wrap items-end gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (email.trim()) concederMut.mutate();
+          }}
+        >
+          <div className="flex-1 min-w-[200px]">
+            <Label
+              htmlFor={`acesso-email-${supplierId}`}
+              className="text-2xs uppercase text-muted-foreground block mb-1"
+            >
+              E-mail do fornecedor
+            </Label>
+            <Input
+              id={`acesso-email-${supplierId}`}
+              type="email"
+              inputMode="email"
+              autoComplete="off"
+              placeholder="compras@fornecedor.com.br"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-9 text-xs"
+            />
+          </div>
+          <Button
+            type="submit"
+            size="sm"
+            disabled={concederMut.isPending || !email.trim()}
+            className="gap-1.5 min-h-11 sm:min-h-9"
+          >
+            <Send className="h-3.5 w-3.5" /> {concederMut.isPending ? "Enviando…" : "Convidar"}
+          </Button>
+        </form>
+        <div className="space-y-1.5" data-testid="acessos-lista">
+          <p className="text-2xs uppercase tracking-wide text-muted-foreground">
+            Com acesso ({ativos.length})
+          </p>
+          {q.isLoading ? (
+            <p className="text-xs text-muted-foreground">Carregando…</p>
+          ) : q.isError ? (
+            <p className="text-xs text-status-rejected">{motivoDe(q.error, "listar os acessos")}</p>
+          ) : ativos.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              Ninguém ainda — convide o e-mail de quem responde cotações.
+            </p>
+          ) : (
+            ativos.map((a) => (
+              <div
+                key={a.id}
+                className="flex items-center justify-between rounded-md border border-border px-3 py-2 text-xs"
+              >
+                <span className="text-foreground">{a.email}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-xs text-muted-foreground hover:text-status-rejected"
+                  onClick={() => revogarMut.mutate(a.id)}
+                  disabled={revogarMut.isPending}
+                >
+                  Revogar
+                </Button>
+              </div>
+            ))
+          )}
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setOpen(false)}
+            className="min-h-11 sm:min-h-9"
+          >
+            Fechar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

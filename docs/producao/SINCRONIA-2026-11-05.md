@@ -2509,6 +2509,22 @@ fornecedor responde pelo portal, adjudicar gera `supplier_orders` e atualiza a B
 
 ---
 
+## 2-CI. 114ª medição — 117/118 validadas; 119 no ar sem migration; Onda 120
+
+**Ar:** `index-Bxf-kQd-.js` = Onda 119 (código). axe claro 3/44, escuro 1/44.
+`rfq_quotes` **não existe no banco** (PGRST205) — RFQ avisa "migration pendente".
+
+**Onda 120 (repo):** acesso do fornecedor ao portal + modo fornecedor.
+
+| Camada | 114ª medição                                                                   |
+| ------ | ------------------------------------------------------------------------------ |
+| Repo   | **Onda 120** — local = remoto                                                  |
+| Ar     | **Onda 119** (`index-Bxf-kQd-.js`) — **Onda 120 pendente**                     |
+| Banco  | **pendente**: `20261121120000_rfq_quotes_persistidas.sql` (bloqueia a cotação) |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **994/994**                    |
+
+---
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
