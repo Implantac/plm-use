@@ -66,6 +66,15 @@ aceitar se esperado == v1 e |agora - t| ≤ 300 s
 - Card em Segurança: `auditoria/webhooks122-local-card.png`;
   chaves com escopo: `auditoria/api122-local-card-chaves-escopo.png`.
 
+## Prova ponta a ponta em produção (24/11/2026)
+
+Usuário cadastrou `https://webhook.site/cfec6e8e-…` em Segurança → Webhooks e clicou
+**Testar** duas vezes. Conferido pela API do webhook.site (`/token/…/requests`): **2 POSTs**
+às 20:42:45 e 20:43:11 UTC, headers `x-plm-event: ping` e `x-plm-signature: t=…,v1=…`,
+corpo `{"id":"aba90f0d-…","event":"ping","created_at":"…","data":{"mensagem":"Teste enviado
+de Segurança → Webhooks",…},"api_version":"1"}`. Primeira entrega real do PLM para um
+sistema externo.
+
 ## Gates
 
 `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **vitest 1010/1010 (179 arquivos)**.
