@@ -20,7 +20,10 @@ export const criarChaveApi = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((i: unknown) =>
     z
-      .object({ name: z.string().trim().min(2, "Dê um nome à chave (ex.: ERP TOTVS).").max(80) })
+      .object({
+        name: z.string().trim().min(2, "Dê um nome à chave (ex.: ERP TOTVS).").max(80),
+        write: z.boolean().optional(),
+      })
       .parse(i),
   )
   .handler(async ({ data, context }) => {
@@ -29,6 +32,7 @@ export const criarChaveApi = createServerFn({ method: "POST" })
       name: data.name,
       key_prefix: prefixo,
       key_hash: hash,
+      scopes: data.write ? ["read", "write"] : ["read"],
       created_by: context.userId,
     });
     if (error) throw new Error(descreverErroSupabase(error, "criar a chave de API"));

@@ -3910,6 +3910,95 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_deliveries: {
+        Row: {
+          attempts: number
+          created_at: string
+          delivered_at: string | null
+          event: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          response_status: number | null
+          status: string
+          subscription_id: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          event: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload: Json
+          response_status?: number | null
+          status?: string
+          subscription_id: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          delivered_at?: string | null
+          event?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          response_status?: number | null
+          status?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_subscriptions: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          events: string[]
+          id: string
+          last_delivery_at: string | null
+          last_status: number | null
+          name: string
+          secret: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          events?: string[]
+          id?: string
+          last_delivery_at?: string | null
+          last_status?: number | null
+          name: string
+          secret: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          events?: string[]
+          id?: string
+          last_delivery_at?: string | null
+          last_status?: number | null
+          name?: string
+          secret?: string
+          url?: string
+        }
+        Relationships: []
+      }
       workflow_definitions: {
         Row: {
           created_at: string
@@ -3965,6 +4054,10 @@ export type Database = {
       }
     }
     Functions: {
+      webhook_enqueue: {
+        Args: { _event: string; _payload: Json }
+        Returns: number
+      }
       approve_sales_order_item: {
         Args: { _item_id: string; _note?: string }
         Returns: undefined

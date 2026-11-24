@@ -2554,6 +2554,19 @@ com chave desconhecida **401 "Chave desconhecida."** (antes 503 migration penden
 
 Falta só a prova de ponta a ponta com chave real (criar em Segurança e `curl` em produção).
 
+## 2-CL. Onda 122 — webhooks assinados + escrita vinda do ERP
+
+**Repo:** `webhook_subscriptions`/`webhook_deliveries` + triggers; despacho com HMAC e backoff;
+card Webhooks em `/security`; `PATCH /api/v1/production-orders/{id}` (escopo `write`);
+OpenAPI com `x-webhooks`. Migration nova: `20261123120000_webhooks.sql`.
+
+| Camada | após a Onda 122                                       |
+| ------ | ----------------------------------------------------- |
+| Repo   | **Onda 122**                                          |
+| Ar     | **Onda 121** (`index-CZFzjpgq.js`) — 122 pendente     |
+| Banco  | **1 pendente**: `20261123120000_webhooks.sql`         |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1010/1010** |
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

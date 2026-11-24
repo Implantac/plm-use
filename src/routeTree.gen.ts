@@ -64,6 +64,8 @@ import { Route as ApiV1RecursoRouteImport } from './routes/api/v1/$recurso'
 import { Route as ApiV1OpenapiDotjsonRouteImport } from './routes/api/v1/openapi[.]json'
 import { Route as ApiPublicCronAbcClassifyRouteImport } from './routes/api/public/cron/abc-classify'
 import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
+import { Route as ApiPublicCronWebhooksDispatchRouteImport } from './routes/api/public/cron/webhooks-dispatch'
+import { Route as ApiV1ProductionOrdersIdRouteImport } from './routes/api/v1/production-orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -353,6 +355,17 @@ const ApiPublicCronLaunchPerformanceRoute =
     path: '/api/public/cron/launch-performance',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCronWebhooksDispatchRoute =
+  ApiPublicCronWebhooksDispatchRouteImport.update({
+    id: '/api/public/cron/webhooks-dispatch',
+    path: '/api/public/cron/webhooks-dispatch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1ProductionOrdersIdRoute = ApiV1ProductionOrdersIdRouteImport.update({
+  id: '/api/v1/production-orders/$id',
+  path: '/api/v1/production-orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -409,6 +422,8 @@ export interface FileRoutesByFullPath {
   '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
+  '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
+  '/api/v1/production-orders/$id': typeof ApiV1ProductionOrdersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -465,6 +480,8 @@ export interface FileRoutesByTo {
   '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
+  '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
+  '/api/v1/production-orders/$id': typeof ApiV1ProductionOrdersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -523,6 +540,8 @@ export interface FileRoutesById {
   '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
+  '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
+  '/api/v1/production-orders/$id': typeof ApiV1ProductionOrdersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -581,6 +600,8 @@ export interface FileRouteTypes {
     | '/api/v1/openapi.json'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
+    | '/api/public/cron/webhooks-dispatch'
+    | '/api/v1/production-orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -637,6 +658,8 @@ export interface FileRouteTypes {
     | '/api/v1/openapi.json'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
+    | '/api/public/cron/webhooks-dispatch'
+    | '/api/v1/production-orders/$id'
   id:
     | '__root__'
     | '/'
@@ -694,6 +717,8 @@ export interface FileRouteTypes {
     | '/api/v1/openapi.json'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
+    | '/api/public/cron/webhooks-dispatch'
+    | '/api/v1/production-orders/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -708,6 +733,8 @@ export interface RootRouteChildren {
   ApiV1OpenapiDotjsonRoute: typeof ApiV1OpenapiDotjsonRoute
   ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
+  ApiPublicCronWebhooksDispatchRoute: typeof ApiPublicCronWebhooksDispatchRoute
+  ApiV1ProductionOrdersIdRoute: typeof ApiV1ProductionOrdersIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1097,6 +1124,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronLaunchPerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/webhooks-dispatch': {
+      id: '/api/public/cron/webhooks-dispatch'
+      path: '/api/public/cron/webhooks-dispatch'
+      fullPath: '/api/public/cron/webhooks-dispatch'
+      preLoaderRoute: typeof ApiPublicCronWebhooksDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/production-orders/$id': {
+      id: '/api/v1/production-orders/$id'
+      path: '/api/v1/production-orders/$id'
+      fullPath: '/api/v1/production-orders/$id'
+      preLoaderRoute: typeof ApiV1ProductionOrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1234,6 +1275,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1OpenapiDotjsonRoute: ApiV1OpenapiDotjsonRoute,
   ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
+  ApiPublicCronWebhooksDispatchRoute: ApiPublicCronWebhooksDispatchRoute,
+  ApiV1ProductionOrdersIdRoute: ApiV1ProductionOrdersIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

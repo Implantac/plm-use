@@ -23,11 +23,12 @@ export function ChavesApiCard() {
   const revogar = useServerFn(revogarChaveApi);
   const [nome, setNome] = useState("");
   const [novaChave, setNovaChave] = useState<string | null>(null);
+  const [escrita, setEscrita] = useState(false);
 
   const chaves = useQuery({ queryKey: ["api-keys"], queryFn: () => listar(), retry: false });
 
   const mCriar = useMutation({
-    mutationFn: () => criar({ data: { name: nome } }),
+    mutationFn: () => criar({ data: { name: nome, write: escrita } }),
     onSuccess: (r) => {
       setNovaChave(r.chave);
       setNome("");
@@ -101,6 +102,15 @@ export function ChavesApiCard() {
               maxLength={80}
             />
           </div>
+          <label className="flex items-center gap-2 text-xs text-foreground pb-2">
+            <input
+              type="checkbox"
+              checked={escrita}
+              onChange={(e) => setEscrita(e.target.checked)}
+              className="h-3.5 w-3.5"
+            />
+            Permitir escrita (PATCH de OPs pelo ERP)
+          </label>
           <Button type="submit" size="sm" disabled={nome.trim().length < 2 || mCriar.isPending}>
             {mCriar.isPending ? "Criando…" : "Criar chave"}
           </Button>
@@ -154,6 +164,7 @@ export function ChavesApiCard() {
                   <tr className="text-left text-muted-foreground border-b border-border/60">
                     <th className="py-1.5 pr-3 font-medium">Nome</th>
                     <th className="py-1.5 pr-3 font-medium">Prefixo</th>
+                    <th className="py-1.5 pr-3 font-medium">Escopo</th>
                     <th className="py-1.5 pr-3 font-medium">Último uso</th>
                     <th className="py-1.5 pr-3 font-medium">Criada</th>
                     <th className="py-1.5 pr-3 font-medium">Status</th>
@@ -168,6 +179,9 @@ export function ChavesApiCard() {
                       <td className="py-1.5 pr-3 text-foreground">{k.name}</td>
                       <td className="py-1.5 pr-3">
                         <code className="text-foreground">{k.key_prefix}…</code>
+                      </td>
+                      <td className="py-1.5 pr-3 text-foreground">
+                        {k.scopes?.includes("write") ? "leitura + escrita" : "leitura"}
                       </td>
                       <td className="py-1.5 pr-3 text-foreground">{fmt(k.last_used_at)}</td>
                       <td className="py-1.5 pr-3 text-foreground">{fmt(k.created_at)}</td>

@@ -142,6 +142,17 @@ export const RECURSOS_V1: RecursoV1[] = [
   },
 ];
 
+/** Espelho de EVENTOS_WEBHOOK (webhooks.ts usa node:crypto; aqui fica puro para o OpenAPI). */
+export const WEBHOOK_EVENT_IDS = [
+  "sales_order.created",
+  "sales_order.status_changed",
+  "production_order.created",
+  "production_order.status_changed",
+  "tech_sheet.created",
+  "tech_sheet.updated",
+  "ping",
+] as const;
+
 export const LIMITE_PADRAO = 100;
 export const LIMITE_MAXIMO = 500;
 
@@ -276,17 +287,67 @@ export function gerarOpenApi(baseUrl: string) {
       },
     };
   }
+  paths["/api/v1/production-orders/{id}"] = {
+    patch: {
+      summary:
+        "Atualizar OP a partir do ERP (status, erp_op_id, datas, notas) — exige escopo write",
+      tags: ["production-orders"],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string" },
+          description: "UUID ou número da OP",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                status: {
+                  type: "string",
+                  enum: ["planejada", "em_producao", "pausada", "concluida", "cancelada"],
+                },
+                erp_op_id: { type: "string", nullable: true },
+                planned_start: { type: "string", format: "date", nullable: true },
+                planned_end: { type: "string", format: "date", nullable: true },
+                notes: { type: "string", nullable: true },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        "200": { description: "OP atualizada" },
+        "400": { description: "Campo inválido" },
+        "401": { description: "Chave ausente/inválida" },
+        "403": { description: "Chave sem escopo write" },
+        "404": { description: "OP não encontrada" },
+      },
+      security: [{ apiKey: [] }],
+    },
+  };
   return {
     openapi: "3.0.3",
     info: {
       title: "USE MODA PLM — API pública v1",
       version: "1.0.0",
       description:
-        "Leitura dos dados do PLM para integração com ERP, e-commerce e BI. Autentique com `Authorization: Bearer <chave>` (crie a chave em Segurança → Chaves de API). Paginação por cursor; use `updated_since` para sincronização incremental.",
+        "Leitura dos dados do PLM para integração com ERP, e-commerce e BI. Autentique com `Authorization: Bearer <chave>` (crie a chave em Segurança → Chaves de API). Paginação por cursor; use `updated_since` para sincronização incremental. Webhooks: cadastre uma URL em Segurança → Webhooks; cada entrega é um POST JSON {id, event, created_at, data} assinado em `X-PLM-Signature: t=<unix>,v1=<hmac_sha256(secret, t + '.' + corpo)>`; responda 2xx em até 10 s (reenvio com backoff até 6 tentativas).",
     },
     servers: [{ url: baseUrl }],
     components: {
       securitySchemes: { apiKey: { type: "http", scheme: "bearer", bearerFormat: "plm_live_…" } },
+    },
+    "x-webhooks": {
+      events: WEBHOOK_EVENT_IDS,
+      signature_header: "X-PLM-Signature",
+      signature: "t=<unix>,v1=hex(hmac_sha256(secret, `${t}.${body}`))",
+      retry: "1 min, 5 min, 30 min, 2 h, 12 h (6 tentativas)",
     },
     paths,
   };
