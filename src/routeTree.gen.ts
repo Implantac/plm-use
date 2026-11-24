@@ -62,6 +62,7 @@ import { Route as AuthenticatedCollectionsCompareRouteImport } from './routes/_a
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
 import { Route as ApiV1RecursoRouteImport } from './routes/api/v1/$recurso'
 import { Route as ApiV1OpenapiDotjsonRouteImport } from './routes/api/v1/openapi[.]json'
+import { Route as ApiV1SalesOrdersRouteImport } from './routes/api/v1/sales-orders'
 import { Route as ApiPublicCronAbcClassifyRouteImport } from './routes/api/public/cron/abc-classify'
 import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
 import { Route as ApiPublicCronWebhooksDispatchRouteImport } from './routes/api/public/cron/webhooks-dispatch'
@@ -343,6 +344,11 @@ const ApiV1OpenapiDotjsonRoute = ApiV1OpenapiDotjsonRouteImport.update({
   path: '/api/v1/openapi.json',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1SalesOrdersRoute = ApiV1SalesOrdersRouteImport.update({
+  id: '/api/v1/sales-orders',
+  path: '/api/v1/sales-orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronAbcClassifyRoute =
   ApiPublicCronAbcClassifyRouteImport.update({
     id: '/api/public/cron/abc-classify',
@@ -420,6 +426,7 @@ export interface FileRoutesByFullPath {
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/v1/$recurso': typeof ApiV1RecursoRoute
   '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
+  '/api/v1/sales-orders': typeof ApiV1SalesOrdersRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
   '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
@@ -478,6 +485,7 @@ export interface FileRoutesByTo {
   '/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/v1/$recurso': typeof ApiV1RecursoRoute
   '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
+  '/api/v1/sales-orders': typeof ApiV1SalesOrdersRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
   '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
@@ -538,6 +546,7 @@ export interface FileRoutesById {
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
   '/api/v1/$recurso': typeof ApiV1RecursoRoute
   '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
+  '/api/v1/sales-orders': typeof ApiV1SalesOrdersRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
   '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
@@ -598,6 +607,7 @@ export interface FileRouteTypes {
     | '/production/today'
     | '/api/v1/$recurso'
     | '/api/v1/openapi.json'
+    | '/api/v1/sales-orders'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
     | '/api/public/cron/webhooks-dispatch'
@@ -656,6 +666,7 @@ export interface FileRouteTypes {
     | '/production/today'
     | '/api/v1/$recurso'
     | '/api/v1/openapi.json'
+    | '/api/v1/sales-orders'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
     | '/api/public/cron/webhooks-dispatch'
@@ -715,6 +726,7 @@ export interface FileRouteTypes {
     | '/_authenticated/production/today'
     | '/api/v1/$recurso'
     | '/api/v1/openapi.json'
+    | '/api/v1/sales-orders'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
     | '/api/public/cron/webhooks-dispatch'
@@ -731,6 +743,7 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   ApiV1RecursoRoute: typeof ApiV1RecursoRoute
   ApiV1OpenapiDotjsonRoute: typeof ApiV1OpenapiDotjsonRoute
+  ApiV1SalesOrdersRoute: typeof ApiV1SalesOrdersRoute
   ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
   ApiPublicCronWebhooksDispatchRoute: typeof ApiPublicCronWebhooksDispatchRoute
@@ -1110,6 +1123,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1OpenapiDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/sales-orders': {
+      id: '/api/v1/sales-orders'
+      path: '/api/v1/sales-orders'
+      fullPath: '/api/v1/sales-orders'
+      preLoaderRoute: typeof ApiV1SalesOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/abc-classify': {
       id: '/api/public/cron/abc-classify'
       path: '/api/public/cron/abc-classify'
@@ -1273,6 +1293,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   ApiV1RecursoRoute: ApiV1RecursoRoute,
   ApiV1OpenapiDotjsonRoute: ApiV1OpenapiDotjsonRoute,
+  ApiV1SalesOrdersRoute: ApiV1SalesOrdersRoute,
   ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
   ApiPublicCronWebhooksDispatchRoute: ApiPublicCronWebhooksDispatchRoute,

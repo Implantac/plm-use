@@ -90,6 +90,8 @@ export const RECURSOS_V1: RecursoV1[] = [
       "total_value",
       "due_date",
       "payment_terms",
+      "external_source",
+      "external_ref",
       "approved_at",
       "released_at",
       "created_at",
@@ -287,6 +289,88 @@ export function gerarOpenApi(baseUrl: string) {
       },
     };
   }
+  (paths["/api/v1/sales-orders"] as Record<string, unknown>).post = {
+    summary:
+      "Criar pedido vindo da loja/ERP (idempotente por source + external_ref) — exige escopo write",
+    tags: ["sales-orders"],
+    requestBody: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            required: ["source", "external_ref", "customer", "items"],
+            properties: {
+              source: { type: "string", example: "vtex", description: "Origem (a-z, 0-9, _ -)" },
+              external_ref: {
+                type: "string",
+                example: "1234567-01",
+                description: "Id do pedido na origem",
+              },
+              customer: {
+                type: "object",
+                required: ["code"],
+                properties: {
+                  code: { type: "string" },
+                  name: {
+                    type: "string",
+                    description: "Obrigatório se o cliente ainda não existir no PLM",
+                  },
+                  trade_name: { type: "string" },
+                  tax_id: { type: "string" },
+                  email: { type: "string" },
+                  phone: { type: "string" },
+                  city: { type: "string" },
+                  state: { type: "string", example: "SP" },
+                },
+              },
+              is_quote: { type: "boolean", default: false },
+              due_date: { type: "string", format: "date", nullable: true },
+              payment_terms: { type: "string", nullable: true },
+              notes: { type: "string", nullable: true },
+              items: {
+                type: "array",
+                minItems: 1,
+                items: {
+                  type: "object",
+                  required: ["product_code", "quantity", "unit_price"],
+                  properties: {
+                    product_code: {
+                      type: "string",
+                      description: "Código do produto no Catálogo do PLM",
+                    },
+                    description: { type: "string" },
+                    color: { type: "string", nullable: true },
+                    quantity: { type: "number" },
+                    unit_price: { type: "number" },
+                    sizes: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: { size: { type: "string" }, quantity: { type: "number" } },
+                      },
+                      description: "Grade; a soma deve ser igual a quantity",
+                    },
+                    notes: { type: "string", nullable: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      "201": {
+        description: "Pedido criado em rascunho ({data:{id, number, status, total_value, items}})",
+      },
+      "200": { description: "Já existia (already_existed: true) — reenvio seguro" },
+      "400": { description: "Corpo inválido (mensagem indica o campo)" },
+      "403": { description: "Chave sem escopo write" },
+      "422": { description: "product_code desconhecido/inativo ou cliente novo sem name" },
+    },
+    security: [{ apiKey: [] }],
+  };
   paths["/api/v1/production-orders/{id}"] = {
     patch: {
       summary:

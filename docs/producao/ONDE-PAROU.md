@@ -889,6 +889,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     despacho automático, `WEBHOOKS_CRON_SECRET` + agendamento por minuto.
     Gates **1010/1010**. Doc `ONDA-122-WEBHOOKS-E-ESCRITA-ERP.md`.
 
+79. **Onda 123 — Pedidos criados pela API — PENDENTE (código + migration).**
+    `POST /api/v1/sales-orders` (escopo `write`): idempotente por
+    `source`+`external_ref`, produto por código do Catálogo, cliente por código
+    (cria/atualiza), pedido em rascunho com itens e grade; 422 lista produtos
+    desconhecidos. **Aplicar `APLICAR-SQL-ONDA-123.sql`.** Gates **1018/1018**.
+    Doc `ONDA-123-PEDIDOS-PELA-API.md`.
+
 ---
 
 ## 8. Como reverificar isto

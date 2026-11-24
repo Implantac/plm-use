@@ -82,7 +82,12 @@ export function ChavesApiCard() {
           <span className="text-foreground">{RECURSOS_V1.map((r) => r.slug).join(", ")}</span> via{" "}
           <code className="text-foreground">GET /api/v1/&lt;recurso&gt;</code>, com paginação por
           cursor e <code className="text-foreground">updated_since</code> para sincronização
-          incremental. Só administração e gestão criam chaves; guardamos apenas o hash.
+          incremental. Com escopo de escrita, a loja/ERP também{" "}
+          <strong className="font-medium text-foreground">cria pedidos</strong> (
+          <code className="text-foreground">POST /api/v1/sales-orders</code>, idempotente por origem
+          + referência) e <strong className="font-medium text-foreground">atualiza OPs</strong> (
+          <code className="text-foreground">PATCH /api/v1/production-orders/:id</code>). Só
+          administração e gestão criam chaves; guardamos apenas o hash.
         </p>
 
         <form

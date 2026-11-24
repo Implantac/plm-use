@@ -2581,6 +2581,19 @@ cron `webhooks-dispatch` → 503 "Cron secret not configured" (esperado até def
 | Banco  | **Onda 122** — nenhuma migration pendente    |
 | Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · 1010 |
 
+## 2-CN. Onda 123 — pedidos criados pela API
+
+**Repo:** `POST /api/v1/sales-orders` idempotente (`external_source`/`external_ref`), leitura v1
+extraída para `leitura-v1.server.ts`, OpenAPI com o POST. Migration nova:
+`20261124120000_sales_orders_external_ref.sql` (2 colunas + índice único parcial).
+
+| Camada | após a Onda 123                                                |
+| ------ | -------------------------------------------------------------- |
+| Repo   | **Onda 123**                                                   |
+| Ar     | **Onda 122** (`index-CW-fs_ke.js`) — 123 pendente              |
+| Banco  | **1 pendente**: `20261124120000_sales_orders_external_ref.sql` |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1018/1018**          |
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

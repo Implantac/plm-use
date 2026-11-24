@@ -2948,6 +2948,8 @@ export type Database = {
           created_by: string | null
           customer_id: string
           due_date: string | null
+          external_ref: string | null
+          external_source: string | null
           id: string
           is_quote: boolean
           notes: string | null
@@ -2968,6 +2970,8 @@ export type Database = {
           created_by?: string | null
           customer_id: string
           due_date?: string | null
+          external_ref?: string | null
+          external_source?: string | null
           id?: string
           is_quote?: boolean
           notes?: string | null
@@ -2988,6 +2992,8 @@ export type Database = {
           created_by?: string | null
           customer_id?: string
           due_date?: string | null
+          external_ref?: string | null
+          external_source?: string | null
           id?: string
           is_quote?: boolean
           notes?: string | null
