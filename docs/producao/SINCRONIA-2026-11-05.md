@@ -2523,6 +2523,19 @@ fornecedor responde pelo portal, adjudicar gera `supplier_orders` e atualiza a B
 | Banco  | **pendente**: `20261121120000_rfq_quotes_persistidas.sql` (bloqueia a cotação) |
 | Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **994/994**                    |
 
+## 2-CJ. Onda 121 — API pública v1 + chaves de API
+
+**Repo:** `GET /api/v1/{references,materials,suppliers,sales-orders,production-orders,stock-balance,tech-sheets}`
+com Bearer `plm_live_…`, paginação por cursor e `updated_since`; `GET /api/v1/openapi.json`;
+card "Chaves de API" em `/security`. Migration nova: `20261122120000_api_keys.sql`.
+
+| Camada | após a Onda 121                                                                              |
+| ------ | -------------------------------------------------------------------------------------------- |
+| Repo   | **Onda 121**                                                                                 |
+| Ar     | **Onda 119** (`index-Bxf-kQd-.js`) — 120 e 121 pendentes                                     |
+| Banco  | **2 pendentes**: `20261121120000_rfq_quotes_persistidas.sql` e `20261122120000_api_keys.sql` |
+| Gates  | `tsc` 0 · `eslint` 0 erros · `prettier` limpo · **1003/1003**                                |
+
 ---
 
 ## 3. App publicado — qual onda está no ar

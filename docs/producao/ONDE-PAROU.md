@@ -868,11 +868,18 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `20261121120000_rfq_quotes_persistidas.sql` antes de publicar.** Gates
     **991/991**. Validação: fluxo completo em produção (doc da onda, §Pendente).
 
-76. **Publicar a Onda 120 — PENDENTE.** Acesso do fornecedor ao portal
+76. **Publicar a Onda 120 — PENDENTE (repo `9bd5759`).** Acesso do fornecedor ao portal
     (convidar e-mail, listar, revogar — servidor com service role, só gestão)
     e modo fornecedor (menu/rotas/abas só do portal). Depende da migration da
     119 para a cotação. Gates **994/994**. Validação: convidar e-mail de teste
     e entrar com ele.
+
+77. **Onda 121 — API pública v1 + chaves de API — PENDENTE (código + migration).**
+    `GET /api/v1/<recurso>` (7 recursos, cursor, `updated_since`, 120 req/min),
+    `GET /api/v1/openapi.json`, chaves em Segurança (hash no banco, chave
+    exibida uma vez). **Aplicar `20261122120000_api_keys.sql` (além da da
+    119).** Gates **1003/1003**. Validação: criar chave e `curl` em produção
+    (doc `ONDA-121-API-PUBLICA.md`).
 
 ---
 

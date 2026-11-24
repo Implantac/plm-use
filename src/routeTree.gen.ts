@@ -60,6 +60,8 @@ import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated.admin.users'
 import { Route as AuthenticatedCollectionsCompareRouteImport } from './routes/_authenticated.collections.compare'
 import { Route as AuthenticatedProductionTodayRouteImport } from './routes/_authenticated.production.today'
+import { Route as ApiV1RecursoRouteImport } from './routes/api/v1/$recurso'
+import { Route as ApiV1OpenapiDotjsonRouteImport } from './routes/api/v1/openapi[.]json'
 import { Route as ApiPublicCronAbcClassifyRouteImport } from './routes/api/public/cron/abc-classify'
 import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
 
@@ -329,6 +331,16 @@ const AuthenticatedProductionTodayRoute =
     path: '/today',
     getParentRoute: () => AuthenticatedProductionRoute,
   } as any)
+const ApiV1RecursoRoute = ApiV1RecursoRouteImport.update({
+  id: '/api/v1/$recurso',
+  path: '/api/v1/$recurso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1OpenapiDotjsonRoute = ApiV1OpenapiDotjsonRouteImport.update({
+  id: '/api/v1/openapi.json',
+  path: '/api/v1/openapi.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicCronAbcClassifyRoute =
   ApiPublicCronAbcClassifyRouteImport.update({
     id: '/api/public/cron/abc-classify',
@@ -393,6 +405,8 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/v1/$recurso': typeof ApiV1RecursoRoute
+  '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
@@ -447,6 +461,8 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/v1/$recurso': typeof ApiV1RecursoRoute
+  '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
@@ -503,6 +519,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/collections/compare': typeof AuthenticatedCollectionsCompareRoute
   '/_authenticated/production/today': typeof AuthenticatedProductionTodayRoute
+  '/api/v1/$recurso': typeof ApiV1RecursoRoute
+  '/api/v1/openapi.json': typeof ApiV1OpenapiDotjsonRoute
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
 }
@@ -559,6 +577,8 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/collections/compare'
     | '/production/today'
+    | '/api/v1/$recurso'
+    | '/api/v1/openapi.json'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
   fileRoutesByTo: FileRoutesByTo
@@ -613,6 +633,8 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/collections/compare'
     | '/production/today'
+    | '/api/v1/$recurso'
+    | '/api/v1/openapi.json'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
   id:
@@ -668,6 +690,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/collections/compare'
     | '/_authenticated/production/today'
+    | '/api/v1/$recurso'
+    | '/api/v1/openapi.json'
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
   fileRoutesById: FileRoutesById
@@ -680,6 +704,8 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiGenerateImageRoute: typeof ApiGenerateImageRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ApiV1RecursoRoute: typeof ApiV1RecursoRoute
+  ApiV1OpenapiDotjsonRoute: typeof ApiV1OpenapiDotjsonRoute
   ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
 }
@@ -1043,6 +1069,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProductionTodayRouteImport
       parentRoute: typeof AuthenticatedProductionRoute
     }
+    '/api/v1/$recurso': {
+      id: '/api/v1/$recurso'
+      path: '/api/v1/$recurso'
+      fullPath: '/api/v1/$recurso'
+      preLoaderRoute: typeof ApiV1RecursoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/openapi.json': {
+      id: '/api/v1/openapi.json'
+      path: '/api/v1/openapi.json'
+      fullPath: '/api/v1/openapi.json'
+      preLoaderRoute: typeof ApiV1OpenapiDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/cron/abc-classify': {
       id: '/api/public/cron/abc-classify'
       path: '/api/public/cron/abc-classify'
@@ -1190,6 +1230,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiGenerateImageRoute: ApiGenerateImageRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ApiV1RecursoRoute: ApiV1RecursoRoute,
+  ApiV1OpenapiDotjsonRoute: ApiV1OpenapiDotjsonRoute,
   ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
 }
