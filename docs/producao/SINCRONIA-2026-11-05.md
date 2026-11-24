@@ -2538,6 +2538,22 @@ card "Chaves de API" em `/security`. Migration nova: `20261122120000_api_keys.sq
 
 ---
 
+## 2-CK. 116ª medição — repo = ar = banco na Onda 121
+
+Usuário publicou e aplicou `APLICAR-SQL-ONDAS-119-121.sql` no SQL Editor (conferência devolveu
+`api_keys`, `rfq_quotes`). Re-medição: entry **`index-CZFzjpgq.js`**; REST `rfq_quotes` e `api_keys` →
+**200 []** (antes PGRST205); `GET /api/v1/openapi.json` 200; `GET /api/v1/references` sem chave 401,
+com chave desconhecida **401 "Chave desconhecida."** (antes 503 migration pendente); `/api/v1/nope` 404.
+
+| Camada | 116ª medição                                 |
+| ------ | -------------------------------------------- |
+| Repo   | **Onda 121** (`8b25c53`)                     |
+| Ar     | **Onda 121** (`index-CZFzjpgq.js`)           |
+| Banco  | **Onda 121** — nenhuma migration pendente    |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · 1003 |
+
+Falta só a prova de ponta a ponta com chave real (criar em Segurança e `curl` em produção).
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
