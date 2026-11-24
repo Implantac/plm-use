@@ -2567,6 +2567,20 @@ OpenAPI com `x-webhooks`. Migration nova: `20261123120000_webhooks.sql`.
 | Banco  | **1 pendente**: `20261123120000_webhooks.sql`         |
 | Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1010/1010** |
 
+## 2-CM. 117ª medição — repo = ar = banco na Onda 122
+
+Usuário publicou e aplicou `APLICAR-SQL-ONDA-122.sql` (conferência: `webhook_deliveries`,
+`webhook_subscriptions`). Entry **`index-CW-fs_ke.js`**; REST das duas tabelas → **200 []**;
+`PATCH /api/v1/production-orders/OP-1` sem chave → 401; `openapi.json` com `x-webhooks` e o path PATCH;
+cron `webhooks-dispatch` → 503 "Cron secret not configured" (esperado até definir `WEBHOOKS_CRON_SECRET`).
+
+| Camada | 117ª medição                                 |
+| ------ | -------------------------------------------- |
+| Repo   | **Onda 122** (`cec31b5`)                     |
+| Ar     | **Onda 122** (`index-CW-fs_ke.js`)           |
+| Banco  | **Onda 122** — nenhuma migration pendente    |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · 1010 |
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por

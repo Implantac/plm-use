@@ -881,7 +881,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     119).** Gates **1003/1003**. Validação: criar chave e `curl` em produção
     (doc `ONDA-121-API-PUBLICA.md`).
 
-78. **Onda 122 — Webhooks + escrita do ERP — PENDENTE (código + migration).**
+78. **Onda 122 — Webhooks + escrita do ERP — FEITO (117ª medição: entry `index-CW-fs_ke.js`; `webhook_subscriptions`/`webhook_deliveries` REST 200; PATCH sem chave 401; OpenAPI com `x-webhooks`). Falta só `WEBHOOKS_CRON_SECRET` + agendamento (cron responde 503 "not configured" — "Testar"/"Enviar agora" já despacham).**
     Fila alimentada por triggers (pedidos, OPs, fichas), assinatura HMAC
     `X-PLM-Signature`, reenvio com backoff, card em Segurança (Testar / Enviar
     agora), cron assinado `webhooks-dispatch`; `PATCH /api/v1/production-orders/{id}`
