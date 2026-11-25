@@ -2894,3 +2894,17 @@ botões Grade (fatores) e Exportar CSV no `GradedMeasurementsPanel`. 11 testes n
 | Ar     | Onda 123 (`index-C2Z1DynH.js`) — publicação pendente  |
 | Banco  | Onda 123 — nenhuma migration pendente                 |
 | Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1029/1029** |
+
+## 2-CQ. 119ª medição — repo = ar = banco na Onda 124
+
+Usuário publicou. Entry **`index-B_7mcuiX.js`** (antes `index-C2Z1DynH.js`); chunk
+`_authenticated.tech-sheet-DtFq1UT3.js` contém os 7 marcadores da onda
+(`Importar DXF`, `Exportar CSV`, `Fator do salto`, `Unidade não declarada`, `moldeDxf`,
+`Usar na BOM`, `por faixa`). Banco inalterado por desenho (sem migration).
+
+| Camada | 119ª medição                                          |
+| ------ | ----------------------------------------------------- |
+| Repo   | **Onda 124** (`7c097a0`)                              |
+| Ar     | **Onda 124** (`index-B_7mcuiX.js`)                    |
+| Banco  | Onda 123 = atual — nenhuma migration pendente         |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1029/1029** |

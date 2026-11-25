@@ -895,8 +895,9 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     (cria/atualiza), pedido em rascunho com itens e grade; 422 lista produtos
     desconhecidos. **Aplicar `APLICAR-SQL-ONDA-123.sql`.** Gates **1018/1018**.
     Doc `ONDA-123-PEDIDOS-PELA-API.md`.
-80. **Onda 124 — Graduação por faixa + molde DXF + CSV de medidas — FECHADA NO REPO
-    (aguarda publicação; sem migration).** `fatoresSalto` por tamanho (salto
+80. **Onda 124 — Graduação por faixa + molde DXF + CSV de medidas — FEITO (119ª
+    medição: entry `index-B_7mcuiX.js`, chunk `_authenticated.tech-sheet-DtFq1UT3.js`
+    com os 7 marcadores da onda; sem migration).** `fatoresSalto` por tamanho (salto
     acumulado a partir do base), `parseDxfMolde` lê DXF-AAMA no navegador
     (peças, área, perímetro, unidade) e estima consumo de tecido → "Usar na BOM";
     `gradedMatrixToCsv` + botão Exportar CSV. Gates **1029/1029**. Doc
