@@ -2921,3 +2921,16 @@ card em Segurança mostra as instruções e o botão Conectar fica desabilitado 
 | Ar     | Onda 124 (`index-B_7mcuiX.js`) — publicação pendente  |
 | Banco  | Onda 123 — **`APLICAR-SQL-ONDA-125.sql` pendente**    |
 | Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1036/1036** |
+
+## 2-CS. Onda 126 — kit de saída do Lovable (sem publicação possível)
+
+Lovable sem créditos: ar congelado na Onda 124 (`index-B_7mcuiX.js`, servidor responde),
+banco sem acesso administrativo. Repo ganha `vercel.json`, `scripts/migracao/*` e o guia.
+Replay das migrations provado localmente (Postgres 17): 76/77 + 2 drizzle → 83 tabelas.
+
+| Camada | Após a Onda 126                                            |
+| ------ | ---------------------------------------------------------- |
+| Repo   | **Onda 126** (este commit)                                 |
+| Ar     | Onda 124 congelada no Lovable — destino: Vercel            |
+| Banco  | Onda 123 congelado no Lovable — destino: Supabase próprio  |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · 1036/1036 (inalt.) |

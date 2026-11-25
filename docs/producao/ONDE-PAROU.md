@@ -910,6 +910,15 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     Segurança com resumo/rejeitados. Gates **1036/1036**. Doc
     `ONDA-125-CONECTOR-BLING.md` + `APLICAR-SQL-ONDA-125.sql`.
 
+82. **Onda 126 — Sair do Lovable (Supabase próprio + Vercel) — PRONTA NO REPO;
+    execução é do dono (≈ 1 h).** Créditos do Lovable acabaram e o banco ficou
+    inacessível. Provado em Postgres 17 limpo: 76/77 migrations passam direto
+    (a 77ª só pede pg_cron+pg_net) → 83 tabelas; build Vercel com
+    `NITRO_PRESET=vercel`. Entregues `vercel.json`, `scripts/migracao/01-03`
+    (schema, **exportar com o próprio login**, importar remapeando usuários) e
+    o guia `ONDA-126-MIGRACAO-VERCEL-SUPABASE.md`. **Primeiro passo do dono:
+    rodar o 02 AGORA, enquanto `plmuse.lovable.app` ainda responde.**
+
 ---
 
 ## 8. Como reverificar isto
