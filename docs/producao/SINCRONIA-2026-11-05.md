@@ -2908,3 +2908,16 @@ Usuário publicou. Entry **`index-B_7mcuiX.js`** (antes `index-C2Z1DynH.js`); ch
 | Ar     | **Onda 124** (`index-B_7mcuiX.js`)                    |
 | Banco  | Onda 123 = atual — nenhuma migration pendente         |
 | Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1029/1029** |
+
+## 2-CR. Onda 125 fechada no repo — Conector Bling
+
+Migration `20261125120000_integration_connections.sql` (**pendente no banco**) e
+segredos `BLING_CLIENT_ID`/`BLING_CLIENT_SECRET` (**pendentes no servidor**). Sem eles o
+card em Segurança mostra as instruções e o botão Conectar fica desabilitado — nada quebra.
+
+| Camada | Após a Onda 125                                       |
+| ------ | ----------------------------------------------------- |
+| Repo   | **Onda 125** (este commit)                            |
+| Ar     | Onda 124 (`index-B_7mcuiX.js`) — publicação pendente  |
+| Banco  | Onda 123 — **`APLICAR-SQL-ONDA-125.sql` pendente**    |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1036/1036** |

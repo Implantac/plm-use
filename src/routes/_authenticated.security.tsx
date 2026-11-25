@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { ModuleLayout } from "@/components/modules/ModuleLayout";
 import { ChavesApiCard } from "@/components/security/ChavesApiCard";
 import { WebhooksCard } from "@/components/security/WebhooksCard";
+import { IntegracaoBlingCard } from "@/components/security/IntegracaoBlingCard";
 import { ModuleTabs } from "@/components/nav/ModuleTabs";
 import { CtaProximoPasso } from "@/components/onboarding/CtaProximoPasso";
 import { Badge } from "@/components/ui/badge";
@@ -221,6 +222,7 @@ function SecurityPage() {
 
       <ChavesApiCard />
       <WebhooksCard />
+      <IntegracaoBlingCard />
 
       {/* Seletor de Papel AppRole para Simulação de Isolamento */}
       <Card className="border-border bg-card rounded-xl mb-6">

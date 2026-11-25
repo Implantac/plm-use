@@ -903,6 +903,13 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     `gradedMatrixToCsv` + botão Exportar CSV. Gates **1029/1029**. Doc
     `ONDA-124-GRADUACAO-E-DXF.md`.
 
+81. **Onda 125 — Conector Bling (ERP) — FECHADA NO REPO (aguarda: SQL da onda +
+    segredos `BLING_CLIENT_ID`/`BLING_CLIENT_SECRET` + publicação).** OAuth v3
+    com state, tokens só no servidor (`integration_connections`), sincronização
+    de pedidos de venda → `criarPedidoExterno` (idempotente `bling`+nº), card em
+    Segurança com resumo/rejeitados. Gates **1036/1036**. Doc
+    `ONDA-125-CONECTOR-BLING.md` + `APLICAR-SQL-ONDA-125.sql`.
+
 ---
 
 ## 8. Como reverificar isto

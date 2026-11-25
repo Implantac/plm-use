@@ -66,6 +66,7 @@ import { Route as ApiV1SalesOrdersRouteImport } from './routes/api/v1/sales-orde
 import { Route as ApiPublicCronAbcClassifyRouteImport } from './routes/api/public/cron/abc-classify'
 import { Route as ApiPublicCronLaunchPerformanceRouteImport } from './routes/api/public/cron/launch-performance'
 import { Route as ApiPublicCronWebhooksDispatchRouteImport } from './routes/api/public/cron/webhooks-dispatch'
+import { Route as ApiPublicIntegracoesBlingCallbackRouteImport } from './routes/api/public/integracoes/bling-callback'
 import { Route as ApiV1ProductionOrdersIdRouteImport } from './routes/api/v1/production-orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -367,6 +368,12 @@ const ApiPublicCronWebhooksDispatchRoute =
     path: '/api/public/cron/webhooks-dispatch',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicIntegracoesBlingCallbackRoute =
+  ApiPublicIntegracoesBlingCallbackRouteImport.update({
+    id: '/api/public/integracoes/bling-callback',
+    path: '/api/public/integracoes/bling-callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiV1ProductionOrdersIdRoute = ApiV1ProductionOrdersIdRouteImport.update({
   id: '/api/v1/production-orders/$id',
   path: '/api/v1/production-orders/$id',
@@ -430,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
   '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
+  '/api/public/integracoes/bling-callback': typeof ApiPublicIntegracoesBlingCallbackRoute
   '/api/v1/production-orders/$id': typeof ApiV1ProductionOrdersIdRoute
 }
 export interface FileRoutesByTo {
@@ -489,6 +497,7 @@ export interface FileRoutesByTo {
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
   '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
+  '/api/public/integracoes/bling-callback': typeof ApiPublicIntegracoesBlingCallbackRoute
   '/api/v1/production-orders/$id': typeof ApiV1ProductionOrdersIdRoute
 }
 export interface FileRoutesById {
@@ -550,6 +559,7 @@ export interface FileRoutesById {
   '/api/public/cron/abc-classify': typeof ApiPublicCronAbcClassifyRoute
   '/api/public/cron/launch-performance': typeof ApiPublicCronLaunchPerformanceRoute
   '/api/public/cron/webhooks-dispatch': typeof ApiPublicCronWebhooksDispatchRoute
+  '/api/public/integracoes/bling-callback': typeof ApiPublicIntegracoesBlingCallbackRoute
   '/api/v1/production-orders/$id': typeof ApiV1ProductionOrdersIdRoute
 }
 export interface FileRouteTypes {
@@ -611,6 +621,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
     | '/api/public/cron/webhooks-dispatch'
+    | '/api/public/integracoes/bling-callback'
     | '/api/v1/production-orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -670,6 +681,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
     | '/api/public/cron/webhooks-dispatch'
+    | '/api/public/integracoes/bling-callback'
     | '/api/v1/production-orders/$id'
   id:
     | '__root__'
@@ -730,6 +742,7 @@ export interface FileRouteTypes {
     | '/api/public/cron/abc-classify'
     | '/api/public/cron/launch-performance'
     | '/api/public/cron/webhooks-dispatch'
+    | '/api/public/integracoes/bling-callback'
     | '/api/v1/production-orders/$id'
   fileRoutesById: FileRoutesById
 }
@@ -747,6 +760,7 @@ export interface RootRouteChildren {
   ApiPublicCronAbcClassifyRoute: typeof ApiPublicCronAbcClassifyRoute
   ApiPublicCronLaunchPerformanceRoute: typeof ApiPublicCronLaunchPerformanceRoute
   ApiPublicCronWebhooksDispatchRoute: typeof ApiPublicCronWebhooksDispatchRoute
+  ApiPublicIntegracoesBlingCallbackRoute: typeof ApiPublicIntegracoesBlingCallbackRoute
   ApiV1ProductionOrdersIdRoute: typeof ApiV1ProductionOrdersIdRoute
 }
 
@@ -1151,6 +1165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronWebhooksDispatchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/integracoes/bling-callback': {
+      id: '/api/public/integracoes/bling-callback'
+      path: '/api/public/integracoes/bling-callback'
+      fullPath: '/api/public/integracoes/bling-callback'
+      preLoaderRoute: typeof ApiPublicIntegracoesBlingCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/production-orders/$id': {
       id: '/api/v1/production-orders/$id'
       path: '/api/v1/production-orders/$id'
@@ -1297,6 +1318,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCronAbcClassifyRoute: ApiPublicCronAbcClassifyRoute,
   ApiPublicCronLaunchPerformanceRoute: ApiPublicCronLaunchPerformanceRoute,
   ApiPublicCronWebhooksDispatchRoute: ApiPublicCronWebhooksDispatchRoute,
+  ApiPublicIntegracoesBlingCallbackRoute:
+    ApiPublicIntegracoesBlingCallbackRoute,
   ApiV1ProductionOrdersIdRoute: ApiV1ProductionOrdersIdRoute,
 }
 export const routeTree = rootRouteImport

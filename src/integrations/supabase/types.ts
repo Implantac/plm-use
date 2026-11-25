@@ -95,6 +95,54 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_connections: {
+        Row: {
+          access_token: string | null
+          account_label: string | null
+          connected_at: string | null
+          connected_by: string | null
+          expires_at: string | null
+          last_sync_at: string | null
+          last_sync_summary: Json | null
+          oauth_state: string | null
+          oauth_state_expires_at: string | null
+          provider: string
+          refresh_token: string | null
+          settings: Json
+          updated_at: string
+        }
+        Insert: {
+          access_token?: string | null
+          account_label?: string | null
+          connected_at?: string | null
+          connected_by?: string | null
+          expires_at?: string | null
+          last_sync_at?: string | null
+          last_sync_summary?: Json | null
+          oauth_state?: string | null
+          oauth_state_expires_at?: string | null
+          provider: string
+          refresh_token?: string | null
+          settings?: Json
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string | null
+          account_label?: string | null
+          connected_at?: string | null
+          connected_by?: string | null
+          expires_at?: string | null
+          last_sync_at?: string | null
+          last_sync_summary?: Json | null
+          oauth_state?: string | null
+          oauth_state_expires_at?: string | null
+          provider?: string
+          refresh_token?: string | null
+          settings?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           created_at: string
