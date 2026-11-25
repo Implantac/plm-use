@@ -889,7 +889,7 @@ Corrigido por `supabase/migrations/20261104120000_stock_reservation_lifecycle.sq
     despacho automático, `WEBHOOKS_CRON_SECRET` + agendamento por minuto.
     Gates **1010/1010**. Doc `ONDA-122-WEBHOOKS-E-ESCRITA-ERP.md`.
 
-79. **Onda 123 — Pedidos criados pela API — PENDENTE (código + migration).**
+79. **Onda 123 — Pedidos criados pela API — FEITO (118ª medição: entry `index-C2Z1DynH.js`; `sales_orders.external_source/external_ref` REST 200; POST sem chave 401, chave desconhecida 401; OpenAPI get+post). Falta a prova com chave write + produto do Catálogo (curl da doc).**
     `POST /api/v1/sales-orders` (escopo `write`): idempotente por
     `source`+`external_ref`, produto por código do Catálogo, cliente por código
     (cria/atualiza), pedido em rascunho com itens e grade; 422 lista produtos

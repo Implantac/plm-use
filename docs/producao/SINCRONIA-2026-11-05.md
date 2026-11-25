@@ -2594,6 +2594,19 @@ extraída para `leitura-v1.server.ts`, OpenAPI com o POST. Migration nova:
 | Banco  | **1 pendente**: `20261124120000_sales_orders_external_ref.sql` |
 | Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1018/1018**          |
 
+## 2-CO. 118ª medição — repo = ar = banco na Onda 123
+
+Usuário publicou e aplicou `APLICAR-SQL-ONDA-123.sql`. Entry **`index-C2Z1DynH.js`**; REST
+`sales_orders?select=external_source,external_ref` → **200** (colunas existem); `POST /api/v1/sales-orders`
+sem chave → 401, chave desconhecida → 401 "Chave desconhecida."; `openapi.json` com `get` e `post`.
+
+| Camada | 118ª medição                                 |
+| ------ | -------------------------------------------- |
+| Repo   | **Onda 123** (`5d6a162`)                     |
+| Ar     | **Onda 123** (`index-C2Z1DynH.js`)           |
+| Banco  | **Onda 123** — nenhuma migration pendente    |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · 1018 |
+
 ## 3. App publicado — qual onda está no ar
 
 Método: baixar `/`, extrair `assets/index-*.js`, seguir os imports em BFS por
