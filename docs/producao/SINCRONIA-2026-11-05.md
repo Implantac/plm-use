@@ -2880,3 +2880,17 @@ Marcadores exclusivos da 60 = `Fornecedor da cotação`, `Tipo do item BOM`,
 **0 na 54ª**, logo a Onda 60 ainda não está no ar. A 54ª é a medição
 corrente: **repo na Onda 60, ar na Onda 58 e banco com as migrações 21/24
 aplicadas — duas publicações pendentes**.
+
+## 2-CP. Onda 124 fechada no repo — graduação por faixa, DXF do molde, CSV
+
+Sem migration. `textile.ts` (`fatoresSalto`, `computeGradedRow` acumulado,
+`gradedMatrixToCsv`, `CadMarkerSpec.moldeDxf`), novo `dxf-molde.ts`
+(`parseDxfMolde`, `estimarConsumoMetros`), `MoldeDxfPanel.tsx` no diálogo CAD,
+botões Grade (fatores) e Exportar CSV no `GradedMeasurementsPanel`. 11 testes novos.
+
+| Camada | Após a Onda 124                                       |
+| ------ | ----------------------------------------------------- |
+| Repo   | **Onda 124** (este commit)                            |
+| Ar     | Onda 123 (`index-C2Z1DynH.js`) — publicação pendente  |
+| Banco  | Onda 123 — nenhuma migration pendente                 |
+| Gates  | `tsc` 0 · `eslint` 0 · prettier limpo · **1029/1029** |

@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ClipboardPaste,
   Download,
+  FileDown,
   Plus,
   RotateCcw,
   Ruler,
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 import { defaultMedidasFor, useTechSheetStore, blankFor } from "@/lib/techsheet/store";
 import {
   computeGradedMatrix,
+  gradedMatrixToCsv,
   parseExcelMeasurementsPaste,
   round2,
   type MeasurementPomRow,
@@ -48,6 +50,7 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
   const [excelText, setExcelText] = useState("");
   const [gradesText, setGradesText] = useState(spec.tamanhos.join(", "));
   const [editGradesOpen, setEditGradesOpen] = useState(false);
+  const [fatoresText, setFatoresText] = useState<Record<string, string>>({});
 
   const charts = useMemo(() => listCharts(), []);
 
@@ -167,10 +170,41 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
     const base = parsed.includes(spec.tamanhoBase)
       ? spec.tamanhoBase
       : parsed[Math.floor(parsed.length / 2)];
-    setMedidas(refAtual, { ...spec, tamanhos: parsed, tamanhoBase: base });
+    const fatoresSalto: Record<string, number> = {};
+    for (const [tam, txt] of Object.entries(fatoresText)) {
+      const f = Number.parseFloat(String(txt).replace(",", "."));
+      if (Number.isFinite(f) && f > 0 && f !== 1 && parsed.includes(tam)) fatoresSalto[tam] = f;
+    }
+    setMedidas(refAtual, {
+      ...spec,
+      tamanhos: parsed,
+      tamanhoBase: base,
+      fatoresSalto: Object.keys(fatoresSalto).length ? fatoresSalto : undefined,
+    });
     setEditGradesOpen(false);
-    toast.success(`Grade atualizada: ${parsed.join(" · ")} (Base ${base}).`);
+    const comFator = Object.entries(fatoresSalto).map(([t, f]) => `${t} ×${f}`);
+    toast.success(
+      `Grade atualizada: ${parsed.join(" · ")} (Base ${base})${comFator.length ? ` · saltos ${comFator.join(", ")}` : ""}.`,
+    );
   };
+
+  const exportarCsv = () => {
+    const csv = gradedMatrixToCsv(spec, refAtual);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `medidas-${refAtual}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast.success(
+      `CSV exportado com ${spec.pontos.length} cotas × ${spec.tamanhos.length} tamanhos.`,
+    );
+  };
+
+  const tamanhosEditando = gradesText
+    .split(/[,;\s]+/)
+    .map((t) => t.trim().toUpperCase())
+    .filter(Boolean);
 
   return (
     <Card id="sec-medidas" className="glass-card rounded-xl p-4 lg:p-5 space-y-4 border-border/80">
@@ -209,10 +243,23 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
             className="h-7 text-2xs"
             onClick={() => {
               setGradesText(spec.tamanhos.join(", "));
+              setFatoresText(
+                Object.fromEntries(
+                  Object.entries(spec.fatoresSalto ?? {}).map(([t, f]) => [t, String(f)]),
+                ),
+              );
               setEditGradesOpen(true);
             }}
           >
             Grade ({spec.tamanhos.join("/")})
+            {spec.fatoresSalto && Object.keys(spec.fatoresSalto).length > 0 && (
+              <span
+                className="ml-1 text-teal-600 dark:text-teal-300"
+                title="Graduação por faixa ativa"
+              >
+                · por faixa
+              </span>
+            )}
           </Button>
           <Button
             size="sm"
@@ -221,6 +268,16 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
             onClick={() => setExcelOpen(true)}
           >
             <ClipboardPaste className="w-3 h-3 text-teal-500" /> Colar Excel
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-2xs gap-1"
+            onClick={exportarCsv}
+            disabled={spec.pontos.length === 0}
+            title="Baixa a tabela graduada em CSV (Excel / Audaces / fornecedor)"
+          >
+            <FileDown className="w-3 h-3 text-teal-500" /> Exportar CSV
           </Button>
           <Button
             size="sm"
@@ -430,6 +487,37 @@ export function GradedMeasurementsPanel({ refAtual }: { refAtual: string }) {
               onChange={(e) => setGradesText(e.target.value)}
               className="font-mono text-xs"
             />
+            {tamanhosEditando.length > 1 && (
+              <div className="pt-2 space-y-1.5">
+                <Label className="text-xs">
+                  Graduação por faixa — fator do salto até cada tamanho (1 = salto normal; 1,5 =
+                  salto 50% maior; vazio = 1)
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                  {tamanhosEditando
+                    .filter((t) => t !== spec.tamanhoBase)
+                    .map((t) => (
+                      <label key={t} className="flex items-center gap-1 text-xs text-foreground">
+                        <span className="font-mono w-8 text-right">{t}</span>
+                        <Input
+                          aria-label={`Fator do salto até ${t}`}
+                          inputMode="decimal"
+                          placeholder="1"
+                          value={fatoresText[t] ?? ""}
+                          onChange={(e) =>
+                            setFatoresText((prev) => ({ ...prev, [t]: e.target.value }))
+                          }
+                          className="h-7 w-16 font-mono text-xs"
+                        />
+                      </label>
+                    ))}
+                </div>
+                <p className="text-2xs text-muted-foreground">
+                  Ex.: GG = 1,5 faz todas as cotas crescerem 1,5× o salto de G para GG. Células
+                  editadas à mão continuam valendo.
+                </p>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditGradesOpen(false)}>

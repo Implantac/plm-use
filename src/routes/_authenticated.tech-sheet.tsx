@@ -67,6 +67,7 @@ import { GarmentSketchStudio } from "@/components/techsheet/GarmentSketchStudio"
 import { BomBopPanel } from "@/components/techsheet/BomBopPanel";
 import { AplicacoesPanel } from "@/components/techsheet/AplicacoesPanel";
 import { GradedMeasurementsPanel } from "@/components/techsheet/GradedMeasurementsPanel";
+import { MoldeDxfPanel } from "@/components/techsheet/MoldeDxfPanel";
 import { PreCostPanel } from "@/components/techsheet/PreCostPanel";
 import { OperationSequencePanel } from "@/components/techsheet/OperationSequencePanel";
 import { TechSheetVersions } from "@/components/techsheet/TechSheetVersions";
@@ -655,7 +656,7 @@ function TechSheetPage() {
 
       {/* Dialog: Parâmetros de Encaixe CAD (Risco / Enfesto / Encolhimento) */}
       <Dialog open={cadOpen} onOpenChange={setCadOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Engenharia de Molde &amp; Encaixe CAD ({activeRef})</DialogTitle>
           </DialogHeader>
@@ -778,6 +779,7 @@ function TechSheetPage() {
                 className="font-mono text-xs"
               />
             </div>
+            <MoldeDxfPanel refAtual={activeRef} />
           </div>
           <DialogFooter className="flex items-center justify-between sm:justify-between">
             <Button variant="ghost" size="sm" asChild className="text-xs gap-1">

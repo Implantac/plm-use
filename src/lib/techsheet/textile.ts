@@ -114,6 +114,12 @@ export type TechSheetMeasurementSpec = {
   unidade: "cm" | "mm";
   pontos: MeasurementPomRow[];
   observacoesModelagem?: string;
+  /**
+   * Onda 124 — fator do salto por tamanho (graduação por faixa): o salto que leva
+   * ATÉ aquele tamanho = regraGraduacaoCm × fator. Ex.: { GG: 1.5, XG: 2 }.
+   * Ausente/1 = linear como antes.
+   */
+  fatoresSalto?: Record<string, number>;
 };
 
 /**
@@ -124,11 +130,23 @@ export function computeGradedRow(
   row: MeasurementPomRow,
   tamanhos: string[],
   tamanhoBase: string,
+  fatoresSalto?: Record<string, number>,
 ): Record<string, number> {
   const baseIdx = Math.max(
     0,
     tamanhos.findIndex((t) => t.toUpperCase() === tamanhoBase.toUpperCase()),
   );
+  const fator = (tam: string) => {
+    const f = fatoresSalto?.[tam];
+    return f != null && Number.isFinite(f) && f > 0 ? f : 1;
+  };
+  // Acumula os saltos a partir do tamanho base, para cima e para baixo, cada um
+  // multiplicado pelo fator do tamanho de destino (graduação por faixa).
+  const calculado: number[] = new Array(tamanhos.length).fill(row.valorBase);
+  for (let i = baseIdx + 1; i < tamanhos.length; i++)
+    calculado[i] = calculado[i - 1]! + row.regraGraduacaoCm * fator(tamanhos[i]!);
+  for (let i = baseIdx - 1; i >= 0; i--)
+    calculado[i] = calculado[i + 1]! - row.regraGraduacaoCm * fator(tamanhos[i]!);
   const out: Record<string, number> = {};
   tamanhos.forEach((tam, idx) => {
     const manual = row.overrides?.[tam];
@@ -136,8 +154,7 @@ export function computeGradedRow(
       out[tam] = round2(manual);
       return;
     }
-    const deltaSteps = idx - baseIdx;
-    out[tam] = round2(Math.max(0, row.valorBase + deltaSteps * row.regraGraduacaoCm));
+    out[tam] = round2(Math.max(0, calculado[idx]!));
   });
   return out;
 }
@@ -147,8 +164,38 @@ export function computeGradedMatrix(
 ): Array<{ row: MeasurementPomRow; values: Record<string, number> }> {
   return spec.pontos.map((row) => ({
     row,
-    values: computeGradedRow(row, spec.tamanhos, spec.tamanhoBase),
+    values: computeGradedRow(row, spec.tamanhos, spec.tamanhoBase, spec.fatoresSalto),
   }));
+}
+
+/** Onda 124 — CSV (;) da tabela graduada, com BOM UTF-8: abre direto no Excel/Audaces. */
+export function gradedMatrixToCsv(spec: TechSheetMeasurementSpec, ref?: string): string {
+  const sep = ";";
+  const esc = (v: unknown) => {
+    const s = String(v ?? "");
+    return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const num = (n: number) => n.toFixed(2).replace(".", ",");
+  const linhas: string[] = [];
+  if (ref)
+    linhas.push(
+      `Referência${sep}${esc(ref)}${sep}Tamanho base${sep}${esc(spec.tamanhoBase)}${sep}Unidade${sep}${spec.unidade}`,
+    );
+  linhas.push(
+    ["Código", "Ponto de medida", "Como medir", "Tolerância", ...spec.tamanhos].map(esc).join(sep),
+  );
+  for (const { row, values } of computeGradedMatrix(spec)) {
+    linhas.push(
+      [
+        esc(row.codigo),
+        esc(row.nome),
+        esc(row.comoMedir ?? ""),
+        `±${num(row.toleranciaCm)}`,
+        ...spec.tamanhos.map((t) => num(values[t] ?? 0)),
+      ].join(sep),
+    );
+  }
+  return "\ufeff" + linhas.join("\r\n") + "\r\n";
 }
 
 // ---------------------------------------------------------------------------
@@ -233,6 +280,8 @@ export type CadMarkerSpec = {
   encolhimentoTramaPct?: number; // transversal %
   arquivoMolde?: string; // ex.: "DEV000006_DRY_PRO_v3.ADS"
   sistemaCad?: "Audaces" | "Lectra" | "Gerber" | "Optitex" | "CLO3D" | "Outro";
+  /** Onda 124 — molde DXF lido no PLM (peças, área, consumo estimado). */
+  moldeDxf?: import("./dxf-molde").MoldeDxf;
 };
 
 // ---------------------------------------------------------------------------
